@@ -1,0 +1,28 @@
+select {
+    -webkit-appearance: none;
+    appearance: none;
+    border: none;
+    /* background-color: yellow; */
+  }
+  .select_t {
+    position: relative;
+    /* border: 1px solid black; */
+    border-radius: 12px;
+  
+    /* padding: 5px; */
+  }
+  .select_t::after {
+    content: "▼";
+    font-size: 12px;
+    right: 10px;
+    color: #c6c4c4;
+    top: 9px;
+    position: absolute;
+    /* background-color: yellow; */
+  }
+  .rectangle {
+    width: 100%;
+    padding-left: 12px;
+    /* background-color: yellow; */
+  }
+  

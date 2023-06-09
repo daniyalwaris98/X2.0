@@ -1,0 +1,57 @@
+{
+  "atom": {
+    "view": true,
+    "pages": {
+      "atom": { "view": true, "read_only": true },
+      "password_group": { "view": true, "read_only": true }
+    }
+  },
+  "uam": {
+    "view": true,
+    "pages": {
+      "sites": { "view": true, "read_only": true },
+      "racks": { "view": true, "read_only": true },
+      "devices": { "view": true, "read_only": true },
+      "boards": { "view": true, "read_only": true },
+      "subboards": { "view": true, "read_only": true },
+      "sfps": { "view": true, "read_only": true },
+      "license": { "view": true, "read_only": true }
+    }
+  },
+  "network_mapping": {
+    "view": true,
+    "pages": { "network_mapping": { "view": true, "read_only": true } }
+  },
+  "ipam": {
+    "view": true,
+    "pages": {
+      "dashboard": { "view": true, "read_only": true },
+      "devices": { "view": true, "read_only": true },
+      "devices_subnet": { "view": true, "read_only": true },
+      "subnet": { "view": true, "read_only": true },
+      "ip_detail": { "view": true, "read_only": true },
+      "discover_subnet": { "view": true, "read_only": true },
+      "ip_history": { "view": true, "read_only": true },
+      "dns_server": { "view": true, "read_only": true },
+      "dns_zones": { "view": true, "read_only": true },
+      "dns_records": { "view": true, "read_only": true }
+    }
+  },
+  "monitering": {
+    "view": true,
+    "pages": { "monitering": { "view": true, "read_only": true } }
+  },
+  "dcm": {
+    "view": true,
+    "pages": { "dcm": { "view": true, "read_only": true } }
+  },
+  "admin": {
+    "view": true,
+    "pages": {
+      "admin": { "view": true, "read_only": true },
+      "show_member": { "view": true, "read_only": true },
+      "role": { "view": true, "read_only": true },
+      "failed_devices": { "view": true, "read_only": true }
+    }
+  }
+}

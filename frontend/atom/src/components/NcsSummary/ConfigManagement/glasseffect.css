@@ -1,0 +1,18 @@
+.glassEffect{
+    /* From https://css.glass */
+background: rgba(227, 227, 227, 0.59);
+border-radius: 16px;
+box-shadow: 0 4px 30px rgba(0, 0, 0, 0.08);
+backdrop-filter: blur(18.7px);
+-webkit-backdrop-filter: blur(18.7px);
+border: 1px solid rgba(23, 23, 23, 0.08);
+}
+
+.line-numbers {
+    counter-reset: line;
+  }
+  .line-number::before {
+    counter-increment: line;
+    content: counter(line);
+    margin-right: 1em;
+  }

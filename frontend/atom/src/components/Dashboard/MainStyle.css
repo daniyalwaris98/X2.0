@@ -1,0 +1,120 @@
+.mainDiv {
+  position: relative;
+  max-width: 450px;
+  height: 500px;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  margin: 10px;
+  /* padding: 15px; */
+  box-sizing: border-box;
+  border-radius: 8px;
+}
+
+.mainDiv:after {
+  content: "";
+  position: absolute;
+  width: 50px;
+  height: 50px;
+  border-top: 0px solid rgb(255, 255, 255);
+  border-right: 2px solid rgba(0, 0, 0, 0.3);
+  border-bottom: 2px solid rgba(0, 0, 0, 0.3);
+  border-left: 0px solid rgb(255, 255, 255);
+  top: 100%;
+  left: 50%;
+  margin-left: -25px;
+  transform: rotate(45deg);
+  margin-top: -24px;
+  background-color: #fff;
+}
+
+.message {
+  display: flex;
+  flex-direction: column;
+  margin-top: 20px;
+}
+
+.messageTop {
+  display: flex;
+}
+
+.messageImg {
+  width: 32px;
+  height: 32px;
+  /* border-radius: 50%; */
+  object-fit: cover;
+  margin-right: 10px;
+}
+.messageImgUser {
+  width: 32px;
+  height: 32px;
+  /* border-radius: 50%; */
+  object-fit: cover;
+  margin-left: 10px;
+}
+
+.messageText {
+  padding: 10px;
+  border-radius: 20px;
+  background-color: #fdfefb;
+  color: #66b127;
+  max-width: 300px;
+}
+
+.messageBottom {
+  font-size: 12px;
+  margin-top: 10px;
+}
+
+.message.own {
+  display: flex;
+  flex-direction: row-reverse;
+  /* align-items: flex-end; */
+  /* flex-direction: row-reverse !important; */
+}
+
+.message.own .messageText {
+  background-color: #fafafa;
+  color: #605f61;
+}
+
+.chatMenuWrapper,
+.chatBoxWrapper,
+.chatOnlineWrapper {
+  padding: 10px;
+  height: 100%;
+}
+
+.noConversationText {
+  position: absolute;
+  top: 10%;
+  font-size: 50px;
+  color: rgb(224, 220, 220);
+  cursor: default;
+}
+.chatBoxWrapper {
+  /* display: flex; */
+  flex-direction: column;
+  justify-content: space-between;
+  position: relative;
+}
+.chatBoxBottom {
+  margin-top: -5px;
+  border-top: 1px solid rgba(0, 0, 0, 0.2);
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+.chatMessageInput {
+  width: 90%;
+  /* height: 90px; */
+  padding: 10px;
+  border: none;
+  z-index: 1;
+}
+.chatMessageInput:active {
+  border: none;
+}
+.chatBoxTop {
+  height: 70%;
+  overflow-y: scroll;
+  padding-right: 10px;
+}

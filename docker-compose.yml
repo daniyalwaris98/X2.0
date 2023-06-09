@@ -1,0 +1,75 @@
+version: "3.8"
+services:
+  updated_atom_db:
+    image: mysql:latest
+    restart: always
+    container_name: Update_Atom_DATABASE_Container
+    ports:
+      - "3306:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: As123456?
+      MYSQL_DATABASE: AtomDB
+    volumes:
+      - ./db/atom.sql:/docker-entrypoint-initdb.d/atom.sql
+
+  updated_atom_flask:
+    container_name: Update_Atom_Flask_Container
+    restart: always
+    build: backend/atom
+    # cap_add:
+    #   - NET_ADMIN
+    #   - SYS_ADMIN
+    ports:
+      - "5010:5000"
+    environment:
+      - NET_TEXTFSM=/app/app/pullers/ntc-templates/ntc_templates/templates/
+    volumes:
+      - ./backend/atom:/app
+    depends_on:
+      - updated_atom_db
+      - updated_influxdb
+    # extra_hosts:
+    #   - "host.docker.internal:host-gateway"
+
+  # uam_flask:
+  #   container_name: UAM_Flask_Container
+  #   restart: always
+  #   build: backend/uam
+  #   ports:
+  #     - "5001:5001"
+  #   volumes:
+  #     - ./backend/uam:/app
+
+  updated_atom_react:
+    container_name: Updated_Atom_React_Container
+    restart: always
+    build: frontend/atom
+    command: ["npm", "start"]
+    volumes:
+      - ./frontend/atom:/frontend-atom
+      - node-modules:/frontend-atom/node_modules
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3010:3010"
+    depends_on:
+      - updated_atom_flask
+
+  updated_influxdb:
+    image: influxdb:latest
+    container_name: Updated_NEW_MONITORING_CONTAINER
+    ports:
+      - "8086:8086"
+    volumes:
+      - influxdb-storage:/var/lib/influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: As123456?
+      DOCKER_INFLUXDB_INIT_ORG: monetx
+      DOCKER_INFLUXDB_INIT_DB: monitoring
+      DOCKER_INFLUXDB_INIT_BUCKET: monitoring
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "nItzto4Hc22kXuLsawB76lhKPM-wbK1DAQc7uBiFpYUCntoHDE6TC-uGeezzx7S89fyClKv2YXLfDi15Ujhn5A=="
+volumes:
+  node-modules:
+  influxdb-storage:

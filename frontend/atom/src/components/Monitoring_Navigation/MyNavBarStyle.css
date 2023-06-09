@@ -1,0 +1,137 @@
+.navbar {
+  overflow: hidden;
+  background-color: rgb(127, 127, 127);
+}
+
+.navbar Link {
+  float: left;
+  font-size: 16px;
+  color: #000;
+  text-align: left;
+  padding: 18px 22px;
+  text-decoration: none;
+}
+
+.dropdown {
+  margin-top: 5px;
+  float: left;
+  overflow: hidden;
+}
+
+.dropdown .dropbtn {
+  font-size: 12px;
+  border: none;
+  outline: none;
+  color: #878787;
+  padding: 20px 36px;
+  background-color: inherit;
+  font-family: inherit;
+  margin: 0;
+}
+
+.navbar Link:hover,
+.dropdown:hover .dropbtn {
+  background-color: transparent;
+}
+
+.dropdown-content {
+  display: none;
+  position: absolute;
+  background-color: #ffffff;
+  min-width: 150px;
+  box-shadow: 0px 8px 16px 0px rgba(0, 0, 0, 0.2);
+  z-index: 1;
+}
+
+.dropdown-content Link {
+  float: none;
+  color: rgb(255, 255, 255);
+  padding: 8px 12px;
+  text-decoration: none;
+  display: block;
+  text-align: left;
+}
+
+.dropdown-content Link:hover {
+  background-color: rgb(254, 252, 252);
+}
+
+.dropdown:hover .dropdown-content {
+  display: block;
+}
+.submenu {
+  display: none;
+  margin-left: 28px;
+  margin-top: -12px;
+}
+.companymenuli {
+  margin-top: -22px;
+  margin-left: 15px;
+}
+.companymenuli:hover > ul {
+  display: block;
+}
+
+#nav {
+  list-style: none ;
+  margin: 0;
+  padding: 0;
+  text-align: left;
+}
+
+
+#nav li {
+ 
+  position: relative;
+  float: left;
+  background: white;
+  z-index: 3;
+  /* padding-left: 20px; */
+  /* border-bottom: 2px solid #71b626;  */
+}
+
+
+#nav li a {
+ 
+  padding: 0px;
+  text-decoration: none;
+  width: 130px;
+  line-height: 26px; /* this is the hieght of the menu items */
+  /* color: rgba(0, 0, 0, 0.1);  */
+}
+
+
+#nav li li a {
+  font-size: 100%;
+} /* smaller font size for sub menu items */
+
+#nav li:hover {
+  background: white;
+  /* color: #71b626 !important; */
+  /* border-bottom: 2px solid #71b626;  */
+} /* highlights current hovered list item and the parent list items when hovering over sub menues */
+
+
+
+#nav ul {
+  position: absolute;
+  padding: 0;
+  left: 0;
+  display: none; /* hides sublists */
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 4px;
+}
+
+#nav li:hover ul ul {
+  display: none;
+} /* hides sub-sublists */
+
+#nav li:hover ul {
+  display: block;
+} /* shows sublist on hover */
+
+#nav li li:hover ul {
+  display: block; /* shows sub-sublist on hover */
+  margin-left: 130px; /* this should be the same width as the parent list item */
+  margin-top: -32px; /* aligns top of sub menu with top of list item */
+}

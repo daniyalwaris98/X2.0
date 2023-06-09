@@ -1,0 +1,143 @@
+.myDIV {
+  background: #e2b200;
+  width: 35px;
+  height: 35px;
+  margin: 1px;
+}
+
+.hidemyDIV {
+  display: none;
+}
+
+.myDIV:hover + .hidemyDIV {
+  z-index: 99999999999;
+  position: absolute;
+  display: block;
+  color: white;
+  width: 160px;
+  height: 80px;
+  text-align: center;
+  background: #e2b200;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.myDIV2 {
+  background: #66b127;
+  width: 35px;
+  height: 35px;
+  margin: 1px;
+}
+
+.myDIV2:hover + .hidemyDIV {
+  z-index: 99999999999;
+  position: absolute;
+  display: block;
+  color: white;
+  width: 160px;
+  height: 80px;
+  text-align: center;
+  background: #66b127;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.myDIV3 {
+  background: #ff9a40;
+  width: 35px;
+  height: 35px;
+  margin: 1px;
+}
+
+.myDIV3:hover + .hidemyDIV {
+  z-index: 99999999999;
+  position: absolute;
+  display: block;
+  color: white;
+  width: 160px;
+  height: 80px;
+  text-align: center;
+  background: #ff9a40;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.myDIV4 {
+  background: #a8a6a6;
+  width: 35px;
+  height: 35px;
+  margin: 1px;
+}
+
+.myDIV4:hover + .hidemyDIV {
+  z-index: 99999999999;
+  position: absolute;
+  display: block;
+  color: white;
+  width: 160px;
+  height: 80px;
+  text-align: center;
+  background: #a8a6a6;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+.myDIV5 {
+  background: #dc3938;
+  width: 35px;
+  height: 35px;
+  margin: 1px;
+}
+
+.myDIV5:hover + .hidemyDIV {
+  z-index: 99999999999;
+  position: absolute;
+  display: block;
+  color: white;
+  width: 160px;
+  height: 80px;
+  text-align: center;
+  background: #dc3938;
+  padding: 15px;
+  border-radius: 10px;
+}
+
+
+.myDIV6 {
+  background: #90EE90;
+  width: 35px;
+  height: 35px;
+  margin: 1px;
+}
+
+.myDIV6:hover + .hidemyDIV {
+  z-index: 99999999999;
+  position: absolute;
+  display: block;
+  color: white;
+  width: 160px;
+  height: 80px;
+  text-align: center;
+  background: #90EE90;
+  padding: 15px;
+  border-radius: 10px;
+}
+.myDIV7 {
+  background: #d7d7d7;
+  width: 35px;
+  height: 35px;
+  margin: 1px;
+}
+
+.myDIV7:hover + .hidemyDIV {
+  z-index: 99999999999;
+  position: absolute;
+  display: block;
+  color: white;
+  width: 160px;
+  height: 80px;
+  text-align: center;
+  background: #d7d7d7;
+  padding: 15px;
+  border-radius: 10px;
+}

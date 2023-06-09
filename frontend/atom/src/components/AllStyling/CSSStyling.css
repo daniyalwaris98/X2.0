@@ -1,0 +1,36 @@
+select {
+  -webkit-appearance: none;
+  appearance: none;
+  border: none;
+  /* background-color: yellow; */
+}
+.select_type {
+  position: relative;
+  /* border: 1px solid black; */
+  border-radius: 2px;
+
+  /* padding: 5px; */
+}
+.select_type::after {
+  content: "˅";
+  font-size: 14px;
+  right: 10px;
+  color: #c6c1c1;
+  top: 7px;
+  position: absolute;
+  /* background-color: yellow; */
+}
+.rectangle {
+  width: 100%;
+  padding-left: 12px;
+  /* background-color: yellow; */
+}
+.hover_img {
+  display: none;
+}
+.btnExample:hover .hover_img {
+  display: inline-block;
+}
+.btnExample:hover .init_img {
+  display: none;
+}
