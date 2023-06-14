@@ -3,6 +3,66 @@ from sqlalchemy import ForeignKey
 from datetime import datetime
 
 
+class USER_TABLE(db.Model):
+    __tablename__ = 'user_table'
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50))
+    email = db.Column(db.String(50))
+    name = db.Column(db.String(50))
+    role_id = db.Column(db.Integer , ForeignKey('admin_roles.role_id'))
+    status = db.Column(db.String(10))
+    account_type = db.Column(db.String(15))
+    password = db.Column(db.String(512))
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    last_login = db.Column(db.DateTime, default=datetime.now())
+    team = db.Column(db.String(20))
+    vendor = db.Column(db.String(20))
+    company_name = db.Column(db.String(500))
+
+
+class ADMIN_ROLES(db.Model):
+    __tablename__ = 'admin_roles'
+    role_id = db.Column(db.Integer, primary_key=True)
+    role = db.Column(db.String(50))
+    configuration = db.Column(db.String(1500))
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    
+
+class END_USER_TABLE(db.Model):
+    __tablename__ = 'end_user_table'
+    end_user_id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String(500))
+    po_box = db.Column(db.String(50))
+    address = db.Column(db.String(2500))
+    street_name = db.Column(db.String(500))
+    city = db.Column(db.String(500))
+    country = db.Column(db.String(500))
+    contact_person = db.Column(db.String(500))
+    contact_number = db.Column(db.String(500))
+    email = db.Column(db.String(500))
+    domain_name = db.Column(db.String(500))
+    industry_type = db.Column(db.String(500))
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    license_status = db.Column(db.String(50))
+
+
+class LICENSE_VERIFICATION_TABLE(db.Model):
+    __tablename__ = 'license_verification_table'
+    license_id = db.Column(db.Integer, primary_key=True)
+    company_name = db.Column(db.String(500))
+    verification_license_key = db.Column(db.String(2500))
+    start_date = db.Column(db.DateTime, default=datetime.now())
+    end_date = db.Column(db.DateTime, default=datetime.now())
+    license_tenure_in_months = db.Column(db.Integer)
+
+
+
 class Atom(db.Model):
     __tablename__ = 'atom_table'
     atom_id = db.Column(db.Integer, primary_key=True)
@@ -298,34 +358,6 @@ class SNTC_TABLE(db.Model):
         db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
 
-class USER_TABLE(db.Model):
-    __tablename__ = 'user_table'
-    id = db.Column(db.Integer, primary_key=True)
-    user_id = db.Column(db.String(50))
-    email = db.Column(db.String(50))
-    name = db.Column(db.String(50))
-    role = db.Column(db.String(10))
-    status = db.Column(db.String(10))
-    account_type = db.Column(db.String(15))
-    password = db.Column(db.String(512))
-    creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
-    last_login = db.Column(db.DateTime, default=datetime.now())
-    team = db.Column(db.String(20))
-    vendor = db.Column(db.String(20))
-    company_name = db.Column(db.String(500))
-
-
-class ADMIN_TABLE(db.Model):
-    __tablename__ = 'admin_table'
-    user_id = db.Column(db.Integer, primary_key=True)
-    email = db.Column(db.String(50))
-    name = db.Column(db.String(50))
-    password = db.Column(db.String(50))
-    role = db.Column(db.String(50))
-    active = db.Column(db.String(50))
-
 
 class FAILED_DEVICES_TABLE(db.Model):
     __tablename__ = 'failed_devices_table'
@@ -336,15 +368,6 @@ class FAILED_DEVICES_TABLE(db.Model):
     failure_reason = db.Column(db.String(2000))
     module = db.Column(db.String(50))
 
-
-class ADMIN_ROLES(db.Model):
-    __tablename__ = 'admin_roles'
-    role_id = db.Column(db.Integer, primary_key=True)
-    role = db.Column(db.String(50))
-    configuration = db.Column(db.String(1500))
-    creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
 
 class IPAM_DEVICES_TABLE(db.Model):
@@ -968,37 +991,6 @@ class NCM_CONFIGURATION_STATUS_TABLE(db.Model):
     creation_date = db.Column(db.DateTime, default=datetime.now())
 
 
-class END_USER_TABLE(db.Model):
-    __tablename__ = 'end_user_table'
-    end_user_id = db.Column(db.Integer, primary_key=True)
-    company_name = db.Column(db.String(500))
-    po_box = db.Column(db.String(50))
-    address = db.Column(db.String(2500))
-    street_name = db.Column(db.String(500))
-    city = db.Column(db.String(500))
-    country = db.Column(db.String(500))
-    contact_person = db.Column(db.String(500))
-    contact_number = db.Column(db.String(500))
-    email = db.Column(db.String(500))
-    domain_name = db.Column(db.String(500))
-    industry_type = db.Column(db.String(500))
-    creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
-    license_status = db.Column(db.String(50))
-
-
-class LICENSE_VERIFICATION_TABLE(db.Model):
-    __tablename__ = 'license_verification_table'
-    license_id = db.Column(db.Integer, primary_key=True)
-    company_name = db.Column(db.String(500))
-    generated_license_key = db.Column(db.String(2500))
-    verification_license_key = db.Column(db.String(2500))
-    start_date = db.Column(db.DateTime, default=datetime.now())
-    end_date = db.Column(db.DateTime, default=datetime.now())
-    license_tenure_in_months = db.Column(db.Integer)
-
-
 class DC_CAPACITY_DEVICES_TABLE(db.Model):
     __tablename__ = 'dc_capacity_devices_table'
     dccm_id = db.Column(db.Integer, primary_key=True)
@@ -1099,3 +1091,14 @@ class SNMP_CREDENTIALS_TABLE(db.Model):
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+class LOGIN_ACTIVITY_TABLE(db.Model):
+    __tablename__ = 'login_activity_table'
+
+    id = db.Column(db.Integer, primary_key=True)
+    user_id = db.Column(db.String(50))
+    operation = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    description = db.Column(db.String(200))
+    timestamp = db.Column(db.DateTime)
+

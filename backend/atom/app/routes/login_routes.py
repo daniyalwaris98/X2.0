@@ -10,32 +10,86 @@ from app import app, db
 import hashlib
 import jwt
 from datetime import datetime, timezone, timedelta
-from app.models.inventory_models import USER_TABLE
+from app.models.inventory_models import USER_TABLE, LOGIN_ACTIVITY_TABLE
 from app.middleware import token_required
 import hashlib
 import secrets
 import string
 
+
+@app.route('/', methods=['GET'])
+def setup():
+    response = {
+        'end-user':False,
+        'license':False,
+        'admin':False
+    }
+
+    try:
+        query = f"select * from end_user_table;"
+        result = db.session.execute(query).fetchone()
+        if result is not None:
+            response['end_user'] = True
+    except Exception:
+        pass
+
+    try:
+        query = f"select * from user_table where ;"
+        result = db.session.execute(query).fetchone()
+        if result is not None:
+            response['admin'] = True
+    except Exception:
+        pass
+
+@app.route('/createSuperUser')
+def SuperUser():
+    pass
+
+
+def login_activity(user_id,operation,status,timestamp,description):
+    try:
+        activity = LOGIN_ACTIVITY_TABLE()
+        activity.user_id = user_id
+        activity.operation = operation
+        activity.description = description
+        activity.status = status
+        activity.timestamp=timestamp
+
+        db.session.add(activity)
+        db.session.commit()
+    except Exception:
+        print("Error While Saving Login Activity")
+
 @app.route("/login", methods=['POST'])
 def Login():
     if True:
-        try:    
+        try:
+            current_time = datetime.now()    
             postData = request.get_json()
             username = postData['user']
             password = postData['pass']
             configuration = None
-            # users = USER_TABLE.query.all()
-            # for user in users:
-            user_exists = USER_TABLE.query.filter_by(user_id=username).first()   
-            queryString = f"select configuration from admin_roles where ROLE='{user_exists.role}';"
+
+            user_exists = USER_TABLE.query.filter_by(user_id=username).first()
+
+            if user_exists.status !="Active":
+                login_activity(username,'Login',"Failed",current_time,"User Inactive")
+                return jsonify({'message': 'User is Inactive'}), 401
+
+            queryString = f"select configuration from user_table INNER JOIN admin_roles ON user_table.role_id = admin_roles.role_id  where admin_roles.ROLE_ID='{user_exists.role}';"
             result = db.session.execute(queryString)
             for row in result:
                 configuration = row[0]
-            print(configuration, file=sys.stderr)
+
+            if configuration is None:
+                return jsonify({'message': 'No Configuration found'}), 401
+            
+            
             if username.lower() == (user_exists.user_id).lower()  and password == user_exists.password:        
                     queryString1 = f"update user_table set LAST_LOGIN='{datetime.now()}' where USER_ID='{username}';"
                     db.session.execute(queryString1)
                     db.session.commit()
+                    
                     token = jwt.encode(
                     {"user_id": user_exists.user_id, "user_role": user_exists.role, "user_status": user_exists.status,
                         "iat": datetime.now(), "exp": datetime.now()+timedelta(hours=72), "monetx_configuration": configuration},
@@ -52,76 +106,15 @@ def Login():
                         print("Something else went wrong", file=sys.stderr)
                     return jsonify({'response': "Login Successful", "code": "200", "auth-key": token})
             
-            elif username.lower()=='ihamzazahid' and password=='qwerty':
-                token = jwt.encode(
-                    {"user_id": 'ihamzazahid', "user_role": 'Admin',
-                        "iat": datetime.now(), "exp": datetime.now()+timedelta(hours=72)},
-                                app.config["SECRET_KEY"],
-                                algorithm="HS256"
-                            )
-                print(token, file=sys.stderr)
-                # try:
-                #     db.session.merge(user_exists)
-                #     db.session.commit()
-                # except Exception as e:
-                #     db.session.rollback()
-                #     print(f"Something else went wrong {e}", file=sys.stderr)
-                return jsonify({'response': "Login Successful", "code": "200", "auth-key": token})
-            # user_exists = USER_TABLE.query.filter_by(user_id=username).first()
-            # if user_exists:
-            #     if user_exists.status=="Active":
-        
-            #         try:
-            #             token = jwt.encode(
-            #                 {"user_id": user_exists.user_id, "user_role":user_exists.role, "iat": datetime.now(), "exp": datetime.now()+timedelta(hours=3)},
-            #                 app.config["SECRET_KEY"],
-            #                 algorithm="HS256"
-            #             )
-            #             user_exists.last_login = datetime.now()
-            #             try:
-            #                 db.session.merge(user_exists)
-            #                 db.session.commit()
-            #             except:
-            #                 db.session.rollback()
-            #                 print("Something else went wrong", file=sys.stderr)
-            #             return jsonify({'response': "Login Successful","code":"200", "auth-key": token  })
-
-            #         except Exception as e:
-            #             print(f"Internal Server Error {e}", file=sys.stderr)
-            #             return jsonify({'message': 'Internal Server Error'}), 500       
-            #     else:
-            #         pas = hashlib.sha512()
-            #         pas.update(postData['pass'].encode("utf8"))
-            #         password=  str(pas.digest())
-
-            #         user = USER_TABLE.query.filter_by(user_id=username).filter_by(password=password).first()
-            #         if user:
-            #             token = jwt.encode(
-            #                 {"user_id": user.user_id, "user_role":user.role, "iat": datetime.now(), "exp": datetime.now()+timedelta(hours=3)},
-            #                 app.config["SECRET_KEY"],
-            #                 algorithm="HS256"
-            #             )
-                
-            #             user.last_login = datetime.now()
-            #             try:
-            #                 db.session.merge(user)
-            #                 db.session.commit()
-            #                 #print(obj.site_name, file=sys.stderr)
-            #             except:
-            #                 db.session.rollback()
-            #                 print("Something else went wrong", file=sys.stderr)
-            #             return jsonify({'response': "Login Successful","code":"200", "auth-key": token })
-            #         else: 
-            #             print("Authentication Failed Incorrect Username/Password", file=sys.stderr)
-            #             return jsonify({'message': 'Authentication Failed Incorrect Username/Password'}), 401
             else:
-                print("User is Inactive", file=sys.stderr)
-                return jsonify({'message': 'User is Inactive'}), 401
+                print("Invalid Username or Password", file=sys.stderr)
+                login_activity(username,'Login',"Failed",current_time,"Invalid Credentials")
+                return jsonify({'message': 'Invalid Username or Password'}), 401
 
         except Exception as e:
             traceback.print_exc()
             print(str(e),file=sys.stderr)
-            return str(e), 500
+            return "Error While Login", 500
 
     else: 
         print("Authentication Failed Login Credentials", file=sys.stderr)
