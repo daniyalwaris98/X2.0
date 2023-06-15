@@ -5,7 +5,6 @@ import traceback
 from flask_jsonpify import jsonify
 from flask import request, make_response
 from app.middleware import token_required
-from .inventory_routes import InsertData
 from app import app, db
 import string
 import secrets
@@ -14,16 +13,11 @@ from datetime import datetime
 from app.models.inventory_models import *
 from app.mail import *
 import hashlib
-hashDict = {}
-def FormatDate(date):
-    #print(date, file=sys.stderr)
-    if date is not None:
-        result = date.strftime('%d-%m-%Y')
-    else:
-        #result = datetime(2000, 1, 1)
-        result = datetime(1, 1, 2000)
 
-    return result
+from app.users.user_utils import *
+
+hashDict = {}
+
 
 
 def FormatStringDate(date):
@@ -142,44 +136,13 @@ def UpdateData(obj):
 @token_required
 def AddAdmin(user_data):
 
-    # request.headers.get('X-Auth-Key') == session.get('token', None):
     if True:
-        userObj = request.get_json()
-        # print(userObj,file=sys.stderr)
-
-        alphabet = string.ascii_letters + string.digits
-        token = ''.join(secrets.choice(alphabet) for i in range(16))
-
-        user = USER_TABLE()
-        user.user_id = userObj['user_id']
-        user.email = userObj['email']
-        user.name = userObj['name']
-        user.role = userObj['role']
-        user.status = userObj['status']
-        user.account_type = userObj['account_type']
-        user.team = userObj['team']
-        # user.vendor = userObj['vendor']
-        #user.token = userObj['name']+token
-
-        # if userObj['account_type'] == "Local":
-        # pas = hashlib.sha512()
-        # pas.update(userObj['password'].encode("utf8"))
-        # user.password = str(pas.digest())
-        user.password = userObj['password']
-        user.company_name = userObj['company_name']
-        # else:
-        #     # pass
-        #     print("Can not Create User Without Password ",file=sys.stderr)
-        #     return ("Can not Create User Without Password"),500
-
-        if USER_TABLE.query.with_entities(USER_TABLE.user_id).filter_by(user_id=userObj['user_id']).first() is not None:
-            print("User Name Already Exists ", file=sys.stderr)
-            return "User Name Already Exists", 500
-        else:
-            InsertData(user)
-            print("Inserted " + userObj['user_id'], file=sys.stderr)
-            return "SUCESSFULLY INSERTED", 200
-
+        try:
+            userObj = request.get_json()
+            response, status = addUserInDatabase(userObj,super_user=False)
+            return response,status
+        except Exception:
+            return "Error While Creating User",500
     else:
         print("Authentication Failed", file=sys.stderr)
         return jsonify({'message': 'Authentication Failed'}), 401
@@ -191,31 +154,12 @@ def EditAdmin(user_data):
     # request.headers.get('X-Auth-Key') == session.get('token', None):
     if True:
         userObj = request.get_json()
-        print(userObj, file=sys.stderr)
-        user = USER_TABLE()
-        user.user_id = userObj['user_id']
-        user.email = userObj['email']
-        user.name = userObj['name']
-        user.role = userObj['role']
-        user.status = userObj['status']
-        user.account_type = userObj['account_type']
-        user.team = userObj['team']
-        # user.vendor = userObj['vendor']
-        user.company_name = userObj['company_name']
-        # edit Password
-        if userObj['password']:
-            # pas = hashlib.sha512()
-            # pas.update(userObj['password'].encode("utf8"))
-            # user.password = str(pas.digest())
-            user.password=userObj['password']
-            if USER_TABLE.query.with_entities(USER_TABLE.id).filter_by(id=userObj['id']).first() is not None:
-                user.id = USER_TABLE.query.with_entities(
-                    USER_TABLE.id).filter_by(id=userObj['id']).first()[0]
-                user.modification_date = datetime.now()
-                UpdateData(user)
+        response, status = EditUserInDatabase(userObj,user_data)
 
-                print("Updated " + userObj['user_id'], file=sys.stderr)
-                return jsonify({'response': "success", "code": "200"})
+        if status == 200:
+            print("Updated " + userObj['user_id'], file=sys.stderr)
+
+        return jsonify({'response': response, "code": str(status)}),status
 
     else:
         print("Authentication Failed", file=sys.stderr)
@@ -227,38 +171,51 @@ def EditAdmin(user_data):
 def GetAllAdmin(user_data):
     if True:
         try:
-            adminObjList = []
-            adminObjs = USER_TABLE.query.all()
 
-            for adminObj in adminObjs:
+            super_user = user_data['user_role']
+
+            userList = []
+            results = db.session.query(USER_TABLE, USER_ROLES).join(USER_ROLES, USER_TABLE.role_id == USER_ROLES.role_id).all()
+            end_user = END_USER_TABLE.query.first()
+            
+
+            for user, user_role in results:
                 adminDataDict = {}
-                adminDataDict['id'] = adminObj.id
-                adminDataDict['user_id'] = adminObj.user_id
-                adminDataDict['name'] = adminObj.name
-                adminDataDict['email'] = adminObj.email
-                adminDataDict['password'] = adminObj.password
-                adminDataDict['role'] = adminObj.role
-                adminDataDict['status'] = adminObj.status
-                adminDataDict['account_type'] = adminObj.account_type
-                adminDataDict['company_name'] = adminObj.company_name
-                if adminObj.creation_date:
+                adminDataDict['id'] = user.id
+                adminDataDict['user_id'] = user.user_id
+                adminDataDict['name'] = user.name
+                adminDataDict['email'] = user.email
+                if super_user == "Super_Admin" and user.super_user == "True":
+                    adminDataDict['password'] = "Hidden"
+                else:
+                    adminDataDict['password'] = user.password
+                adminDataDict['role'] = user_role.role
+                adminDataDict['status'] = user.status
+                adminDataDict['account_type'] = user.account_type
+                adminDataDict['company_name'] = end_user.company_name
+                
+                if user.creation_date:
                     adminDataDict['creation_date'] = str(
-                        adminObj.creation_date)
+                        user.creation_date)
                 else:
                     adminDataDict['creation_date'] = "N/A"
-                if adminObj.modification_date:
+
+                if user.modification_date:
                     adminDataDict['modification_date'] = str(
-                        adminObj.modification_date)
+                        user.modification_date)
                 else:
                     adminDataDict['creation_date'] = "N/A"
-                adminDataDict['team'] = adminObj.team
-                adminDataDict['vendor'] = adminObj.vendor
-                if adminObj.last_login:
-                    adminDataDict['last_login'] = str(adminObj.last_login)
+
+                adminDataDict['team'] = user.team
+
+                if user.last_login:
+                    adminDataDict['last_login'] = str(user.last_login)
                 else:
                     adminDataDict['last_login'] = "N/A"
-                adminObjList.append(adminDataDict)
-            content = gzip.compress(json.dumps(adminObjList).encode('utf8'), 5)
+
+                userList.append(adminDataDict)
+
+            content = gzip.compress(json.dumps(userList).encode('utf8'), 5)
             response = make_response(content)
             response.headers['Content-length'] = len(content)
             response.headers['Content-Encoding'] = 'gzip'
@@ -288,474 +245,6 @@ def DeleteUser(user_data):
             else:
                 print(f"{user_id} DELETION WAS NOT SUCCESSFUL", file=sys.stderr)
                 return "DELETION UNSUCCESSFUL", 500
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/uamFailedDevicesCount', methods=['GET'])
-@token_required
-def UamFailedDevicesCount(user_data):
-    if True:
-        try:
-            queryString = f"select count(*) from failed_devices_table where MODULE='UAM';"
-            result = db.session.execute(queryString).scalar()
-            objDict = {'name': 'UAM', 'value': result}
-            print(objDict, file=sys.stderr)
-            return (objDict), 200
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/networkMappingFailedDevicesCount', methods=['GET'])
-@token_required
-def NetworkMappingFailedDevicesCount(user_data):
-    if True:
-        try:
-            queryString = f"select count(*) from failed_devices_table where MODULE='MONITORING';"
-            result = db.session.execute(queryString).scalar()
-            objDict = {'name': 'MONITORING', 'value': result}
-            print(objDict, file=sys.stderr)
-            return (objDict), 200
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/getFailedDevices', methods=['GET'])
-@token_required
-def FailedDevicesCount(user_data):
-    atom_count = 0
-    atom_fail = []
-    ipam_count = 0
-    ipam_fail = []
-    monitoring_count = 0
-    monitoring_fail = []
-    uam_count =0
-    uam_fail = []
-    ncm_count = 0
-    ncm_fail =[]
-
-    try:
-        queryString = f"select count(*) from failed_devices_table where MODULE='ATOM';"
-        atom_count = db.session.execute(queryString).scalar()
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    try:
-        queryString = f"select count(*) from failed_devices_table where MODULE='IPAM';"
-        ipam_count = db.session.execute(queryString).scalar()
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    try:
-        queryString = f"select count(*) from failed_devices_table where MODULE='UAM';"
-        uam_count = db.session.execute(queryString).scalar()
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    try:
-        queryString = f"select count(*) from failed_devices_table where MODULE='NCM';"
-        ncm_count = db.session.execute(queryString).scalar()
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    try:
-        queryString = f"select count(*) from failed_devices_table where MODULE='MONITORING';"
-        monitoring_count = db.session.execute(queryString).scalar()
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    
-
-    try:
-        queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='ATOM' order by `DATE` DESC;"
-        result = db.session.execute(queryString)
-        for row in result:
-            ip_address = row[0]
-            device_type = row[1]
-            date = row[2]
-            failure_reason = row[3]
-            objDict = {}
-            objDict['ip_address'] = ip_address
-            objDict['device_type'] = device_type
-            objDict['date'] = FormatDate(date)
-            objDict['failure_reason'] = failure_reason
-            atom_fail.append(objDict)
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    
-    try:
-        queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='IPAM' order by `DATE` DESC;"
-        result = db.session.execute(queryString)
-        for row in result:
-            ip_address = row[0]
-            device_type = row[1]
-            date = row[2]
-            failure_reason = row[3]
-            objDict = {}
-            objDict['ip_address'] = ip_address
-            objDict['device_type'] = device_type
-            objDict['date'] = FormatDate(date)
-            objDict['failure_reason'] = failure_reason
-            ipam_fail.append(objDict)
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    
-    try:
-        queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='UAM' order by `DATE` DESC;"
-        result = db.session.execute(queryString)
-        for row in result:
-            ip_address = row[0]
-            device_type = row[1]
-            date = row[2]
-            failure_reason = row[3]
-            objDict = {}
-            objDict['ip_address'] = ip_address
-            objDict['device_type'] = device_type
-            objDict['date'] = FormatDate(date)
-            objDict['failure_reason'] = failure_reason
-            uam_fail.append(objDict)
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    
-    try:
-        queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='NCM' order by `DATE` DESC;"
-        result = db.session.execute(queryString)
-        for row in result:
-            ip_address = row[0]
-            device_type = row[1]
-            date = row[2]
-            failure_reason = row[3]
-            objDict = {}
-            objDict['ip_address'] = ip_address
-            objDict['device_type'] = device_type
-            objDict['date'] = FormatDate(date)
-            objDict['failure_reason'] = failure_reason
-            ncm_fail.append(objDict)
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-    
-    
-    try:
-        queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='MONITORING' order by `DATE` DESC;"
-        result = db.session.execute(queryString)
-        for row in result:
-            ip_address = row[0]
-            device_type = row[1]
-            date = row[2]
-            failure_reason = row[3]
-            objDict = {}
-            objDict['ip_address'] = ip_address
-            objDict['device_type'] = device_type
-            objDict['date'] = FormatDate(date)
-            objDict['failure_reason'] = failure_reason
-            monitoring_fail.append(objDict)
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-
-    try:
-        result = {
-            'atom_count':atom_count,
-            'atom_fail':atom_fail,
-            'ipam_count' :ipam_count,
-            'ipam_fail':ipam_fail,
-            'monitoring_count' :monitoring_count,
-            'monitoring_fail':monitoring_fail,
-            'uam_count' :uam_count,
-            'uam_fail':uam_fail,
-            'ncm_count':ncm_count,
-            'ncm_fail':ncm_fail
-            }
-        return jsonify(result),200
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-        return "Error While Loading Data",500
-    
-
-
-
-
-@app.route('/ipamFailedDevicesCount', methods=['GET'])
-@token_required
-def IpamFailedDevicesCount(user_data):
-    if True:
-        try:
-            queryString = f"select count(*) from failed_devices_table where MODULE='IPAM';"
-            result = db.session.execute(queryString).scalar()
-            objDict = {'name': 'IPAM', 'value': result}
-            print(objDict, file=sys.stderr)
-            return (objDict), 200
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/dcmFailedDevicesCount', methods=['GET'])
-@token_required
-def DcmFailedDevicesCount(user_data):
-    if True:
-        try:
-            queryString = f"select count(*) from failed_devices_table where MODULE='DCM';"
-            result = db.session.execute(queryString).scalar()
-            objDict = {'name': 'DCCM', 'value': result}
-            print(objDict, file=sys.stderr)
-            return (objDict), 200
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-@app.route('/ncmFailedDevicesCount', methods=['GET'])
-@token_required
-def NcmFailedDevicesCount(user_data):
-    if True:
-        try:
-            queryString = f"select count(*) from failed_devices_table where MODULE='NCM';"
-            result = db.session.execute(queryString).scalar()
-            objDict = {'name': 'NCM', 'value': result}
-            print(objDict, file=sys.stderr)
-            return (objDict), 200
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-
-
-@app.route('/uamFailedDevices', methods=['GET'])
-@token_required
-def UamFailedDevices(user_data):
-    if True:
-        try:
-            queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='UAM' order by `DATE` DESC;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                ip_address = row[0]
-                device_type = row[1]
-                date = row[2]
-                failure_reason = row[3]
-                objDict = {}
-                objDict['ip_address'] = ip_address
-                objDict['device_type'] = device_type
-                objDict['date'] = FormatDate(date)
-                objDict['failure_reason'] = failure_reason
-                objList.append(objDict)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/networkMappingFailedDevices', methods=['GET'])
-# @token_required
-def NetworkMappingFailedDevices():
-    if True:
-        try:
-            queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='MONITORING' order by `DATE` DESC;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                ip_address = row[0]
-                device_type = row[1]
-                date = row[2]
-                failure_reason = row[3]
-                objDict = {}
-                objDict['ip_address'] = ip_address
-                objDict['device_type'] = device_type
-                objDict['date'] = FormatDate(date)
-                objDict['failure_reason'] = failure_reason
-                objList.append(objDict)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/ipamFailedDevices', methods=['GET'])
-@token_required
-def IpamFailedDevices(user_data):
-    if True:
-        try:
-            queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='IPAM' order by `DATE` DESC;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                ip_address = row[0]
-                device_type = row[1]
-                date = row[2]
-                failure_reason = row[3]
-                objDict = {}
-                objDict['ip_address'] = ip_address
-                objDict['device_type'] = device_type
-                objDict['date'] = FormatDate(date)
-                objDict['failure_reason'] = failure_reason
-                objList.append(objDict)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/dcmFailedDevices', methods=['GET'])
-@token_required
-def DcmFailedDevices(user_data):
-    if True:
-        try:
-            queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='DCM' order by `DATE` DESC;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                ip_address = row[0]
-                device_type = row[1]
-                date = row[2]
-                failure_reason = row[3]
-                objDict = {}
-                objDict['ip_address'] = ip_address
-                objDict['device_type'] = device_type
-                objDict['date'] = FormatDate(date)
-                objDict['failure_reason'] = failure_reason
-                objList.append(objDict)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-@app.route('/ncmFailedDevices', methods=['GET'])
-@token_required
-def NcmFailedDevices(user_data):
-    if True:
-        try:
-            queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='NCM' order by `DATE` DESC;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                ip_address = row[0]
-                device_type = row[1]
-                date = row[2]
-                failure_reason = row[3]
-                objDict = {}
-                objDict['ip_address'] = ip_address
-                objDict['device_type'] = device_type
-                objDict['date'] = FormatDate(date)
-                objDict['failure_reason'] = failure_reason
-                objList.append(objDict)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-    
-
-
-@app.route('/monitoringFailedDevicesCount', methods=['GET'])
-@token_required
-def MonitoringFailedDevicesCount(user_data):
-    if True:
-        try:
-            queryString = f"select count(*) from failed_devices_table where MODULE='MONITORING';"
-            result = db.session.execute(queryString).scalar()
-            objDict = {'name': 'NCM', 'value': result}
-            print(objDict, file=sys.stderr)
-            return (objDict), 200
-        except Exception as e:
-            traceback.print_exc()
-            print(str(e), file=sys.stderr)
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-
-@app.route('/monitoringFailedDevices', methods=['GET'])
-@token_required
-def MonitoringFailedDevices(user_data):
-    if True:
-        try:
-            queryString = f"select IP_ADDRESS,DEVICE_TYPE,`DATE`,FAILURE_REASON from failed_devices_table where MODULE='MONITORING' order by `DATE` DESC;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                ip_address = row[0]
-                device_type = row[1]
-                date = row[2]
-                failure_reason = row[3]
-                objDict = {}
-                objDict['ip_address'] = ip_address
-                objDict['device_type'] = device_type
-                objDict['date'] = FormatDate(date)
-                objDict['failure_reason'] = failure_reason
-                objList.append(objDict)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
         except Exception as e:
             traceback.print_exc()
             print(str(e), file=sys.stderr)
@@ -1184,84 +673,15 @@ def DecryptCredentialsLicenseKey():
         return jsonify({"Response": "Service not Available"}), 503
             
 
-def DaysLeftConversion(date_string):
-    # Parse the date string
-    parsed_date = datetime.strptime(str(date_string),"%Y-%m-%d %H:%M:%S")
-    # Convert the parsed date to the desired format
-    formatted_date = parsed_date.strftime("%Y-%m-%d")
-    target_date = datetime.strptime(formatted_date, "%Y-%m-%d")
-    today = datetime.now()
-    time_left = target_date - today
-    time_left_in_days = time_left.days
-    print("Days left:", time_left_in_days,file=sys.stderr)
-    return time_left_in_days
+# def DaysLeftConversion(date_string):
+#     # Parse the date string
+#     parsed_date = datetime.strptime(str(date_string),"%Y-%m-%d %H:%M:%S")
+#     # Convert the parsed date to the desired format
+#     formatted_date = parsed_date.strftime("%Y-%m-%d")
+#     target_date = datetime.strptime(formatted_date, "%Y-%m-%d")
+#     today = datetime.now()
+#     time_left = target_date - today
+#     time_left_in_days = time_left.days
+#     print("Days left:", time_left_in_days,file=sys.stderr)
+#     return time_left_in_days
 
-@app.route('/trackLicenseTenure',methods = ['POST'])
-@token_required
-def TrackLicenseTenure(user_data):
-    if True:
-        try:
-            userObj = request.get_json()
-            print(userObj,file=sys.stderr)
-            
-            company_name = ""
-            queryString = f"select COMPANY_NAME from user_table where USER_ID='{userObj['username']}';"
-            result = db.session.execute(queryString)
-            for row in result:
-                company_name=row[0] 
-            print(company_name,file=sys.stderr)
-            if company_name!="":
-                end_date = ""
-                queryString1 = f"select END_DATE from license_verification_table where COMPANY_NAME='{company_name}';"
-                result1 = db.session.execute(queryString1)
-                for row1 in result1:
-                    end_date=row1[0]
-                print(end_date,file=sys.stderr)
-                if end_date!="":
-                    daysLeft = DaysLeftConversion(end_date)
-                    return f"{daysLeft}",200
-                else:
-                    traceback.print_exc()
-                    return "End Date not Found",500
-                
-            else:
-                traceback.print_exc()
-                return "Company not Listed",500
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-@app.route('/licenseValidationAfterLogin',methods = ['POST'])
-@token_required
-def LicenseValidationAfterLogin(user_data):
-    if True:
-        try:
-            userObj = request.get_json()
-            username = userObj['username']
-            status = ""
-            company_name = ""
-            queryString = f"select company_name from user_table where user_id='{username}';"
-            result = db.session.execute(queryString)
-            for row in result:
-                company_name=row[0]
-            queryString1 = f"select license_status from end_user_table where company_name='{company_name}';"
-            result1 = db.session.execute(queryString1)
-            for row in result1:
-                if row[0]==None:
-                    pass
-                else:
-                    status=row[0]
-            return status,200
-                
-            
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
