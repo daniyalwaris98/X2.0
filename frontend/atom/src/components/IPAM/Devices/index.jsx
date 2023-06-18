@@ -762,7 +762,7 @@ const index = () => {
 
       <MainTableModal
         width={"75%"}
-        visible={mainModalVisible}
+        open={mainModalVisible}
         footer={false}
         onOk={handleMainOk}
         onCancel={handleMainCancel}
@@ -919,7 +919,7 @@ const index = () => {
                       <Modal
                         width={"30%"}
                         title="Add New Password Group"
-                        visible={isModalVisible}
+                        open={isModalVisible}
                         onOk={handleOk}
                         footer={false}
                         onCancel={handleCancel}

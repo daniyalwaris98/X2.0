@@ -24,7 +24,6 @@ const FirstNavBar = () => {
   useEffect(() => {
     Data = localStorage.getItem("user");
     setUserData(JSON.parse(Data));
-    // console.log("username", userData.user_name);
     console.log("username");
   }, []);
 

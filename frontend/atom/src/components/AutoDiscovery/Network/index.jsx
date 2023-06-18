@@ -38,7 +38,6 @@ const Atom = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   let [loading, setLoading] = useState(false);
-  let [inputValue, setInputValue] = useState("");
   const [searchText, setSearchText] = useState(null);
   const [searchedColumn, setSearchedColumn] = useState(null);
   const [configData, setConfigData] = useState(null);
@@ -163,8 +162,6 @@ const Atom = () => {
   };
 
   const postSeed = async (seed) => {
-    console.log("seed========>", seed);
-
     setLoading(true);
 
     await axios
@@ -205,9 +202,14 @@ const Atom = () => {
   };
 
   const validateSheet = (seeds) => {
-    if (seeds[0].scan_status == "Active" || seeds[0].scan_status == "Active") {
+    console.log("seeds ========>", seeds);
+
+    if (
+      seeds[0].scan_status == "Active" ||
+      seeds[0].scan_status == "inActive"
+    ) {
       postSeed(seeds);
-    } else if (seeds[0].scan_status.trim() == "") {
+    } else if (seeds[0].scan_status == "") {
       openSweetAlert("scan status should not be empty", "error");
     } else {
       openSweetAlert("Please add valid scan status", "error");
@@ -568,7 +570,6 @@ const Atom = () => {
               accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"
               style={{ float: "right", marginRight: "30px", marginLeft: "5px" }}
               type="file"
-              value={inputValue}
               onChange={() => importExcel}
               ref={inputRef}
               prefix={<ImportOutlined />}

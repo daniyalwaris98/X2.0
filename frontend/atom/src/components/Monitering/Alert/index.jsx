@@ -1639,7 +1639,7 @@ const index = () => {
       <Modal
         width="70%"
         title="IP Address Details"
-        visible={isModalOpen}
+        open={isModalOpen}
         open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}

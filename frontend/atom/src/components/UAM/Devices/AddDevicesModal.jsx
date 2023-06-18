@@ -72,7 +72,6 @@ const AddDevicesModal = (props) => {
     });
   };
 
-
   const [siteArray, setSiteArray] = useState([]);
   useEffect(() => {
     const getSitesForDropdown = async () => {
@@ -135,7 +134,7 @@ const AddDevicesModal = (props) => {
   };
 
   let [device, setDevice] = useState(props.addRecord);
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
 
   let [device_name, setdevice_name] = useState(
     device ? getString(device.device_name) : ""
@@ -366,7 +365,7 @@ const AddDevicesModal = (props) => {
       width="90%"
       title=""
       closable={false}
-      visible={props.isModalVisible}
+      open={props.isModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >
@@ -466,56 +465,55 @@ const AddDevicesModal = (props) => {
             </InputWrapper>
             {/* <InputWrapper>
               Site Name: */}
-              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-              {/* &nbsp;&nbsp; */}
-              {/* {device ? (
+            {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
+            {/* &nbsp;&nbsp; */}
+            {/* {device ? (
                   <StyledInput value={ip_address} />
                 ) : ( */}
-              {/* <StyledInput
+            {/* <StyledInput
                 value={site_name}
                 onChange={(e) => setsite_name(e.target.value)}
                 // required
               /> */}
-              {/* )} */}
+            {/* )} */}
             {/* </InputWrapper> */}
 
             <InputWrapper>
-                Site Name: &nbsp;<span style={{ color: "red" }}>*</span>
-                <br />
-                <div className="select_type">
-                  <Styledselect
-                    className="rectangle"
-                    // value={site_name}
-                    required
-                    onChange={(e) => {
-                      setsite_name(e.target.value);
-                    }}
-                  >
-                    {/* <option>Seleect Site Name</option> */}
+              Site Name: &nbsp;<span style={{ color: "red" }}>*</span>
+              <br />
+              <div className="select_type">
+                <Styledselect
+                  className="rectangle"
+                  // value={site_name}
+                  required
+                  onChange={(e) => {
+                    setsite_name(e.target.value);
+                  }}
+                >
+                  {/* <option>Seleect Site Name</option> */}
 
-                    {siteArray.map((item, index) => {
-                      return (
-                        <>
-                          <option>{item}</option>
-                        </>
-                      );
-                    })}
+                  {siteArray.map((item, index) => {
+                    return (
+                      <>
+                        <option>{item}</option>
+                      </>
+                    );
+                  })}
 
-                    {/* <option>Choose...</option>
+                  {/* <option>Choose...</option>
 
                 <option>Algorithm</option>
                 <option>Language</option>
                 <option>Data Structure</option> */}
-                  </Styledselect>
-                </div>
-                {/* <StyledInput
+                </Styledselect>
+              </div>
+              {/* <StyledInput
                 value={site_name}
                 onChange={(e) => setSite_name(e.target.value)}
                 required
               /> */}
-                {/* )} */}
-              </InputWrapper>
-
+              {/* )} */}
+            </InputWrapper>
 
             {/* <InputWrapper>
                 Atom ID:
@@ -543,40 +541,40 @@ const AddDevicesModal = (props) => {
               />
              
             </InputWrapper> */}
-             <InputWrapper>
-                Rack Name: &nbsp;<span style={{ color: "red" }}>*</span>
-                <br />
-                {/* &nbsp;&nbsp; */}
-                {/* {device ? (
+            <InputWrapper>
+              Rack Name: &nbsp;<span style={{ color: "red" }}>*</span>
+              <br />
+              {/* &nbsp;&nbsp; */}
+              {/* {device ? (
                   <StyledInput value={rack_name} />
                 ) : ( */}
-                <div className="select_type">
-                  <Styledselect
-                    className="rectangle"
-                    required
-                    value={rack_name}
-                    onChange={(e) => {
-                      setrack_name(e.target.value);
-                    }}
-                  >
-                    {/* <option>Seleect Rack Name</option> */}
+              <div className="select_type">
+                <Styledselect
+                  className="rectangle"
+                  required
+                  value={rack_name}
+                  onChange={(e) => {
+                    setrack_name(e.target.value);
+                  }}
+                >
+                  {/* <option>Seleect Rack Name</option> */}
 
-                    {rackArray?.map((item, index) => {
-                      return (
-                        <>
-                          <option>{item}</option>
-                        </>
-                      );
-                    })}
-                  </Styledselect>
-                </div>
-                {/* <StyledInput
+                  {rackArray?.map((item, index) => {
+                    return (
+                      <>
+                        <option>{item}</option>
+                      </>
+                    );
+                  })}
+                </Styledselect>
+              </div>
+              {/* <StyledInput
                 value={rack_name}
                 onChange={(e) => setRack_name(e.target.value)}
                 required
               /> */}
-                {/* )} */}
-              </InputWrapper>
+              {/* )} */}
+            </InputWrapper>
 
             <InputWrapper>
               Ip Address:

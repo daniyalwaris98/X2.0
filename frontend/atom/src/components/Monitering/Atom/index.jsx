@@ -940,7 +940,6 @@ const index = () => {
   };
 
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -956,13 +955,11 @@ const index = () => {
   };
 
   const showSubnetData = async (subnet) => {
-    console.log("subnet", subnet);
     try {
       setLoading(true);
       const res = await axios.post(
         `${baseUrl}/getIpAddressesBySubnet?subnet_address=${subnet}`
       );
-      console.log("subnet data", res.data);
       setSubnetDataSource(res.data);
       setLoading(false);
     } catch (err) {
@@ -973,7 +970,6 @@ const index = () => {
 
   const edit = (record) => {
     setEditRecord(record);
-    // setAddRecord(record);
     setIsEditModalVisible(true);
   };
 
@@ -987,12 +983,7 @@ const index = () => {
         <>
           {configData?.monitering.pages.device.read_only ? (
             <>
-              <a
-                disabled
-                // onClick={() => {
-                //   edit(record);
-                // }}
-              >
+              <a disabled>
                 <EditOutlined
                   style={{ paddingRight: "50px", color: "#66A111" }}
                 />
@@ -1659,7 +1650,7 @@ const index = () => {
 
         <MainTableModal
           width={"75%"}
-          visible={mainModalVisible}
+          open={mainModalVisible}
           footer={false}
           onOk={handleMainOk}
           onCancel={handleMainCancel}
@@ -2130,7 +2121,7 @@ const index = () => {
                                     </p>
                                     <Modal
                                       title="Add credentials"
-                                      visible={credentialIsModalOpen}
+                                      open={credentialIsModalOpen}
                                       onOk={handleOkCredential}
                                       onCancel={handleCancelCredential}
                                       footer={false}
@@ -2164,7 +2155,7 @@ const index = () => {
                                           <Modal
                                             // title="V1/V2"
                                             // header={false}
-                                            visible={v1v2isModalOpen}
+                                            open={v1v2isModalOpen}
                                             // onOk={handleOkv1v2}
                                             // onCancel={handleCancelv1v2}
                                             footer={false}
@@ -2364,7 +2355,7 @@ const index = () => {
                                           </button>
                                           <Modal
                                             // title="V3"
-                                            visible={v3isModalOpen}
+                                            open={v3isModalOpen}
                                             closable={false}
                                             footer={false}
                                             // onOk={handleOkv3}
@@ -2650,7 +2641,7 @@ const index = () => {
                                             WMI
                                           </button>
                                           <Modal
-                                            visible={wmiIsModalOpen}
+                                            open={wmiIsModalOpen}
                                             footer={false}
                                             closable={false}
                                           >

@@ -9,32 +9,28 @@ import {
   Legend,
   ResponsiveContainer,
 } from "recharts";
-import axios, { baseUrl } from "../../../../../utils/axios";
-import { SpinLoading } from "../../../../AllStyling/All.styled";
+import axios, { baseUrl } from "../../../../utils/axios/index";
+import { VerticalBarChartStyle } from "./VerticalBarChart.style";
 
-const index = (props) => {
+function VerticalBarChart() {
   const [vendorData, setVendorData] = useState([]);
-  const [mainTableLoading, setMainTableLoading] = useState(false);
+
   useEffect(() => {
     const serviceCalls = async () => {
-      setMainTableLoading(true);
-
       try {
         const res = await axios.get(baseUrl + "/getAllMonitoringVendors");
         console.log("res", res);
         setVendorData(res.data);
-        setMainTableLoading(false);
       } catch (err) {
         console.log(err.response);
-        setMainTableLoading(false);
       }
     };
     serviceCalls();
-  }, [props.rowCount]);
+  }, []);
 
   return (
-    <SpinLoading spinning={mainTableLoading} tip="Loading...">
-      <ResponsiveContainer width="100%" height={350}>
+    <VerticalBarChartStyle>
+      <ResponsiveContainer width="100%" height={300}>
         <BarChart
           layout="vertical"
           width={500}
@@ -68,8 +64,8 @@ const index = (props) => {
           />
         </BarChart>
       </ResponsiveContainer>
-    </SpinLoading>
+    </VerticalBarChartStyle>
   );
-};
+}
 
-export default index;
+export default VerticalBarChart;

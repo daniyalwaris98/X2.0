@@ -687,7 +687,7 @@ const index = () => {
           <ColRowNumberStyle>11</ColRowNumberStyle>
         </div>
         <div style={{ float: "right", marginBottom: "10px" }}>
-          <Dropdown overlay={menu}>
+          <Dropdown menu={menu}>
             <ExportButtonStyle>
               <span className="icon">
                 <ExportIcon />
@@ -710,7 +710,7 @@ const index = () => {
       <Modal
         title="Ip Address History"
         width="60%"
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}

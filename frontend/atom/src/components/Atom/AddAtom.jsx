@@ -485,7 +485,7 @@ const AddAtom = (props) => {
         width="60%"
         title=""
         closable={false}
-        visible={props.isModalVisible}
+        open={props.isModalVisible}
         footer=""
         bodyStyle={{ padding: "0" }}
       >
@@ -802,7 +802,7 @@ const AddAtom = (props) => {
       <Modal
         width={"30%"}
         title="Add New Password Group"
-        visible={isPassModalVisible}
+        open={isPassModalVisible}
         onOk={handleOk}
         footer={false}
         onCancel={handleCancelPasPopup}
@@ -884,7 +884,7 @@ const AddAtom = (props) => {
       <Modal
         width={"70%"}
         title="Add New Site"
-        visible={isSiteModalVisible}
+        open={isSiteModalVisible}
         onOk={handleOkSite}
         footer={false}
         onCancel={handleCancelSitePopup}
@@ -1020,7 +1020,7 @@ const AddAtom = (props) => {
       <Modal
         width={"70%"}
         title="Add New Rack"
-        visible={isRackModalVisible}
+        open={isRackModalVisible}
         onOk={handleOkRack}
         footer={false}
         onCancel={handleCancelRackPopup}

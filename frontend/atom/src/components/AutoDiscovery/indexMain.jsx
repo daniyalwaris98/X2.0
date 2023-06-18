@@ -194,18 +194,13 @@ const indexMain = () => {
     });
   };
   const onFinish = async (values) => {
-    // console.log(values);
     // const res= await axios.post(baseUrl + "/autoDiscover", values);
-    // console.log(res.data)
 
     setPostLoading(true);
 
     await axios
       .post(baseUrl + "/autoDiscover", values)
       .then((response) => {
-        console.log("hahahehehoho");
-        // console.log(response.status);
-
         // setIsPassModalVisible(false);
         // setPostLoading(false);
 
@@ -664,18 +659,6 @@ const indexMain = () => {
         columnFilters
       ),
       ellipsis: true,
-      // title: (
-      //   <ColumnHeader
-      //     dataIndex="function"
-      //     title="Function"
-      //     setRowCount={setRowCount}
-      //     setDataSource={setDataSource}
-      //     excelData={excelData}
-      //     columnFilters={columnFilters}
-      //   />
-      // ),
-      //   title: "Function",
-      //   dataIndex: "function",
     },
 
     {
@@ -717,74 +700,6 @@ const indexMain = () => {
     },
   ];
   const SwitchesColumns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "1%",
-
-    //   render: (text, record) => (
-    //     <>
-    //       {!configData?.atom.pages.atom.read_only ? (
-    //         <>
-    //           <p
-    //             style={{
-    //               color: "#66B127",
-    //               textDecoration: "underline",
-    //               fontWeight: "400",
-    //               textAlign: "center",
-    //               // color: "blue",
-    //               cursor: "pointer",
-    //             }}
-    //             disabled
-    //             // onClick={() => {
-    //             //   edit(record);
-    //             // }}
-    //           >
-    //             <EditOutlined
-    //               style={{ paddingTop:"17px", color: "#66A111" }}
-    //             />
-    //           </p>
-    //         </>
-    //       ) : (
-    //         <p
-    //           style={{
-    //             color: "#66B127",
-    //             textDecoration: "underline",
-    //             fontWeight: "400",
-    //             textAlign: "center",
-    //             // color: "blue",
-    //             cursor: "pointer",
-    //           }}
-    //           onClick={() => {
-    //             edit(record);
-    //           }}
-    //         >
-    //           <EditOutlined
-    //             style={{paddingTop:"17px",  color: "#66A111" }}
-    //           />
-    //         </p>
-    //       )}
-    //     </>
-    //   ),
-    // },
-
-    // {
-    //   title: "Atom ID",
-    //   dataIndex: "atom_id",
-    //   key: "atom_id",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "atom_id",
-    //     "Atom Id",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-
     {
       title: "IP Address",
       dataIndex: "ip_address",
@@ -986,74 +901,6 @@ const indexMain = () => {
     },
   ];
   const OtherDevicesColumns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "1%",
-
-    //   render: (text, record) => (
-    //     <>
-    //       {!configData?.atom.pages.atom.read_only ? (
-    //         <>
-    //           <p
-    //             style={{
-    //               color: "#66B127",
-    //               textDecoration: "underline",
-    //               fontWeight: "400",
-    //               textAlign: "center",
-    //               // color: "blue",
-    //               cursor: "pointer",
-    //             }}
-    //             disabled
-    //             // onClick={() => {
-    //             //   edit(record);
-    //             // }}
-    //           >
-    //             <EditOutlined
-    //               style={{ paddingTop:"17px", color: "#66A111" }}
-    //             />
-    //           </p>
-    //         </>
-    //       ) : (
-    //         <p
-    //           style={{
-    //             color: "#66B127",
-    //             textDecoration: "underline",
-    //             fontWeight: "400",
-    //             textAlign: "center",
-    //             // color: "blue",
-    //             cursor: "pointer",
-    //           }}
-    //           onClick={() => {
-    //             edit(record);
-    //           }}
-    //         >
-    //           <EditOutlined
-    //             style={{paddingTop:"17px",  color: "#66A111" }}
-    //           />
-    //         </p>
-    //       )}
-    //     </>
-    //   ),
-    // },
-
-    // {
-    //   title: "Atom ID",
-    //   dataIndex: "atom_id",
-    //   key: "atom_id",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "atom_id",
-    //     "Atom Id",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-
     {
       title: "IP Address",
       dataIndex: "ip_address",
@@ -2047,7 +1894,7 @@ const indexMain = () => {
 
       <Modal
         title="Basic Modal"
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOk}
         footer={false}
         onCancel={handleCancel}
@@ -2103,7 +1950,7 @@ const indexMain = () => {
               <button
                 disabled={value == 2 ? true : false}
                 type="primary"
-                htmlType="submit"
+                htmltype="submit"
                 style={{
                   height: "32px",
                   width: "80px",
@@ -2156,7 +2003,7 @@ const indexMain = () => {
               <button
                 disabled={value == 1 ? true : false}
                 type="primary"
-                htmlType="submit"
+                htmltype="submit"
                 style={{
                   height: "32px",
                   width: "80px",

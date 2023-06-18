@@ -13,6 +13,7 @@ const theme = {
     RED_COLOR: "#ff0000",
     DULL_WHITE_COLOR: "#FDFDFD;",
     TOMATO_COLOR: "#FB7457",
+    WHITE_COLOR: "#fff",
   },
 };
 

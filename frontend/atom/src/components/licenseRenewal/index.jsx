@@ -19,7 +19,6 @@ const index = () => {
     // setUserData("");
     window.location.href = "/login";
     setIsModalOpen(false);
-
   };
   const SubmitKey = async () => {
     try {
@@ -77,7 +76,7 @@ const index = () => {
     <ModalContainer>
       <Modal
         title="License Renewal"
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOk}
         // closable={false}
         // onCancel={handleCancel}
@@ -85,9 +84,6 @@ const index = () => {
         mask={true}
         maskClosable={false}
       >
-   
-       
-      
         <br />
         <div style={{ display: "grid", placeItems: "center" }}>
           <img src={cert} alt="" />
@@ -107,7 +103,7 @@ const index = () => {
                 borderRadius: "8px",
                 backgroundColor: "#127",
                 color: "#fff",
-width:"90px",
+                width: "90px",
 
                 fontWeight: "600",
                 cursor: "pointer",
@@ -116,50 +112,47 @@ width:"90px",
               Logout
             </button>{" "}
             &nbsp;&nbsp;
-            {
-              liscKey!==""?
+            {liscKey !== "" ? (
+              <button
+                onClick={SubmitKey}
+                style={{
+                  marginTop: "12px",
+                  border: "none",
+                  height: "32px",
+                  padding: "0px 15px",
+                  width: "90px",
 
-            <button
-              onClick={SubmitKey}
-              
-              style={{
-                marginTop: "12px",
-                border: "none",
-                height: "32px",
-                padding: "0px 15px",
-                width:"90px",
-
-                borderRadius: "8px",
-                backgroundColor: "#66B127",
-                color: "#fff",
-                fontWeight: "600",
-              }}
-            >
-              Verify
-            </button>:
-             <button
-            //  onClick={SubmitKey}
-             disabled={true}
-             style={{
-               marginTop: "12px",
-               border: "none",
-               height: "32px",
-               padding: "0px 15px",
-width:"90px",
-               borderRadius: "8px",
-               backgroundColor: "#66B127",
-               color: "#fff",
-               fontWeight: "600",
-             }}
-           >
-             Verify
-           </button>
-            }
+                  borderRadius: "8px",
+                  backgroundColor: "#66B127",
+                  color: "#fff",
+                  fontWeight: "600",
+                }}
+              >
+                Verify
+              </button>
+            ) : (
+              <button
+                //  onClick={SubmitKey}
+                disabled={true}
+                style={{
+                  marginTop: "12px",
+                  border: "none",
+                  height: "32px",
+                  padding: "0px 15px",
+                  width: "90px",
+                  borderRadius: "8px",
+                  backgroundColor: "#66B127",
+                  color: "#fff",
+                  fontWeight: "600",
+                }}
+              >
+                Verify
+              </button>
+            )}
           </div>
         </div>
         <br />
       </Modal>
-     
     </ModalContainer>
   );
 };

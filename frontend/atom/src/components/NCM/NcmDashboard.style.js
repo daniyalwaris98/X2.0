@@ -9,7 +9,7 @@ export const NcmDashboardStyle = styled.article`
   ${CommonSpacing};
 
   .ncm-dashboard-top {
-    ${GridBoxStyle({ columns: "1fr 2fr" })};
+    ${GridBoxStyle({ columns: "repeat(3, 1fr)" })};
 
     margin-bottom: 20px;
 
@@ -68,6 +68,44 @@ export const NcmDashboardStyle = styled.article`
 
           .date-and-time {
             ${FlexboxStyle({ justify: "flex-start", gap: "20px" })}
+          }
+        }
+      }
+    }
+  }
+
+  .rcm-alarms-wrapper {
+    .alarms-wrapper {
+      .heading {
+        font-size: 15px;
+        margin-bottom: 20px;
+      }
+
+      .alarms-list {
+        .alarm {
+          border-left: 5px solid ${({ theme }) => theme.colors.TOMATO_COLOR};
+          padding: 10px;
+          padding-left: 20px;
+          border-radius: 5px 0 0 5px;
+          box-shadow: 0px 1px 6px rgba(0, 0, 0, 0.07);
+          margin-bottom: 10px;
+
+          h3 {
+            margin: 0;
+          }
+          .alarm-title {
+            font-size: 12px;
+            font-weight: 700;
+          }
+
+          .alarm-description {
+            font-size: 12px;
+          }
+
+          .time-and-date {
+            ${FlexboxStyle({ justify: "flex-start", gap: "10px" })};
+
+            font-size: 11px;
           }
         }
       }

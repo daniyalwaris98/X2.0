@@ -126,7 +126,7 @@ const index = (props) => {
         bodyStyle={{
           padding: "20px",
         }}
-        visible={isModalVisible}
+        open={isModalVisible}
         // onOk={handleOk}
         footer={null}
         // style={{ padding: "20px" }}

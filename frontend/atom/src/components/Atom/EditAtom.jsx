@@ -234,6 +234,7 @@ const EditAtom = (props) => {
                   className="rectangle"
                   value={site_name}
                   onChange={(e) => changeSelectOptionHandler(e)}
+                  required
                 >
                   {siteArray?.map((item, index) => {
                     return (
@@ -252,6 +253,7 @@ const EditAtom = (props) => {
                 <Styledselect
                   className="rectangle"
                   value={rack_name}
+                  required
                   onChange={(e) => {
                     setRack_name(e.target.value);
                   }}
@@ -402,6 +404,7 @@ const EditAtom = (props) => {
                 <Styledselect
                   className="rectangle"
                   value={password_group}
+                  required
                   onChange={(e) => {
                     setPassword_group(e.target.value);
                   }}

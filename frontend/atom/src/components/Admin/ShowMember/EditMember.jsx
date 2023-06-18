@@ -230,7 +230,7 @@ const EditMember = (props) => {
       width="80%"
       title=""
       closable={false}
-      visible={props.isEditModalVisible}
+      open={props.isEditModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

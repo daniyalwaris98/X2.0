@@ -356,10 +356,7 @@ const FirstNavBar = (props) => {
                 </div>
               </li>
               <li>
-                <Dropdown
-                  overlay={menu}
-                  style={{ width: "50px", height: "50px" }}
-                >
+                <Dropdown menu={menu} style={{ width: "50px", height: "50px" }}>
                   <img
                     src={setting}
                     alt=""
@@ -486,7 +483,7 @@ const FirstNavBar = (props) => {
         title="License Information"
         placement="right"
         onClose={onClose}
-        visible={open}
+        open={open}
       >
         <div>
           {/* <div style={{ display: "flex" }}>

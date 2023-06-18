@@ -902,7 +902,6 @@ const index = () => {
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
-                 
 
                   // excelData = response.data;
                   setLoading(false);
@@ -1234,7 +1233,7 @@ const index = () => {
       <MainTableModal
         width={"75%"}
         // title="Basic Modal"
-        visible={mainModalVisible}
+        open={mainModalVisible}
         // closable={false}
         footer={false}
         onOk={handleMainOk}
@@ -1420,7 +1419,7 @@ const index = () => {
                       <Modal
                         width={"30%"}
                         title="Add New Password Group"
-                        visible={isModalVisible}
+                        open={isModalVisible}
                         onOk={handleOk}
                         footer={false}
                         onCancel={handleCancel}

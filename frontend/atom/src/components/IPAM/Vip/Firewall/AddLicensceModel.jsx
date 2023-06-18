@@ -258,7 +258,7 @@ const AddLicensceModel = (props) => {
       width="70%"
       title=""
       closable={false}
-      visible={props.isModalVisible}
+      open={props.isModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

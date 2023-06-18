@@ -125,26 +125,17 @@ const index = () => {
       await axios
         .post(baseUrl + "/dismantleOnBoardedDevice", selectedRowKeys)
         .then((response) => {
-          // if (response?.response?.status == 500) {
-          //   openSweetAlert(response?.response?.data?.response, "error");
-          // } else {
-          //   openSweetAlert(`All Devices Onboarded Successfully`, "success");
-          // }
           const promises = [];
           promises.push(
             axios
               .get(baseUrl + "/getAllDevices")
               .then((response) => {
                 setDataSource(response.data);
-                // setExcelData(response.data);
-                // setOnBoardedDevices(response.data);
-                // excelData = response.data;
+
                 setRowCount(excelData.length);
                 setDismantleLoading(false);
               })
               .catch((error) => {
-                // openSweetAlert("Something Went Wrong!", "error");
-
                 setDismantleLoading(false);
               })
           );
@@ -1316,33 +1307,16 @@ const index = () => {
                 >
                   Device Status Overview
                 </h3>
-                {/* <h4
-              style={{
-                color: "#000",
-                borderLeft: "3px solid #3D9E47",
-                borderRadius: "3px",
-                paddingLeft: "6px",
-                alignItems: "center",
-                marginLeft: "3px",
-                marginTop: "2px",
-                fontWeight: "bold",
-                float: "left",
-              }}
-            >
-              Devices Statistics
-            </h4> */}
+
                 <h4
                   style={{
                     color: "#000",
-                    // borderLeft: "3px solid #3D9E47",
-                    // borderTopLeftRadius: '6px',
+
                     paddingLeft: "6px",
                     alignItems: "center",
                     color: "#878787",
-                    // marginLeft: "-6px",
                     marginRight: "10px",
                     marginTop: "2px",
-                    // paddingRight: "20px",
                     paddingTop: "6px",
                     fontWeight: "bold",
                     float: "right",
@@ -1350,29 +1324,12 @@ const index = () => {
                 >
                   {totalDeviceCount.name} : <b>{totalDeviceCount.value}</b>
                 </h4>
-                {/* <h4
-              style={{
-                color: "#000",
 
-                alignItems: "center",
-                marginLeft: "3px",
-                marginTop: "2px",
-                fontWeight: "bold",
-                float: "right",
-              }}
-            >
-              Device count : <b>100</b>
-            </h4> */}
                 <br />
                 <br />
                 <Row>
                   {myDeviceStatus.map((item, index) => (
-                    <Col
-                      xs={{ span: 12 }}
-                      md={{ span: 12 }}
-                      lg={{ span: 6 }}
-                      // xl={{ span: 2 }}
-                    >
+                    <Col xs={{ span: 12 }} md={{ span: 12 }} lg={{ span: 6 }}>
                       <SpinLoading spinning={loading}>
                         <div
                           style={{
@@ -1380,11 +1337,6 @@ const index = () => {
                             margin: "0 auto",
                             marginTop: "65px",
                             marginBottom: "50px",
-
-                            // justifyContent: "space-evenly",
-                            // marginRight: "10px",
-                            // borderRadius: "12px",
-                            //   backgroundColor: "#fcfcfc",
                           }}
                         >
                           <div key={index} style={{ paddingRight: "20px" }}>
@@ -1395,8 +1347,6 @@ const index = () => {
                                 paddingRight: 25,
                                 display: "block",
                               }}
-                              // {...(index === 1 ? (strokeColor = "#000") : null)}
-                              // style={{ border: index === selectedIndex ? '2px solid #00adb5' : 'none'}}
                               strokeColor={
                                 (index === 0 ? "#66B127" : null) ||
                                 (index === 1 ? "#db5" : null) ||
@@ -1414,22 +1364,14 @@ const index = () => {
                               bgtwo={index === 2}
                               colortwo={index === 2}
                               style={{
-                                // backgroundColor: index === 1 ? "#db5" : null,
                                 marginRight: "5px",
                                 textAlign: "center",
                                 margin: "15px",
-                                // backgroundColor: "rgba(175, 255, 207, 0.2)",
                                 borderRadius: "15px",
                                 padding: "5px",
                                 fontSize: "10px",
                                 fontWeight: "600",
                               }}
-                              // color={getColor(item.name).color}
-                              // backgroundColor={getColor(item.name).backgroundColor}
-
-                              // Dismantled={"Dismantled" === item.name}
-                              // Maintenance={"Maintenance" === item.name}
-                              // Undefined={"Undefined" === item.name}
                             >
                               <img src={imgFun(item.name)} alt="" /> &nbsp;
                               &nbsp;
@@ -1726,7 +1668,7 @@ const index = () => {
             <MainTableModal
               width={"75%"}
               // title="Basic Modal"
-              visible={mainModalVisible}
+              open={mainModalVisible}
               closable={false}
               footer={false}
               onOk={handleMainOk}

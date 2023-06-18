@@ -272,7 +272,7 @@ const AddMember = (props) => {
       width="80%"
       title=""
       closable={false}
-      visible={props.isModalVisible}
+      open={props.isModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

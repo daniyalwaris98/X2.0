@@ -2,8 +2,8 @@ export const LoginPassword = () => {
   return (
     <svg width="22" height="27" viewBox="0 0 22 27">
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M10.8878 0.00254104C14.684 0.00254104 17.7755 3.09407 17.7755 6.89413L17.7754 8.9438C20.0832 9.74699 21.7434 11.9441 21.7434 14.5226V20.0985C21.7434 23.3552 19.0952 26.0034 15.8386 26.0034H5.90485C2.64821 26.0034 0 23.3552 0 20.0985V14.5226C0 11.9446 1.65955 9.74782 3.96674 8.94425L3.96764 6.89413C3.97544 5.02205 4.69957 3.29428 6.00612 1.99943C7.31398 0.703271 9.04045 -0.046861 10.8878 0.00254104ZM15.8386 10.5678H5.90485C3.72336 10.5678 1.95008 12.3411 1.95008 14.5226V20.0985C1.95008 22.28 3.72336 24.0533 5.90485 24.0533H15.8386C18.0188 24.0533 19.7933 22.28 19.7933 20.0985V14.5226C19.7933 12.3411 18.0188 10.5678 15.8386 10.5678ZM10.8714 14.8916C11.4097 14.8916 11.8465 15.3284 11.8465 15.8666V18.754C11.8465 19.2922 11.4097 19.7291 10.8714 19.7291C10.3332 19.7291 9.89641 19.2922 9.89641 18.754V15.8666C9.89641 15.3284 10.3332 14.8916 10.8714 14.8916ZM10.8839 1.95262H10.8631C9.54617 1.95262 8.31242 2.45964 7.38028 3.38398C6.44164 4.31222 5.92292 5.55118 5.91772 6.87203L5.91655 8.61701H15.8243L15.8254 6.89413C15.8254 4.16922 13.6088 1.95262 10.8839 1.95262Z"
         fill="#9F9F9F"
       />
@@ -15,8 +15,8 @@ export const LoginUser = () => {
   return (
     <svg width="21" height="26" viewBox="0 0 21 26">
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M20.5197 20.9775C20.5197 25.2472 14.6643 25.7408 10.2611 25.7408L9.94604 25.7405C7.1407 25.7337 0 25.5566 0 20.9516C0 16.769 5.62005 16.21 9.98972 16.1889L10.5762 16.1885C13.3814 16.1954 20.5197 16.3725 20.5197 20.9775ZM10.2611 18.1314C4.74129 18.1314 1.94315 19.0797 1.94315 20.9516C1.94315 22.8403 4.74129 23.7976 10.2611 23.7976C15.7797 23.7976 18.5765 22.8494 18.5765 20.9775C18.5765 19.0887 15.7797 18.1314 10.2611 18.1314ZM10.2611 0C14.0542 0 17.1386 3.08572 17.1386 6.87876C17.1386 10.6718 14.0542 13.7562 10.2611 13.7562H10.2197C6.43442 13.7446 3.36813 10.6575 3.38104 6.87487C3.38104 3.08572 6.46681 0 10.2611 0ZM10.2611 1.84988C7.48761 1.84988 5.23094 4.10523 5.23094 6.87876C5.2219 9.64321 7.4617 11.8973 10.2236 11.9076L10.2611 12.8326V11.9076C13.0334 11.9076 15.2887 9.65099 15.2887 6.87876C15.2887 4.10523 13.0334 1.84988 10.2611 1.84988Z"
         fill="#9F9F9F"
       />
@@ -47,8 +47,8 @@ export const SendIcon = () => {
   return (
     <svg width="47" height="46" viewBox="0 0 47 46" fill="none">
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M20.363 24.5633L9.86576 21.0642L9.86575 21.0642C7.51254 20.2798 6.33594 19.8876 6.33594 19.1668C6.33594 18.4461 7.51254 18.0539 9.86576 17.2695L34.8789 8.93175C36.5347 8.37982 37.3626 8.10386 37.7996 8.54088C38.2366 8.97789 37.9607 9.80578 37.4088 11.4616L37.4087 11.4616L29.071 36.4747C28.2866 38.828 27.8944 40.0046 27.1737 40.0046C26.4529 40.0046 26.0607 38.828 25.2763 36.4747L21.7772 25.9775L29.7974 17.9573C30.188 17.5668 30.188 16.9336 29.7974 16.5431C29.4069 16.1525 28.7737 16.1525 28.3832 16.5431L20.363 24.5633Z"
         fill="#66B127"
       />
@@ -70,8 +70,8 @@ export const ChatIcon = () => {
         <path
           d="M114.578 110.042C106.786 100.578 104.137 87.7221 103.265 82.0606C106.656 75.2304 108.572 67.5333 108.572 59.3907V57.3311C108.572 29.1242 85.7058 6.25793 57.4989 6.25793C29.2921 6.25793 6.42578 29.1242 6.42578 57.3311V59.3907C6.42578 87.5976 29.2921 110.464 57.4989 110.464C67.4089 110.464 76.658 107.633 84.4892 102.743C90.4716 104.022 115.46 111.106 114.578 110.038V110.042Z"
           stroke="url(#paint0_linear_3688_30247)"
-          stroke-width="1.43693"
-          stroke-miterlimit="10"
+          strokeWidth="1.43693"
+          strokeMiterlimit="10"
         />
       </g>
       <path
@@ -99,27 +99,27 @@ export const ChatIcon = () => {
         <path
           d="M46.9219 44.404C46.9362 43.2353 48.1624 42.3349 49.7239 42.3444C51.2614 42.3492 52.4972 43.3024 52.4732 44.4519"
           stroke="#FEFEFE"
-          stroke-width="1.9159"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="1.9159"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
       </g>
       <g filter="url(#filter3_d_3688_30247)">
         <path
           d="M66.6172 44.404C66.6316 43.2353 67.7236 42.3349 69.1222 42.3444C70.4969 42.3492 71.6033 43.3024 71.5842 44.4519"
           stroke="#FEFEFE"
-          stroke-width="1.9159"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="1.9159"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
       </g>
       <g filter="url(#filter4_d_3688_30247)">
         <path
           d="M63.0456 49.5768C63.0456 49.6822 63.0217 49.8067 62.9882 49.9408C62.7726 50.9083 62.2026 51.6364 61.3022 52.101C60.2963 52.6183 59.0606 52.6279 58.0547 52.1058C57.1255 51.6268 56.5412 50.8413 56.3256 49.778C56.316 49.7205 56.3065 49.663 56.2969 49.6151"
           stroke="#FEFEFE"
-          stroke-width="1.9159"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="1.9159"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
       </g>
       <path
@@ -155,9 +155,9 @@ export const ChatIcon = () => {
           width="126.58"
           height="122.306"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -189,9 +189,9 @@ export const ChatIcon = () => {
           width="119.193"
           height="116.085"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -223,9 +223,9 @@ export const ChatIcon = () => {
           width="13.2125"
           height="9.77114"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -257,9 +257,9 @@ export const ChatIcon = () => {
           width="12.6305"
           height="9.77114"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -291,9 +291,9 @@ export const ChatIcon = () => {
           width="18.2436"
           height="14.4119"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -326,9 +326,9 @@ export const ChatIcon = () => {
           y2="58.3657"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#70B544" />
-          <stop offset="0.36" stop-color="#5EAD44" />
-          <stop offset="1" stop-color="#379B47" />
+          <stop stopColor="#70B544" />
+          <stop offset="0.36" stopColor="#5EAD44" />
+          <stop offset="1" stopColor="#379B47" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_3688_30247"
@@ -338,9 +338,9 @@ export const ChatIcon = () => {
           y2="33.076"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#70B544" />
-          <stop offset="0.01" stop-color="#6EB444" />
-          <stop offset="0.66" stop-color="#379B47" />
+          <stop stopColor="#70B544" />
+          <stop offset="0.01" stopColor="#6EB444" />
+          <stop offset="0.66" stopColor="#379B47" />
         </linearGradient>
         <linearGradient
           id="paint2_linear_3688_30247"
@@ -350,8 +350,8 @@ export const ChatIcon = () => {
           y2="24.1289"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#1C2B23" />
-          <stop offset="1" stop-color="#1A2B22" />
+          <stop stopColor="#1C2B23" />
+          <stop offset="1" stopColor="#1A2B22" />
         </linearGradient>
         <linearGradient
           id="paint3_linear_3688_30247"
@@ -361,9 +361,9 @@ export const ChatIcon = () => {
           y2="92.1959"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#70B544" />
-          <stop offset="0.39" stop-color="#53A845" />
-          <stop offset="0.83" stop-color="#379B47" />
+          <stop stopColor="#70B544" />
+          <stop offset="0.39" stopColor="#53A845" />
+          <stop offset="0.83" stopColor="#379B47" />
         </linearGradient>
         <linearGradient
           id="paint4_linear_3688_30247"
@@ -373,13 +373,13 @@ export const ChatIcon = () => {
           y2="91.5495"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#8CC63F" stop-opacity="0.1" />
-          <stop offset="0.14" stop-color="#89C53F" stop-opacity="0.13" />
-          <stop offset="0.3" stop-color="#82C440" stop-opacity="0.2" />
-          <stop offset="0.47" stop-color="#76C141" stop-opacity="0.33" />
-          <stop offset="0.64" stop-color="#66BE43" stop-opacity="0.51" />
-          <stop offset="0.82" stop-color="#51BA46" stop-opacity="0.73" />
-          <stop offset="1" stop-color="#39B54A" />
+          <stop stopColor="#8CC63F" stopOpacity="0.1" />
+          <stop offset="0.14" stopColor="#89C53F" stopOpacity="0.13" />
+          <stop offset="0.3" stopColor="#82C440" stopOpacity="0.2" />
+          <stop offset="0.47" stopColor="#76C141" stopOpacity="0.33" />
+          <stop offset="0.64" stopColor="#66BE43" stopOpacity="0.51" />
+          <stop offset="0.82" stopColor="#51BA46" stopOpacity="0.73" />
+          <stop offset="1" stopColor="#39B54A" />
         </linearGradient>
       </defs>
     </svg>
@@ -413,27 +413,27 @@ export const BotIcon = () => {
         <path
           d="M10.7891 14.7263C10.7977 14.021 11.5356 13.4777 12.4753 13.4834C13.4005 13.4863 14.1442 14.0615 14.1298 14.7552"
           stroke="#FEFEFE"
-          stroke-width="0.92"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="0.92"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
       </g>
       <g filter="url(#filter1_d_3688_30421)">
         <path
           d="M22.6367 14.7263C22.6454 14.021 23.3026 13.4777 24.1442 13.4834C24.9715 13.4863 25.6373 14.0615 25.6258 14.7552"
           stroke="#FEFEFE"
-          stroke-width="0.92"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="0.92"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
       </g>
       <g filter="url(#filter2_d_3688_30421)">
         <path
           d="M20.491 17.8467C20.491 17.9103 20.4766 17.9854 20.4564 18.0663C20.3267 18.6502 19.9837 19.0895 19.4418 19.3699C18.8365 19.682 18.0928 19.6878 17.4875 19.3727C16.9283 19.0837 16.5767 18.6097 16.447 17.9681C16.4412 17.9334 16.4355 17.8987 16.4297 17.8698"
           stroke="#FEFEFE"
-          stroke-width="0.92"
-          stroke-miterlimit="10"
-          stroke-linecap="round"
+          strokeWidth="0.92"
+          strokeMiterlimit="10"
+          strokeLinecap="round"
         />
       </g>
       <path
@@ -468,9 +468,9 @@ export const BotIcon = () => {
           width="10.0094"
           height="7.93911"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -502,9 +502,9 @@ export const BotIcon = () => {
           width="9.65786"
           height="7.93911"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -536,9 +536,9 @@ export const BotIcon = () => {
           width="14.56"
           height="12.2592"
           filterUnits="userSpaceOnUse"
-          color-interpolation-filters="sRGB"
+          colorInterpolationFilters="sRGB"
         >
-          <feFlood flood-opacity="0" result="BackgroundImageFix" />
+          <feFlood floodOpacity="0" result="BackgroundImageFix" />
           <feColorMatrix
             in="SourceAlpha"
             type="matrix"
@@ -571,9 +571,9 @@ export const BotIcon = () => {
           y2="7.88994"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#70B544" />
-          <stop offset="0.01" stop-color="#6EB444" />
-          <stop offset="0.66" stop-color="#379B47" />
+          <stop stopColor="#70B544" />
+          <stop offset="0.01" stopColor="#6EB444" />
+          <stop offset="0.66" stopColor="#379B47" />
         </linearGradient>
         <linearGradient
           id="paint1_linear_3688_30421"
@@ -583,8 +583,8 @@ export const BotIcon = () => {
           y2="2.49148"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#1C2B23" />
-          <stop offset="1" stop-color="#1A2B22" />
+          <stop stopColor="#1C2B23" />
+          <stop offset="1" stopColor="#1A2B22" />
         </linearGradient>
         <linearGradient
           id="paint2_linear_3688_30421"
@@ -594,9 +594,9 @@ export const BotIcon = () => {
           y2="43.5655"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#70B544" />
-          <stop offset="0.39" stop-color="#53A845" />
-          <stop offset="0.83" stop-color="#379B47" />
+          <stop stopColor="#70B544" />
+          <stop offset="0.39" stopColor="#53A845" />
+          <stop offset="0.83" stopColor="#379B47" />
         </linearGradient>
         <linearGradient
           id="paint3_linear_3688_30421"
@@ -606,13 +606,13 @@ export const BotIcon = () => {
           y2="43.1753"
           gradientUnits="userSpaceOnUse"
         >
-          <stop stop-color="#8CC63F" stop-opacity="0.1" />
-          <stop offset="0.14" stop-color="#89C53F" stop-opacity="0.13" />
-          <stop offset="0.3" stop-color="#82C440" stop-opacity="0.2" />
-          <stop offset="0.47" stop-color="#76C141" stop-opacity="0.33" />
-          <stop offset="0.64" stop-color="#66BE43" stop-opacity="0.51" />
-          <stop offset="0.82" stop-color="#51BA46" stop-opacity="0.73" />
-          <stop offset="1" stop-color="#39B54A" />
+          <stop stopColor="#8CC63F" stopOpacity="0.1" />
+          <stop offset="0.14" stopColor="#89C53F" stopOpacity="0.13" />
+          <stop offset="0.3" stopColor="#82C440" stopOpacity="0.2" />
+          <stop offset="0.47" stopColor="#76C141" stopOpacity="0.33" />
+          <stop offset="0.64" stopColor="#66BE43" stopOpacity="0.51" />
+          <stop offset="0.82" stopColor="#51BA46" stopOpacity="0.73" />
+          <stop offset="1" stopColor="#39B54A" />
         </linearGradient>
       </defs>
     </svg>
@@ -648,14 +648,14 @@ export const DccmIcon = () => {
     <svg width="30" height="31" viewBox="0 0 30 31">
       <path
         d="M15.0013 20.2076C17.3945 20.2076 19.3346 18.1756 19.3346 15.669C19.3346 13.1624 17.3945 11.1304 15.0013 11.1304C12.6081 11.1304 10.668 13.1624 10.668 15.669C10.668 18.1756 12.6081 20.2076 15.0013 20.2076Z"
-        stroke-width="3"
-        stroke-linecap="round"
+        strokeWidth="3"
+        strokeLinecap="round"
         stroke-linejoin="round"
       />
       <path
         d="M15 29.2849V29.3M2 11.1303V11.1455M28 11.1303V11.1455M9.22222 27.9233C7.25105 26.9163 5.55515 25.4033 4.29238 23.5252C3.02962 21.6472 2.24102 19.465 2 17.1819M20.7778 27.9233C22.7489 26.9163 24.4448 25.4033 25.7076 23.5252C26.9704 21.6472 27.759 19.465 28 17.1819M6.62222 5.07884C8.94502 3.08783 11.8541 2 14.8556 2C17.8571 2 20.7661 3.08783 23.0889 5.07884"
-        stroke-width="3"
-        stroke-linecap="round"
+        strokeWidth="3"
+        strokeLinecap="round"
         stroke-linejoin="round"
       />
     </svg>
@@ -870,11 +870,11 @@ export const ScreenIcon = () => {
     <svg width="24" height="21" viewBox="0 0 24 21">
       <path
         d="M1.75 5.19658C1.75 3.95176 1.75141 3.08918 1.83357 2.43966C1.91356 1.80727 2.05847 1.4915 2.26222 1.27493C2.45987 1.06484 2.73897 0.919586 3.31277 0.837585C3.91308 0.751795 4.71407 0.75 5.88889 0.75H18.1111C19.2859 0.75 20.0869 0.751795 20.6872 0.837585C21.261 0.919586 21.5401 1.06484 21.7378 1.27493C21.9415 1.4915 22.0864 1.80727 22.1664 2.43966C22.2486 3.08918 22.25 3.95176 22.25 5.19658V16.1389H1.75V5.19658Z"
-        stroke-width="1.5"
+        strokeWidth="1.5"
       />
       <path
         d="M2.74074 16.1389C1.95414 16.1389 1.25 16.7539 1.25 17.5926C1.25 18.8199 2.28578 19.75 3.48148 19.75H20.5185C21.7142 19.75 22.75 18.8199 22.75 17.5926C22.75 16.7539 22.0459 16.1389 21.2593 16.1389H2.74074Z"
-        stroke-width="1.5"
+        strokeWidth="1.5"
       />
     </svg>
   );
@@ -889,7 +889,7 @@ export const DashboardIcon = () => {
         width="7.44375"
         height="8.68437"
         rx="1"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linejoin="round"
       />
       <rect
@@ -898,7 +898,7 @@ export const DashboardIcon = () => {
         width="7.44375"
         height="6.20312"
         rx="1"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linejoin="round"
       />
       <rect
@@ -907,7 +907,7 @@ export const DashboardIcon = () => {
         width="7.44375"
         height="6.20312"
         rx="1"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linejoin="round"
       />
       <rect
@@ -916,7 +916,7 @@ export const DashboardIcon = () => {
         width="7.44375"
         height="8.68437"
         rx="1"
-        stroke-width="1.5"
+        strokeWidth="1.5"
         stroke-linejoin="round"
       />
     </svg>
@@ -1027,8 +1027,8 @@ export const CloudIcon = () => {
   return (
     <svg width="28" height="26" viewBox="0 0 28 26">
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M14.9931 0.996285C13.9745 1.1043 12.9916 1.4947 12.0997 2.14549C11.3003 2.72883 10.4859 3.73894 10.0597 4.67585C9.97467 4.86287 9.89979 5.02224 9.89338 5.03C9.88696 5.03781 9.75361 4.9974 9.597 4.94024C9.1223 4.76702 8.68065 4.67657 8.18278 4.65064C7.26385 4.60276 6.42821 4.80174 5.60091 5.26547C4.22641 6.03592 3.24007 7.44187 2.90493 9.10833L2.82207 9.52037L2.52675 9.63263C1.92642 9.86085 1.26466 10.3719 0.87238 10.9102C0.436269 11.5086 0.191597 12.0842 0.0552144 12.8325C-0.0273147 13.2853 -0.000643531 14.2022 0.107756 14.6384C0.485458 16.1587 1.50022 17.2621 2.90915 17.6846C3.15528 17.7584 3.3155 17.7711 4.17475 17.7849C5.10425 17.7998 5.16488 17.7964 5.2735 17.7219C5.46723 17.5891 5.48046 17.259 5.29958 17.0722C5.20893 16.9786 5.447 16.987 4.50778 16.9627C3.42036 16.9347 3.46401 16.902 2.90493 16.5912C2.53211 16.3839 2.47359 16.3347 2.08379 15.9009C1.48087 15.2297 1.19197 14.366 1.24618 13.3965C1.2757 12.8688 1.34157 12.6028 1.57018 12.0888C1.73939 11.7084 1.79335 11.6292 2.14234 11.2487C2.45818 10.9044 2.41529 10.9757 2.74554 10.7134C2.90935 10.5833 2.98095 10.6079 3.25695 10.3968C3.40845 10.2443 3.43603 10.2052 3.47239 10.1653C3.51717 10.1161 3.6683 9.9449 3.71618 9.63263C4.04905 8.75711 4.03866 8.65943 4.33259 8.17638C4.38616 8.08837 4.52713 7.85635 4.52713 7.85635C4.52713 7.85635 4.7733 7.53315 4.95537 7.33373C5.44763 6.79455 5.96784 6.43363 6.59812 6.19409C7.12448 5.99402 7.42064 5.94326 8.05559 5.94434C8.59139 5.94526 8.64849 5.94434 9.08869 6.03636C9.32542 6.10528 9.60611 6.13448 9.76016 6.21361C10.2303 6.45523 10.3601 6.0872 10.498 5.68236C10.7974 4.80306 11.442 4.54232 12.0997 3.91101C13.6525 2.42053 15.4988 2.00153 17.4297 2.85146C18.8233 3.46497 19.8193 4.41994 20.3119 6.03636C20.4311 6.42748 20.9538 7.10927 20.9538 7.36394C20.9538 7.42987 20.9812 7.53468 21.0147 7.59685C21.1235 7.79911 21.1613 7.95736 21.7015 7.90184C23.0012 7.76822 23.634 8.3225 24.5607 9.33981C26.3942 11.3529 25.7715 14.5452 23.9312 15.9818C23.2495 16.5139 22.9823 16.9563 22.0974 16.9569C21.8198 16.9571 21.7499 16.9704 21.6719 17.0378C21.5336 17.1573 21.4839 17.3563 21.5494 17.5286C21.6383 17.7622 21.7199 17.7973 22.1735 17.7971C24.1599 17.7963 25.9963 16.4404 26.7482 14.4195C26.9964 13.7523 27.0796 13.3076 27.1018 12.5303C27.124 11.7526 27.0758 11.3406 26.885 10.6765C26.2302 8.39825 24.211 6.8142 22.0473 6.88153L21.7015 6.89225L21.6194 6.45412C21.4065 5.31744 20.9611 4.28752 20.3119 3.43087C19.3384 2.14605 17.8983 1.25795 16.4357 1.04017C16.0142 0.977404 15.3593 0.957481 14.9931 0.996285Z"
         fill="#66B127"
       />
@@ -1081,8 +1081,8 @@ export const LifeCycleIcon = () => {
     <svg width="24" height="25" viewBox="0 0 24 25">
       <path d="M14 3.49991L11 1.16553V2.73977H4C3.46957 2.73977 2.96086 2.71062 2.58579 3.0857C2.21071 3.46077 2 3.96948 2 4.49991V20.4999C2 21.0303 2.21071 21.539 2.58579 21.9141C2.96086 22.2892 3.46957 22.4999 4 22.4999H8V21.0038H3.46663V4.12543H11V5.57869L14 3.49991ZM10 21.4999L13 23.9688V22.4999H20C20.5304 22.4999 21.0391 22.2892 21.4142 21.9141C21.7893 21.539 22 21.0303 22 20.4999V4.49991C22 3.96948 21.7893 3.46077 21.4142 3.0857C21.0391 2.71062 20.5304 2.73977 20 2.73977H16V4.12543H20.4607V21.0038H13V19.1567L10 21.4999Z" />
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M10.2802 6.98242C10.2802 6.70628 10.0564 6.48242 9.78023 6.48242C9.50408 6.48242 9.28023 6.70628 9.28023 6.98242V7.33142H8.44735C7.45692 7.33142 6.61473 8.10415 6.61473 9.10473V9.8779H6.22656C5.95042 9.8779 5.72656 10.1018 5.72656 10.3779C5.72656 10.654 5.95042 10.8779 6.22656 10.8779H6.61473V12.0001H6.22656C5.95042 12.0001 5.72656 12.2239 5.72656 12.5001C5.72656 12.7762 5.95042 13.0001 6.22656 13.0001H6.61473V14.1223H6.22656C5.95042 14.1223 5.72656 14.3461 5.72656 14.6223C5.72656 14.8984 5.95042 15.1223 6.22656 15.1223H6.61473V15.8957C6.61473 16.8963 7.45692 17.669 8.44735 17.669H9.28023V18.0177C9.28023 18.2939 9.50408 18.5177 9.78023 18.5177C10.0564 18.5177 10.2802 18.2939 10.2802 18.0177V17.669H11.5013V18.0177C11.5013 18.2939 11.7251 18.5177 12.0013 18.5177C12.2774 18.5177 12.5013 18.2939 12.5013 18.0177V17.669H13.7223V18.0177C13.7223 18.2939 13.9462 18.5177 14.2223 18.5177C14.4984 18.5177 14.7223 18.2939 14.7223 18.0177V17.669H15.5547C16.5451 17.669 17.3873 16.8963 17.3873 15.8957V15.1223H17.776C18.0521 15.1223 18.276 14.8984 18.276 14.6223C18.276 14.3461 18.0521 14.1223 17.776 14.1223H17.3873V13.0001H17.776C18.0521 13.0001 18.276 12.7762 18.276 12.5001C18.276 12.2239 18.0521 12.0001 17.776 12.0001H17.3873V10.8779H17.776C18.0521 10.8779 18.276 10.654 18.276 10.3779C18.276 10.1018 18.0521 9.8779 17.776 9.8779H17.3873V9.10473C17.3873 8.10415 16.5451 7.33142 15.5547 7.33142H14.7223V6.98242C14.7223 6.70628 14.4984 6.48242 14.2223 6.48242C13.9462 6.48242 13.7223 6.70628 13.7223 6.98242V7.33142H12.5013V6.98242C12.5013 6.70628 12.2774 6.48242 12.0013 6.48242C11.7251 6.48242 11.5013 6.70628 11.5013 6.98242V7.33142H10.2802V6.98242ZM14.2337 16.669H15.5547C16.0362 16.669 16.3873 16.3016 16.3873 15.8957V9.10473C16.3873 8.69885 16.0362 8.33142 15.5547 8.33142H8.44735C7.96581 8.33142 7.61473 8.69885 7.61473 9.10473V10.362C7.61489 10.3673 7.61498 10.3726 7.61498 10.3779C7.61498 10.3832 7.61489 10.3885 7.61473 10.3938V12.4842C7.61489 12.4894 7.61498 12.4948 7.61498 12.5001C7.61498 12.5054 7.61489 12.5107 7.61473 12.516V14.6063C7.61489 14.6116 7.61498 14.6169 7.61498 14.6223C7.61498 14.6276 7.61489 14.6329 7.61473 14.6382V15.8957C7.61473 16.3016 7.96581 16.669 8.44735 16.669H9.76881C9.7726 16.6689 9.77641 16.6689 9.78023 16.6689C9.78404 16.6689 9.78785 16.6689 9.79164 16.669H11.9898C11.9936 16.6689 11.9974 16.6689 12.0013 16.6689C12.0051 16.6689 12.0089 16.6689 12.0127 16.669H14.2109C14.2147 16.6689 14.2185 16.6689 14.2223 16.6689C14.2261 16.6689 14.2299 16.6689 14.2337 16.669ZM9.39106 10.0291V14.9711H14.61V10.0291H9.39106ZM8.39106 9.95349C8.39106 9.42173 8.8355 9.02905 9.33527 9.02905H14.6658C15.1655 9.02905 15.61 9.42173 15.61 9.95349V15.0467C15.61 15.5785 15.1655 15.9711 14.6658 15.9711H9.33527C8.8355 15.9711 8.39106 15.5785 8.39106 15.0467V9.95349Z"
       />
     </svg>
@@ -1093,8 +1093,8 @@ export const ExportIcon = () => {
   return (
     <svg width="23" height="24" viewBox="0 0 23 24">
       <path
-        fill-rule="evenodd"
-        clip-rule="evenodd"
+        fillRule="evenodd"
+        clipRule="evenodd"
         d="M0.636718 13.0435C0.636718 10.3864 2.79846 8.22461 5.45556 8.22461L6.468 8.22461C6.91773 8.22461 7.28273 8.58961 7.28273 9.03934C7.28273 9.48907 6.91773 9.85407 6.468 9.85407L5.45556 9.85407C3.69575 9.85407 2.26617 11.2847 2.26617 13.0435L2.26617 18.3392C2.26617 20.0957 3.69575 21.5253 5.45556 21.5253L17.545 21.5253C19.3038 21.5253 20.7333 20.0957 20.7333 18.3392L20.7333 13.0315C20.7333 11.2804 19.3081 9.85407 17.557 9.85407L16.5326 9.85407C16.0829 9.85407 15.7179 9.48907 15.7179 9.03934C15.7179 8.58961 16.0829 8.22461 16.5326 8.22461L17.557 8.22461C20.2076 8.22461 22.3628 10.382 22.3628 13.0315L22.3628 18.3392C22.3628 20.9941 20.2021 23.1548 17.545 23.1548L5.45556 23.1548C2.79846 23.1548 0.636719 20.9941 0.636719 18.3392L0.636718 13.0435ZM7.75635 4.26601L10.9229 1.08531C10.9511 1.05694 10.9804 1.03153 11.0113 1.00827L10.9229 1.08531C10.9609 1.04682 11.0023 1.0126 11.0466 0.9829C11.0666 0.969829 11.0873 0.957222 11.1086 0.945537C11.1252 0.936056 11.1426 0.92733 11.1602 0.919239C11.1758 0.912382 11.1914 0.905797 11.2073 0.899696C11.2279 0.891506 11.2492 0.884334 11.2707 0.878044C11.2876 0.873304 11.3045 0.868948 11.3216 0.865127C11.3424 0.860275 11.3632 0.856454 11.3843 0.853448C11.3979 0.851747 11.4123 0.850084 11.4267 0.848798C11.4515 0.846311 11.4756 0.845239 11.4998 0.845239L11.5671 0.850778L11.6103 0.853008C11.6121 0.853258 11.6139 0.853513 11.6158 0.853776L11.4998 0.845239C11.5601 0.845239 11.6198 0.851915 11.6778 0.864894C11.695 0.868947 11.7119 0.873304 11.7286 0.878181C11.7504 0.884334 11.7716 0.891506 11.7925 0.899539C11.8081 0.905797 11.8237 0.912382 11.839 0.919427C11.8569 0.92733 11.8743 0.936054 11.8913 0.945404C11.9122 0.957221 11.9329 0.969829 11.953 0.983306C11.9649 0.990932 11.9767 0.999296 11.9882 1.00799C12.0222 1.03385 12.0543 1.06203 12.0839 1.09253L15.2442 4.26601C15.4028 4.42461 15.4821 4.63318 15.4821 4.84066C15.4821 5.04923 15.4028 5.25889 15.2421 5.41749C14.9227 5.73469 14.4078 5.73361 14.0906 5.41532L12.3145 3.63389L12.3145 14.7405C12.3145 15.1902 11.9495 15.5552 11.4998 15.5552C11.05 15.5552 10.685 15.1902 10.685 14.7405L10.685 3.63172L8.91001 5.41532C8.59281 5.73361 8.0779 5.73578 7.75853 5.41749C7.43915 5.10029 7.43915 4.58538 7.75635 4.26601Z"
       />
     </svg>

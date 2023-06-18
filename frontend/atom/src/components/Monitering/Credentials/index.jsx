@@ -802,7 +802,7 @@ const Atom = () => {
       </div>
       <Modal
         title="Add Credentials"
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}

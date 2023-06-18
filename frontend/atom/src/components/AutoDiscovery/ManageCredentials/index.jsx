@@ -56,21 +56,16 @@ const index = () => {
   const [searchText, setSearchText] = useState(null);
   const [searchedColumn, setSearchedColumn] = useState(null);
   let [loading, setLoading] = useState(false);
-  const [rowCount, setRowCount] = useState(0);
   const [discoveryCount, setDiscoveryCount] = useState("");
   const [selectedRowKeysv3, setSelectedRowKeysv3] = useState([]);
   const [alertStatusLoading, setAlertStatusLoading] = useState(false);
   const [isModalOpen, setIsModalOpen] = useState(false);
-  const [v3rowCount, setv3RowCount] = useState(0);
-  const [rowCountpassGroup, setRowCountpassGroup] = useState(0);
   let [v3dataSource, setv3DataSource] = useState(v3excelData);
-  const [selectedRowKeyspassGroup, setSelectedRowKeyspassGroup] = useState([]);
   const [configData, setConfigData] = useState(null);
   let [dataSourcepassGroup, setDataSourcepassGroup] =
     useState(excelDatapassGroup);
   const [v1v2isModalOpen, setv1v2IsModalOpen] = useState(false);
   const [v3isModalOpen, setv3IsModalOpen] = useState(false);
-  const [credentialIsModalOpen, setCredentialIsModalOpen] = useState(false);
   const [wmiIsModalOpen, setwmiIsModalOpen] = useState(false);
 
   const [profileName, setProfileName] = useState("");
@@ -86,7 +81,7 @@ const index = () => {
   const [authorizationProtocolv3, setaAuthorizationProtocolv3] =
     useState("MD5");
   const [authorizationPasswordv3, setaAuthorizationPasswordv3] = useState("");
-  const [encryptionProtocolv3, setEncryptionProtocolv3] = useState("DES");
+  const [encryptionProtocolv3, setEncryptionProtocolv3] = useState("");
 
   const [encryptionPasswordv3, setEncryptionPasswordv3] = useState("");
 
@@ -115,7 +110,6 @@ const index = () => {
         const res = await axios.get(baseUrl + "/getUsers");
         excelDatapassGroup = res.data;
         setDataSourcepassGroup(excelDatapassGroup);
-        setRowCountpassGroup(excelDatapassGroup.length);
       } catch (err) {
         console.log(err.response);
       }
@@ -197,7 +191,7 @@ const index = () => {
         const res = await axios.get(baseUrl + "/getSNMPV1V2Credentials");
         excelData = res.data;
         setDataSource(excelData);
-        setRowCount(excelData.length);
+
         setLoading(false);
       } catch (err) {
         console.log(err.response);
@@ -261,7 +255,6 @@ const index = () => {
                   .then((response) => {
                     excelData = response.data;
                     setDataSource(excelData);
-                    setRowCount(excelData.length);
                   })
                   .catch((error) => {
                     console.log(error);
@@ -281,6 +274,7 @@ const index = () => {
 
   const handleSubmitv3 = async (e) => {
     e.preventDefault();
+
     const v3Data = {
       profile_name: profileNamev3,
       description: descriptionv3,
@@ -292,7 +286,7 @@ const index = () => {
       encryption_protocol: encryptionProtocolv3,
       category: "v3",
     };
-    console.log("v3Data========>", v3Data);
+
     setv3IsModalOpen(false);
     try {
       await axios
@@ -318,7 +312,6 @@ const index = () => {
                 .then((response) => {
                   v3excelData = response.data;
                   setv3DataSource(v3excelData);
-                  setv3RowCount(v3excelData.length);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -363,7 +356,6 @@ const index = () => {
 
                   excelData = response.data;
                   setDataSource(excelData);
-                  setRowCount(excelData.length);
                 })
                 .catch((error) => {
                   console.log(error);
@@ -394,7 +386,7 @@ const index = () => {
       ...getColumnSearchProps(
         "description",
         "Description",
-        setRowCount,
+
         setDataSource,
         excelData,
         columnFilters
@@ -416,7 +408,7 @@ const index = () => {
       ...getColumnSearchProps(
         "version",
         "Version",
-        setRowCount,
+
         setDataSource,
         excelData,
         columnFilters
@@ -434,7 +426,7 @@ const index = () => {
       ...getColumnSearchProps(
         "profile_name",
         "Profile Name",
-        setRowCount,
+
         setDataSource,
         excelData,
         columnFilters
@@ -452,7 +444,7 @@ const index = () => {
       ...getColumnSearchProps(
         "community",
         "Community",
-        setRowCount,
+
         setDataSource,
         excelData,
         columnFilters
@@ -480,7 +472,6 @@ const index = () => {
                     console.log(response.data);
                     excelData = response.data;
                     setDataSource(response.data);
-                    setRowCount(response.data.length);
                     setSelectedRowKeys([]);
 
                     setLoading(false);
@@ -529,7 +520,7 @@ const index = () => {
                     console.log(response.data);
                     v3excelData = response.data;
                     setv3DataSource(response.data);
-                    setv3RowCount(response.data.length);
+
                     setSelectedRowKeysv3([]);
 
                     // excelData = response.data;
@@ -570,7 +561,7 @@ const index = () => {
         );
         v3excelData = res.data;
         setv3DataSource(v3excelData);
-        setv3RowCount(v3excelData.length);
+
         setV3Loading(false);
       } catch (err) {
         console.log(err.response);
@@ -733,7 +724,6 @@ const index = () => {
       ...getColumnSearchProps(
         "password_group",
         "Password Group",
-        setRowCountpassGroup,
         setDataSourcepassGroup,
         excelDatapassGroup,
         columnFilters
@@ -752,7 +742,6 @@ const index = () => {
       ...getColumnSearchProps(
         "username",
         "Username",
-        setRowCountpassGroup,
         setDataSourcepassGroup,
         excelDatapassGroup,
         columnFilters
@@ -767,7 +756,6 @@ const index = () => {
       ...getColumnSearchProps(
         "password",
         "Password",
-        setRowCountpassGroup,
         setDataSourcepassGroup,
         excelDatapassGroup,
         columnFilters
@@ -982,7 +970,7 @@ const index = () => {
       </div>
       <Modal
         title="Add Credentials"
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}
@@ -996,7 +984,7 @@ const index = () => {
         <Row style={{ width: "100%", marginTop: "10px" }}>
           <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
             <CreBtnStyleAuto onClick={showModalv1v2}>V 1 / V 2</CreBtnStyleAuto>
-            <Modal visible={v1v2isModalOpen} footer={false} closable={false}>
+            <Modal open={v1v2isModalOpen} footer={false} closable={false}>
               <form
                 onSubmit={handleSubmit}
                 style={{
@@ -1124,7 +1112,7 @@ const index = () => {
           <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
             <CreBtnStyleAuto onClick={showModalv3}>V 3</CreBtnStyleAuto>
 
-            <Modal visible={v3isModalOpen} closable={false} footer={false}>
+            <Modal open={v3isModalOpen} closable={false} footer={false}>
               <form
                 onSubmit={handleSubmitv3}
                 style={{
@@ -1275,10 +1263,11 @@ const index = () => {
                             setEncryptionProtocolv3(e.target.value)
                           }
                         >
-                          <option>DES</option>
-                          <option>AES-128</option>
-                          <option>AES-192</option>
-                          <option>AES-256</option>
+                          <option value="">Select Protocol</option>
+                          <option value="des">DES</option>
+                          <option value="AES-128">AES-128</option>
+                          <option value="AES-192">AES-192</option>
+                          <option value="AES-256">AES-256</option>
                         </Styledselect>
                       </div>
                     </InputWrapper>
@@ -1303,7 +1292,7 @@ const index = () => {
             {/* <CreBtnStyleAuto onClick={showModalwmi}>WMI</CreBtnStyleAuto> */}
             <Modal
               // title="WMI"
-              visible={wmiIsModalOpen}
+              open={wmiIsModalOpen}
               footer={false}
               closable={false}
               // onOk={handleOkwmi}

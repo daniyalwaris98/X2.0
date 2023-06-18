@@ -199,7 +199,7 @@ const ButtonCell = ({
             // setPending(false);
           }}
           style={{ background: "#66b127 !important", cursor: "no-drop" }}
-          overlay={menu}
+          menu={menu}
           icon={<DownOutlined style={{ fontSize: "14px" }} />}
         >
           <img src={Scanner} width="18px" height="18px" alt="" /> &nbsp; Scan
@@ -303,7 +303,7 @@ const ButtonCell = ({
             // setPending(false);
           }}
           style={{ background: "#66b127 !important" }}
-          overlay={menu}
+          menu={menu}
           icon={<DownOutlined style={{ fontSize: "14px" }} />}
         >
           <img src={Scanner} width="18px" height="18px" alt="" /> &nbsp; Scan

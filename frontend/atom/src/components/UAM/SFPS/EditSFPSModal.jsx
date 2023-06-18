@@ -272,7 +272,7 @@ const EditSFPSModel = (props) => {
       width="50%"
       title=""
       closable={false}
-      visible={props.isEditModalVisible}
+      open={props.isEditModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

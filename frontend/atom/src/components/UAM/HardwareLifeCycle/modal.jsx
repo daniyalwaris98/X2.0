@@ -82,10 +82,7 @@ const EditSiteModel = (props) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert(
-              `PN Code Updated Successfully`,
-              "success"
-            );
+            openSweetAlert(`PN Code Updated Successfully`, "success");
             const promises = [];
             promises.push(
               axios
@@ -183,13 +180,13 @@ const EditSiteModel = (props) => {
     e.preventDefault();
     const device = {
       // site_name,
-      pn_code:pnCode,
-      sntc_id:sntcId,
-      sw_eol_date:swEolDate,
-      sw_eos_date:swEosDate,
-      hw_eol_date:hwEolDate,
-      hw_eos_date:hwEosDate,
-      manufacturer_date:manufactureDate
+      pn_code: pnCode,
+      sntc_id: sntcId,
+      sw_eol_date: swEolDate,
+      sw_eos_date: swEosDate,
+      hw_eol_date: hwEolDate,
+      hw_eos_date: hwEosDate,
+      manufacturer_date: manufactureDate,
       // item_code:itemCode,
       // item_desc:itemDesc,
       // region,
@@ -240,7 +237,7 @@ const EditSiteModel = (props) => {
       width="50%"
       title=""
       closable={false}
-      visible={props.isEditModalVisible}
+      open={props.isEditModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >
@@ -264,7 +261,8 @@ const EditSiteModel = (props) => {
                 display: "flex",
               }}
             >
-              <img src={sites} alt="" /> &nbsp; {device ? "Edit" : "Add"} PN Code
+              <img src={sites} alt="" /> &nbsp; {device ? "Edit" : "Add"} PN
+              Code
             </p>
             <div
               style={{
@@ -333,7 +331,7 @@ const EditSiteModel = (props) => {
                 // required
               />
             </InputWrapper> */}
-             <InputWrapper>
+            <InputWrapper>
               HW EOL Date: &nbsp;&nbsp;
               <StyledInput
                 pattern={regex}
@@ -355,7 +353,6 @@ const EditSiteModel = (props) => {
             </InputWrapper>
           </Col>
           <Col span={12}>
-           
             <InputWrapper>
               SW EOS Date: &nbsp;&nbsp;
               <StyledInput

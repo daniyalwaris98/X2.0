@@ -203,7 +203,7 @@ const SiteNameModel = (props) => {
       width="75%"
       title=""
       closable={false}
-      visible={props.siteNameModalVisible}
+      open={props.siteNameModalVisible}
       footer=""
     >
       <TableStyling

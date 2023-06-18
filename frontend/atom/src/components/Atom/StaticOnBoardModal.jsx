@@ -405,7 +405,7 @@ const StaticOnBoardModal = (props) => {
       width="80%"
       title=""
       closable={false}
-      visible={props.isStaticModalVisible}
+      open={props.isStaticModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

@@ -251,7 +251,7 @@ const AddBoardModel = (props) => {
       width="70%"
       title=""
       closable={false}
-      visible={props.isModalVisible}
+      open={props.isModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >
@@ -399,8 +399,6 @@ const AddBoardModel = (props) => {
             </InputWrapper>
           </Col>
           <Col span={7} style={{ marginLeft: "1%" }}>
-       
-    
             <InputWrapper>
               serial_number:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
@@ -415,7 +413,7 @@ const AddBoardModel = (props) => {
               />
               {/* )} */}
             </InputWrapper>
-          
+
             <InputWrapper>
               status:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
@@ -459,7 +457,7 @@ const AddBoardModel = (props) => {
               />
               {/* )} */}
             </InputWrapper>
-            
+
             <InputWrapper>
               pn_code:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}

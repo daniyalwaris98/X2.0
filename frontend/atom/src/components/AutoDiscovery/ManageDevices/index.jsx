@@ -832,7 +832,7 @@ const index = () => {
       </div>
       <Modal
         title="Add Credentials"
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}
@@ -851,7 +851,7 @@ const index = () => {
             <Modal
               // title="V1/V2"
               // header={false}
-              visible={v1v2isModalOpen}
+              open={v1v2isModalOpen}
               // onOk={handleOkv1v2}
               // onCancel={handleCancelv1v2}
               footer={false}
@@ -1006,7 +1006,7 @@ const index = () => {
 
             <Modal
               // title="V3"
-              visible={v3isModalOpen}
+              open={v3isModalOpen}
               closable={false}
               footer={false}
               // onOk={handleOkv3}
@@ -1285,7 +1285,7 @@ const index = () => {
             {/* <CreBtnStyleAuto onClick={showModalwmi}>WMI</CreBtnStyleAuto> */}
             <Modal
               // title="WMI"
-              visible={wmiIsModalOpen}
+              open={wmiIsModalOpen}
               footer={false}
               closable={false}
               // onOk={handleOkwmi}

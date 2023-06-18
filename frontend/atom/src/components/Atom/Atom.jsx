@@ -79,8 +79,6 @@ const Atom = () => {
   };
 
   const openSweetAlert = (title, type, errors) => {
-    console.log("errors==============>", errors);
-
     Swal.fire({
       title,
       type,
@@ -139,10 +137,15 @@ const Atom = () => {
   };
 
   const exportSeed = async () => {
-    console.log("first");
+    const UpdatedExcelData = excelData.map((data) => {
+      delete data.inserted;
+      delete data.exception;
+      delete data.updated;
 
-    jsonToExcel(excelData);
-    // openNotification();
+      return data;
+    });
+
+    jsonToExcel(UpdatedExcelData);
   };
 
   const openNotification = () => {
@@ -185,7 +188,6 @@ const Atom = () => {
   };
 
   const jsonToExcel = (atomData) => {
-    console.log("first");
     if (rowCount !== 0) {
       let wb = XLSX.utils.book_new();
       let binaryAtomData = XLSX.utils.json_to_sheet(atomData);
@@ -362,27 +364,23 @@ const Atom = () => {
       const res = await axios.get(
         `${baseUrl}/getSiteBySiteName?site_name=${record.site_name}`
       );
-      console.log(res.data);
       setSiteData(res.data);
       setSiteNameModalVisible(true);
-      console.log("Site Name");
       setLoading(false);
     } catch (err) {
       setLoading(false);
       console.log(err);
     }
   };
+
   const showRackName = async (record) => {
-    console.log(record);
     try {
       setLoading(true);
       const res = await axios.get(
         `${baseUrl}/getRacksByRackName?rack_name=${record.rack_name}`
       );
-      console.log(res.data);
       setRackData(res.data);
       setRackNameModalVisible(true);
-      console.log("Rack Name");
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -837,7 +835,7 @@ const Atom = () => {
             <img src={hoverexp} alt="" width="15px" height="15px" />
             &nbsp; Export
           </StyledExportButton>
-          <div style={{}}>
+          <div>
             <StyledImportFileInput
               disabled={configData?.atom.pages.atom.read_only}
               accept=".csv, application/vnd.openxmlformats-officedocument.spreadsheetml.sheet, application/vnd.ms-excel"

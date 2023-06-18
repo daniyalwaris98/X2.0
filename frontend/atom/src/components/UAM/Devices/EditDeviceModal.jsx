@@ -364,7 +364,7 @@ const EditDevicesModel = (props) => {
       width="90%"
       title=""
       closable={false}
-      visible={props.isEditModalVisible}
+      open={props.isEditModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

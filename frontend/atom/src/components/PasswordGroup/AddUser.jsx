@@ -160,7 +160,7 @@ const AddAtom = (props) => {
       width="50%"
       title=""
       closable={false}
-      visible={props.isModalVisible}
+      open={props.isModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

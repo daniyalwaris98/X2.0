@@ -1224,7 +1224,7 @@ const index = () => {
         <MainTableModal
           width={"75%"}
           title="Subnet Information"
-          visible={mainModalVisible}
+          open={mainModalVisible}
           // closable={false}
           footer={false}
           onOk={handleMainOk}

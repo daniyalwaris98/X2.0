@@ -369,7 +369,7 @@ const AddRackModel = (props) => {
         width="90%"
         title=""
         closable={false}
-        visible={props.isModalVisible}
+        open={props.isModalVisible}
         footer=""
         bodyStyle={{ padding: "0" }}
       >
@@ -768,7 +768,7 @@ const AddRackModel = (props) => {
       <Modal
         width={"70%"}
         title="Add New Site"
-        visible={isSiteModalVisible}
+        open={isSiteModalVisible}
         onOk={handleOkSite}
         footer={false}
         onCancel={handleCancelSitePopup}

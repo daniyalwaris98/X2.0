@@ -187,7 +187,7 @@ const EditSiteModel = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const device = {
-      old_site_name:old_site_name,
+      old_site_name: old_site_name,
       site_name,
       region,
       site_id,
@@ -236,7 +236,7 @@ const EditSiteModel = (props) => {
       width="50%"
       title=""
       closable={false}
-      visible={props.isEditModalVisible}
+      open={props.isEditModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

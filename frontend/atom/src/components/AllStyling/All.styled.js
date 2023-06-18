@@ -144,10 +144,9 @@ export const StyledTempExportButton = styled.button`
 `;
 
 export const TableStyling = styled(Table)`
-  box-shadow: rgba(99, 99, 99, 0.2) 0px 1px 5px 0px;
-
   border: 1px solid rgba(0, 0, 0, 0.1);
   border-radius: 8px;
+  overflow: hidden;
 
   .ant-select-selection {
     background-color: #000 !important;

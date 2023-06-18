@@ -1,15 +1,18 @@
 import React, { useState, useEffect } from "react";
 import ReactEcharts from "echarts-for-react";
+import { useNavigate } from "react-router-dom";
 
 import axios, { baseUrl } from "../../utils/axios";
-import { SpinLoading } from "../AllStyling/All.styled.js";
+import { SpinLoading, TableStyling } from "../AllStyling/All.styled.js";
 import { NcmDashboardStyle } from "./NcmDashboard.style";
-import CustomTable from "../ReusableComponents/CustomTable/CustomTable";
 import Container from "../ReusableComponents/Container/Container";
+import BarChart from "../ReusableComponents/Carts/BarChart/BarChart";
+import DonutChart from "../ReusableComponents/Carts/DonutChart/DonutChart";
 
 const indexMain = () => {
   const [loading, setLoading] = useState(false);
   const [configBackupSummary, setConfigureSummary] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const serviceCalls = async () => {
@@ -27,6 +30,10 @@ const indexMain = () => {
     serviceCalls();
   }, []);
 
+  const handleChartClick = (data) => {
+    navigate("/ncm/config-data", { state: data.data });
+  };
+
   const option = {
     tooltip: {
       trigger: "item",
@@ -37,6 +44,7 @@ const indexMain = () => {
       left: "center",
     },
     color: ["#46BB7D", "#FA5B5A", "#FAAD5A"],
+
     series: [
       {
         name: "",
@@ -96,6 +104,9 @@ const indexMain = () => {
           <SpinLoading spinning={loading}>
             <div style={{ width: "100%", height: "350px" }}>
               <ReactEcharts
+                onEvents={{
+                  click: handleChartClick,
+                }}
                 option={option}
                 style={{ height: "100%", padding: "0px", paddingTop: "10px" }}
               />
@@ -103,8 +114,66 @@ const indexMain = () => {
           </SpinLoading>
         </Container>
 
+        <Container title="Configuration Change by Time">
+          <BarChart endPoint="ncmChangeSummryByTime" />
+        </Container>
+
+        <Container title="Configuration Change by Device">
+          <BarChart endPoint="ncmChangeSummryByDevice" />
+        </Container>
+
+        <Container title="Recent RCM Alarms" className="rcm-alarms-wrapper">
+          <DonutChart endPoint="ncmAlarmSummery" alertsCount={3} />
+
+          <article className="alarms-wrapper">
+            <h3 className="heading">Device Name</h3>
+
+            <article className="alarms-list">
+              <article className="alarm">
+                <h3 className="alarm-title">
+                  Device Configuration Backup failed
+                </h3>
+                <h3 className="alarm-description">
+                  NETS-DMZ-C367.nets-international
+                </h3>
+
+                <article className="time-and-date">
+                  <span className="date">28-Jan-2023</span>
+                  <span className="date">09:43:21 AM</span>
+                </article>
+              </article>
+              <article className="alarm">
+                <h3 className="alarm-title">
+                  Device Configuration Backup failed
+                </h3>
+                <h3 className="alarm-description">
+                  NETS-DMZ-C367.nets-international
+                </h3>
+
+                <article className="time-and-date">
+                  <span className="date">28-Jan-2023</span>
+                  <span className="date">09:43:21 AM</span>
+                </article>
+              </article>
+              <article className="alarm">
+                <h3 className="alarm-title">
+                  Device Configuration Backup failed
+                </h3>
+                <h3 className="alarm-description">
+                  NETS-DMZ-C367.nets-international
+                </h3>
+
+                <article className="time-and-date">
+                  <span className="date">28-Jan-2023</span>
+                  <span className="date">09:43:21 AM</span>
+                </article>
+              </article>
+            </article>
+          </article>
+        </Container>
+
         <Container title="NCM Devices Summary">
-          <CustomTable
+          <TableStyling
             columns={ncmDevicesSummryColumns}
             dataSource={ncmDevices}
           />

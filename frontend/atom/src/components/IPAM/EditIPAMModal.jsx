@@ -275,7 +275,7 @@ const EditIPAMModal = (props) => {
       width="70%"
       title=""
       closable={false}
-      visible={props.isEditModalVisible}
+      open={props.isEditModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

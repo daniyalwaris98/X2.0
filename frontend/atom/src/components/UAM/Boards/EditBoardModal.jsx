@@ -249,7 +249,7 @@ const EditBoardModel = (props) => {
       width="50%"
       title=""
       closable={false}
-      visible={props.isEditModalVisible}
+      open={props.isEditModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >
@@ -411,7 +411,6 @@ const EditBoardModel = (props) => {
             </InputWrapper>
           </Col>
           <Col span={7} style={{ marginLeft: "1%" }}>
-           
             <InputWrapper>
               Serial Number:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
@@ -426,7 +425,7 @@ const EditBoardModel = (props) => {
               />
               {/* )} */}
             </InputWrapper>
-         
+
             <InputWrapper>
               Status:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
@@ -470,7 +469,7 @@ const EditBoardModel = (props) => {
               />
               {/* )} */}
             </InputWrapper>
-         
+
             <InputWrapper>
               PN Code:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}

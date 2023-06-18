@@ -2,7 +2,7 @@ import styled from "styled-components";
 import { FlexboxStyle, Poisitioning } from "../../../styles/commonStyle";
 
 export const ChatBotStyle = styled.article`
-  ${Poisitioning({ position: "fixed", right: "15px", bottom: "130px" })};
+  ${Poisitioning({ position: "fixed", right: "0px", bottom: "80px" })};
 
   .chatbot-icon {
     ${Poisitioning({ position: "absolute", right: "20px" })}

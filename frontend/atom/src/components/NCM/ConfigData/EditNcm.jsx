@@ -148,7 +148,7 @@ const EditSubnet = (props) => {
         width="40%"
         title=""
         closable={false}
-        visible={props.isEditModalVisible}
+        open={props.isEditModalVisible}
         footer=""
         bodyStyle={{ padding: "0" }}
       >
@@ -232,7 +232,8 @@ const EditSubnet = (props) => {
                 </div>
               </InputWrapper>
               <InputWrapper>
-                Vendor: &nbsp;<span style={{ color: "red" }}>*</span>
+                Vendor:
+                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
                 &nbsp;&nbsp;
                 <div className="select_type">
                   <Styledselect

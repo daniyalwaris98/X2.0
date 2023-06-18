@@ -805,7 +805,7 @@ const index_Main = () => {
 
       <Modal
         title="Possible Reasons For Alert"
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}

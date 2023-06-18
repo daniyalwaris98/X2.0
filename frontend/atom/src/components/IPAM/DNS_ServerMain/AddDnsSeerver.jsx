@@ -182,7 +182,7 @@ const AddDNSModel = (props) => {
       title=""
       centered
       closable={false}
-      visible={props.isModalVisible}
+      open={props.isModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >

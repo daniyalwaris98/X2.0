@@ -156,7 +156,7 @@ const EditAtom = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const device = {
-     network_id,
+      network_id,
       network_name: networkName,
       subnet,
       no_of_devices: noOfDevices,
@@ -297,7 +297,7 @@ const EditAtom = (props) => {
       width="50%"
       title=""
       closable={false}
-      visible={props.isEditModalVisible}
+      open={props.isEditModalVisible}
       footer=""
       bodyStyle={{ padding: "0" }}
     >
@@ -383,7 +383,7 @@ const EditAtom = (props) => {
                 value={subnet}
                 onChange={(e) => setSubnet(e.target.value)}
                 readOnly
-                style={{cursor:"no-drop"}}
+                style={{ cursor: "no-drop" }}
                 //   required
               />
               {/* )

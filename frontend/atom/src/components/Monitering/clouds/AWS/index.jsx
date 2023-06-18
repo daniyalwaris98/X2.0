@@ -1216,31 +1216,31 @@ const index = () => {
       key: "lb_name",
       render: (text, record) => (
         <p
-        onClick={async () => {
-          // setMainLoading(true);
-          // const res = await axios.post(baseUrl + "/getEC2MonitoringData", {
-          //   instance_id: record.instance_id,
-          // });
+          onClick={async () => {
+            // setMainLoading(true);
+            // const res = await axios.post(baseUrl + "/getEC2MonitoringData", {
+            //   instance_id: record.instance_id,
+            // });
 
-          // console.log("getMonitoringDevicesCards", res);
+            // console.log("getMonitoringDevicesCards", res);
 
-          navigate("/monitoring/cloud/elb-dashboard-data", {
-            state: {
-              lb_arn: record.lb_arn,
-              // res: res.data,
-            },
-          });
-          // setMainLoading(false);
-        }}
-        style={{
-          color: "#66B127",
-          textDecoration: "underline",
-          fontWeight: "400",
-          textAlign: "left",
-          // color: "blue",
-          cursor: "pointer",
-          paddingTop: "16px",
-        }}
+            navigate("/monitoring/cloud/elb-dashboard-data", {
+              state: {
+                lb_arn: record.lb_arn,
+                // res: res.data,
+              },
+            });
+            // setMainLoading(false);
+          }}
+          style={{
+            color: "#66B127",
+            textDecoration: "underline",
+            fontWeight: "400",
+            textAlign: "left",
+            // color: "blue",
+            cursor: "pointer",
+            paddingTop: "16px",
+          }}
           // style={{ textAlign: "left", marginLeft: "12px", paddingTop: "16px" }}
         >
           {text}
@@ -1333,9 +1333,7 @@ const index = () => {
           {text === "Disabled" ? (
             <>
               <button
-                onClick={() =>
-                  EnableELBMonitoring(record.lb_arn, "Enabled")
-                }
+                onClick={() => EnableELBMonitoring(record.lb_arn, "Enabled")}
                 style={{
                   backgroundColor: "#6ab127",
                   color: "#fff",
@@ -1353,9 +1351,7 @@ const index = () => {
           {text === "Enabled" ? (
             <>
               <button
-                onClick={() =>
-                  EnableELBMonitoring(record.lb_arn, "Disabled")
-                }
+                onClick={() => EnableELBMonitoring(record.lb_arn, "Disabled")}
                 style={{
                   backgroundColor: "#DC3938",
                   color: "#fff",
@@ -1593,16 +1589,20 @@ const index = () => {
       render: (text, record) => (
         <div style={{ display: "flex", justifyContent: "center" }}>
           <button
-          disabled={record.status===false}
+            disabled={record.status === false}
             style={{
-              backgroundColor: record.status===false?"rgba(255,0,0,0.5)":"transparent",
-              border: record.status===false?"1px solid rgb(255,0,0)":"1px solid #66B127",
+              backgroundColor:
+                record.status === false ? "rgba(255,0,0,0.5)" : "transparent",
+              border:
+                record.status === false
+                  ? "1px solid rgb(255,0,0)"
+                  : "1px solid #66B127",
               width: "100px",
               borderRadius: "8px",
               height: "30px",
               cursor: "pointer",
               fontWeight: 500,
-              cursor:record.status===false?"no-drop":"pointer"
+              cursor: record.status === false ? "no-drop" : "pointer",
             }}
             onClick={() => {
               navigate("/monitoring/cloud/cloudSummary", {
@@ -1851,7 +1851,7 @@ const index = () => {
         width={1000}
         title="AWS"
         footer={false}
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOkReload}
         onCancel={handleCancelReload}
       >

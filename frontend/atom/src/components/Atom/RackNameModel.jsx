@@ -339,7 +339,7 @@ const RackNameModel = (props) => {
       width="75%"
       title=""
       closable={false}
-      visible={props.rackNameModalVisible}
+      open={props.rackNameModalVisible}
       footer=""
     >
       <TableStyling

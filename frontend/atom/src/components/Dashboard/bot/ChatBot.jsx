@@ -50,27 +50,7 @@ const ChatBot = () => {
       .catch((err) => {
         console.log(err);
       });
-
-    // axios
-    //   .get(
-    //     "https://192.168.10.224:5001" + "/monetx/user/query/" + inputMsg,
-    //     header
-
-    //     // header
-    //   )
-    //   .then((respose) => {
-    //     msg.push({ text: respose.data, own: false });
-    //     setMsg(msg);
-    //     setShow(true);
-    //     setLoading(false);
-
-    //     setShowDemoMsg(false);
-    //   });
   };
-
-  useEffect(() => {
-    console.log(msg);
-  }, [msg]);
 
   return (
     <ChatBotStyle show={show}>

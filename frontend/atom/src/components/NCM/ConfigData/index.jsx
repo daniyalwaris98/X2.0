@@ -1,5 +1,11 @@
 import React, { useState, useEffect, useRef } from "react";
-import { Col, Row, Table, notification, Radio, Modal } from "antd";
+import { Col, Row, Table, notification, Radio, Progress } from "antd";
+import { useLocation } from "react-router-dom";
+import { EditOutlined } from "@ant-design/icons";
+import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
+import { saveAs } from "file-saver";
+
 import { columnSearch } from "../../../utils";
 import axios, { baseUrl } from "../../../utils/axios";
 import rcs from "../assets/rcs.svg";
@@ -9,7 +15,7 @@ import EditModal from "./EditNcm.jsx";
 import JSZip from "jszip";
 import active from "../assets/active.svg";
 import inactive from "../assets/inactive.svg";
-import { EditOutlined } from "@ant-design/icons";
+
 import {
   DeleteButton,
   MainTableModal,
@@ -23,10 +29,11 @@ import {
   BackupButton,
   DownloadButton,
 } from "../../AllStyling/All.styled.js";
-import Swal from "sweetalert2";
-import * as XLSX from "xlsx";
-import { saveAs } from "file-saver";
+
 import { devices } from "../../../data/globalData";
+import Container from "../../ReusableComponents/Container/Container";
+import { ConfigDataStyle } from "./ConfigData.style";
+import VerticalBarChart from "../../ReusableComponents/Carts/VerticalBarChart/VerticalBarChart";
 
 let excelData = [];
 let columnFilters = {};
@@ -43,7 +50,6 @@ const indexMain = () => {
   let [dataSourceOfDeviceLoading, setDataSourceOfDeviceLoading] =
     useState(false);
   const [deviceName, setDeviceName] = useState("");
-  const [configData, setConfigData] = useState(null);
 
   const [ipAddress, setIpAddress] = useState("");
   const [activeState, setActiveState] = useState("Active");
@@ -66,6 +72,27 @@ const indexMain = () => {
   const [loading, setLoading] = useState(false);
   const [mainTableloadingData, setmainTableloadingData] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [severityData, setSeverityData] = useState([]);
+
+  const location = useLocation(); // for future use to filter out table
+  // console.log("location=========>", location.state);
+
+  useEffect(() => {
+    getSeverityData();
+  }, []);
+
+  const getSeverityData = async () => {
+    await axios
+      .get(baseUrl + "/ncmBackupSummeryDashboard")
+      .then((res) => {
+        res.data[0].color = "#DC3938";
+        res.data[1].color = "#2D9CDB";
+        res.data[2].color = "#4BE58C";
+
+        setSeverityData(res.data);
+      })
+      .catch((err) => console.log(err));
+  };
 
   const onValueChange = (e) => {
     setValue(e.target.value);
@@ -318,11 +345,8 @@ const indexMain = () => {
     deviceSelectedRowKeys,
     onChange: onDeviceSelectChange,
     selection: Table.SELECTION_ALL,
-
-    getCheckboxProps: () => ({
-      disabled: configData?.monitering.pages.device.read_only,
-    }),
   };
+
   const handleMainOk = () => {
     setMainModalVisible(false);
   };
@@ -341,7 +365,6 @@ const indexMain = () => {
       .then((response) => {
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
-          console.log(response?.response?.data);
           inputRef.current.value = "";
 
           setLoading(false);
@@ -392,7 +415,8 @@ const indexMain = () => {
       }
     };
     serviceCalls();
-  }, [rowCount]);
+  }, []);
+
   const rowSelection = {
     columnWidth: 140,
 
@@ -405,6 +429,7 @@ const indexMain = () => {
       status: record.status,
     }),
   };
+
   const deleteRow = async () => {
     if (selectedRowKeys.length > 0) {
       try {
@@ -446,7 +471,9 @@ const indexMain = () => {
       openSweetAlert(`No Device Selected`, "error");
     }
   };
+
   const [backupLoading, setBackupLoading] = useState(false);
+
   const backedUp = async () => {
     try {
       setBackupLoading(true);
@@ -473,12 +500,14 @@ const indexMain = () => {
       console.log(err);
     }
   };
+
   let getColumnSearchProps = columnSearch(
     searchText,
     setSearchText,
     searchedColumn,
     setSearchedColumn
   );
+
   const columns = [
     {
       title: "",
@@ -486,27 +515,13 @@ const indexMain = () => {
       width: "2%",
 
       render: (text, record) => (
-        <>
-          {configData?.monitering.pages.device.read_only ? (
-            <>
-              <a disabled>
-                <EditOutlined
-                  style={{ paddingRight: "50px", color: "#66A111" }}
-                />
-              </a>
-            </>
-          ) : (
-            <a
-              onClick={() => {
-                edit(record);
-              }}
-            >
-              <EditOutlined
-                style={{ paddingRight: "50px", color: "#66A111" }}
-              />
-            </a>
-          )}
-        </>
+        <a
+          onClick={() => {
+            edit(record);
+          }}
+        >
+          <EditOutlined style={{ paddingRight: "50px", color: "#66A111" }} />
+        </a>
       ),
     },
     {
@@ -723,7 +738,7 @@ const indexMain = () => {
       ),
 
       ...getColumnSearchProps(
-        "Vendor",
+        "vendor",
         "Vendor",
         setRowCount,
         setDataSource,
@@ -884,8 +899,6 @@ const indexMain = () => {
           .then((response) => {
             openSweetAlert(`Device Added Successfully`, "success");
 
-            console.log(deviceSelectedRowKeys);
-
             const promises = [];
             promises.push(
               axios
@@ -919,6 +932,7 @@ const indexMain = () => {
   };
 
   const [tableName, setTableName] = useState("Add Device");
+
   const showTable = (myDataTable) => {
     if (myDataTable === "Add Device") {
       setTableName(myDataTable);
@@ -928,6 +942,36 @@ const indexMain = () => {
       setTableName("Auto Discovery");
     }
   };
+
+  const handleDownloadBulkConfig = async () => {
+    setDownLoadLoading(true);
+
+    try {
+      setDownLoadLoading(true);
+      const res = await axios.post(
+        baseUrl + "/downloadBulkConfiguration",
+        selectedRowKeys
+      );
+
+      if (res?.response?.status == 500) {
+        openSweetAlert(res?.response?.data, "error");
+        setDownLoadLoading(false);
+      } else {
+        var zip = new JSZip();
+        for (let i = 0; i < res?.data.length; i++) {
+          zip.file(`${res.data[i].name}.cfg`, `${res.data[i].value}`);
+        }
+        zip.generateAsync({ type: "blob" }).then(function (blob) {
+          saveAs(blob, "configurations.zip");
+        });
+
+        setDownLoadLoading(false);
+      }
+    } catch (err) {
+      setDownLoadLoading(false);
+    }
+  };
+
   let [password_group, setPassword_group] = useState("");
   const [passwordArray, setPasswordArray] = useState([]);
 
@@ -962,69 +1006,50 @@ const indexMain = () => {
   );
 
   return (
-    <div
-      style={{
-        marginLeft: "25px",
-        marginRight: "25px",
-        marginBottom: "15px",
-      }}
-    >
-      <br />
-      <br />
+    <ConfigDataStyle>
       <div style={{ marginBottom: "15px" }}>
-        <div>
+        <article className="graphs-wrapper">
+          <Container className="sort-by-soverity" title="Sort By Severity">
+            {severityData.map((data, index) => {
+              const customFormatter = (percent) => percent;
+              return (
+                <article className="stages" key={index}>
+                  <Progress
+                    type="dashboard"
+                    percent={data.value}
+                    format={customFormatter}
+                    strokeColor={data.color}
+                  />
+                  <h3 className="heading" style={{ color: data.color }}>
+                    {data.name}
+                  </h3>
+                </article>
+              );
+            })}
+          </Container>
+          <Container className="device-type" title="Device Type">
+            <VerticalBarChart />
+          </Container>
+        </article>
+
+        <div
+          style={{
+            display: "flex",
+            alignItems: "center",
+            justifyContent: "space-between",
+            marginBottom: "50px",
+          }}
+        >
           <div style={{ marginTop: "7px", float: "left", display: "flex" }}>
             {selectedRowKeys.length > 0 ? (
               <div style={{ display: "flex" }}>
                 <SpinLoading spinning={backupLoading}>
                   <BackupButton onClick={backedUp}>Backup</BackupButton>
-                </SpinLoading>{" "}
+                </SpinLoading>
                 &nbsp;&nbsp;
                 <SpinLoading spinning={downLoadLoading}>
                   <DownloadButton
-                    onClick={async () => {
-                      setDownLoadLoading(true);
-
-                      try {
-                        setDownLoadLoading(true);
-                        const res = await axios.post(
-                          baseUrl + "/downloadBulkConfiguration",
-                          selectedRowKeys
-                        );
-                        // setRightSide(true);
-
-                        if (res?.response?.status == 500) {
-                          openSweetAlert(res?.response?.data, "error");
-                          console.log(res?.response?.data);
-                          setDownLoadLoading(false);
-                        } else {
-                          // openSweetAlert(res?.data, "success");
-
-                          console.log(res?.data);
-
-                          var zip = new JSZip();
-                          for (let i = 0; i < res?.data.length; i++) {
-                            console.log(res.data[i].name);
-                            zip.file(
-                              `${res.data[i].name}.cfg`,
-                              `${res.data[i].value}`
-                            );
-                          }
-                          zip
-                            .generateAsync({ type: "blob" })
-                            .then(function (blob) {
-                              saveAs(blob, "configurations.zip");
-                            });
-
-                          console.log("asd");
-
-                          setDownLoadLoading(false);
-                        }
-                      } catch (err) {
-                        console.log(err.response);
-                        setDownLoadLoading(false);
-                      }
-                    }}
+                    onClick={handleDownloadBulkConfig}
                     style={{
                       cursor: "pointer",
                     }}
@@ -1064,23 +1089,23 @@ const indexMain = () => {
             </AddButtonStyle>
           </div>
         </div>
-        <br />
-        <br />
-        <br />
-        <SpinLoading spinning={mainTableloadingData}>
-          <TableStyling
-            rowSelection={rowSelection}
-            scroll={{ x: 2000 }}
-            pagination={{ pageSize: 10 }}
-            rowKey="ip_address"
-            columns={columns}
-            dataSource={netWorkConfigData}
-          />
-        </SpinLoading>
+
+        <article className="table-wrapper">
+          <SpinLoading spinning={mainTableloadingData}>
+            <TableStyling
+              rowSelection={rowSelection}
+              scroll={{ x: 2000 }}
+              pagination={{ pageSize: 10 }}
+              rowKey="ip_address"
+              columns={columns}
+              dataSource={netWorkConfigData}
+            />
+          </SpinLoading>
+        </article>
       </div>
       <MainTableModal
         width={"75%"}
-        visible={mainModalVisible}
+        open={mainModalVisible}
         footer={false}
         onOk={handleMainOk}
         onCancel={handleMainCancel}
@@ -1308,9 +1333,7 @@ const indexMain = () => {
                                       >
                                         {passwordArray.map((item, index) => {
                                           return (
-                                            <>
-                                              <option>{item}</option>
-                                            </>
+                                            <option key={index}>{item}</option>
                                           );
                                         })}
                                       </StyledselectIpam>
@@ -1327,9 +1350,9 @@ const indexMain = () => {
                                     Vendor
                                   </label>
                                   &nbsp;
-                                  <span style={{ color: "red", float: "left" }}>
+                                  {/* <span style={{ color: "red", float: "left" }}>
                                     *
-                                  </span>
+                                  </span> */}
                                   <div className="select_t">
                                     <StyledselectIpam
                                       style={{
@@ -1338,7 +1361,6 @@ const indexMain = () => {
                                         border: "1px solid #cfcfcf",
                                         borderRadius: "3px",
                                       }}
-                                      required
                                       onChange={(e) =>
                                         setVendor(e.target.value)
                                       }
@@ -1605,6 +1627,7 @@ const indexMain = () => {
 
       {isEditModalVisible && (
         <EditModal
+          Modal
           style={{ padding: "0px" }}
           isEditModalVisible={isEditModalVisible}
           setIsEditModalVisible={setIsEditModalVisible}
@@ -1616,7 +1639,7 @@ const indexMain = () => {
           centered={true}
         />
       )}
-    </div>
+    </ConfigDataStyle>
   );
 };
 

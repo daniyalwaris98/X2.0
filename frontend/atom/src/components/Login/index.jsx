@@ -269,7 +269,7 @@ const index = () => {
             <Form.Item>
               <button
                 type="primary"
-                htmlType="submit"
+                htmltype="submit"
                 className="login-form-button"
               >
                 Log in
@@ -277,9 +277,9 @@ const index = () => {
             </Form.Item>
           </Form>
         </div>
-        <picutre className="login-gif-wrapper">
-          <img src={illustration} alt="" />
-        </picutre>
+        <picture className="login-gif-wrapper">
+          <img src={illustration} alt="Montex Gif" />
+        </picture>
       </article>
     </LoginContainer>
   );

@@ -3,16 +3,12 @@ import {
   Route,
   useLocation,
   useNavigate,
-  useHistory,
   Navigate,
 } from "react-router-dom";
 import React, { useEffect, useState } from "react";
 import Navigation from "./Navigation";
 import Atom from "../Atom";
 import PasswordGroup from "../PasswordGroup";
-import Dashboard from "../Dashboard";
-import { PropertySafetyFilled } from "@ant-design/icons";
-import FirstNavBar from "../FirstNavBar";
 import Login from "../Login";
 import UAM from "../UAM";
 import UAMData from "../UAM/UamData";
@@ -20,33 +16,26 @@ import Sites from "../UAM/Sites";
 import Racks from "../UAM/Racks";
 import Devices from "../UAM/Devices";
 import Boards from "../UAM/Boards";
-import SubBoards from "../UAM/SubBoards";
 import SFPS from "../UAM/SFPS";
 import Licensce from "../UAM/Licensce";
 import Aps from "../UAM/Aps";
 
 import Admin from "../Admin";
 import Subnet from "../IPAM/Subnet";
-// import ShowMember from "../Admin/ShowMember";
 import Role from "../Admin/Role";
 import FailedDevices from "../Admin/FailedDevices";
 import EndUser from "../EndUser";
 import NetworkMap from "../NetworkMapping";
 import MyFirst from "../FirstNavBar/MyFirst.jsx";
 import IPAM from "../IPAM/index.jsx";
-import Ipam_Main from "../IPAM/Ipam_Main";
 import Subnet_Main from "../IPAM/Subnet/Subnet_main.jsx";
-import Dhcp_servers from "../IPAM/DHCP_Server";
 import IpamDevices from "../IPAM/Devices";
-import Dhcp_scope from "../IPAM/DHCP_Scope";
 import Dns_servers from "../IPAM/DNS_Servers";
 import Dns_zone from "../IPAM/DNS_Zone";
 import Monitering from "../Monitering";
 import Device_Subnet from "../IPAM/Device_Subnet";
-import DCM from "../DCM";
 import AtomMain from "../Atom/Atom";
 import AdminShowMember from "../Admin/ShowMem";
-import { UserContext } from "../Context/UserContext";
 import PageNotFound from "../PageNotFound";
 import IpamDashboard from "../IPAM/Dashboard";
 import IP_Details from "../IPAM/Subnet/IP_Details";
@@ -61,8 +50,6 @@ import Router from "../Monitering/Network/Router";
 import RouterInterface from "../Monitering/Network/Router/Interface.jsx";
 import Firewall from "../Monitering/Network/FireWalls";
 import FireWallInterface from "../Monitering/Network/FireWalls/Interface.jsx";
-import Printers from "../Monitering/Network/Printers";
-import PrintersInterface from "../Monitering/Network/Printers/Interface.jsx";
 import Switches from "../Monitering/Network/Switches";
 import SwitchesInterface from "../Monitering/Network/Switches/Interface.jsx";
 import Wireless from "../Monitering/Network/Wireless";
@@ -86,13 +73,10 @@ import MoniteringSummary from "../MonitoringSummary";
 import MainMoniteringSummary from "../MonitoringSummary/index_Main.jsx";
 import DeviceSummary from "../MonitoringSummary/Summary";
 
-import MoniteringSummaryInterface from "../MonitoringSummaryInterfaces";
 import MainMoniteringSummaryInterface from "../MonitoringSummaryInterfaces/index_Main.jsx";
-import InterfaceSummary from "../MonitoringSummaryInterfaces/Summary";
 import MoniteringAlert from "../Monitering/Alert";
 import MoniteringCredentials from "../Monitering/Credentials";
 import MoniteringInterface from "../MonitoringSummaryInterfaces/index_Main.jsx";
-import Bot from "../Dashboard/bot/ChatBot";
 import AddNetwork from "../AutoDiscovery/Network";
 
 import CloudDashboard from "../Monitering/CloudDashboard";
@@ -134,75 +118,49 @@ import NewDashboard from "../NewDashboard";
 const SecondNavBar = (props) => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
-  // const history = useHistory();
 
   const [configData, setConfigData] = useState(null);
   const [token, setToken] = useState("");
-  // let configData;
-  const [userRole, setUserRole] = useState(null);
+
   useEffect(() => {
     if (localStorage.getItem("user") !== null) {
       let user = localStorage.getItem("user");
       user = JSON.parse(user);
 
-      setUserRole(user?.user_role);
       const test = user?.monetx_configuration;
 
       let t = eval(test);
       let config = JSON.parse(t);
       setConfigData(config);
     }
-
-    // let userAllData = localStorage.getItem("user");
-    // let config = localStorage.getItem("monetx_configuration");
-    // setUserData(JSON.parse(userAllData));
-    // setConfigData(JSON.parse(config));
-    // console.log(JSON.parse(config));
   }, []);
-  // const [loading, setLoading] = useState(1);
 
-  // useEffect(() => {
-  //   // debugger;
-  //   if (loading === 1) {
-  //     window.location.reload();
-  //     // console.log("page is loading");
-  //     // setLoading(loading + 1);
-  //   } else {
-  //     console.log("page already loaded");
-  //   }
-  // }, [token]);
   useEffect(() => {
     let mainkey = localStorage.getItem("monetx_token");
     if (mainkey) {
       setToken(mainkey);
-      // window.location.reload();
     } else {
-      // navigate("/login");
       navigate("/login");
     }
-    // console.log(JSON.parse(config));
   }, [pathname]);
-  // console.log(configData?.uam.view);
-  // console.log(configData);
 
+  const data = localStorage.getItem("user");
   const [keyResp, setKeyResp] = useState("");
   useEffect(() => {
-    const licenseData = async () => {
-      const Data = localStorage.getItem("user");
-      const a = JSON.parse(Data);
-      console.log(a.user_name);
+    if (data !== null) {
+      const licenseData = async () => {
+        const a = JSON.parse(data);
 
-      const res = await axios.post(baseUrl + "/licenseValidationAfterLogin", {
-        username: a.user_name,
-      });
-      setKeyResp(res.data);
-    };
-    licenseData();
-  }, [keyResp]);
+        const res = await axios.post(baseUrl + "/licenseValidationAfterLogin", {
+          username: a.user_name,
+        });
+        setKeyResp(res.data);
+      };
+      licenseData();
+    }
+  }, [keyResp, data]);
 
   useEffect(() => {
-    // console.clear();
-    console.log("keyrResponsee by effect ", keyResp);
     if (keyResp !== "" && keyResp !== "TRUE") {
       navigate("/license-renewal");
     }
@@ -215,21 +173,15 @@ const SecondNavBar = (props) => {
     }
   }, [token]);
 
-  var subscriptionToken = "";
   return (
     <div>
-      {/* <UserContext.Provider value={userData}> */}
       {pathname !== "/login" && (
         <>
           <MyFirst />
           <Navigation />
         </>
       )}
-      {/* {
-  subscriptiionToken!==""?
-  
-} */}
-      {/* {subscriptionToken === "" ? ( */}
+
       <Routes>
         {token ? (
           keyResp !== "TRUE" && keyResp !== "" ? (
@@ -251,7 +203,6 @@ const SecondNavBar = (props) => {
                 element={<Navigate to="/" replace />}
               />
               <Route path="/" element={<NewDashboard />} />
-              {/* <Route path="/dashboard-new" element={<NewDashboard />} /> */}
 
               <Route path="/license-key" element={<LicenseKey />} />
 
@@ -264,14 +215,7 @@ const SecondNavBar = (props) => {
                   ) : (
                     <Route path="main" element={<></>} />
                   )}
-                  {/* {configData?.monitering.view ? (
-                    <Route
-                      path="/monitoring/main"
-                      element={<Main_Monitoring />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )} */}
+
                   {configData?.monitering.pages.device.view ? (
                     <Route
                       path="/monitoring/device"
@@ -329,22 +273,7 @@ const SecondNavBar = (props) => {
                   ) : (
                     <Route path="main" element={<></>} />
                   )}
-                  {/* {configData?.monitering.pages.switches.view ? (
-                <Route
-                  path="/monitoring/network/printers"
-                  element={<Printers />}
-                />
-              ) : (
-                <Route path="main" element={<></>} />
-              )}
-              {configData?.ipam.view ? (
-                <Route
-                  path="/monitoring/network/printers-interface"
-                  element={<PrintersInterface />}
-                />
-              ) : (
-                <Route path="main" element={<></>} />
-              )} */}
+
                   {configData?.monitering.pages.firewall.view ? (
                     <Route
                       path="/monitoring/network/firewall"
@@ -472,73 +401,6 @@ const SecondNavBar = (props) => {
                   ) : (
                     <Route path="main" element={<></>} />
                   )}
-                  {/* {configData?.ipam.pages.subnet.view ? (
-                <Route path="/monitoring/network" element={<NetworkMain />}>
-                  {configData?.ipam.view ? (
-                    <Route path="main" element={<NetworkMain />} />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )}
-                  {configData?.ipam.view ? (
-                    <Route
-                      path="/monitoring/network/main"
-                      element={<NetworkMain />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )}
-                  {configData?.ipam.view ? (
-                    <Route
-                      path="/monitoring/network/interface"
-                      element={<Subnet_Main />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )}
-                  {configData?.ipam.view ? (
-                    <Route
-                      path="/monitoring/network/router"
-                      element={<IP_Details />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )}
-                  {configData?.ipam.view ? (
-                    <Route
-                      path="/monitoring/network/switches"
-                      element={<Discovered_subnet />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )}
-                  {configData?.ipam.view ? (
-                    <Route
-                      path="/monitoring/network/printers"
-                      element={<Ip_history />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )}
-                  {configData?.ipam.view ? (
-                    <Route
-                      path="/monitoring/network/firewall"
-                      element={<Ip_history />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )}
-                  {configData?.ipam.view ? (
-                    <Route
-                      path="/monitoring/network/wireless"
-                      element={<Ip_history />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )}
-                </Route>
-              ) : (
-                <Route path="main" element={<></>} />
-              )} */}
                 </Route>
               ) : null}
 
@@ -625,38 +487,6 @@ const SecondNavBar = (props) => {
               ) : (
                 <Route path="main" element={<></>} />
               )}
-
-              {/* {configData?.atom.view ? (
-            <Route
-              path="monitoringsummaryinterface"
-              element={<MoniteringSummaryInterface />}
-            >
-              {configData?.atom.pages.atom.view ? (
-                <Route
-                  path="main"
-                  element={<MainMoniteringSummaryInterface />}
-                />
-              ) : (
-                <Route path="main" element={<></>} />
-              )}
-              {configData?.atom.pages.atom.view ? (
-                <Route
-                  path="/monitoringsummaryinterface/main"
-                  element={<MainMoniteringSummaryInterface />}
-                />
-              ) : (
-                <Route path="main" element={<></>} />
-              )}
-              {configData?.atom.pages.atom.view ? (
-                <Route
-                  path="/monitoringsummaryinterface/device-summary"
-                  element={<InterfaceSummary />}
-                />
-              ) : (
-                <Route path="main" element={<></>} />
-              )}
-            </Route>
-          ) : null} */}
 
               {configData?.atom.view ? (
                 <Route path="atom" element={<Atom />}>
@@ -753,11 +583,7 @@ const SecondNavBar = (props) => {
                   ) : (
                     <Route path="main" element={<></>} />
                   )}
-                  {/* {configData?.uam.pages.subboards.view ? (
-                    <Route path="stackswitches" element={<SubBoards />} />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )} */}
+
                   {configData?.uam.pages.sfps.view ? (
                     <Route path="sfps" element={<SFPS />} />
                   ) : (
@@ -800,16 +626,6 @@ const SecondNavBar = (props) => {
                     <Route path="main" element={<></>} />
                   )}
 
-                  {/* {configData?.ipam.pages.dhcp_servers.view ? (
-                <Route path="/ipam/dhcp_servers" element={<Dhcp_servers />} />
-              ) : (
-                <Route path="main" element={<></>} />
-              )}
-              {configData?.ipam.pages.dhcp_scope.view ? (
-                <Route path="/ipam/dhcp_scope" element={<Dhcp_scope />} />
-              ) : (
-                <Route path="main" element={<></>} />
-              )}  */}
                   {configData?.ipam.pages.dns_server.view ? (
                     <Route path="/ipam/dns_servers" element={<Dns_servers />} />
                   ) : (
@@ -900,14 +716,6 @@ const SecondNavBar = (props) => {
                       ) : (
                         <Route path="main" element={<></>} />
                       )}
-                      {/* {configData?.ipam.pages.discover_subnet.view ? (
-                    <Route
-                      path="/ipam/vip/load-balancer"
-                      element={<Discovered_subnet />}
-                    />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )} */}
                     </Route>
                   ) : (
                     <Route path="main" element={<></>} />
@@ -959,15 +767,8 @@ const SecondNavBar = (props) => {
                   )}
                 </Route>
               ) : null}
-              {/* <Route path="/dcm" element={<DCM />} /> */}
               {configData?.atom.pages.atom.view ? (
-                <Route path="end-user" element={<EndUser />}>
-                  {/* {configData?.admin.view ? (
-                  <Route path="main" element={<EndUser />} />
-                ) : (
-                  <Route path="main" element={<></>} />
-                )} */}
-                </Route>
+                <Route path="end-user" element={<EndUser />}></Route>
               ) : null}
               {configData?.admin.view ? (
                 <Route path="admin" element={<Admin />}>
@@ -997,11 +798,6 @@ const SecondNavBar = (props) => {
                   ) : (
                     <Route path="main" element={<></>} />
                   )}
-                  {/* {configData?.admin.pages.failed_devices.view ? (
-                    <Route path="/admin/enduser" element={<EndUser />} />
-                  ) : (
-                    <Route path="main" element={<></>} />
-                  )} */}
                 </Route>
               ) : null}
               <Route path="*" element={<PageNotFound />} />

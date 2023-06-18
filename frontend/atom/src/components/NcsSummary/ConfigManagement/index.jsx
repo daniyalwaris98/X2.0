@@ -1,87 +1,45 @@
 import React, { useState, useEffect, useRef } from "react";
 import styled from "styled-components";
 
-import {
-  Card,
-  Col,
-  Row,
-  Table,
-  Divider,
-  Input,
-  Button,
-  Dropdown,
-  Space,
-  message,
-  Menu,
-  Modal,
-} from "antd";
+import { Col, Row, Input, Dropdown, Menu, Modal } from "antd";
 import "./glasseffect.css";
 import { saveAs } from "file-saver";
-// import { Diff, diffChars, diffWords } from "diff";
-import ReactSpeedometer from "react-d3-speedometer";
 import axios, { baseUrl } from "../../../utils/axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
 import ReactHtmlParser from "react-html-parser";
 import {
-  DoubleLeftOutlined,
   DownOutlined,
-  SmileOutlined,
-  UserOutlined,
   CaretRightOutlined,
   CaretLeftOutlined,
   DeleteTwoTone,
 } from "@ant-design/icons";
 
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import "../../../App.css";
 import {
-  MainTableFailedDevices,
-  MainTableFailedDevicesTitle,
   TableStyling,
   SummaryDevices,
   MainTitle,
   SpinLoading,
-  ColRowNumberStyle,
-  StyleCmdInput,
   Styledselect,
   InputWrapper,
 } from "../../AllStyling/All.styled.js";
-// import summary from "./assets/summary.svg";
-// import inter from "./assets/interface.svg";
+
 import { columnSearch } from "../../../utils";
 import Highlighter from "react-highlight-words";
-import { Markup } from "interweave";
+import { ConfigManagmentStyle } from "./ConfigManagment.style";
+
 let excelData = [];
 let excelDataRestore = [];
 let columnFilters = {};
+
 const index_Main = () => {
-  const navigate = useNavigate();
   const data = useLocation();
-
-  const inputRef = useRef(null);
   const targetRef = useRef(null);
-
-  function handleFind() {
-    const inputValue = inputRef.current.value;
-    const targetElement = targetRef.current.querySelector(
-      `[data-name='${inputValue}']`
-    );
-
-    if (targetElement) {
-      targetElement.scrollIntoView({ behavior: "smooth" });
-    }
-  }
   const findInput = useRef(null);
+  const ipAddress = data?.state?.ip_address;
+
+  console.log("COnfig data================>>", data);
 
   const handleFindNext = () => {
     const searchTerm = findInput.current.value;
@@ -92,52 +50,29 @@ const index_Main = () => {
     const searchTerm = findInput.current.value;
     window.find(searchTerm, false, true, false, false, true, true);
   };
-  console.log(data);
+
   const [loading, setLoading] = useState(false);
-  const [loadingCompareDate, setLoadingCompareDate] = useState(false);
   const [compareSection, setCompareSection] = useState(false);
   const [rightSide, setRightSide] = useState(false);
   const [tableClickLoading, setTableClickLoading] = useState(false);
   const [restoreLoading, setRestoreLoading] = useState(false);
-  const [ipAddress, setIpAddress] = useState(data?.state?.ip_address);
-  const [ipAddressAllData, setIpAddressAllData] = useState(data?.state?.res);
-  console.log(ipAddressAllData);
-  const [vendor, setvendor] = useState(data?.state?.res?.vendor);
-  const [device_name, setdevice_name] = useState(data?.state?.res?.device_name);
-  const [myFunction, setMyFunction] = useState(data?.state?.res?.function);
-  // const [configuration, setconfiguration] = useState(
-  //   data?.state?.res?.function
-  // );
+
   const [todos, setTodos] = useState([]);
   const [inputValue, setInputValue] = useState("");
-  let [compareDate, setcompareDate] = useState("");
   const [searchedColumn, setSearchedColumn] = useState(null);
   let [configDatabyDate, setConfigDatabyDate] = useState("");
 
-  const [cmdOutputData, setCmdOutputData] = useState("");
-  // const [ConfigDatabyDate, setConfigDatabyDate] = useState("");
   let [dataSource, setDataSource] = useState(excelData);
   let [dataSourceRestore, setDataSourceRestore] = useState(excelDataRestore);
-  const [mainModalVisible, setMainModalVisible] = useState(false);
 
-  const [ipamDeviceLoading, setIpamDeviceLoading] = useState(false);
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [searchText, setSearchText] = useState(null);
-  const [searchContext, setsearchContext] = useState("");
-  const [ipAddressData, setIpAddressData] = useState(data?.state?.res?.alerts);
   const [date1, setDate1] = useState("");
   const [date2, setDate2] = useState("");
-  // const [device_type, setDeviceType] = useState("");
-  // const [password_group, setPassword_group] = useState("");
   const [rowCount, setRowCount] = useState(0);
-  const [mainTableloading, setMainTableLoading] = useState(false);
-  const [configData, setConfigData] = useState(null);
   const [configurationComparisonData, setConfigurationComparisonData] =
     useState(null);
-
   const [isModalOpen, setIsModalOpen] = useState(false);
   const [isModalOpenRestroreData, setIsModalOpenRestroreData] = useState(false);
-
   const [date1Array, setdate1Array] = useState([]);
   const [date2Array, setdate2Array] = useState([]);
 
@@ -149,7 +84,6 @@ const index_Main = () => {
         baseUrl + "/getAllConfigurationDatesInString",
         { ip_address: ip }
       );
-      console.log(resDate1.data);
       setdate1Array(resDate1.data);
       setDate1(resDate1.data[0]);
     } catch (err) {
@@ -168,18 +102,23 @@ const index_Main = () => {
       console.log(err);
     }
   };
+
   const handleOk = () => {
     setIsModalOpen(false);
   };
+
   const handleCancel = () => {
     setIsModalOpen(false);
   };
+
   const showModalRestroreData = () => {
     setIsModalOpenRestroreData(true);
   };
+
   const handleOkRestroreData = () => {
     setIsModalOpenRestroreData(false);
   };
+
   const handleCancelRestroreData = () => {
     setIsModalOpenRestroreData(false);
   };
@@ -206,32 +145,12 @@ const index_Main = () => {
     });
   };
 
-  useEffect(() => {
-    let config = localStorage.getItem("monetx_configuration");
-    setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
-  }, []);
-
-  const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
-    setSelectedRowKeys(selectedRowKeys);
-  };
-
   let getColumnSearchProps = columnSearch(
     searchText,
     setSearchText,
     searchedColumn,
     setSearchedColumn
   );
-  const rowSelection = {
-    selectedRowKeys,
-
-    onChange: onSelectChange,
-    selection: Table.SELECTION_ALL,
-    getCheckboxProps: () => ({
-      disabled: !configData?.uam.pages.sites.read_only,
-    }),
-  };
 
   useEffect(() => {
     const serviceCalls = async () => {
@@ -272,26 +191,23 @@ const index_Main = () => {
       .then((response) => {
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
-          console.log(response.data);
           setLoading(false);
         } else {
           openSweetAlert(response?.data, "success");
-          console.log(response?.data);
-
-          const promises = [];
 
           axios
             .post(baseUrl + "/getAllConfigurationDates", {
               ip_address: ipAddress,
             })
             .then((response) => {
-              console.log(response.data);
               excelData = response.data;
               setDataSource(excelData);
               setRowCount(excelData.length);
               setLoading(false);
             })
-            .catch((error) => {});
+            .catch((error) => {
+              console.log(error);
+            });
         }
       })
       .catch((err) => {
@@ -301,6 +217,7 @@ const index_Main = () => {
   };
 
   const [tableName, setTableName] = useState("Configurations");
+
   const showTable = (myDataTable) => {
     if (myDataTable === "Configurations") {
       setTableName("Configurations");
@@ -377,11 +294,8 @@ const index_Main = () => {
 
               if (res?.response?.status == 500) {
                 openSweetAlert(res?.response?.data, "error");
-                console.log(res.data);
                 setLoading(false);
               } else {
-                console.log("res MAin", res);
-
                 setConfigDatabyDate(res.data);
               }
 
@@ -414,6 +328,7 @@ const index_Main = () => {
       ellipsis: true,
     },
   ];
+
   const columnsRestore = [
     {
       title: "Date",
@@ -427,7 +342,6 @@ const index_Main = () => {
             textAlign: "left",
             paddingTop: "10px",
             paddingLeft: "10px",
-            // cursor: "pointer",
           }}
         >
           {text}
@@ -460,15 +374,12 @@ const index_Main = () => {
                 ip_address: ipAddress,
                 date: record.date,
               });
-              // setRightSide(true);
 
               if (res?.response?.status == 500) {
                 openSweetAlert(res?.response?.data, "error");
-                console.log(res?.response?.data);
                 setRestoreLoading(false);
               } else {
                 openSweetAlert(res?.response?.data, "success");
-                console.log(res?.response?.data);
 
                 setRestoreLoading(false);
               }
@@ -508,29 +419,17 @@ const index_Main = () => {
                 ip_address: ipAddress,
                 date: record.date,
               });
-              // setRightSide(true);
 
               if (res?.response?.status == 500) {
                 openSweetAlert(res?.response?.data, "error");
-                console.log(res?.response?.data);
                 setRestoreLoading(false);
               } else {
-                // openSweetAlert(res?.data, "success");
-                console.log(res?.response?.data);
-                let lyrics =
-                  "But still I'm having memories of high speeds when the cops crashed\n" +
-                  "As I laugh, pushin the gas while my Glocks blast\n" +
-                  "We was young and we was dumb but we had heart";
-
                 var blob = new Blob([res.data[1]], {
                   type: "text/plain;charset=utf-8",
                 });
                 saveAs(blob, `${res.data[0]}.cfg`);
                 setRestoreLoading(false);
               }
-
-              // setRowCount(excelData.length);
-              // setTableClickLoading(false);
             } catch (err) {
               console.log(err.response);
               setRestoreLoading(false);
@@ -558,10 +457,8 @@ const index_Main = () => {
       if (e.keyCode === 114 || (e.ctrlKey && e.keyCode === 70)) {
         if (document.getElementById("search") !== document.activeElement) {
           e.preventDefault();
-          console.log("Search is not in focus");
           document.getElementById("search").focus();
         } else {
-          console.log("Default action of CtrlF");
           return true;
         }
       }
@@ -569,9 +466,15 @@ const index_Main = () => {
   }, []);
 
   return (
-    <div style={{ marginRight: "15px", marginLeft: "15px" }}>
-      <br />
-      <div>
+    <ConfigManagmentStyle>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "space-between",
+          padding: "15px",
+        }}
+      >
         <div
           style={{
             display: "flex",
@@ -630,9 +533,24 @@ const index_Main = () => {
           </SummaryDevices>
         </div>
         <div style={{ float: "right" }}>
-          <>
+          <button
+            onClick={handleBackup}
+            style={{
+              border: "1px solid #6AB344",
+              borderRadius: "5px",
+              color: "white",
+              fontWeight: "600",
+              cursor: "pointer",
+              padding: "8px 15px",
+              background: "linear-gradient(270deg, #4AA446 0%, #6AB344 100%)",
+            }}
+          >
+            Backup
+          </button>
+          &nbsp;&nbsp;
+          <Dropdown menu={menu}>
             <button
-              onClick={handleBackup}
+              className="ant-dropdown-link"
               style={{
                 border: "1px solid #6AB344",
                 borderRadius: "5px",
@@ -643,203 +561,166 @@ const index_Main = () => {
                 background: "linear-gradient(270deg, #4AA446 0%, #6AB344 100%)",
               }}
             >
-              {" "}
-              Backup
-            </button>{" "}
-            &nbsp;&nbsp;
-            <Dropdown overlay={menu}>
-              <button
-                className="ant-dropdown-link"
-                style={{
-                  border: "1px solid #6AB344",
-                  borderRadius: "5px",
-                  color: "white",
-                  fontWeight: "600",
-                  cursor: "pointer",
-                  padding: "8px 15px",
-                  background:
-                    "linear-gradient(270deg, #4AA446 0%, #6AB344 100%)",
-                }}
-              >
-                Manage Configuration <DownOutlined />
-              </button>
-            </Dropdown>
-          </>
+              Manage Configuration <DownOutlined />
+            </button>
+          </Dropdown>
         </div>
       </div>
-      <br />
-      <br />
-      <br />
-      <br />
+
       <div>
         {tableName === "Configurations" ? (
-          <>
-            <Row>
-              <Col
-                xs={{ span: 24 }}
-                md={{ span: 10 }}
-                lg={{ span: 10 }}
+          <Row>
+            <Col
+              xs={{ span: 24 }}
+              md={{ span: 10 }}
+              lg={{ span: 10 }}
+              style={{
+                marginRight: "6px",
+              }}
+            >
+              <div
                 style={{
-                  marginRight: "6px",
+                  borderRadius: "12px",
+                  backgroundColor: "#fcfcfc",
+                  boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
+                  height: "110px",
+
+                  width: "100%",
+                  marginTop: "8px",
                 }}
               >
+                <SpinLoading spinning={loading}>
+                  <TableStyling columns={columns} dataSource={dataSource} />
+                </SpinLoading>
+              </div>
+            </Col>
+            {rightSide ? (
+              <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
                 <div
                   style={{
                     borderRadius: "12px",
                     backgroundColor: "#fcfcfc",
                     boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
                     height: "110px",
-
                     width: "100%",
                     marginTop: "8px",
+                    height: "100%",
                   }}
                 >
-                  <SpinLoading spinning={loading}>
-                    <TableStyling columns={columns} dataSource={dataSource} />
+                  <SpinLoading spinning={tableClickLoading}>
+                    <div
+                      className="html-template-placeholder"
+                      style={{ height: "100%" }}
+                    >
+                      <article className="section-header">
+                        <article className="time-and-date"></article>
+                        <article className="search-input">
+                          <input
+                            type="text"
+                            ref={findInput}
+                            placeholder="Search"
+                            onKeyDown={(e) => {
+                              if (e.keyCode === 13) {
+                                handleFindNext();
+                              }
+                            }}
+                          />
+                          <button onClick={handleFindPrevious}>
+                            <CaretLeftOutlined />
+                          </button>
+                          <button onClick={handleFindNext}>
+                            <CaretRightOutlined />
+                          </button>
+                        </article>
+                      </article>
+                      <code class="line-numbers">
+                        <pre style={{ padding: "8px" }}>
+                          <Highlighter
+                            highlightClassName="rc-highlight"
+                            searchWords={[`${targetRef}`]}
+                            autoEscape={true}
+                            activeStyle={{ color: "red" }}
+                            textToHighlight={configDatabyDate}
+                          />
+                        </pre>
+                      </code>
+                    </div>
                   </SpinLoading>
                 </div>
               </Col>
-              <Col xs={{ span: 24 }} md={{ span: 1 }} lg={{ span: 1 }}></Col>
-              {rightSide ? (
-                <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
-                  <div
-                    style={{
-                      borderRadius: "12px",
-                      backgroundColor: "#fcfcfc",
-                      boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
-                      height: "110px",
-
-                      width: "100%",
-                      marginTop: "8px",
-                      height: "100%",
-                    }}
-                  >
-                    <SpinLoading spinning={tableClickLoading}>
-                      <div style={{ height: "100%" }}>
-                        <input
-                          type="text"
-                          ref={findInput}
-                          onKeyDown={(e) => {
-                            if (e.keyCode === 13) {
-                              handleFindNext();
-                              console.log("asdlk");
-                            }
-                          }}
-                          style={{
-                            width: "220px",
-                            border: "1px solid gray",
-                            height: "25px",
-                          }}
-                        />
-                        <button
-                          style={{
-                            height: "25px",
-                          }}
-                          onClick={handleFindPrevious}
-                        >
-                          <CaretLeftOutlined />
-                        </button>
-                        <button
-                          style={{
-                            height: "25px",
-                          }}
-                          onClick={handleFindNext}
-                        >
-                          <CaretRightOutlined />
-                        </button>
-                        <code class="line-numbers">
-                          <pre style={{ padding: "8px" }}>
-                            <Highlighter
-                              highlightClassName="rc-highlight"
-                              searchWords={[`${targetRef}`]}
-                              autoEscape={true}
-                              activeStyle={{ color: "red" }}
-                              textToHighlight={configDatabyDate}
-                            />
-                          </pre>
-                        </code>
-                      </div>
-                    </SpinLoading>
-                  </div>
-                </Col>
-              ) : null}
-            </Row>
-          </>
+            ) : null}
+          </Row>
         ) : null}
         {tableName === "Documentation" ? (
-          <>
-            <Row>
-              <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
-                <form
-                  onSubmit={handleSubmit}
-                  style={{ width: "100%", display: "flex", padding: "15px" }}
+          <Row>
+            <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
+              <form
+                onSubmit={handleSubmit}
+                style={{ width: "100%", display: "flex", padding: "15px" }}
+              >
+                <StyledInput
+                  type="text"
+                  value={inputValue}
+                  onChange={(e) => setInputValue(e.target.value)}
+                />
+                &nbsp;&nbsp;{" "}
+                <button
+                  type="submit"
+                  style={{
+                    width: "100px",
+                    color: "#fff",
+                    backgroundColor: "#6ab644",
+                    border: "none",
+                  }}
                 >
-                  <StyledInput
-                    type="text"
-                    value={inputValue}
-                    onChange={(e) => setInputValue(e.target.value)}
-                  />
-                  &nbsp;&nbsp;{" "}
-                  <button
-                    type="submit"
+                  Add
+                </button>
+              </form>
+            </Col>
+
+            <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
+              <div style={{ width: "100%", padding: "15px", height: "200px" }}>
+                {todos.map((todo, index) => (
+                  <div
+                    className="glassEffect"
                     style={{
-                      width: "100px",
-                      color: "#fff",
-                      backgroundColor: "#6ab644",
-                      border: "none",
+                      padding: "5px",
+                      height: "100%",
+                      overflowY: "auto",
+                      behavior: "smooth",
+                      marginBottom: "15px",
+                      borderTopLeftRadius: "8px",
+                      borderTopRightRadius: "8px",
                     }}
                   >
-                    Add
-                  </button>
-                </form>
-              </Col>
-
-              <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
-                <div
-                  style={{ width: "100%", padding: "15px", height: "200px" }}
-                >
-                  {todos.map((todo, index) => (
                     <div
-                      className="glassEffect"
+                      key={index}
+                      style={{ float: "left", width: "90%", height: "100%" }}
+                    >
+                      {todo}
+                    </div>
+                    <div
                       style={{
-                        padding: "5px",
-                        height: "100%",
-                        overflowY: "auto",
-                        behavior: "smooth",
-                        marginBottom: "15px",
-                        borderTopLeftRadius: "8px",
-                        borderTopRightRadius: "8px",
+                        float: "right",
+                        width: "10%",
+                        textAlign: "center",
                       }}
                     >
-                      <div
-                        key={index}
-                        style={{ float: "left", width: "90%", height: "100%" }}
-                      >
-                        {todo}
-                      </div>
-                      <div
+                      <DeleteTwoTone
+                        twoToneColor="rgba(255,0,0,0.5)"
                         style={{
-                          float: "right",
-                          width: "10%",
-                          textAlign: "center",
+                          color: "rgba(255,0,0,0.5)",
+                          fontSize: "20px",
                         }}
-                      >
-                        <DeleteTwoTone
-                          twoToneColor="rgba(255,0,0,0.5)"
-                          style={{
-                            color: "rgba(255,0,0,0.5)",
-                            fontSize: "20px",
-                          }}
-                          onClick={() => handleDelete(index)}
-                        />
-                      </div>
-                      <br />
+                        onClick={() => handleDelete(index)}
+                      />
                     </div>
-                  ))}
-                </div>
-              </Col>
-            </Row>
-          </>
+                    <br />
+                  </div>
+                ))}
+              </div>
+            </Col>
+          </Row>
         ) : null}
       </div>
 
@@ -847,7 +728,7 @@ const index_Main = () => {
       <Modal
         width={980}
         title=""
-        visible={isModalOpen}
+        open={isModalOpen}
         onOk={handleOk}
         onCancel={handleCancel}
         footer={false}
@@ -874,11 +755,7 @@ const index_Main = () => {
                     Select Compare Date
                   </option>
                   {date1Array?.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
@@ -903,11 +780,7 @@ const index_Main = () => {
                     Select Compare Date
                   </option>
                   {date2Array?.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option>{item}</option>;
                   })}
                 </Styledselect>
               </div>
@@ -931,7 +804,6 @@ const index_Main = () => {
                 color: "white",
                 fontWeight: "600",
                 cursor: "pointer",
-                // padding: "8px 15px",
                 width: "100px",
                 height: "2.2rem",
                 background: "linear-gradient(270deg, #4AA446 0%, #6AB344 100%)",
@@ -950,7 +822,6 @@ const index_Main = () => {
                 color: "EB5757",
                 fontWeight: "600",
                 cursor: "pointer",
-                // padding: "8px 15px",
                 height: "2.2rem",
                 background: "white",
                 width: "100px",
@@ -958,7 +829,6 @@ const index_Main = () => {
             >
               Cancel
             </button>
-            <div>{/* {commonData} */}</div>
           </div>
         </div>
 
@@ -975,7 +845,6 @@ const index_Main = () => {
                     boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
                   }}
                 >
-                  {/* <pre>{configurationComparisonData}</pre> */}
                   <div
                     style={{
                       width: "100%",
@@ -983,8 +852,6 @@ const index_Main = () => {
                       scrollBehavior: "smooth",
                     }}
                   >
-                    {/* <Markup content={configurationComparisonData} /> */}
-
                     {ReactHtmlParser(configurationComparisonData)}
                   </div>
                 </div>
@@ -996,7 +863,7 @@ const index_Main = () => {
       <Modal
         width={700}
         title=""
-        visible={isModalOpenRestroreData}
+        open={isModalOpenRestroreData}
         onOk={handleOkRestroreData}
         onCancel={handleCancelRestroreData}
         footer={false}
@@ -1006,24 +873,18 @@ const index_Main = () => {
             <h4 style={{ textAlign: "center" }}>Restore Data</h4>
             <hr />
             <TableStyling
-              // rowSelection={rowSelection}
-              // scroll={{ x: 2000 }}
-              // rowKey="ip_address"
               columns={columnsRestore}
               dataSource={dataSourceRestore}
               pagination={{ pageSize: 5 }}
-              // style={{ width: "100%" }}
             />
           </>
         </SpinLoading>
       </Modal>
-    </div>
+    </ConfigManagmentStyle>
   );
 };
 
 const StyledInput = styled(Input)`
-  // height: 2.2rem;
-  // border-radius: 12px;
   border: 1px solid rgba(0, 0, 0, 0.1) !important;
   box-shadow: none !important;
   background-color: #eee;

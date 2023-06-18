@@ -1671,7 +1671,7 @@ const index = () => {
       <MainTableModal
         width={"75%"}
         // title="Basic Modal"
-        visible={mainModalVisible}
+        open={mainModalVisible}
         // closable={false}
         footer={false}
         onOk={handleMainOk}
@@ -2139,7 +2139,7 @@ const index = () => {
               onClick={handleButtonClick}
               disabled={configData?.ipam.pages.subnet.read_only}
               style={{ background: "#66b127 !important" }}
-              overlay={menu}
+              menu={menu}
               icon={<DownOutlined style={{ fontSize: "14px" }} />}
             >
               <img src={Scanner} width="18px" height="18px" alt="" /> &nbsp;
@@ -2178,7 +2178,7 @@ const index = () => {
         {/* <Modal
           width="60%"
           title="IP Details"
-          visible={isModalOpen}
+          open={isModalOpen}
           open={isModalOpen}
           footer={false}
           onOk={handleOkAllPopup}
@@ -2220,7 +2220,7 @@ const index = () => {
       <MainTableModal
         style={{ zIndex: 9999 }}
         title="Subnet Detail"
-        visible={isModalOpen}
+        open={isModalOpen}
         footer={false}
         onOk={handleOk}
         onCancel={handleCancel}
