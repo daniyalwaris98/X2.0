@@ -2,3 +2,4 @@
 __pycache__/
 frontend/atom/package-lock.json
 backend/atom/app/configuration_backups
+.idea
