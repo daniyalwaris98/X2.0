@@ -156,7 +156,7 @@ def NCMDeviceSummryDashboard(user_data):
 
 @app.route('/ncmChangeSummryByDevice',methods = ['GET'])
 @token_required
-def NCMChangeSummryByDevice():
+def NCMChangeSummryByDevice(user_data):
     if True:
         current_time = datetime.now()
         pre_time = datetime.now() - timedelta(days=1)
@@ -164,18 +164,27 @@ def NCMChangeSummryByDevice():
             
             query = f"select count(*) as BACKUP_COUNT,VENDOR from ncm_table where config_change_date>'{pre_time}' group by VENDOR ORDER by BACKUP_COUNT DESC LIMIT 5;"
             result = db.session.execute(query)
-            objList = []
+            
+            nameList = []
+            valueList = []
             for row in result:
-                objDict = {
-                    'name': row[1],
-                    'value': int(row[0])
-                }
                 if row[1] == '':
-                    objDict['name'] = 'Undefined'
+                    nameList.append('Undefined')
+                else:
+                    nameList.append(row[1])
+                
+                valueList.append(int(row[0]))
+            
+            if len(nameList)<=0:
+                nameList = ['Cisco','Huawei','Juniper','Fortinet','Other']
+                valueList = [0,0,0,0,0]
+            
+            objDict = {
+                'name':nameList,
+                'value':valueList
+            }
 
-                objList.append(objDict)
-
-            return jsonify(objList),200
+            return jsonify(objDict),200
         except Exception as e:
             traceback.print_exc()
             return "Error While Fetching The Data\nFor Configuration Change Count By Vendors Garph",500
@@ -187,7 +196,7 @@ def NCMChangeSummryByDevice():
 
 @app.route('/ncmChangeSummryByTime',methods = ['GET'])
 @token_required
-def NCMChangeSummryByTime():
+def NCMChangeSummryByTime(user_data):
     if True:
         current_time = datetime.now()
         pre_time = datetime.now() - timedelta(days=1)
@@ -195,16 +204,25 @@ def NCMChangeSummryByTime():
             
             query = f"SELECT COUNT(*) AS BACKUP, DATE_FORMAT(config_change_date, '%Y-%m-%d %H:00:00') AS hour_interval FROM ncm_table where config_change_date IS NOT NULL  GROUP BY hour_interval ORDER BY BACKUP DESC LIMIT 5;"
             result = db.session.execute(query)
-            objList = []
+            
+            nameList = []
+            valueList = []
             for row in result:
-                objDict = {
-                    'name' : row[1],
-                    'value': int(row[0])
-                }
-                
-                objList.append(objDict)
+                nameList.append(row[1])
+                valueList.append(int(row[0]))
 
-            return jsonify(objList),200
+            if len(nameList)<=0:
+                for i in range(5):
+                    temp_time = current_time - timedelta(hours=i)
+                    nameList.append(f"{temp_time.date()} {temp_time.hour}:00")
+                    valueList.append(0)
+                    
+            objDict = {
+                'name':nameList,
+                'value':valueList
+            }
+
+            return jsonify(objDict),200
         except Exception as e:
             traceback.print_exc()
             return "Error While Fetching The Data\nFor Configuration Change Count By Timw Garph",500
@@ -215,13 +233,13 @@ def NCMChangeSummryByTime():
 
 @app.route('/ncmAlarmSummery',methods = ['GET'])
 @token_required
-def NCMAlarmSummry():
+def NCMAlarmSummry(user_data):
     if True:
         current_time = datetime.now()
         pre_time = datetime.now() - timedelta(days=1)
         try:
             
-            query = f"SELECT * from NCM_ALARM_TABLE where ALARM_STATUS='Open' LIMIT 50;"
+            query = f"SELECT * from ncm_alarm_table where ALARM_STATUS='Open' LIMIT 50;"
             result = db.session.execute(query)
             objList = []
             for row in result:

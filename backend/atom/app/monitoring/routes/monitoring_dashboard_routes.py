@@ -11,8 +11,50 @@ from datetime import datetime
 from app.middleware import token_required
 from app import client
 
+
+@app.route('/getavailabilityTimeline', methods=['POST'])
+# @token_required
+def GetAvailabilityTimeline():
+    try:
+        x = request.get_json()
+        ip_address = x.get('ip_address')
+        days = x.get('days')
+        
+        query_api = client.query_api()
+        query = f'import "strings"\
+        import "influxdata/influxdb/schema"\
+        from(bucket: "monitoring")\
+        |> range(start:-{days}d)\
+        |> filter(fn: (r) => r["_measurement"] == "Devices")\
+        |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip_address}")\
+        |> last()\
+        |> schema.fieldsAsCols()\
+        |> sort(columns: ["_time"], desc: false)'
+
+        results = query_api.query(org='monetx', query=query)
+
+
+        for table in results:
+            for record in table.records:
+                if record['Date']:
+
+                    print(f"{record['Date']} : {record['STATUS']}")
+
+                    if record['STATUS']:
+                        if record['STATUS'] == 'Up':
+                            pass
+                        elif record['STATUS'] == 'Down':
+                            pass
+
+        return "OK",200
+    except Exception:
+        traceback.print_exc()
+        return "Can not provide timeline for Up Time", 500
+
+
 @app.route('/getMonitoringDevicesCards', methods=['GET', 'POST'])
-def GetMonitoringDevicesCards():
+@token_required
+def GetMonitoringDevicesCards(user_data):
     if True:
         try:
             x = request.get_json()

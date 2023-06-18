@@ -27,7 +27,6 @@ scheduler.init_app(app)
 scheduler.start()
 
 
-
 def GenerateAlertMails():
     from datetime import datetime, timedelta
     from app.mail import send_mail
@@ -39,38 +38,40 @@ def GenerateAlertMails():
         if mail_cred is None:
             return
         mail_cred = dict(mail_cred)
-        print("\n---> Active Mail Credentials <---\n",file=sys.stderr)
-        print(mail_cred,file=sys.stderr)
+        print("\n---> Active Mail Credentials <---\n", file=sys.stderr)
+        print(mail_cred, file=sys.stderr)
 
-        query = f"select * from alerts_table where DATE >= '{datetime.now()- timedelta(minutes=20)}' and MAIL_STATUS = 'no' and (ALERT_TYPE='critical' or CATEGORY = 'device_down');"
+        query = "select * from alert_recipents_table where `CATEGORY`='Monitoring' and `STATUS`='Active';"
+        recipents = []
+
+        try:
+            results = db.session.execute(query)
+            for row in results:
+                recipents.append(row[1])
+        except Exception as e:
+            traceback.print_exc()
+            print(e, file=sys.stderr)
+
+        print(f"Recipents : {recipents}", file=sys.stderr)
+
+        # query = f"select * from alerts_table where DATE >= '{datetime.now()- timedelta(minutes=60)}' and MAIL_STATUS = 'no' and (ALERT_TYPE='critical' or CATEGORY = 'device_down');"
+        query = f"select * from alerts_table where MAIL_STATUS = 'no' and (ALERT_TYPE='critical' or CATEGORY = 'device_down');"
         results = db.session.execute(query)
 
+        # print(f"Total Alerts : {len(results)}", file=sys.stderr)
 
         for row in results:
-            print(dict(row))
+            print(
+                f"-----> Sendig Mail for alert id = {row[0]} <------\n", file=sys.stderr)
+            
             try:
+                # recipents = [
+                # 'najam.hassan@nets-international.com',
+                # 'hamza.zahid@nets-international.com',
+                # 'muhammad.naseem@nets-international.com',
+                # 'usama.islam@nets-international.com'
+                # ]
 
-                query = "select * from alert_recipents_table where `CATEGORY`='Monitoring' and `STATUS`='Active';"
-                recipents = []
-
-                try:
-                    results = db.session.execute(query)
-                    for row in results:
-                        recipents.append(row[1])
-                except Exception as e:
-                    traceback.print_exc()
-                    print(e,file=sys.stderr)
-                    # recipents = [
-                    # 'najam.hassan@nets-international.com',
-                    # 'hamza.zahid@nets-international.com',
-                    # 'muhammad.naseem@nets-international.com',
-                    # 'usama.islam@nets-international.com'
-                    # ]
-                
-                
-
-                
-                
                 subject = f"MonetX - Monitoring Alert - {row[3]} | {row[4]}"
                 msg = f"""
                 Alert ID : {row[0]}\n
@@ -83,71 +84,65 @@ def GenerateAlertMails():
                 """
 
                 # sending email
-                print(f"-----> Sendig Mail for alert id = {row[0]} <------\n",file=sys.stderr)
+                print(
+                    f"-----> Sendig Mail for alert id = {row[0]} <------\n", file=sys.stderr)
 
                 send_mail(
                     send_from=mail_cred['MAIL'],
-                    send_to=recipents, 
-                    subject=subject, 
-                    message=msg, 
+                    send_to=recipents,
+                    subject=subject,
+                    message=msg,
                     username=mail_cred['MAIL'],
                     password=mail_cred['PASSWORD'],
                     server=mail_cred['SERVER']
-                    )
-                
+                )
+
                 query = f"update alerts_table set mail_status='yes' where alert_id = {row[0]};"
                 db.session.execute(query)
                 db.session.commit()
 
             except Exception as e:
-                print("\n*** ERROR In Mail Generation ***\n")
+                print("\n*** ERROR In Mail Generation ***\n", file=sys.stderr)
                 traceback.print_exc()
-                print(f"\n{e}\n",file=sys.stderr)
+                print(f"\n{e}\n", file=sys.stderr)
 
     except Exception as e:
         print("\n*** ERROR In Mail Generation ***\n")
         traceback.print_exc()
-        print(f"\n{e}\n",file=sys.stderr)
+        print(f"\n{e}\n", file=sys.stderr)
 
 
+def creatMonitoringPoll(devicePoll):
 
-
-def creatMonitoringPoll(classname, host):
-    inv_data = {}
-    connections_limit = 50
     threads = []
-    obj = classname()
+    for host in devicePoll:
+        obj = CommonPuller()
+        th = threading.Thread(target=obj.poll, args=(host,))
+        th.start()
+        threads.append(th)
 
-    th = threading.Thread(target=obj.poll, args=(host,))
-    th.start()
-                
-    return inv_data
+    for thread in threads:
+        thread.join()
 
 
+def MonitoringOperations():
+    iteration = 1
+    while True:
 
-def RunningActiveDevices():
+        print(f"\n\n\n** Iteration : {iteration} **\n\n\n", file=sys.stderr)
+        iteration = iteration + 1
 
-    @scheduler.task('interval', id="testingpolls", seconds=300)
-    def MonitoringOperations():
+        if iteration == 100000:
+            iteration = 1
+
         # GenerateAlertMails()
         print(f"Running Monitoring Schedular\n", file=sys.stderr)
 
         try:
-            queryString = f"select ip_address from monitoring_devices_table;"
-            results = db.session.execute(queryString)
-            status = None
-            for result in results:
-                ip_address = result[0].strip()
-                status = ping(ip_address)[0]
-                print(ip_address+" : "+status,file=sys.stderr)
-                updatequery = f"update monitoring_devices_table set status = '{status}' where ip_address='{result[0]}';"
-                db.session.execute(updatequery)
-                db.session.commit()
-
             queryString = f"select * from monitoring_devices_table where active='Active';"
             results = db.session.execute(queryString)
 
-
+            devicePoll = []
             for result in results:
                 try:
 
@@ -157,59 +152,77 @@ def RunningActiveDevices():
                     for communityv in community_result:
                         community = communityv[:]
 
-                    result = list(result) + list(community)
-
                     if community is not None:
-                        creatMonitoringPoll(CommonPuller,result)
+                        result = list(result) + list(community)
+                        devicePoll.append(result)
                     else:
                         print(f"{result[1]}: Error : No SNMP Credentials")
 
                 except Exception as e:
                     traceback.print_exc()
 
-                
+            try:
+                creatMonitoringPoll(devicePoll)
+                # GenerateAlertMails()
+            except Exception:
+                traceback.print_exc()
 
             # queryString1 = f"select * from alerts_table;"
             # alerts = db.session.execute(queryString1)
             # for alert in alerts:
             #     alert_manage(alert)
             # AlarmOperations()
+
         except Exception as e:
             print("Error in Monitoring Scheduler: ", str(e), file=sys.stderr)
             traceback.print_exc()
 
-        # GenerateAlertMails()
+
+
+def RunningActiveDevices():
+
+    # @scheduler.task('interval', id="testingpolls", seconds=300)
+    try:
+        monitoringThread = threading.Thread(target=MonitoringOperations)
+        monitoringThread.start()
+    except Exception:
+        traceback.print_exc()
+
+
+@app.route("/runactive", methods=['GET'])
+# @token_required
+def runactivedevice():
+    try:
+        print("\n\nMonitoring Started\n\n", file=sys.stderr)
+        RunningActiveDevices()
+        return "Monitoring Has Been Started"
+    except Exception as e:
+        print("Error While Starting Monitoring", file=sys.stderr)
+        error = "Something Went Wrong:", type(e).__name__, str(e)
+        return error
+
 
 # host = ['0', '192.168.0.2', 'fortinet', '3', '4', '5', '6', '7', '8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'public', '161']
-
 # host = ['0', '192.168.10.36', 'cisco_ios', '3', '4', '5', '6', '7', '8', '9', '10',
 #         '11', '12', '13', 'v3', '15', '16', '17', '18', 'public', '161','NETS','NETSAUTH','NETSENCR','SHA','AES']
-
 # host = ['0', '192.168.0.55', 'cisco_ios_xe', '3', '4', '5', 'Cisco', 'Switch', '8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'NetsDevTeam@2021', '161']
-
 # host = ['0', '192.168.0.5', 'cisco_ios', '3', '4', '5', 'Cisco', 'Switch', '8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'NetsDevTeam@2021', '161']
-
 # host = ['0', '192.168.18.126', 'Windows', '3', '4', '5', 'Microsoft', 'VM','8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'public', '161']
-
-
 # host = ['0', '10.212.134.202', 'Windows', '3', '4', '5', 'Microsoft', 'VM','8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'public', '161']
-
-# host = ['0', '10.68.3.5', 'extream', '3', '4', '5', '6', '7', '8', '9', '10',       
+# host = ['0', '10.68.3.5', 'extream', '3', '4', '5', '6', '7', '8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'ReadOnlyAtheeb_MPLS', '161']
-
-
-# host = ['0', '91.147.128.26', 'cisco_ios', 'Edge_Ro-1', '4', '5', '6', '7', '8', '9', '10',       
+# host = ['0', '91.147.128.26', 'cisco_ios', 'Edge_Ro-1', '4', '5', '6', '7', '8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'public', '161']
-
 host = ['0', '192.168.10.36', 'cisco_ios', '3', '4', '5', '6', '7', '8', '9', '10',
-        '11', '12', '13', 'v3', '15', '16', '17', '18', 'public', '161','nets','netsauth','netsencr','SHA-128','AES']
+        '11', '12', '13', 'v3', '15', '16', '17', '18', 'public', '161', 'nets', 'netsauth', 'netsencr', 'SHA-128', 'AES']
 
-@app.route("/testPuller",methods=['GET'])
+
+@app.route("/testPuller", methods=['GET'])
 def TestPuller():
     puller = CommonPuller()
     puller.poll(host)
@@ -219,11 +232,9 @@ def TestPuller():
     #     difference = datetime.now() - result[8]
     #     print(result[8])
     #     print(difference.total_seconds())
-    
-    
+
     # queryString = f"select * from monitoring_devices_table where active='Active';"
     # results = db.session.execute(queryString)
-
 
     # for result in results:
     #     try:
@@ -243,29 +254,10 @@ def TestPuller():
 
     #     except Exception as e:
     #         traceback.print_exc()
-    return "OK",200
+    return "OK", 200
 
 
-@app.route("/runactive", methods=['GET'])
-# @token_required
-def runactivedevice():
-    try:
-        print("\n\nMonitoring Started\n\n", file=sys.stderr)
-        RunningActiveDevices()
-        return "Monitoring Has Been Started"
-    except Exception as e:
-        print("Error While Starting Monitoring", file=sys.stderr)
-        error = "Something Went Wrong:", type(e).__name__, str(e)
-        return error
-
-
-
-
-
-
-
- 
-@app.route("/pingTest",methods=['GET'])
+@app.route("/pingTest", methods=['GET'])
 def PingShed():
     queryString = f"select ip_address from monitoring_devices_table;"
     results = db.session.execute(queryString)
@@ -273,23 +265,23 @@ def PingShed():
     for result in results:
         ip_address = result[0].strip()
         status = ping(ip_address)
-        print(ip_address+" : "+status,file=sys.stderr)
+        print(ip_address+" : "+status, file=sys.stderr)
         updatequery = f"update monitoring_devices_table set status = '{status}' where ip_address='{ip_address}';"
         db.session.execute(updatequery)
         db.session.commit()
-    return "OK",200
+    return "OK", 200
 
 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
-# 
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
 
 
 @app.route("/alarmactive")

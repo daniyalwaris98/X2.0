@@ -58,33 +58,76 @@ class DownloadPuller(object):
     def poll(self, host,command):
         print('HOST IS :',type(host),file=sys.stderr)
         print(f"Connecting to {host['ip_address']}")
-        login_tries = 3
-        c = 0
+        login_tries = 2
+        telnet = 0
+        ssh = 0
         is_login = False
         login_exception = None
-        while c < login_tries :
+        connection = None
+
+        while ssh < login_tries :
             try:
-                device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'], device_type=host['device_type'], timeout=600, global_delay_factor=2, banner_timeout=300)
-                print(device,file=sys.stderr)
-                print(f"Success: logged in {host['ip_address']}",file=sys.stderr)
+                connection = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'], device_type=host['device_type'], timeout=600, global_delay_factor=2, banner_timeout=300)
+                
+                print(f"NCM - {host['ip_address']} : SSH - Logged In Successfully",file=sys.stderr)
+
                 is_login = True
                 break
             except Exception as e:
-                c +=1
+                ssh +=1
                 print(f"Failed to login {host['ip_address']}",file=sys.stderr)
                 login_exception = str(e)
+
+        if is_login == False:
+
+            device = {
+                'device_type': f"{host['device_type']}_telnet",
+                'ip': host['ip_address'],
+                'password': host['password'],
+                'secret' : 'S3cur!ty@2020',
+                'port': 23,
+                'timeout': 300,
+            }
+
+            while telnet < login_tries :
+                    
+                try:
+                    # device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'], device_type=host['device_type'], timeout=600, global_delay_factor=2, banner_timeout=300)
+                    
+                    connection = ConnectHandler(**device)
+                    
+                    print(f"NCM - {host['ip_address']} : Telnet - Logged In Successfully",file=sys.stderr)
+                    
+                    is_login = True
+                    break
+                except Exception as e:
+                    telnet +=1
+                    print(f"NCM - {host['ip_address']} : Telnet - Failed to login",file=sys.stderr)
+                    login_exception = str(e)
+
+
         if is_login==False:
             # self.inv_data[host['ip_address']] = {"error":"Login Failed"}
             date = datetime.now()
             self.failed = True
             addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'NCM')
             self.response3 = True
+        
         if is_login==True: 
 
-            print("LOGIN IS SUCCESSFUL",file=sys.stderr)
+            print(f"NCM - {host['ip_address']} : Executing {command} ...",file=sys.stderr)
+
             current_time = datetime.now()
             file_name = f"{host['device_name']}_{current_time}"
-            output = device.send_command(f"{command}")
+
+            if ssh ==2:
+                connection.enable()
+                connection.send_command(f"terminal length 0")
+                output = connection.send_command(f"{command}")
+                connection.disconnect()
+            else:
+                output = connection.send_command(f"{command}")
+                
             print(f"BACKUP GENERATED FOR DEVICE {host['device_name']} at {current_time}",file=sys.stderr)
             dataDict = {}
             dataDict['name']=file_name

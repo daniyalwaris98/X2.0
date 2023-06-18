@@ -51,3 +51,6 @@ def login_activity(user_id, operation, status, timestamp, description):
         db.session.commit()
     except Exception:
         print("Error While Saving Login Activity")
+
+
+

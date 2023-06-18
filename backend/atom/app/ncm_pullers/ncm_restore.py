@@ -3,6 +3,7 @@ import secrets
 import traceback
 from unicodedata import name
 from netmiko import Netmiko,ConnectHandler
+import paramiko
 from datetime import datetime
 import re, sys, time, json
 import threading
@@ -75,10 +76,16 @@ class RestorePuller(object):
             self.failed = True
             addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'NCM')
             self.response3 = True
-        if is_login==True:  
+        if is_login==True:
+
+            ssh_client = paramiko.SSHClient()
+            ssh_client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+            ssh_client.connect(host['ip_address'], username=host['username'], password=host['password'])
+
+   
             print(f"Successfully Logged into device {host['device_type']}", file=sys.stderr) 
 
-            device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'], device_type=host['device_type'], timeout=600, global_delay_factor=2)
+            # device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'], device_type=host['device_type'], timeout=600, global_delay_factor=2)
             # device.send_command('config t')
             file_name = ""
             queryString = f"select FILE_NAME from ncm_history_table where IP_ADDRESS='{host['ip_address']}' AND CONFIGURATION_DATE='{date}';"
@@ -88,8 +95,33 @@ class RestorePuller(object):
             if file_name!="":
 
                 cwd = os.getcwd()
-                configPath = f"{cwd}/app/backup_configurations/{file_name}.cfg"
-                device.send_config_from_file(config_file=configPath)
+                configPath = f"{cwd}/app/configuration_backups/{file_name}.cfg"
+                # config_commands = ""
+                # with open(configPath, 'r') as file:
+                #     config_commands = file.read().splitlines()
+
+
+                # output = net_connect.send_config_set(config_commands)
+                # output = net_connect.send_config_from_file(configPath)
+
+                sftp = ssh_client.open_sftp()
+                sftp.put(configPath, 'temporary_config_file')
+
+                ssh_client.exec_command('configure replace temporary_config_file')
+
+ 
+
+                # Close the SFTP session
+                sftp.close()
+
+                
+
+                # Close the SSH connection
+                ssh_client.close()
+
+                # print("Restorted ",file=sys.stderr)
+
+                # device.send_config_from_file(config_file=configPath)
                 print("Configuration Restored Successfully",file=sys.stderr)        
                 self.response1 = True
             else:

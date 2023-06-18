@@ -289,3 +289,105 @@ def EditUserInDatabase(userObj, user_data):
     except Exception:
         traceback.print_exc()
         return "Error While Updating User Data",500
+    
+
+
+
+def addUserRoleInDatabase(roleObj):
+    try:
+        role = USER_ROLES()
+
+        #
+        # role can not be null or duplicate
+        if 'role' in roleObj.keys():
+            role_id = roleObj['role'].strip()
+
+            if role_id != "":
+
+                role_exists = USER_ROLES.query.filter_by(role_id=role_id).first()
+                if role_exists is None:
+                    role.role_id = role_id
+                else:
+                    return "User Role Already Exists", 500
+
+            else:
+                return "User Role Can Not Be Null", 500
+
+        else:
+            return "User Role Can Not Be Null", 500
+        
+
+
+        #
+        if 'configuration' in roleObj.keys():
+            configuration = roleObj['configuration'].strip()
+            if configuration != "":
+                    role.configuration = configuration
+            else:
+                return "User Configuration Can Not Be Null", 500
+        else:
+            return "User Configuration Can Not Be Null", 500
+        
+        #
+        # insert record
+        status = InsertDBData(role)
+        if status == 200:
+            return "User Role Inserted Successfully", 200
+        else:
+            return "Error While Inserting User Role",500
+    except Exception:
+        traceback.print_exc()
+        return "Error While Inserting User Role",500
+    
+
+
+
+def EditUserRoleInDatabase(roleObj):
+    try:
+
+        user_role = None
+
+        #
+        # user id can not be null or duplicate
+        if 'role' in roleObj.keys():
+            role = role['role'].strip()
+
+            if role != "":
+
+                user_role = USER_ROLES.query.filter_by(role=role).first()
+
+            else:
+                return "User Role Can Not Be Null", 500
+
+        else:
+            return "User Role Can Not Be Null", 500
+        
+        if user_role is None:
+            return "User Role Does Not Exist", 500
+        
+        
+        
+        if user_role.role == "Super_Admin":
+            return "Super_Admin Role Can Not Be Updated", 500
+
+
+        #
+        if 'configuration' in roleObj.keys():
+            configuration = roleObj['configuration'].strip()
+            if configuration != "":
+                    role.configuration = configuration
+            else:
+                return "User Configuration Can Not Be Null", 500
+        else:
+            return "User Configuration Can Not Be Null", 500
+        
+        #
+        # insert record
+        status = UpdateDBData(user_role)
+        if status == 200:
+            return "User Role Updated Successfully", 200
+        else:
+            return "Error While Updating User Role",500
+    except Exception:
+        traceback.print_exc()
+        return "Error While Updating User Role",500

@@ -19,7 +19,7 @@ def snmpAlert(host,flag):
             db.session.commit()
     else:
         if result is not None:
-            query = f"DELETE FROM ALERTS_TABLE WHERE IP_ADDRESS='{host[1]}' AND CATEGORY='snmp';"
+            query = f"DELETE FROM alerts_table WHERE IP_ADDRESS='{host[1]}' AND CATEGORY='snmp';"
             db.session.execute(query)
             db.session.commit()
 
