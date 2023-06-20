@@ -1,131 +1,131 @@
 export const devices = [
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Cisco-IOS",
+    name: "cisco_ios",
   },
+  // {
+  //   module: ["atom", "monitoring", "ipam", "ncm"],
+  //   name: "Cisco-IOS-XR",
+  // },
   {
     module: ["atom", "monitoring", "ipam", "ncm"],
-    name: "Cisco-IOS-XR",
-  },
-  {
-    module: ["atom", "monitoring", "ipam", "ncm"],
-    name: "Cisco-ASA",
+    name: "cisco-asa",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Cisco NX-OS",
+    name: "cisco_nx_os",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Cisco_XE",
+    name: "cisco_xe",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Cisco_WLC",
+    name: "cisco_wlc",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Fortinet",
+    name: "fortinet",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Paloalto",
+    name: "paloalto",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Arista EOS",
+    name: "arista_eos",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Huawei",
+    name: "huawei",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "F5_itm",
+    name: "f5_itm",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Juniper_screenos",
+    name: "juniper_screenos",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "JUNOS OS",
+    name: "junos_os",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "A10 Networks ACOS",
+    name: "a10_networks_acos",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Arbor",
+    name: "arbor",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "FireEye OS",
+    name: "fireeye_OS",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Greatbay",
+    name: "greatbay",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Infoblox",
+    name: "infoblox",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Prime",
+    name: "prime",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Pulse_secure",
+    name: "pulse_secure",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Cisco UCS Firmware",
+    name: "cisco_ics_firmware",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Wire_filter",
+    name: "wire_filter",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Cisco APIC Firmware",
+    name: "cisco_apic_firmware",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Symantec",
+    name: "symantec",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Extreme XOS",
+    name: "extreme_xos",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Firepower",
+    name: "firepower",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Window",
+    name: "window",
   },
   {
     module: ["ipam", "monitoring", "ncm", "atom"],
-    name: "CISCO ACI",
+    name: "cisco_aci",
   },
   {
     module: ["ipam", "monitoring", "ncm", "atom"],
-    name: "CISCO_AIREOS",
+    name: "cisco_aireos",
   },
   {
     module: ["ipam", "monitoring", "ncm", "atom"],
-    name: "CISCO APIC",
+    name: "cisco_apic",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Palow",
+    name: "palow",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "Linux",
+    name: "linux",
   },
   // {
   //   module: ["atom", "ipam", "monitoring", "ncm"],

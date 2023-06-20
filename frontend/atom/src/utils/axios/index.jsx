@@ -5,7 +5,6 @@ import axios from "axios";
 
 export const baseUrl = "http://localhost:5010"; //! local
 // export const baseUrl = "http://192.168.10.151:5010"; //! VM
-// export const baseUrl = "http://192.168.10.150:5010"; //! VM
 // export const baseUrl = "https://monetxbackend.nets-x-map.com"; //! local
 // export const baseUrl = "https://192.168.10.242:5010"; //! DR
 // export const baseUrl = "http://192.168.10.218:5010"; //! Production

@@ -68,7 +68,6 @@ const index = () => {
 
     let test = userData.monetx_configuration;
     const t = eval(test);
-    console.log(t);
     let config = JSON.parse(t);
     setConfigData(config);
   }, []);

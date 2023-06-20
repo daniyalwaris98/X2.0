@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Col, Row, Modal } from "antd";
+import * as XLSX from "xlsx";
 import ReactSpeedometer from "react-d3-speedometer";
 import axios, { baseUrl } from "../../utils/axios";
 import { useLocation, useNavigate } from "react-router-dom";
@@ -8,6 +9,7 @@ import { DoubleLeftOutlined } from "@ant-design/icons";
 import bulb from "./assets/bulb.svg";
 import up from "./assets/down.svg";
 import down from "./assets/up.svg";
+import exportExcel from "./assets/exp.svg";
 
 import "../../App.css";
 import {
@@ -16,6 +18,7 @@ import {
   MainTitle,
   SpinLoading,
   ColRowNumberStyle,
+  StyledExportButton,
 } from "../AllStyling/All.styled.js";
 import summary from "./assets/summary.svg";
 import inter from "./assets/interface.svg";
@@ -91,7 +94,6 @@ const index_Main = () => {
 
   const handleClearAlerts = async () => {
     if (ipAddressData.length == 0) {
-      console.log("ipAddressData value ==============", ipAddressData);
       openSweetAlert("No Alerts Found", "error");
     } else {
       try {
@@ -103,7 +105,6 @@ const index_Main = () => {
             } else {
               openSweetAlert(response?.data, "success");
               setIpAddressData([]);
-              console.log("response============>", response);
             }
           })
           .catch((error) => {
@@ -364,6 +365,7 @@ const index_Main = () => {
       ellipsis: true,
     },
   ];
+
   const [descData, setDescData] = useState("");
   const handleDescription = async (description) => {
     setIsModalOpen(true);
@@ -371,14 +373,11 @@ const index_Main = () => {
       const res = await axios.post(baseUrl + "/possibleReasonForAlerts", {
         description: description,
       });
-      console.log("res", res);
       if (res.status == 500) {
         openSweetAlert(res?.response?.data, "error");
         console.log(res?.data?.Response);
       } else {
         setDescData(res?.data);
-        console.log(res?.data?.Response);
-        console.log(res?.data);
       }
     } catch (err) {
       console.log(err.response);
@@ -390,6 +389,22 @@ const index_Main = () => {
   };
   const handleCancel = () => {
     setIsModalOpen(false);
+  };
+
+  const jsonToExcel = (alerts) => {
+    let wb = XLSX.utils.book_new();
+    let binaryAlerts = XLSX.utils.json_to_sheet(alerts);
+    XLSX.utils.book_append_sheet(wb, binaryAlerts, "Alerts");
+    XLSX.writeFile(wb, "Alerts.xlsx");
+  };
+
+  const exportSeed = async () => {
+    if (ipAddressData.length > 0) {
+      jsonToExcel(ipAddressData);
+      openNotification();
+    } else {
+      openSweetAlert("No Data Found!", "info");
+    }
   };
 
   const [tableName, setTableName] = useState("Summary");
@@ -717,6 +732,21 @@ const index_Main = () => {
             <br />
             <br />
             <div style={{ float: "right" }}>
+              <StyledExportButton
+                onClick={exportSeed}
+                style={{
+                  marginRight: "12px",
+                }}
+              >
+                <img
+                  src={exportExcel}
+                  alt=""
+                  width="15px"
+                  height="15px"
+                  style={{ marginBottom: "3px" }}
+                />
+                &nbsp;&nbsp; Export
+              </StyledExportButton>
               <button
                 onClick={handleClearAlerts}
                 style={{

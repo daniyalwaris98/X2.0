@@ -42,10 +42,15 @@ export const FailedDevicesStyle = styled.article`
       border-radius: 10px;
       overflow: hidden;
 
-      .title {
-        border-left: 5px solid ${({ theme }) => theme.colors.PRIMARY_COLOR};
-        padding: 10px;
-        margin-bottom: 40px;
+      .section-header {
+        ${FlexboxStyle};
+
+        margin-bottom: 10px;
+
+        .title {
+          border-left: 5px solid ${({ theme }) => theme.colors.PRIMARY_COLOR};
+          padding: 10px;
+        }
       }
 
       .failed-devices-table {

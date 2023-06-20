@@ -77,7 +77,7 @@ const EditUser = (props) => {
             const promises = [];
             promises.push(
               axios
-                .get(baseUrl + "/getPasswordGroups")
+                .get(baseUrl + "/getUsers")
                 .then((response) => {
                   console.log(response.data);
                   props.setDataSource(response.data);

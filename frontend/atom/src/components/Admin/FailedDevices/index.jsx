@@ -1,10 +1,12 @@
 import React, { useState, useEffect } from "react";
+import * as XLSX from "xlsx";
 import uam from "../assets/uamm.svg";
 import dcm from "../assets/dcmm.svg";
 import ipam from "../assets/ipam.svg";
 import device from "../assets/device.svg";
 import axios, { baseUrl } from "../../../utils/axios";
 import { FailedDevicesStyle, TabStyle } from "./FailedDevices.style";
+import exportExcel from "./assets/exp.svg";
 import {
   IpamIcon,
   MonitoringIcon,
@@ -12,7 +14,7 @@ import {
   NetworkMapIcon,
   UamIcon,
 } from "../../../svg";
-import { TableStyling } from "../../AllStyling/All.styled";
+import { StyledExportButton, TableStyling } from "../../AllStyling/All.styled";
 
 const index = () => {
   const [uamCard, setUamCard] = useState("");
@@ -152,6 +154,22 @@ const index = () => {
     //   tabText: "Network Configuration Manager (NCM)",
     // },
   ];
+
+  const jsonToExcel = (failedDevices) => {
+    let wb = XLSX.utils.book_new();
+    let binaryFailedDevices = XLSX.utils.json_to_sheet(failedDevices);
+    XLSX.utils.book_append_sheet(wb, binaryFailedDevices, "FailedDevices");
+    XLSX.writeFile(wb, "FailedDevices.xlsx");
+  };
+
+  const exportSeed = async () => {
+    if (tableData.length > 0) {
+      jsonToExcel(tableData);
+      openNotification();
+    } else {
+      openSweetAlert("No Data Found!", "info");
+    }
+  };
 
   const getTabsData = (tabName) => {
     switch (tabName) {
@@ -347,7 +365,24 @@ const index = () => {
         </article>
 
         <article className="tab-data">
-          <h3 className="title">Failed Devices</h3>
+          <article className="section-header">
+            <h3 className="title">Failed Devices</h3>
+            <StyledExportButton
+              onClick={exportSeed}
+              style={{
+                marginRight: "12px",
+              }}
+            >
+              <img
+                src={exportExcel}
+                alt=""
+                width="15px"
+                height="15px"
+                style={{ marginBottom: "3px" }}
+              />
+              &nbsp;&nbsp; Export
+            </StyledExportButton>
+          </article>
 
           <TableStyling dataSource={tableData} columns={uamColumns} />
         </article>

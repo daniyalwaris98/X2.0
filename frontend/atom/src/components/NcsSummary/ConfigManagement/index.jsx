@@ -180,15 +180,17 @@ const index_Main = () => {
 
   const handleBackup = async (e) => {
     e.preventDefault();
-    const Data = {
+    const ipData = {
       ip_address: ipAddress,
     };
 
     setLoading(true);
 
     await axios
-      .post(baseUrl + "/backupConfigurations", Data)
+      .post(baseUrl + "/backupConfigurations", ipData)
       .then((response) => {
+        console.log("IP response ==============>", response);
+
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
           setLoading(false);
@@ -196,9 +198,7 @@ const index_Main = () => {
           openSweetAlert(response?.data, "success");
 
           axios
-            .post(baseUrl + "/getAllConfigurationDates", {
-              ip_address: ipAddress,
-            })
+            .post(baseUrl + "/getAllConfigurationDates", ipData)
             .then((response) => {
               excelData = response.data;
               setDataSource(excelData);
@@ -548,7 +548,7 @@ const index_Main = () => {
             Backup
           </button>
           &nbsp;&nbsp;
-          <Dropdown menu={menu}>
+          <Dropdown overlay={menu}>
             <button
               className="ant-dropdown-link"
               style={{
