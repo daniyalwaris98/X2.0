@@ -122,6 +122,7 @@ bandwidth_time = 900000
 
 from app.license import license_generator
 
+from app.routes import one_time_setup
 from app.routes import login_routes
 from app.routes import admin_routes
 
