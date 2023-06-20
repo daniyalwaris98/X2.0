@@ -66,7 +66,7 @@ const AddAtom = (props) => {
     try {
       //console.log(device);
       await axios
-        .post(baseUrl + "/addUser", device)
+        .post(baseUrl + "/addPasswordGroup", device)
 
         .then((response) => {
           // console.log(response?.status);
@@ -79,7 +79,7 @@ const AddAtom = (props) => {
             const promises = [];
             promises.push(
               axios
-                .get(baseUrl + "/getUsers")
+                .get(baseUrl + "/getPasswordGroups")
                 .then((response) => {
                   console.log(response.data);
                   props.setDataSource(response.data);

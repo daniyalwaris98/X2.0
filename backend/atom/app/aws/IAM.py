@@ -224,7 +224,7 @@ class IAM(AWS.AWS):
                 groupDict = {
                     'group_name':group_name,
                     'creation_date':create_date,
-                    'users' : userList,
+                    'utilities' : userList,
                     'policis': policyList
                 }
 

@@ -3,7 +3,7 @@ from sqlalchemy import ForeignKey
 from datetime import datetime
 
 
-class LICENSE_VERIFICATION_TABLE(db.Model):
+class LicenseVerificationTable(db.Model):
     __tablename__ = 'license_verification_table'
     license_id = db.Column(db.Integer, primary_key=True)
     license_verification_key = db.Column(db.String(2500))
@@ -17,7 +17,7 @@ class LICENSE_VERIFICATION_TABLE(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class END_USER_TABLE(db.Model):
+class EndUserTable(db.Model):
     __tablename__ = 'end_user_table'
     end_user_id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String(500))
@@ -36,12 +36,12 @@ class END_USER_TABLE(db.Model):
         db.DateTime, default=datetime.now(), onupdate=datetime.now())
     license_id = db.Column(db.Integer, ForeignKey(
         'license_verification_table.license_id'))
-    
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class USER_ROLES(db.Model):
+class UserRolesTable(db.Model):
     __tablename__ = 'user_roles'
     role_id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50))
@@ -49,12 +49,12 @@ class USER_ROLES(db.Model):
     creation_date = db.Column(db.DateTime, default=datetime.now())
     modification_date = db.Column(
         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-    
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class USER_TABLE(db.Model):
+class UserTable(db.Model):
     __tablename__ = 'user_table'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50))
@@ -72,12 +72,12 @@ class USER_TABLE(db.Model):
     end_user_id = db.Column(
         db.Integer, ForeignKey('end_user_table.end_user_id'))
     super_user = db.Column(db.String(15), default="False")
-    
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class LOGIN_ACTIVITY_TABLE(db.Model):
+class LoginActivityTable(db.Model):
     __tablename__ = 'login_activity_table'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -91,82 +91,83 @@ class LOGIN_ACTIVITY_TABLE(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-
-# class Atom(db.Model):
-#     __tablename__ = 'atom_table'
-#     atom_id = db.Column(db.Integer, primary_key=True)
-#     site_name = db.Column(db.String(50), ForeignKey('phy_table.site_name'))
-#     rack_name = db.Column(db.String(50), ForeignKey('rack_table.rack_name'))
-#     device_name = db.Column(db.String(50))
-#     ip_address = db.Column(db.String(50))
-#     device_ru = db.Column(db.String(50))
-#     department = db.Column(db.String(50))
-#     section = db.Column(db.String(50))
-#     criticality = db.Column(db.String(20))
-#     function = db.Column(db.String(50))
-#     domain = db.Column(db.String(50))
-#     virtual = db.Column(db.String(20))
-#     device_type = db.Column(db.String(50))
-#     password_group = db.Column(db.String(50), ForeignKey(
-#         'password_group_table.password_group'))
-#     onboard_status = db.Column(db.String(50))
-#     inserted = db.Column(db.Integer)
-#     updated = db.Column(db.Integer)
-#     exception = db.Column(db.Integer)
-
-#     def as_dict(self):
-#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+class PasswordGroupTable(db.Model):
+    __tablename__ = 'password_group_table'
+    password_group = db.Column(db.String(50), primary_key=True)
+    username = db.Column(db.String(50))
+    password = db.Column(db.String(50))
+    secret_password = db.Column(db.String(50))
+    password_group_type = db.Column(db.String(50))
 
 
-# class Password_Group_Table(db.Model):
-#     __tablename__ = 'password_group_table'
-#     password_group = db.Column(db.String(50), primary_key=True)
-#     username = db.Column(db.String(50))
-#     password = db.Column(db.String(50))
+class SiteTable(db.Model):
+    __tablename__ = 'site_table'
+    site_id = db.Column(db.Integer, primary_key=True)
+    site_name = db.Column(db.String(50))
+    region_name = db.Column(db.String(50))
+    latitude = db.Column(db.String(70))
+    longitude = db.Column(db.String(70))
+    city = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    total_count = db.Column(db.Integer)
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-# class Phy_Table(db.Model):
-#     __tablename__ = 'phy_table'
-#     site_id = db.Column(db.Integer, primary_key=True)
-#     site_name = db.Column(db.String(50))
-#     region_name = db.Column(db.String(50))
-#     latitude = db.Column(db.String(70))
-#     longitude = db.Column(db.String(70))
-#     city = db.Column(db.String(50))
-#     creation_date = db.Column(db.DateTime, default=datetime.now())
-#     modification_date = db.Column(
-#         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-#     status = db.Column(db.String(50))
-#     total_count = db.Column(db.Integer)
+class RackTable(db.Model):
+    __tablename__ = 'rack_table'
+    rack_id = db.Column(db.Integer, primary_key=True)
+    rack_name = db.Column(db.String(50))
+    site_id = db.Column(db.Integer, ForeignKey('site_table.site_id'))
+    serial_number = db.Column(db.String(50))
+    manufacturer_date = db.Column(db.Date, default=datetime(2000, 1, 1))
+    unit_position = db.Column(db.String(20))
+    status = db.Column(db.String(50))
+    ru = db.Column(db.String(50))
+    rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1))
+    height = db.Column(db.Integer)
+    width = db.Column(db.Integer)
+    depth = db.Column(db.Integer)
+    pn_code = db.Column(db.String(50))
+    rack_model = db.Column(db.String(50))
+    floor = db.Column(db.String(50))
+    total_count = db.Column(db.Integer)
 
-#     def as_dict(self):
-#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-# class Rack_Table(db.Model):
-#     __tablename__ = 'rack_table'
-#     rack_id = db.Column(db.Integer, primary_key=True)
-#     rack_name = db.Column(db.String(50))
-#     site_name = db.Column(db.String(50))
-#     serial_number = db.Column(db.String(50))
-#     manufacturer_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     unit_position = db.Column(db.String(20))
-#     creation_date = db.Column(db.DateTime, default=datetime.now())
-#     modification_date = db.Column(
-#         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-#     status = db.Column(db.String(50))
-#     ru = db.Column(db.String(50))
-#     rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     height = db.Column(db.Integer)
-#     width = db.Column(db.Integer)
-#     depth = db.Column(db.Integer)
-#     pn_code = db.Column(db.String(50))
-#     rack_model = db.Column(db.String(50))
-#     floor = db.Column(db.String(50))
-#     total_count = db.Column(db.Integer)
+class AtomTable(db.Model):
+    __tablename__ = 'atom_table'
+    atom_id = db.Column(db.Integer, primary_key=True)
+    rack_id = db.Column(db.String(50), ForeignKey('rack_table.rack_id'))
+    device_name = db.Column(db.String(50))
+    ip_address = db.Column(db.String(50))
+    device_ru = db.Column(db.String(50))
+    department = db.Column(db.String(50))
+    section = db.Column(db.String(50))
+    criticality = db.Column(db.String(20))
+    function = db.Column(db.String(50))
+    domain = db.Column(db.String(50))
+    virtual = db.Column(db.String(20))
+    device_type = db.Column(db.String(50))
+    password_group = db.Column(db.String(50), ForeignKey('password_group_table.password_group'))
+    onboard_status = db.Column(db.String(50))
+    inserted = db.Column(db.Integer)
+    updated = db.Column(db.Integer)
+    exception = db.Column(db.Integer)
+    scop = db.Column(db.String(50), default='Atom')
 
-#     def as_dict(self):
-#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 
 # class Device_Table(db.Model):

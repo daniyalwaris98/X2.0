@@ -1,240 +1,145 @@
-from lib2to3.pgen2 import token
-from os import device_encoding
-from re import A
-from app import app, db
-from flask import request, make_response, Response, session
-from app.models.inventory_models import Phy_Table, Rack_Table, Board_Table, Subboard_Table, Sfps_Table, License_Table, Device_Table, Atom,APS_TABLE
-from flask_jsonpify import jsonify
-import pandas as pd
-import json
-import sys
-import time
-from datetime import date, datetime
-from flask import request, make_response, Response, session
-from sqlalchemy import func
+from app import app
+from app.models.inventory_models import *
 from app.middleware import token_required
-from dateutil.relativedelta import relativedelta
-import gzip
+
+from flask_jsonpify import jsonify
+from flask import request
+
 import traceback
-from flask_cors import CORS, cross_origin
+import sys
+from datetime import datetime
 
 
 def FormatDate(date):
-    #print(date, file=sys.stderr)
+    # print(date, file=sys.stderr)
     if date is not None:
         result = date.strftime('%d-%m-%Y')
     else:
-        #result = datetime(2000, 1, 1)
-        result = datetime(2000,1,1)
-
-    return result
-
-
-def InsertData(obj):
-    # add data to db
-    try:
-        db.session.add(obj)
-        db.session.commit()
-
-    except Exception as e:
-        db.session.rollback()
-        print(
-            f"Something else went wrong in Database Insertion {e}", file=sys.stderr)
-
-    return True
-
-
-def UpdateData(obj):
-    # add data to db
-    #print(obj, file=sys.stderr)
-    try:
-        db.session.flush()
-
-        db.session.merge(obj)
-        db.session.commit()
-
-    except Exception as e:
-        db.session.rollback()
-        print(
-            f"Something else went wrong during Database Update {e}", file=sys.stderr)
-
-    return True
-
-
-def FormatStringDate(date):
-    print(date, file=sys.stderr)
-
-    try:
-        if date is not None:
-            if '-' in date:
-                result = datetime.strptime(date, '%d-%m-%Y')
-            elif '/' in date:
-                result = datetime.strptime(date, '%d/%m/%Y')
-            else:
-                print("incorrect date format", file=sys.stderr)
-                result = datetime(2000, 1, 1)
-        else:
-            #result = datetime(2000, 1, 1)
-            result = datetime(2000, 1, 1)
-    except:
+        # result = datetime(2000, 1, 1)
         result = datetime(2000, 1, 1)
-        print("date format exception", file=sys.stderr)
 
     return result
-
-
-@app.route('/', methods=['GET'])
-@token_required
-def Hello(user_data):
-    return jsonify('HELLO WORLD'), 200
 
 
 @app.route('/getAllSites', methods=['GET'])
 @token_required
 def GetAllSites(user_data):
-    if True:
-        try:
-            phyObjList = []
-            phyObjs = Phy_Table.query.all()
-            for phyObj in phyObjs:
-                print(phyObj.longitude,file=sys.stderr)
-                phyDataDict = {}
-                phyDataDict['site_id'] = phyObj.site_id
-                phyDataDict['site_name'] = phyObj.site_name
-                phyDataDict['region'] = phyObj.region
-                phyDataDict['longitude'] = phyObj.longitude                    
-                phyDataDict['latitude'] = phyObj.latitude
-                phyDataDict['city'] = phyObj.city          
-                phyDataDict['creation_date'] = FormatDate((phyObj.creation_date))
-                phyDataDict['modification_date'] = FormatDate((phyObj.modification_date))
-                phyDataDict['status'] = phyObj.status
-                # phyDataDict['total_count']=phyObj.total_count 
-                phyObjList.append(phyDataDict)
-            print(phyObjList, file=sys.stderr)
-            return jsonify(phyObjList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+    try:
+        siteObjList = []
+        siteObjs = SiteTable.query.all()
+        for siteObj in siteObjs:
+            siteDataDict = {'site_id': siteObj.site_id, 'site_name': siteObj.site_name,
+                            'region': siteObj.region_name, 'longitude': siteObj.longitude,
+                            'latitude': siteObj.latitude, 'city': siteObj.city,
+                            'creation_date': FormatDate(siteObj.creation_date),
+                            'modification_date': FormatDate(siteObj.modification_date), 'status': siteObj.status}
+
+            siteObjList.append(siteDataDict)
+        print(siteObjList, file=sys.stderr)
+
+        return jsonify(siteObjList), 200
+    except Exception as e:
+        traceback.print_exc()
+        return str(e), 500
 
 
 @app.route('/addSite', methods=['POST'])
 @token_required
 def AddSite(user_data):
-    if True:
-        try:
-            siteObj = request.get_json()
-            # print(siteObj, file=sys.stderr)
-            # site = Phy_Table()
+    try:
+        siteObj = request.get_json()
 
-            # site.site_name = siteObj['site_name']
-            # site.region = siteObj['region']
-            # site.latitude = siteObj['latitude']
-            # site.longitude = siteObj['longitude']
-            # site.city = siteObj['city']
-            # site.status = siteObj['status']
-            # if 'total_count' in siteObj:
+        queryString = f"select SITE_ID from phy_table;"
+        result = db.session.execute(queryString)
+        idsList = []
+        for row in result:
+            idsList.append(row[0])
 
-            #     if siteObj['total_count']=='':
-            #         siteObj['total_count'] = 0
-            #         site.total_count = siteObj['total_count']
-            #     else:
-            #         site.total_count = siteObj['total_count']
-            queryString = f"select SITE_ID from phy_table;"
-            result = db.session.execute(queryString)
-            idsList = []
-            for row in result:
-                idsList.append(row[0])
+        date = datetime.now()
+        atomSiteList = []
+        queryString = f"select SITE_NAME from atom_table;"
+        result = db.session.execute(queryString)
+        for row in result:
+            atomSiteList.append(row[0])
 
-            date = datetime.now()
-            atomSiteList = []
-            queryString = f"select SITE_NAME from atom_table;"
-            result = db.session.execute(queryString)
-            for row in result:
-                atomSiteList.append(row[0])
-            
-            # if siteObj['site_name'] in atomSiteList:
-            #     return 'Site Name Already Exists', 500
-            if 'site_id' in siteObj:
-                if siteObj['site_id'] in idsList:
-                    # queryString = f"update atom_table set SITE_NAME='{siteObj['site_name']}' where SITE_NAME='{siteObj['old_site_name']}';"
-                    # db.session.execute(queryString)
-                    # db.session.commit()
-                    # queryString = f"update rack_table set SITE_NAME='{siteObj['site_name']}' where SITE_NAME='{siteObj['old_site_name']}';"
-                    # db.session.execute(queryString)
-                    # db.session.commit()
-                    queryString1 = f"update phy_table set SITE_NAME='{siteObj['site_name']}',CITY='{siteObj['city']}',REGION='{siteObj['region']}',STATUS='{siteObj['status']}',LATITUDE='{siteObj['latitude']}',LONGITUDE='{siteObj['longitude']}',MODIFICATION_DATE='{date}' where SITE_ID={siteObj['site_id']};" 
-                    db.session.execute(queryString1)
-                    db.session.commit()
-                    print(f"Updated {siteObj['site_id']}",file=sys.stderr)
-                    
-                    return "Site Updated Successfully",200
-                else:
-                    return "Something Went Wrong",500
-            else:
-
-                queryString = f"select SITE_NAME from phy_table;"
-                result = db.session.execute(queryString)
-                siteList = []
-                for row in result:
-                    siteList.append(row[0])
-
-                if siteObj['site_name'] in siteList:
-                    return 'Site Name Already Exists', 500
-                
-                queryString2 = f"INSERT INTO phy_table (SITE_NAME,CITY,REGION,STATUS,LATITUDE,LONGITUDE,CREATION_DATE,MODIFICATION_DATE) VALUES ('{siteObj['site_name']}','{siteObj['city']}','{siteObj['region']}','{siteObj['status']}','{siteObj['latitude']}','{siteObj['longitude']}','{date}','{date}');"
-                db.session.execute(queryString2)
+        # if siteObj['site_name'] in atomSiteList:
+        #     return 'Site Name Already Exists', 500
+        if 'site_id' in siteObj:
+            if siteObj['site_id'] in idsList:
+                # queryString = f"update atom_table set SITE_NAME='{siteObj['site_name']}' where SITE_NAME='{siteObj['old_site_name']}';"
+                # db.session.execute(queryString)
+                # db.session.commit()
+                # queryString = f"update rack_table set SITE_NAME='{siteObj['site_name']}' where SITE_NAME='{siteObj['old_site_name']}';"
+                # db.session.execute(queryString)
+                # db.session.commit()
+                queryString1 = f"update phy_table set SITE_NAME='{siteObj['site_name']}',CITY='{siteObj['city']}',REGION='{siteObj['region']}',STATUS='{siteObj['status']}',LATITUDE='{siteObj['latitude']}',LONGITUDE='{siteObj['longitude']}',MODIFICATION_DATE='{date}' where SITE_ID={siteObj['site_id']};"
+                db.session.execute(queryString1)
                 db.session.commit()
-                print(f"Inserted {siteObj['site_name']}",file=sys.stderr)
-                return "Site Inserted Successfully",200
-                 
+                print(f"Updated {siteObj['site_id']}", file=sys.stderr)
 
-        except Exception as e:
-            traceback.print_exc()
-            return "Site name is already in use\nSite name can not be updated", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+                return "Site Updated Successfully", 200
+            else:
+                return "Something Went Wrong", 500
+        else:
 
-@app.route('/deleteSite',methods = ['POST'])
+            queryString = f"select SITE_NAME from phy_table;"
+            result = db.session.execute(queryString)
+            siteList = []
+            for row in result:
+                siteList.append(row[0])
+
+            if siteObj['site_name'] in siteList:
+                return 'Site Name Already Exists', 500
+
+            queryString2 = f"INSERT INTO phy_table (SITE_NAME,CITY,REGION,STATUS,LATITUDE,LONGITUDE,CREATION_DATE,MODIFICATION_DATE) VALUES ('{siteObj['site_name']}','{siteObj['city']}','{siteObj['region']}','{siteObj['status']}','{siteObj['latitude']}','{siteObj['longitude']}','{date}','{date}');"
+            db.session.execute(queryString2)
+            db.session.commit()
+            print(f"Inserted {siteObj['site_name']}", file=sys.stderr)
+            return "Site Inserted Successfully", 200
+
+
+    except Exception as e:
+        traceback.print_exc()
+        return "Site name is already in use\nSite name can not be updated", 500
+
+
+@app.route('/deleteSite', methods=['POST'])
 @token_required
 def DeleteSite(user_data):
     if True:
         try:
             response = False
             siteIds = request.get_json()
-            print("SITEEEEEEEEE",siteIds,file=sys.stderr)
+            print("SITEEEEEEEEE", siteIds, file=sys.stderr)
             for siteId in siteIds:
                 queryString1 = f"select count(*) from atom_table where SITE_NAME=(select SITE_NAME from phy_table where SITE_ID={siteId});"
                 result1 = db.session.execute(queryString1).scalar()
                 queryString2 = f"select count(*) from device_table where SITE_NAME=(select SITE_NAME from phy_table where SITE_ID ={siteId});"
-                result2 = db.session.execute(queryString2).scalar()            
+                result2 = db.session.execute(queryString2).scalar()
                 queryString3 = f"select count(*) from rack_table where SITE_NAME= (select SITE_NAME from phy_table where SITE_ID ={siteId});"
                 result3 = db.session.execute(queryString3).scalar()
-                print("RESULTSSSSSSSSS",result1,result2,result3,file=sys.stderr)
-                if result1>0 and result2>0 and result3>0:
-                    return "Site Name Found in Atom, Rack and Device",500
-                if result1>0 and result2>0:
-                    return "Site Name Found in Atom and Device",500
-                if result1>0 and result3>0:
-                    return "Site Name Found in Atom and Rack",500
-                if result2>0 and result3>0:
-                    return "Site Name Found in Device and Rack",500
-                if result1>0:
-                    return "Site Name Found in Atom",500
-                if result2>0:
-                    return "Site Name Found in Device",500
-                if result3>0:
-                    return "Site Name Found in Rack",500
+                print("RESULTSSSSSSSSS", result1, result2, result3, file=sys.stderr)
+                if result1 > 0 and result2 > 0 and result3 > 0:
+                    return "Site Name Found in Atom, Rack and Device", 500
+                if result1 > 0 and result2 > 0:
+                    return "Site Name Found in Atom and Device", 500
+                if result1 > 0 and result3 > 0:
+                    return "Site Name Found in Atom and Rack", 500
+                if result2 > 0 and result3 > 0:
+                    return "Site Name Found in Device and Rack", 500
+                if result1 > 0:
+                    return "Site Name Found in Atom", 500
+                if result2 > 0:
+                    return "Site Name Found in Device", 500
+                if result3 > 0:
+                    return "Site Name Found in Rack", 500
                 else:
-                    queryString = f"delete from phy_table where site_id = '{siteId}';" 
+                    queryString = f"delete from phy_table where site_id = '{siteId}';"
                     db.session.execute(queryString)
                     db.session.commit()
                     response = True
-            if response==True:
-                return "Site Deleted Successfully",200
+            if response == True:
+                return "Site Deleted Successfully", 200
         except Exception as e:
             traceback.print_exc()
             return "Site name is already in use\nSite can not be deleted", 500
@@ -242,70 +147,69 @@ def DeleteSite(user_data):
         print("Service not Available", file=sys.stderr)
         return jsonify({"Response": "Service not Available"}), 503
 
+
 @app.route('/getAllDevices', methods=['GET'])
 @token_required
 def GetAllDevices(user_data):
-    if True:
-        try:
-            deviceObjList = []
-            deviceObjs = Device_Table.query.all()
-            for deviceObj in deviceObjs:
-                deviceDataDict = {}
-                deviceDataDict['device_name'] = deviceObj.device_name
-                deviceDataDict['site_name'] = deviceObj.site_name
-                deviceDataDict['rack_name'] = deviceObj.rack_name
-                deviceDataDict['ip_address'] = deviceObj.ip_address
-                deviceDataDict['device_type'] = deviceObj.device_type
-                deviceDataDict['software_type'] = deviceObj.software_type
-                deviceDataDict['software_version'] = deviceObj.software_version
-                # deviceDataDict['patch_version'] = deviceObj.patch_version
-                deviceDataDict['creation_date'] = FormatDate(
-                    (deviceObj.creation_date))
-                deviceDataDict['modification_date'] = FormatDate(
-                    (deviceObj.modification_date))
-                deviceDataDict['status'] = deviceObj.status
-                deviceDataDict['ru'] = deviceObj.ru
-                deviceDataDict['department'] = deviceObj.department
-                deviceDataDict['section'] = deviceObj.section
-                # deviceDataDict['criticality'] = deviceObj.criticality
-                deviceDataDict['function'] = deviceObj.function
-                # deviceDataDict['domain'] = deviceObj.domain
-                deviceDataDict['manufacturer'] = deviceObj.manufacturer
-                deviceDataDict['hw_eos_date'] = FormatDate(
-                    (deviceObj.hw_eos_date))
-                deviceDataDict['hw_eol_date'] = FormatDate(
-                    (deviceObj.hw_eol_date))
-                deviceDataDict['sw_eos_date'] = FormatDate(
-                    (deviceObj.sw_eos_date))
-                deviceDataDict['sw_eol_date'] = FormatDate(
-                    (deviceObj.sw_eol_date))
-                deviceDataDict['virtual'] = (deviceObj.virtual)
-                deviceDataDict['rfs_date'] = FormatDate((deviceObj.rfs_date))
-                deviceDataDict['authentication'] = deviceObj.authentication
-                deviceDataDict['serial_number'] = deviceObj.serial_number
-                deviceDataDict['pn_code'] = deviceObj.pn_code
-                # deviceDataDict['subrack_id_number'] = deviceObj.subrack_id_number
-                deviceDataDict['manufacturer_date'] = FormatDate(
-                    (deviceObj.manufacturer_date))
-                # deviceDataDict['max_power'] = deviceObj.max_power
-                # deviceDataDict['site_type'] = deviceObj.site_type
-                deviceDataDict['source'] = deviceObj.source
-                deviceDataDict['stack'] = deviceObj.stack
-                deviceDataDict['contract_number'] = deviceObj.contract_number
-                deviceDataDict['hardware_version'] = deviceObj.hardware_version
-                deviceDataDict['contract_expiry'] = FormatDate(
-                    (deviceObj.contract_expiry))
-                deviceDataDict['uptime'] = ((deviceObj.uptime))
+    return jsonify(list()), 200
 
-                deviceObjList.append(deviceDataDict)
-            # print(deviceObjList, file=sys.stderr)
-            return jsonify(deviceObjList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+    try:
+        deviceObjList = []
+        deviceObjs = Device_Table.query.all()
+        for deviceObj in deviceObjs:
+            deviceDataDict = {}
+            deviceDataDict['device_name'] = deviceObj.device_name
+            deviceDataDict['site_name'] = deviceObj.site_name
+            deviceDataDict['rack_name'] = deviceObj.rack_name
+            deviceDataDict['ip_address'] = deviceObj.ip_address
+            deviceDataDict['device_type'] = deviceObj.device_type
+            deviceDataDict['software_type'] = deviceObj.software_type
+            deviceDataDict['software_version'] = deviceObj.software_version
+            # deviceDataDict['patch_version'] = deviceObj.patch_version
+            deviceDataDict['creation_date'] = FormatDate(
+                (deviceObj.creation_date))
+            deviceDataDict['modification_date'] = FormatDate(
+                (deviceObj.modification_date))
+            deviceDataDict['status'] = deviceObj.status
+            deviceDataDict['ru'] = deviceObj.ru
+            deviceDataDict['department'] = deviceObj.department
+            deviceDataDict['section'] = deviceObj.section
+            # deviceDataDict['criticality'] = deviceObj.criticality
+            deviceDataDict['function'] = deviceObj.function
+            # deviceDataDict['domain'] = deviceObj.domain
+            deviceDataDict['manufacturer'] = deviceObj.manufacturer
+            deviceDataDict['hw_eos_date'] = FormatDate(
+                (deviceObj.hw_eos_date))
+            deviceDataDict['hw_eol_date'] = FormatDate(
+                (deviceObj.hw_eol_date))
+            deviceDataDict['sw_eos_date'] = FormatDate(
+                (deviceObj.sw_eos_date))
+            deviceDataDict['sw_eol_date'] = FormatDate(
+                (deviceObj.sw_eol_date))
+            deviceDataDict['virtual'] = (deviceObj.virtual)
+            deviceDataDict['rfs_date'] = FormatDate((deviceObj.rfs_date))
+            deviceDataDict['authentication'] = deviceObj.authentication
+            deviceDataDict['serial_number'] = deviceObj.serial_number
+            deviceDataDict['pn_code'] = deviceObj.pn_code
+            # deviceDataDict['subrack_id_number'] = deviceObj.subrack_id_number
+            deviceDataDict['manufacturer_date'] = FormatDate(
+                (deviceObj.manufacturer_date))
+            # deviceDataDict['max_power'] = deviceObj.max_power
+            # deviceDataDict['site_type'] = deviceObj.site_type
+            deviceDataDict['source'] = deviceObj.source
+            deviceDataDict['stack'] = deviceObj.stack
+            deviceDataDict['contract_number'] = deviceObj.contract_number
+            deviceDataDict['hardware_version'] = deviceObj.hardware_version
+            deviceDataDict['contract_expiry'] = FormatDate(
+                (deviceObj.contract_expiry))
+            deviceDataDict['uptime'] = ((deviceObj.uptime))
+
+            deviceObjList.append(deviceDataDict)
+        # print(deviceObjList, file=sys.stderr)
+        return jsonify(deviceObjList), 200
+    except Exception as e:
+        traceback.print_exc()
+        return str(e), 500
 
 
 @app.route('/addDevice', methods=['POST'])
@@ -344,13 +248,17 @@ def AddDevice(user_data):
             device.stack = deviceObj['stack']
             device.contract_number = deviceObj['contract_number']
 
-            if Device_Table.query.with_entities(Device_Table.ip_address).filter_by(ip_address=deviceObj['ip_address']).first() is not None:
-                    device.device_name = Device_Table.query.with_entities(Device_Table.device_name).filter_by(ip_address=deviceObj['ip_address']).first()[0]
-                    print(f"UPDATED {deviceObj['device_name']} WITH IP ", deviceObj['ip_address'],"SUCCESSFULLY",file = sys.stderr)
-                    UpdateData(device)
-                    
+            if Device_Table.query.with_entities(Device_Table.ip_address).filter_by(
+                    ip_address=deviceObj['ip_address']).first() is not None:
+                device.device_name = Device_Table.query.with_entities(Device_Table.device_name).filter_by(
+                    ip_address=deviceObj['ip_address']).first()[0]
+                print(f"UPDATED {deviceObj['device_name']} WITH IP ", deviceObj['ip_address'], "SUCCESSFULLY",
+                      file=sys.stderr)
+                UpdateData(device)
+
             else:
-                print(f"Inserted {deviceObj['device_name']} WITH IP ", deviceObj['ip_address'],"SUCCESSFULLY", file=sys.stderr)
+                print(f"Inserted {deviceObj['device_name']} WITH IP ", deviceObj['ip_address'], "SUCCESSFULLY",
+                      file=sys.stderr)
                 InsertData(device)
 
             flag = 'False'
@@ -361,22 +269,24 @@ def AddDevice(user_data):
             db.session.execute(query)
             db.session.commit()
 
-            return jsonify({'response': "success", "code": "200"}),200
+            return jsonify({'response': "success", "code": "200"}), 200
         except Exception as e:
             traceback.print_exc()
-            return jsonify({'response': "Error", "code": "500"}),500
+            return jsonify({'response': "Error", "code": "500"}), 500
     else:
         print("Service not Available", file=sys.stderr)
         return jsonify({"Response": "Service not Available"}), 503
 
-@app.route('/editDevice',methods = ['POST'])
+
+@app.route('/editDevice', methods=['POST'])
 @token_required
 def EditDevice(user_data):
     if True:
         try:
             deviceObj = request.get_json()
-            
-            device = Device_Table.query.with_entities(Device_Table).filter_by(device_name=deviceObj["device_name"]).first()
+
+            device = Device_Table.query.with_entities(Device_Table).filter_by(
+                device_name=deviceObj["device_name"]).first()
 
             # device.device_name = deviceObj['device_name']
             device.site_name = deviceObj['site_name']
@@ -413,19 +323,19 @@ def EditDevice(user_data):
             # device.contract_expiry = deviceObj['contract_expiry']
 
             UpdateData(device)
-            print("Updated Device "+deviceObj['device_name'], file=sys.stderr)
-            
-            #Updating device parameters in Atom
+            print("Updated Device " + deviceObj['device_name'], file=sys.stderr)
+
+            # Updating device parameters in Atom
             queryString = f"update atom_table set SITE_NAME='{deviceObj['site_name']}' where DEVICE_NAME='{deviceObj['device_name']}';"
             db.session.execute(queryString)
             db.session.commit()
-            print(f"SITE NAME SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",file=sys.stderr)
-            
+            print(f"SITE NAME SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}", file=sys.stderr)
+
             queryString = f"update atom_table set RACK_NAME='{deviceObj['rack_name']}' where DEVICE_NAME='{deviceObj['device_name']}';"
             db.session.execute(queryString)
             db.session.commit()
-            print(f"RACK NAME SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",file=sys.stderr)
-            
+            print(f"RACK NAME SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}", file=sys.stderr)
+
             # queryString = f"update atom_table set STATUS='{device.status}' where DEVICE_NAME='{deviceObj['device_name']}';"
             # db.session.execute(queryString)
             # db.session.commit()
@@ -434,32 +344,30 @@ def EditDevice(user_data):
             queryString = f"update atom_table set DEPARTMENT='{deviceObj['department']}' where DEVICE_NAME='{deviceObj['device_name']}';"
             db.session.execute(queryString)
             db.session.commit()
-            print(f"DEPARTMENT SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",file=sys.stderr)
+            print(f"DEPARTMENT SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}", file=sys.stderr)
 
             queryString = f"update atom_table set SECTION='{deviceObj['section']}' where DEVICE_NAME='{deviceObj['device_name']}';"
             db.session.execute(queryString)
             db.session.commit()
-            print(f"SECTION SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",file=sys.stderr)
-            
+            print(f"SECTION SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}", file=sys.stderr)
+
             queryString = f"update atom_table set `FUNCTION`='{deviceObj['function']}' where DEVICE_NAME='{deviceObj['device_name']}';"
             db.session.execute(queryString)
             db.session.commit()
-            print(f"FUNCTION SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",file=sys.stderr)
-            
+            print(f"FUNCTION SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}", file=sys.stderr)
+
             queryString = f"update atom_table set `VIRTUAL`='{deviceObj['virtual']}' where DEVICE_NAME='{deviceObj['device_name']}';"
             db.session.execute(queryString)
             db.session.commit()
-            print(f"VIRTUAL SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",file=sys.stderr)
-            
-            #Updating Modules
+            print(f"VIRTUAL SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}", file=sys.stderr)
+
+            # Updating Modules
             queryString = f"update board_table set SOFTWARE_VERSION='{deviceObj['software_version']}' DEVICE_NAME='{deviceObj['device_name']}';"
             db.session.execute(queryString)
             db.session.commit()
             print(f"SOFTWARE VERSION SUCCESSFULLY UPDATED IN MODULES FOR {deviceObj['device_name']}")
 
-
-            
-            return "Device Updated Successfully",200
+            return "Device Updated Successfully", 200
 
         except Exception as e:
             traceback.print_exc()
@@ -469,7 +377,8 @@ def EditDevice(user_data):
         print("Authentication Failed", file=sys.stderr)
         return jsonify({'message': 'Authentication Failed'}), 401
 
-@app.route('/deleteDevice',methods = ['POST'])
+
+@app.route('/deleteDevice', methods=['POST'])
 @token_required
 def DeleteDevice(user_data):
     if True:
@@ -486,48 +395,37 @@ def DeleteDevice(user_data):
                 db.session.commit()
                 db.session.execute(f"delete from device_table where device_name='{deviceName}';")
                 db.session.commit()
-            return "DELETED SUCCESSFULLY",200
+            return "DELETED SUCCESSFULLY", 200
         except Exception as e:
             traceback.print_exc()
             return str(e), 500
     else:
         print("Service not Available", file=sys.stderr)
         return jsonify({"Response": "Service not Available"}), 503
+
+
 @app.route('/getAllRacks', methods=['GET'])
 @token_required
 def GetAllRacks(user_data):
-    if True:
-        try:
-            rackObjList = []
-            rackObjs = Rack_Table.query.all()
-            for rackObj in rackObjs:
-                rackDataDict = {}
-                rackDataDict['rack_id'] = rackObj.rack_id
-                rackDataDict['rack_name'] = rackObj.rack_name
-                rackDataDict['site_name'] = rackObj.site_name
-                rackDataDict['serial_number'] = rackObj.serial_number
-                rackDataDict['manufacturer_date'] = FormatDate((rackObj.manufacturer_date))
-                rackDataDict['unit_position'] = rackObj.unit_position
-                rackDataDict['creation_date'] = FormatDate((rackObj.creation_date))
-                rackDataDict['modification_date'] =  FormatDate((rackObj.modification_date))
-                rackDataDict['status'] = rackObj.status
-                rackDataDict['ru'] = rackObj.ru
-                rackDataDict['rfs_date'] = FormatDate((rackObj.rfs_date))
-                rackDataDict['height'] = rackObj.height
-                rackDataDict['width'] = rackObj.width
-                # rackDataDict['depth'] = rackObj.depth
-                rackDataDict['pn_code'] = rackObj.pn_code
-                rackDataDict['rack_model'] = rackObj.rack_model
-                rackDataDict['brand'] = rackObj.floor
-                # rackDataDict['total_count'] = rackObj.total_count
-                rackObjList.append(rackDataDict)
-            return jsonify(rackObjList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+    try:
+        rackObjList = []
+        rackObjs = db.session.query(RackTable, SiteTable) \
+            .join(SiteTable, RackTable.site_id == SiteTable.site_id).all()
+        for rackObj in rackObjs:
+            rackDataDict = {'rack_id': rackObj.rack_id, 'rack_name': rackObj.rack_name,
+                            'site_name': rackObj.site_name, 'serial_number': rackObj.serial_number,
+                            'manufacturer_date': FormatDate(rackObj.manufacturer_date),
+                            'unit_position': rackObj.unit_position,
+                            'creation_date': FormatDate(rackObj.creation_date),
+                            'modification_date': FormatDate(rackObj.modification_date), 'status': rackObj.status,
+                            'ru': rackObj.ru, 'rfs_date': FormatDate(rackObj.rfs_date), 'height': rackObj.height,
+                            'width': rackObj.width, 'pn_code': rackObj.pn_code, 'rack_model': rackObj.rack_model,
+                            'brand': rackObj.floor}
+            rackObjList.append(rackDataDict)
+        return jsonify(rackObjList), 200
+    except Exception as e:
+        traceback.print_exc()
+        return str(e), 500
 
 
 @app.route('/addRack', methods=['POST'])
@@ -536,8 +434,9 @@ def AddRack(user_data):
     if True:
         try:
             rackObj = request.get_json()
-            if Phy_Table.query.with_entities(Phy_Table.site_name).filter_by(site_name=rackObj['site_name']).first() is not None:
-                            
+            if Phy_Table.query.with_entities(Phy_Table.site_name).filter_by(
+                    site_name=rackObj['site_name']).first() is not None:
+
                 queryString = f"select RACK_ID from rack_table;"
                 result = db.session.execute(queryString)
                 idsList = []
@@ -561,17 +460,15 @@ def AddRack(user_data):
                     rackObj['height'] = 'NULL'
                 if rackObj['width'] == "":
                     rackObj['width'] = 'NULL'
-                
 
-                
                 if rackObj['rack_name'] in atomRackList:
                     return 'Rack Name Already Exists', 500
                 if 'rack_id' in rackObj:
                     if rackObj['rack_id'] in idsList:
-                        queryString1 = f"update rack_table set SITE_NAME='{rackObj['site_name']}',RACK_NAME='{rackObj['rack_name']}',SERIAL_NUMBER='{rackObj['serial_number']}',CREATION_DATE='{date}',MODIFICATION_DATE='{date}',STATUS='{rackObj['status']}',RU={rackObj['ru']},HEIGHT='{rackObj['height']}',WIDTH='{rackObj['width']}',RACK_MODEL='{rackObj['rack_model']}',FLOOR='{rackObj['floor']}' where RACK_ID={rackObj['rack_id']};" 
+                        queryString1 = f"update rack_table set SITE_NAME='{rackObj['site_name']}',RACK_NAME='{rackObj['rack_name']}',SERIAL_NUMBER='{rackObj['serial_number']}',CREATION_DATE='{date}',MODIFICATION_DATE='{date}',STATUS='{rackObj['status']}',RU={rackObj['ru']},HEIGHT='{rackObj['height']}',WIDTH='{rackObj['width']}',RACK_MODEL='{rackObj['rack_model']}',FLOOR='{rackObj['floor']}' where RACK_ID={rackObj['rack_id']};"
                         db.session.execute(queryString1)
                         db.session.commit()
-                        print(f"Updated {rackObj['rack_id']}",file=sys.stderr)
+                        print(f"Updated {rackObj['rack_id']}", file=sys.stderr)
                         queryString = f"update atom_table set SITE_NAME='{rackObj['site_name']}' where RACK_NAME='{rackObj['rack_name']}';"
                         queryString1 = f"update atom_table set RACK_NAME='{rackObj['rack_name']}' where RACK_NAME=(select RACK_NAME from rack_table where RACK_ID={rackObj['rack_id']});"
                         queryString2 = f"update device_table set SITE_NAME='{rackObj['site_name']}' where RACK_NAME='{rackObj['rack_name']}';"
@@ -581,9 +478,9 @@ def AddRack(user_data):
                         db.session.execute(queryString2)
                         db.session.execute(queryString3)
                         db.session.commit()
-                        return "Rack Updated Successfully",200
+                        return "Rack Updated Successfully", 200
                     else:
-                        return "Something Went Wrong",500
+                        return "Something Went Wrong", 500
                 else:
 
                     queryString = f"select RACK_NAME from rack_table;"
@@ -598,10 +495,10 @@ def AddRack(user_data):
                     queryString2 = f"INSERT INTO rack_table (SITE_NAME,RACK_NAME,SERIAL_NUMBER,CREATION_DATE,MODIFICATION_DATE,STATUS,RU,HEIGHT,WIDTH,RACK_MODEL,FLOOR) VALUES ('{rackObj['site_name']}','{rackObj['rack_name']}','{rackObj['serial_number']}','{date}','{date}','{rackObj['status']}',{rackObj['ru']},{rackObj['height']},{rackObj['width']},'{rackObj['rack_model']}','{rackObj['floor']}');"
                     db.session.execute(queryString2)
                     db.session.commit()
-                    print(f"Inserted {rackObj['rack_name']}",file=sys.stderr)
-                    return "Rack Inserted Successfully",200
-            
-                    
+                    print(f"Inserted {rackObj['rack_name']}", file=sys.stderr)
+                    return "Rack Inserted Successfully", 200
+
+
             else:
                 print("Site Name do not exists", file=sys.stderr)
                 return jsonify({'response': 'Site Name do not exists'}), 500
@@ -613,7 +510,8 @@ def AddRack(user_data):
         print("Authentication Failed", file=sys.stderr)
         return jsonify({'message': 'Authentication Failed'}), 401
 
-@app.route('/deleteRack',methods = ['POST'])
+
+@app.route('/deleteRack', methods=['POST'])
 @token_required
 def DeleteRack(user_data):
     if True:
@@ -629,55 +527,55 @@ def DeleteRack(user_data):
                 result = db.session.execute(queryString).scalar()
                 queryString1 = f"select count(*) from atom_table where rack_name = '{rackName}';"
                 result1 = db.session.execute(queryString1).scalar()
-                if result1>0 and result>0:
-                    response1='both'
+                if result1 > 0 and result > 0:
+                    response1 = 'both'
                     responseList.append(response1)
-                    
-                elif result>0:
-                    response2='device'
+
+                elif result > 0:
+                    response2 = 'device'
                     responseList.append(response2)
-                    
-                elif result1>0:
+
+                elif result1 > 0:
                     response3 = 'atom'
                     responseList.append(response3)
-                    
-                
+
+
                 else:
                     queryString = f"delete from rack_table where rack_name = '{rackName}';"
                     db.session.execute(queryString)
                     db.session.commit()
                     response4 = 'deleted'
                     responseList.append(response4)
-                    
+
             responseList = set(responseList)
             responseList = list(responseList)
-            print(responseList,file=sys.stderr)
-            if len(responseList)==1:
-                if responseList[0]=='both':
-                    return "Rack Name Found in Both Atom and Device",500
-                elif responseList[0]=='device':
-                    return "Rack Name Found in Device",500
-                elif responseList[0]=='atom':
-                    return "Rack Name Found in Atom",500
-                elif responseList[0]=='deleted':
-                    return "Rack Delete Successfully",200
-            elif len(responseList)>1:
+            print(responseList, file=sys.stderr)
+            if len(responseList) == 1:
+                if responseList[0] == 'both':
+                    return "Rack Name Found in Both Atom and Device", 500
+                elif responseList[0] == 'device':
+                    return "Rack Name Found in Device", 500
+                elif responseList[0] == 'atom':
+                    return "Rack Name Found in Atom", 500
+                elif responseList[0] == 'deleted':
+                    return "Rack Delete Successfully", 200
+            elif len(responseList) > 1:
                 # if 'deleted' in responseList:
                 #     return "Some Racks are Deleted",200
                 if 'both' in responseList and 'deleted' in responseList:
-                    return "Some Racks are Deleted and Some Racks Found in Both Atom and Device",200
+                    return "Some Racks are Deleted and Some Racks Found in Both Atom and Device", 200
                 elif 'both' in responseList and 'atom' in responseList:
-                    return "Some Racks Found in Both Atom and Device",500
+                    return "Some Racks Found in Both Atom and Device", 500
                 elif 'both' in responseList and 'device' in responseList:
-                    return "Some Racks Found in Both Atom and Device",500
+                    return "Some Racks Found in Both Atom and Device", 500
                 elif 'device' in responseList and 'deleted' in responseList:
-                    return "Some Racks are Deleted and Some Racks are Found in Atom",200
+                    return "Some Racks are Deleted and Some Racks are Found in Atom", 200
                 elif 'device' in responseList and 'deleted' in responseList:
-                    return "Some Racks are Deleted and Some Racks are Found in Device",200
+                    return "Some Racks are Deleted and Some Racks are Found in Device", 200
                 elif 'device' in responseList and 'atom' in responseList:
-                    return "Some Racks are Found in Atom and Device",500
+                    return "Some Racks are Found in Atom and Device", 500
             else:
-                return "Something Went Wrong",500
+                return "Something Went Wrong", 500
 
         except Exception as e:
             traceback.print_exc()
@@ -688,42 +586,38 @@ def DeleteRack(user_data):
         return jsonify({'message': 'Authentication Failed'}), 401
 
 
-
 @app.route('/getAllBoards', methods=['GET'])
 @token_required
 def GetAllBoards(user_data):
-    if True:
-        try:
-            boardObjList = []
-            boardObjs = Board_Table.query.all()
-            for boardObj in boardObjs:
-                boardDataDict = {}
-                boardDataDict['module_name'] = boardObj.board_name
-                boardDataDict['device_name'] = boardObj.device_name
-                boardDataDict['device_slot_id'] = boardObj.device_slot_id
-                boardDataDict['software_version'] = boardObj.software_version
-                # boardDataDict['hardware_version'] = boardObj.hardware_version
-                boardDataDict['serial_number'] = boardObj.serial_number
-                # boardDataDict['manufacturer_date'] = FormatDate(
-                #     (boardObj.manufacturer_date))
-                boardDataDict['creation_date'] = FormatDate(
-                    (boardObj.creation_date))
-                boardDataDict['modification_date'] = FormatDate(
-                    (boardObj.modification_date))
-                boardDataDict['status'] = boardObj.status
-                boardDataDict['eos_date'] = FormatDate((boardObj.eos_date))
-                boardDataDict['eol_date'] = FormatDate((boardObj.eol_date))
-                # boardDataDict['rfs_date'] = FormatDate((boardObj.rfs_date))
-                boardDataDict['pn_code'] = boardObj.pn_code
+    return jsonify(list()), 200
+    try:
+        boardObjList = []
+        boardObjs = Board_Table.query.all()
+        for boardObj in boardObjs:
+            boardDataDict = {}
+            boardDataDict['module_name'] = boardObj.board_name
+            boardDataDict['device_name'] = boardObj.device_name
+            boardDataDict['device_slot_id'] = boardObj.device_slot_id
+            boardDataDict['software_version'] = boardObj.software_version
+            # boardDataDict['hardware_version'] = boardObj.hardware_version
+            boardDataDict['serial_number'] = boardObj.serial_number
+            # boardDataDict['manufacturer_date'] = FormatDate(
+            #     (boardObj.manufacturer_date))
+            boardDataDict['creation_date'] = FormatDate(
+                (boardObj.creation_date))
+            boardDataDict['modification_date'] = FormatDate(
+                (boardObj.modification_date))
+            boardDataDict['status'] = boardObj.status
+            boardDataDict['eos_date'] = FormatDate((boardObj.eos_date))
+            boardDataDict['eol_date'] = FormatDate((boardObj.eol_date))
+            # boardDataDict['rfs_date'] = FormatDate((boardObj.rfs_date))
+            boardDataDict['pn_code'] = boardObj.pn_code
 
-                boardObjList.append(boardDataDict)
-            return jsonify(boardObjList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+            boardObjList.append(boardDataDict)
+        return jsonify(boardObjList), 200
+    except Exception as e:
+        traceback.print_exc()
+        return str(e), 500
 
 
 @app.route('/addBoard', methods=['POST'])
@@ -732,7 +626,8 @@ def AddBoard(user_data):
     if True:
         try:
             boardObj = request.get_json()
-            if Device_Table.query.with_entities(Device_Table.device_name).filter_by(device_name=boardObj['device_name']).first() is not None:
+            if Device_Table.query.with_entities(Device_Table.device_name).filter_by(
+                    device_name=boardObj['device_name']).first() is not None:
                 board = Board_Table()
                 board.board_name = boardObj['board_name']
                 board.device_name = boardObj['device_name']
@@ -757,6 +652,8 @@ def AddBoard(user_data):
         except Exception as e:
             traceback.print_exc()
             return str(e), 500
+
+
 # @app.route('/addBoard',methods = ['POST'])
 # def AddBoard():
 #     if True:
@@ -814,6 +711,7 @@ def EditBoard(user_data):
 @app.route('/getAllSubBoards', methods=['GET'])
 @token_required
 def GetAllSubBoards(user_data):
+    return jsonify(list()), 200
     if True:
         try:
             subboardObjList = []
@@ -881,6 +779,7 @@ def EditSubBoard(user_data):
 @app.route('/getAllSfps', methods=['GET'])
 @token_required
 def GetAllSfps(user_data):
+    return jsonify(list()), 200
     if True:
         try:
             sfpObjList = []
@@ -946,6 +845,7 @@ def EditSfps(user_data):
 @app.route('/getAllLicenses', methods=['GET'])
 @token_required
 def GetAllLicenses(user_data):
+    return jsonify(list()), 200
     if True:
 
         try:
@@ -981,6 +881,7 @@ def GetAllLicenses(user_data):
         print("Service not Available", file=sys.stderr)
         return jsonify({"Response": "Service not Available"}), 503
 
+
 # @app.route("/editLicenses", methods = ['POST'])
 # def EditLicenses():
 #     if True:
@@ -1015,7 +916,7 @@ def DismantleOnBoardDevice(user_data):
                     Atom).filter_by(ip_address=ip).first()
                 atomObj.onboard_status = 'False'
                 UpdateData(atomObj)
-                print(f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM",file=sys.stderr)
+                print(f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr)
                 deviceObj = db.session.query(
                     Device_Table).filter_by(ip_address=ip).first()
 
@@ -1023,7 +924,7 @@ def DismantleOnBoardDevice(user_data):
                 deviceObj.status = 'Dismantled'
                 deviceObj.modification_date = datetime.now()
                 UpdateData(deviceObj)
-                print(f"DEVICE {deviceObj.device_name} SUCCESSFULLY DISMANTLED",file=sys.stderr)
+                print(f"DEVICE {deviceObj.device_name} SUCCESSFULLY DISMANTLED", file=sys.stderr)
                 # change all board status
                 boardObjs = db.session.query(Board_Table).filter_by(
                     device_name=deviceObj.device_name)
@@ -1031,7 +932,7 @@ def DismantleOnBoardDevice(user_data):
                     boardObj.status = 'Dismantled'
                     boardObj.modification_date = datetime.now()
                     UpdateData(boardObj)
-                    print(f"MODULE {boardObj.board_name} SUCCESSFULLY DISMANTLED",file=sys.stderr)
+                    print(f"MODULE {boardObj.board_name} SUCCESSFULLY DISMANTLED", file=sys.stderr)
                 # change all sub-board status
                 subboardObjs = db.session.query(Subboard_Table).filter_by(
                     device_name=deviceObj.device_name)
@@ -1039,7 +940,7 @@ def DismantleOnBoardDevice(user_data):
                     subboardObj.status = 'Dismantled'
                     subboardObj.modification_date = datetime.now()
                     UpdateData(subboardObj)
-                    print(f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY DISMANTLED",file=sys.stderr)
+                    print(f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY DISMANTLED", file=sys.stderr)
 
                 # change all SFP status
                 sfpObjs = db.session.query(Sfps_Table).filter_by(
@@ -1048,7 +949,7 @@ def DismantleOnBoardDevice(user_data):
                     sfpObj.status = 'Dismantled'
                     sfpObj.modification_date = datetime.now()
                     UpdateData(sfpObj)
-                    print(f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY DISMANTLED",file=sys.stderr)
+                    print(f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY DISMANTLED", file=sys.stderr)
 
             return "SUCCESSFULLY DISMANTLED", 200
         except Exception as e:
@@ -1074,7 +975,7 @@ def MaintenanceOnBoardDevice(user_data):
                     Atom).filter_by(ip_address=ip).first()
                 atomObj.onboard_status = 'False'
                 UpdateData(atomObj)
-                print(f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM",file=sys.stderr)
+                print(f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr)
                 deviceObj = db.session.query(
                     Device_Table).filter_by(ip_address=ip).first()
 
@@ -1082,7 +983,7 @@ def MaintenanceOnBoardDevice(user_data):
                 deviceObj.status = 'Maintenance'
                 deviceObj.modification_date = datetime.now()
                 UpdateData(deviceObj)
-                print(f"DEVICE {deviceObj.device_name} SUCCESSFULLY under Maintenance",file=sys.stderr)
+                print(f"DEVICE {deviceObj.device_name} SUCCESSFULLY under Maintenance", file=sys.stderr)
                 # change all board status
                 boardObjs = db.session.query(Board_Table).filter_by(
                     device_name=deviceObj.device_name)
@@ -1090,7 +991,7 @@ def MaintenanceOnBoardDevice(user_data):
                     boardObj.status = 'Maintenance'
                     boardObj.modification_date = datetime.now()
                     UpdateData(boardObj)
-                    print(f"MODULE {boardObj.board_name} SUCCESSFULLY under Maintenance",file=sys.stderr)
+                    print(f"MODULE {boardObj.board_name} SUCCESSFULLY under Maintenance", file=sys.stderr)
                 # change all sub-board status
                 subboardObjs = db.session.query(Subboard_Table).filter_by(
                     device_name=deviceObj.device_name)
@@ -1098,7 +999,7 @@ def MaintenanceOnBoardDevice(user_data):
                     subboardObj.status = 'Maintenance'
                     subboardObj.modification_date = datetime.now()
                     UpdateData(subboardObj)
-                    print(f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY under Maintenance",file=sys.stderr)
+                    print(f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY under Maintenance", file=sys.stderr)
 
                 # change all SFP status
                 sfpObjs = db.session.query(Sfps_Table).filter_by(
@@ -1107,7 +1008,7 @@ def MaintenanceOnBoardDevice(user_data):
                     sfpObj.status = 'Maintenance'
                     sfpObj.modification_date = datetime.now()
                     UpdateData(sfpObj)
-                    print(f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY under Maintenance",file=sys.stderr)
+                    print(f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY under Maintenance", file=sys.stderr)
 
             return "SUCCESSFULLY Under Maintenance", 200
         except Exception as e:
@@ -1117,6 +1018,7 @@ def MaintenanceOnBoardDevice(user_data):
     else:
         print("Authentication Failed", file=sys.stderr)
         return jsonify({'message': 'Authentication Failed'}), 401
+
 
 @app.route("/undefinedOnBoardedDevice", methods=['POST'])
 @token_required
@@ -1132,7 +1034,7 @@ def UndefinedOnBoardDevice(user_data):
                     Atom).filter_by(ip_address=ip).first()
                 atomObj.onboard_status = 'False'
                 UpdateData(atomObj)
-                print(f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM",file=sys.stderr)
+                print(f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr)
                 deviceObj = db.session.query(
                     Device_Table).filter_by(ip_address=ip).first()
 
@@ -1140,7 +1042,7 @@ def UndefinedOnBoardDevice(user_data):
                 deviceObj.status = 'Undefined'
                 deviceObj.modification_date = datetime.now()
                 UpdateData(deviceObj)
-                print(f"DEVICE {deviceObj.device_name} SUCCESSFULLY under Undefined state",file=sys.stderr)
+                print(f"DEVICE {deviceObj.device_name} SUCCESSFULLY under Undefined state", file=sys.stderr)
                 # change all board status
                 boardObjs = db.session.query(Board_Table).filter_by(
                     device_name=deviceObj.device_name)
@@ -1148,7 +1050,7 @@ def UndefinedOnBoardDevice(user_data):
                     boardObj.status = 'Undefined'
                     boardObj.modification_date = datetime.now()
                     UpdateData(boardObj)
-                    print(f"MODULE {boardObj.board_name} SUCCESSFULLY under Undefined state",file=sys.stderr)
+                    print(f"MODULE {boardObj.board_name} SUCCESSFULLY under Undefined state", file=sys.stderr)
                 # change all sub-board status
                 subboardObjs = db.session.query(Subboard_Table).filter_by(
                     device_name=deviceObj.device_name)
@@ -1156,7 +1058,8 @@ def UndefinedOnBoardDevice(user_data):
                     subboardObj.status = 'Undefined'
                     subboardObj.modification_date = datetime.now()
                     UpdateData(subboardObj)
-                    print(f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY under Undefined state",file=sys.stderr)
+                    print(f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY under Undefined state",
+                          file=sys.stderr)
 
                 # change all SFP status
                 sfpObjs = db.session.query(Sfps_Table).filter_by(
@@ -1165,7 +1068,7 @@ def UndefinedOnBoardDevice(user_data):
                     sfpObj.status = 'Undefined'
                     sfpObj.modification_date = datetime.now()
                     UpdateData(sfpObj)
-                    print(f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY under Undefined state",file=sys.stderr)
+                    print(f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY under Undefined state", file=sys.stderr)
 
             return "SUCCESSFULLY Under Undefined state", 200
         except Exception as e:
@@ -1175,10 +1078,12 @@ def UndefinedOnBoardDevice(user_data):
     else:
         print("Authentication Failed", file=sys.stderr)
         return jsonify({'message': 'Authentication Failed'}), 401
-    
-@app.route('/getAllAps',methods = ['GET'])
+
+
+@app.route('/getAllAps', methods=['GET'])
 @token_required
 def GetAllAps(user_data):
+    return jsonify(list()), 200
     if True:
         try:
             apObjs = APS_TABLE.query.all()
@@ -1197,16 +1102,14 @@ def GetAllAps(user_data):
                 objDict['creation_date'] = apObj.creation_date
                 objDict['modification_date'] = apObj.modification_date
                 objList.append(objDict)
-            print(objList,file=sys.stderr)
-            return jsonify(objList),200
-                
+            print(objList, file=sys.stderr)
+            return jsonify(objList), 200
+
 
         except Exception as e:
-            print(str(e),file=sys.stderr)
+            print(str(e), file=sys.stderr)
             traceback.print_exc()
-            return str(e),500
+            return str(e), 500
     else:
-        print("Authentication Failed",file=sys.stderr)
-        return jsonify({"message":"Authentication Failed"}),401
-
-
+        print("Authentication Failed", file=sys.stderr)
+        return jsonify({"message": "Authentication Failed"}), 401

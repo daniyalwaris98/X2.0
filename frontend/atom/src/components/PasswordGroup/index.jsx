@@ -190,7 +190,7 @@ const Atom = () => {
           const promises = [];
           promises.push(
             axios
-              .get(baseUrl + "/getUsers")
+              .get(baseUrl + "/getPasswordGroups")
               .then((response) => {
                 // console.log("response===>", response);
                 // setExcelData(response.data);
@@ -230,7 +230,7 @@ const Atom = () => {
       setLoading(true);
 
       try {
-        const res = await axios.get(baseUrl + "/getUsers");
+        const res = await axios.get(baseUrl + "/getPasswordGroups");
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);
@@ -541,7 +541,7 @@ const Atom = () => {
               const promises = [];
               promises.push(
                 axios
-                  .get(baseUrl + "/getUsers")
+                  .get(baseUrl + "/getPasswordGroups")
                   .then((response) => {
                     console.log(response.data);
                     excelData = response.data;

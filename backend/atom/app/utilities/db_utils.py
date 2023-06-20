@@ -4,6 +4,7 @@ import traceback
 
 from app.models.inventory_models import *
 
+
 def InsertDBData(obj):
     # add data to db
     try:
@@ -17,12 +18,10 @@ def InsertDBData(obj):
             f"Something else went wrong in Database Insertion {e}", file=sys.stderr)
         return 500
 
-    
-
 
 def UpdateDBData(obj):
     # add data to db
-    #print(obj, file=sys.stderr)
+    # print(obj, file=sys.stderr)
     try:
         db.session.flush()
 
@@ -35,12 +34,11 @@ def UpdateDBData(obj):
         print(
             f"Something else went wrong during Database Update {e}", file=sys.stderr)
         return 500
-        
 
 
 def login_activity(user_id, operation, status, timestamp, description):
     try:
-        activity = LOGIN_ACTIVITY_TABLE()
+        activity = LoginActivityTable()
         activity.user_id = user_id
         activity.operation = operation
         activity.description = description
@@ -51,6 +49,3 @@ def login_activity(user_id, operation, status, timestamp, description):
         db.session.commit()
     except Exception:
         print("Error While Saving Login Activity")
-
-
-
