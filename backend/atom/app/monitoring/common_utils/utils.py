@@ -98,9 +98,9 @@ def testSnmpConnection(snmp):
                                                                              ObjectType(oid)))
         # Check if SNMP query was successful
         if error_indication:
-            print(f"SNMP query failed: {error_indication}")
+            print(f"SNMP query failed: {error_indication}",file=sys.stderr)
         elif error_status:
-            print(f"SNMP query failed: {error_status.prettyPrint()}")
+            print(f"SNMP query failed: {error_status.prettyPrint()}",file=sys.stderr)
         else:
             return True
 
@@ -139,7 +139,7 @@ def get_oid_data(engn, community, transport, cnxt, oid):
 
 
 def getSnmpData(host, oids):
-    print(f"\n---------->>>>>>>> {host[1]} : Start <<<<<<<<-----------\n")
+    print(f"\n---------->>>>>>>> {host[1]} : Start <<<<<<<<-----------\n",file=sys.stderr)
     
     status = dict()
     try:
@@ -158,8 +158,8 @@ def getSnmpData(host, oids):
         except:
             traceback.print_exc()
     
-    if status['status'] == 'Down':
-        return
+    # if status['status'] == 'Down':
+    #     return
 
     snmp = None
     connection = False
@@ -171,48 +171,48 @@ def getSnmpData(host, oids):
         snmp = createSnmpObjectV2(host[1], host[19], host[20])
         connection = testSnmpConnection(snmp)
     else:
-        print(f"{host[1]}: Error : SNMP Version Unkwon")
+        print(f"{host[1]}: Error : SNMP Version Unkwon",file=sys.stderr)
 
 
     # check snmp credentials
     if connection is False:
-        print(f"{host[1]}: Error : Check SNMP Credentials")
+        print(f"{host[1]}: Error : Check SNMP Credentials",file=sys.stderr)
         snmpAlert(host,False)
         snmp = None
     else:
-        print(f"{host[1]}: SNMP Connection Successfull")
+        print(f"{host[1]}: SNMP Connection Successfull",file=sys.stderr)
         snmpAlert(host,True)
 
     # check if snmp is not set up successfully
     if snmp is None:
-        print(f"{host[1]}: Exiting Poll. Failed")
+        print(f"{host[1]}: Exiting Poll. Failed",file=sys.stderr)
         return None
 
     device = dict()
     try:
         print(
-            f"\n---------->>>>>>>\n{host[1]}: Device Data Extraction/Insertion Started\n")
+            f"\n---------->>>>>>>\n{host[1]}: Device Data Extraction/Insertion Started\n",file=sys.stderr)
         device = getDeviceData(host, snmp, oids)
         device.update(status)
         dumpDeviceData(host, device)
     except Exception as e:
         traceback.print_exc()
-        print(f"{host[1]}: Device Data Extraction/Insertion Failed")
+        print(f"{host[1]}: Device Data Extraction/Insertion Failed",file=sys.stderr)
     print(
-        f"\n{host[1]}: Device Data Extraction/Insertion Complete\n<<<<<---------------\n")
+        f"\n{host[1]}: Device Data Extraction/Insertion Complete\n<<<<<---------------\n",file=sys.stderr)
 
     interface = dict()
     try:
         print(
-            f"\n---------->>>>>>>\n{host[1]}: Interface Data Extraction/Insertion Started\n")
+            f"\n---------->>>>>>>\n{host[1]}: Interface Data Extraction/Insertion Started\n",file=sys.stderr)
         interface = getInterfaceData(host, snmp, oids)
         if interface is not None:
             dumpInterfaceData(host, device, interface)
     except Exception as e:
         traceback.print_exc()
-        print(f"{host[1]}: Interface Data Extraction/Insertion Failed")
+        print(f"{host[1]}: Interface Data Extraction/Insertion Failed",file=sys.stderr)
     print(
-        f"\n{host[1]}: Interface Data Extraction/Insertion Complete\n<<<<<---------------\n")
+        f"\n{host[1]}: Interface Data Extraction/Insertion Complete\n<<<<<---------------\n",file=sys.stderr)
 
 
 def getDeviceData(host, snmp, oids):
@@ -592,7 +592,7 @@ def parse_general(varbinds):
 def dumpDeviceData(host, output):
 
     from app import client
-    print(f"{host[1]}: Dumping Device Data")
+    print(f"{host[1]}: Dumping Device Data",file=sys.stderr)
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
     dictionary = [

@@ -299,143 +299,143 @@ def GetMonitoringDevicesCards(user_data):
             # Query script
 
             try:
-                if objDict4['value'] == 100:
-                    ip = x['ip_address']
+                # if objDict4['value'] == 100:
+                ip = x['ip_address']
 
-                    query_api = client.query_api()
-                    query = f'import "strings"\
-                    import "influxdata/influxdb/schema"\
-                    from(bucket: "monitoring")\
-                    |> range(start: -1d)\
-                    |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
-                    |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip}")\
-                    |> schema.fieldsAsCols()\
-                    |> sort(columns: ["_time"], desc: true)\
-                    |> unique(column: "Interface_Name")\
-                    |> yield(name: "unique")'
+                query_api = client.query_api()
+                query = f'import "strings"\
+                import "influxdata/influxdb/schema"\
+                from(bucket: "monitoring")\
+                |> range(start: -1d)\
+                |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
+                |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip}")\
+                |> schema.fieldsAsCols()\
+                |> sort(columns: ["_time"], desc: true)\
+                |> unique(column: "Interface_Name")\
+                |> yield(name: "unique")'
 
-                    result = query_api.query(org='monetx', query=query)
-                    interresults = []
-                    print("$$$$$$$$$$$$$$",result,file=sys.stderr)
+                result = query_api.query(org='monetx', query=query)
+                interresults = []
+                print("$$$$$$$$$$$$$$",result,file=sys.stderr)
 
-                    try:
-                        for table in result:
-                            for record in table.records:
-                                print("#####result of recods",record,file=sys.stderr)
+                try:
+                    for table in result:
+                        for record in table.records:
+                            print("#####result of recods",record,file=sys.stderr)
 
-                                objDict = {}
-                                try:
-                                    if record["IP_ADDRESS"]:
-                                        objDict['ip_address'] = record["IP_ADDRESS"]
-                                except Exception as e:
-                                    print("error", str(e), file=sys.stderr)
-                                    pass
-                                try:
-                                    if record["DEVICE_NAME"]:
-                                        objDict['device_name'] = record["DEVICE_NAME"]
-                                except Exception as e:
-                                    print("error", str(e), file=sys.stderr)
-                                    pass
-                                try:
-                                    if record["FUNCTION"]:
-                                        objDict['function'] = record["FUNCTION"]
-                                except Exception as e:
-                                    print("error", str(e), file=sys.stderr)
-                                    pass
-                                try:
-                                    if record['Status']:
-                                        objDict['interface_status'] = record['Status']
-                                except Exception as e:
-                                    print("error", str(e), file=sys.stderr)
-                                    pass
-                                try:
-                                    if record['VENDOR']:
-                                        objDict['vendor'] = record['VENDOR']
-                                except Exception as e:
-                                    print("error", str(e), file=sys.stderr)
-                                    pass
-                                try:
-                                    if record['Interface_Name'] == None or record['Interface_Name'] == '':
-                                        continue
-                                    else:
-                                        objDict['interface_name'] = record['Interface_Name']
-                                except Exception as e:
-                                    print("error", str(e), file=sys.stderr)
+                            objDict = {}
+                            try:
+                                if record["IP_ADDRESS"]:
+                                    objDict['ip_address'] = record["IP_ADDRESS"]
+                            except Exception as e:
+                                print("error", str(e), file=sys.stderr)
+                                pass
+                            try:
+                                if record["DEVICE_NAME"]:
+                                    objDict['device_name'] = record["DEVICE_NAME"]
+                            except Exception as e:
+                                print("error", str(e), file=sys.stderr)
+                                pass
+                            try:
+                                if record["FUNCTION"]:
+                                    objDict['function'] = record["FUNCTION"]
+                            except Exception as e:
+                                print("error", str(e), file=sys.stderr)
+                                pass
+                            try:
+                                if record['Status']:
+                                    objDict['interface_status'] = record['Status']
+                            except Exception as e:
+                                print("error", str(e), file=sys.stderr)
+                                pass
+                            try:
+                                if record['VENDOR']:
+                                    objDict['vendor'] = record['VENDOR']
+                            except Exception as e:
+                                print("error", str(e), file=sys.stderr)
+                                pass
+                            try:
+                                if record['Interface_Name'] == None or record['Interface_Name'] == '':
                                     continue
-                                try:
-                                    if record['Interface Description']:
-                                        objDict['interface_description'] = record['Interface Description']
-                                except Exception as e:
-                                    print("error", str(e), file=sys.stderr)
-                                    pass
-                                # try:
-                                #     if record['Download']:
-                                #         objDict['download_speed'] = record['Download']
-                                # except Exception as e:
-                                #     print("error",str(e),file=sys.stderr)
-                                #     pass
-                                # try:
-                                #     if record['Upload']:
-                                #         objDict['upload_speed'] = record['Upload']
-                                # except Exception as e:
-                                #     print("error",str(e),file=sys.stderr)
-                                #     pass
-                                try:
-                                    if record['Download'] == None or record['Download'] == '':
-                                        objDict['download_speed'] = 0
-                                    else:
-                                        objDict['download_speed'] = round(
-                                            float(record['Download']), 2)
-                                except Exception as e:
+                                else:
+                                    objDict['interface_name'] = record['Interface_Name']
+                            except Exception as e:
+                                print("error", str(e), file=sys.stderr)
+                                continue
+                            try:
+                                if record['Interface Description']:
+                                    objDict['interface_description'] = record['Interface Description']
+                            except Exception as e:
+                                print("error", str(e), file=sys.stderr)
+                                pass
+                            # try:
+                            #     if record['Download']:
+                            #         objDict['download_speed'] = record['Download']
+                            # except Exception as e:
+                            #     print("error",str(e),file=sys.stderr)
+                            #     pass
+                            # try:
+                            #     if record['Upload']:
+                            #         objDict['upload_speed'] = record['Upload']
+                            # except Exception as e:
+                            #     print("error",str(e),file=sys.stderr)
+                            #     pass
+                            try:
+                                if record['Download'] == None or record['Download'] == '':
                                     objDict['download_speed'] = 0
-                                    print("error", str(e), file=sys.stderr)
-                                    pass
-                                try:
-                                    if record['Upload'] == None or record['Upload'] == '':
-                                        objDict['upload_speed'] = 0
-                                    else:
-                                        objDict['upload_speed'] = round(
-                                            float(record['Upload']), 2)
-                                except Exception as e:
+                                else:
+                                    objDict['download_speed'] = round(
+                                        float(record['Download']), 2)
+                            except Exception as e:
+                                objDict['download_speed'] = 0
+                                print("error", str(e), file=sys.stderr)
+                                pass
+                            try:
+                                if record['Upload'] == None or record['Upload'] == '':
                                     objDict['upload_speed'] = 0
-                                    print("error", str(e), file=sys.stderr)
-                                    pass
+                                else:
+                                    objDict['upload_speed'] = round(
+                                        float(record['Upload']), 2)
+                            except Exception as e:
+                                objDict['upload_speed'] = 0
+                                print("error", str(e), file=sys.stderr)
+                                pass
+                            try:
+                                if record['Date']:
+                                    temp = datetime.strptime(record['Date'],'%m-%d-%y %H:%M:%S')
+                                    objDict['date'] = str(temp.time())
+                            except Exception as e:
                                 try:
-                                    if record['Date']:
-                                        temp = datetime.strptime(record['Date'],'%m-%d-%y %H:%M:%S')
-                                        objDict['date'] = str(temp.time())
-                                except Exception as e:
-                                    try:
-                                        temp = datetime.strptime(record['Date'],'%y-%m-%d %H:%M:%S')
-                                        objDict['date'] = str(temp.time())
-                                    except Exception as e:
-                                        print("error", str(e), file=sys.stderr)
-                                    pass
-                                try:
-                                    if record['DEVICE_NAME']:
-                                        objDict['device_name'] = record['DEVICE_NAME']
+                                    temp = datetime.strptime(record['Date'],'%y-%m-%d %H:%M:%S')
+                                    objDict['date'] = str(temp.time())
                                 except Exception as e:
                                     print("error", str(e), file=sys.stderr)
-                                    pass
+                                pass
+                            try:
+                                if record['DEVICE_NAME']:
+                                    objDict['device_name'] = record['DEVICE_NAME']
+                            except Exception as e:
+                                print("error", str(e), file=sys.stderr)
+                                pass
 
-                                # str(datetime.strptime((str(datetime.now()).split('.')[0]),"%Y-%m-%d %H:%M:%S")-datetime.strptime((record['discovered_time'].discovered_time.split('.'))[0],"%Y-%m-%d %H:%M:%S"))
+                            # str(datetime.strptime((str(datetime.now()).split('.')[0]),"%Y-%m-%d %H:%M:%S")-datetime.strptime((record['discovered_time'].discovered_time.split('.'))[0],"%Y-%m-%d %H:%M:%S"))
 
-                                interresults.append(objDict)
+                            interresults.append(objDict)
 
 
-                    # [i for n, i in enumerate(cardslist) if i not in cardslist[n + 1:]]
-                        final_interfaces  = list({dictionary['interface_name']: dictionary for dictionary in interresults}.values())
-                        print("printing interfaces of ",final_interfaces,file=sys.stderr)
-                    # list(map(dict, set(tuple(d.items()) for d in interresults)))     
-                            
-                        print(cardslist, file=sys.stderr)
-                        globalDict['interfaces'] = final_interfaces
-                    except Exception as e:
-                        print("Error", str(e), file=sys.stderr)
-                        traceback.print_exc()
-                        return "Error ", 500
-                else:
-                    globalDict['interfaces'] = []
+                # [i for n, i in enumerate(cardslist) if i not in cardslist[n + 1:]]
+                    final_interfaces  = list({dictionary['interface_name']: dictionary for dictionary in interresults}.values())
+                    print("printing interfaces of ",final_interfaces,file=sys.stderr)
+                # list(map(dict, set(tuple(d.items()) for d in interresults)))     
+                        
+                    print(cardslist, file=sys.stderr)
+                    globalDict['interfaces'] = final_interfaces
+                except Exception as e:
+                    print("Error", str(e), file=sys.stderr)
+                    traceback.print_exc()
+                    return "Error ", 500
+                # else:
+                #     globalDict['interfaces'] = []
             except:
                 globalDict['interfaces'] = []
             

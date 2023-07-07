@@ -60,6 +60,19 @@ def UpdateData(obj):
 
     return True
 
+def convertFunction(function):
+    temp_function = str(function).lower()
+    if temp_function == 'vm':
+        function = 'VM'
+    elif temp_function == 'esxi':
+        function = 'ESXi'
+    elif temp_function == 'wap':
+        function = 'WAP'
+    else:
+        function = temp_function.capitalize()
+    
+    return function
+
 
 
 @app.route("/addMonitoringDevice", methods=['POST'])
@@ -91,7 +104,7 @@ def AddMonitoringDevice(user_data):
             Monitoringdb.source = "Static"
             Monitoringdb.vendor = MonitoringObj['vendor']
             Monitoringdb.device_type = MonitoringObj['device_type']
-            Monitoringdb.function = MonitoringObj['function']
+            Monitoringdb.function = convertFunction(MonitoringObj['function'])
             Monitoringdb.credentials = MonitoringObj['credentials']
             Monitoringdb.active = MonitoringObj['active']
             Monitoringdb.device_heatmap = MonitoringObj['active']
@@ -172,7 +185,7 @@ def AddMonitoringDevices(user_data):
                         Monitoringdb.device_name = monitoringObj['device_name']
                     Monitoringdb.source = "Static"
                     Monitoringdb.vendor = monitoringObj['vendor']
-                    Monitoringdb.function = monitoringObj['function']
+                    Monitoringdb.function = convertFunction(monitoringObj['function'])
                     Monitoringdb.credentials = monitoringObj['credentials']
                     Monitoringdb.active = monitoringObj['active']
                     Monitoringdb.device_heatmap = monitoringObj['active']
@@ -227,7 +240,7 @@ def GetMonitorings(user_data):
                 MonitoringDataDict['device_type'] = MonitoringObj.device_type
                 MonitoringDataDict['device_name'] = MonitoringObj.device_name
                 MonitoringDataDict['vendor'] = MonitoringObj.vendor
-                MonitoringDataDict['function'] = MonitoringObj.function
+                MonitoringDataDict['function'] = convertFunction(MonitoringObj.function)
                 MonitoringDataDict['source'] = MonitoringObj.source
                 MonitoringDataDict['credentials'] = MonitoringObj.credentials
                 MonitoringDataDict['active'] = MonitoringObj.active
@@ -301,7 +314,7 @@ def addAtomInMonitoring(user_data):
                 for row in result:
                     ip_address = row[0]
                     device_name = row[1]
-                    function = row[2]
+                    function = convertFunction(row[2])
                     device_type = row[3]
             # if Atom.query.with_entities(Atom.ip_address).filter_by(ip_address=MonitoringObj['ip_address']).first() !=None:
 
@@ -309,7 +322,7 @@ def addAtomInMonitoring(user_data):
                     Monitoringdb.ip_address = ip_address
                     Monitoringdb.device_name = device_name
                     Monitoringdb.source = "Atom"
-                    Monitoringdb.function = function.capitalize()
+                    Monitoringdb.function = convertFunction(function)
                     Monitoringdb.device_type = device_type
                     Monitoringdb.active = "InActive"
 

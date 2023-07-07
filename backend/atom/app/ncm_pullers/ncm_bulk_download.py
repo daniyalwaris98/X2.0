@@ -118,15 +118,21 @@ class DownloadPuller(object):
             print(f"NCM - {host['ip_address']} : Executing {command} ...",file=sys.stderr)
 
             current_time = datetime.now()
-            file_name = f"{host['device_name']}_{current_time}"
+            file_name = f"{host['ip_address']}_{host['device_name']}_{current_time}"
 
             if ssh ==2:
                 connection.enable()
                 connection.send_command(f"terminal length 0")
                 output = connection.send_command(f"{command}")
+                ip_br = connection.send_command("show ip interface brief")
+                version = connection.send_command("show version")
+                output+="\n\n\n"+ip_br+"\n\n\n"+version
                 connection.disconnect()
             else:
                 output = connection.send_command(f"{command}")
+                ip_br = connection.send_command("show ip interface brief")
+                version = connection.send_command("show version")
+                output+="\n\n\n"+ip_br+"\n\n\n"+version
                 
             print(f"BACKUP GENERATED FOR DEVICE {host['device_name']} at {current_time}",file=sys.stderr)
             dataDict = {}

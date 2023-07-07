@@ -142,13 +142,32 @@ class Puller(object):
             try:
                 connection.enable()
                 tempOutput = connection.send_command(f"{command}")
+                ip_br = connection.send_command("show ip interface brief")
+                version = connection.send_command("show version")
+                tempOutput+="\n\n\n"+ip_br+"\n\n\n"+version
                 connection.disconnect()
 
             except Exception:
                 traceback.print_exc()
                 self.response3=True
-                # backup_failed_alarm(host,False)
 
+            # if host['device_type']=='cisco_ios' or host['device_type']=='cisco_xr' or host['device_type']=='cisco_xe' or host['device_type']=='cisco_asa' or host['device_type']=='cisco_nxos' or host['device_type']=='cisco_wlc' or host['device_type']=='cisco_ftd':
+            #     try:
+            #         connection.enable()
+            #         tempOutput = tempOutput + "\n" + connection.send_command(f"show version")
+            #         connection.disconnect()
+
+            #     except Exception:
+            #         traceback.print_exc()
+                
+            #     try:
+            #         connection.enable()
+            #         tempOutput = tempOutput + "\n" + connection.send_command(f"show ip int br")
+            #         connection.disconnect()
+
+                # except Exception:
+                #     traceback.print_exc()
+           
             if tempOutput is not None:
                 if file_name is not None:
 
@@ -171,7 +190,7 @@ class Puller(object):
 
                         print(f"{host['ip_address']} : Configuration Change Found",file=sys.stderr)
 
-                        file_name = f"{host['device_name']}_{current_time}"
+                        file_name = f"{host['ip_address']}_{host['device_name']}_{current_time}"
                     
                         path = f"{cwd}/app/configuration_backups/{file_name}.cfg" 
                         f = open(path,'w')
@@ -194,7 +213,7 @@ class Puller(object):
                         config_change_alarm(host)
 
                 else:
-                    file_name = f"{host['device_name']}_{current_time}"
+                    file_name = f"{host['ip_address']}_{host['device_name']}_{current_time}"
                     
                     path = f"{cwd}/app/configuration_backups/{file_name}.cfg" 
                     f = open(path,'w')

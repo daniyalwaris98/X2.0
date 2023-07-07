@@ -10,6 +10,8 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
 from app.common_utils.insert_to_db import UamInventoryData
 from app.monitoring.common_utils.utils import addFailedDevice
+import traceback
+import pprint
 
 class ACIPuller(object):
     
@@ -101,8 +103,11 @@ class ACIPuller(object):
                 nodes_firmvare = f'{host_url}/api/node/class/firmwareRunning.json?&order-by=firmwareRunning.modTs|desc'
                 headers = {'cache-control': "no-cache"}
                 get_response = requests.get(nodes_firmvare, headers=headers, cookies=cookie, verify=False)
+                
                 if get_response.ok:
                     get_response= get_response.json()
+                    #print(get_response, file=sys.stderr)
+                
                     imdata = get_response['imdata']
                     if imdata:
                         for ver in imdata:
@@ -131,6 +136,8 @@ class ACIPuller(object):
                 inv_url = f'{host_url}/api/node/class/eqptCh.json?&order-by=eqptCh.modTs|desc'
                 headers = {'cache-control': "no-cache"}
                 get_response = requests.get(inv_url, headers=headers, cookies=cookie, verify=False)
+                
+                #print(get_response.json(), file=sys.stderr)
                 if get_response.ok:
                     get_response= get_response.json()
                     imdata = get_response['imdata']
@@ -146,53 +153,79 @@ class ACIPuller(object):
                     if imdata:
                         for mgmt_ip in imdata:
                             all_nodes_mgmt_ips.append(mgmt_ip['mgmtRsOoBStNode']['attributes'])
-                
-                
-                for node in all_nodes_chassis:
-                    node_id = re.findall(r'topology\/(.*)\/sys\/ch', node['dn'])
-                    if node_id:
-                        node_id = node_id[0]
-                        for x in all_nodes_mgmt_ips:
-                            mmgt_ip = re.findall(r'topology\/(.*)', x['tDn'])
-                            if mmgt_ip and (node_id == mmgt_ip[0]):
-                                node.update({'addr':re.findall(r'(.*)\/',x['addr'])[0]})
-                        for v in all_nodes_ver:
-                            if node_id in v['dn']:
-                                if '-' in v['version']:
-                                    version = v['version'].split('-')[-1]
-                                else:
-                                    version = v['version']
-                                node.update({'version':version})
-                    
-                
-                for node in all_nodes_chassis:
-                    if node['addr'] not in self.inv_data:
-                        self.inv_data[node['addr']]={'device':
-                                                        {'ip_addr': node.get('addr'), 
-                                                        'serial_number': None if not node.get('ser') else node.get('ser'), 
-                                                        'pn_code': None if not node.get('model') else node.get('model'), 
-                                                        'hw_version': None if not node.get('rev') else node.get('rev'), 
-                                                        "software_version": None if not node.get('version') else node.get('version'), 
-                                                        "desc": node.get('descr'), 
-                                                        "max_power": None, 
-                                                        "manufecturer": None if not node.get('vendor') else node.get('vendor'), 
-                                                        "status": 'Production',
-                                                        "authentication": "AAA",
-                                                        "dn":node.get('dn')},
-                                                     'board':[],
-                                                     'sub_board':[],
-                                                     'sfp':[],
-                                                     'license':[],
-                                                     'status':'success',
-                                                     'server_ip':host['ip_address']}
 
-                self.get_boards(host, port, cookie, all_nodes_chassis)   
-                self.get_sfps(host, port, cookie, all_nodes_chassis)
-                self.get_license(host, port, cookie, all_nodes_chassis)
-                print(self.inv_data,file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                try:
+                    for node in all_nodes_chassis:
+                        node_id = re.findall(r'topology\/(.*)\/sys\/ch', node['dn'])
+                        if node_id:
+                            node_id = node_id[0]
+                            for x in all_nodes_mgmt_ips:
+                                mmgt_ip = re.findall(r'topology\/(.*)', x['tDn'])
+                                if mmgt_ip and (node_id == mmgt_ip[0]):
+                                    node.update({'addr':re.findall(r'(.*)\/',x['addr'])[0]})
+                            for v in all_nodes_ver:
+                                if node_id in v['dn']:
+                                    if '-' in v['version']:
+                                        version = v['version'].split('-')[-1]
+                                    else:
+                                        version = v['version']
+                                    node.update({'version':version})
+
+                    try:
+                        filtered_nodes = [node for node in all_nodes_chassis if 'addr' in node.keys()]
+                        all_nodes_chassis = filtered_nodes
+                    except Exception:
+                        print("Error while filtering data",sys.stderr)
+                        traceback.print_exc()
+
+                    for node in all_nodes_chassis:
+                        try:
+                            if node['addr'] not in self.inv_data:
+                                self.inv_data[node['addr']]={'device':
+                                                                {'ip_addr': node.get('addr'), 
+                                                                'serial_number': None if not node.get('ser') else node.get('ser'), 
+                                                                'pn_code': None if not node.get('model') else node.get('model'), 
+                                                                'hw_version': None if not node.get('rev') else node.get('rev'), 
+                                                                "software_version": None if not node.get('version') else node.get('version'), 
+                                                                "desc": node.get('descr'), 
+                                                                "max_power": None, 
+                                                                "manufecturer": None if not node.get('vendor') else node.get('vendor'), 
+                                                                "status": 'Production',
+                                                                "authentication": "AAA",
+                                                                "dn":node.get('dn')},
+                                                            'board':[],
+                                                            'sub_board':[],
+                                                            'sfp':[],
+                                                            'license':[],
+                                                            'status':'success',
+                                                            'server_ip':host['ip_address']}
+
+                        except Exception as e:
+                            traceback.print_exc()
+                            pass
+
+                    self.get_boards(host, port, cookie, all_nodes_chassis)   
+                    self.get_sfps(host, port, cookie, all_nodes_chassis)
+                    self.get_license(host, port, cookie, all_nodes_chassis)
+                    
+                    # original_stdout = sys.stdout
+                    # try:
+                    #     sys.stdout = sys.stderr
+                    #     pprint.pprint(self.inv_data)
+                    # finally:
+                    #     sys.stdout = original_stdout
+
+                    # print(self.inv_data,file=sys.stderr)
+                    UamInventoryData(self.inv_data)
+                
+                except Exception as e:
+                  traceback.print_exc()
+                  print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
+                  if host['ip_address'] in self.inv_data:
+                      self.inv_data[host['ip_address']].update({'status': 'error'})
                 
             except Exception as e:
+                traceback.print_exc()
                 print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
                 if host['ip_address'] in self.inv_data:
                     self.inv_data[host['ip_address']].update({'status': 'error'})
@@ -245,19 +278,22 @@ class ACIPuller(object):
                                                 })
             
             for node in all_nodes:
-                node_id = re.findall(r'topology\/(.*)\/sys\/ch', node['dn'])
-                if node_id:
-                    node_id = node_id[0]
-                    for board in board_data:
-                        b_dn = re.findall(r'topology\/(.*)\/sys\/ch', board['slot_id'])
-                        if b_dn and (node_id == b_dn[0]):
-                            board.update({"software_version":self.inv_data.get(node['addr'],{}).get('device')['software_version']})
-                            self.inv_data.get(node['addr'],{}).get('board').append(board)
+                try:
+                    node_id = re.findall(r'topology\/(.*)\/sys\/ch', node['dn'])
+                    if node_id:
+                        node_id = node_id[0]
+                        for board in board_data:
+                            b_dn = re.findall(r'topology\/(.*)\/sys\/ch', board['slot_id'])
+                            if b_dn and (node_id == b_dn[0]):
+                                board.update({"software_version":self.inv_data.get(node['addr'],{}).get('device')['software_version']})
+                                self.inv_data.get(node['addr'],{}).get('board').append(board)
                             
-                            
-            
+                except Exception as e:
+                    print('\Board Exception in Device\n', file=sys.stderr)
+                    traceback.print_exc()
         except Exception:
-            print('exception in boards', file=sys.stderr)
+            print('\nException in Board Function\n', file=sys.stderr)
+            traceback.print_exc()
     
 
     def get_sfps(self, host, port,cookie, all_nodes):
@@ -277,44 +313,50 @@ class ACIPuller(object):
                         sfps_data.append(sfp)
 
             for node in all_nodes:
-                node_id = re.findall(r'topology\/(.*)\/sys\/ch', node['dn'])
-                if node_id:
-                    node_id = node_id[0]
-                    for sfp in sfps_data:
-                        sfp_dn = re.findall(r'topology\/(.*)\/sys', sfp['dn'])
-                        if sfp_dn and (node_id == sfp_dn[0]):
-                            p_name = re.findall(r'.*phys-\[(.*)\]', sfp['dn'])
-                            #if len(sfp.get('guiCiscoPID'))>0:
-                            #    speed = re.findall(r'-(.*)G-', sfp.get('guiCiscoPID'))
-                            #else:
-                            speed = re.findall(r'(\d*)[G|b]', sfp.get('typeName'))
-                            
-                            pn_code= sfp.get('guiCiscoPID').strip() if len(sfp.get('guiCiscoPID').strip())>0 else sfp.get('typeName',None).strip()
-                            modes= {'LR':'single-mode','SR':'multimode','LH':'single-mode','LX':'single-mode', 'SX':'multimode', 'MM':'multimode', 'GLC-T': 'single-mode', 'SFP-GE-S': 'multimode', 'FTLF':'multimode', 'GLR':'single-mode', 'WF-SFP':'multimode' }
-                            mode = ''
-                            for key, value in modes.items():
-                                if key in pn_code:
-                                    mode = value
-                                    break
-                                            
-                            sfp_data = {'port_name': p_name[0] if p_name else '',
-                                    'mode': mode,
-                                    'speed': '1G' if speed[0]=="1000"  else speed[0]+'G',
-                                    'hw_version': sfp.get('guiRev'),
-                                    'serial_number': sfp.get('guiSN').lstrip('0'),
-                                    'port_type': sfp.get('type'),
-                                    'connector': None,
-                                    'wavelength':None,
-                                    'optical_direction_type':None,
-                                    'pn_code':pn_code,
-                                    'status':'Production', #sfp.get('status')
-                                    'description': sfp.get('description'),
-                                    'manufacturer': sfp.get('guiName'),
-                                    'media_type': None}
-                            self.inv_data.get(node['addr'],{}).get('sfp').append(sfp_data)
-            
+                try:
+                    node_id = re.findall(r'topology\/(.*)\/sys\/ch', node['dn'])
+                    if node_id:
+                        node_id = node_id[0]
+                        for sfp in sfps_data:
+                            sfp_dn = re.findall(r'topology\/(.*)\/sys', sfp['dn'])
+                            if sfp_dn and (node_id == sfp_dn[0]):
+                                p_name = re.findall(r'.*phys-\[(.*)\]', sfp['dn'])
+                                #if len(sfp.get('guiCiscoPID'))>0:
+                                #    speed = re.findall(r'-(.*)G-', sfp.get('guiCiscoPID'))
+                                #else:
+                                speed = re.findall(r'(\d*)[G|b]', sfp.get('typeName'))
+                                
+                                pn_code= sfp.get('guiCiscoPID').strip() if len(sfp.get('guiCiscoPID').strip())>0 else sfp.get('typeName',None).strip()
+                                modes= {'LR':'single-mode','SR':'multimode','LH':'single-mode','LX':'single-mode', 'SX':'multimode', 'MM':'multimode', 'GLC-T': 'single-mode', 'SFP-GE-S': 'multimode', 'FTLF':'multimode', 'GLR':'single-mode', 'WF-SFP':'multimode' }
+                                mode = ''
+                                for key, value in modes.items():
+                                    if key in pn_code:
+                                        mode = value
+                                        break
+                                                
+                                sfp_data = {'port_name': p_name[0] if p_name else '',
+                                        'mode': mode,
+                                        # 'speed': '1G' if speed[0]=="1000"  else speed[0]+'G',
+                                        'speed' : 'N/A',
+                                        'hw_version': sfp.get('guiRev'),
+                                        'serial_number': sfp.get('guiSN').lstrip('0'),
+                                        'port_type': sfp.get('type'),
+                                        'connector': None,
+                                        'wavelength':None,
+                                        'optical_direction_type':None,
+                                        'pn_code':pn_code,
+                                        'status':'Production', #sfp.get('status')
+                                        'description': sfp.get('description'),
+                                        'manufacturer': sfp.get('guiName'),
+                                        'media_type': None}
+                                self.inv_data.get(node['addr'],{}).get('sfp').append(sfp_data)
+                except Exception as e:
+                    print('\nSFP Exception in Device\n', file=sys.stderr)
+                    traceback.print_exc()
         except Exception:
-            print('Exception in sfp', file=sys.stderr)
+            print('\nException in SFP Function\n', file=sys.stderr)
+            traceback.print_exc()
+            
 
 
     def get_license(self, host, port,cookie, all_nodes):
@@ -348,10 +390,15 @@ class ACIPuller(object):
                                         })
 
                     for node in all_nodes:
-                        if node['role']=='leaf':
-                            self.inv_data.get(node['addr'],{}).get('license').extend(all_license)
+                        try:
+                            if node['role']=='leaf':
+                                self.inv_data.get(node['addr'],{}).get('license').extend(all_license)
+                        except Exception as e:
+                            print('\License Exception in Device\n', file=sys.stderr)
+                            traceback.print_exc()
         except Exception:
-            print("License not found", file=sys.stderr)
+            print('\nException in License Function\n', file=sys.stderr)
+            traceback.print_exc()
             
 
 if __name__ == '__main__':

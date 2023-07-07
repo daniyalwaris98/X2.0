@@ -466,13 +466,12 @@ def UamInventoryData(pullerData):
     error = False
     failed=False
     try:
-        # print("******", pullerData, file=sys.stderr)
-        for ip_addr in pullerData:
+        for ip_addr in pullerData.keys():
+            print(f"\n\n{ip_addr} : Checking Device For Onboarding",file=sys.stderr)
             data = pullerData[ip_addr]
-            # print(data, file=sys.stderr)
-
-            if 'error' in data:
-                print("Login Failed Skipping", file=sys.stderr)
+            
+            if data['status'] == 'error':
+                print(f"\n\n{ip_addr} : Error - Login Failed Skipping", file=sys.stderr)
                 error = True
                 failed = True
             
@@ -480,7 +479,7 @@ def UamInventoryData(pullerData):
 
                 atom = Atom.query.filter_by(ip_address=ip_addr).first()
                 if not atom:
-                    print("Atom Not Found", file=sys.stderr)
+                    print(f"\n\n{ip_addr} : Error - Not Found In Atom", file=sys.stderr)
                     # return "IP Address Not Found",500
                     failed = True
                     error = True
@@ -490,39 +489,54 @@ def UamInventoryData(pullerData):
                 rack = Rack_Table.query.filter_by(rack_name=atom.rack_name).first()
 
                 if not site:
-                    print("Site Not Found", file=sys.stderr)
+                    print(f"\n\n{ip_addr} : Error - Site Not Found", file=sys.stderr)
                     failed=True
                     # return "Site Not Found",500
                     error = True
                     continue
 
                 if not rack:
-                    print("Rack Not Found", file=sys.stderr)
+                    print(f"\n\n{ip_addr} : Error - Rack Not Found", file=sys.stderr)
                     failed=True
                     # return "Rack Not Found",500
                     error = True
                     continue
 
-                print("Puller Contain Data", file=sys.stderr)
+                print(f"\n\n{ip_addr} : Device Found in Atom",file=sys.stderr)
 
-                atom.onboard_status = 'true'
-                UpdateData(atom)
                 name = InsertUamDeviceData(data, atom, ip_addr)
-                
+
                 if name:
-                    # InsertUamDeviceApsData(name,data)
-                    InsertUamDeviceBoardData(name, data)
-                    InsertUamDeviceSubBoardData(name, data)
-                    InsertUamDeviceSfpData(name, data)
-                    # if 'license' in data:
-                    InsertUamDeviceLicenseData(name, data)
-                    # print("$$$$ AFTER LICENSE $$$$", file=sys.stderr)
-                    # InsertUamDeviceApsData(name,data)
-                    
+                    atom.onboard_status = 'true'
+                    UpdateData(atom)
+                
+                    try:
+                        InsertUamDeviceBoardData(name, data)
+                    except Exception:
+                        print(f"\n\n{ip_addr} : Error In Board Insertion", file=sys.stderr)
+                        traceback.print_exc()
+
+                    try:
+                        InsertUamDeviceSubBoardData(name, data)
+                    except Exception:
+                        print(f"\n\n{ip_addr} : Error In Sub-Board Insertion", file=sys.stderr)
+                        traceback.print_exc()
+
+                    try:
+                        InsertUamDeviceSfpData(name, data)
+                    except Exception:
+                        print(f"\n\n{ip_addr} : Error In Sfp Insertion", file=sys.stderr)
+                        traceback.print_exc()
+
+                    try:
+                        InsertUamDeviceLicenseData(name, data)
+                    except Exception:
+                        print(f"\n\n{ip_addr} : Error In License Insertion", file=sys.stderr)
+                        traceback.print_exc()
+
+
                 else:
                     print("Device Not Found", file=sys.stderr)
-            # print("I am ELIF", file=sys.stderr)
-            break
         else:
             traceback.print_exc()
             print("Error while getting data from device " + ip_addr, file=sys.stderr)

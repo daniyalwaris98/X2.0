@@ -178,6 +178,16 @@ class CommonPuller(object):
     def poll(self, host):
         output = dict()
 
+        status = ping(host[1])[0]
+        print(host[1]+" : "+status, file=sys.stderr)
+        updatequery = f"update monitoring_devices_table set status = '{status}' where ip_address='{host[1]}';"
+        db.session.execute(updatequery)
+        db.session.commit()
+
+        # if status == "Down":
+        #     return
+
+
         if host[2].lower() == "cisco_ios":
             output = getSnmpData(host, cisco_ios_oids)
         elif host[2].lower() == "cisco_ios_xe":
