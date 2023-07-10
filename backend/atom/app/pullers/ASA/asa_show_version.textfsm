@@ -1,6 +1,0 @@
-Value version (.*)
-Value serial (.*)
-
-Start
-  ^Cisco Adaptive Security Appliance Software Version\s+${version}
-  ^Serial Number:\s+${serial}

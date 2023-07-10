@@ -1,8 +1,0 @@
-Value INTERFACE (.*)
-Value IP_ADDRESS (\d+.\d+.\d+.\d+)
-
-#Separate VIP
-
-Start
-  ^\s+==\[${INTERFACE}\]
-  ^\s+ip:\s+${IP_ADDRESS} -> Record 

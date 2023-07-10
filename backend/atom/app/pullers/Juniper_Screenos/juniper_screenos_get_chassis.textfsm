@@ -1,8 +1,0 @@
-Value slot (\d+)
-Value name ([a-zA-Z ]*)
-Value serial (\S+)
-Value pid (\S+)
-Value version (\S+)
-
-Start
-  ^\s+${slot}\s+${name}\b\s+${serial}\s+${pid}\s+${version} -> Record

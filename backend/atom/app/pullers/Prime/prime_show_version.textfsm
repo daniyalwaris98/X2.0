@@ -1,6 +1,0 @@
-Value version (.*)
-Value build (.*)
-
-Start
-  ^Version\s+:\s+${version}
-  ^Build\s+:\s+${build}

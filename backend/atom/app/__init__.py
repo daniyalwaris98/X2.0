@@ -126,7 +126,7 @@ from app.routes import one_time_setup
 from app.routes import login_routes
 from app.routes import admin_routes
 
-from app.routes import atom_inventory_routes
+from app.atom import atom_routes
 from app.routes import uam_inventory_routes
 from app.routes import uam_dashboard_routes
 

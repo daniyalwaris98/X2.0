@@ -1,5 +1,0 @@
-Value MONITOR_VALUE (.*)
-#Separate VIP
-
-Start
-  ^\s+[D|d]estination\s+\*:${MONITOR_VALUE}

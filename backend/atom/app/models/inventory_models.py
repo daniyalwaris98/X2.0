@@ -181,9 +181,6 @@ class AtomTable(db.Model):
     device_type = db.Column(db.String(50))
     password_group = db.Column(db.String(50), ForeignKey('password_group_table.password_group'))
     onboard_status = db.Column(db.String(50))
-    inserted = db.Column(db.Integer)
-    updated = db.Column(db.Integer)
-    exception = db.Column(db.Integer)
     scop = db.Column(db.String(50), default='Atom')
 
     def as_dict(self):
