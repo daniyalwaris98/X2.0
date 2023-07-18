@@ -17,7 +17,10 @@ from app.utilities.db_utils import *
 def AddAtomDevice(user_data):
     try:
         atomObj = request.get_json()
-        response, status = addAtomComplete(atomObj, 0)
+        response, status = AddCompleteAtom(atomObj, 0)
+
+        if status == 500:
+            response, status = AddTansitionAtom(atomObj,0)
 
         return response, status
     except Exception as e:
@@ -37,11 +40,17 @@ def AddAtomDevices(user_data):
         row = 0
         for atomObj in atomObjs:
             row = row + 1
-            response, status = addAtomComplete(atomObj, row)
+            response, status = AddCompleteAtom(atomObj, row)
+
             if status == 200:
                 responseList.append(response)
             else:
-                errorList.append(response)
+                response, status = AddTansitionAtom(atomObj, row)
+                if status == 200:
+                    responseList.append(response)
+                else:
+                    errorList.append(response)
+
 
         responseDict = {
             "success": len(responseList),
