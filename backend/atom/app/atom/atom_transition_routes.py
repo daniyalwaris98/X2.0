@@ -10,43 +10,6 @@ import traceback
 import sys
 
 
-# @app.route("/addTransitionAtom", methods=["POST"])
-# @token_required
-# def AddTransitionAtom(user_data):
-#     try:
-#         deviceObjs = request.get_json()
-#         errorList = []
-#         successList = []
-#         try:
-#             row = 0
-#             for device in deviceObjs:
-#                 row = row + 1
-
-#                 msg, status = AddTansitionAtom(device, row)
-
-#                 if status == 200:
-#                     successList.append(msg)
-#                 else:
-#                     errorList.append(msg)
-
-#             responseDict = {
-#                 "success": len(successList),
-#                 "error": len(errorList),
-#                 "error_list": errorList,
-#                 "success_list": successList,
-#             }
-
-#             return jsonify(responseDict), 200
-#         except Exception as e:
-#             traceback.print_exc()
-#             print(f"Error While Fetching Transition Table", file=sys.stderr)
-#             return "Error While Moving Data", 500
-
-#     except Exception:
-#         traceback.print_exc()
-#         return "Error While Moving Data", 500
-
-
 @app.route("/transitDicoveryData", methods=["POST"])
 @token_required
 def TransitDicoveryData(user_data):
@@ -58,7 +21,7 @@ def TransitDicoveryData(user_data):
         deviceObjs = []
         try:
             for ip in ipList:
-                device = AUTO_DISCOVERY_TABLE.query.filter_by(ip_address=ip).first()
+                device = AutoDiscoveryTable.query.filter_by(ip_address=ip).first()
                 if device is None:
                     errorList.append(f"{device['ip_address']} : Error - IP Address Not Found In Discovery Data")
                 else:
@@ -121,69 +84,12 @@ def TransitDicoveryData(user_data):
 #         return "Error While Fetching Data", 500
 
 
-# @app.route("/transitToAtom", methods=["GET"])
-# @token_required
-# def TransitToAtom(user_data):
-#     try:
-#         ipList = request.get_json()
-#         errorList = []
-#         successList = []
-        
-#         deviceObjs = []
-#         try:
-#             for ip in ipList:
-#                 device = Atom_Transition_Table.query.filter_by(ip_address=ip).first()
-#                 if device is None:
-#                     errorList.append(f"{device['ip_address']} : Error - IP Address Not Found In Atom Transition Table")
-#                 else:
-#                     deviceObjs.append(device.as_dict())
-#         except Exception:
-#             traceback.print_exc()
-#             print(f"Error While Fetching Transition Data", file=sys.stderr)
-#             return "Error While Fetching Transition Data", 500
-
-#         try:
-#             row = 0
-#             for device in deviceObjs:
-#                 row = row + 1
-
-#                 msg, status = TransitToAtom(device, row)
-
-#                 if status == 200:
-#                     successList.append(msg)
-#                 else:
-#                     errorList.append(msg)
-
-#             responseDict = {
-#                 "success": len(successList),
-#                 "error": len(errorList),
-#                 "error_list": errorList,
-#                 "success_list": successList,
-#             }
-
-#             return jsonify(responseDict), 200
-#         except Exception as e:
-#             traceback.print_exc()
-#             print(f"Error While Fetching Transition Table Data", file=sys.stderr)
-#             return "Error While Moving Data", 500
-
-#     except Exception:
-#         traceback.print_exc()
-#         return "Error While Moving Data", 500
-
-
-# @app.route("/editTransitionData", methods=["POST"])
-# @token_required
-# def EditTransitionData(user_data):
-#     pass
-
-
 
 
 def GetAtomList():
     atomList = []
     try:
-        devices = Atom.query.all()
+        devices = AtomTable.query.all()
         for device in devices:
             atomList.append(device.ip_address)
     except Exception:
@@ -194,7 +100,7 @@ def GetAtomList():
 def GetTransitionAtomList():
     atomList = []
     try:
-        devices = Atom_Transition_Table.query.all()
+        devices = AtomTransitionTable.query.all()
         for device in devices:
             atomList.append(device.ip_address)
     except Exception:
@@ -217,9 +123,9 @@ def GetDiscoveryForTransition(user_data):
         
         results = None
         if data['subnet'].strip() == 'All' or data['subnet'].strip() == '':
-            results = AUTO_DISCOVERY_TABLE.query.all()
+            results = AutoDiscoveryTable.query.all()
         else:
-            results = AUTO_DISCOVERY_TABLE.query.filter_by(subnet=data['subnet']).all()
+            results = AutoDiscoveryTable.query.filter_by(subnet=data['subnet']).all()
 
         for result in results:
 

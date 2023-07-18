@@ -26,7 +26,7 @@ def AddAtomDevice(user_data):
     except Exception as e:
         traceback.print_exc()
         print(str(e), file=sys.stderr)
-        return str(e), 500
+        return "Server Error", 500
 
 
 @app.route("/addAtomDevices", methods=['POST'])
@@ -63,13 +63,19 @@ def AddAtomDevices(user_data):
     except Exception as e:
         traceback.print_exc()
         print(str(e), file=sys.stderr)
-        return str(e), 500
+        return "Server Error", 500
 
 
 @app.route("/getAtoms", methods=['GET'])
 @token_required
 def GetAtoms(user_data):
     try:
+
+        try:
+            transitionList = GetTransitionAtoms()
+        except Exception:
+            traceback.print_exc()
+
         atomObjList = []
         result = db.session.query(AtomTable, RackTable, SiteTable, PasswordGroupTable). \
             join(PasswordGroupTable, AtomTable.password_group == PasswordGroupTable.password_group). \
@@ -85,15 +91,19 @@ def GetAtoms(user_data):
                             'device_type': atomObj.device_type, 'password_group': passObj.password_group,
                             'updated': atomObj.updated, 'inserted': atomObj.inserted,
                             'exception': atomObj.exception}
-            if atomObj.onboard_status == '' or atomObj.onboard_status is not None:
+            if atomObj.onboard_status != '' or atomObj.onboard_status is not None:
                 atomDataDict['onboard_status'] = atomObj.onboard_status
             else:
                 atomDataDict['onboard_status'] = 'False'
+            
+            atomDataDict['message'] = "Complete"
+            atomDataDict['status'] = 200
 
             atomObjList.append(atomDataDict)
 
         # print(atomObjList, file=sys.stderr)
-        content = gzip.compress(json.dumps(atomObjList).encode('utf8'), 5)
+        finalList = atomObjList + transitionList
+        content = gzip.compress(json.dumps(finalList).encode('utf8'), 5)
         response = make_response(content)
         response.headers['Content-length'] = len(content)
         response.headers['Content-Encoding'] = 'gzip'
@@ -101,5 +111,21 @@ def GetAtoms(user_data):
 
     except Exception as e:
         traceback.print_exc()
-        return str(e), 500
+        return "Server Error", 500
 
+
+@app.route("/editAtom", methods=['POST'])
+@token_required
+def EditAtom(user_data):
+    try:
+        atomObj = request.get_json()
+        response, status = AddCompleteAtom(atomObj, 1)
+
+        if status == 500:
+            response, status = AddTansitionAtom(atomObj,1)
+
+        return response, status
+    except Exception as e:
+        traceback.print_exc()
+        print(str(e), file=sys.stderr)
+        return "Server Error", 500

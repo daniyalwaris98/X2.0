@@ -23,7 +23,7 @@ def ValidateAtom(device, row):
             if AtomTable.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
         
-            if Atom_Transition_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
+            if AtomTransitionTable.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
 
         if 'device_name' not in device:
@@ -238,7 +238,7 @@ def AddCompleteAtom(device, row):
 
         if status == 200:
             try:
-                transitObj = Atom_Transition_Table.query.filter_by(ip_address=atom.ip_address).first()
+                transitObj = AtomTransitionTable.query.filter_by(ip_address=atom.ip_address).first()
                 if transitObj is not None:
                     db.session.delete(transitObj)
                     db.session.commit()
@@ -272,19 +272,19 @@ def AddTansitionAtom(device, row):
             if AtomTable.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
         
-            if Atom_Transition_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
+            if AtomTransitionTable.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
         
         msg, status = ValidateAtom(device, row)
 
-        transObj = Atom_Transition_Table.query.filter_by(
+        transObj = AtomTransitionTable.query.filter_by(
             ip_address=device["ip_address"]
         ).first()
 
         exist = True
         if transObj is None:
             exist = False
-            transObj = Atom_Transition_Table()
+            transObj = AtomTransitionTable()
 
             transObj.ip_address = device["ip_address"]
 
@@ -383,7 +383,7 @@ def AddTansitionAtom(device, row):
 def GetTransitionAtoms():
     objList = []
     try:
-        results = Atom_Transition_Table.query.all()
+        results = AtomTransitionTable.query.all()
 
         for result in results:
             objDict = result.as_dict()

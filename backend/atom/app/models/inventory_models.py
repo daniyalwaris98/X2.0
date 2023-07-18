@@ -2,7 +2,7 @@ from app import db
 from sqlalchemy import ForeignKey
 from datetime import datetime
 
-class Atom_Transition_Table(db.Model):
+class AtomTransitionTable(db.Model):
     __tablename__ = 'atom_transition_table'
     atom_id = db.Column(db.Integer, primary_key=True)
     site_name = db.Column(db.String(50))
@@ -182,6 +182,40 @@ class AtomTable(db.Model):
     password_group = db.Column(db.String(50), ForeignKey('password_group_table.password_group'))
     onboard_status = db.Column(db.String(50))
     scop = db.Column(db.String(50), default='Atom')
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    
+
+class AutoDiscoveryTable(db.Model):
+    __tablename__ = 'auto_discovery_table'
+    discovery_id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(50))
+    subnet = db.Column(db.String(50))
+    os_type = db.Column(db.String(500))
+    make_model = db.Column(db.String(500))
+    function = db.Column(db.String(500))
+    vendor = db.Column(db.String(500))
+    snmp_status = db.Column(db.String(50))
+    snmp_version = db.Column(db.String(50))
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now())
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+
+class AutoDiscoveryNetworkTable(db.Model):
+    __tablename__ = 'auto_discovery_network_table'
+    network_id = db.Column(db.Integer, primary_key=True)
+    network_name = db.Column(db.String(50))
+    subnet = db.Column(db.String(50))
+    no_of_devices = db.Column(db.Integer)
+    scan_status = db.Column(db.String(50))
+    excluded_ip_range = db.Column(db.String(200))
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now())
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
