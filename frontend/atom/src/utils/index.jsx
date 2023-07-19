@@ -14,7 +14,6 @@ const ColumnHeader = ({
     if (dataIndex in columnFilters) {
       if (e.target.value.length > 0) {
         columnFilters[dataIndex] = e.target.value;
-        console.log(columnFilters[dataIndex]);
       } else {
         delete columnFilters[dataIndex];
       }

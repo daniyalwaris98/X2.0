@@ -77,16 +77,6 @@ const Navigation = () => {
                   <span className="icon">
                     <NetworkIcon />
                   </span>
-                  {/* <img
-                    src={manageDevices}
-                    alt=""
-                    style={{
-                      marginBottom: "5px",
-                      width: "20px",
-                      height: "20px",
-                      paddingTop: "4px",
-                    }}
-                  /> */}
                   Manage Network &nbsp;&nbsp;&nbsp;
                 </NavbarLink>
               ) : null}

@@ -5,9 +5,10 @@ export const CustomInputStyle = styled.article`
   text-align: left;
 
   .input-header {
-    ${FlexboxStyle({ justify: "flex-start", gap: "10px" })};
+    ${FlexboxStyle({ justify: "flex-start", gap: "5px" })};
 
-    margin-bottom: 10px;
+    margin-bottom: 5px;
+    font-weight: 500;
 
     .icon {
       color: ${({ theme }) => theme.colors.RED_COLOR};

@@ -6,9 +6,6 @@ export const NavbarContainer = styled.nav`
   height: ${(props) => (props.extendNavbar ? "100vh" : "35px")};
   display: flex;
   flex-direction: column;
-  // @media (min-width: 700px) {
-  //   height: 55px;
-  // }
 `;
 
 export const LeftContainer = styled.div`
@@ -18,13 +15,8 @@ export const LeftContainer = styled.div`
   padding-left: 2%;
 `;
 export const CenterContainer = styled.div`
-  // flex: 80%;
-  // justify-content: center;
-  // align-items: center;
   text-align: center;
-
   width: 100%;
-  // border: 2px solid #000;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -42,49 +34,34 @@ export const NavbarInnerContainer = styled.div`
   height: 35px;
   display: flex;
   background-color: transparent;
-  align-item: center;
+  align-items: center;
 `;
 
 export const NavbarLinkContainer = styled.div`
   display: flex;
-  // border-bottom: 2px solid #878787;
 `;
 
 export const NavbarLink = styled(Link)`
   color: #878787;
-  // color: #71b626;
   font-size: 14px;
   justify-content: center;
-  // font-family: Arial, Helvetica, sans-serif;
   text-decoration: none;
   margin: 5px;
-  // margin-bottom:5px;
   font-weight: 600;
   color: ${(props) => (props.mainLoc ? "#66B127 !important" : "#878787")};
   border-bottom: ${(props) =>
     props.mainLoc ? "2px solid #71b626 !important" : null};
 
+  font-weight: ${(props) => (props.mainLoc ? 700 : 500)};
 
-    // color: ${(props) => (props.mainLoc ? "#66B127 !important" : "#c5c5c5")};
-    font-weight: ${(props) => (props.mainLoc ? 700 : 500)};
-
-
-
-  // border-bottom: 1px solid #878787;
   &:hover {
     color: #71b626;
-    // font-weight:700;
   }
-
-  // @media (max-width: 900px) {
-  //   display: none;
-  // }
 `;
 
 export const NavbarLinkExtended = styled(Link)`
   color: #c5c5c5;
   font-size: 12px;
-  // font-family: Arial, Helvetica, sans-serif;
   text-decoration: none;
   margin: 10px;
 `;
@@ -104,10 +81,6 @@ export const OpenLinksButton = styled.button`
   font-size: 45px;
   cursor: pointer;
   display: none;
-
-  // @media (min-width: 900px) {
-  //   display: none;
-  // }
 `;
 
 export const NavbarExtendedContainer = styled.div`
@@ -115,8 +88,4 @@ export const NavbarExtendedContainer = styled.div`
   flex-direction: column;
   align-items: center;
   background-color: #2d2f35;
-
-  // @media (min-width: 900px) {
-  //   display: none;
-  // }
 `;

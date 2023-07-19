@@ -1,26 +1,23 @@
 import "./App.css";
 import "leaflet/dist/leaflet.css";
-// import "antd/dist/antd.css";
 import "antd/dist/antd.min.css";
-// import NavBar from "./components/NavBar";
 import i18n from "i18next";
 import React, { useEffect, useState, Suspense } from "react";
-import { useTranslation, initReactI18next } from "react-i18next";
+import { initReactI18next } from "react-i18next";
 import tEn from "./components/Languages/English/Eng.json";
 import tDu from "./components/Languages/Dutch/Du.json";
-import { SpinLoading } from "./components/AllStyling/All.styled.js";
 import Loader from "./components/Loader/Loader";
 import ChatBot from "./components/Dashboard/bot/ChatBot";
 import { ThemeProvider } from "styled-components";
 import theme from "./styles/theme";
 const NavBar = React.lazy(() => import("./components/NavBar"));
 
+import "/node_modules/react-grid-layout/css/styles.css";
+import "/node_modules/react-resizable/css/styles.css";
+
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
   .init({
-    // the translations
-    // (tip move them in a JSON file and import them,
-    // or even better, manage them via a UI: https://react.i18next.com/guides/multiple-translation-files#manage-your-translations-with-a-management-gui)
     resources: {
       en: {
         translation: tEn,

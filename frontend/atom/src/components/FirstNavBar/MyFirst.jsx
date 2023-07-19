@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import logo from "./images/logo.svg";
-import light from "./images/light.svg";
 import notification from "./images/notification.svg";
 import setting from "./images/setting.svg";
 import logout from "./images/logout.svg";
@@ -8,51 +7,33 @@ import { useLocation } from "react-router-dom";
 import axios, { baseUrl } from "../../utils/axios";
 
 import profile from "./images/profile.svg";
-import { Divider, Input, Dropdown, Menu, Drawer } from "antd";
+import { Input, Dropdown, Menu, Drawer } from "antd";
 import { SearchOutlined, FlagOutlined } from "@ant-design/icons";
-// import ReactLanguageSelect from "react-languages-select";
 import ReactFlagsSelect from "react-flags-select";
-// import { US, GB } from "country-flag-icons/react/3x2";
-import { Row, Col, Switch } from "antd";
-import Dashboard from "../Dashboard";
+import { Row, Col } from "antd";
 import { StyledMenu, MainStyling } from "./FirstNavBar.styled.js";
-import { useTranslation, initReactI18next } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
-//import css module
-// import "react-languages-select/css/react-languages-select.css";
-
 const FirstNavBar = (props) => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  let location = useLocation();
   const [open, setOpen] = useState(false);
 
   const [selected, setSelected] = useState("");
-  const [title, setTitle] = useState("");
-  // console.log(selected);
-  const [color, setColor] = useState("#000000");
   const [showMenu, setShowMenu] = useState(true);
   const [userData, setUserData] = useState("");
   const [userName, setUserName] = useState("");
-  const [checked, setChecked] = useState(false);
-  var firstLetter;
 
   useEffect(() => {
     const Data = localStorage.getItem("user");
     setUserData(JSON.parse(Data));
-    // var name = userData.user_name;
-    // console.log(name);
-    // firstLetter = name.slice(0, 1);
 
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
-    setColor(color);
   }, []);
 
   useEffect(() => {
@@ -66,64 +47,15 @@ const FirstNavBar = (props) => {
     setSelected(code);
     localStorage.setItem("lang", code);
   };
-  useEffect(() => {
-    //Checks if location.pathname is not "/".
-    if (location.pathname === "/") {
-      setTitle("Dashboard");
-    } else if (location.pathname === "/atom/main") {
-      setTitle("Atom");
-    } else if (location.pathname === "/atom/password-group") {
-      setTitle("Password Group");
-    } else if (location.pathname === "/uam/devices") {
-      setTitle("Devices");
-    } else if (location.pathname === "/uam/sites") {
-      setTitle("Sites");
-    } else if (location.pathname === "/uam/racks") {
-      setTitle("Racks");
-    } else if (location.pathname === "/uam/boards") {
-      setTitle("Line Card");
-    } else if (location.pathname === "/uam/subboards") {
-      setTitle("Sub Boards");
-    } else if (location.pathname === "/uam/sfps") {
-      setTitle("SFPS");
-    } else if (location.pathname === "/uam/license") {
-      setTitle("Licenses");
-    } else if (location.pathname === "/ipam/main") {
-      setTitle("IPAM");
-    } else if (location.pathname === "/ipam/dhcp_servers") {
-      setTitle("DHCP Servers");
-    } else if (location.pathname === "/ipam/dhcp_scope") {
-      setTitle("DHCP Scopes");
-    } else if (location.pathname === "/ipam/dns_servers") {
-      setTitle("DNS Servers");
-    } else if (location.pathname === "/ipam/dns_zones") {
-      setTitle("DNS Zones");
-    } else if (location.pathname === "/dcm") {
-      setTitle("DCCM");
-    } else if (location.pathname === "/monitering") {
-      setTitle("Monitoring");
-    } else if (location.pathname === "/admin/show-member") {
-      setTitle("Admin Members");
-    } else if (location.pathname === "/admin/role") {
-      setTitle("Role");
-    } else if (location.pathname === "/admin/failed-devices") {
-      setTitle("Failed Devices");
-    } else {
-      setTitle("");
-    }
-  }, [location.pathname]);
 
   const showDrawer = () => {
     setOpen(true);
-    console.log("asdfghjk");
   };
   const onClose = () => {
     setOpen(false);
   };
 
   useEffect(() => {
-    // setSelected(localStorage.setItem("lang", selected));
-
     setSelected(localStorage.getItem("lang"));
   }, [selected]);
 
@@ -131,7 +63,6 @@ const FirstNavBar = (props) => {
     localStorage.removeItem("monetx_token");
     localStorage.removeItem("user");
     localStorage.removeItem("monetx_configuration");
-    // setUserData("");
     window.location.href = "/login";
   };
   const menu = (
@@ -139,12 +70,9 @@ const FirstNavBar = (props) => {
       <Menu.Item>
         <Row
           style={{
-            // backgroundColor: "#839CA91A",
             width: "100%",
-            // marginLeft: "10px",
             marginRight: "30px",
             marginTop: "5px",
-
             borderRadius: "10px",
           }}
         >
@@ -156,7 +84,6 @@ const FirstNavBar = (props) => {
               height="40px"
               style={{
                 marginLeft: "10px",
-                // backgroundColor: "#839CA91A",
                 padding: "10px",
                 borderRadius: "50%",
                 marginTop: "3px",
@@ -200,20 +127,22 @@ const FirstNavBar = (props) => {
     </Menu>
   );
   const [DaysLeft, setDaysLeft] = useState("");
+  const data = localStorage.getItem("user");
 
   useEffect(() => {
-    const licenseData = async () => {
-      const Data = localStorage.getItem("user");
-      const a = JSON.parse(Data);
-      console.log(a.user_name);
-      const res = await axios.post(baseUrl + "/trackLicenseTenure", {
-        username: a.user_name,
-      });
-      console.log("trackLicenseTenure", res.data);
-      setDaysLeft(res.data);
-    };
-    licenseData();
-  }, []);
+    if (data !== null) {
+      const licenseData = async () => {
+        const a = JSON.parse(data);
+        console.log(a.user_name);
+        const res = await axios.post(baseUrl + "/trackLicenseTenure", {
+          username: a.user_name,
+        });
+        console.log("trackLicenseTenure", res.data);
+        setDaysLeft(res.data);
+      };
+      licenseData();
+    }
+  }, [data]);
   return (
     <div>
       <div
@@ -356,10 +285,12 @@ const FirstNavBar = (props) => {
                 </div>
               </li>
               <li>
-                <Dropdown menu={menu} style={{ width: "50px", height: "50px" }}>
+                <Dropdown
+                  overlay={menu}
+                  style={{ width: "50px", height: "50px", cursor: "pointer" }}
+                >
                   <img
                     src={setting}
-                    alt=""
                     width="40px"
                     height="40px"
                     style={{
@@ -367,10 +298,8 @@ const FirstNavBar = (props) => {
                       backgroundColor: "#839CA91A",
                       padding: "10px",
                       borderRadius: "50%",
-                      // display: "none",
-
                       marginTop: "5px",
-                      // marginBottom: "12px",
+                      cursor: "pointer",
                     }}
                   />
                 </Dropdown>

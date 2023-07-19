@@ -4,7 +4,7 @@ import { Row, Col, Modal, Input, Select } from "antd";
 import axios, { baseUrl } from "../../utils/axios";
 import Swal from "sweetalert2";
 import "../AllStyling/CSSStyling.css";
-import { devices } from "../../data/globalData";
+import { devices, functions } from "../../data/globalData";
 
 const EditAtom = (props) => {
   const getString = (str) => {
@@ -101,6 +101,10 @@ const EditAtom = (props) => {
 
   const atomDeviceType = devices.filter((device) =>
     device.module.includes("atom")
+  );
+
+  const atomFunctions = functions.filter((atomFunction) =>
+    atomFunction.module.includes("atom")
   );
 
   const handleSubmit = (e) => {
@@ -342,15 +346,14 @@ const EditAtom = (props) => {
                     setMyfunction(e.target.value);
                   }}
                 >
-                  <option value="ROUTER">ROUTER</option>
-                  <option value="SWITCH">SWITCH</option>
-                  <option value="Wireless">Wireless</option>
-                  <option value="Firewall">Firewall</option>
-                  <option value="VM">VM</option>
-                  <option value="EXSI">EXSI</option>
-                  <option value="Load Balancer">Load Balancer</option>
-                  <option value="WAF">WAF</option>
-                  <option value="Other">Other</option>
+                  <option value="">Select Function</option>
+                  {atomFunctions.map((atomFunction, index) => {
+                    return (
+                      <option value={atomFunction.name} key={index}>
+                        {atomFunction.name}
+                      </option>
+                    );
+                  })}
                 </Styledselect>
               </div>
             </InputWrapper>

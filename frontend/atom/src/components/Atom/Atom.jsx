@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Table, notification } from "antd";
+import { Button, notification, Select } from "antd";
 import Modal from "./AddAtom";
 import EditModal from "./EditAtom";
 import RackNameModel from "./RackNameModel";
@@ -25,6 +25,140 @@ import { columnSearch } from "../../utils";
 
 import axios, { baseUrl } from "../../utils/axios";
 import SiteNameModel from "./SiteNameModel";
+import { DiscoverTableModelStyle } from "./Dashboard.styled";
+import CustomModal from "../ReusableComponents/CustomModal/CustomModal";
+import Table from "../ReusableComponents/Carts/Table/Table";
+
+const DiscoverTableModel = (props) => {
+  const { isDiscoveryItemActive, setDiscoverItemAcitve, endPoint } = props;
+  const [searchText, setSearchText] = useState(null);
+  const [searchedColumn, setSearchedColumn] = useState(null);
+  const [rowCount, setRowCount] = useState(0);
+
+  let excelData = [];
+  let [dataSource, setDataSource] = useState(excelData);
+
+  let getColumnSearchProps = columnSearch(
+    searchText,
+    setSearchText,
+    searchedColumn,
+    setSearchedColumn
+  );
+
+  const handleChange = async (value) => {
+    console.log("value =============>", value);
+
+    await axios
+      .post(`${baseUrl}/getDiscoveryForTransition`, { subnet: value })
+      .then((res) => {
+        console.log("res=====>", res);
+      })
+      .catch((err) => console.log("err========>", err));
+  };
+
+  const columns = [
+    {
+      title: "IP Address",
+      dataIndex: "ip_address",
+      key: "ip_address",
+      render: (text, record) => (
+        <p
+          style={{ textAlign: "left", marginLeft: "12px", paddingTop: "16px" }}
+        >
+          {text}
+        </p>
+      ),
+
+      ...getColumnSearchProps(
+        "ip_address",
+        "Ip Address",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+    {
+      title: (
+        <Select defaultValue="All" suffixIcon={"V"} onChange={handleChange}>
+          <Select.Option value="All">All</Select.Option>
+          <Select.Option value="192.168.0.0/24">192.168.0.0/24</Select.Option>
+        </Select>
+      ),
+      dataIndex: "subnet",
+      key: "subnet",
+    },
+    {
+      title: "Make & Model",
+      dataIndex: "make_model",
+      key: "make_model",
+      render: (text, record) => (
+        <p style={{ textAlign: "center", paddingTop: "16px" }}>{text}</p>
+      ),
+
+      ...getColumnSearchProps(
+        "make_model",
+        "Make & Model",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+    {
+      title: "OS Type",
+      dataIndex: "os_type",
+      key: "os_type",
+      render: (text, record) => (
+        <p style={{ textAlign: "center", paddingTop: "16px" }}>{text}</p>
+      ),
+
+      ...getColumnSearchProps(
+        "os_type",
+        "OS Type",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+
+    {
+      title: "Vendor",
+      dataIndex: "vendor",
+      key: "vendor",
+      render: (text, record) => (
+        <p style={{ textAlign: "center", paddingTop: "16px" }}>{text}</p>
+      ),
+
+      ...getColumnSearchProps(
+        "vendor",
+        "Vendor",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+  ];
+
+  return (
+    <CustomModal
+      isModalOpen={isDiscoveryItemActive}
+      setIsModalOpen={setDiscoverItemAcitve}
+      width="100%"
+      footer={null}
+    >
+      <DiscoverTableModelStyle>
+        <Table columns={columns} />
+      </DiscoverTableModelStyle>
+    </CustomModal>
+  );
+};
 
 let excelData = [];
 let columnFilters = {};
@@ -222,7 +356,7 @@ const Atom = () => {
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
-
+                  setSelectedRowKeys([]);
                   setOnboardLoading(false);
                 })
                 .catch((error) => {
@@ -749,13 +883,27 @@ const Atom = () => {
     }),
   };
 
+  const [isDiscoveryItemActive, setDiscoverItemAcitve] = useState(false);
+
   return (
     <SpinLoading spinning={onBoardLoading} tip="Loading...">
+      <AddAtomStyledButton
+        onClick={() => setDiscoverItemAcitve(true)}
+        disabled={configData?.atom.pages.atom.read_only}
+        style={{
+          marginRight: "30px",
+          float: "right",
+          borderRadius: "8px",
+        }}
+      >
+        + Add devices from discovery
+      </AddAtomStyledButton>
+
       <AddAtomStyledButton
         onClick={showModal}
         disabled={configData?.atom.pages.atom.read_only}
         style={{
-          marginRight: "30px",
+          marginRight: "10px",
           float: "right",
           borderRadius: "8px",
         }}
@@ -859,6 +1007,14 @@ const Atom = () => {
       </div>
       <br />
       <br />
+
+      {isDiscoveryItemActive && (
+        <DiscoverTableModel
+          isDiscoveryItemActive={isDiscoveryItemActive}
+          setDiscoverItemAcitve={setDiscoverItemAcitve}
+        />
+      )}
+
       {isModalVisible && (
         <Modal
           style={{ padding: "0px" }}

@@ -1,13 +1,5 @@
 import React, { useEffect, useState } from "react";
-import { Link, useNavigate } from "react-router-dom";
-import first from "./assets/loc.svg";
-import second from "./assets/second.svg";
-import third from "./assets/third.svg";
-import fourth from "./assets/fourth.svg";
-import fifth from "./assets/fourth.svg";
-import six from "./assets/fifth.svg";
-import seven from "./assets/six.svg";
-import { Row, Col, Divider } from "antd";
+import { useNavigate } from "react-router-dom";
 
 import { DivStyling, HeaderStyle } from "./TopCard.styled.js";
 import axios, { baseUrl } from "../../../utils/axios";
@@ -34,9 +26,7 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/dashboardCards");
-        console.log("dashboardCards", res);
         setMyCards(res.data);
-        console.log(myCards);
         setLoading(false);
       } catch (err) {
         console.log(err.response);
@@ -65,6 +55,7 @@ const index = () => {
       navigate("/uam/aps");
     }
   };
+
   const imgFun = (myimg) => {
     if (myimg === "SITES") {
       return <LocationIcon />;
@@ -92,11 +83,11 @@ const index = () => {
       <HeaderStyle>
         {myCards.map((item, index) => {
           return (
-            <DivStyling>
+            <DivStyling key={index}>
               <article onClick={() => Pages(item.name)} className="tab">
                 <span className="icon">{imgFun(item.name)}</span>
                 <article>
-                  <p style={{}}>{item.name}</p>
+                  <p>{item.name}</p>
                   <h2>{item.value}</h2>
                 </article>
               </article>

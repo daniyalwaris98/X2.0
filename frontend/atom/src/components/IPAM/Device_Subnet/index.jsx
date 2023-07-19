@@ -60,12 +60,8 @@ const index = () => {
     let t = eval(test);
     let config = JSON.parse(t);
     setConfigData(config);
-    // let config = localStorage.getItem("monetx_configuration");
-    // setConfigData(JSON.parse(config));
-    // allConfig = JSON.parse(config);
-    // console.log(JSON.parse(config));
-    // console.log(configData);
   }, []);
+
   let getColumnSearchProps = columnSearch(
     searchText,
     setSearchText,
@@ -93,6 +89,7 @@ const index = () => {
     };
     getPasswordGroupDropdown();
   }, []);
+
   const exportSeed = async () => {
     setExportLoading(true);
     if (excelData.length > 0) {
@@ -111,11 +108,7 @@ const index = () => {
       },
     });
   };
-  // let seedTemp = [
 
-  //   {
-
-  //   },]
   const exportTemplate = async () => {
     jsonToExcel(seedTemp);
     openNotification();
@@ -126,15 +119,13 @@ const index = () => {
       let binaryAtomData = XLSX.utils.json_to_sheet(atomData);
       XLSX.utils.book_append_sheet(wb, binaryAtomData, "ipam_fetch_devices");
       XLSX.writeFile(wb, "ipam_fetch_devices.xlsx");
-
-      // setExportLoading(false);
     }
   };
   const onSelectChange = (selectedRowKeys) => {
     console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
-  // console.log(selectedRowKeys);
+
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -143,12 +134,11 @@ const index = () => {
       disabled: configData?.ipam.pages.devices_subnet.read_only,
     }),
   };
+
   useEffect(() => {
     const getAllIpamFetchDevices = async () => {
       setAllIpamDeviceLoading(true);
       const status = await axios.get(baseUrl + "/getIpamFetchStatus");
-      console.log("popooooooooooooooo");
-      console.log(status);
       if (status.data.fetch_status === "Running") {
         setFetchLoading("true");
         setBackgroundColor("red");
@@ -678,12 +668,9 @@ const index = () => {
         <SpinLoading spinning={allIpamDeviceLoading} tip="Loading...">
           <div style={{ padding: "25px" }}>
             <TableStyling
-              // rowSelection={rowSelection}
               scroll={{ x: 3600 }}
-              // rowKey="ip_address"
               columns={columns}
               dataSource={dataSource}
-              // pagination={false}
               style={{ width: "100%", padding: "2%" }}
             />
           </div>

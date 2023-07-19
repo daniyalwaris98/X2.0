@@ -687,7 +687,7 @@ const index = () => {
           <ColRowNumberStyle>11</ColRowNumberStyle>
         </div>
         <div style={{ float: "right", marginBottom: "10px" }}>
-          <Dropdown menu={menu}>
+          <Dropdown overlay={menu}>
             <ExportButtonStyle>
               <span className="icon">
                 <ExportIcon />

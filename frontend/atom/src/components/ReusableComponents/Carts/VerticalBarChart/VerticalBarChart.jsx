@@ -12,21 +12,24 @@ import {
 import axios, { baseUrl } from "../../../../utils/axios/index";
 import { VerticalBarChartStyle } from "./VerticalBarChart.style";
 
-function VerticalBarChart() {
+function VerticalBarChart(props) {
+  const { endPoint } = props;
   const [vendorData, setVendorData] = useState([]);
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      try {
-        const res = await axios.get(baseUrl + "/getAllMonitoringVendors");
-        console.log("res", res);
-        setVendorData(res.data);
-      } catch (err) {
-        console.log(err.response);
-      }
-    };
-    serviceCalls();
+    getData();
   }, []);
+
+  const getData = async () => {
+    await axios
+      .get(baseUrl + "/getAllMonitoringVendors")
+      .then((res) => {
+        setVendorData(res.data);
+      })
+      .catch((err) => {
+        console.log("err=======>", err);
+      });
+  };
 
   return (
     <VerticalBarChartStyle>

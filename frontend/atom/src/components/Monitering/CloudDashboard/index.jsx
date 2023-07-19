@@ -22,49 +22,22 @@ const index = () => {
   const [allData, setAllData] = useState("");
   const [mainLoading, setMainLoading] = useState(false);
 
-  //   useEffect(() => {
-  //     const interval = setInterval(() => {
-  //       axios
-  //         .get("https://example.com/api")
-  //         .then((response) => setData(response.data))
-  //         .catch((error) => console.error(error));
-  //     }, 180000); // 3 minutes in milliseconds
-
-  //     return () => clearInterval(interval);
-  //   }, []);
-
   useEffect(() => {
     const interval = setInterval(() => {
       const loadAllData = async () => {
-        // setMainLoading(true);
         const res = await axios.post(baseUrl + "/getEC2MonitoringData", {
           instance_id: id,
         });
 
         console.log("getMonitoringDevicesCards", res);
         setAllData(res.data);
-        // setMainLoading(false);
       };
       loadAllData();
     }, 600000); // 3 minutes in milliseconds
 
     return () => clearInterval(interval);
   }, []);
-  // const [LoadingReload,setLoadingReload]=useState(false);
-  // const ReloadData=async()=>{
-  //   setLoadingReload(true);
-  
-  //   try {
-  //     const res = await axios.get(baseUrl + "/getMonitoringSpiral");
-  //     console.log("getMonitoringSpiral", res);
-  //     setMyFunction(res.data);
-  //     setLoadingReload(false);
-  //   } catch (err) {
-  //     console.log(err.response);
-  //     setLoadingReload(false);
-  //   }
-  
-  // }
+
   useEffect(() => {
     const loadAllData = async () => {
       setMainLoading(true);
@@ -94,13 +67,11 @@ const index = () => {
           >
             <h3
               style={{
-                // color: "#66b127",
                 borderLeft: "5px solid #66b127",
                 borderTopLeftRadius: "6px",
                 paddingLeft: "13px",
                 alignItems: "center",
                 textAlign: "left",
-                // marginLeft: '-6px',
                 paddingTop: "8px",
                 fontWeight: "bold",
               }}
@@ -112,7 +83,6 @@ const index = () => {
                 style={{
                   padding: "10px",
                   paddingLeft: "20px",
-                  // width: "200px",
                   height: "70px",
                   borderRight: "0.5px solid rgba(0,0,0,0.1)",
                 }}
@@ -125,7 +95,6 @@ const index = () => {
                 style={{
                   padding: "10px",
                   paddingLeft: "20px",
-                  // width: "200px",
                   height: "70px",
                   borderRight: "0.5px solid rgba(0,0,0,0.1)",
                 }}
@@ -164,7 +133,6 @@ const index = () => {
                 style={{
                   padding: "10px",
                   paddingLeft: "20px",
-                  // width: "200px",
                   height: "70px",
                   borderRight: "0.5px solid rgba(0,0,0,0.1)",
                 }}
@@ -184,21 +152,6 @@ const index = () => {
               boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
             }}
           >
-            {/* <h3
-              style={{
-                // color: "#66b127",
-                borderLeft: "5px solid #66b127",
-                borderTopLeftRadius: "6px",
-                paddingLeft: "13px",
-                alignItems: "center",
-                textAlign: "left",
-                // marginLeft: '-6px',
-                paddingTop: "8px",
-                fontWeight: "bold",
-              }}
-            >
-          
-            </h3> */}
             <Row style={{ padding: "15px" }}>
               <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 4 }}>
                 <div style={{ textAlign: "center" }}>
@@ -267,21 +220,6 @@ const index = () => {
                 </div>
               </Col>
               <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 6 }}>
-                {/* <div
-                  style={{
-                    display: "flex",
-                    justifyContent: "center",
-                    alignItems: "center",
-                  }}
-                >
-                  <CpuUtilization
-                    cpu_utilizationValue={allData.cpu_utilization}
-                  />
-                  <h3 style={{ display: "block" }}>ra</h3>
-                  <MemoryUtilization
-                    memoryUtilizationValue={allData.memory_utilization}
-                  />
-                </div> */}
                 <div style={{ display: "grid", placeItems: "center" }}>
                   <CpuUtilization
                     cpu_utilizationValue={allData.cpu_utilization}
@@ -350,13 +288,11 @@ const index = () => {
           >
             <h3
               style={{
-                // color: "#66b127",
                 borderLeft: "5px solid #66b127",
                 borderTopLeftRadius: "6px",
                 paddingLeft: "13px",
                 alignItems: "center",
                 textAlign: "left",
-                // marginLeft: '-6px',
                 paddingTop: "8px",
                 fontWeight: "bold",
               }}
@@ -377,13 +313,11 @@ const index = () => {
           >
             <h3
               style={{
-                // color: "#66b127",
                 borderLeft: "5px solid #66b127",
                 borderTopLeftRadius: "6px",
                 paddingLeft: "13px",
                 alignItems: "center",
                 textAlign: "left",
-                // marginLeft: '-6px',
                 paddingTop: "8px",
                 fontWeight: "bold",
               }}

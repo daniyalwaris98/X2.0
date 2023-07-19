@@ -46,7 +46,6 @@ const EditRackModel = (props) => {
                 })
                 .catch((error) => {
                   console.log(error);
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
@@ -54,7 +53,6 @@ const EditRackModel = (props) => {
         })
         .catch((error) => {
           console.log("in add seed device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
       console.log(err);

@@ -156,6 +156,7 @@ const Atom = () => {
       XLSX.utils.book_append_sheet(wb, binaryAtomData, "network");
       XLSX.writeFile(wb, "network.xlsx");
       openNotification();
+      setSelectedRowKeys([]);
     } else {
       openSweetAlert("No Data Found!", "error");
     }

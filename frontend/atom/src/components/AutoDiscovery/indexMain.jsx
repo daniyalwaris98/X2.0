@@ -1,15 +1,5 @@
-import {
-  Row,
-  Table,
-  Modal,
-  Checkbox,
-  Form,
-  Radio,
-  Button,
-  Input,
-  message,
-} from "antd";
 import React, { useState, useEffect } from "react";
+import { Row, Table, Modal, Form, Radio, Input, message } from "antd";
 import scanning from "./assets/scanning.svg";
 import { SpinLoading, TableStyling } from "../AllStyling/All.styled.js";
 import axios, { baseUrl } from "../../utils/axios";
@@ -42,7 +32,6 @@ const indexMain = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [scanSubnet, setScanSubnet] = useState("All");
   const [alertStatusLoading, setAlertStatusLoading] = useState(false);
-  const [size, setSize] = useState("small");
   let [dataSource, setDataSource] = useState(excelData);
   let [SwitchesDataSource, setSwitchesDataSource] = useState(excelDataSwitches);
   let [FirewallDataSource, setFirewallDataSource] = useState(excelDataFirewall);
@@ -68,13 +57,9 @@ const indexMain = () => {
 
   const [value, setValue] = useState(1);
   const onChange = (e) => {
-    console.log("radio checked", e.target.value);
     setValue(e.target.value);
   };
 
-  const showModal = () => {
-    setIsModalOpen(true);
-  };
   const handleOk = () => {
     setIsModalOpen(false);
   };
@@ -98,6 +83,7 @@ const indexMain = () => {
       setFirewallLoading(false);
     }
   };
+
   const SwitchesTrigger = async () => {
     setSwitchesLoading(true);
 
@@ -110,10 +96,10 @@ const indexMain = () => {
       setSwitchesRowCount(excelDataSwitches.length);
       setSwitchesLoading(false);
     } catch (err) {
-      console.log(err.response);
       setSwitchesLoading(false);
     }
   };
+
   const OtherDevicesTrigger = async () => {
     setOtherDevicesLoading(true);
 
@@ -126,10 +112,10 @@ const indexMain = () => {
       setOtherDevicesRowCount(excelDataOtherDevices.length);
       setOtherDevicesLoading(false);
     } catch (err) {
-      console.log(err.response);
       setOtherDevicesLoading(false);
     }
   };
+
   const RoutersTrigger = async () => {
     setRoutersLoading(true);
 
@@ -146,6 +132,7 @@ const indexMain = () => {
       setRoutersLoading(false);
     }
   };
+
   const AllDevicesDataTrigger = async () => {
     setLoading(true);
 
@@ -158,21 +145,19 @@ const indexMain = () => {
       setRowCount(excelData.length);
       setLoading(false);
     } catch (err) {
-      console.log(err.response);
       setLoading(false);
     }
   };
+
   const [tableName, setTableName] = useState("Unknown Devices");
 
   const showTable = (myDataTable) => {
     if (myDataTable === "Unknown Devices") {
       setTableName("Unknown Devices");
       AllDevicesDataTrigger();
-      console.log("Unknown Devices");
     } else if (myDataTable === "Firewalls") {
       setTableName("Firewalls");
       FirewallTrigger();
-      console.log("Firewalls");
     } else if (myDataTable === "Switches") {
       setTableName("Switches");
       SwitchesTrigger();
@@ -193,17 +178,13 @@ const indexMain = () => {
       confirmButtonColor: "#66B127",
     });
   };
-  const onFinish = async (values) => {
-    // const res= await axios.post(baseUrl + "/autoDiscover", values);
 
+  const onFinish = async (values) => {
     setPostLoading(true);
 
     await axios
       .post(baseUrl + "/autoDiscover", values)
       .then((response) => {
-        // setIsPassModalVisible(false);
-        // setPostLoading(false);
-
         message.info("Scanning Started...");
 
         if (response?.response?.status == 500) {
@@ -219,7 +200,6 @@ const indexMain = () => {
             axios
               .get(baseUrl + "/getDiscoveryData")
               .then((response) => {
-                console.log(response.data);
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
                 setDataSource(response?.data);
@@ -252,6 +232,7 @@ const indexMain = () => {
     searchedColumn,
     setSearchedColumn
   );
+
   const onSelectChange = (selectedRowKeys) => {
     setSelectedRowKeys(selectedRowKeys);
   };
@@ -260,9 +241,6 @@ const indexMain = () => {
     selectedRowKeys,
     onChange: onSelectChange,
     selection: Table.SELECTION_ALL,
-    // getCheckboxProps: () => ({
-    //   disabled: !configData?.atom.pages.atom.read_only,
-    // }),
   };
   const [subnetArray, setsubnetArray] = useState([]);
 
@@ -294,8 +272,6 @@ const indexMain = () => {
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);
-        console.log("Filtering", res.data);
-        console.log("Filtering", scanSubnet);
         setLoading(false);
       } catch (err) {
         console.log(err.response);
@@ -313,7 +289,6 @@ const indexMain = () => {
           subnet: scanSubnet,
         });
         setCount(res.data);
-        console.log(res.data);
         setLoading(false);
       } catch (err) {
         console.log(err.response);
@@ -848,18 +823,6 @@ const indexMain = () => {
         columnFilters
       ),
       ellipsis: true,
-      // title: (
-      //   <ColumnHeader
-      //     dataIndex="function"
-      //     title="Function"
-      //     setRowCount={setRowCount}
-      //     setDataSource={setDataSource}
-      //     excelData={excelData}
-      //     columnFilters={columnFilters}
-      //   />
-      // ),
-      //   title: "Function",
-      //   dataIndex: "function",
     },
 
     {
@@ -1049,18 +1012,6 @@ const indexMain = () => {
         columnFilters
       ),
       ellipsis: true,
-      // title: (
-      //   <ColumnHeader
-      //     dataIndex="function"
-      //     title="Function"
-      //     setRowCount={setRowCount}
-      //     setDataSource={setDataSource}
-      //     excelData={excelData}
-      //     columnFilters={columnFilters}
-      //   />
-      // ),
-      //   title: "Function",
-      //   dataIndex: "function",
     },
 
     {
@@ -1102,74 +1053,6 @@ const indexMain = () => {
     },
   ];
   const RoutersColumns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "1%",
-
-    //   render: (text, record) => (
-    //     <>
-    //       {!configData?.atom.pages.atom.read_only ? (
-    //         <>
-    //           <p
-    //             style={{
-    //               color: "#66B127",
-    //               textDecoration: "underline",
-    //               fontWeight: "400",
-    //               textAlign: "center",
-    //               // color: "blue",
-    //               cursor: "pointer",
-    //             }}
-    //             disabled
-    //             // onClick={() => {
-    //             //   edit(record);
-    //             // }}
-    //           >
-    //             <EditOutlined
-    //               style={{ paddingTop:"17px", color: "#66A111" }}
-    //             />
-    //           </p>
-    //         </>
-    //       ) : (
-    //         <p
-    //           style={{
-    //             color: "#66B127",
-    //             textDecoration: "underline",
-    //             fontWeight: "400",
-    //             textAlign: "center",
-    //             // color: "blue",
-    //             cursor: "pointer",
-    //           }}
-    //           onClick={() => {
-    //             edit(record);
-    //           }}
-    //         >
-    //           <EditOutlined
-    //             style={{paddingTop:"17px",  color: "#66A111" }}
-    //           />
-    //         </p>
-    //       )}
-    //     </>
-    //   ),
-    // },
-
-    // {
-    //   title: "Atom ID",
-    //   dataIndex: "atom_id",
-    //   key: "atom_id",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "atom_id",
-    //     "Atom Id",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-
     {
       title: "IP Address",
       dataIndex: "ip_address",
@@ -1326,18 +1209,6 @@ const indexMain = () => {
         columnFilters
       ),
       ellipsis: true,
-      // title: (
-      //   <ColumnHeader
-      //     dataIndex="function"
-      //     title="Function"
-      //     setRowCount={setRowCount}
-      //     setDataSource={setDataSource}
-      //     excelData={excelData}
-      //     columnFilters={columnFilters}
-      //   />
-      // ),
-      //   title: "Function",
-      //   dataIndex: "function",
     },
 
     {
@@ -1383,7 +1254,6 @@ const indexMain = () => {
   const startScanning = async () => {
     setSubnetScanLoading(true);
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/autoDiscover", { subnet: scanSubnet })
         .then((response) => {
@@ -1401,16 +1271,11 @@ const indexMain = () => {
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
-                  // setSelectedRowKeys([]);
-
-                  // excelData = response.data;
                   setSubnetScanLoading(false);
                 })
                 .catch((error) => {
                   console.log(error);
                   setSubnetScanLoading(false);
-
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
 
@@ -1421,7 +1286,6 @@ const indexMain = () => {
                 })
                 .then((res) => {
                   setCount(res.data);
-
                   setLoading(false);
                 })
                 .catch((err) => {
@@ -1437,7 +1301,6 @@ const indexMain = () => {
           setSubnetScanLoading(false);
 
           console.log("in add seed device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
       setSubnetScanLoading(false);
@@ -1451,11 +1314,7 @@ const indexMain = () => {
       <div style={{ marginLeft: "15px", marginRight: "15px" }}>
         <div
           style={{
-            // display: "flex",
-            // height: "100%",
-            // paddingTop: '15px',
             marginRight: "15px",
-            // boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
             boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
             borderRadius: "12px",
             backgroundColor: "#fcfcfc",
@@ -1469,7 +1328,6 @@ const indexMain = () => {
               borderTopLeftRadius: "6px",
               paddingLeft: "13px",
               alignItems: "center",
-              // marginLeft: '-6px',
               paddingTop: "15px",
               fontWeight: "bold",
             }}
@@ -1480,40 +1338,10 @@ const indexMain = () => {
             <div style={{ textAlign: "center", width: "20%", height: "100%" }}>
               <img src={scanning} alt="" />
               <br />
-              {/* <p style={{ fontWeight: "bold", margin: "0px" }}>
-                Scanning 45 Networks
-              </p> */}
-              {/* <div style={{ marginLeft: "25px" }}> */}
-              {/* <p style={{ textAlign: "center", margin: "0px" }}>
-                10.23.12.23/28
-              </p> */}
+
               <SpinLoading spinning={subnetScanLoadings} tip="Scanning">
                 <div style={{ width: "100%" }}>
-                  {/* <InputWrapper style={{ width: "18vw", textAlign: "center" }}>
-                    
-                    <div className="select_type">
-                      <Styledselect
-                        className="rectangle"
-                        required
-                        placeholder="select"
-                        value={scanSubnet}
-                        style={{ width: "18vw", textAlign: "center" }}
-                        onChange={(e) => setscanStatus(e.target.value)}
-                      >
-                        <option>Select Subnet</option>
-
-                        {subnetArray?.map((item, index) => {
-                          return (
-                            <>
-                              <option>{item}</option>
-                            </>
-                          );
-                        })}
-                      </Styledselect>
-                    </div>
-                  </InputWrapper> */}
                   <InputWrapper style={{ width: "18vw", textAlign: "center" }}>
-                    {/* Scan Status: &nbsp;<span style={{ color: "red" }}>*</span> */}
                     <br />
                     <div className="select_type">
                       <Styledselect
@@ -1523,8 +1351,6 @@ const indexMain = () => {
                         style={{ width: "18vw", textAlign: "center" }}
                         onChange={(e) => setScanSubnet(e.target.value)}
                       >
-                        {/* <option value="All">All Subnet</option> */}
-
                         {subnetArray?.map((item, index) => {
                           return <option key={index}>{item}</option>;
                         })}
@@ -1534,7 +1360,6 @@ const indexMain = () => {
                 </div>
 
                 <button
-                  // onClick={showModal}
                   onClick={() => startScanning()}
                   style={{
                     textAlign: "center",
@@ -1550,10 +1375,8 @@ const indexMain = () => {
                   Start Scanning Devices
                 </button>
               </SpinLoading>
-              {/* </div> */}
             </div>
 
-            {/* <SpinLoading spinning={alertStatusLoading}> */}
             <div style={{ width: "80%" }}>
               <Row gutter={[8, 8]}>
                 <ColStyle
@@ -1567,10 +1390,7 @@ const indexMain = () => {
                     marginRight: "15px",
                   }}
                 >
-                  <DivStyle
-                    onClick={() => showTable("Unknown Devices")}
-                    //    active={"Total Alert" === tableName}
-                  >
+                  <DivStyle onClick={() => showTable("Unknown Devices")}>
                     <PStyle
                       active={"Unknown Devices" === tableName}
                       style={{
@@ -1583,16 +1403,12 @@ const indexMain = () => {
                       }}
                     >
                       {getCount.devices}
-                      {/* {alertStatus.total} */}
                     </PStyle>
                     <PStyle
                       active={"Unknown Devices" === tableName}
-                      //   onClick={() => showTable("Total Alert")}
-
                       style={{
                         fontWeight: 600,
                         color: "#000000",
-                        // marginTop: "8px",
                       }}
                     >
                       <img
@@ -1614,10 +1430,7 @@ const indexMain = () => {
                     marginRight: "15px",
                   }}
                 >
-                  <DivStyle
-                    onClick={() => showTable("Firewalls")}
-                    //    active={"Total Alert" === tableName}
-                  >
+                  <DivStyle onClick={() => showTable("Firewalls")}>
                     <PStyle
                       active={"Firewalls" === tableName}
                       style={{
@@ -1629,18 +1442,13 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {/* {FirewallRowCount} */}
                       {getCount.firewall}
-                      {/* {alertStatus.total} */}
                     </PStyle>
                     <PStyle
                       active={"Firewalls" === tableName}
-                      //   onClick={() => showTable("Total Alert")}
-
                       style={{
                         fontWeight: 600,
                         color: "#000000",
-                        // marginTop: "8px",
                       }}
                     >
                       <img
@@ -1662,10 +1470,7 @@ const indexMain = () => {
                     marginRight: "15px",
                   }}
                 >
-                  <DivStyle
-                    onClick={() => showTable("Switches")}
-                    //    active={"Total Alert" === tableName}
-                  >
+                  <DivStyle onClick={() => showTable("Switches")}>
                     <PStyle
                       active={"Switches" === tableName}
                       style={{
@@ -1677,17 +1482,13 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {/* {SwitchesRowCount} */}
                       {getCount.switch}
                     </PStyle>
                     <PStyle
                       active={"Switches" === tableName}
-                      //   onClick={() => showTable("Total Alert")}
-
                       style={{
                         fontWeight: 600,
                         color: "#000000",
-                        // marginTop: "8px",
                       }}
                     >
                       <img
@@ -1709,10 +1510,7 @@ const indexMain = () => {
                     marginRight: "15px",
                   }}
                 >
-                  <DivStyle
-                    onClick={() => showTable("Routers")}
-                    //    active={"Total Alert" === tableName}
-                  >
+                  <DivStyle onClick={() => showTable("Routers")}>
                     <PStyle
                       active={"Routers" === tableName}
                       style={{
@@ -1724,19 +1522,13 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {/* {RoutersRowCount} */}
                       {getCount.router}
-
-                      {/* {alertStatus.total} */}
                     </PStyle>
                     <PStyle
                       active={"Routers" === tableName}
-                      //   onClick={() => showTable("Total Alert")}
-
                       style={{
                         fontWeight: 600,
                         color: "#000000",
-                        // marginTop: "8px",
                       }}
                     >
                       <img
@@ -1758,10 +1550,7 @@ const indexMain = () => {
                     marginRight: "15px",
                   }}
                 >
-                  <DivStyle
-                    onClick={() => showTable("Other Devices")}
-                    //    active={"Total Alert" === tableName}
-                  >
+                  <DivStyle onClick={() => showTable("Other Devices")}>
                     <PStyle
                       active={"Other Devices" === tableName}
                       style={{
@@ -1773,19 +1562,13 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {/* {OtherDevicesRowCount} */}
                       {getCount.other}
-
-                      {/* {alertStatus.total} */}
                     </PStyle>
                     <PStyle
                       active={"Other Devices" === tableName}
-                      //   onClick={() => showTable("Total Alert")}
-
                       style={{
                         fontWeight: 600,
                         color: "#000000",
-                        // marginTop: "8px",
                       }}
                     >
                       <img
@@ -1799,18 +1582,12 @@ const indexMain = () => {
                 </ColStyleFour>
               </Row>
             </div>
-
-            {/* </SpinLoading> */}
           </div>
         </div>
         <br />
         <div
           style={{
-            // display: "flex",
-            // height: "100%",
-            // paddingTop: '15px',
             marginRight: "15px",
-            // boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
             boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
             borderRadius: "12px",
             backgroundColor: "#fcfcfc",
@@ -1824,7 +1601,6 @@ const indexMain = () => {
               borderTopLeftRadius: "6px",
               paddingLeft: "13px",
               alignItems: "center",
-              // marginLeft: '-6px',
               paddingTop: "15px",
               fontWeight: "bold",
             }}
@@ -1840,7 +1616,6 @@ const indexMain = () => {
                 rowKey="ip_address"
                 columns={columns}
                 dataSource={dataSource}
-                // pagination={false}
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
@@ -1851,7 +1626,6 @@ const indexMain = () => {
                 rowKey="ip_address"
                 columns={FirewallsColumns}
                 dataSource={FirewallDataSource}
-                // pagination={false}
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
@@ -1862,7 +1636,6 @@ const indexMain = () => {
                 rowKey="ip_address"
                 columns={SwitchesColumns}
                 dataSource={SwitchesDataSource}
-                // pagination={false}
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
@@ -1873,7 +1646,6 @@ const indexMain = () => {
                 rowKey="ip_address"
                 columns={RoutersColumns}
                 dataSource={RoutersDataSource}
-                // pagination={false}
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
@@ -1884,7 +1656,6 @@ const indexMain = () => {
                 rowKey="ip_address"
                 columns={OtherDevicesColumns}
                 dataSource={OtherDevicesDataSource}
-                // pagination={false}
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
@@ -1901,13 +1672,6 @@ const indexMain = () => {
       >
         <SpinLoading spinning={postloading}>
           <div style={{ backgroundColor: "rgba(0,0,0,0.06)", padding: "10px" }}>
-            {/* <Checkbox
-        checked={componentDisabled}
-        onChange={(e) => setComponentDisabled(e.target.checked)}
-      >
-        Form disabled
-      </Checkbox> */}
-
             <Radio.Group onChange={onChange} value={value}>
               <Radio value={1}>Subnet</Radio>
               <Radio value={2}>IP Range</Radio>
@@ -1915,19 +1679,12 @@ const indexMain = () => {
             <br />
             <br />
             <Form
-              // labelCol={{
-              //   span: 4,
-              // }}
-              // wrapperCol={{
-              //   span: 14,
-              // }}
               layout="horizontal"
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
               autoComplete="off"
               disabled={value == 2 ? true : false}
               style={{
-                // maxWidth: 600,
                 display: "flex",
               }}
             >
@@ -1968,19 +1725,12 @@ const indexMain = () => {
               </button>
             </Form>
             <Form
-              // labelCol={{
-              //   span: 4,
-              // }}
-              // wrapperCol={{
-              //   span: 14,
-              // }}
               layout="horizontal"
               onFinish={onFinish}
               onFinishFailed={onFinishFailed}
               autoComplete="off"
               disabled={value == 1 ? true : false}
               style={{
-                // maxWidth: 600,
                 display: "flex",
               }}
             >
@@ -2027,7 +1777,6 @@ const indexMain = () => {
   );
 };
 const StyledInput = styled(Input)`
-  // height: 2.2rem;
   border-radius: 12px;
   border: none !important;
   box-shadow: none !important;
@@ -2036,12 +1785,6 @@ const StyledInput = styled(Input)`
   &:focus {
     border: 1px solid #6ab344 !important;
   }
-  /* .ant-input:focus {
-    border-color: #6ab344 !important;
-    outline: 0 !important;
-    -webkit-box-shadow: 0 0 0 2px #6ab344 !important;
-    box-shadow: 0 0 0 2px #6ab344 !important;
-  }  */
 `;
 const Styledselect = styled.select`
   height: 2.2rem;
@@ -2053,9 +1796,7 @@ const Styledselect = styled.select`
 const InputWrapper = styled.div`
   text-align: left;
   font-size: 12px;
-  // white-space: nowrap;
-  // display: flex;
-  // justify-content: space-between;
+
   padding-bottom: 10px;
 `;
 

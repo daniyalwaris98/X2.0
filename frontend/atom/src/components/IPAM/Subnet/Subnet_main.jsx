@@ -2139,7 +2139,7 @@ const index = () => {
               onClick={handleButtonClick}
               disabled={configData?.ipam.pages.subnet.read_only}
               style={{ background: "#66b127 !important" }}
-              menu={menu}
+              overlay={menu}
               icon={<DownOutlined style={{ fontSize: "14px" }} />}
             >
               <img src={Scanner} width="18px" height="18px" alt="" /> &nbsp;
