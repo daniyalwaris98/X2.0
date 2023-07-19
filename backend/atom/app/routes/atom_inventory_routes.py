@@ -43,62 +43,6 @@ def hello(user_data):
 
 
 
-@app.route('/deleteAtom', methods=['POST'])
-@token_required
-def DeleteAtom(user_data):
-    if True:
-        try:
-            ips = request.get_json()
-            ipList = []
-            deletionResponse = False
-            errorResponse = False
-            responses = []
-            queryString = "select IP_ADDRESS from device_table;"
-            result = db.session.execute(queryString)
-            for row in result:
-                ipList.append(row[0])
-
-            for ip in ips:
-                if ip in ipList:
-                    queryString = f"select STATUS from device_table where IP_ADDRESS='{ip}';"
-                    result = db.session.execute(queryString)
-                    for row in result:
-                        if row[0] == 'Dismantled':
-                            queryString = f"delete from atom_table where ip_address='{ip}';"
-                            db.session.execute(queryString)
-                            db.session.commit()
-                            queryString = f"delete from device_table where ip_address='{ip}';"
-                            db.session.execute(queryString)
-                            db.session.commit()
-                            deletionResponse = 'deletionResponse'
-                            responses.append(deletionResponse)
-                        if row[0] == 'Production':
-                            errorResponse = 'errorResponse'
-                            responses.append(errorResponse)
-                else:
-                    queryString = f"delete from atom_table where ip_address='{ip}';"
-                    db.session.execute(queryString)
-                    db.session.commit()
-                    deletionResponse = 'deletionResponse'
-                    responses.append(deletionResponse)
-            responses = set(responses)
-            responses = list(responses)
-            if len(responses) == 1:
-                if responses[0] == 'deletionResponse':
-                    return "ATOMS DELETED SUCCESSFULLY", 200
-                if responses[0] == 'errorResponse':
-                    return "ERROR! DEVICE IS IN PRODUCTION", 500
-            elif len(responses) > 1:
-                return "SOME ATOMS ARE DELETED", 200
-
-            return "DELETE SUCCESSFULLY", 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
 
 @app.route("/getSiteBySiteName", methods=['GET'])
 @token_required
@@ -107,7 +51,7 @@ def GetSiteBySiteName(user_data):
         site_name = request.args.get('site_name')
         siteList = []
         if site_name:
-            siteObj = SiteTable.query.filter_by(site_name=site_name).all()
+            siteObj = Site_Table.query.filter_by(site_name=site_name).all()
             if siteObj:
                 for site in siteObj:
                     siteDataDict = {'site_name': site.site_name, 'region': site.region, 'latitude': site.latitude,
@@ -136,7 +80,7 @@ def GetRacksBySiteName(user_data):
         rack_name = request.args.get('rack_name')
         rackList = []
         if rack_name:
-            rackObj = RackTable.query.filter_by(rack_name=rack_name).all()
+            rackObj = Rack_Table.query.filter_by(rack_name=rack_name).all()
             if rackObj:
                 for rack in rackObj:
                     rackDataDict = {'rack_name': rack.rack_name, 'site_name': rack.site_name,
@@ -162,264 +106,6 @@ def GetRacksBySiteName(user_data):
         print(str(e), file=sys.stderr)
         return str(e), 500
 
-
-# @app.route('/editAtom', methods=['POST'])
-# @token_required
-# def EditAtom(user_data):
-#     try:
-#         atomObj = request.get_json()
-#         print(atomObj, file=sys.stderr)
-#
-#         atom = Atom.query.with_entities(Atom).filter_by(
-#             atom_id=atomObj['atom_id']).first()
-#         if Phy_Table.query.with_entities(Phy_Table.site_name).filter_by(
-#                 site_name=atomObj['site_name']).first() != None and Rack_Table.query.with_entities(
-#             Rack_Table.rack_name).filter_by(rack_name=atomObj['rack_name']).first() != None:
-#
-#             atom.site_name = atomObj['site_name']
-#             atom.rack_name = atomObj['rack_name']
-#             atom.device_name = atomObj['device_name']
-#             # match = re.match(r"[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}", atomObj['ip_address'])
-#             # value = (bool(match))
-#             # if value:
-#             #     atom.ip_address = atomObj['ip_address']
-#             # else:
-#             #     return "Wrong IP Address",500
-#             atom.ip_address = atomObj['ip_address']
-#             atom.device_ru = atomObj['device_ru']
-#             atom.department = atomObj['department']
-#             atom.section = atomObj['section']
-#             # atom.criticality = atomObj['criticality']
-#             atom.function = atomObj['function']
-#             # atom.domain = atomObj['domain']
-#             atom.virtual = atomObj['virtual']
-#             atom.device_type = atomObj['device_type']
-#             atom.password_group = atomObj['password_group']
-#             UpdateData(atom)
-#             print(
-#                 f"Updated Atom with IP ADDRESS {atomObj['ip_address']}", file=sys.stderr)
-#             return jsonify({"Response": "Success"}), 200
-#         else:
-#             print("Rack Name or Site Name does not exists", file=sys.stderr)
-#             return jsonify({'response': "Rack Name or Site Name does not Exists"}), 500
-#     except Exception as e:
-#         traceback.print_exc()
-#         print(str(e), file=sys.stderr)
-#         return str(e), 500
-
-
-@app.route("/addPasswordGroup", methods=['POST'])
-# @token_required
-def AddUser():
-    try:
-        passObj = request.get_json()
-        response, status = addPasswordGroup(passObj, 0)
-
-        print(response, file=sys.stderr)
-
-        return response, status
-
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-        return str(e), 500
-
-
-@app.route("/addPasswordGroups", methods=['POST'])
-@token_required
-def AddUsers(user_data):
-    try:
-        errorList = []
-        responseList = []
-
-        passObjs = request.get_json()
-        row = 0
-
-        for passObj in passObjs:
-            row = row + 1
-            response, status = addPasswordGroup(passObj, row)
-
-            if status == 200:
-                responseList.append(response)
-            else:
-                errorList.append(response)
-
-        responseDict = {
-            "success": len(responseList),
-            "error": len(errorList),
-            "error_list": errorList,
-            "success_list": responseList
-        }
-
-        return jsonify(responseDict), 200
-
-    except Exception as e:
-        traceback.print_exc()
-        print(str(e), file=sys.stderr)
-        return str(e), 500
-
-
-@app.route("/editUser", methods=['POST'])
-@token_required
-def EditUser(user_data):
-    try:
-        userObj = request.get_json()
-        print(userObj, file=sys.stderr)
-
-        user = PasswordGroupTable.query.with_entities(PasswordGroupTable).filter_by(
-            password_group=userObj['password_group']).first()
-        print(user, file=sys.stderr)
-
-        if PasswordGroupTable.query.with_entities(PasswordGroupTable.password_group).filter_by(
-                password_group=userObj['password_group']):
-            user.password_group = userObj['password_group']
-            user.username = userObj['username']
-            user.password = userObj['password']
-
-            UpdateDBData(user)
-            print(
-                f"Updated User {userObj['password_group']} SUCCESSFULLY", file=sys.stderr)
-            return jsonify({"Response": "Password Group Updated Successfully"}), 200
-        else:
-            print("Password Group Does not exist", file=sys.stderr)
-            return jsonify({"Response": "Password group does not exist"}), 500
-    except Exception as e:
-        traceback.print_exc()
-        return str(e), 500
-
-
-@app.route('/deletePasswordGroup', methods=['POST'])
-@token_required
-def DeletePasswordGroup(user_data):
-    try:
-        responses = []
-        response = False
-        response1 = False
-        response2 = False
-        passwordGroups = request.get_json()
-        for passwordGroup in passwordGroups:
-            queryString = f"select count(*) from atom_table where password_group='{passwordGroup}';"
-            queryString1 = f"select count(*) from ipam_devices_table where password_group='{passwordGroup}';"
-
-            result = db.session.execute(queryString).scalar()
-            result1 = db.session.execute(queryString1).scalar()
-            if result > 0:
-                response = 'atom'
-                responses.append(response)
-
-            elif result1 > 0:
-                response1 = 'ipam'
-                responses.append(response1)
-
-            else:
-
-                db.session.execute(
-                    f"delete from password_group_table where PASSWORD_GROUP='{passwordGroup}';")
-                db.session.commit()
-                response2 = 'deleted'
-                responses.append(response2)
-        responses = set(responses)
-        responses = list(responses)
-        if len(responses) == 1:
-            if responses[0] == 'atom':
-                return "Password Group Found in Atom", 500
-            elif responses[0] == 'ipam':
-                return "Password Group Found in IPAM", 500
-            elif responses[0] == 'deleted':
-                return "Deleted Successfully", 200
-        elif len(responses) == 3:
-            return "Some Deleted and Some are Found in IPAM and Atom", 200
-        elif len(responses) == 2:
-            if 'atom' in responses and 'ipam' in responses:
-                return "Password Group Found in Atom and IPAM", 500
-            elif 'atom' in responses and 'deleted' in responses:
-                return "Some Delete and Some Found in Atom", 200
-            elif 'ipam' in responses and 'deleted' in responses:
-                return "Some Deleted and Some Found in Atom", 200
-
-    except Exception as e:
-        traceback.print_exc()
-        return str(e), 500
-
-
-@app.route("/getPasswordGroups", methods=['GET'])
-@token_required
-def GetUsers(user_data):
-    try:
-        userObjList = []
-        userObjs = PasswordGroupTable.query.all()
-
-        for userObj in userObjs:
-            userDataDict = {'password_group': userObj.password_group, 'username': userObj.username,
-                            'password': userObj.password, 'secret_password': userObj.secret_password,
-                            'password_group_type': userObj.password_group_type}
-
-            userObjList.append(userDataDict)
-        # print(userObjList, file=sys.stderr)
-        content = gzip.compress(json.dumps(userObjList).encode('utf8'), 5)
-        response = make_response(content)
-        response.headers['Content-length'] = len(content)
-        response.headers['Content-Encoding'] = 'gzip'
-        return response
-    except Exception as e:
-        traceback.print_exc()
-        return str(e), 500
-
-
-@app.route('/getSitesForDropdown', methods=['GET'])
-@token_required
-def GetSitesForDropDown(user_data):
-    try:
-
-        result = SiteTable.query.all()
-        objList = []
-        for site in result:
-            site_name = site.site_name
-            objList.append(site_name)
-        print(objList, file=sys.stderr)
-        return jsonify(objList), 200
-    except Exception as e:
-        traceback.print_exc()
-        return str(e), 500
-
-
-@app.route('/getRacksBySiteDropdown', methods=['GET'])
-@token_required
-def GetRacksBySiteDropdown(user_data):
-    try:
-        site_name = request.args.get('site_name')
-        objList = []
-
-        result = db.session.query(RackTable, SiteTable) \
-            .join(SiteTable, RackTable.site_id == SiteTable.site_id) \
-            .filter(SiteTable.site_name == site_name).all()
-
-        for rack, site in result:
-            rack_name = rack.rack_name
-            objList.append(rack_name)
-
-        print(objList, 200)
-        return jsonify(objList), 200
-    except Exception as e:
-        traceback.print_exc()
-        return str(e), 500
-
-
-@app.route('/getPasswordGroupDropdown', methods=['GET'])
-@token_required
-def GetPasswordGroupDropdown(user_data):
-    try:
-
-        result = PasswordGroupTable.query.all()
-        objList = []
-        for password_group in result:
-            password_group_name = password_group.password_group
-            objList.append(password_group_name)
-        print(objList, 200)
-        return jsonify(objList), 200
-    except Exception as e:
-        traceback.print_exc()
-        return str(e), 500
 
 #
 # @app.route("/onBoardDevice", methods=['POST'])
@@ -597,9 +283,9 @@ def GetPasswordGroupDropdown(user_data):
 #
 #             print(deviceObj, file=sys.stderr)
 #
-#             if SiteTable.query.with_entities(SiteTable.site_name).filter_by(
-#                     site_name=deviceObj['site_name']).first() != None and RackTable.query.with_entities(
-#                 RackTable.rack_name).filter_by(rack_name=deviceObj['rack_name']).first() != None:
+#             if Site_Table.query.with_entities(Site_Table.site_name).filter_by(
+#                     site_name=deviceObj['site_name']).first() != None and Rack_Table.query.with_entities(
+#                 Rack_Table.rack_name).filter_by(rack_name=deviceObj['rack_name']).first() != None:
 #                 device = Device_Table()
 #                 device.site_id = deviceObj['site_name']
 #                 device.rack_id = deviceObj['rack_name']

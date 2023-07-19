@@ -8,26 +8,26 @@ from atom.static_list import *
 def ValidateAtom(device, row):
     try:
         if 'ip_address' not in device:
-            return f"Row {row} : Ip Address Cannot be Empty", 500
+            return f"Row {row} : Ip Address Can Not be Empty", 500
         
         if device['ip_address'] is None:
             error = f"Row {row} : Ip Address Can Not be Empty"
             return error, 500
         
         if device['ip_address'].strip() == "":
-            return f"Row {row} : Ip Address Cannot be Empty", 500
+            return f"Row {row} : Ip Address Can Not be Empty", 500
 
         # row 0 means single row is being added statically and ip_address can not be updated through Insertion
         # else multiple row are being added by using file import and row will be updated if ip address already exists
         if row == 0:
-            if AtomTable.query.filter_by(ip_address=device['ip_address']).first() is not None:
+            if Atom_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
         
-            if AtomTransitionTable.query.filter_by(ip_address=device['ip_address']).first() is not None:
+            if Atom_Transition_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
 
         if 'device_name' not in device:
-            return f"{device['ip_address']} : Device Name Cannot be Empty", 500
+            return f"{device['ip_address']} : Device Name Can Not be Empty", 500
         
         if device['device_name'] is None:
             error = f"Row {row} : Device Name Can Not be Empty"
@@ -35,9 +35,9 @@ def ValidateAtom(device, row):
 
         device['device_name'] = device['device_name'].strip()
         if device['device_name'] == "":
-            return f"Row {row} : Device Name Cannot be Empty", 500
+            return f"Row {row} : Device Name Can Not be Empty", 500
 
-        atom =  AtomTable.query.filter_by(device_name=device['device_name']).first()
+        atom =  Atom_Table.query.filter_by(device_name=device['device_name']).first()
         if atom is not None:
             if atom.ip_address != device['ip_address'].strip():
                 error = f"{device['ip_address']} : Device Already Assigned To An Other Device"
@@ -54,7 +54,7 @@ def ValidateAtom(device, row):
             return error, 500
 
         if 'device_type' not in device:
-            return f"{device['ip_address']} : Device Type Cannot be Empty", 500
+            return f"{device['ip_address']} : Device Type Can Not be Empty", 500
         
         if device['device_type'] is None:
             error = f"Row {row} : Device Type Can Not be Empty"
@@ -65,7 +65,7 @@ def ValidateAtom(device, row):
         
         
         if device['device_type'] == "":
-            return f"Row {row} : Device Type Cannot be Empty", 500
+            return f"Row {row} : Device Type Can Not be Empty", 500
         
         if device['device_type'] not in device_type_list:
             return f"Row {row} : Device Type Is Not Supported - {device['device_type']}", 500
@@ -74,47 +74,47 @@ def ValidateAtom(device, row):
         # Site Check
         site_exist = None
         if 'site_name' not in device:
-            return f"{device['ip_address']} : Site Name Cannot be Empty", 500
+            return f"{device['ip_address']} : Site Name Can Not be Empty", 500
         if device['site_name'] is None:
             error = f"{device['ip_address']} : Site Name Can Not be Empty"
             return error, 500
         
         device['site_name'] = device['site_name'].strip()
         if device['site_name'] == '':
-            return f"{device['ip_address']} : Site Name Cannot be Empty", 500
+            return f"{device['ip_address']} : Site Name Can Not be Empty", 500
 
         else:
-            site_exist = SiteTable.query.with_entities(SiteTable.site_name).filter_by(
+            site_exist = Site_Table.query.with_entities(Site_Table.site_name).filter_by(
                 site_name=device['site_name']).first()
             if site_exist is None:
                 return f"{device['ip_address']} : Site Name Does Not Exists", 500
 
         # Rack Check
         if 'rack_name' not in device:
-            return f"{device['ip_address']} : Rack Name Cannot be Empty", 500
+            return f"{device['ip_address']} : Rack Name Can Not be Empty", 500
         if device['rack_name'] is None:
             error = f"{device['ip_address']} : Rack Name Can Not be Empty"
             return error, 500
 
         device['rack_name'] = device['rack_name'].strip()
         if device['rack_name'] == '':
-            return f"{device['ip_address']} : Rack Name Cannot be Empty", 500
+            return f"{device['ip_address']} : Rack Name Can Not be Empty", 500
         else:
-            if RackTable.query.with_entities(RackTable.rack_name).filter_by(
+            if Rack_Table.query.with_entities(Rack_Table.rack_name).filter_by(
                     rack_name=device['rack_name'], site_id=site_exist.site_id).first() is None:
                 return f"{device['ip_address']} : Rack Name And Site Name Does Not Match", 500
 
         if 'password_group' not in device:
-            return f"{device['ip_address']} : Password Group Cannot be Empty", 500
+            return f"{device['ip_address']} : Password Group Can Not be Empty", 500
         
         device['password_group'] = device['password_group'].strip()
         if device['password_group'] == "":
-            return f"{device['ip_address']} : Password Group Cannot be Empty", 500
+            return f"{device['ip_address']} : Password Group Can Not be Empty", 500
         elif device['password_group'] is None:
             error = f"{device['ip_address']} : Password Group Can Not be Empty"
             return error, 500
         else:
-            if PasswordGroupTable.query.with_entities(PasswordGroupTable.password_group).filter_by(
+            if Password_Group_Table.query.with_entities(Password_Group_Table.password_group).filter_by(
                     password_group=device['password_group']).first() is None:
                 return f"{device['ip_address']} : Password Group Does Not Exist", 500
         
@@ -137,7 +137,7 @@ def AddCompleteAtom(device, row):
         if status == 500:
             return msg, status
         
-        atom = AtomTable.query.filter_by(ip_address=device['ip_address'].strip()).first()
+        atom = Atom_Table.query.filter_by(ip_address=device['ip_address'].strip()).first()
 
         exist = False
         if atom is not None:
@@ -146,10 +146,10 @@ def AddCompleteAtom(device, row):
             # if uam_exist is not None:
             #     return f"{device['ip_address']} : Device is already in production", 500
         else:
-            atom = AtomTable()
+            atom = Atom_Table()
             atom.ip_address = device['ip_address'].strip()
 
-        rack = RackTable.query.filter_by(rack_name=device['rack_name'].strip()).first()
+        rack = Rack_Table.query.filter_by(rack_name=device['rack_name'].strip()).first()
         atom.rack_id = rack.rack_id
         atom.device_name = device['device_name'].strip()
         atom.device_type = device['device_type'].strip()
@@ -238,7 +238,7 @@ def AddCompleteAtom(device, row):
 
         if status == 200:
             try:
-                transitObj = AtomTransitionTable.query.filter_by(ip_address=atom.ip_address).first()
+                transitObj = Atom_Transition_Table.query.filter_by(ip_address=atom.ip_address).first()
                 if transitObj is not None:
                     db.session.delete(transitObj)
                     db.session.commit()
@@ -269,22 +269,22 @@ def AddTansitionAtom(device, row):
             return f"Row {row} : IP Address Can Not Be Empty", 500
         
         if row == 0:
-            if AtomTable.query.filter_by(ip_address=device['ip_address']).first() is not None:
+            if Atom_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
         
-            if AtomTransitionTable.query.filter_by(ip_address=device['ip_address']).first() is not None:
+            if Atom_Transition_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
         
         msg, status = ValidateAtom(device, row)
 
-        transObj = AtomTransitionTable.query.filter_by(
+        transObj = Atom_Transition_Table.query.filter_by(
             ip_address=device["ip_address"]
         ).first()
 
         exist = True
         if transObj is None:
             exist = False
-            transObj = AtomTransitionTable()
+            transObj = Atom_Transition_Table()
 
             transObj.ip_address = device["ip_address"]
 
@@ -383,7 +383,7 @@ def AddTansitionAtom(device, row):
 def GetTransitionAtoms():
     objList = []
     try:
-        results = AtomTransitionTable.query.all()
+        results = Atom_Transition_Table.query.all()
 
         for result in results:
             objDict = result.as_dict()
@@ -405,16 +405,21 @@ def addPasswordGroup(passObj, row):
     try:
 
         if 'password_group' not in passObj.keys():
-            return f"Row {row} : Password group Cannot be Empty", 500
+            return f"Row {row} : Password Group Can Not be Empty", 500
+        
+        if passObj['password_group'] is None:
+            return f"Row {row} : Password Group Can Not be Empty", 500
+        
+        passObj['password_group'] = passObj['password_group'].strip()
 
-        if passObj['password_group'].strip() == "":
-            return f"Row {row} : Password group Cannot be Empty", 500
+        if passObj['password_group'] == "":
+            return f"Row {row} : Password Group Can Not be Empty", 500
 
-        # row 0 means single row is being added statically and password group can not be updated through Insertion
-        # else multiple row are being added by using file import and row will be updated if password group already
+        # row 0 means single row is being added statically and password Group can not be updated through Insertion
+        # else multiple row are being added by using file import and row will be updated if password Group already
         # exists
 
-        password_group = PasswordGroupTable.query.filter_by(password_group=passObj['password_group']).first()
+        password_group = Password_Group_Table.query.filter_by(password_group=passObj['password_group']).first()
         print(password_group,file=sys.stderr)
         if row == 0:
             if password_group is not None:
@@ -423,11 +428,18 @@ def addPasswordGroup(passObj, row):
         update = True
         if password_group is None:
             update = False
-            password_group = PasswordGroupTable()
+            password_group = Password_Group_Table()
             password_group.password_group = passObj['password_group']
 
-        if 'password' not in passObj.keys():
-            return f"{passObj['password_group']} : Password Field Cannot be Empty", 500
+        if 'password' not in passObj.keys():    
+            return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
+
+        if passObj['password'] is None:
+            return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
+        
+        passObj['password'] = passObj['password'].strip()
+        if passObj['password'] == '':
+            return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
 
         password_group.password = passObj['password']
 
@@ -436,30 +448,45 @@ def addPasswordGroup(passObj, row):
                 password_group.password_group_type = 'Telnet'
 
                 if 'secret_password' not in passObj.keys():
-                    return f"{passObj['password_group']} : Secret Password Field Cannot Be Empty For Telnet", 500
+                    return f"{passObj['password_group']} : Secret Password Field Can Not Be Empty For Telnet", 500
+                
+                if passObj['secret_password'] is None:
+                    return f"{passObj['password_group']} : Secret Password Field Can Not Be Empty For Telnet", 500
+
+                passObj['secret_password'] = passObj['secret_password'].strip()
 
                 if passObj['secret_password'].strip() == "":
-                    return f"{passObj['password_group']} : Secret Password Field Cannot Be Empty For Telnet", 500
+                    return f"{passObj['password_group']} : Secret Password Field Can Not Be Empty For Telnet", 500
 
                 password_group.secret_password = passObj['secret_password']
 
             else:
                 password_group.password_group_type = 'SSH'
                 if 'username' not in passObj.keys():
-                    return f"{passObj['password_group']} : Username Field Cannot Be Empty For SSH", 500
+                    return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
+                
+                if passObj['username'] is None:
+                    return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
+            
+                passObj['username'] = passObj['username'].strip()
 
-                if passObj['username'].strip() == "":
-                    return f"{passObj['password_group']} : Username Field Cannot Be Empty For SSH", 500
+                if passObj['username'] == "":
+                    return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
 
                 password_group.username = passObj['username']
 
         else:
             password_group.password_group_type = 'SSH'
             if 'username' not in passObj.keys():
-                return f"{passObj['password_group']} : Username Field Cannot Be Empty For SSH", 500
+                return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
+            
+            if passObj['username'] is None:
+                return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
+            
+            passObj['username'] = passObj['username'].strip()
 
-            if passObj['username'].strip() == "":
-                return f"{passObj['password_group']} : Username Field Cannot Be Empty For SSH", 500
+            if passObj['username'] == "":
+                return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
 
             password_group.username = passObj['username']
 

@@ -14,21 +14,21 @@ def setup():
     }
 
     try:
-        license_exists = LicenseVerificationTable.query.first()
+        license_exists = License_Verification_Table.query.first()
         if license_exists is not None:
             response['license'] = True
     except Exception:
         pass
 
     try:
-        end_user_exists = EndUserTable.query.first()
+        end_user_exists = End_User_Table.query.first()
         if end_user_exists is not None:
             response['end_user'] = True
     except Exception:
         pass
 
     try:
-        user_exists = UserTable.query.first()
+        user_exists = User_Table.query.first()
         if user_exists is not None:
             response['admin'] = True
     except Exception:
@@ -40,7 +40,7 @@ def setup():
 @app.route('/addEndUserDetails', methods=['POST'])
 def addEndUser():
     try:
-        end_user_exists = EndUserTable.query.first()
+        end_user_exists = End_User_Table.query.first()
         if end_user_exists is not None:
             return "End User Already Exists", 500
 
@@ -64,7 +64,7 @@ def addEndUser():
 @app.route('/createSuperUser', methods=['POST'])
 def SuperUser():
     try:
-        super_user = UserTable.query.filter_by(super_user='True').first()
+        super_user = User_Table.query.filter_by(super_user='True').first()
         if super_user is not None:
             return "Super User Already Exists", 500
 

@@ -2,7 +2,7 @@ from app import db
 from sqlalchemy import ForeignKey
 from datetime import datetime
 
-class AtomTransitionTable(db.Model):
+class Atom_Transition_Table(db.Model):
     __tablename__ = 'atom_transition_table'
     atom_id = db.Column(db.Integer, primary_key=True)
     site_name = db.Column(db.String(50))
@@ -24,7 +24,7 @@ class AtomTransitionTable(db.Model):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-class LicenseVerificationTable(db.Model):
+class License_Verification_Table(db.Model):
     __tablename__ = 'license_verification_table'
     license_id = db.Column(db.Integer, primary_key=True)
     license_verification_key = db.Column(db.String(2500))
@@ -38,7 +38,7 @@ class LicenseVerificationTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class EndUserTable(db.Model):
+class End_User_Table(db.Model):
     __tablename__ = 'end_user_table'
     end_user_id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String(500))
@@ -62,7 +62,7 @@ class EndUserTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class UserRolesTable(db.Model):
+class User_Roles_Table(db.Model):
     __tablename__ = 'user_roles'
     role_id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50))
@@ -75,7 +75,7 @@ class UserRolesTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class UserTable(db.Model):
+class User_Table(db.Model):
     __tablename__ = 'user_table'
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50))
@@ -98,7 +98,7 @@ class UserTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class LoginActivityTable(db.Model):
+class Login_Activity_Table(db.Model):
     __tablename__ = 'login_activity_table'
 
     id = db.Column(db.Integer, primary_key=True)
@@ -112,7 +112,7 @@ class LoginActivityTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class PasswordGroupTable(db.Model):
+class Password_Group_Table(db.Model):
     __tablename__ = 'password_group_table'
     password_group = db.Column(db.String(50), primary_key=True)
     username = db.Column(db.String(50))
@@ -121,7 +121,7 @@ class PasswordGroupTable(db.Model):
     password_group_type = db.Column(db.String(50))
 
 
-class SiteTable(db.Model):
+class Site_Table(db.Model):
     __tablename__ = 'site_table'
     site_id = db.Column(db.Integer, primary_key=True)
     site_name = db.Column(db.String(50))
@@ -139,7 +139,7 @@ class SiteTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class RackTable(db.Model):
+class Rack_Table(db.Model):
     __tablename__ = 'rack_table'
     rack_id = db.Column(db.Integer, primary_key=True)
     rack_name = db.Column(db.String(50))
@@ -165,10 +165,10 @@ class RackTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class AtomTable(db.Model):
+class Atom_Table(db.Model):
     __tablename__ = 'atom_table'
     atom_id = db.Column(db.Integer, primary_key=True)
-    rack_id = db.Column(db.String(50), ForeignKey('rack_table.rack_id'))
+    rack_id = db.Column(db.Integer, ForeignKey('rack_table.rack_id'))
     device_name = db.Column(db.String(50))
     ip_address = db.Column(db.String(50))
     device_ru = db.Column(db.String(50))
@@ -187,7 +187,7 @@ class AtomTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
     
 
-class AutoDiscoveryTable(db.Model):
+class Auto_Discovery_Table(db.Model):
     __tablename__ = 'auto_discovery_table'
     discovery_id = db.Column(db.Integer, primary_key=True)
     ip_address = db.Column(db.String(50))
@@ -206,7 +206,7 @@ class AutoDiscoveryTable(db.Model):
 
 
 
-class AutoDiscoveryNetworkTable(db.Model):
+class Auto_Discovery_Network_Table(db.Model):
     __tablename__ = 'auto_discovery_network_table'
     network_id = db.Column(db.Integer, primary_key=True)
     network_name = db.Column(db.String(50))
@@ -220,6 +220,33 @@ class AutoDiscoveryNetworkTable(db.Model):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
+class NCM_Device_Table(db.Model):
+    __tablename__ = 'ncm_device_table'
+    ncm_device_id = db.Column(db.Integer, primary_key=True)
+    atom_id = db.Column(db.Integer, ForeignKey('atom_table.atom_id'))
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    status = db.Column(db.String(50))
+    
+
+
+class NCM_History_Table(db.Model):
+    __tablename__ = 'ncm_history_table'
+    ncm_history_id = db.Column(db.Integer, primary_key=True)
+    ncm_device_id = db.Column(db.Integer, ForeignKey('ncm_device_table.ncm_device_id'))
+    file_name = db.Column(db.String(200))
+    configuration_date = db.Column(db.DateTime, default=datetime.now())
+    
+
+class NCM_CONFIGURATION_STATUS_TABLE(db.Model):
+    __tablename__ = 'ncm_configuration_status_table'
+    ncm_status_id = db.Column(db.Integer, primary_key=True)
+    ncm_device_id = db.Column(db.Integer, ForeignKey('ncm_device_table.ncm_device_id'))
+    success = db.Column(db.Integer)
+    failure = db.Column(db.Integer)
+    creation_date = db.Column(db.DateTime, default=datetime.now())
 
 
 # class Device_Table(db.Model):

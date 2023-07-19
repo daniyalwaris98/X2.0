@@ -18,7 +18,7 @@ def Login():
         username = postData['user']
         password = postData['pass']
 
-        user_exists = UserTable.query.filter_by(user_id=username).first()
+        user_exists = User_Table.query.filter_by(user_id=username).first()
 
         if user_exists:
 
@@ -27,7 +27,7 @@ def Login():
                                current_time, "User Inactive")
                 return jsonify({'message': 'User is Inactive'}), 401
 
-            user_role = UserRolesTable.query.filter_by(
+            user_role = User_Roles_Table.query.filter_by(
                 role_id=user_exists.role_id).first()
 
             if user_role is None:
@@ -97,10 +97,10 @@ def GetUserByToken(user_Data):
 
 def checkLicense(username):
     try:
-        result = db.session.query(UserTable, EndUserTable, LicenseVerificationTable).join(
-            EndUserTable, UserTable.end_user_id == EndUserTable.end_user_id).join(
-            LicenseVerificationTable, EndUserTable.license_id == LicenseVerificationTable.license_id).filter(
-            UserTable.user_id == username).first()
+        result = db.session.query(User_Table, End_User_Table, License_Verification_Table).join(
+            End_User_Table, User_Table.end_user_id == End_User_Table.end_user_id).join(
+            License_Verification_Table, End_User_Table.license_id == License_Verification_Table.license_id).filter(
+            User_Table.user_id == username).first()
 
         if result is None:
             print("A valid licence does not exists", file=sys.stderr)

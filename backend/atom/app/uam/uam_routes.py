@@ -16,7 +16,7 @@ def GetSiteBySiteName(user_data):
         site_name = request.args.get('site_name')
         siteList = []
         if site_name:
-            siteObj = SiteTable.query.filter_by(site_name=site_name).all()
+            siteObj = Site_Table.query.filter_by(site_name=site_name).all()
             if siteObj:
                 for site in siteObj:
                     siteDataDict = {'site_name': site.site_name, 'region': site.region, 'latitude': site.latitude,
@@ -45,7 +45,7 @@ def GetRacksBySiteName(user_data):
         rack_name = request.args.get('rack_name')
         rackList = []
         if rack_name:
-            rackObj = RackTable.query.filter_by(rack_name=rack_name).all()
+            rackObj = Rack_Table.query.filter_by(rack_name=rack_name).all()
             if rackObj:
                 for rack in rackObj:
                     rackDataDict = {'rack_name': rack.rack_name, 'site_name': rack.site_name,

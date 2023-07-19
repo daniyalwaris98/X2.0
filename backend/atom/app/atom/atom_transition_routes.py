@@ -21,7 +21,7 @@ def TransitDicoveryData(user_data):
         deviceObjs = []
         try:
             for ip in ipList:
-                device = AutoDiscoveryTable.query.filter_by(ip_address=ip).first()
+                device = Auto_Discovery_Table.query.filter_by(ip_address=ip).first()
                 if device is None:
                     errorList.append(f"{device['ip_address']} : Error - IP Address Not Found In Discovery Data")
                 else:
@@ -89,7 +89,7 @@ def TransitDicoveryData(user_data):
 def GetAtomList():
     atomList = []
     try:
-        devices = AtomTable.query.all()
+        devices = Atom_Table.query.all()
         for device in devices:
             atomList.append(device.ip_address)
     except Exception:
@@ -100,7 +100,7 @@ def GetAtomList():
 def GetTransitionAtomList():
     atomList = []
     try:
-        devices = AtomTransitionTable.query.all()
+        devices = Atom_Transition_Table.query.all()
         for device in devices:
             atomList.append(device.ip_address)
     except Exception:
@@ -123,9 +123,9 @@ def GetDiscoveryForTransition(user_data):
         
         results = None
         if data['subnet'].strip() == 'All' or data['subnet'].strip() == '':
-            results = AutoDiscoveryTable.query.all()
+            results = Auto_Discovery_Table.query.all()
         else:
-            results = AutoDiscoveryTable.query.filter_by(subnet=data['subnet']).all()
+            results = Auto_Discovery_Table.query.filter_by(subnet=data['subnet']).all()
 
         for result in results:
 

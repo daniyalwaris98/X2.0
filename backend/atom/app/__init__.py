@@ -127,6 +127,10 @@ from app.routes import login_routes
 from app.routes import admin_routes
 
 from app.atom import atom_routes
+from app.atom import atom_transition_routes
+from app.atom import password_group_routes
+from app.atom import inventory_list_routes
+
 from app.routes import uam_inventory_routes
 from app.routes import uam_dashboard_routes
 
@@ -135,10 +139,10 @@ try:
     from app.models.inventory_models import *
     import json
 
-    user_role = UserRolesTable.query.filter_by(role="Super_Admin").first()
+    user_role = User_Roles_Table.query.filter_by(role="Super_Admin").first()
 
     if user_role is None:
-        user_role = UserRolesTable()
+        user_role = User_Roles_Table()
         user_role.role = "Super_Admin"
         user_role.configuration = '\"{\\\"dashboard\\\":{\\\"view\\\":true,\\\"pages\\\":{\\\"dashboard\\\":{' \
                                   '\\\"view\\\":true,\\\"read_only\\\":false}}},\\\"atom\\\":{\\\"view\\\":true,' \

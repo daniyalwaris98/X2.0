@@ -26,7 +26,7 @@ def FormatDate(date):
 def GetAllSites(user_data):
     try:
         siteObjList = []
-        siteObjs = SiteTable.query.all()
+        siteObjs = Site_Table.query.all()
         for siteObj in siteObjs:
             siteDataDict = {'site_id': siteObj.site_id, 'site_name': siteObj.site_name,
                             'region': siteObj.region_name, 'longitude': siteObj.longitude,
@@ -409,8 +409,8 @@ def DeleteDevice(user_data):
 def GetAllRacks(user_data):
     try:
         rackObjList = []
-        rackObjs = db.session.query(RackTable, SiteTable) \
-            .join(SiteTable, RackTable.site_id == SiteTable.site_id).all()
+        rackObjs = db.session.query(RackTable, Site_Table) \
+            .join(Site_Table, RackTable.site_id == Site_Table.site_id).all()
         for rackObj in rackObjs:
             rackDataDict = {'rack_id': rackObj.rack_id, 'rack_name': rackObj.rack_name,
                             'site_name': rackObj.site_name, 'serial_number': rackObj.serial_number,

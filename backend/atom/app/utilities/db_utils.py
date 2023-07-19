@@ -38,7 +38,7 @@ def UpdateDBData(obj):
 
 def login_activity(user_id, operation, status, timestamp, description):
     try:
-        activity = LoginActivityTable()
+        activity = Login_Activity_Table()
         activity.user_id = user_id
         activity.operation = operation
         activity.description = description
