@@ -1,0 +1,13 @@
+{
+  "type": "service_account",
+  "project_id": "monetx-mobile",
+  "private_key_id": "f29067e8874803c988c12101fdfd6f0a615c27da",
+  "private_key": "-----BEGIN PRIVATE KEY-----\nMIIEvgIBADANBgkqhkiG9w0BAQEFAASCBKgwggSkAgEAAoIBAQD2revceMO3K9eK\n/cqfgj09ehgS38b7g4/mvGN4C+tdPaFiUXA274V7+L315UEdbZyWXuqBxb3R/XrG\nnEaI4rvOSUnKPCnVV8WrjGKf5sdmLJGgKnJGtxqvnVeU1dAeCwRQw3Af6cqP8+pW\nvT/QSyM1IytyMXg3uzV5irfyd73CN4qo2sdkhH6MVASuqXdpLbLUjIyyRShgJHjw\n69DoIQMkeShKpickjqLz1wN1w7D20Cew5HF4ysZlcao3CDZRCGIPjRXlO0B8yH/V\nr+4OmGvAjHffhLj46dkEvq2SQe6rWxz/dHOsA2ZjYQYjUSVildsfAhWZIdMVzK06\nZEDYRp3FAgMBAAECggEAEchB1hfX4U7GGp08S7lYxCNsCYLw1iq1Zz2yB0eyBNEE\n3uXd//0jkzyVfQdfZUlZ3gvOPeKiUg6YGNR6eohVtNja+pAnDTERl9Hmk35QZiYq\nV/Bst8+f8IRCzwDcICj30QFLBjyVP0FRuu+o4lFi+AP8BXRZeohX94Cvd/QieBXi\nq0FYCJIcopf4guR2V3v90B3CI8lFCIjF+TltGwQ0xricKm/+p3HhbDrBnEsBEqzt\nKSyKZM5sYbPjQ1DSCM+UnDuQv5UZbsdglu7fhCgBGtwqxu7qD8KZ90njEAevIara\nH9wDRJcsng9rB9wWfMqf2xnjHf5wxzjrR+aQNv0KVQKBgQD/CK078uO5r4yhM7/3\nMH6GOMjsdnYDVWb6j4zOXtb8FDyv0gMfk8YC/uuT9MFVyM/wvkc0G8Mx4gMn+JOF\n6kJxPFVDzCtL1SczuNvDIPq2xPRJcrja7iGdXabB0bwRNp2L0C5PNCb7lMvVJIHm\nOtsOMRFbejKFmplhwY6ZyD1wgwKBgQD3nSSIr1b48921Suvj9yvqecsyw2sbMMEU\nIwQHesABTjARWYrkoHy3G110bq22pcX9bmUNdfvdjSccCQW66m8E5xPJeVyhVsrk\ntLo938m/Tcg/TtjtRLV2fP9ouyds7PKJpnFp0EoG/7X87JP7m6F6WC4ONVH0UywU\nI2OnYDzWFwKBgQDIyX8B/LeXgIOagtC2/4INkHV33cgJ1doOmKgF7hsaOaCR2ClH\nWiOCRksYoJD6RfCYnGYYu2bRRhywAn+65fVLi3GhwAOyX23OxdKXbMaW0Ld3gA/T\npbnnWE0quUJ01ufwpIVhLDEozzwvYd+3cEz4fl8pAyr1jwMFOMtZfZIJmwKBgChU\nLckdVbsCbQ/D/huI/FwaLiA8d8tb63aOJW/abD9KLsYEoXyPLwDbsiLui9h9s3uN\naWQB3V2+SaplRcultyNDR5O+8nlMm4sYbGT7d+5yirTU8LvkPvHndenm4Yr6JJ6K\nv1oOlKADMe7Z0VhfhrNYfVfPE2QJz9oP0YFHSWFNAoGBAPTXga+rBaFHQ6GJBrML\nEtObJSKfYZz5T29qq+VJ2N72FETZSBHCUZwJbaG5vgBqjFCelAnfAt4qAjFgVjX7\npZdVKvhbs8bXhU2PuvF0PZ0qQugQHjn0Fx5Oq/HOpc0TBsWw9XfEUNlyvo9JVs9z\n73/9Fsx1XemHtczF/A9GBrUz\n-----END PRIVATE KEY-----\n",
+  "client_email": "firebase-adminsdk-4jlco@monetx-mobile.iam.gserviceaccount.com",
+  "client_id": "116991811667323244521",
+  "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+  "token_uri": "https://oauth2.googleapis.com/token",
+  "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+  "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/firebase-adminsdk-4jlco%40monetx-mobile.iam.gserviceaccount.com",
+  "universe_domain": "googleapis.com"
+}

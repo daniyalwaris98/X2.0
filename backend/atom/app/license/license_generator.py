@@ -95,11 +95,11 @@ def DecodeLicenseKey():
         end_date = datetime.strptime(objDict['end_date'], "%Y-%m-%d %H:%M:%S")
 
         noneFlag = False
-        licenseObj = LicenseVerificationTable.query.filter_by(company_name=company_name).first()
+        licenseObj = License_Verification_Table.query.filter_by(company_name=company_name).first()
 
         if licenseObj is None:
             noneFlag = True
-            licenseObj = LicenseVerificationTable()
+            licenseObj = License_Verification_Table()
             licenseObj.company_name = company_name
             licenseObj.creation_date = f"{current_time}"
 

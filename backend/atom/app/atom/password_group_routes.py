@@ -30,7 +30,7 @@ def AddPasswordGroup(user_date):
 
 @app.route("/addPasswordGroups", methods=['POST'])
 @token_required
-def AddPasswordGroup(user_data):
+def AddPasswordGroups(user_data):
     try:
         errorList = []
         responseList = []

@@ -4,7 +4,7 @@ from datetime import datetime
 
 class Atom_Transition_Table(db.Model):
     __tablename__ = 'atom_transition_table'
-    atom_id = db.Column(db.Integer, primary_key=True)
+    atom_transition_id = db.Column(db.Integer, primary_key=True)
     site_name = db.Column(db.String(50))
     rack_name = db.Column(db.String(50))
     device_name = db.Column(db.String(50))
@@ -21,6 +21,9 @@ class Atom_Transition_Table(db.Model):
     password_group = db.Column(db.String(50))
     onboard_status = db.Column(db.String(50))
 
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -31,8 +34,9 @@ class License_Verification_Table(db.Model):
     company_name = db.Column(db.String(500))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
+    
     creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -52,11 +56,11 @@ class End_User_Table(db.Model):
     email = db.Column(db.String(500))
     domain_name = db.Column(db.String(500))
     industry_type = db.Column(db.String(500))
-    creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
     license_id = db.Column(db.Integer, ForeignKey(
         'license_verification_table.license_id'))
+    
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -67,9 +71,9 @@ class User_Roles_Table(db.Model):
     role_id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50))
     configuration = db.Column(db.String(1500))
+
     creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -85,14 +89,14 @@ class User_Table(db.Model):
     status = db.Column(db.String(10))
     account_type = db.Column(db.String(15))
     password = db.Column(db.String(512))
-    creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
     last_login = db.Column(db.DateTime, default=datetime.now())
     team = db.Column(db.String(20))
     end_user_id = db.Column(
         db.Integer, ForeignKey('end_user_table.end_user_id'))
     super_user = db.Column(db.String(15), default="False")
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -119,6 +123,12 @@ class Password_Group_Table(db.Model):
     password = db.Column(db.String(50))
     secret_password = db.Column(db.String(50))
     password_group_type = db.Column(db.String(50))
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 class Site_Table(db.Model):
@@ -183,6 +193,9 @@ class Atom_Table(db.Model):
     onboard_status = db.Column(db.String(50))
     scop = db.Column(db.String(50), default='Atom')
 
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
     
@@ -198,12 +211,12 @@ class Auto_Discovery_Table(db.Model):
     vendor = db.Column(db.String(500))
     snmp_status = db.Column(db.String(50))
     snmp_version = db.Column(db.String(50))
+    
     creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
-
 
 
 class Auto_Discovery_Network_Table(db.Model):
@@ -214,21 +227,27 @@ class Auto_Discovery_Network_Table(db.Model):
     no_of_devices = db.Column(db.Integer)
     scan_status = db.Column(db.String(50))
     excluded_ip_range = db.Column(db.String(200))
+    
     creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 
 class NCM_Device_Table(db.Model):
     __tablename__ = 'ncm_device_table'
     ncm_device_id = db.Column(db.Integer, primary_key=True)
     atom_id = db.Column(db.Integer, ForeignKey('atom_table.atom_id'))
-    creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
     status = db.Column(db.String(50))
+    vendor = db.Column(db.String(50))
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
     
 
 
@@ -238,7 +257,13 @@ class NCM_History_Table(db.Model):
     ncm_device_id = db.Column(db.Integer, ForeignKey('ncm_device_table.ncm_device_id'))
     file_name = db.Column(db.String(200))
     configuration_date = db.Column(db.DateTime, default=datetime.now())
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
     
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 class NCM_CONFIGURATION_STATUS_TABLE(db.Model):
     __tablename__ = 'ncm_configuration_status_table'
@@ -246,8 +271,12 @@ class NCM_CONFIGURATION_STATUS_TABLE(db.Model):
     ncm_device_id = db.Column(db.Integer, ForeignKey('ncm_device_table.ncm_device_id'))
     success = db.Column(db.Integer)
     failure = db.Column(db.Integer)
+    
     creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 # class Device_Table(db.Model):
 #     __tablename__ = 'device_table'

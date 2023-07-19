@@ -2,7 +2,7 @@ import sys
 import traceback
 
 from app.utilities.db_utils import *
-from atom.static_list import *
+from app.atom.static_list import *
 
 
 def ValidateAtom(device, row):
