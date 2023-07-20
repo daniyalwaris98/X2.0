@@ -104,9 +104,12 @@ def GetAllNetworks(user_data):
 def DeleteNetworks(user_data):
     if True:
         try:
-            response = False
+            successList = []
+            errorList = []
             networkObjs = request.get_json()
+            row = 0
             for networkObj in networkObjs:
+                row = row + 1
                 try:
 
                     queryString = f"select subnet from auto_discovery_network_table where network_id='{networkObj}';"
@@ -121,17 +124,28 @@ def DeleteNetworks(user_data):
                         queryString = f"delete from auto_discovery_table where subnet='{subnet[0]}';"
                         db.session.execute(queryString)
                         db.session.commit()
+
+                        successList.append(f"{subnet[0]} : Deleted Successfully")
+
+                    else:
+                        errorList.append(f"Row {row} : Subnet Not Found")
+
                 except Exception:
                     traceback.print_exc()
+                    errorList.append(f"Row {row} : Error While Deleting")
 
-            if response:
-                return "Network Deleted Successfully", 200
+            response = {
+                'success' : len(successList),
+                'error' : len(errorList),
+                "success_list" : successList,
+                'error_list' : errorList
+            }
 
-            else:
-                return "Something Went Wrong", 500
+            return jsonify(response), 200
+            
         except Exception as e:
             print(str(e), file=sys.stderr)
-            return str(e), 500
+            return "Server Error", 500
 
 
 @app.route('/getSubnetsDropdown', methods=['GET'])

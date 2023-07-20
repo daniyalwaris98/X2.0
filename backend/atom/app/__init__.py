@@ -69,7 +69,7 @@ app.config['CORS_HEADERS'] = 'Content-Type'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:As123456?@10.254.168.159:3306/AtomDB'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:As123456?@atom_db:3306/AtomDB'
 # app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:As123456?@atom_db:3306/AtomDB'
-app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:As123456?@updated_atom_db:3307/AtomDB'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 # app.config['SQLALCHEMY_BINDS'] = {
@@ -90,7 +90,7 @@ bucket = "monitoring"
 # client = InfluxDBClient(url="http://10.254.168.159:8086", token=token, org=org)
 # client = InfluxDBClient(url="http://10.254.168.159:8086", token=token, org=org)
 # client = InfluxDBClient(url="http://influxdb:8086", token=token, org=org)
-client = InfluxDBClient(url="http://updated_influxdb:8087", token=token, org=org)
+client = InfluxDBClient(url="http://updated_influxdb:8086", token=token, org=org)
 # conf_file_path = os.path.join(os.path.dirname(__file__), "configuration_ backups")
 
 # variable for time in bandwith formula

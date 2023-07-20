@@ -5,7 +5,7 @@ services:
     restart: always
     container_name: Update_Atom_DATABASE_Container
     ports:
-      - "3307:3307"
+      - "3306:3306"
     environment:
       MYSQL_ROOT_PASSWORD: As123456?
       MYSQL_DATABASE: AtomDB
@@ -20,7 +20,7 @@ services:
     #   - NET_ADMIN
     #   - SYS_ADMIN
     ports:
-      - "5011:5001"
+      - "5010:5000"
     environment:
       - NET_TEXTFSM=/app/app/pullers/ntc-templates/ntc_templates/templates/
     volumes:
@@ -51,7 +51,7 @@ services:
     environment:
       - NODE_ENV=development
     ports:
-      - "3011:3011"
+      - "3010:3010"
     depends_on:
       - updated_atom_flask
 
@@ -59,7 +59,7 @@ services:
     image: influxdb:latest
     container_name: Updated_NEW_MONITORING_CONTAINER
     ports:
-      - "8087:8087"
+      - "8086:8086"
     volumes:
       - influxdb-storage:/var/lib/influxdb
     environment:
