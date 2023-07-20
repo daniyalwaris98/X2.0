@@ -2,6 +2,7 @@ import React from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { InputField } from "./Input.Styled.js";
 import "../App.css";
+
 const ColumnHeader = ({
   dataIndex,
   title,

@@ -67,6 +67,14 @@ const indexMain = () => {
     setIsModalOpen(false);
   };
 
+  useEffect(() => {
+    FirewallTrigger();
+    SwitchesTrigger();
+    OtherDevicesTrigger();
+    RoutersTrigger();
+    AllDevicesDataTrigger();
+  }, [scanSubnet]);
+
   const FirewallTrigger = async () => {
     setFirewallLoading(true);
 
@@ -485,6 +493,7 @@ const indexMain = () => {
       ellipsis: true,
     },
   ];
+
   const FirewallsColumns = [
     {
       title: "IP Address",
@@ -674,6 +683,7 @@ const indexMain = () => {
       ellipsis: true,
     },
   ];
+
   const SwitchesColumns = [
     {
       title: "IP Address",
@@ -863,6 +873,7 @@ const indexMain = () => {
       ellipsis: true,
     },
   ];
+
   const OtherDevicesColumns = [
     {
       title: "IP Address",
@@ -1052,6 +1063,7 @@ const indexMain = () => {
       ellipsis: true,
     },
   ];
+
   const RoutersColumns = [
     {
       title: "IP Address",
@@ -1251,6 +1263,7 @@ const indexMain = () => {
   ];
 
   const [subnetScanLoadings, setSubnetScanLoading] = useState(false);
+
   const startScanning = async () => {
     setSubnetScanLoading(true);
     try {
@@ -1259,7 +1272,6 @@ const indexMain = () => {
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
-            console.log("logs", response?.response?.data);
             setSubnetScanLoading(false);
           } else {
             openSweetAlert(`Subnet Scanned Successfully`, "success");
@@ -1381,7 +1393,7 @@ const indexMain = () => {
               <Row gutter={[8, 8]}>
                 <ColStyle
                   className="gutter-row"
-                  onClick={() => showTable("Unknown ")}
+                  onClick={() => showTable("Unknown")}
                   active={"Unknown Devices" === tableName}
                   span={4}
                   style={{
@@ -1619,6 +1631,7 @@ const indexMain = () => {
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
+
             {tableName === "Firewalls" ? (
               <TableStyling
                 rowSelection={rowSelection}
@@ -1629,6 +1642,7 @@ const indexMain = () => {
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
+
             {tableName === "Switches" ? (
               <TableStyling
                 rowSelection={rowSelection}
@@ -1639,6 +1653,7 @@ const indexMain = () => {
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
+
             {tableName === "Routers" ? (
               <TableStyling
                 rowSelection={rowSelection}
@@ -1649,6 +1664,7 @@ const indexMain = () => {
                 style={{ width: "100%", padding: "2%" }}
               />
             ) : null}
+
             {tableName === "Other Devices" ? (
               <TableStyling
                 rowSelection={rowSelection}

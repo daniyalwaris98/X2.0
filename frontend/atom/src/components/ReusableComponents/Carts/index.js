@@ -4,7 +4,6 @@ import BarChart from "./BarChart/BarChart";
 import VerticalBarChart from "./VerticalBarChart/VerticalBarChart";
 import HorizontalBarChart from "./HorizontalBarChart/HorizontalBarChart";
 import BarChartBold from "./BarChartBold/BarChartBold";
-import Table from "./Table/Table";
 
 export {
   PieChart,
@@ -13,5 +12,4 @@ export {
   VerticalBarChart,
   HorizontalBarChart,
   BarChartBold,
-  Table,
 };

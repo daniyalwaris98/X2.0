@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Modal, Input, Select } from "antd";
+import { Row, Col, Modal, Input } from "antd";
 import axios, { baseUrl } from "../../utils/axios";
 import Swal from "sweetalert2";
 import "../AllStyling/CSSStyling.css";
@@ -23,7 +23,7 @@ const EditAtom = (props) => {
   const postDevice = async (device) => {
     try {
       await axios
-        .post(baseUrl + "/addAtomDevice ", device)
+        .post(baseUrl + "/editAtom ", device)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
@@ -227,47 +227,41 @@ const EditAtom = (props) => {
               <StyledInput
                 value={ip_address}
                 onChange={(e) => setIp(e.target.value)}
-                required
+                readOnly
               />
             </InputWrapper>
             <InputWrapper>
-              Site Name: &nbsp;<span style={{ color: "red" }}>*</span>
+              Site Name:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               <br />
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
                   value={site_name}
                   onChange={(e) => changeSelectOptionHandler(e)}
-                  required
+                  // required
                 >
                   {siteArray?.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
             </InputWrapper>
             <InputWrapper>
-              Rack Name: &nbsp;<span style={{ color: "red" }}>*</span>
+              Rack Name:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
                   value={rack_name}
-                  required
+                  // required
                   onChange={(e) => {
                     setRack_name(e.target.value);
                   }}
                 >
                   {rackArray?.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
@@ -286,12 +280,13 @@ const EditAtom = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Device RU: &nbsp;<span style={{ color: "red" }}>*</span>
+              Device RU:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
-                  required
+                  // required
                   placeholder="select"
                   value={device_ru}
                   onChange={(e) => {
@@ -299,11 +294,7 @@ const EditAtom = (props) => {
                   }}
                 >
                   {Ru.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
@@ -334,12 +325,13 @@ const EditAtom = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Function: &nbsp;<span style={{ color: "red" }}>*</span>
+              Function:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
-                  required
+                  // required
                   placeholder="select"
                   value={myfunction}
                   onChange={(e) => {
@@ -371,12 +363,13 @@ const EditAtom = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Device Type: &nbsp;<span style={{ color: "red" }}>*</span>
+              Device Type:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
-                  required
+                  // required
                   placeholder="select"
                   value={device_type}
                   onChange={(e) => {
@@ -398,35 +391,23 @@ const EditAtom = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Password Group: &nbsp;<span style={{ color: "red" }}>*</span>
+              Password Group:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={password_group} />
-                ) : ( */}
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
                   value={password_group}
-                  required
+                  // required
                   onChange={(e) => {
                     setPassword_group(e.target.value);
                   }}
                 >
                   {passwordArray.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
-              {/* <StyledInput
-                value={password_group}
-                onChange={(e) => setPassword_group(e.target.value)}
-                required
-              /> */}
-              {/* )} */}
             </InputWrapper>
           </Col>
         </Row>
@@ -447,7 +428,6 @@ const EditAtom = (props) => {
                   width: "120px",
                   marginLeft: "10px",
                   marginRight: "10px",
-                  // paddingBottom: "5px",
                 }}
                 color={"#BBBABA"}
                 onClick={handleCancel}

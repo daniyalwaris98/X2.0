@@ -8,7 +8,6 @@ import {
 export const DashboardStyle = styled.section`
   .dashboard-content {
     ${CustomContainer};
-    ${CommonSpacing};
 
     .layout {
       .react-grid-item {
@@ -85,3 +84,5 @@ export const MenusWrapperStyle = styled.article`
     }
   }
 `;
+
+export const DevicesPerGlobalStyle = styled.article``;

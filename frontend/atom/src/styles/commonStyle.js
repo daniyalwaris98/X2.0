@@ -32,8 +32,8 @@ export const GridBoxStyle = ({ columns, align, gap }) => css`
 `;
 
 export const CommonSpacing = css`
-  margin-left: 25px;
-  margin-right: 25px;
+  padding: 25px;
+  padding-right: 25px;
 `;
 
 export const CustomContainer = css`

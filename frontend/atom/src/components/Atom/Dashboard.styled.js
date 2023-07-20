@@ -1,121 +1,57 @@
 import styled from "styled-components";
 import { Table, Button } from "antd";
-import { CustomContainer } from "../../styles/commonStyle";
+import { CustomContainer, FlexboxStyle } from "../../styles/commonStyle";
 
-export const TableStyling = styled(Table)`
-  margin-top: 10px;
+export const AtomStyle = styled.section`
+  .atom-table {
+    border: 1px solid ${({ theme }) => theme.colors.GRAY_COLOR};
 
-  table tr:nth-child(2n) td {
-    background-color: #f1ffe1;
-  }
+    .ant-table-thead {
+      .ant-table-cell {
+        .ant-select {
+          width: 100%;
 
-  && tbody > tr:hover > td {
-    background: #d3f3ae;
-  }
+          .ant-select-selector {
+            background-color: ${({ theme }) =>
+              theme.colors.WHITE_COLOR} !important;
+            color: ${({ theme }) => theme.colors.GRAY_COLOR} !important;
+            height: 26px;
 
-  .ant-table-container {
-    .ant-table-header {
-      table {
-        thead.ant-table-thead {
-          tr {
-            th.ant-table-cell {
-              background-color: #fff;
-              font-size: 12px;
-              margin: 0 !important;
-              padding: 0 !important;
-              padding: 5px 10px 10px 10px !important;
-              font-weight: 600;
-              color: #000;
-              border: none;
+            .ant-select-selection-item {
+              line-height: 26px !important;
+            }
+          }
 
-              .ant-checkbox-inner {
-                border: none;
-                background-color: #fff;
-              }
+          .ant-select-arrow {
+            color: ${({ theme }) => theme.colors.GRAY_COLOR};
+
+            &:hover {
+              color: ${({ theme }) => theme.colors.GRAY_COLOR};
             }
           }
         }
       }
     }
-    .ant-table-body {
-      table {
-        tbody.ant-table-tbody {
-          tr.ant-table-row:hover > td {
-            background: #fafafa;
-            color: #fff;
-          }
 
-          tr.ant-table-row-selected > td {
-            background-color: #f5f5f5;
-            color: #fff !important;
-          }
-          tr.ant-table-row {
-            td.ant-table-cell {
-              font-size: 11px !important;
-              margin: 0 !important;
-              padding: 0 !important;
-              padding-left: 10px !important;
-              height: 33px;
-              color: #fff !important;
-              border: none;
+    .ant-table-row {
+      border: 1px solid red;
 
-              .ant-checkbox-wrapper {
-                margin-right: 6px;
-              }
-              .ant-checkbox-inner {
-                border: none;
-                background-color: #fff;
-              }
-            }
-          }
-          tr.dark {
-            background-color: #1a1a1a;
-          }
+      .ant-table-cell {
+        .status-icon {
+          ${FlexboxStyle({ justify: "center" })};
 
-          tr.light {
-            background-color: #fff;
+          cursor: pointer;
+
+          > svg {
+            width: 20px;
+            height: 20px;
           }
         }
       }
     }
-  }
-  .ant-pagination-item a {
-    display: block;
-    padding: 0 6px;
-    color: #fff;
-  }
-
-  .ant-pagination-jump-prev
-    .ant-pagination-item-container
-    .ant-pagination-item-ellipsis,
-  .ant-pagination-jump-next
-    .ant-pagination-item-container
-    .ant-pagination-item-ellipsis {
-    color: #fff;
-  }
-
-  .ant-pagination-item,
-  .ant-pagination-item-active a {
-    border-radius: 20px;
-    background-color: #fff;
-  }
-
-  .ant-pagination-prev button,
-  .ant-pagination-next button {
-    color: #fff;
-  }
-
-  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
-    border: none;
-    border-radius: 5px;
-    color: white;
-    background-color: #2a2a2a;
-  }
-
-  .ant-select-arrow {
-    color: #fff;
   }
 `;
+
 export const OnBoardStyledButton = styled(Button)`
   background-color: #f3f3f3;
   color: #9f9f9f;
@@ -136,6 +72,7 @@ export const OnBoardStyledButton = styled(Button)`
     color: #9f9f9f;
   }
 `;
+
 export const StyledImportFileInput = styled.input`
   margin-top: 1px;
   width: 144px;
@@ -203,8 +140,6 @@ export const DivStratch = styled.div`
 `;
 
 export const DiscoverTableModelStyle = styled.article`
-  margin-top: 30px;
-
   .ant-table-cell {
     .ant-select {
       width: 100%;
@@ -227,5 +162,11 @@ export const DiscoverTableModelStyle = styled.article`
         }
       }
     }
+  }
+
+  .button-wrapper {
+    ${FlexboxStyle({ justify: "center" })};
+
+    margin-top: 30px;
   }
 `;

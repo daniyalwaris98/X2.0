@@ -137,26 +137,8 @@ const index = () => {
     selectedRowKeys,
     onChange: onSelectChange,
     selection: Table.SELECTION_ALL,
-    // getCheckboxProps: () => ({
-    //   disabled: !configData?.atom.pages.atom.read_only,
-    // }),
   };
-  // useEffect(() => {
-  //   const serviceCalls = async () => {
-  //     setAlertStatusLoading(true);
 
-  //     try {
-  //       const res = await axios.get(baseUrl + "/alertStatus");
-  //       console.log("res", res);
-  //       setAlertStatus(res.data);
-  //       setAlertStatusLoading(false);
-  //     } catch (err) {
-  //       console.log(err.response);
-  //       setAlertStatusLoading(false);
-  //     }
-  //   };
-  //   serviceCalls();
-  // }, []);
   const showModal = () => {
     setIsModalOpen(true);
   };
@@ -191,12 +173,8 @@ const index = () => {
       await axios
         .post(baseUrl + "/addMonitoringCredentials ", v1v2Data)
         .then((response) => {
-          console.log("hahahehehoho");
-          // console.log(response.status);
           if (response?.response?.status == 500) {
             openSweetAlert(response?.data, "error");
-            console.log(response?.data);
-            // openSweetAlert("Something Went Wrong!", "error");
             setLoading(false);
           } else {
             openSweetAlert("v1v2Data Added Successfully", "success");
@@ -209,17 +187,12 @@ const index = () => {
               axios
                 .get(baseUrl + "/getV1V2Credentials")
                 .then((response) => {
-                  console.log("getV1V2Credentials", response);
-                  // setcred(response.data);
-                  // setCred_group(response.data[0]);
                   v1v2excelData = response.data;
                   setv1v2DataSource(v1v2excelData);
                   setv1v2RowCount(v1v2excelData.length);
                 })
                 .catch((error) => {
                   console.log(error);
-                  // openSweetAlert("Something Went Wrong!", "danger");
-                  // setLoading(false);
                 })
             );
             setLoading(false);
@@ -244,19 +217,14 @@ const index = () => {
       encryption_protocol: encryptionProtocolv3,
       category: "v3",
     };
-    console.log(v3Data);
+
     setv3IsModalOpen(false);
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addMonitoringCredentials ", v3Data)
         .then((response) => {
-          console.log("hahahehehoho");
-          // console.log(response.status);
           if (response?.response?.status == 500) {
             openSweetAlert(response?.data, "error");
-            console.log(response?.data);
-            // openSweetAlert("Something Went Wrong!", "error");
             setLoading(false);
           } else {
             openSweetAlert("v3 Added Successfully", "success");
@@ -265,27 +233,19 @@ const index = () => {
             setPortv3("");
             setUsernamev3("");
             setaAuthorizationPasswordv3("");
-            // setaAuthorizationProtocolv3("");
             setEncryptionPasswordv3("");
-            // setEncryptionProtocolv3("");
 
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + "/getV3Credentials")
                 .then((response) => {
-                  console.log("getV3Credentials", response);
-                  // setcred(response.data);
-                  // setCred_group(response.data[0]);
-
                   v3excelData = response.data;
                   setv3DataSource(v3excelData);
                   setv3RowCount(v3excelData.length);
                 })
                 .catch((error) => {
                   console.log(error);
-                  // openSweetAlert("Something Went Wrong!", "danger");
-                  // setLoading(false);
                 })
             );
             setLoading(false);
@@ -296,6 +256,7 @@ const index = () => {
       console.log(err);
     }
   };
+
   const handleSubmitWmc = async (e) => {
     e.preventDefault();
     const wmiData = {
@@ -304,15 +265,12 @@ const index = () => {
       profile_name: profileNamewmi,
       category: "wmi",
     };
-    console.log(wmiData);
+
     setwmiIsModalOpen(false);
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addMonitoringCredentials ", wmiData)
         .then((response) => {
-          console.log("hahahehehoho");
-          // console.log(response.status);
           if (response?.response?.status == 500) {
             openSweetAlert(response?.data, "error");
             console.log(response?.data);

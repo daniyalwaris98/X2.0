@@ -14,6 +14,7 @@ const theme = {
     DULL_WHITE_COLOR: "#FDFDFD;",
     TOMATO_COLOR: "#FB7457",
     WHITE_COLOR: "#fff",
+    WARNING_COLOR: "#fff6e5",
   },
 };
 

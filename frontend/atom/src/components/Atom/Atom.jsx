@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Button, notification, Select } from "antd";
+import { notification, Select } from "antd";
 import Modal from "./AddAtom";
 import EditModal from "./EditAtom";
 import RackNameModel from "./RackNameModel";
@@ -7,6 +7,8 @@ import StaticOnBoardModal from "./StaticOnBoardModal";
 import tempexp from "./assets/exp.svg";
 import hoverexp from "./assets/activeexport.svg";
 import trash from "./assets/trash.svg";
+import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
 
 import { ImportOutlined, EditOutlined } from "@ant-design/icons";
 import {
@@ -19,24 +21,42 @@ import {
   DeleteButton,
 } from "../AllStyling/All.styled.js";
 
-import Swal from "sweetalert2";
-import * as XLSX from "xlsx";
 import { columnSearch } from "../../utils";
-
 import axios, { baseUrl } from "../../utils/axios";
 import SiteNameModel from "./SiteNameModel";
-import { DiscoverTableModelStyle } from "./Dashboard.styled";
 import CustomModal from "../ReusableComponents/CustomModal/CustomModal";
-import Table from "../ReusableComponents/Carts/Table/Table";
+import Table from "../ReusableComponents/Table/Table";
+import LoadingButton from "../ReusableComponents/LoadingButton/LoadingButton";
+import { AtomStyle, DiscoverTableModelStyle } from "./Dashboard.styled";
+import { CheckMarkIcon, ErrorIcon } from "../../svg";
 
 const DiscoverTableModel = (props) => {
-  const { isDiscoveryItemActive, setDiscoverItemAcitve, endPoint } = props;
+  const {
+    isDiscoveryItemActive,
+    setDiscoverItemAcitve,
+    serviceCalls,
+    openSweetAlert,
+  } = props;
   const [searchText, setSearchText] = useState(null);
   const [searchedColumn, setSearchedColumn] = useState(null);
   const [rowCount, setRowCount] = useState(0);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [configData, setConfigData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [subnetDevices, setSubnetDevices] = useState([]);
+
+  useEffect(() => {
+    let user = localStorage.getItem("user");
+    let userData = JSON.parse(user);
+
+    let test = userData.monetx_configuration;
+    const t = eval(test);
+    let config = JSON.parse(t);
+    setConfigData(config);
+  }, []);
 
   let excelData = [];
-  let [dataSource, setDataSource] = useState(excelData);
+  const [dataSource, setDataSource] = useState(excelData);
 
   let getColumnSearchProps = columnSearch(
     searchText,
@@ -45,15 +65,52 @@ const DiscoverTableModel = (props) => {
     setSearchedColumn
   );
 
+  const onSelectChange = (selectedRowKeys) => {
+    setSelectedRowKeys(selectedRowKeys);
+  };
+
+  const rowSelection = {
+    columnWidth: 40,
+    selectedRowKeys,
+    onChange: onSelectChange,
+    selection: Table.SELECTION_ALL,
+    getCheckboxProps: () => ({
+      disabled: configData?.atom.pages.atom.read_only,
+    }),
+  };
+
+  useEffect(() => {
+    handleChange();
+    getSubnetDevices();
+  }, []);
+
   const handleChange = async (value) => {
-    console.log("value =============>", value);
+    let subnets;
+
+    if (value) {
+      subnets = value;
+    } else {
+      subnets = "All";
+    }
 
     await axios
-      .post(`${baseUrl}/getDiscoveryForTransition`, { subnet: value })
+      .post(`${baseUrl}/getDiscoveryForTransition`, {
+        subnet: subnets,
+      })
       .then((res) => {
-        console.log("res=====>", res);
+        setDataSource(res.data);
+        setRowCount(res.data.length);
       })
       .catch((err) => console.log("err========>", err));
+  };
+
+  const getSubnetDevices = async () => {
+    await axios
+      .get(`${baseUrl}/getSubnetsDropdown`)
+      .then((res) => {
+        setSubnetDevices(res.data);
+      })
+      .catch((err) => console.log(err));
   };
 
   const columns = [
@@ -82,8 +139,13 @@ const DiscoverTableModel = (props) => {
     {
       title: (
         <Select defaultValue="All" suffixIcon={"V"} onChange={handleChange}>
-          <Select.Option value="All">All</Select.Option>
-          <Select.Option value="192.168.0.0/24">192.168.0.0/24</Select.Option>
+          {subnetDevices.map((device, index) => {
+            return (
+              <Select.Option key={index} value={device}>
+                {device}
+              </Select.Option>
+            );
+          })}
         </Select>
       ),
       dataIndex: "subnet",
@@ -146,15 +208,57 @@ const DiscoverTableModel = (props) => {
     },
   ];
 
+  const addDevices = async () => {
+    if (selectedRowKeys.length > 0) {
+      setLoading(true);
+      await axios
+        .post(`${baseUrl}/transitDicoveryData`, selectedRowKeys)
+        .then((res) => {
+          if (res.status == 200) {
+            console.log(res);
+            setTimeout(() => {
+              setDiscoverItemAcitve(false);
+              setLoading(false);
+              serviceCalls();
+              openSweetAlert(
+                "Devices Inserted",
+                "success",
+                res.data.error_list
+              );
+            }, 3000);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
   return (
     <CustomModal
       isModalOpen={isDiscoveryItemActive}
       setIsModalOpen={setDiscoverItemAcitve}
       width="100%"
       footer={null}
+      title="Add Devices from Descovery"
     >
       <DiscoverTableModelStyle>
-        <Table columns={columns} />
+        <Table
+          columns={columns}
+          data={dataSource}
+          pagination={5}
+          rowSelection={rowSelection}
+          rowKey="ip_address"
+        />
+
+        <article className="button-wrapper">
+          <LoadingButton
+            onClick={() => addDevices()}
+            btnText="+ Add Device"
+            loading={loading}
+            disabled={selectedRowKeys.length == 0}
+          />
+        </article>
       </DiscoverTableModelStyle>
     </CustomModal>
   );
@@ -328,8 +432,6 @@ const Atom = () => {
       XLSX.utils.book_append_sheet(wb, binaryAtomData, "atom_devices");
       XLSX.writeFile(wb, "atom_devices.xlsx");
       openNotification();
-
-      // setExportLoading(false);
     } else {
       openSweetAlert("No Data Found!", "error");
     }
@@ -421,22 +523,23 @@ const Atom = () => {
   };
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/getAtoms");
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
     serviceCalls();
   }, []);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getAtoms");
+      excelData = res.data;
+      setDataSource(excelData);
+      setRowCount(excelData.length);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
 
   const convertToJson = (headers, fileData) => {
     let rows = [];
@@ -610,7 +713,29 @@ const Atom = () => {
         </>
       ),
     },
-
+    {
+      title: (
+        <Select
+          defaultValue="200"
+          style={{
+            width: 120,
+          }}
+        >
+          <Select.Option value="200">200</Select.Option>
+          <Select.Option value="500">500</Select.Option>
+        </Select>
+      ),
+      dataIndex: "status",
+      key: "status",
+      width: "5%",
+      render: (text, record) => {
+        return (
+          <span className="status-icon" title={record.message}>
+            {text == 200 ? <CheckMarkIcon /> : <ErrorIcon />}
+          </span>
+        );
+      },
+    },
     {
       title: "IP Address",
       dataIndex: "ip_address",
@@ -709,7 +834,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Site Name",
       dataIndex: "site_name",
@@ -773,7 +897,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Password Group",
       dataIndex: "password_group",
@@ -792,7 +915,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Device RU",
       dataIndex: "device_ru",
@@ -829,7 +951,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Section",
       dataIndex: "section",
@@ -848,7 +969,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Virtual",
       dataIndex: "virtual",
@@ -886,7 +1006,7 @@ const Atom = () => {
   const [isDiscoveryItemActive, setDiscoverItemAcitve] = useState(false);
 
   return (
-    <SpinLoading spinning={onBoardLoading} tip="Loading...">
+    <AtomStyle>
       <AddAtomStyledButton
         onClick={() => setDiscoverItemAcitve(true)}
         disabled={configData?.atom.pages.atom.read_only}
@@ -1012,6 +1132,8 @@ const Atom = () => {
         <DiscoverTableModel
           isDiscoveryItemActive={isDiscoveryItemActive}
           setDiscoverItemAcitve={setDiscoverItemAcitve}
+          serviceCalls={serviceCalls}
+          openSweetAlert={openSweetAlert}
         />
       )}
 
@@ -1029,6 +1151,7 @@ const Atom = () => {
           centered={true}
         />
       )}
+
       {isEditModalVisible && (
         <EditModal
           style={{ padding: "0px" }}
@@ -1046,6 +1169,7 @@ const Atom = () => {
           centered={true}
         />
       )}
+
       {isStaticModalVisible && (
         <StaticOnBoardModal
           style={{ padding: "0px" }}
@@ -1059,6 +1183,7 @@ const Atom = () => {
           centered={true}
         />
       )}
+
       {siteNameModalVisible && (
         <SiteNameModel
           siteNameModalVisible={siteNameModalVisible}
@@ -1066,6 +1191,7 @@ const Atom = () => {
           dataSource={siteData}
         />
       )}
+
       {rackNameModalVisible && (
         <RackNameModel
           rackNameModalVisible={rackNameModalVisible}
@@ -1073,9 +1199,11 @@ const Atom = () => {
           dataSource={rackData}
         />
       )}
+
       <SpinLoading spinning={loading} tip="Loading...">
         <div style={{ padding: "25px" }}>
-          <TableStyling
+          <Table
+            className="atom-table"
             rowSelection={rowSelection}
             scroll={{ x: 4000 }}
             rowKey="ip_address"
@@ -1085,7 +1213,7 @@ const Atom = () => {
           />
         </div>
       </SpinLoading>
-    </SpinLoading>
+    </AtomStyle>
   );
 };
 

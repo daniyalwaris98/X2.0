@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from "react";
+import React, { useState, useRef, useMemo, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import GridLayout from "react-grid-layout";
+import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
 
 import {
   BoardsIcon,
@@ -17,11 +18,61 @@ import {
   PieChart,
   HorizontalBarChart,
   BarChartBold,
-  Table,
 } from "../../components/ReusableComponents/Carts";
-
-import { DashboardStyle, MenusWrapperStyle } from "./Dashboard.style";
 import { Progress } from "antd";
+import { Table } from "../../components/ReusableComponents";
+import {
+  DashboardStyle,
+  DevicesPerGlobalStyle,
+  MenusWrapperStyle,
+} from "./Dashboard.style";
+
+const DevicesPerGlobal = () => {
+  const [mapData, setMapData] = useState([]);
+
+  useEffect(() => {
+    const phyLeaflet = async () => {
+      try {
+        const res = await axios.get(baseUrl + "/phyLeaflet");
+        setMapData(res.data);
+      } catch (err) {
+        console.log(err.response);
+      }
+    };
+    phyLeaflet();
+  }, []);
+
+  const mapRef = useRef();
+
+  return (
+    <DevicesPerGlobalStyle>
+      <Container title="Devices per Global">
+        <MapContainer
+          minZoom={1.5}
+          maxZoom={18}
+          center={[60.505, 100.09]}
+          zoom={0}
+          ref={mapRef}
+          style={{ borderRadius: "8px" }}
+        >
+          <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}" />
+
+          {mapData.map((item, index) => (
+            <div key={index}>
+              <Marker position={[`${item.latitude}`, `${item.longitude}`]}>
+                <Tooltip>
+                  {item.site_name}
+                  <br />
+                  {item.city}
+                </Tooltip>
+              </Marker>
+            </div>
+          ))}
+        </MapContainer>
+      </Container>
+    </DevicesPerGlobalStyle>
+  );
+};
 
 const MenusWrapper = () => {
   const navigate = useNavigate();
@@ -342,6 +393,8 @@ function Dashboard() {
     { i: "d", x: 0, y: 10, w: 5, h: 15 },
     { i: "e", x: 5, y: 20, w: 4, h: 7.5 },
     { i: "f", x: 9, y: 30, w: 4, h: 7.5 },
+    { i: "g", x: 0, y: 40, w: 5, h: 7.5 },
+    { i: "h", x: 5, y: 40, w: 4, h: 7.5 },
   ];
 
   return (
@@ -356,27 +409,27 @@ function Dashboard() {
           rowHeight={30}
           width={1440}
         >
-          <div key="a">
+          <article key="a">
             <Container title="Count Per Vendor" className="content-wrapper">
               <HorizontalBarChart endPoint="getVendorsCount" />
             </Container>
-          </div>
-          <div key="b">
+          </article>
+          <article key="b">
             <Container
               title="Top Vendor For Discovery"
               className="content-wrapper"
             >
               <PieChart endPoint="getTopVendorsForDiscovery" />
             </Container>
-          </div>
+          </article>
 
-          <div key="c">
+          <article key="c">
             <Container title="TCP Open Ports" className="content-wrapper">
               <BarChartBold endPoint="topOpenPorts" />
             </Container>
-          </div>
+          </article>
 
-          <div key="d">
+          <article key="d">
             <Container
               title="Top Subnets by % IP Address Used"
               className="content-wrapper"
@@ -387,8 +440,8 @@ function Dashboard() {
                 columns={columns}
               />
             </Container>
-          </div>
-          <div key="e">
+          </article>
+          <article key="e">
             <Container
               title="Top Devices by CPU Utilization"
               className="content-wrapper"
@@ -399,8 +452,8 @@ function Dashboard() {
                 pagination={false}
               />
             </Container>
-          </div>
-          <div key="f">
+          </article>
+          <article key="f">
             <Container
               title="Devices By Memory Utilization"
               className="content-wrapper"
@@ -411,7 +464,10 @@ function Dashboard() {
                 pagination="5"
               />
             </Container>
-          </div>
+          </article>
+          <article key="g">
+            <DevicesPerGlobal />
+          </article>
         </GridLayout>
       </article>
     </DashboardStyle>
