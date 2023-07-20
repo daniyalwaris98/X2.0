@@ -256,7 +256,7 @@ def AddCompleteAtom(device, row):
 
 def AddTansitionAtom(device, row):
     try:
-        if "ip_address" not in device.key():
+        if "ip_address" not in device.keys():
             return f"Row {row} : IP Address Can Not Be Empty", 500
         
         if device['ip_address'] is None:
@@ -391,6 +391,9 @@ def GetTransitionAtoms():
             msg, status = AddCompleteAtom(objDict, 1)
             
             if status == 500:
+                objDict['creation_date'] = str(objDict['creation_date'])
+                objDict['modification_date'] = str(objDict['modification_date'])
+                
                 objDict['message'] = msg
                 objDict['status'] = status
                 objList.append(objDict)

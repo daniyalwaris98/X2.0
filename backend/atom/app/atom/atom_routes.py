@@ -89,8 +89,8 @@ def GetAtoms(user_data):
                             'department': atomObj.department, 'section': atomObj.section,
                             'function': atomObj.function, 'virtual': atomObj.virtual,
                             'device_type': atomObj.device_type, 'password_group': passObj.password_group,
-                            'updated': atomObj.updated, 'inserted': atomObj.inserted,
-                            'exception': atomObj.exception}
+                            'creation_date': str(atomObj.creation_date), 'modification_date' : str(atomObj.modification_date)}
+            
             if atomObj.onboard_status != '' or atomObj.onboard_status is not None:
                 atomDataDict['onboard_status'] = atomObj.onboard_status
             else:

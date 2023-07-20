@@ -131,6 +131,9 @@ from app.atom import atom_transition_routes
 from app.atom import password_group_routes
 from app.atom import inventory_list_routes
 
+from app.auto_discovery import auto_discovery_routes
+from app.auto_discovery import auto_discovery_dashboard_routes
+
 from app.routes import uam_inventory_routes
 from app.routes import uam_dashboard_routes
 

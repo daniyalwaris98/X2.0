@@ -5,7 +5,7 @@ import traceback
 import sys
 
 def FormatDate(date):
-    result = datetime(1, 1, 2000)
+    result = datetime(2000, 1, 1)
     
     try:
         if date is not None:
