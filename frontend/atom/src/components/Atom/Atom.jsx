@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { notification, Select } from "antd";
+import { Button, Dropdown, notification, Select } from "antd";
 import Modal from "./AddAtom";
 import EditModal from "./EditAtom";
 import RackNameModel from "./RackNameModel";
@@ -28,7 +28,7 @@ import CustomModal from "../ReusableComponents/CustomModal/CustomModal";
 import Table from "../ReusableComponents/Table/Table";
 import LoadingButton from "../ReusableComponents/LoadingButton/LoadingButton";
 import { AtomStyle, DiscoverTableModelStyle } from "./Dashboard.styled";
-import { CheckMarkIcon, ErrorIcon } from "../../svg";
+import { CheckMarkIcon, ErrorIcon, ExportIcon } from "../../svg";
 
 const DiscoverTableModel = (props) => {
   const {
@@ -374,16 +374,29 @@ const Atom = () => {
     }
   };
 
-  const exportSeed = async () => {
+  const exportSeed = async (data) => {
     const UpdatedExcelData = excelData.map((data) => {
       delete data.inserted;
       delete data.exception;
       delete data.updated;
-
       return data;
     });
 
-    jsonToExcel(UpdatedExcelData);
+    let UpdatedFilterExcelData;
+
+    if (data == "completed") {
+      UpdatedFilterExcelData = UpdatedExcelData.filter(
+        (data) => data.status == 200
+      );
+    } else if (data == "Not Completed") {
+      UpdatedFilterExcelData = UpdatedExcelData.filter(
+        (data) => data.status == 500
+      );
+    } else {
+      UpdatedFilterExcelData = UpdatedExcelData;
+    }
+
+    jsonToExcel(UpdatedFilterExcelData);
   };
 
   const openNotification = () => {
@@ -522,6 +535,8 @@ const Atom = () => {
       });
   };
 
+  const [isStatusDataFilter, setStatusDataFilter] = useState([]);
+
   useEffect(() => {
     serviceCalls();
   }, []);
@@ -533,6 +548,7 @@ const Atom = () => {
       const res = await axios.get(baseUrl + "/getAtoms");
       excelData = res.data;
       setDataSource(excelData);
+      setStatusDataFilter(excelData);
       setRowCount(excelData.length);
       setLoading(false);
     } catch (err) {
@@ -625,6 +641,34 @@ const Atom = () => {
     }
   };
 
+  // const handleChange = (status) => {
+  //   const filterStatusData = dataSource.filter((data) => data.status == status);
+  //   console.log("filterStatusData", filterStatusData);
+  //   setDataSource(filterStatusData);
+  // };
+
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const [sortedInfo, setSortedInfo] = useState({});
+
+  const handleChange = (pagination, filters, sorter) => {
+    console.log("Various parameters", pagination, filters, sorter);
+    setFilteredInfo(filters);
+    setSortedInfo(sorter);
+  };
+  const clearFilters = () => {
+    setFilteredInfo({});
+  };
+  const clearAll = () => {
+    setFilteredInfo({});
+    setSortedInfo({});
+  };
+  const setAgeSort = () => {
+    setSortedInfo({
+      order: "descend",
+      columnKey: "age",
+    });
+  };
+
   const columns = [
     {
       title: "",
@@ -714,17 +758,7 @@ const Atom = () => {
       ),
     },
     {
-      title: (
-        <Select
-          defaultValue="200"
-          style={{
-            width: 120,
-          }}
-        >
-          <Select.Option value="200">200</Select.Option>
-          <Select.Option value="500">500</Select.Option>
-        </Select>
-      ),
+      title: "Status",
       dataIndex: "status",
       key: "status",
       width: "5%",
@@ -735,6 +769,21 @@ const Atom = () => {
           </span>
         );
       },
+
+      filters: [
+        {
+          text: "Completed",
+          value: "200",
+        },
+        {
+          text: "Not Completed",
+          value: "500",
+        },
+      ],
+      filteredValue: filteredInfo.name || null,
+      onFilter: (value, record) => record.name.includes(value),
+
+      ellipsis: true,
     },
     {
       title: "IP Address",
@@ -1005,6 +1054,21 @@ const Atom = () => {
 
   const [isDiscoveryItemActive, setDiscoverItemAcitve] = useState(false);
 
+  const items = [
+    {
+      key: "1",
+      label: <p onClick={() => exportSeed("all")}>All Devices</p>,
+    },
+    {
+      key: "2",
+      label: <p onClick={() => exportSeed("completed")}>Completed</p>,
+    },
+    {
+      key: "3",
+      label: <p onClick={() => exportSeed("Not Completed")}>Not Complete</p>,
+    },
+  ];
+
   return (
     <AtomStyle>
       <AddAtomStyledButton
@@ -1092,7 +1156,7 @@ const Atom = () => {
             &nbsp; Export Template
           </StyledExportButton>
 
-          <StyledExportButton
+          {/* <StyledExportButton
             onClick={exportSeed}
             style={{
               marginRight: "5px",
@@ -1102,7 +1166,22 @@ const Atom = () => {
             <img src={tempexp} alt="" width="15px" height="15px" />
             <img src={hoverexp} alt="" width="15px" height="15px" />
             &nbsp; Export
-          </StyledExportButton>
+          </StyledExportButton> */}
+
+          <Dropdown
+            menu={{
+              items,
+            }}
+            placement="bottomLeft"
+            className="export-dropdown"
+          >
+            <Button>
+              <span className="icon">
+                <ExportIcon />
+              </span>
+              Export
+            </Button>
+          </Dropdown>
           <div>
             <StyledImportFileInput
               disabled={configData?.atom.pages.atom.read_only}

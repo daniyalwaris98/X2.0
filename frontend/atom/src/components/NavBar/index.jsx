@@ -203,9 +203,9 @@ const SecondNavBar = (props) => {
                 path="/license-renewal"
                 element={<Navigate to="/" replace />}
               />
-              <Route path="/" element={<NewDashboard />} />
+              <Route path="/" element={<Dashboard />} />
 
-              <Route path="/new" element={<Dashboard />} />
+              <Route path="/new" element={<NewDashboard />} />
 
               <Route path="/license-key" element={<LicenseKey />} />
 

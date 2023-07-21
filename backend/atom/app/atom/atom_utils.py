@@ -5,30 +5,30 @@ from app.utilities.db_utils import *
 from app.atom.static_list import *
 
 
-def ValidateAtom(device, row):
+def ValidateAtom(device, row, update):
     try:
         if 'ip_address' not in device:
             return f"Row {row} : Ip Address Can Not be Empty", 500
-        
+
         if device['ip_address'] is None:
             error = f"Row {row} : Ip Address Can Not be Empty"
             return error, 500
-        
+
         if device['ip_address'].strip() == "":
             return f"Row {row} : Ip Address Can Not be Empty", 500
 
         # row 0 means single row is being added statically and ip_address can not be updated through Insertion
         # else multiple row are being added by using file import and row will be updated if ip address already exists
-        if row == 0:
+        if not update:
             if Atom_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
-        
+
             if Atom_Transition_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
 
         if 'device_name' not in device:
             return f"{device['ip_address']} : Device Name Can Not be Empty", 500
-        
+
         if device['device_name'] is None:
             error = f"Row {row} : Device Name Can Not be Empty"
             return error, 500
@@ -37,13 +37,14 @@ def ValidateAtom(device, row):
         if device['device_name'] == "":
             return f"Row {row} : Device Name Can Not be Empty", 500
 
-        atom =  Atom_Table.query.filter_by(device_name=device['device_name']).first()
+        atom = Atom_Table.query.filter_by(
+            device_name=device['device_name']).first()
         if atom is not None:
             if atom.ip_address != device['ip_address'].strip():
                 error = f"{device['ip_address']} : Device Already Assigned To An Other Device"
                 return error, 500
-            
-        if  'function' not in device:
+
+        if 'function' not in device:
             error = f"{device['ip_address']} : Function Can Not be Empty"
             return error, 500
         elif device['function'] is None:
@@ -55,21 +56,19 @@ def ValidateAtom(device, row):
 
         if 'device_type' not in device:
             return f"{device['ip_address']} : Device Type Can Not be Empty", 500
-        
+
         if device['device_type'] is None:
             error = f"Row {row} : Device Type Can Not be Empty"
             return error, 500
 
         device['device_type'] = device['device_type'].strip()
         device['device_type'] = device['device_type'].lower()
-        
-        
+
         if device['device_type'] == "":
             return f"Row {row} : Device Type Can Not be Empty", 500
-        
+
         if device['device_type'] not in device_type_list:
             return f"Row {row} : Device Type Is Not Supported - {device['device_type']}", 500
-
 
         # Site Check
         site_exist = None
@@ -78,13 +77,13 @@ def ValidateAtom(device, row):
         if device['site_name'] is None:
             error = f"{device['ip_address']} : Site Name Can Not be Empty"
             return error, 500
-        
+
         device['site_name'] = device['site_name'].strip()
         if device['site_name'] == '':
             return f"{device['ip_address']} : Site Name Can Not be Empty", 500
 
         else:
-            site_exist = Site_Table.query.with_entities(Site_Table.site_name).filter_by(
+            site_exist = Site_Table.query.filter_by(
                 site_name=device['site_name']).first()
             if site_exist is None:
                 return f"{device['ip_address']} : Site Name Does Not Exists", 500
@@ -100,26 +99,26 @@ def ValidateAtom(device, row):
         if device['rack_name'] == '':
             return f"{device['ip_address']} : Rack Name Can Not be Empty", 500
         else:
-            if Rack_Table.query.with_entities(Rack_Table.rack_name).filter_by(
+            if Rack_Table.query.filter_by(
                     rack_name=device['rack_name'], site_id=site_exist.site_id).first() is None:
                 return f"{device['ip_address']} : Rack Name And Site Name Does Not Match", 500
 
         if 'password_group' not in device:
             return f"{device['ip_address']} : Password Group Can Not be Empty", 500
+
+        if device['password_group'] is None:
+            return f"{device['ip_address']} : Password Group Can Not be Empty", 500
         
         device['password_group'] = device['password_group'].strip()
+        
         if device['password_group'] == "":
             return f"{device['ip_address']} : Password Group Can Not be Empty", 500
-        elif device['password_group'] is None:
-            error = f"{device['ip_address']} : Password Group Can Not be Empty"
-            return error, 500
-        else:
-            if Password_Group_Table.query.with_entities(Password_Group_Table.password_group).filter_by(
-                    password_group=device['password_group']).first() is None:
-                return f"{device['ip_address']} : Password Group Does Not Exist", 500
         
+        if Password_Group_Table.query.filter_by(password_group=device['password_group']).first() is None:
+            return f"{device['ip_address']} : Password Group Does Not Exist", 500
+
         return "Complete", 200
-        
+
     except Exception:
         error = f"Error - Row {row} : Exception"
         print(error, file=sys.stderr)
@@ -127,17 +126,17 @@ def ValidateAtom(device, row):
         return error, 500
 
 
-
-def AddCompleteAtom(device, row):
+def AddCompleteAtom(device, row, update):
 
     try:
 
-        msg , status = ValidateAtom(device,row)
-        
+        msg, status = ValidateAtom(device, row, update)
+
         if status == 500:
             return msg, status
-        
-        atom = Atom_Table.query.filter_by(ip_address=device['ip_address'].strip()).first()
+
+        atom = Atom_Table.query.filter_by(
+            ip_address=device['ip_address'].strip()).first()
 
         exist = False
         if atom is not None:
@@ -149,13 +148,14 @@ def AddCompleteAtom(device, row):
             atom = Atom_Table()
             atom.ip_address = device['ip_address'].strip()
 
-        rack = Rack_Table.query.filter_by(rack_name=device['rack_name'].strip()).first()
+        rack = Rack_Table.query.filter_by(
+            rack_name=device['rack_name'].strip()).first()
         atom.rack_id = rack.rack_id
         atom.device_name = device['device_name'].strip()
         atom.device_type = device['device_type'].strip()
         atom.password_group = device['password_group'].strip()
         atom.function = device['function'].strip()
-        
+
         if "device_ru" in device.keys():
             if device['device_ru'] is None:
                 atom.device_ru = 'N/A'
@@ -217,7 +217,7 @@ def AddCompleteAtom(device, row):
             atom.virtual = 'N/A'
 
         atom.onboard_status = "False"
-    
+
         msg = ""
         status = 500
         if exist:
@@ -238,44 +238,44 @@ def AddCompleteAtom(device, row):
 
         if status == 200:
             try:
-                transitObj = Atom_Transition_Table.query.filter_by(ip_address=atom.ip_address).first()
+                transitObj = Atom_Transition_Table.query.filter_by(
+                    ip_address=atom.ip_address).first()
                 if transitObj is not None:
                     db.session.delete(transitObj)
                     db.session.commit()
             except Exception:
                 traceback.print_exc()
-        
+
         return msg, status
-            
+
     except Exception:
         error = f"Error - Row {row} : Exception"
         print(error, file=sys.stderr)
         traceback.print_exc()
-        return error, 500  
-        
+        return error, 500
 
-def AddTansitionAtom(device, row):
+
+def AddTansitionAtom(device, row, update):
     try:
         if "ip_address" not in device.keys():
             return f"Row {row} : IP Address Can Not Be Empty", 500
-        
+
         if device['ip_address'] is None:
             return f"Row {row} : IP Address Can Not Be Empty", 500
 
         device["ip_address"] = device["ip_address"].strip()
 
-
         if device["ip_address"] == "":
             return f"Row {row} : IP Address Can Not Be Empty", 500
-        
-        if row == 0:
+
+        if not update:
             if Atom_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
-        
+
             if Atom_Transition_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
-        
-        msg, status = ValidateAtom(device, row)
+
+        msg, status = ValidateAtom(device, row, update)
 
         transObj = Atom_Transition_Table.query.filter_by(
             ip_address=device["ip_address"]
@@ -351,7 +351,6 @@ def AddTansitionAtom(device, row):
                 if device["virtual"].strip() != "":
                     transObj.virtual = device["virtual"].strip()
 
-
         if exist:
             status = UpdateDBData(transObj)
             if status == 200:
@@ -377,7 +376,6 @@ def AddTansitionAtom(device, row):
         print(error, file=sys.stderr)
         traceback.print_exc()
         return error, 500
-    
 
 
 def GetTransitionAtoms():
@@ -388,19 +386,20 @@ def GetTransitionAtoms():
         for result in results:
             objDict = result.as_dict()
 
-            msg, status = AddCompleteAtom(objDict, 1)
-            
+            msg, status = AddCompleteAtom(objDict, 1, True)
+
             if status == 500:
                 objDict['creation_date'] = str(objDict['creation_date'])
-                objDict['modification_date'] = str(objDict['modification_date'])
-                
+                objDict['modification_date'] = str(
+                    objDict['modification_date'])
+
                 objDict['message'] = msg
                 objDict['status'] = status
                 objList.append(objDict)
 
     except Exception:
         traceback.print_exc()
-    
+
     return objList
 
 
@@ -409,10 +408,10 @@ def addPasswordGroup(passObj, row):
 
         if 'password_group' not in passObj.keys():
             return f"Row {row} : Password Group Can Not be Empty", 500
-        
+
         if passObj['password_group'] is None:
             return f"Row {row} : Password Group Can Not be Empty", 500
-        
+
         passObj['password_group'] = passObj['password_group'].strip()
 
         if passObj['password_group'] == "":
@@ -422,8 +421,9 @@ def addPasswordGroup(passObj, row):
         # else multiple row are being added by using file import and row will be updated if password Group already
         # exists
 
-        password_group = Password_Group_Table.query.filter_by(password_group=passObj['password_group']).first()
-        print(password_group,file=sys.stderr)
+        password_group = Password_Group_Table.query.filter_by(
+            password_group=passObj['password_group']).first()
+        print(password_group, file=sys.stderr)
         if row == 0:
             if password_group is not None:
                 return f"{passObj['password_group']} : Password Group Already Exists", 500
@@ -434,12 +434,12 @@ def addPasswordGroup(passObj, row):
             password_group = Password_Group_Table()
             password_group.password_group = passObj['password_group']
 
-        if 'password' not in passObj.keys():    
+        if 'password' not in passObj.keys():
             return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
 
         if passObj['password'] is None:
             return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
-        
+
         passObj['password'] = passObj['password'].strip()
         if passObj['password'] == '':
             return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
@@ -452,7 +452,7 @@ def addPasswordGroup(passObj, row):
 
                 if 'secret_password' not in passObj.keys():
                     return f"{passObj['password_group']} : Secret Password Field Can Not Be Empty For Telnet", 500
-                
+
                 if passObj['secret_password'] is None:
                     return f"{passObj['password_group']} : Secret Password Field Can Not Be Empty For Telnet", 500
 
@@ -467,10 +467,10 @@ def addPasswordGroup(passObj, row):
                 password_group.password_group_type = 'SSH'
                 if 'username' not in passObj.keys():
                     return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
-                
+
                 if passObj['username'] is None:
                     return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
-            
+
                 passObj['username'] = passObj['username'].strip()
 
                 if passObj['username'] == "":
@@ -482,10 +482,10 @@ def addPasswordGroup(passObj, row):
             password_group.password_group_type = 'SSH'
             if 'username' not in passObj.keys():
                 return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
-            
+
             if passObj['username'] is None:
                 return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
-            
+
             passObj['username'] = passObj['username'].strip()
 
             if passObj['username'] == "":

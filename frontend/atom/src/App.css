@@ -299,7 +299,7 @@ input:-moz-placeholder {
 .ant-btn:hover,
 .ant-btn:focus {
   color: #66b127 !important;
-  border: 1px solid #66b127 !important;
+  border: 1px solid #66b127;
 }
 .ant-btn-group > .ant-btn:first-child:not(:last-child) {
   background-color: #66b127 !important;

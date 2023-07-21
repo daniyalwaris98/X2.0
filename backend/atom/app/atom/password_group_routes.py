@@ -153,3 +153,20 @@ def GetUsers(user_data):
     except Exception as e:
         traceback.print_exc()
         return str(e), 500
+    
+
+@app.route('/getPasswordGroupDropdown', methods=['GET'])
+@token_required
+def GetPasswordGroupDropdown(user_data):
+    try:
+
+        result = Password_Group_Table.query.all()
+        objList = []
+        for password_group in result:
+            password_group_name = password_group.password_group
+            objList.append(password_group_name)
+        print(objList, 200)
+        return jsonify(objList), 200
+    except Exception as e:
+        traceback.print_exc()
+        return str(e), 500

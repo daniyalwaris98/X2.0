@@ -3,6 +3,36 @@ import { Table, Button } from "antd";
 import { CustomContainer, FlexboxStyle } from "../../styles/commonStyle";
 
 export const AtomStyle = styled.section`
+  .export-dropdown {
+    border: none;
+
+    &.ant-btn {
+      ${FlexboxStyle({ justify: "flex-start", gap: "15px" })};
+
+      color: ${({ theme }) => theme.colors.DIM_GRAY_COLOR};
+
+      &:hover {
+        border: none;
+
+        .icon {
+          > svg {
+            fill: ${({ theme }) => theme.colors.PRIMARY_COLOR};
+          }
+        }
+      }
+
+      .icon {
+        ${FlexboxStyle({ justify: "center" })};
+
+        > svg {
+          width: 15px;
+          transition: 0.3s all linear;
+          fill: ${({ theme }) => theme.colors.DIM_GRAY_COLOR};
+        }
+      }
+    }
+  }
+
   .atom-table {
     border: 1px solid ${({ theme }) => theme.colors.GRAY_COLOR};
 

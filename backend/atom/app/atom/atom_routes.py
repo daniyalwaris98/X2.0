@@ -17,10 +17,10 @@ from app.utilities.db_utils import *
 def AddAtomDevice(user_data):
     try:
         atomObj = request.get_json()
-        response, status = AddCompleteAtom(atomObj, 0)
+        response, status = AddCompleteAtom(atomObj, 0, False)
 
         if status == 500:
-            response, status = AddTansitionAtom(atomObj,0)
+            response, status = AddTansitionAtom(atomObj,0, False)
 
         return response, status
     except Exception as e:
@@ -40,16 +40,38 @@ def AddAtomDevices(user_data):
         row = 0
         for atomObj in atomObjs:
             row = row + 1
-            response, status = AddCompleteAtom(atomObj, row)
+            if 'ip_address' not in atomObj:
+                errorList.append(f"Row {row} : IP Address Can Not Be Empty")
+                continue
+        
+            if atomObj['ip_address'] is None:
+                errorList.append(f"Row {row} : IP Address Can Not Be Empty")
+                continue
+            
+            atomObj['ip_address'] = atomObj['ip_address'].strip()
+            if atomObj['ip_address'] == "":
+                errorList.append(f"Row {row} : IP Address Can Not Be Empty")
+                continue
+
+            atom = Atom_Table.query.filter_by(ip_address=atomObj['ip_address']).first()
+            transitAtom = Atom_Transition_Table.query.filter_by(ip_address=atomObj['ip_address']).first()
+
+            status = 500
+            msg = ""
+            if atom is not None:
+                msg, status = AddCompleteAtom(atomObj, row, True)
+            elif transitAtom is not None:
+                msg, status = AddTansitionAtom(atomObj, row, True)
+            else:
+                msg, status = AddCompleteAtom(atomObj, row, False)
+
+                if status == 500:
+                    msg, status = AddTansitionAtom(atomObj, row, False)
 
             if status == 200:
-                responseList.append(response)
+                responseList.append(msg)
             else:
-                response, status = AddTansitionAtom(atomObj, row)
-                if status == 200:
-                    responseList.append(response)
-                else:
-                    errorList.append(response)
+                errorList.append(msg)
 
 
         responseDict = {
@@ -119,10 +141,10 @@ def GetAtoms(user_data):
 def EditAtom(user_data):
     try:
         atomObj = request.get_json()
-        response, status = AddCompleteAtom(atomObj, 1)
+        response, status = AddCompleteAtom(atomObj, 1, True)
 
         if status == 500:
-            response, status = AddTansitionAtom(atomObj,1)
+            response, status = AddTansitionAtom(atomObj,1, True)
 
         return response, status
     except Exception as e:

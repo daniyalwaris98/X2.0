@@ -14,11 +14,12 @@ def FormatDate(date):
 
 def GetAllRacks():
 	rackObjList = []
-	rackObjs = db.session.query(Rack_Table, Site_Table) \
+	results = db.session.query(Rack_Table, Site_Table) \
 		.join(Site_Table, Rack_Table.site_id == Site_Table.site_id).all()
-	for rackObj in rackObjs:
+	for result in results:
+		rackObj, siteObj = result
 		rackDataDict = {'rack_id': rackObj.rack_id, 'rack_name': rackObj.rack_name,
-						'site_name': rackObj.site_name, 'serial_number': rackObj.serial_number,
+						'site_name': siteObj.site_name, 'serial_number': rackObj.serial_number,
 						'manufacturer_date': FormatDate(rackObj.manufacturer_date),
 						'unit_position': rackObj.unit_position,
 						'creation_date': FormatDate(rackObj.creation_date),
@@ -27,7 +28,36 @@ def GetAllRacks():
 						'width': rackObj.width, 'pn_code': rackObj.pn_code, 'rack_model': rackObj.rack_model,
 						'brand': rackObj.floor}
 		rackObjList.append(rackDataDict)
+	
+	return rackObjList
 
+
+def GetRackDetailsByRackName(rackName):
+	rackObjList = []
+	try:
+		results = db.session.query(Rack_Table, Site_Table) \
+			.join(Site_Table, Rack_Table.site_id == Site_Table.site_id).filter(Rack_Table.rack_name==rackName).all()
+		for result in results:
+			try:
+
+				rackObj, siteObj = result
+				rackDataDict = {'rack_id': rackObj.rack_id, 'rack_name': rackObj.rack_name,
+								'site_name': siteObj.site_name, 'serial_number': rackObj.serial_number,
+								'manufacturer_date': FormatDate(rackObj.manufacturer_date),
+								'unit_position': rackObj.unit_position,
+								'creation_date': FormatDate(rackObj.creation_date),
+								'modification_date': FormatDate(rackObj.modification_date), 'status': rackObj.status,
+								'ru': rackObj.ru, 'rfs_date': FormatDate(rackObj.rfs_date), 'height': rackObj.height,
+								'width': rackObj.width, 'pn_code': rackObj.pn_code, 'rack_model': rackObj.rack_model,
+								'brand': rackObj.floor}
+				rackObjList.append(rackDataDict)
+
+			except Exception:
+				traceback.print_exc()
+	except Exception:
+		traceback.print_exc()
+	
+	return rackObjList
 
 
 
@@ -91,16 +121,25 @@ def AddRack(rackObj, update):
 
 		if "ru" in rackObj.keys():
 			if rackObj["ru"] is not None:
-				rack_exist.ru = rackObj["ru"]
+				try:
+					rack_exist.ru = int(rackObj["ru"])
+				except Exception:
+					rack_exist.ru = None
 		
 		if "height" in rackObj.keys():
 			if rackObj["height"] is not None:
-				rack_exist.height = rackObj["height"]
+				try:
+					rack_exist.height = int(rackObj["height"])
+				except Exception:
+					rack_exist.height = None
 		
 		if "width" in rackObj.keys():
 			if rackObj["width"] is not None:
-				rack_exist.width = rackObj["width"]
-		
+				try:
+					rack_exist.width = int(rackObj["width"])
+				except Exception:
+					rack_exist.width = None
+
 		if "serial_number" in rackObj.keys():
 			if rackObj["serial_number"] is not None:
 				rack_exist.serial_number = rackObj["serial_number"]
@@ -119,15 +158,15 @@ def AddRack(rackObj, update):
 		if update:
 			status = UpdateDBData(rack_exist)
 			if status == 200:
-				msg = "Site Updated Successfully"
+				msg = "Rack Updated Successfully"
 			else:
-				msg = "Error While Updating Site"
+				msg = "Error While Updating Rack"
 		else:
 			status = InsertDBData(rack_exist)
 			if status == 200:
-				msg = "Site Inserted Successfully"
+				msg = "Rack Inserted Successfully"
 			else:
-				msg = "Error While Inserting Site"
+				msg = "Error While Inserting Rack"
 		
 		return msg, status
 	

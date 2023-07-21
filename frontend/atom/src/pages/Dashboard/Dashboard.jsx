@@ -1,4 +1,5 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
+import { Row, Col } from "antd";
 import { useNavigate } from "react-router-dom";
 import GridLayout from "react-grid-layout";
 import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
@@ -20,12 +21,152 @@ import {
   BarChartBold,
 } from "../../components/ReusableComponents/Carts";
 import { Progress } from "antd";
-import { Table } from "../../components/ReusableComponents";
+import { CustomModal, Table } from "../../components/ReusableComponents";
 import {
   DashboardStyle,
   DevicesPerGlobalStyle,
   MenusWrapperStyle,
+  RackDetailsModelStyle,
+  RackDetailsStyle,
 } from "./Dashboard.style";
+
+const RockDetails = () => {
+  const [isModalVisible, setIsModalVisible] = useState(false);
+  const [data, setData] = useState([]);
+  const [rackDetails, setRackDetails] = useState([]);
+
+  useEffect(() => {
+    const allRacks = async () => {
+      try {
+        const res = await axios.get(baseUrl + "/allRacks");
+        setData(res.data);
+      } catch (err) {
+        console.log(err.response);
+      }
+    };
+    allRacks();
+  }, []);
+
+  const showRackDetail = async (record) => {
+    try {
+      const res = await axios.get(
+        `${baseUrl}/getRackByRackName?rackname=${record}`
+      );
+      setRackDetails(res.data);
+    } catch (err) {
+      console.log(err);
+    }
+  };
+  const showModal = (index) => {
+    showRackDetail(index);
+    setIsModalVisible(true);
+  };
+
+  const handleOk = () => {
+    setIsModalVisible(false);
+  };
+
+  const handleCancel = () => {
+    setIsModalVisible(false);
+  };
+
+  return (
+    <RackDetailsStyle>
+      <Container title="Rack Details" className="racks-list">
+        {data?.map((item, index) => {
+          return (
+            <article
+              key={index}
+              className="rack-item"
+              onClick={() => showModal(item)}
+            >
+              {item}
+            </article>
+          );
+        })}
+      </Container>
+
+      <CustomModal
+        open={isModalVisible}
+        footer={null}
+        title="Rack Detials"
+        onCancel={handleCancel}
+        className="rack-details-model"
+      >
+        <RackDetailsModelStyle>
+          <article className="racks-details-wrapper">
+            <article className="row">
+              <h3>Rack Name </h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.rack_name}</h3>
+            </article>
+            <article className="row">
+              <h3>Site Name</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.site_name}</h3>
+            </article>
+            <article className="row">
+              <h3>Serial Number </h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.rack_name}</h3>
+            </article>
+            <article className="row">
+              <h3>Manufacturer Date</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.manufacturer_date}</h3>
+            </article>
+            <article className="row">
+              <h3>Creation Date</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.creation_date}</h3>
+            </article>
+            <article className="row">
+              <h3>Modification Date</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.modification_date}</h3>
+            </article>
+            <article className="row">
+              <h3>Status </h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.status}</h3>
+            </article>
+            <article className="row">
+              <h3>RU</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.ru}</h3>
+            </article>
+            <article className="row">
+              <h3>Height</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.height}</h3>
+            </article>
+            <article className="row">
+              <h3>Width</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.width}</h3>
+            </article>
+            <article className="row">
+              <h3>Brand</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.brand}</h3>
+            </article>
+            <article className="row">
+              <h3>Rack Modal</h3>
+              <h3> : </h3>
+              <h3> {rackDetails[0]?.rack_model}</h3>
+            </article>
+          </article>
+
+          <article className="button-wrapper">
+            <button className="ok-btn" onClick={handleOk}>
+              OK
+            </button>
+          </article>
+        </RackDetailsModelStyle>
+      </CustomModal>
+    </RackDetailsStyle>
+  );
+};
 
 const DevicesPerGlobal = () => {
   const [mapData, setMapData] = useState([]);
@@ -57,7 +198,7 @@ const DevicesPerGlobal = () => {
         >
           <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}" />
 
-          {mapData.map((item, index) => (
+          {mapData?.map((item, index) => (
             <div key={index}>
               <Marker position={[`${item.latitude}`, `${item.longitude}`]}>
                 <Tooltip>
@@ -393,8 +534,8 @@ function Dashboard() {
     { i: "d", x: 0, y: 10, w: 5, h: 15 },
     { i: "e", x: 5, y: 20, w: 4, h: 7.5 },
     { i: "f", x: 9, y: 30, w: 4, h: 7.5 },
-    { i: "g", x: 0, y: 40, w: 5, h: 7.5 },
-    { i: "h", x: 5, y: 40, w: 4, h: 7.5 },
+    { i: "g", x: 0, y: 40, w: 5, h: 12, minW: 5, minH: 12 },
+    { i: "h", x: 5, y: 40, w: 4, h: 12 },
   ];
 
   return (
@@ -467,6 +608,9 @@ function Dashboard() {
           </article>
           <article key="g">
             <DevicesPerGlobal />
+          </article>
+          <article key="h">
+            <RockDetails />
           </article>
         </GridLayout>
       </article>

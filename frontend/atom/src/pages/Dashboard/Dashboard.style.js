@@ -3,6 +3,7 @@ import {
   CommonSpacing,
   CustomContainer,
   FlexboxStyle,
+  GridBoxStyle,
 } from "../../styles/commonStyle";
 
 export const DashboardStyle = styled.section`
@@ -85,4 +86,72 @@ export const MenusWrapperStyle = styled.article`
   }
 `;
 
-export const DevicesPerGlobalStyle = styled.article``;
+export const DevicesPerGlobalStyle = styled.article`
+  height: inherit;
+`;
+
+export const RackDetailsStyle = styled.article`
+  height: inherit;
+
+  .racks-list {
+    height: inherit;
+    .container-content {
+      ${FlexboxStyle({ justify: "flex-start", gap: "20px" })};
+
+      flex-wrap: wrap;
+
+      .rack-item {
+        padding: 20px;
+        border-radius: 10px;
+        color: ${({ theme }) => theme.colors.WHITE_COLOR};
+
+        &:nth-child(odd) {
+          background: ${({ theme }) => theme.colors.PRIMARY_COLOR};
+        }
+
+        &:nth-child(even) {
+          background: ${({ theme }) => theme.colors.YELLOW_COLOR};
+        }
+      }
+    }
+  }
+`;
+
+export const RackDetailsModelStyle = styled.article`
+  .racks-details-wrapper {
+    height: 500px;
+    overflow: auto;
+
+    .row {
+      ${GridBoxStyle({ columns: "1fr 20px 1fr" })};
+
+      text-align: center;
+
+      padding: 10px;
+      border-radius: 10px;
+
+      &:nth-child(odd) {
+        background: ${({ theme }) => theme.colors.LIGHT_PRIMARY_COLOR};
+      }
+
+      h3 {
+        font-size: 15px;
+      }
+    }
+  }
+
+  .button-wrapper {
+    ${FlexboxStyle({ justify: "center" })};
+
+    margin-top: 30px;
+
+    .ok-btn {
+      padding: 10px 30px;
+      background: ${({ theme }) => theme.colors.PRIMARY_COLOR};
+      color: ${({ theme }) => theme.colors.WHITE_COLOR};
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+  }
+`;
