@@ -6,7 +6,6 @@ from app.models.inventory_models import *
 
 
 def InsertDBData(obj):
-    # add data to db
     try:
         db.session.add(obj)
         db.session.commit()
@@ -15,13 +14,11 @@ def InsertDBData(obj):
         db.session.rollback()
         traceback.print_exc()
         print(
-            f"Something else went wrong in Database Insertion {e}", file=sys.stderr)
+            f"Something else went wrong in Database Insertion: {e}", file=sys.stderr)
         return 500
 
 
 def UpdateDBData(obj):
-    # add data to db
-    # print(obj, file=sys.stderr)
     try:
         db.session.flush()
 
@@ -32,7 +29,19 @@ def UpdateDBData(obj):
         db.session.rollback()
         traceback.print_exc()
         print(
-            f"Something else went wrong during Database Update {e}", file=sys.stderr)
+            f"Something else went wrong during Database Update: {e}", file=sys.stderr)
+        return 500
+
+def DeleteDBData(obj):
+    try:
+        db.session.delete(obj)
+        db.session.commit()
+        return 200
+    except Exception as e:
+        db.session.rollback()
+        traceback.print_exc()
+        print(
+            f"Something else went wrong during Database Delete: {e}", file=sys.stderr)
         return 500
 
 

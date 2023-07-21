@@ -134,8 +134,8 @@ from app.atom import inventory_list_routes
 from app.auto_discovery import auto_discovery_routes
 from app.auto_discovery import auto_discovery_dashboard_routes
 
-from app.routes import uam_inventory_routes
-from app.routes import uam_dashboard_routes
+from app.uam import uam_inventory_routes
+from app.uam import uam_dashboard_routes
 
 
 try:
