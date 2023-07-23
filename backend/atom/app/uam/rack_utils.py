@@ -5,12 +5,12 @@ from app.utilities.db_utils import *
 
 
 def FormatDate(date):
-	if date is not None:
-		result = date.strftime('%d-%m-%Y')
-	else:
-		result = datetime(2000, 1, 1)
-
-	return result
+    result = datetime(2000, 1, 1)
+    try:
+        result = date.strftime("%d-%m-%Y")
+    except Exception:
+        traceback.print_exc()
+    return result
 
 def GetAllRacks():
 	rackObjList = []

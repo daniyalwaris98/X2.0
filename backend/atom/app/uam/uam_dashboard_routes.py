@@ -20,7 +20,7 @@ from app.middleware import token_required
 def FormatDate(date):
     # print(date, file=sys.stderr)
     if date is not None:
-        result = date.strftime('%d-%m-%Y')
+        result = date.strftime("%d-%m-%Y")
     else:
         # result = datetime(2000, 1, 1)
         result = datetime(1, 1, 2000)
@@ -33,10 +33,10 @@ def FormatStringDate(date):
 
     try:
         if date is not None:
-            if '-' in date:
-                result = datetime.strptime(date, '%d-%m-%Y')
-            elif '/' in date:
-                result = datetime.strptime(date, '%d/%m/%Y')
+            if "-" in date:
+                result = datetime.strptime(date, "%d-%m-%Y")
+            elif "/" in date:
+                result = datetime.strptime(date, "%d/%m/%Y")
             else:
                 print("incorrect date format", file=sys.stderr)
                 result = datetime(2000, 1, 1)
@@ -50,22 +50,13 @@ def FormatStringDate(date):
     return result
 
 
-@app.route('/totalSites', methods=['GET'])
+@app.route("/totalSites", methods=["GET"])
 @token_required
 def TotalSites(user_data):
     objList = [
-        {
-            "name": "Sites",
-            "value": 0
-        },
-        {
-            "name": "Devices",
-            "value": 0
-        },
-        {
-            "name": "Vendors",
-            "value": 0
-        }
+        {"name": "Sites", "value": 0},
+        {"name": "Devices", "value": 0},
+        {"name": "Vendors", "value": 0},
     ]
     return jsonify(objList), 200
     if True:
@@ -77,18 +68,9 @@ def TotalSites(user_data):
             queryString2 = f"select count(distinct MANUFACTURER) from device_table;"
             result2 = db.session.execute(queryString2).scalar()
             objList = [
-                {
-                    "name": "Sites",
-                    "value": result
-                },
-                {
-                    "name": "Devices",
-                    "value": result1
-                },
-                {
-                    "name": "Vendors",
-                    "value": result2
-                }
+                {"name": "Sites", "value": result},
+                {"name": "Devices", "value": result1},
+                {"name": "Vendors", "value": result2},
             ]
             print(objList, file=sys.stderr)
             return jsonify(objList), 200
@@ -100,242 +82,14 @@ def TotalSites(user_data):
         return jsonify({"Response": "Service not Available"}), 503
 
 
-@app.route('/topSites', methods=['GET'])
-@token_required
-def TopSites(user_data):
-    return jsonify(list()), 200
-    if True:
-        try:
-            queryString = f"select SITE_NAME,count(SITE_NAME) from device_table group by SITE_NAME;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                site = row[0]
-                count = row[1]
-                objDict = {}
-                objDict[site] = count
-                objList.append(objDict)
-            y = {}
-            for i in objList:
-                for j in i:
-                    y[j] = i[j]
-
-            print(objList, file=sys.stderr)
-            return (y), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/dataCentreStatus', methods=['GET'])
-@token_required
-def DataCentreStatus(user_data):
-    return jsonify(dict()), 200
-    if True:
-        try:
-            queryString = f"select distinct STATUS, count(STATUS) from phy_table group by STATUS;"
-            result = db.session.execute(queryString)
-            objList = []
-
-            for row in result:
-                objDict = {}
-                status = row[0]
-                count = row[1]
-
-                objDict[status] = count
-                # objDict["value"] = count
-                objList.append(objDict)
-            y = {}
-            for i in objList:
-                for j in i:
-                    y[j] = i[j]
-
-            print(objList, file=sys.stderr)
-            return (y), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/phyLeaflet', methods=['GET'])
-@token_required
-def PhyLeaflet(user_data):
-    return jsonify(list()), 200
-    if True:
-        try:
-            queryString = f"select SITE_NAME,LONGITUDE,LATITUDE,CITY from phy_table;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                site_name = row[0]
-                longitude = row[1]
-                latitude = row[2]
-                city = row[3]
-                objDict = {}
-                objDict['site_name'] = site_name
-                objDict['longitude'] = longitude
-                objDict['latitude'] = latitude
-                objDict['city'] = city
-                objList.append(objDict)
-            return jsonify(objList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/totalRacks', methods=['GET'])
-@token_required
-def TotalRacks(user_data):
-    objList = [
-        {
-            "name": "Racks",
-            "value": 0
-        },
-        {
-            "name": "Devices",
-            "value": 0
-        },
-        {
-            "name": "Total RU",
-            "value": 0
-        }
-    ]
-    print(objList, file=sys.stderr)
-    return jsonify(objList), 200
-    if True:
-        try:
-            queryString = f"select count(distinct RACK_NAME) from rack_table;"
-            result = db.session.execute(queryString).scalar()
-            queryString1 = f"select count(distinct DEVICE_NAME) from device_table;"
-            result1 = db.session.execute(queryString1).scalar()
-            queryString2 = f"select sum(RU) from rack_table;"
-            result2 = db.session.execute(queryString2).scalar()
-            objList = [
-                {
-                    "name": "Racks",
-                    "value": result
-                },
-                {
-                    "name": "Devices",
-                    "value": result1
-                },
-                {
-                    "name": "Total RU",
-                    "value": result2
-                }
-            ]
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/rackLeaflet', methods=['GET'])
-@token_required
-def RackLeaflet(user_data):
-    return jsonify(list()), 200
-    if True:
-        try:
-            queryString = f"select LONGITUDE,LATITUDE from phy_table where SITE_NAME in (select SITE_NAME from rack_table);"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                longitude = row[0]
-                latitude = row[1]
-                objDict = {}
-                objDict['longitude'] = longitude
-                objDict['latitude'] = latitude
-                objList.append(objDict)
-            return jsonify(objList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/allFloors', methods=['GET'])
-@token_required
-def AllFloors(user_data):
-    return jsonify(list()), 200
-    if True:
-        try:
-            objList = []
-            queryString = f"select FLOOR from rack_table;"
-            result = db.session.execute(queryString)
-            for row in result:
-                floor = row[0]
-                objList.append(floor)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/allRacks', methods=['GET'])
-@token_required
-def AllRacks(user_data):
-    return jsonify(list()), 200
-    if True:
-        try:
-            objList = []
-            queryString = f"select RACK_NAME from rack_table;"
-            result = db.session.execute(queryString)
-            for row in result:
-                rack = row[0]
-                objList.append(rack)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route('/deviceStatus', methods=['GET'])
+@app.route("/deviceStatus", methods=["GET"])
 @token_required
 def DeviceStatus(user_data):
     objList = [
-        {
-            "name": "Production",
-
-            "value": 0
-        },
-        {
-            "name": "Dismantled",
-            "value": 0
-
-        },
-        {
-            'name': 'Maintenance',
-            'value': 0
-        },
-        {
-            'name': 'Undefined',
-            'value': 0
-        }
+        {"name": "Production", "value": 0},
+        {"name": "Dismantled", "value": 0},
+        {"name": "Maintenance", "value": 0},
+        {"name": "Undefined", "value": 0},
     ]
     return jsonify(objList), 200
     if True:
@@ -346,33 +100,27 @@ def DeviceStatus(user_data):
             result0 = db.session.execute(query).scalar()
             if result0 == 0:
                 result0 = 1
-            queryString = f"select count(status) from device_table where STATUS='Production';"
+            queryString = (
+                f"select count(status) from device_table where STATUS='Production';"
+            )
             result = db.session.execute(queryString).scalar()
-            queryString1 = f"select count(status) from device_table where STATUS='Dismantled';"
+            queryString1 = (
+                f"select count(status) from device_table where STATUS='Dismantled';"
+            )
             result1 = db.session.execute(queryString1).scalar()
-            queryString2 = f"select count(status) from device_table where STATUS='Maintenance';"
+            queryString2 = (
+                f"select count(status) from device_table where STATUS='Maintenance';"
+            )
             result2 = db.session.execute(queryString2).scalar()
-            queryString3 = f"select count(status) from device_table where STATUS='Undefined';"
+            queryString3 = (
+                f"select count(status) from device_table where STATUS='Undefined';"
+            )
             result3 = db.session.execute(queryString3).scalar()
             objList = [
-                {
-                    "name": "Production",
-
-                    "value": round(((result / result0) * 100), 2)
-                },
-                {
-                    "name": "Dismantled",
-                    "value": round(((result1 / result0) * 100), 2)
-
-                },
-                {
-                    'name': 'Maintenance',
-                    'value': round(((result2 / result0) * 100), 2)
-                },
-                {
-                    'name': 'Undefined',
-                    'value': round(((result3 / result0) * 100), 2)
-                }
+                {"name": "Production", "value": round(((result / result0) * 100), 2)},
+                {"name": "Dismantled", "value": round(((result1 / result0) * 100), 2)},
+                {"name": "Maintenance", "value": round(((result2 / result0) * 100), 2)},
+                {"name": "Undefined", "value": round(((result3 / result0) * 100), 2)},
             ]
 
             # queryString3 = f"select status,count(status) from device_table where STATUS='Maintenance' group by status;"
@@ -434,7 +182,8 @@ def DeviceStatus(user_data):
 #         print("Service not Available",file=sys.stderr)
 #         return jsonify({"Response":"Service not Available"}),503
 
-@app.route('/topFunctions', methods=['GET'])
+
+@app.route("/topFunctions", methods=["GET"])
 @token_required
 def TopFunctions(user_data):
     return jsonify(dict()), 200
@@ -464,7 +213,7 @@ def TopFunctions(user_data):
         return jsonify({"Response": "Service not Available"}), 503
 
 
-@app.route('/sfpStatus', methods=['GET'])
+@app.route("/sfpStatus", methods=["GET"])
 @token_required
 def SfpStatus(user_data):
     return jsonify(dict()), 200
@@ -495,7 +244,7 @@ def SfpStatus(user_data):
         return jsonify({"Response": "Service not Available"}), 503
 
 
-@app.route('/sfpMode', methods=['GET'])
+@app.route("/sfpMode", methods=["GET"])
 @token_required
 def SfpMode(user_data):
     return jsonify(dict()), 200
@@ -527,57 +276,57 @@ def SfpMode(user_data):
         return jsonify({"Response": "Service not Available"}), 503
 
 
-@app.route("/getRackByRackName", methods=['GET'])
-@token_required
-def GetRackByRackName(user_data):
-    rack_name = request.args.get('rackname')
-    rackList = []
-    if rack_name:
-        try:
-            rackObj = Rack_Table.query.with_entities(Rack_Table.rack_name, Rack_Table.site_name,
-                                                     Rack_Table.serial_number, Rack_Table.manufacturer_date,
-                                                     Rack_Table.unit_position, Rack_Table.creation_date,
-                                                     Rack_Table.modification_date, Rack_Table.status, Rack_Table.ru,
-                                                     Rack_Table.rfs_date, Rack_Table.height, Rack_Table.width,
-                                                     Rack_Table.depth, Rack_Table.pn_code, Rack_Table.rack_model,
-                                                     Rack_Table.floor).filter_by(rack_name=rack_name).all()
-            if rackObj:
-                for rack in rackObj:
-                    rackDataDict = {}
-                    rackDataDict['rack_name'] = rack.rack_name
-                    rackDataDict['site_name'] = rack.site_name
-                    rackDataDict['serial_number'] = rack.serial_number
-                    rackDataDict['manufacturer_date'] = FormatDate(FormatStringDate(rack.manufacturer_date))
-                    rackDataDict['unit_position'] = rack.unit_position
-                    rackDataDict['creation_date'] = FormatDate(FormatStringDate(rack.creation_date))
-                    rackDataDict['modification_date'] = FormatDate(FormatStringDate(rack.modification_date))
-                    rackDataDict['ru'] = rack.ru
-                    rackDataDict['status'] = rack.status
-                    rackDataDict['rfs_date'] = FormatDate(FormatStringDate(rack.rfs_date))
-                    rackDataDict['height'] = rack.height
-                    rackDataDict['width'] = rack.width
-                    rackDataDict['depth'] = rack.depth
-                    rackDataDict['pn_code'] = rack.pn_code
-                    rackDataDict['rack_model'] = rack.rack_model
-                    rackDataDict['brand'] = rack.floor
-                    rackList.append(rackDataDict)
+# @app.route("/getRackByRackName", methods=['GET'])
+# @token_required
+# def GetRackByRackName(user_data):
+#     rack_name = request.args.get('rackname')
+#     rackList = []
+#     if rack_name:
+#         try:
+#             rackObj = Rack_Table.query.with_entities(Rack_Table.rack_name, Rack_Table.site_name,
+#                                                      Rack_Table.serial_number, Rack_Table.manufacturer_date,
+#                                                      Rack_Table.unit_position, Rack_Table.creation_date,
+#                                                      Rack_Table.modification_date, Rack_Table.status, Rack_Table.ru,
+#                                                      Rack_Table.rfs_date, Rack_Table.height, Rack_Table.width,
+#                                                      Rack_Table.depth, Rack_Table.pn_code, Rack_Table.rack_model,
+#                                                      Rack_Table.floor).filter_by(rack_name=rack_name).all()
+#             if rackObj:
+#                 for rack in rackObj:
+#                     rackDataDict = {}
+#                     rackDataDict['rack_name'] = rack.rack_name
+#                     rackDataDict['site_name'] = rack.site_name
+#                     rackDataDict['serial_number'] = rack.serial_number
+#                     rackDataDict['manufacturer_date'] = FormatDate(FormatStringDate(rack.manufacturer_date))
+#                     rackDataDict['unit_position'] = rack.unit_position
+#                     rackDataDict['creation_date'] = FormatDate(FormatStringDate(rack.creation_date))
+#                     rackDataDict['modification_date'] = FormatDate(FormatStringDate(rack.modification_date))
+#                     rackDataDict['ru'] = rack.ru
+#                     rackDataDict['status'] = rack.status
+#                     rackDataDict['rfs_date'] = FormatDate(FormatStringDate(rack.rfs_date))
+#                     rackDataDict['height'] = rack.height
+#                     rackDataDict['width'] = rack.width
+#                     rackDataDict['depth'] = rack.depth
+#                     rackDataDict['pn_code'] = rack.pn_code
+#                     rackDataDict['rack_model'] = rack.rack_model
+#                     rackDataDict['brand'] = rack.floor
+#                     rackList.append(rackDataDict)
 
-                return jsonify(rackList), 200
-            else:
-                print("Rack Data not found in DB", file=sys.stderr)
-                return jsonify({'response': "Rack Data not found in DB"}), 500
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Can not Get Rack Name from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get Rack Name from URL"}), 500
+#                 return jsonify(rackList), 200
+#             else:
+#                 print("Rack Data not found in DB", file=sys.stderr)
+#                 return jsonify({'response': "Rack Data not found in DB"}), 500
+#         except Exception as e:
+#             traceback.print_exc()
+#             return str(e), 500
+#     else:
+#         print("Can not Get Rack Name from URL", file=sys.stderr)
+#         return jsonify({'response': "Can not Get Rack Name from URL"}), 500
 
 
-@app.route("/getSiteDetailByIpAddress", methods=['GET'])
+@app.route("/getSiteDetailByIpAddress", methods=["GET"])
 @token_required
 def GetSiteByIpAddress(user_data):
-    ip_address = request.args.get('ipaddress')
+    ip_address = request.args.get("ipaddress")
     print(ip_address, file=sys.stderr)
     print(type(ip_address), file=sys.stderr)
     if ip_address:
@@ -595,33 +344,39 @@ def GetSiteByIpAddress(user_data):
                 modification_date = row[6]
                 status = row[7]
                 total_count = row[8]
-                siteDataDict['site_name'] = site_name
-                siteDataDict['region'] = region
-                siteDataDict['latitude'] = latitude
-                siteDataDict['longitude'] = longitude
-                siteDataDict['city'] = city
-                siteDataDict['creation_date'] = FormatDate(FormatStringDate(creation_date))
-                siteDataDict['modification_date'] = FormatDate(FormatStringDate(modification_date))
-                siteDataDict['status'] = status
-                siteDataDict['total_count'] = total_count
+                siteDataDict["site_name"] = site_name
+                siteDataDict["region"] = region
+                siteDataDict["latitude"] = latitude
+                siteDataDict["longitude"] = longitude
+                siteDataDict["city"] = city
+                siteDataDict["creation_date"] = FormatDate(
+                    FormatStringDate(creation_date)
+                )
+                siteDataDict["modification_date"] = FormatDate(
+                    FormatStringDate(modification_date)
+                )
+                siteDataDict["status"] = status
+                siteDataDict["total_count"] = total_count
             return siteDataDict, 200
         except Exception as e:
             traceback.print_exc()
             return str(e), 500
     else:
         print("Can not Get IP Address from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get IP Address from URL"}), 500
+        return jsonify({"response": "Can not Get IP Address from URL"}), 500
 
 
-@app.route("/getRackDetailByIpAddress", methods=['GET'])
+@app.route("/getRackDetailByIpAddress", methods=["GET"])
 @token_required
 def GetRackByIpAddress(user_data):
-    ip_address = request.args.get('ipaddress')
+    ip_address = request.args.get("ipaddress")
 
     if ip_address:
         try:
             objList = []
-            queryString = f"select rack_name from device_table where IP_ADDRESS='{ip_address}';"
+            queryString = (
+                f"select rack_name from device_table where IP_ADDRESS='{ip_address}';"
+            )
             result = db.session.execute(queryString)
             for row1 in result:
                 rack_name = row1[0]
@@ -646,22 +401,28 @@ def GetRackByIpAddress(user_data):
                     pn_code = row[13]
                     rack_model = row[14]
                     floor = row[15]
-                    rackDataDict['rack_name'] = rack_name
-                    rackDataDict['site_name'] = site_name
-                    rackDataDict['serial_number'] = serial_number
-                    rackDataDict['manufacturer_date'] = FormatDate(FormatStringDate(manufacturer_date))
-                    rackDataDict['unit_position'] = unit_position
-                    rackDataDict['creation_date'] = FormatDate(FormatStringDate(creation_date))
-                    rackDataDict['modification_date'] = FormatDate(FormatStringDate(modification_date))
-                    rackDataDict['status'] = status
-                    rackDataDict['rfs_date'] = FormatDate(FormatStringDate(rfs_date))
-                    rackDataDict['height'] = height
-                    rackDataDict['width'] = width
-                    rackDataDict['depth'] = depth
-                    rackDataDict['ru'] = ru
-                    rackDataDict['pn_code'] = pn_code
-                    rackDataDict['rack_model'] = rack_model
-                    rackDataDict['brand'] = floor
+                    rackDataDict["rack_name"] = rack_name
+                    rackDataDict["site_name"] = site_name
+                    rackDataDict["serial_number"] = serial_number
+                    rackDataDict["manufacturer_date"] = FormatDate(
+                        FormatStringDate(manufacturer_date)
+                    )
+                    rackDataDict["unit_position"] = unit_position
+                    rackDataDict["creation_date"] = FormatDate(
+                        FormatStringDate(creation_date)
+                    )
+                    rackDataDict["modification_date"] = FormatDate(
+                        FormatStringDate(modification_date)
+                    )
+                    rackDataDict["status"] = status
+                    rackDataDict["rfs_date"] = FormatDate(FormatStringDate(rfs_date))
+                    rackDataDict["height"] = height
+                    rackDataDict["width"] = width
+                    rackDataDict["depth"] = depth
+                    rackDataDict["ru"] = ru
+                    rackDataDict["pn_code"] = pn_code
+                    rackDataDict["rack_model"] = rack_model
+                    rackDataDict["brand"] = floor
                     objList.append(rackDataDict)
             return jsonify(objList), 200
         except Exception as e:
@@ -669,13 +430,13 @@ def GetRackByIpAddress(user_data):
             return str(e), 500
     else:
         print("Can not Get Ip Address from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get Ip Address from URL"}), 500
+        return jsonify({"response": "Can not Get Ip Address from URL"}), 500
 
 
-@app.route('/getDeviceDetailsByIpAddress', methods=['GET'])
+@app.route("/getDeviceDetailsByIpAddress", methods=["GET"])
 @token_required
 def GetDeviceDetailsByIpAddress(user_data):
-    ip_address = request.args.get('ipaddress')
+    ip_address = request.args.get("ipaddress")
     if ip_address:
         try:
             queryString = f"select DEVICE_NAME,SITE_NAME,RACK_NAME,IP_ADDRESS,SOFTWARE_TYPE,SOFTWARE_VERSION,PATCH_VERSION,CREATION_DATE,MODIFICATION_DATE,STATUS,RU,DEPARTMENT,SECTION,CRITICALITY,`FUNCTION`,DOMAIN,MANUFACTURER,HW_EOS_DATE,HW_EOL_DATE,SW_EOS_DATE,SW_EOL_DATE,`VIRTUAL`,RFS_DATE,AUTHENTICATION,SERIAL_NUMBER,PN_CODE,SUBRACK_ID_NUMBER,MANUFACTURER_DATE,HARDWARE_VERSION,MAX_POWER,SITE_TYPE,SOURCE,STACK,CONTRACT_NUMBER,CONTRACT_EXPIRY from device_table where IP_ADDRESS='{ip_address}';"
@@ -717,55 +478,56 @@ def GetDeviceDetailsByIpAddress(user_data):
                 stack = row[32]
                 contract_number = row[33]
                 contract_expiry = row[34]
-                objDict['device_name'] = device_name
-                objDict['site_name'] = site_name
-                objDict['rack_name'] = rack_name
-                objDict['ip_address'] = ip_address
-                objDict['software_type'] = software_type
-                objDict['software_version'] = software_version
-                objDict['patch_version'] = patch_version
-                objDict['creation_date'] = FormatDate(FormatStringDate(creation_date))
-                objDict['modification_date'] = FormatDate(FormatStringDate(modification_date))
-                objDict['status'] = status
-                objDict['ru'] = ru
-                objDict['department'] = department
-                objDict['section'] = section
+                objDict["device_name"] = device_name
+                objDict["site_name"] = site_name
+                objDict["rack_name"] = rack_name
+                objDict["ip_address"] = ip_address
+                objDict["software_type"] = software_type
+                objDict["software_version"] = software_version
+                objDict["patch_version"] = patch_version
+                objDict["creation_date"] = FormatDate(FormatStringDate(creation_date))
+                objDict["modification_date"] = FormatDate(
+                    FormatStringDate(modification_date)
+                )
+                objDict["status"] = status
+                objDict["ru"] = ru
+                objDict["department"] = department
+                objDict["section"] = section
                 # objDict['criticality'] = criticality
-                objDict['function'] = function
+                objDict["function"] = function
                 # objDict['domain'] = domain
-                objDict['manufacturer'] = manufacturer
-                objDict['hw_eos_date'] = FormatDate((hw_eos_date))
-                objDict['hw_eol_date'] = FormatDate((hw_eol_date))
-                objDict['sw_eos_date'] = FormatDate((sw_eos_date))
-                objDict['sw_eol_date'] = FormatDate((sw_eol_date))
-                objDict['virtual'] = virtual
+                objDict["manufacturer"] = manufacturer
+                objDict["hw_eos_date"] = FormatDate((hw_eos_date))
+                objDict["hw_eol_date"] = FormatDate((hw_eol_date))
+                objDict["sw_eos_date"] = FormatDate((sw_eos_date))
+                objDict["sw_eol_date"] = FormatDate((sw_eol_date))
+                objDict["virtual"] = virtual
                 # objDict['rfs_date'] = rfs_date
-                objDict['authentication'] = authentication
-                objDict['serial_number'] = serial_number
-                objDict['pn_code'] = pn_code
-                # objDict['subrack_id_number'] = subrack_id_number 
-                objDict['manufacturer_date'] = FormatDate((manufacturer_date))
-                objDict['hardware_version'] = hardware_version
+                objDict["authentication"] = authentication
+                objDict["serial_number"] = serial_number
+                objDict["pn_code"] = pn_code
+                # objDict['subrack_id_number'] = subrack_id_number
+                objDict["manufacturer_date"] = FormatDate((manufacturer_date))
+                objDict["hardware_version"] = hardware_version
                 # objDict['max_power'] = max_power
                 # objDict['site_type'] = site_type
-                objDict['source'] = source
-                objDict['stack'] = stack
-                objDict['contract_number'] = contract_number
-                objDict['contract_expiry'] = FormatDate((contract_expiry))
+                objDict["source"] = source
+                objDict["stack"] = stack
+                objDict["contract_number"] = contract_number
+                objDict["contract_expiry"] = FormatDate((contract_expiry))
             return objDict, 200
         except Exception as e:
             traceback.print_exc()
             return str(e), 500
     else:
-
         print("Can not Get Ip Address from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get Ip Address from URL"}), 500
+        return jsonify({"response": "Can not Get Ip Address from URL"}), 500
 
 
-@app.route('/getBoardDetailsByIpAddress', methods=['GET'])
+@app.route("/getBoardDetailsByIpAddress", methods=["GET"])
 @token_required
 def GetBoardDetailsByIpAddress(user_data):
-    ip_address = request.args.get('ipaddress')
+    ip_address = request.args.get("ipaddress")
     # ip_address = '1.1.1.1'
     if ip_address:
         try:
@@ -788,20 +550,20 @@ def GetBoardDetailsByIpAddress(user_data):
                 # rfs_date = row[12]
                 pn_code = row[13]
                 objDict = {}
-                objDict['board_name'] = board_name
-                objDict['device_name'] = device_name
-                objDict['device_slot_id'] = device_slot_id
-                objDict['software_version'] = software_version
+                objDict["board_name"] = board_name
+                objDict["device_name"] = device_name
+                objDict["device_slot_id"] = device_slot_id
+                objDict["software_version"] = software_version
                 # objDict['hardware_version'] = hardware_version
-                objDict['serial_number'] = serial_number
+                objDict["serial_number"] = serial_number
                 # objDict['manufacturer_date'] = FormatDate((manufacturer_date))
-                objDict['creation_date'] = FormatDate((creation_date))
-                objDict['modification_date'] = FormatDate((modification_date))
-                objDict['status'] = status
-                objDict['eos_date'] = FormatDate((eos_date))
-                objDict['eol_date'] = FormatDate((eol_date))
+                objDict["creation_date"] = FormatDate((creation_date))
+                objDict["modification_date"] = FormatDate((modification_date))
+                objDict["status"] = status
+                objDict["eos_date"] = FormatDate((eos_date))
+                objDict["eol_date"] = FormatDate((eol_date))
                 # objDict['rfs_date'] = FormatDate((rfs_date))
-                objDict['pn_code'] = pn_code
+                objDict["pn_code"] = pn_code
                 objList.append(objDict)
             return jsonify(objList), 200
         except Exception as e:
@@ -809,13 +571,13 @@ def GetBoardDetailsByIpAddress(user_data):
             return str(e), 500
     else:
         print("Can not Get Ip Address from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get Ip Address from URL"}), 500
+        return jsonify({"response": "Can not Get Ip Address from URL"}), 500
 
 
-@app.route('/getSubBoardDetailsByIpAddress', methods=['GET'])
+@app.route("/getSubBoardDetailsByIpAddress", methods=["GET"])
 @token_required
 def GetSubBoardDetailsByIpAddress(user_data):
-    ip_address = request.args.get('ipaddress')
+    ip_address = request.args.get("ipaddress")
     # ip_address = '2.2.2.2'
     if ip_address:
         try:
@@ -840,22 +602,22 @@ def GetSubBoardDetailsByIpAddress(user_data):
                 eol_date = row[13]
                 # rfs_date = row[14]
                 pn_code = row[15]
-                objDict['subboard_name'] = subboard_name
-                objDict['device_name'] = device_name
-                objDict['subboard_type'] = subboard_type
-                objDict['subrack_id'] = subrack_id
-                objDict['slot_number'] = slot_number
-                objDict['subslot_number'] = subslot_number
-                objDict['software_version'] = software_version
+                objDict["subboard_name"] = subboard_name
+                objDict["device_name"] = device_name
+                objDict["subboard_type"] = subboard_type
+                objDict["subrack_id"] = subrack_id
+                objDict["slot_number"] = slot_number
+                objDict["subslot_number"] = subslot_number
+                objDict["software_version"] = software_version
                 # objDict['hardware_version'] = hardware_version
-                objDict['serial_number'] = serial_number
-                objDict['creation_date'] = FormatDate((creation_date))
-                objDict['modification_date'] = FormatDate((modification_date))
-                objDict['status'] = status
-                objDict['eos_date'] = FormatDate((eos_date))
-                objDict['eol_date'] = FormatDate((eol_date))
+                objDict["serial_number"] = serial_number
+                objDict["creation_date"] = FormatDate((creation_date))
+                objDict["modification_date"] = FormatDate((modification_date))
+                objDict["status"] = status
+                objDict["eos_date"] = FormatDate((eos_date))
+                objDict["eol_date"] = FormatDate((eol_date))
                 # objDict['rfs_date'] = FormatDate((rfs_date))
-                objDict['pn_code'] = pn_code
+                objDict["pn_code"] = pn_code
                 objList.append(objDict)
             return jsonify(objList), 200
         except Exception as e:
@@ -864,13 +626,13 @@ def GetSubBoardDetailsByIpAddress(user_data):
 
     else:
         print("Can not Get Ip Address from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get Ip Address from URL"}), 500
+        return jsonify({"response": "Can not Get Ip Address from URL"}), 500
 
 
-@app.route('/getSfpsDetailsByIpAddress', methods=['GET'])
+@app.route("/getSfpsDetailsByIpAddress", methods=["GET"])
 @token_required
 def GetSfpsDetailsByIpAddress(user_data):
-    ip_address = request.args.get('ipaddress')
+    ip_address = request.args.get("ipaddress")
     # ip_address = '2.2.2.2'
     if ip_address:
         try:
@@ -897,24 +659,24 @@ def GetSfpsDetailsByIpAddress(user_data):
                 # rfs_date = row[16]
                 serial_number = row[17]
                 objDict = {}
-                objDict['sfp_id'] = sfp_id
-                objDict['device_name'] = device_name
-                objDict['media_type'] = media_type
-                objDict['port_name'] = port_name
-                objDict['port_type'] = port_type
+                objDict["sfp_id"] = sfp_id
+                objDict["device_name"] = device_name
+                objDict["media_type"] = media_type
+                objDict["port_name"] = port_name
+                objDict["port_type"] = port_type
                 # objDict['connector'] =  connector
-                objDict['mode'] = mode
+                objDict["mode"] = mode
                 # objDict['speed'] = speed
                 # objDict['wavelength'] = wavelength
-                # objDict['optical_direction_type'] =optical_direction_type 
+                # objDict['optical_direction_type'] =optical_direction_type
                 # objDict['pn_code'] = pn_code
-                objDict['creation_date'] = FormatDate((creation_date))
-                objDict['modification_date'] = FormatDate((modification_date))
-                objDict['status'] = status
-                objDict['eos_date'] = FormatDate((eos_date))
-                objDict['eol_date'] = FormatDate((eol_date))
+                objDict["creation_date"] = FormatDate((creation_date))
+                objDict["modification_date"] = FormatDate((modification_date))
+                objDict["status"] = status
+                objDict["eos_date"] = FormatDate((eos_date))
+                objDict["eol_date"] = FormatDate((eol_date))
                 # objDict['rfs_date'] = FormatDate((rfs_date))
-                objDict['serial_number'] = serial_number
+                objDict["serial_number"] = serial_number
                 objList.append(objDict)
             return jsonify(objList), 200
         except Exception as e:
@@ -922,15 +684,14 @@ def GetSfpsDetailsByIpAddress(user_data):
             return str(e), 500
     else:
         print("Can not Get Ip Address from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get Ip Address from URL"}), 500
+        return jsonify({"response": "Can not Get Ip Address from URL"}), 500
 
 
-@app.route('/getLicenseDetailsByIpAddress', methods=['GET'])
+@app.route("/getLicenseDetailsByIpAddress", methods=["GET"])
 @token_required
 def GetLicenseDetailsByIpAddress(user_data):
     if True:
-
-        ip_address = request.args.get('ipaddress')
+        ip_address = request.args.get("ipaddress")
         # ip_address = '1.1.1.1'
         if ip_address:
             try:
@@ -953,20 +714,20 @@ def GetLicenseDetailsByIpAddress(user_data):
                     # usage = row[12]
                     pn_code = row[13]
                     objDict = {}
-                    objDict['license_name'] = license_name
-                    objDict['license_description'] = license_description
-                    objDict['ne_name'] = ne_name
+                    objDict["license_name"] = license_name
+                    objDict["license_description"] = license_description
+                    objDict["ne_name"] = ne_name
                     # objDict['rfs_date'] = FormatDate((rfs_date))
-                    objDict['activation_date'] = FormatDate((activation_date))
-                    objDict['expiry_date'] = FormatDate((expiry_date))
+                    objDict["activation_date"] = FormatDate((activation_date))
+                    objDict["expiry_date"] = FormatDate((expiry_date))
                     # objDict['grace_period'] = grace_period
                     # objDict['serial_number'] = serial_number
-                    objDict['creation_date'] = FormatDate((creation_date))
-                    objDict['modification_date'] = FormatDate((modification_date))
-                    objDict['status'] = status
+                    objDict["creation_date"] = FormatDate((creation_date))
+                    objDict["modification_date"] = FormatDate((modification_date))
+                    objDict["status"] = status
                     # objDict['capacity'] = capacity
                     # objDict['usage'] = usage
-                    objDict['pn_code'] = pn_code
+                    objDict["pn_code"] = pn_code
                     objList.append(objDict)
 
                 return jsonify(objList), 200
@@ -977,37 +738,13 @@ def GetLicenseDetailsByIpAddress(user_data):
 
         else:
             print("Can not Get Ip Address from URL", file=sys.stderr)
-            return jsonify({'response': "Can not Get Ip Address from URL"}), 500
+            return jsonify({"response": "Can not Get Ip Address from URL"}), 500
     else:
         print("Service not Available", file=sys.stderr)
         return jsonify({"Response": "Service not Available"}), 503
 
 
-@app.route('/topRacks', methods=['GET'])
-@token_required
-def TopRacks(user_data):
-    if True:
-        try:
-            queryString = f"select site_name,count(rack_name) from rack_table group by site_name order by count(rack_name) DESC;"
-            result = db.session.execute(queryString)
-            objList = []
-            for row in result:
-                sites = row[0]
-                count = row[1]
-                objDict = {}
-                objDict['name'] = sites
-                objDict['value'] = count
-                objList.append(objDict)
-            return jsonify(objList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Can not Get Ip Address from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get Ip Address from URL"}), 500
-
-
-@app.route('/totalDevicesInDeviceDashboard', methods=['GET'])
+@app.route("/totalDevicesInDeviceDashboard", methods=["GET"])
 @token_required
 def TotalDevicesInDeviceDashboard(user_data):
     return jsonify(list()), 200
@@ -1015,14 +752,11 @@ def TotalDevicesInDeviceDashboard(user_data):
         try:
             queryString = f"select count(DEVICE_NAME) from device_table"
             result = db.session.execute(queryString).scalar()
-            objList = {
-                "name": "Total Device Count",
-                "value": result
-            }
+            objList = {"name": "Total Device Count", "value": result}
             return jsonify(objList), 200
         except Exception as e:
             traceback.print_exc()
             return str(e), 500
     else:
         print("Can not Get Ip Address from URL", file=sys.stderr)
-        return jsonify({'response': "Can not Get Ip Address from URL"}), 500
+        return jsonify({"response": "Can not Get Ip Address from URL"}), 500
