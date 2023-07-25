@@ -158,13 +158,11 @@ def AddCompleteAtom(device, row, update):
 
         if "device_ru" in device.keys():
             if device['device_ru'] is None:
-                atom.device_ru = 'N/A'
-            elif device["device_ru"].strip() != "":
-                atom.device_ru = device["device_ru"].strip()
+                atom.device_ru = None
             else:
-                atom.device_ru = 'N/A'
+                atom.device_ru = device["device_ru"]
         else:
-            atom.device_ru = 'N/A'
+            atom.device_ru = None
 
         if "department" in device.keys():
             if device['department'] is None:
@@ -323,8 +321,7 @@ def AddTansitionAtom(device, row, update):
                     transObj.password_group = device["password_group"].strip()
 
         if "device_ru" in device.keys():
-            if device["device_ru"].strip() != "":
-                transObj.device_ru = device["device_ru"].strip()
+            transObj.device_ru = device["device_ru"]
 
         if "department" in device.keys():
             if device['department'] is not None:

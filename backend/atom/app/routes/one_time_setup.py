@@ -8,7 +8,7 @@ from app.license.license_decoder import *
 @app.route('/oneTimeSetup', methods=['GET'])
 def setup():
     response = {
-        'end-user': False,
+        'end_user': False,
         'license': False,
         'admin': False
     }

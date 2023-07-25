@@ -236,7 +236,6 @@ class UAM_Device_Table(db.Model):
     hw_eol_date = db.Column(db.Date, default=datetime(2030, 1, 1))
     sw_eos_date = db.Column(db.Date, default=datetime(2030, 1, 1))
     sw_eol_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-    virtual = db.Column(db.String(20))
     rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1))
     authentication = db.Column(db.String(10))
     serial_number = db.Column(db.String(50))

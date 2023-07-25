@@ -230,3 +230,25 @@ def DataCentreStatus(user_data):
     except Exception as e:
         traceback.print_exc()
         return "Server Error", 500
+
+
+@app.route("/totalSites", methods=["GET"])
+@token_required
+def TotalSites(user_data):
+    try:
+        queryString = f"select count(distinct SITE_NAME) from site_table;"
+        result = db.session.execute(queryString).scalar()
+        queryString1 = f"select count(distinct DEVICE_NAME) from uam_device_table join atom_table on uam_device_table.atom_id = atom_table.atom_id;"
+        result1 = db.session.execute(queryString1).scalar()
+        queryString2 = f"select count(distinct MANUFACTURER) from uam_device_table;"
+        result2 = db.session.execute(queryString2).scalar()
+        objList = [
+            {"name": "Sites", "value": result},
+            {"name": "Devices", "value": result1},
+            {"name": "Vendors", "value": result2},
+        ]
+        print(objList, file=sys.stderr)
+        return jsonify(objList), 200
+    except Exception as e:
+        traceback.print_exc()
+        return "Server Error", 500
