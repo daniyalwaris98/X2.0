@@ -84,7 +84,7 @@ class WirefilterPuller(object):
             # print(f"{self.inv_data}", file=sys.stderr)
             self.inv_data[host['ip_address']].update({'status': 'success'})
             print(self.inv_data,file=sys.stderr)
-            UamInventoryData(self.inv_data)
+            self.failed = UamInventoryData(self.inv_data)
         except Exception as e:
             print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
             traceback.print_exc()

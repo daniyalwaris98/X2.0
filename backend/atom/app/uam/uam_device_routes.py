@@ -256,7 +256,6 @@ def DeviceStatus(user_data):
         query = f"select count(*) from uam_device_table;"
         result0 = db.session.execute(query).scalar()
         if result0 != 0:
-            
             queryString = (
                 f"select count(status) from uam_device_table where STATUS='Production';"
             )
@@ -265,9 +264,7 @@ def DeviceStatus(user_data):
                 f"select count(status) from uam_device_table where STATUS='Dismantled';"
             )
             result1 = db.session.execute(queryString1).scalar()
-            queryString2 = (
-                f"select count(status) from uam_device_table where STATUS='Maintenance';"
-            )
+            queryString2 = f"select count(status) from uam_device_table where STATUS='Maintenance';"
             result2 = db.session.execute(queryString2).scalar()
             queryString3 = (
                 f"select count(status) from uam_device_table where STATUS='Undefined';"
@@ -281,7 +278,7 @@ def DeviceStatus(user_data):
             ]
 
         print(objList, file=sys.stderr)
-        
+
         return jsonify(objList), 200
     except Exception as e:
         traceback.print_exc()
@@ -311,3 +308,214 @@ def TopFunctions(user_data):
     except Exception as e:
         traceback.print_exc()
         return "Server Error", 500
+
+
+@app.route("/getSiteDetailByIpAddress", methods=["GET"])
+@token_required
+def GetSiteByIpAddress(user_data):
+    ip_address = request.args.get("ipaddress")
+    print(ip_address, file=sys.stderr)
+    print(type(ip_address), file=sys.stderr)
+    if ip_address:
+        try:
+            result = (
+                db.session.query(Atom_Table, Rack_Table, Site_Table)
+                .join(Rack_Table, Atom_Table.rack_id == Rack_Table.rack_id)
+                .join(Site_Table, Rack_Table.site_id == Site_Table.site_id)
+                .filter(Atom_Table.ip_address == ip_address)
+                .first()
+            )
+
+            if result is None:
+                return "No Site Found", 500
+
+            atom, rack, site = result
+            siteDataDict = {}
+            siteDataDict["site_name"] = site.site_name
+            siteDataDict["region"] = site.region_name
+            siteDataDict["latitude"] = site.latitude
+            siteDataDict["longitude"] = site.longitude
+            siteDataDict["city"] = site.city
+            siteDataDict["creation_date"] = FormatDate(site.creation_date)
+            siteDataDict["modification_date"] = FormatDate(site.modification_date)
+            siteDataDict["status"] = site.status
+            siteDataDict["total_count"] = site.total_count
+
+            return siteDataDict, 200
+        except Exception as e:
+            traceback.print_exc()
+            return "Server Error", 500
+    else:
+        print("Can not Get IP Address from URL", file=sys.stderr)
+        return jsonify({"response": "Can not Get IP Address from URL"}), 500
+
+
+@app.route("/getRackDetailByIpAddress", methods=["GET"])
+@token_required
+def GetRackByIpAddress(user_data):
+    ip_address = request.args.get("ipaddress")
+
+    if ip_address:
+        try:
+            objList = []
+
+            result = (
+                db.session.query(Atom_Table, Rack_Table, Site_Table)
+                .join(Rack_Table, Atom_Table.rack_id == Rack_Table.rack_id)
+                .join(Site_Table, Rack_Table.site_id == Site_Table.site_id)
+                .filter(Atom_Table.ip_address == ip_address)
+                .first()
+            )
+
+            if result is None:
+                return "No Rack Found", 500
+
+            atom, rack, site = result
+            rackDataDict = {}
+            rackDataDict["rack_name"] = rack.rack_name
+            rackDataDict["site_name"] = site.site_name
+            rackDataDict["serial_number"] = rack.serial_number
+            rackDataDict["manufacturer_date"] = FormatDate(rack.manufacturer_date)
+            rackDataDict["unit_position"] = rack.unit_position
+            rackDataDict["creation_date"] = FormatDate(rack.creation_date)
+            rackDataDict["modification_date"] = FormatDate(rack.modification_date)
+            rackDataDict["status"] = rack.status
+            rackDataDict["rfs_date"] = FormatDate(rack.rfs_date)
+            rackDataDict["height"] = rack.height
+            rackDataDict["width"] = rack.width
+            rackDataDict["depth"] = rack.depth
+            rackDataDict["ru"] = rack.ru
+            rackDataDict["pn_code"] = rack.pn_code
+            rackDataDict["rack_model"] = rack.rack_model
+            rackDataDict["brand"] = rack.floor
+
+            objList.append(rackDataDict)
+
+            return jsonify(objList), 200
+
+        except Exception as e:
+            traceback.print_exc()
+            return "Error While Fetchin Rack Data", 500
+    else:
+        print("Can not Get Ip Address from URL", file=sys.stderr)
+        return "Can not Get Ip Address from URL", 500
+
+
+@app.route("/getDeviceDetailsByIpAddress", methods=["GET"])
+@token_required
+def GetDeviceDetailsByIpAddress(user_data):
+    ip_address = request.args.get("ipaddress")
+    if ip_address:
+        try:
+            result = (
+                db.session.query(UAM_Device_Table, Atom_Table, Rack_Table, Site_Table)
+                .join(Atom_Table, UAM_Device_Table.atom_id == Atom_Table.atom_id)
+                .join(Rack_Table, Atom_Table.rack_id == Rack_Table.rack_id)
+                .join(Site_Table, Rack_Table.site_id == Site_Table.site_id)
+                .filter(Atom_Table.ip_address == ip_address)
+                .first()
+            )
+
+            if result is None:
+                return "No Rack Found", 500
+
+            uam, atom, rack, site = result
+
+            objDict = {}
+            objDict["device_name"] = atom.device_name
+            objDict["site_name"] = site.site_name
+            objDict["rack_name"] = rack.rack_name
+            objDict["ip_address"] = atom.ip_address
+            objDict["software_type"] = uam.software_type
+            objDict["software_version"] = uam.software_version
+            objDict["patch_version"] = uam.patch_version
+            objDict["creation_date"] = FormatDate(uam.creation_date)
+            objDict["modification_date"] = FormatDate(uam.modification_date)
+            objDict["status"] = uam.status
+            objDict["ru"] = atom.device_ru
+            objDict["department"] = atom.department
+            objDict["section"] = atom.section
+            objDict["function"] = atom.function
+            objDict["manufacturer"] = uam.manufacturer
+            objDict["hw_eos_date"] = FormatDate((uam.hw_eos_date))
+            objDict["hw_eol_date"] = FormatDate((uam.hw_eol_date))
+            objDict["sw_eos_date"] = FormatDate((uam.sw_eos_date))
+            objDict["sw_eol_date"] = FormatDate((uam.sw_eol_date))
+            objDict["virtual"] = atom.virtual
+            objDict["authentication"] = uam.authentication
+            objDict["serial_number"] = uam.serial_number
+            objDict["pn_code"] = uam.pn_code
+            objDict["manufacturer_date"] = FormatDate((uam.manufacturer_date))
+            objDict["hardware_version"] = uam.hardware_version
+            objDict["source"] = uam.source
+            objDict["stack"] = uam.stack
+            objDict["contract_number"] = uam.contract_number
+            objDict["contract_expiry"] = FormatDate((uam.contract_expiry))
+            return objDict, 200
+        except Exception as e:
+            traceback.print_exc()
+            return "Error While Fetching UAM Device Data", 500
+    else:
+        print("Can not Get Ip Address from URL", file=sys.stderr)
+        return "Can not Get Ip Address from URL", 500
+
+
+@app.route("/getLicenseDetailsByIpAddress", methods=["GET"])
+@token_required
+def GetLicenseDetailsByIpAddress(user_data):
+    return jsonify(list()), 200
+    if True:
+        ip_address = request.args.get("ipaddress")
+        # ip_address = '1.1.1.1'
+        if ip_address:
+            try:
+                
+                
+                
+                queryString = f"select LICENSE_NAME,LICENSE_DESCRIPTION,DEVICE_NAME,RFS_DATE,ACTIVATION_DATE,EXPIRY_DATE,GRACE_PERIOD,SERIAL_NUMBER,CREATION_DATE,MODIFICATION_DATE,STATUS,CAPACITY,`USAGE`,PN_CODE from license_table where DEVICE_NAME in (select DEVICE_NAME from device_table where IP_ADDRESS='{ip_address}');"
+                result = db.session.execute(queryString)
+                objList = []
+                for row in result:
+                    license_name = row[0]
+                    license_description = row[1]
+                    ne_name = row[2]
+                    # rfs_date = row[3]
+                    activation_date = row[4]
+                    expiry_date = row[5]
+                    # grace_period = row[6]
+                    # serial_number = row[7]
+                    creation_date = row[8]
+                    modification_date = row[9]
+                    status = row[10]
+                    # capacity = row[11]
+                    # usage = row[12]
+                    pn_code = row[13]
+                    objDict = {}
+                    objDict["license_name"] = license_name
+                    objDict["license_description"] = license_description
+                    objDict["ne_name"] = ne_name
+                    # objDict['rfs_date'] = FormatDate((rfs_date))
+                    objDict["activation_date"] = FormatDate((activation_date))
+                    objDict["expiry_date"] = FormatDate((expiry_date))
+                    # objDict['grace_period'] = grace_period
+                    # objDict['serial_number'] = serial_number
+                    objDict["creation_date"] = FormatDate((creation_date))
+                    objDict["modification_date"] = FormatDate((modification_date))
+                    objDict["status"] = status
+                    # objDict['capacity'] = capacity
+                    # objDict['usage'] = usage
+                    objDict["pn_code"] = pn_code
+                    objList.append(objDict)
+
+                return jsonify(objList), 200
+            except Exception as e:
+                traceback.print_exc()
+                print(str(e), file=sys.stderr)
+                return str(e), 500
+
+        else:
+            print("Can not Get Ip Address from URL", file=sys.stderr)
+            return jsonify({"response": "Can not Get Ip Address from URL"}), 500
+    else:
+        print("Service not Available", file=sys.stderr)
+        return jsonify({"Response": "Service not Available"}), 503

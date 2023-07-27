@@ -116,9 +116,8 @@ class JuniperPuller(object):
                 self.inv_data[host['ip_address']].update({'status': 'success'})
                 print(self.inv_data,file=sys.stderr)
                 
-                response = UamInventoryData(self.inv_data)
-                if not response:
-                    self.failed = True
+                self.failed = UamInventoryData(self.inv_data)
+                
             except Exception as e:
                 traceback.print_exc()
                 self.failed = True

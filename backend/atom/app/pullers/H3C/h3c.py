@@ -154,7 +154,7 @@ class H3CPuller(object):
                 self.get_license(host, device)
                 self.inv_data[host['ip_address']].update({'status': 'success'})
                 print(self.inv_data,file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
             except Exception as e:
                 traceback.print_exc()
                 print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)

@@ -218,7 +218,7 @@ class ACIPuller(object):
                     #     sys.stdout = original_stdout
 
                     # print(self.inv_data,file=sys.stderr)
-                    UamInventoryData(self.inv_data)
+                    self.failed = UamInventoryData(self.inv_data)
                 
                 except Exception as e:
                   traceback.print_exc()

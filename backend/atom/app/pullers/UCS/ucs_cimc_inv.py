@@ -94,7 +94,7 @@ class UCSPuller(object):
 
                 self.get_boards(base_url , host)   
                 print(f"{self.inv_data}", file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
             else:
                 print(f"Connection failed {host['ip_address']}", file=sys.stderr)
                 

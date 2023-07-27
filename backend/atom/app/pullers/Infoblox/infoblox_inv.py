@@ -80,7 +80,7 @@ class InfoboxPuller(object):
 
                   
                 print(f"{self.inv_data}", file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
             else:
                 print(f"Connection failed {host['ip_address']}", file=sys.stderr)
 
