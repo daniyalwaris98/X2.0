@@ -115,7 +115,7 @@ import LicenseRenewal from "../licenseRenewal";
 import axios, { baseUrl } from "../../utils/axios";
 import NewDashboard from "../NewDashboard";
 
-const SecondNavBar = (props) => {
+const SecondNavBar = () => {
   const { pathname } = useLocation();
   const navigate = useNavigate();
 

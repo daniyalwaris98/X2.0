@@ -264,8 +264,8 @@ input:-moz-placeholder {
   color: #66b127 !important;
 }
 .ant-select-selector {
-  border: 1px solid rgba(0, 0, 0, 0.3) !important;
-  box-shadow: none !important;
+  border: 1px solid rgba(0, 0, 0, 0.3);
+  box-shadow: none;
 }
 .ant-select-dropdown:focus {
   z-index: 1200 !important;

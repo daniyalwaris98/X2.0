@@ -1,11 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   LoginContainer,
   LoginStyledInput,
   LoginPassStyledInput,
+  LicenseFormModalStyle,
+  SuperAdminModalStyle,
 } from "./Login.styled.js";
 
-import { Form, message } from "antd";
+import { Form, Select, message } from "antd";
 import illustration from "./assets/login.gif";
 import { useNavigate } from "react-router-dom";
 import axios, { baseUrl } from "../../utils/axios";
@@ -14,13 +16,356 @@ import { CloseOutlined } from "@ant-design/icons";
 import { LoginPassword, LoginUser } from "../../svg/index.js";
 import Loader from "../Loader/Loader.jsx";
 import "./main.css";
+import CustomModal from "../ReusableComponents/CustomModal/CustomModal.jsx";
+import CustomInput from "../ReusableComponents/FormComponents/CustomInput/CustomInput.jsx";
+import { Button } from "../ReusableComponents/index.js";
+
+const SuperAdminModal = (props) => {
+  const { isModalOpen, setIsModalOpen } = props;
+  const [userInput, setUserInput] = useState({
+    name: "",
+    userId: "",
+    role: "Super_Admin",
+    password: "",
+    email: "",
+  });
+  const [loading, setLoading] = useState(false);
+  const { name, userId, role, password, email } = userInput;
+  const [status, setStatus] = useState("Active");
+
+  const handleInput = (e) => {
+    setUserInput({
+      ...userInput,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleChange = (option) => {
+    setStatus(option);
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+
+    await axios
+      .post(`${baseUrl}/createSuperUser`, {
+        user_id: userId,
+        name: name,
+        role: role,
+        status: status,
+        password: password,
+        email: email,
+      })
+      .then((res) => {
+        if (res.status == 200) {
+          setLoading(false);
+          setIsModalOpen(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
+  return (
+    <CustomModal
+      isModalOpen={isModalOpen}
+      setIsModalOpen={setIsModalOpen}
+      footer={null}
+      title="Create User"
+    >
+      <SuperAdminModalStyle onSubmit={handleSubmit}>
+        <CustomInput
+          title="Name"
+          required
+          value={name}
+          name="name"
+          onChange={handleInput}
+          className="custom-input"
+        />
+        <CustomInput
+          title="User ID"
+          required
+          value={userId}
+          name="userId"
+          onChange={handleInput}
+          className="custom-input"
+        />
+        <CustomInput
+          title="Role"
+          required
+          value={role}
+          readOnly
+          className="custom-input"
+        />
+
+        <CustomInput title="Status" required className="custom-input">
+          <Select
+            defaultValue={status}
+            style={{
+              width: 120,
+            }}
+            onChange={handleChange}
+            options={[
+              {
+                value: "Active",
+                label: "Active",
+              },
+              {
+                value: "InActive",
+                label: "In Active",
+              },
+            ]}
+            required
+          />
+        </CustomInput>
+        <CustomInput
+          title="Password"
+          value={password}
+          name="password"
+          onChange={handleInput}
+          required
+          className="custom-input"
+        />
+        <CustomInput
+          title="Email"
+          value={email}
+          name="email"
+          onChange={handleInput}
+          className="custom-input"
+          type="email"
+        />
+
+        <article className="button-wrapper">
+          <Button btnText="+ Add Member" loading={loading} />
+        </article>
+      </SuperAdminModalStyle>
+    </CustomModal>
+  );
+};
+
+const LicenseFormModal = (props) => {
+  const { isModalOpen, setIsModalOpen } = props;
+  const [loading, setLoading] = useState(false);
+  const [formInput, setFormInput] = useState({
+    license: "",
+    companyName: "",
+    poBox: "",
+    address: "",
+    country: "",
+    contactPerson: "",
+    phoneNo: "",
+    email: "",
+    domainName: "",
+    industryType: "",
+  });
+
+  const {
+    license,
+    companyName,
+    poBox,
+    address,
+    country,
+    contactPerson,
+    phoneNo,
+    email,
+    domainName,
+    industryType,
+  } = formInput;
+
+  const handleInput = (e) => {
+    setFormInput({
+      ...formInput,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+
+    setLoading(true);
+
+    await axios
+      .post(`${baseUrl}/addEndUserDetails`, {
+        company_name: companyName,
+        po_box: poBox,
+        contact_person: contactPerson,
+        contact_number: phoneNo,
+        license_key: license,
+        email,
+        domain_name: domainName,
+        industry_type: industryType,
+        address,
+        country,
+      })
+      .then((res) => {
+        if (res) {
+          console.log("res", res);
+          setLoading(false);
+        }
+      })
+      .catch((err) => console.log(err));
+  };
+
+  return (
+    <CustomModal
+      width={700}
+      isModalOpen={isModalOpen}
+      setIsModalOpen={setIsModalOpen}
+      footer={null}
+      title=" Please add your details to first time setup the MonetX platform."
+    >
+      <LicenseFormModalStyle>
+        <form className="form-wrapper" onSubmit={handleSubmit}>
+          <h3 className="heading">Company License</h3>
+
+          <article className="form-content">
+            <CustomInput
+              title="License Key"
+              required
+              className="input-full form-input"
+            >
+              <textarea
+                value={license}
+                onChange={handleInput}
+                name="license"
+                rows={3}
+                column={3}
+                required
+                className="text-area-input"
+              />
+            </CustomInput>
+          </article>
+
+          <h3 className="heading">Company Details</h3>
+
+          <article className="form-content">
+            <CustomInput
+              title="Company Name"
+              required
+              value={companyName}
+              name="companyName"
+              onChange={handleInput}
+              className="form-input"
+            />
+            <CustomInput
+              title="PO Box"
+              required
+              value={poBox}
+              name="poBox"
+              onChange={handleInput}
+              className="form-input"
+            />
+            <CustomInput
+              title="Address"
+              value={address}
+              name="address"
+              onChange={handleInput}
+              className="form-input"
+            />
+            <CustomInput
+              title="Country"
+              value={country}
+              name="country"
+              onChange={handleInput}
+              className="form-input"
+            />
+          </article>
+
+          <h3 className="heading">Personl Details</h3>
+
+          <article className="form-content">
+            <CustomInput
+              title="Contact Person"
+              required
+              value={contactPerson}
+              name="contactPerson"
+              onChange={handleInput}
+              className="form-input"
+            />
+            <CustomInput
+              title="Phone Number"
+              required
+              value={phoneNo}
+              name="phoneNo"
+              onChange={handleInput}
+              className="form-input"
+            />
+            <CustomInput
+              title="Email"
+              type="email"
+              value={email}
+              name="email"
+              onChange={handleInput}
+              className="form-input"
+            />
+            <CustomInput
+              title="Domin Name"
+              value={domainName}
+              name="domainName"
+              onChange={handleInput}
+              className="form-input"
+            />
+            <CustomInput
+              title="Industry Type"
+              className="input-full form-input"
+              value={industryType}
+              name="industryType"
+              onChange={handleInput}
+            />
+          </article>
+
+          <article className="button-wrapper">
+            <Button btnText="Submit" type="submit" loading={loading} />
+          </article>
+        </form>
+      </LicenseFormModalStyle>
+    </CustomModal>
+  );
+};
 
 const index = () => {
   const navigate = useNavigate();
-
   const [user, setUser] = useState(null);
   const [pass, setPass] = useState(null);
   const [loading, setLoading] = useState(false);
+  const [isLicenseModalOpen, setLicenseModalOpen] = useState(false);
+  const [isSupperAdminModalOpen, setSuperAdminModalOpen] = useState(false);
+
+  useEffect(() => {
+    handleOneTimeSetup();
+  }, []);
+
+  const handleOneTimeSetup = async () => {
+    await axios
+      .get(`${baseUrl}/oneTimeSetup`)
+      .then((res) => {
+        console.log(res);
+
+        if (
+          res.data.admin == false &&
+          res.data.end_user == false &&
+          res.data.license == false
+        ) {
+          setLicenseModalOpen(true);
+          setSuperAdminModalOpen(false);
+        } else if (
+          res.data.admin == false &&
+          res.data.end_user == true &&
+          res.data.license == true
+        ) {
+          setLicenseModalOpen(false);
+          setSuperAdminModalOpen(true);
+        } else {
+          setLicenseModalOpen(false);
+          setSuperAdminModalOpen(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
 
   const config = {
     dashboard: {
@@ -192,6 +537,19 @@ const index = () => {
 
   return (
     <LoginContainer>
+      {isLicenseModalOpen && (
+        <LicenseFormModal
+          isModalOpen={isLicenseModalOpen}
+          setIsModalOpen={setLicenseModalOpen}
+        />
+      )}
+
+      {isSupperAdminModalOpen && (
+        <SuperAdminModal
+          isModalOpen={isSupperAdminModalOpen}
+          setIsModalOpen={setSuperAdminModalOpen}
+        />
+      )}
       <article className="login-container">
         <div className="form-container">
           <p className="welcome-text">Welcome to</p>

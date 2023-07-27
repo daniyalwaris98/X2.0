@@ -12,80 +12,46 @@ import TCPOpenPorts from "./charts/TCP";
 import RackDetails from "../UAM/Racks/RackDetails";
 
 const index = () => {
-  const [myDeviceStatus, setMyDevicesStatus] = useState([]);
-  const [loading, setLoading] = useState(false);
   const [memoryFunc, setMemoryFunc] = useState([]);
   const [tableData, setTableData] = useState("");
-  const [tableLoading, setTableLoading] = useState(false);
 
   const [rackData, setRackData] = useState([]);
 
   useEffect(() => {
     const serviceCalls = async () => {
-      setTableLoading(true);
-
       try {
         const res = await axios.get(baseUrl + "/topTenSubnetsPercentage");
-        console.log("res Subnet MAin ========>", res);
 
-        // deviceExcelData = res.data;
         setTableData(res.data);
-        // setRowCount(excelData.length);
-        setTableLoading(false);
       } catch (err) {
         console.log(err.response);
-        setTableLoading(false);
       }
     };
     serviceCalls();
   }, []);
   useEffect(() => {
     const serviceCalls = async () => {
-      setLoading(true);
       try {
         const res = await axios.get(baseUrl + "/getAllRacks");
-        console.log("rees", res);
-        // excelData = res.data;
         setRackData(res.data);
         setRowCount(res.data.length);
-        setLoading(false);
       } catch (err) {
         console.log(err.response);
-        setLoading(false);
       }
     };
     serviceCalls();
   }, []);
+
   useEffect(() => {
     const memoryFunc = async () => {
-      setLoading(true);
       try {
         const res = await axios.get(baseUrl + "/getMemoryDashboard");
         setMemoryFunc(res.data);
-        setLoading(false);
       } catch (err) {
         console.log(err.response);
-        setLoading(false);
       }
     };
     memoryFunc();
-  }, []);
-
-  useEffect(() => {
-    const deviceStatus = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/deviceStatus");
-        console.log("deviceStatus", res.data);
-        setMyDevicesStatus(res.data);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
-    deviceStatus();
   }, []);
 
   const memoryColumns = [
@@ -96,7 +62,6 @@ const index = () => {
       render: (text, record) => (
         <p
           onClick={async () => {
-            // setMainLoading(true);
             const res = await axios.post(
               baseUrl + "/getMonitoringDevicesCards ",
               { ip_address: text }
@@ -110,13 +75,11 @@ const index = () => {
                 res: res.data,
               },
             });
-            // setMainLoading(false);
           }}
           style={{
             color: "#66B127",
             textDecoration: "underline",
             textAlign: "left",
-            // paddingTop: "10px",
             paddingLeft: "10px",
             cursor: "pointer",
           }}
@@ -134,7 +97,6 @@ const index = () => {
           style={{
             textAlign: "left",
             paddingLeft: "10px",
-            // paddingTop: "10px",
           }}
         >
           {text}
@@ -152,9 +114,6 @@ const index = () => {
             console.log(text);
           }}
           style={{
-            // textAlign: "center",
-            // marginLeft: "20px",
-            // marginTop: "-10px",
             paddingRight: "25px",
             paddingLeft: "15px",
           }}
@@ -194,55 +153,6 @@ const index = () => {
     },
   ];
 
-  // const column = [
-  //   {
-  //     title: "Subnet",
-  //     dataIndex: "subnet",
-  //     key: "subnet",
-  //     render: (text, record) => (
-  //       <p
-  //         style={{
-  //           // color: "#66B127",
-  //           // textDecoration: "underline",
-  //           // fontWeight: "400",
-  //           // // textAlign: "center",
-  //           // paddingLeft: "20px",
-  //           // // color: "blue",
-  //           // cursor: "pointer",
-
-  //           height: "18px",
-  //           fontWeight: "500",
-  //           fontSize: "13px",
-  //           paddingTop: "5px",
-  //           paddingLeft: "12px",
-  //         }}
-  //       >
-  //         {text}
-  //       </p>
-  //     ),
-  //   },
-  //   {
-  //     title: "IP % Space Used",
-  //     dataIndex: "space_usage",
-  //     key: "space_usage",
-
-  //     render: (text, record) => (
-  //       <Progress
-  //         style={{
-  //           paddingRight: "10px",
-  //           paddingLeft: "10px",
-  //           paddingRight: "75px",
-  //         }}
-  //         strokeColor="#66B127"
-  //         // percent="97"
-  //         percent={text}
-  //         size="small"
-  //         status="active"
-  //       />
-  //     ),
-  //   },
-  // ];
-
   const column = [
     {
       title: "Subnet",
@@ -261,9 +171,7 @@ const index = () => {
             color: "#66B127",
             textDecoration: "underline",
             fontWeight: "400",
-            // textAlign: "center",
             paddingLeft: "12px",
-            // color: "blue",
             cursor: "pointer",
           }}
         >
@@ -281,8 +189,6 @@ const index = () => {
             console.log(text);
           }}
           style={{
-            // textAlign: "center",
-            // marginLeft: "20px",
             marginTop: "-10px",
             paddingRight: "75px",
             paddingLeft: "15px",
@@ -384,46 +290,12 @@ const index = () => {
                   borderTopLeftRadius: "6px",
                   paddingLeft: "13px",
                   alignItems: "center",
-                  // marginLeft: '-6px',
                   paddingTop: "15px",
                   fontWeight: "bold",
                 }}
               >
                 Top Vendor For Discovery
               </h3>
-              {/* <div style={{ padding: "8px" }}>
-                <p style={{ marginBottom: "0px",color:"#6ab127",fontWeight:"600" }}>Production</p> &nbsp;
-                <Progress
-                  percent={myDeviceStatus.production}
-                  status="active"
-                  strokeColor={"#6ab127"}
-                />
-              </div>
-              <div style={{ padding: "8px" }}>
-                <p style={{ marginBottom: "0px",color:"#db5",fontWeight:"600" }}>Dismantled</p> &nbsp;
-                <Progress
-                  percent={myDeviceStatus.dismantled}
-                  status="active"
-                  strokeColor={"#db5"}
-                />
-              </div>
-              <div style={{ padding: "8px" }}>
-                <p style={{ marginBottom: "0px",color:"#DC3938",fontWeight:"600" }}>Maintenance</p> &nbsp;
-                <Progress
-                  percent={myDeviceStatus.maintenance}
-                  status="active"
-                  strokeColor={"#DC3938"}
-                />
-              </div>
-              <div style={{ padding: "8px" }}>
-                <p style={{ marginBottom: "0px",color:"#878787",fontWeight:"600" }}>Undefined</p> &nbsp;
-                <Progress
-                  percent={myDeviceStatus.undefined}
-                //   percent={60}
-                  status="active"
-                  strokeColor={"#878787"}
-                />
-              </div> */}
               <VendorDiscovery />
             </div>
           </Col>
@@ -600,15 +472,6 @@ const index = () => {
               </h3>
 
               <GeoMap />
-
-              {/* Devices By Memory Utilization
-              </h3>
-
-              <TableStyling
-                dataSource={memoryFunc}
-                columns={memoryColumns}
-                pagination={{ pageSize: 5 }}
-              /> */}
             </div>
           </Col>
           <Col

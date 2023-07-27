@@ -6,6 +6,7 @@ export const NavbarContainer = styled.nav`
   height: ${(props) => (props.extendNavbar ? "100vh" : "80px")};
   display: flex;
   flex-direction: column;
+
   @media (min-width: 700px) {
     height: 55px;
   }
@@ -27,11 +28,9 @@ export const RightContainer = styled.div`
 
 export const NavbarInnerContainer = styled.div`
   width: 100%;
-  // height: 45px;
   border-top: 1px solid #fff;
   display: flex;
   background-color: #2d2f35;
-  /* align-item: center; */
 `;
 
 export const NavbarLinkContainer = styled.div`
@@ -49,13 +48,11 @@ export const NavbarLink = styled(Link)`
   font-weight: ${(props) => (props.mainLoc ? 700 : 500)};
   border-bottom: ${(props) =>
     props.mainLoc ? "3px solid #71b626 !important" : null};
-  // margin: 5px;
   margin-top: 13px;
   padding-bottom: 6px;
-  // padding-top:-10px;
+
   &:hover {
     color: #71b626;
-    font-weight: 700;
   }
 
   @media (max-width: 900px) {
@@ -73,7 +70,6 @@ export const NavbarLinkExtended = styled(Link)`
     props.mainLoc ? "rgba(255,255,255,0.8) !important" : null};
   border-bottom: ${(props) =>
     props.mainLoc ? "2px solid #71b626 !important" : null};
-  // font-family: Arial, Helvetica, sans-serif;
   text-decoration: none;
   letter-spacing: 2px;
   padding: 5px;

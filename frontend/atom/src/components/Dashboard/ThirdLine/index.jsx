@@ -1,14 +1,8 @@
 import React from "react";
-
-import {
-  MainProfileCard,
-  ProfileChildMainCard,
-  ProfileChildCard,
-} from "./ThirdLine.styled.js";
 import MyTable from "./MyTable";
 import MyMap from "./Map";
 import { Row, Col } from "antd";
-import { useTranslation, initReactI18next } from "react-i18next";
+import { useTranslation } from "react-i18next";
 
 const index = () => {
   const { t } = useTranslation();
@@ -16,21 +10,14 @@ const index = () => {
   return (
     <Row
       style={{
-        // padding: "10px",
         marginTop: "5px",
         marginRight: "10px",
         marginLeft: "10px",
       }}
     >
-      <Col
-        xs={{ span: 24 }}
-        md={{ span: 12 }}
-        lg={{ span: 12 }}
-        // xl={{ span: 2 }}
-      >
+      <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
         <div
           style={{
-            // display: "flex",
             justifyContent: "space-between",
             marginRight: "10px",
             borderRadius: "12px",
@@ -45,7 +32,6 @@ const index = () => {
               paddingLeft: "8px",
 
               alignItems: "center",
-              // marginLeft: "1px",
               marginTop: "2px",
               paddingTop: "5px",
             }}
@@ -57,17 +43,10 @@ const index = () => {
           </div>
         </div>
       </Col>
-      <Col
-        xs={{ span: 24 }}
-        md={{ span: 12 }}
-        lg={{ span: 12 }}
-        // xl={{ span: 2 }}
-      >
+      <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
         <div
           style={{
-            // display: "flex",
             justifyContent: "space-between",
-            // marginRight: "10px",
             borderRadius: "12px",
             backgroundColor: "#fcfcfc",
           }}
@@ -80,7 +59,6 @@ const index = () => {
               paddingLeft: "8px",
 
               alignItems: "center",
-              // marginLeft: "1px",
               marginTop: "2px",
               paddingTop: "5px",
             }}

@@ -1,5 +1,10 @@
 import styled from "styled-components";
 import { Input } from "antd";
+import {
+  FlexboxStyle,
+  GridBoxStyle,
+  Poisitioning,
+} from "../../styles/commonStyle";
 
 export const MainProfileCard = styled.div`
   width: 100%;
@@ -39,20 +44,14 @@ export const ProfileChildCard2 = styled.div`
   top: 20px;
   bottom: 0;
   margin: auto;
-  /*Solves a problem in which the content is being cut when the div is smaller than its' wrapper:*/
   max-width: 100%;
   max-height: 100%;
   overflow: auto;
 `;
 
 export const BG = styled.div`
-  // background-image:
-  // url(
-  // "./assets/bg2.svg");
   background-image: url("./assets/bg2.svg");
   background-position: center;
-  //   width: 2000px;
-  //   height: 2000px;
 `;
 
 export const RightCard = styled.div`
@@ -87,7 +86,6 @@ export const LoginContainer = styled.article`
       }
 
       .greeting-text {
-        /* max-width: 370px; */
         line-height: 16px;
         font-weight: 500;
         margin: 0;
@@ -156,7 +154,6 @@ export const LoginStyledInput = styled(Input)`
 export const LoginPassStyledInput = styled(Input.Password)`
   height: 2.8rem;
   border-radius: 6px;
-  /* border: none !important; */
   box-shadow: none !important;
   overflow: hidden;
   border: 1px solid rgba(0, 0, 0, 0.3) !important;
@@ -171,5 +168,99 @@ export const LoginPassStyledInput = styled(Input.Password)`
     > svg {
       width: 14px;
     }
+  }
+`;
+
+export const LicenseFormModalStyle = styled.article`
+  .heading {
+    ${Poisitioning};
+
+    margin: 10px 0;
+    z-index: 1;
+    font-size: 13px;
+    font-weight: 600;
+
+    &:after {
+      ${Poisitioning({
+        position: "absolute",
+        top: "50%",
+        right: "0",
+        transform: "tranlateY(-50%)",
+      })};
+      content: "";
+      width: 78%;
+      height: 1px;
+      background: ${({ theme }) => theme.colors.SILVER_COLOR};
+      z-index: -1;
+    }
+  }
+
+  .form-wrapper {
+    height: 500px;
+    overflow: auto;
+    padding: 0 20px;
+
+    .form-content {
+      ${GridBoxStyle({ columns: "1fr 1fr", gap: "10px" })};
+
+      margin: 20px 0;
+
+      .form-input {
+        .input-header {
+          .input-title {
+            font-size: 10px;
+            font-weight: 600;
+          }
+        }
+
+        .text-area-input {
+          padding: 7px 10px;
+          width: 100%;
+          border-radius: 8px;
+          border: 1px solid ${({ theme }) => theme.colors.GRAY_COLOR};
+          outline: none;
+
+          &::placeholder {
+            color: ${({ theme }) => theme.colors.GRAY_COLOR};
+          }
+        }
+      }
+
+      .input-full {
+        grid-column: 1/-1;
+      }
+    }
+
+    .button-wrapper {
+      ${FlexboxStyle({ justify: "center", gap: "10px" })};
+
+      margin-top: 40px;
+    }
+  }
+`;
+
+export const SuperAdminModalStyle = styled.form`
+  ${GridBoxStyle({ columns: "1fr 1fr" })};
+
+  .custom-input {
+    .input-wrapper {
+      .ant-select {
+        width: 100%;
+
+        .ant-select-selector {
+          height: 36px;
+          border: 1px solid ${({ theme }) => theme.colors.GRAY_COLOR};
+          border-radius: 8px;
+        }
+      }
+    }
+  }
+
+  .button-wrapper {
+    ${FlexboxStyle({ justify: "center" })};
+
+    grid-column: 1/-1;
+
+    margin-top: 1rem;
   }
 `;

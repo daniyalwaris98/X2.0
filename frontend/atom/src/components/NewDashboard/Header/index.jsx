@@ -65,6 +65,7 @@ const index = () => {
       navigate("/uam/aps");
     }
   };
+
   const imgFun = (myimg) => {
     if (myimg === "SITES") {
       return <LocationIcon />;
@@ -92,11 +93,11 @@ const index = () => {
       <HeaderStyle>
         {myCards.map((item, index) => {
           return (
-            <DivStyling>
+            <DivStyling key={index}>
               <article onClick={() => Pages(item.name)} className="tab">
                 <span className="icon">{imgFun(item.name)}</span>
                 <article>
-                  <p style={{}}>{item.name}</p>
+                  <p>{item.name}</p>
                   <h2>{item.value}</h2>
                 </article>
               </article>

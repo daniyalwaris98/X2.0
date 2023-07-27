@@ -12,52 +12,30 @@ import { Divider, Input, Dropdown, Menu, Drawer } from "antd";
 import { SearchOutlined, FlagOutlined } from "@ant-design/icons";
 // import ReactLanguageSelect from "react-languages-select";
 import ReactFlagsSelect from "react-flags-select";
-// import { US, GB } from "country-flag-icons/react/3x2";
-import { Row, Col, Switch } from "antd";
-import Dashboard from "../Dashboard";
+import { Row, Col } from "antd";
 import { StyledMenu, MainStyling } from "./FirstNavBar.styled.js";
-import { useTranslation, initReactI18next } from "react-i18next";
 import { useNavigate } from "react-router-dom";
 import { MenuOutlined, CloseOutlined } from "@ant-design/icons";
 import styled from "styled-components";
 
-//import css module
-// import "react-languages-select/css/react-languages-select.css";
-
 const FirstNavBar = (props) => {
-  const { t } = useTranslation();
   const navigate = useNavigate();
-  let location = useLocation();
+
   const [open, setOpen] = useState(false);
 
   const [selected, setSelected] = useState("");
-  const [title, setTitle] = useState("");
-  // console.log(selected);
-  const [color, setColor] = useState("#000000");
   const [showMenu, setShowMenu] = useState(true);
   const [userData, setUserData] = useState("");
-  const [userName, setUserName] = useState("");
-  const [checked, setChecked] = useState(false);
-  var firstLetter;
 
   useEffect(() => {
     const Data = localStorage.getItem("user");
     setUserData(JSON.parse(Data));
-    // var name = userData.user_name;
-    // console.log(name);
-    // firstLetter = name.slice(0, 1);
 
     const letters = "0123456789ABCDEF";
     let color = "#";
     for (let i = 0; i < 6; i++) {
       color += letters[Math.floor(Math.random() * 16)];
     }
-    setColor(color);
-  }, []);
-
-  useEffect(() => {
-    setUserName(userData?.user_name);
-    console.log(userName);
   }, []);
 
   const SelectedLanguage = (code) => {
@@ -66,52 +44,6 @@ const FirstNavBar = (props) => {
     setSelected(code);
     localStorage.setItem("lang", code);
   };
-  useEffect(() => {
-    //Checks if location.pathname is not "/".
-    if (location.pathname === "/") {
-      setTitle("Dashboard");
-    } else if (location.pathname === "/atom/main") {
-      setTitle("Atom");
-    } else if (location.pathname === "/atom/password-group") {
-      setTitle("Password Group");
-    } else if (location.pathname === "/uam/devices") {
-      setTitle("Devices");
-    } else if (location.pathname === "/uam/sites") {
-      setTitle("Sites");
-    } else if (location.pathname === "/uam/racks") {
-      setTitle("Racks");
-    } else if (location.pathname === "/uam/boards") {
-      setTitle("Line Card");
-    } else if (location.pathname === "/uam/subboards") {
-      setTitle("Sub Boards");
-    } else if (location.pathname === "/uam/sfps") {
-      setTitle("SFPS");
-    } else if (location.pathname === "/uam/license") {
-      setTitle("Licenses");
-    } else if (location.pathname === "/ipam/main") {
-      setTitle("IPAM");
-    } else if (location.pathname === "/ipam/dhcp_servers") {
-      setTitle("DHCP Servers");
-    } else if (location.pathname === "/ipam/dhcp_scope") {
-      setTitle("DHCP Scopes");
-    } else if (location.pathname === "/ipam/dns_servers") {
-      setTitle("DNS Servers");
-    } else if (location.pathname === "/ipam/dns_zones") {
-      setTitle("DNS Zones");
-    } else if (location.pathname === "/dcm") {
-      setTitle("DCCM");
-    } else if (location.pathname === "/monitering") {
-      setTitle("Monitoring");
-    } else if (location.pathname === "/admin/show-member") {
-      setTitle("Admin Members");
-    } else if (location.pathname === "/admin/role") {
-      setTitle("Role");
-    } else if (location.pathname === "/admin/failed-devices") {
-      setTitle("Failed Devices");
-    } else {
-      setTitle("");
-    }
-  }, [location.pathname]);
 
   const showDrawer = () => {
     setOpen(true);
@@ -122,8 +54,6 @@ const FirstNavBar = (props) => {
   };
 
   useEffect(() => {
-    // setSelected(localStorage.setItem("lang", selected));
-
     setSelected(localStorage.getItem("lang"));
   }, [selected]);
 
@@ -131,20 +61,17 @@ const FirstNavBar = (props) => {
     localStorage.removeItem("monetx_token");
     localStorage.removeItem("user");
     localStorage.removeItem("monetx_configuration");
-    // setUserData("");
     window.location.href = "/login";
   };
+
   const menu = (
     <Menu>
       <Menu.Item>
         <Row
           style={{
-            // backgroundColor: "#839CA91A",
             width: "100%",
-            // marginLeft: "10px",
             marginRight: "30px",
             marginTop: "5px",
-
             borderRadius: "10px",
           }}
         >
@@ -156,7 +83,6 @@ const FirstNavBar = (props) => {
               height="40px"
               style={{
                 marginLeft: "10px",
-                // backgroundColor: "#839CA91A",
                 padding: "10px",
                 borderRadius: "50%",
                 marginTop: "3px",
@@ -200,20 +126,21 @@ const FirstNavBar = (props) => {
     </Menu>
   );
   const [DaysLeft, setDaysLeft] = useState("");
+  const data = localStorage.getItem("user");
 
   useEffect(() => {
-    const licenseData = async () => {
-      const Data = localStorage.getItem("user");
-      const a = JSON.parse(Data);
-      console.log(a.user_name);
-      const res = await axios.post(baseUrl + "/trackLicenseTenure", {
-        username: a.user_name,
-      });
-      console.log("trackLicenseTenure", res.data);
-      setDaysLeft(res.data);
-    };
-    licenseData();
-  }, []);
+    if (data) {
+      const licenseData = async () => {
+        const a = JSON.parse(data);
+        const res = await axios.post(baseUrl + "/trackLicenseTenure", {
+          username: a.user_name,
+        });
+        console.log("trackLicenseTenure", res.data);
+        setDaysLeft(res.data);
+      };
+      licenseData();
+    }
+  }, [data]);
   return (
     <div>
       <div
@@ -231,31 +158,6 @@ const FirstNavBar = (props) => {
               marginLeft: "32px",
             }}
           />
-          {/* <Divider
-            type="vertical"
-            style={{
-              backgroundColor: "#B7B4B44D",
-              height: "90%",
-              margin: "4px",
-              // padding:"10px",
-              // marginTop: "5px",
-              marginLeft: "20px",
-            }}
-          /> */}
-          {/* <p
-            style={{
-              color: "#EBEBEB",
-              fontSize: "22px",
-              paddingTop: "18px",
-              margin: "7px",
-              marginLeft: "20px",
-              textAlign: "center",
-              // fontWeight: "700",
-            }}
-          >
-            {t(`${title}`)}
-            {/* Dashboard */}
-          {/* </p> */}
         </div>
         {showMenu ? (
           <StyledMenu>
@@ -283,24 +185,7 @@ const FirstNavBar = (props) => {
                   icons={<SearchOutlined style={{ color: "white" }} />}
                 />
               </li>
-              <li>
-                {/* <Switch checked={checked} onChange={setChecked} /> */}
-                {/* <img
-                  src={light}
-                  alt=""
-                  width="40px"
-                  height="40px"
-                  style={{
-                    backgroundColor: "#839CA91A",
-                    padding: "10px",
-                    borderRadius: "50%",
-                    display: "none",
-                    marginTop: "17px",
-
-                    // marginBottom: "7px",
-                  }}
-                /> */}
-              </li>
+              <li></li>
               <li>
                 <img
                   src={notification}
@@ -313,12 +198,7 @@ const FirstNavBar = (props) => {
                     padding: "10px",
                     borderRadius: "50%",
                     display: "none",
-
-                    // marginTop: "18px",
-                    // marginTop: "12px",
-
                     marginTop: "17px",
-
                     marginBottom: "12px",
                   }}
                 />
@@ -326,19 +206,10 @@ const FirstNavBar = (props) => {
               <li>
                 <div
                   style={{
-                    // backgroundColor: "#839CA91A",
-                    // padding: "10px",
-                    // borderRadius: "50%",
-
-                    // marginTop: "21px",
                     display: "none",
-
                     marginTop: "23px",
-
                     marginBottom: "12px",
                     marginLeft: "10px",
-                    // width: "40px",
-                    // height: "40px",
                   }}
                 >
                   <ReactFlagsSelect
@@ -356,10 +227,12 @@ const FirstNavBar = (props) => {
                 </div>
               </li>
               <li>
-                <Dropdown menu={menu} style={{ width: "50px", height: "50px" }}>
+                <Dropdown
+                  overlay={menu}
+                  style={{ width: "50px", height: "50px", cursor: "pointer" }}
+                >
                   <img
                     src={setting}
-                    alt=""
                     width="40px"
                     height="40px"
                     style={{
@@ -367,10 +240,8 @@ const FirstNavBar = (props) => {
                       backgroundColor: "#839CA91A",
                       padding: "10px",
                       borderRadius: "50%",
-                      // display: "none",
-
                       marginTop: "5px",
-                      // marginBottom: "12px",
+                      cursor: "pointer",
                     }}
                   />
                 </Dropdown>
@@ -392,9 +263,6 @@ const FirstNavBar = (props) => {
                     cursor: "pointer",
                     borderRadius: "50%",
                     marginTop: "5px",
-                    // marginTop: "18px",
-                    // marginTop: "21px",
-                    // marginBottom: "12px",
                   }}
                 />
               </li>
@@ -450,31 +318,6 @@ const FirstNavBar = (props) => {
                   </Col>
                 </Row>
               </li>
-
-              {/* &nbsp;&nbsp;
-              <li>
-                
-                <h3
-                  style={{
-                    color: "#fff",
-                    fontSize: "20px",
-                    width: "40px",
-                    height: "40px",
-                    borderRadius: "50%",
-                    // padding: "13px",
-                    background: color,
-                    marginTop: "8px",
-                    display: "grid",
-                    placeItems: "center",
-                    marginLeft: "8px",
-                    marginRight: "8px",
-                    marginBottom: "0px",
-                  }}
-                >
-                  {userData?.user_name?.toString().slice(0, 1)}
-                </h3>
-           
-              </li> */}
             </ul>
           </MainStyling>
         ) : null}
@@ -486,21 +329,6 @@ const FirstNavBar = (props) => {
         open={open}
       >
         <div>
-          {/* <div style={{ display: "flex" }}>
-            <p
-              style={{
-                marginTop: "5px",
-                fontSize: "16px",
-                fontWeight: "600",
-                color: "#999",
-              }}
-            >
-              License
-            </p>
-            <StyledInput type="text" />
-          </div>
-          <br /> */}
-
           <br />
           <p>Remaining Days</p>
           <div
@@ -522,21 +350,6 @@ const FirstNavBar = (props) => {
             </h2>
             <p style={{ marginTop: "45px" }}>Days Left</p>
           </div>
-          {/* <div style={{ display: "flex" }}>
-            <StyledInput2 type="text" />
-            <button
-              style={{
-                width: "100px",
-                backgroundColor: "#6ab344",
-                border: "1px solid #6ab344",
-                borderTopRightRadius: "12px",
-                borderBottomRightRadius: "12px",
-                color: "white",
-              }}
-            >
-              Verify
-            </button>
-          </div> */}
         </div>
       </Drawer>
     </div>
@@ -554,18 +367,5 @@ const StyledInput = styled(Input)`
     border: 1px solid #6ab344 !important;
   }
 `;
-const StyledInput2 = styled(Input)`
-  height: 2.2rem;
-  margin-left: 8px;
-  /* border-radius: 12px; */
-  border-top-left-radius: 12px;
-  border-bottom-left-radius: 12px;
-  border: 1px solid #6ab344 !important;
-  box-shadow: none !important;
-  overflow: hidden;
-  width: 100%;
-  &:focus {
-    border: 1px solid #6ab344 !important;
-  }
-`;
+
 export default FirstNavBar;
