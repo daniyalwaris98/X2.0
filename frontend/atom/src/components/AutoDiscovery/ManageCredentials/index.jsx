@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Table, Modal, Switch } from "antd";
+import { EditOutlined } from "@ant-design/icons";
 
 import trash from "../assets/trash.svg";
 import { columnSearch } from "../../../utils";
@@ -27,7 +28,6 @@ import Swal from "sweetalert2";
 let excelData = [];
 let excelDatapassGroup = [];
 let columnFilters = {};
-let v1v2excelData = [];
 let v3excelData = [];
 
 const index = () => {
@@ -38,15 +38,12 @@ const index = () => {
   const showTable = (myDataTable) => {
     if (myDataTable === "SNMP Credentials") {
       setTableName("SNMP Credentials");
-      console.log("SNMP Credentials");
     } else if (myDataTable === "Login Credentials") {
       setTableName("Login Credentials");
       LoginCredentialsTrigger();
-      console.log("Login Credentials");
     } else if (myDataTable === "WMI Credentials") {
       setTableName("WMI Credentials");
       WMICredentialsTrigger();
-      console.log("WMI Credentials");
     }
   };
 
@@ -601,10 +598,7 @@ const index = () => {
       dataIndex: "description",
       key: "description",
       render: (text, record) => (
-        <p style={{ textAlign: "left", paddingTop: "10px" }}>
-          {/* <Switch defaultChecked onChange={onChangeSwitch} /> */}
-          {text}
-        </p>
+        <p style={{ textAlign: "left", paddingTop: "10px" }}>{text}</p>
       ),
 
       ellipsis: true,
@@ -945,27 +939,21 @@ const index = () => {
           </>
         ) : null}
         {tableName === "Login Credentials" ? (
-          <>
-            <SpinLoading spinning={loading} tip="Loading...">
-              <div style={{ padding: "15px" }}>
-                <h2 style={{ fontWeight: 700 }}>SSH Login</h2>
+          <SpinLoading spinning={loading} tip="Loading...">
+            <div style={{ padding: "15px" }}>
+              <h2 style={{ fontWeight: 700 }}>SSH Login</h2>
 
-                <TableStyling
-                  // rowSelection={rowSelectionpassGroup}
-                  // scroll={{ x: 2430 }}
-                  rowKey="password_group"
-                  columns={columnspassGroup}
-                  dataSource={dataSourcepassGroup}
-                  // pagination={false}
-                  style={{
-                    width: "100%",
-                    padding: "2%",
-                    // margin: "0 auto"
-                  }}
-                />
-              </div>
-            </SpinLoading>
-          </>
+              <TableStyling
+                rowKey="password_group"
+                columns={columnspassGroup}
+                dataSource={dataSourcepassGroup}
+                style={{
+                  width: "100%",
+                  padding: "2%",
+                }}
+              />
+            </div>
+          </SpinLoading>
         ) : null}
       </div>
       <Modal
@@ -1054,9 +1042,12 @@ const index = () => {
                   </Col>
                   <Col span={10} style={{ marginLeft: "6%" }}>
                     <InputWrapper>
-                      Profile Name: &nbsp;&nbsp;
+                      Profile Name: &nbsp;
+                      <span style={{ color: "red" }}>*</span>
+                      &nbsp;&nbsp;
                       <StyledInput
                         value={profileName}
+                        required
                         onChange={(e) =>
                           setProfileName(
                             e.target.value.replace(/[^\w\s]/gi, "")

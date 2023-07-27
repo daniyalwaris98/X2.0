@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Modal, Input, Button, Select, Checkbox } from "antd";
+import { Row, Col, Modal, Input, Button } from "antd";
 import axios, { baseUrl } from "../../../utils/axios";
 import Swal from "sweetalert2";
 import { SpinLoading } from "../../AllStyling/All.styled";
-import { devices } from "../../../data/globalData";
+import { devices, functions, vendors } from "../../../data/globalData";
 
 const EditSubnet = (props) => {
   const getString = (str) => {
@@ -61,7 +61,8 @@ const EditSubnet = (props) => {
       console.log(err);
     }
   };
-  let [device, setDevice] = useState(props.editRecord);
+
+  let device = props.editRecord;
 
   let [ipAddress, setIpAddreess] = useState(
     device ? getString(device.ip_address) : ""
@@ -70,9 +71,6 @@ const EditSubnet = (props) => {
     device ? getString(device.device_type) : ""
   );
 
-  let [deviceTypeOther, setDeviceTypeOther] = useState(
-    device ? getString(device.device_type) : ""
-  );
   let [deviceName, setDeviceName] = useState(
     device ? getString(device.device_name) : ""
   );
@@ -311,6 +309,14 @@ const EditSubnet = (props) => {
 
   const deviceValue = deviceTy.includes(deviceType.toLowerCase());
 
+  const monitoringVendors = vendors.filter((vendor) =>
+    vendor.module.includes("monitoring")
+  );
+
+  const monitoringFunctions = functions.filter((montiFunction) =>
+    montiFunction.module.includes("monitoring")
+  );
+
   return (
     <SpinLoading spinning={editLoading} tip="Loading...">
       <Modal
@@ -428,58 +434,15 @@ const EditSubnet = (props) => {
                     }}
                   >
                     <option value="">Select Vendor</option>
-                    <option value="cisco">Cisco</option>
-                    <option value="fortinet">Fortinet</option>
-                    <option value="juniper">Juniper</option>
-                    <option value="paloAlto">PaloAlto</option>
-                    <option value="huawei">Huawei</option>
-                    <option value="juniper">Juniper</option>
-                    <option value="microsoft">Microsoft</option>
-                    <option value="linux">Linux</option>
-                    <option value="other">Other</option>
+                    {monitoringVendors.map((vendor, index) => {
+                      return (
+                        <option value={vendor.name.toLowerCase()} key={index}>
+                          {vendor.name}
+                        </option>
+                      );
+                    })}
                   </Styledselect>
                 </div>
-                {/* {vendor !== "Cisco" &&
-                vendor !== "Fortinet" &&
-                vendor !== "Juniper" &&
-                vendor !== "PaloAlto" &&
-                vendor !== "Huawei" &&
-                vendor !== "Juniper" &&
-                vendor !== "Microsoft" &&
-                vendor !== "Linux" &&
-                vendor !== "" ? (
-                  <StyledInput
-                    value={vendor}
-                    onChange={(e) => setVendor(e.target.value)}
-                    required
-                  />
-                ) : (
-                  <div className="select_type">
-                    <Styledselect
-                      className="rectangle"
-                      required
-                      placeholder="select"
-                      onFocus={(e) => {
-                        setVendor(e.target.value ? e.target.value : "Cisco");
-                      }}
-                      value={vendor.toLowerCase()}
-                      onChange={(e) => {
-                        setVendor(e.target.value);
-                      }}
-                    >
-                      <option value="">Select Vendor</option>
-                      <option value="cisco">Cisco</option>
-                      <option value="fortinet">Fortinet</option>
-                      <option value="juniper">Juniper</option>
-                      <option value="paloAlto">PaloAlto</option>
-                      <option value="huawei">Huawei</option>
-                      <option value="juniper">Juniper</option>
-                      <option value="microsoft">Microsoft</option>
-                      <option value="linux">Linux</option>
-                      <option value="other">Other</option>
-                    </Styledselect>
-                  </div>
-                )} */}
               </InputWrapper>
               <InputWrapper>
                 Function: &nbsp;&nbsp;
@@ -491,15 +454,17 @@ const EditSubnet = (props) => {
                     value={myFunction.toLowerCase()}
                     onChange={(e) => setFunction(e.target.value)}
                   >
-                    <option value="router">Router</option>
-                    <option value="switch">Switch</option>
-                    <option value="wireless">Wireless</option>
-                    <option value="firewall">Firewall</option>
-                    <option value="vm">VM</option>
-                    <option value="exsi">EXSI</option>
-                    <option value="load balancer">Load Balancer</option>
-                    <option value="waf">WAF</option>
-                    <option value="other">Other</option>
+                    <option value="">Select Function</option>
+                    {monitoringFunctions.map((monitoringFuntion, index) => {
+                      return (
+                        <option
+                          value={monitoringFuntion.name.toLowerCase()}
+                          key={index}
+                        >
+                          {monitoringFuntion.name}
+                        </option>
+                      );
+                    })}
                   </Styledselect>
                 </div>
               </InputWrapper>
@@ -527,11 +492,7 @@ const EditSubnet = (props) => {
                     <option value="">Select Crediential</option>
 
                     {credArray.map((item, index) => {
-                      return (
-                        <>
-                          <option>{item}</option>
-                        </>
-                      );
+                      return <option key={index}>{item}</option>;
                     })}
                   </Styledselect>
                 </div>

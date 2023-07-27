@@ -6,8 +6,8 @@ from netmiko import Netmiko
 from datetime import datetime
 import re, sys, time
 import threading
-from app.common_utils.insert_to_db import UamInventoryData
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.uam.uam_db_utils import UamInventoryData
+
 
 class NXOSPuller(object):
     
@@ -144,7 +144,7 @@ class NXOSPuller(object):
                 self.get_license(host, device)
                 self.inv_data[host['ip_address']].update({'status': 'success'})
                 print(self.inv_data,file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
             except Exception as e:
                 print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
                 if host['ip_address'] in self.inv_data:

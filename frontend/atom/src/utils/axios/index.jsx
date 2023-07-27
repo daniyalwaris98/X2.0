@@ -4,6 +4,7 @@ import React, { useEffect } from "react";
 import axios from "axios";
 
 export const baseUrl = "http://localhost:5010"; //! local
+// export const baseUrl = "http://192.168.10.150:5010"; //! local vm
 // export const baseUrl = "http://192.168.10.151:5010"; //! VM
 // export const baseUrl = "https://monetxbackend.nets-x-map.com"; //! local
 // export const baseUrl = "https://192.168.10.242:5010"; //! DR
@@ -14,6 +15,7 @@ export const baseUrl = "http://localhost:5010"; //! local
 // export const baseUrl = "http://182.176.228.148:5010"; //! For NCWH
 
 // export const baseUrl = "http://172.16.0.16:5010"; //! For NCWH
+// export const baseUrl = "http://192.168.0.32:5010"; //! For Nust Resarpur server
 
 // export const baseUrl = "http://172.22.5.230:5010";
 

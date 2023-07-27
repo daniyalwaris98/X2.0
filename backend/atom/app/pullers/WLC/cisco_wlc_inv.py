@@ -8,8 +8,8 @@ import re, sys, time
 import threading
 import pandas as pd
 from pandas import read_excel
-from app.common_utils.insert_to_db import UamInventoryData
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.uam.uam_db_utils import UamInventoryData
+
 from app import db
 from app.models.inventory_models import *
 
@@ -178,7 +178,7 @@ class WLCPuller(object):
                 self.get_aps(host, device)
                 self.inv_data[host['ip_address']].update({'status': 'success'})
                 print(self.inv_data,file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
             except Exception as e:
                 print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
                 traceback.print_exc()

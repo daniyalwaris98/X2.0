@@ -6,8 +6,8 @@ from datetime import datetime
 import urllib3
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
-from app.common_utils.insert_to_db import UamInventoryData
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.uam.uam_db_utils import UamInventoryData
+
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
@@ -94,7 +94,7 @@ class UCSPuller(object):
 
                 self.get_boards(base_url , host)   
                 print(f"{self.inv_data}", file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
             else:
                 print(f"Connection failed {host['ip_address']}", file=sys.stderr)
                 

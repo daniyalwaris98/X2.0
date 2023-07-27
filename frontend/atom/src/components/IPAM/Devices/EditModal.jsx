@@ -162,7 +162,6 @@ const EditAtom = (props) => {
                   width: "120px",
                   marginLeft: "10px",
                   marginRight: "10px",
-                  // paddingBottom: "5px",
                 }}
                 color={"#BBBABA"}
                 onClick={handleCancel}
@@ -181,7 +180,6 @@ const EditAtom = (props) => {
                 onChange={(e) => setIp(e.target.value)}
                 required
               />
-              {/* )} */}
             </InputWrapper>
 
             <InputWrapper>

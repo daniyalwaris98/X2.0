@@ -333,7 +333,6 @@ const Atom = () => {
   };
   const edit = (record) => {
     setEditRecord(record);
-    console.log(record);
     setIsEditModalVisible(true);
     // setAddRecord(record);
   };
@@ -391,16 +390,11 @@ const Atom = () => {
                   textDecoration: "underline",
                   fontWeight: "400",
                   textAlign: "center",
-                  // paddingLeft: "10px",
                   paddingTop: "5px",
                   paddingLeft: "15px",
-                  // color: "blue",
                   cursor: "pointer",
                 }}
                 disabled
-                // onClick={() => {
-                //   edit(record);
-                // }}
               >
                 <EditOutlined
                   style={{ paddingRight: "50px", color: "#66A111" }}
@@ -416,7 +410,6 @@ const Atom = () => {
                 textAlign: "center",
                 paddingTop: "5px",
                 paddingLeft: "15px",
-                // color: "blue",
                 cursor: "pointer",
               }}
               onClick={() => {
@@ -749,32 +742,16 @@ const Atom = () => {
           centered={true}
         />
       )}
-      {/* {siteNameModalVisible && (
-        <SiteNameModel
-          siteNameModalVisible={siteNameModalVisible}
-          setSiteNameModalVisible={setSiteNameModalVisible}
-          dataSource={siteData}
-        />
-      )} */}
-      {/* {rackNameModalVisible && (
-        <RackNameModel
-          rackNameModalVisible={rackNameModalVisible}
-          setRackNameModalVisible={setRackNameModalVisible}
-          dataSource={rackData}
-        />
-      )} */}
+
       <div style={{ padding: "25px", marginTop: "10px" }}>
         <TableStyling
           rowSelection={rowSelection}
-          // scroll={{ x: 2430 }}
           rowKey="password_group"
           columns={columns}
           dataSource={dataSource}
-          // pagination={false}
           style={{
             width: "100%",
             padding: "2%",
-            // margin: "0 auto"
           }}
         />
       </div>

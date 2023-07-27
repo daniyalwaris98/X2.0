@@ -4,8 +4,10 @@ from datetime import datetime
 import urllib3
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
-from app.common_utils.insert_to_db import UamInventoryData
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.uam.uam_db_utils import UamInventoryData
+
+from app.utilities.failed_utilts import addFailedDevice
+
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
@@ -93,7 +95,7 @@ class FirePowerPuller(object):
                                                     'license':[],
                                                     'status':'success'}
                 print(self.inv_data, file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
             else:
                 r.raise_for_status()
                 print("Error occurred in GET --> "+resp, file=sys.stderr)

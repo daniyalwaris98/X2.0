@@ -2,23 +2,36 @@ from app import db
 from sqlalchemy import ForeignKey
 from datetime import datetime
 
+#
+#
+#
 
-class LicenseVerificationTable(db.Model):
-    __tablename__ = 'license_verification_table'
+# ** License, End User, User, User Role Models **
+
+#
+#
+#
+
+
+class License_Verification_Table(db.Model):
+    __tablename__ = "license_verification_table"
     license_id = db.Column(db.Integer, primary_key=True)
     license_verification_key = db.Column(db.String(2500))
     company_name = db.Column(db.String(500))
     start_date = db.Column(db.DateTime)
     end_date = db.Column(db.DateTime)
+
     creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class EndUserTable(db.Model):
-    __tablename__ = 'end_user_table'
+class End_User_Table(db.Model):
+    __tablename__ = "end_user_table"
     end_user_id = db.Column(db.Integer, primary_key=True)
     company_name = db.Column(db.String(500))
     po_box = db.Column(db.String(50))
@@ -31,54 +44,60 @@ class EndUserTable(db.Model):
     email = db.Column(db.String(500))
     domain_name = db.Column(db.String(500))
     industry_type = db.Column(db.String(500))
+    license_id = db.Column(
+        db.Integer, ForeignKey("license_verification_table.license_id")
+    )
+
     creation_date = db.Column(db.DateTime, default=datetime.now())
     modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
-    license_id = db.Column(db.Integer, ForeignKey(
-        'license_verification_table.license_id'))
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class UserRolesTable(db.Model):
-    __tablename__ = 'user_roles'
+class User_Roles_Table(db.Model):
+    __tablename__ = "user_roles"
     role_id = db.Column(db.Integer, primary_key=True)
     role = db.Column(db.String(50))
     configuration = db.Column(db.String(1500))
+
     creation_date = db.Column(db.DateTime, default=datetime.now())
     modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class UserTable(db.Model):
-    __tablename__ = 'user_table'
+class User_Table(db.Model):
+    __tablename__ = "user_table"
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50))
     email = db.Column(db.String(50))
     name = db.Column(db.String(50))
-    role_id = db.Column(db.Integer, ForeignKey('user_roles.role_id'))
+    role_id = db.Column(db.Integer, ForeignKey("user_roles.role_id"))
     status = db.Column(db.String(10))
     account_type = db.Column(db.String(15))
     password = db.Column(db.String(512))
-    creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(
-        db.DateTime, default=datetime.now(), onupdate=datetime.now())
     last_login = db.Column(db.DateTime, default=datetime.now())
     team = db.Column(db.String(20))
-    end_user_id = db.Column(
-        db.Integer, ForeignKey('end_user_table.end_user_id'))
+    end_user_id = db.Column(db.Integer, ForeignKey("end_user_table.end_user_id"))
     super_user = db.Column(db.String(15), default="False")
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class LoginActivityTable(db.Model):
-    __tablename__ = 'login_activity_table'
+class Login_Activity_Table(db.Model):
+    __tablename__ = "login_activity_table"
 
     id = db.Column(db.Integer, primary_key=True)
     user_id = db.Column(db.String(50))
@@ -91,17 +110,36 @@ class LoginActivityTable(db.Model):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class PasswordGroupTable(db.Model):
-    __tablename__ = 'password_group_table'
+#
+#
+#
+
+# ** Atom, Rack Site, Password Group Models **
+
+#
+#
+#
+
+
+class Password_Group_Table(db.Model):
+    __tablename__ = "password_group_table"
     password_group = db.Column(db.String(50), primary_key=True)
     username = db.Column(db.String(50))
     password = db.Column(db.String(50))
     secret_password = db.Column(db.String(50))
     password_group_type = db.Column(db.String(50))
 
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
-class SiteTable(db.Model):
-    __tablename__ = 'site_table'
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Site_Table(db.Model):
+    __tablename__ = "site_table"
     site_id = db.Column(db.Integer, primary_key=True)
     site_name = db.Column(db.String(50))
     region_name = db.Column(db.String(50))
@@ -112,17 +150,19 @@ class SiteTable(db.Model):
     total_count = db.Column(db.Integer)
 
     creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class RackTable(db.Model):
-    __tablename__ = 'rack_table'
+class Rack_Table(db.Model):
+    __tablename__ = "rack_table"
     rack_id = db.Column(db.Integer, primary_key=True)
     rack_name = db.Column(db.String(50))
-    site_id = db.Column(db.Integer, ForeignKey('site_table.site_id'))
+    site_id = db.Column(db.Integer, ForeignKey("site_table.site_id"))
     serial_number = db.Column(db.String(50))
     manufacturer_date = db.Column(db.Date, default=datetime(2000, 1, 1))
     unit_position = db.Column(db.String(20))
@@ -138,16 +178,18 @@ class RackTable(db.Model):
     total_count = db.Column(db.Integer)
 
     creation_date = db.Column(db.DateTime, default=datetime.now())
-    modification_date = db.Column(db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class AtomTable(db.Model):
-    __tablename__ = 'atom_table'
+class Atom_Table(db.Model):
+    __tablename__ = "atom_table"
     atom_id = db.Column(db.Integer, primary_key=True)
-    rack_id = db.Column(db.String(50), ForeignKey('rack_table.rack_id'))
+    rack_id = db.Column(db.Integer, ForeignKey("rack_table.rack_id"))
     device_name = db.Column(db.String(50))
     ip_address = db.Column(db.String(50))
     device_ru = db.Column(db.String(50))
@@ -158,162 +200,349 @@ class AtomTable(db.Model):
     domain = db.Column(db.String(50))
     virtual = db.Column(db.String(20))
     device_type = db.Column(db.String(50))
-    password_group = db.Column(db.String(50), ForeignKey('password_group_table.password_group'))
+    password_group = db.Column(
+        db.String(50), ForeignKey("password_group_table.password_group")
+    )
     onboard_status = db.Column(db.String(50))
-    inserted = db.Column(db.Integer)
-    updated = db.Column(db.Integer)
-    exception = db.Column(db.Integer)
-    scop = db.Column(db.String(50), default='Atom')
+    scop = db.Column(db.String(50), default="Atom")
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
+class Atom_Transition_Table(db.Model):
+    __tablename__ = "atom_transition_table"
+    atom_transition_id = db.Column(db.Integer, primary_key=True)
+    site_name = db.Column(db.String(50))
+    rack_name = db.Column(db.String(50))
+    device_name = db.Column(db.String(50))
+    ip_address = db.Column(db.String(50))
+    vendor = db.Column(db.String(50))
+    device_ru = db.Column(db.String(50))
+    department = db.Column(db.String(50))
+    section = db.Column(db.String(50))
+    criticality = db.Column(db.String(20))
+    function = db.Column(db.String(50))
+    domain = db.Column(db.String(50))
+    virtual = db.Column(db.String(20))
+    device_type = db.Column(db.String(50))
+    password_group = db.Column(db.String(50))
+    onboard_status = db.Column(db.String(50))
 
-# class Device_Table(db.Model):
-#     __tablename__ = 'device_table'
-#     device_name = db.Column(db.String(150), primary_key=True)
-#     site_name = db.Column(db.String(50))
-#     rack_name = db.Column(db.String(50))
-#     ip_address = db.Column(db.String(50))
-#     device_type = db.Column(db.String(50))
-#     software_type = db.Column(db.String(50))
-#     software_version = db.Column(db.String(50))
-#     patch_version = db.Column(db.String(50))
-#     creation_date = db.Column(db.DateTime, default=datetime.now())
-#     modification_date = db.Column(
-#         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-#     status = db.Column(db.String(50))
-#     ru = db.Column(db.String(50))
-#     department = db.Column(db.String(50))
-#     section = db.Column(db.String(50))
-#     criticality = db.Column(db.String(50))
-#     function = db.Column(db.String(50))
-#     domain = db.Column(db.String(50))
-#     manufacturer = db.Column(db.String(50))
-#     hw_eos_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     hw_eol_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     sw_eos_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     sw_eol_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     virtual = db.Column(db.String(20))
-#     rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     authentication = db.Column(db.String(10))
-#     serial_number = db.Column(db.String(50))
-#     pn_code = db.Column(db.String(50))
-#     subrack_id_number = db.Column(db.String(50))
-#     manufacturer_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     hardware_version = db.Column(db.String(50))
-#     max_power = db.Column(db.String(50))
-#     site_type = db.Column(db.String(50))
-#     source = db.Column(db.String(50))
-#     stack = db.Column(db.String(50))
-#     contract_number = db.Column(db.String(50))
-#     contract_expiry = db.Column(db.Date, default=datetime(2022, 12, 31))
-#     uptime = db.Column(db.Date, default=datetime(2000, 1, 1, 1, 1, 1))
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
-#     def as_dict(self):
-#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-# class Board_Table(db.Model):
-#     __tablename__ = 'board_table'
-#     board_id = db.Column(db.Integer, primary_key=True)
-#     board_name = db.Column(db.String(250))
-#     device_name = db.Column(
-#         db.String(150))
-#     hardware_version = db.Column(db.String(50))
-#     device_slot_id = db.Column(db.String(50))
-#     software_version = db.Column(db.String(50))
-#     serial_number = db.Column(db.String(50))
-#     manufacturer_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     creation_date = db.Column(db.DateTime, default=datetime.now())
-#     modification_date = db.Column(
-#         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-#     status = db.Column(db.String(50))
-#     eos_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     eol_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     pn_code = db.Column(db.String(50))
+#
+#
+#
 
-#     def as_dict(self):
-#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+# ** UAM Models **
+
+#
+#
+#
 
 
-# class Subboard_Table(db.Model):
-#     __tablename__ = 'subboard_table'
-#     subboard_id = db.Column(db.Integer, primary_key=True)
-#     subboard_name = db.Column(db.String(250))
-#     device_name = db.Column(
-#         db.String(150))
-#     subboard_type = db.Column(db.String(150))
-#     subrack_id = db.Column(db.String(250))
-#     slot_number = db.Column(db.String(250))
-#     subslot_number = db.Column(db.String(250))
-#     hardware_version = db.Column(db.String(50))
-#     software_version = db.Column(db.String(50))
-#     serial_number = db.Column(db.String(50))
-#     creation_date = db.Column(db.DateTime, default=datetime.now())
-#     modification_date = db.Column(
-#         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-#     status = db.Column(db.String(50))
-#     eos_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     eol_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     pn_code = db.Column(db.String(50))
+class UAM_Device_Table(db.Model):
+    __tablename__ = "uam_device_table"
+    uam_id = db.Column(db.Integer, primary_key=True)
+    atom_id = db.Column(db.Integer, ForeignKey("atom_table.atom_id"))
 
-#     def as_dict(self):
-#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    software_type = db.Column(db.String(50))
+    software_version = db.Column(db.String(50))
+    patch_version = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    manufacturer = db.Column(db.String(50))
+    hw_eos_date = db.Column(db.Date)
+    hw_eol_date = db.Column(db.Date)
+    sw_eos_date = db.Column(db.Date)
+    sw_eol_date = db.Column(db.Date)
+    rfs_date = db.Column(db.Date)
+    authentication = db.Column(db.String(10))
+    serial_number = db.Column(db.String(50))
+    pn_code = db.Column(db.String(50))
+    subrack_id_number = db.Column(db.String(50))
+    manufacturer_date = db.Column(db.Date)
+    hardware_version = db.Column(db.String(50))
+    max_power = db.Column(db.String(50))
+    site_type = db.Column(db.String(50))
+    source = db.Column(db.String(50))
+    stack = db.Column(db.String(50))
+    contract_number = db.Column(db.String(50))
+    contract_expiry = db.Column(db.Date)
+    uptime = db.Column(db.Date)
 
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
 
-# class Sfps_Table(db.Model):
-#     __tablename__ = 'sfp_table'
-#     sfp_id = db.Column(db.Integer, primary_key=True)
-#     device_name = db.Column(
-#         db.String(150))
-#     media_type = db.Column(db.String(50))
-#     port_name = db.Column(db.String(250))
-#     port_type = db.Column(db.String(50))
-#     connector = db.Column(db.String(50))
-#     mode = db.Column(db.String(50))
-#     speed = db.Column(db.String(50))
-#     wavelength = db.Column(db.String(50))
-#     manufacturer = db.Column(db.String(250))
-#     optical_direction_type = db.Column(db.String(50))
-#     pn_code = db.Column(db.String(50))
-#     creation_date = db.Column(db.DateTime, default=datetime.now())
-#     modification_date = db.Column(
-#         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-#     status = db.Column(db.String(50))
-#     eos_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     eol_date = db.Column(db.Date, default=datetime(2030, 1, 1))
-#     rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     serial_number = db.Column(db.String(50))
-
-#     def as_dict(self):
-#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-# class License_Table(db.Model):
-#     __tablename__ = 'license_table'
-#     license_name = db.Column(db.String(250), primary_key=True)
-#     license_description = db.Column(db.String(250))
-#     device_name = db.Column(
-#         db.String(150))
-#     rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     activation_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     expiry_date = db.Column(db.Date, default=datetime(2000, 1, 1))
-#     grace_period = db.Column(db.String(10))
-#     serial_number = db.Column(db.String(50))
-#     creation_date = db.Column(db.DateTime, default=datetime.now())
-#     modification_date = db.Column(
-#         db.DateTime, default=datetime.now(), onupdate=datetime.now())
-#     status = db.Column(db.String(50))
-#     capacity = db.Column(db.String(50))
-#     usage = db.Column(db.String(50))
-#     pn_code = db.Column(db.String(50))
+class Board_Table(db.Model):
+    __tablename__ = "board_table"
+    board_id = db.Column(db.Integer, primary_key=True)
+    uam_id = db.Column(db.Integer, ForeignKey("uam_device_table.uam_id"))
 
-#     def as_dict(self):
-#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+    board_name = db.Column(db.String(250))
+    hardware_version = db.Column(db.String(50))
+    device_slot_id = db.Column(db.String(50))
+    software_version = db.Column(db.String(50))
+    serial_number = db.Column(db.String(50))
+    manufacturer_date = db.Column(db.Date)
+    status = db.Column(db.String(50))
+    eos_date = db.Column(db.Date)
+    eol_date = db.Column(db.Date)
+    rfs_date = db.Column(db.Date)
+    pn_code = db.Column(db.String(50))
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Subboard_Table(db.Model):
+    __tablename__ = "subboard_table"
+    subboard_id = db.Column(db.Integer, primary_key=True)
+    uam_id = db.Column(db.Integer, ForeignKey("uam_device_table.uam_id"))
+
+    subboard_name = db.Column(db.String(250))
+    subboard_type = db.Column(db.String(150))
+    subrack_id = db.Column(db.String(250))
+    slot_number = db.Column(db.String(250))
+    subslot_number = db.Column(db.String(250))
+    hardware_version = db.Column(db.String(50))
+    software_version = db.Column(db.String(50))
+    serial_number = db.Column(db.String(50))
+ 
+    status = db.Column(db.String(50))
+    eos_date = db.Column(db.Date)
+    eol_date = db.Column(db.Date)
+    rfs_date = db.Column(db.Date)
+    pn_code = db.Column(db.String(50))
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Sfps_Table(db.Model):
+    __tablename__ = "sfp_table"
+    sfp_id = db.Column(db.Integer, primary_key=True)
+    uam_id = db.Column(db.Integer, ForeignKey("uam_device_table.uam_id"))
+
+    media_type = db.Column(db.String(50))
+    port_name = db.Column(db.String(250))
+    port_type = db.Column(db.String(50))
+    connector = db.Column(db.String(50))
+    mode = db.Column(db.String(50))
+    speed = db.Column(db.String(50))
+    wavelength = db.Column(db.String(50))
+    manufacturer = db.Column(db.String(250))
+    optical_direction_type = db.Column(db.String(50))
+    pn_code = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    eos_date = db.Column(db.Date)
+    eol_date = db.Column(db.Date)
+    rfs_date = db.Column(db.Date)
+    serial_number = db.Column(db.String(50))
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class License_Table(db.Model):
+    __tablename__ = "license_table"
+    uam_id = db.Column(db.Integer, ForeignKey("uam_device_table.uam_id"))
+
+    license_name = db.Column(db.String(250), primary_key=True)
+    license_description = db.Column(db.String(250))
+    rfs_date = db.Column(db.Date)
+    activation_date = db.Column(db.Date)
+    expiry_date = db.Column(db.Date)
+    grace_period = db.Column(db.String(10))
+    serial_number = db.Column(db.String(50))
+    status = db.Column(db.String(50))
+    capacity = db.Column(db.String(50))
+    usage = db.Column(db.String(50))
+    pn_code = db.Column(db.String(50))
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class SNTC_TABLE(db.Model):
+    __tablename__ = "sntc_table"
+    sntc_id = db.Column(db.Integer, primary_key=True)
+    pn_code = db.Column(db.String(50))
+    
+    hw_eos_date = db.Column(db.Date)
+    hw_eol_date = db.Column(db.Date)
+    sw_eos_date = db.Column(db.Date)
+    sw_eol_date = db.Column(db.Date)
+    manufacturer_date = db.Column(db.Date)
+    
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+
+
+class APS_TABLE(db.Model):
+    __tablename__ = 'aps_table'
+    ap_id = db.Column(db.Integer, primary_key=True)
+    controller_name = db.Column(db.String(50))
+    ap_ip = db.Column(db.String(50))
+    ap_name = db.Column(db.String(50))
+    serial_number = db.Column(db.String(50))
+    ap_model = db.Column(db.String(50))
+    hardware_version = db.Column(db.String(50))
+    software_version = db.Column(db.String(50))
+    description = db.Column(db.String(200))
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now())
+
+
+#
+#
+#
+
+# ** Auto Discovery Models **
+
+#
+#
+#
+
+
+class Auto_Discovery_Table(db.Model):
+    __tablename__ = "auto_discovery_table"
+    discovery_id = db.Column(db.Integer, primary_key=True)
+    ip_address = db.Column(db.String(50))
+    subnet = db.Column(db.String(50))
+    os_type = db.Column(db.String(500))
+    make_model = db.Column(db.String(500))
+    function = db.Column(db.String(500))
+    vendor = db.Column(db.String(500))
+    snmp_status = db.Column(db.String(50))
+    snmp_version = db.Column(db.String(50))
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class Auto_Discovery_Network_Table(db.Model):
+    __tablename__ = "auto_discovery_network_table"
+    network_id = db.Column(db.Integer, primary_key=True)
+    network_name = db.Column(db.String(50))
+    subnet = db.Column(db.String(50))
+    no_of_devices = db.Column(db.Integer, default=0)
+    scan_status = db.Column(db.String(50), default="InActive")
+    excluded_ip_range = db.Column(db.String(200), default="0")
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+#
+#
+#
+
+# ** NCM Models **
+
+#
+#
+#
+
+
+class NCM_Device_Table(db.Model):
+    __tablename__ = "ncm_device_table"
+    ncm_device_id = db.Column(db.Integer, primary_key=True)
+    atom_id = db.Column(db.Integer, ForeignKey("atom_table.atom_id"))
+    status = db.Column(db.String(50))
+    vendor = db.Column(db.String(50))
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class NCM_History_Table(db.Model):
+    __tablename__ = "ncm_history_table"
+    ncm_history_id = db.Column(db.Integer, primary_key=True)
+    ncm_device_id = db.Column(db.Integer, ForeignKey("ncm_device_table.ncm_device_id"))
+    file_name = db.Column(db.String(200))
+    configuration_date = db.Column(db.DateTime, default=datetime.now())
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class NCM_CONFIGURATION_STATUS_TABLE(db.Model):
+    __tablename__ = "ncm_configuration_status_table"
+    ncm_status_id = db.Column(db.Integer, primary_key=True)
+    ncm_device_id = db.Column(db.Integer, ForeignKey("ncm_device_table.ncm_device_id"))
+    success = db.Column(db.Integer)
+    failure = db.Column(db.Integer)
+
+    creation_date = db.Column(db.DateTime, default=datetime.now())
+    modification_date = db.Column(
+        db.DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
 # class IPAM_TABLE(db.Model):
@@ -929,21 +1158,6 @@ class AtomTable(db.Model):
 #     def as_dict(self):
 #         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
-
-# class APS_TABLE(db.Model):
-#     __tablename__ = 'aps_table'
-#     ap_id = db.Column(db.Integer, primary_key=True)
-#     controller_name = db.Column(db.String(50))
-#     ap_ip = db.Column(db.String(50))
-#     ap_name = db.Column(db.String(50))
-#     serial_number = db.Column(db.String(50))
-#     ap_model = db.Column(db.String(50))
-#     hardware_version = db.Column(db.String(50))
-#     software_version = db.Column(db.String(50))
-#     description = db.Column(db.String(200))
-#     creation_date = db.Column(db.DateTime, default=datetime.now())
-#     modification_date = db.Column(
-#         db.DateTime, default=datetime.now(), onupdate=datetime.now())
 
 
 # class F5(db.Model):

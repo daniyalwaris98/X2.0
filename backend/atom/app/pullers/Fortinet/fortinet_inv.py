@@ -4,8 +4,10 @@ from datetime import datetime
 import re, sys, time, json
 import threading
 from dateutil.parser import parse
-from app.common_utils.insert_to_db import UamInventoryData
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.uam.uam_db_utils import UamInventoryData
+from app.utilities.failed_utilts import addFailedDevice
+
+
 class FortinetPuller(object):
     
     def __init__(self):
@@ -124,7 +126,7 @@ class FortinetPuller(object):
                 self.inv_data[host['ip_address']].update({'status': 'success'})
                 self.inv_data[host['ip_address']].update({'board': []})
                 self.inv_data[host['ip_address']].update({'sub_board': []})
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
                 print(self.inv_data,file=sys.stderr)
             except Exception as e:
                 traceback.print_exc()

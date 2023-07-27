@@ -61,6 +61,8 @@ const index = () => {
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [mainModalVisible, setMainModalVisible] = useState(false);
   const [configData, setConfigData] = useState(null);
+  let [dataSourceOfDeviceLoading, setDataSourceOfDeviceLoading] =
+    useState(false);
 
   useEffect(() => {
     let user = localStorage.getItem("user");
@@ -163,13 +165,16 @@ const index = () => {
   useEffect(() => {
     const addIpamByAtom = async () => {
       setAllIpamDeviceLoading(true);
+      setDataSourceOfDeviceLoading(true);
       try {
         const res = await axios.get(baseUrl + "/getAtominIpam");
         atomExcelData = res.data;
         setAtomDataSource(atomExcelData);
         setAllIpamDeviceLoading(false);
+        setDataSourceOfDeviceLoading(false);
       } catch (err) {
         setAllIpamDeviceLoading(false);
+        setDataSourceOfDeviceLoading(false);
       }
     };
     addIpamByAtom();
@@ -353,6 +358,7 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "ip_address",
         "Ip Address",
+        setRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
@@ -370,6 +376,7 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "device_name",
         "Device Name",
+        setRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
@@ -387,6 +394,7 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "function",
         "Function",
+        setRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
@@ -404,6 +412,7 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "onboard_status",
         "Device Type",
+        setRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
@@ -421,6 +430,7 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "onboard_status",
         "OnBoard Status",
+        setRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
@@ -432,7 +442,6 @@ const index = () => {
   const deleteRow = async () => {
     if (selectedRowKeys.length > 0) {
       try {
-        ////console.log(device);
         await axios
           .post(baseUrl + "/deleteIpamDevice ", selectedRowKeys)
           .then((response) => {
@@ -442,16 +451,13 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllIpamDevices")
                 .then((response) => {
-                  //console.log(response.data);
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
                   setSelectedRowKeys([]);
-                  // excelData = response.data;
                   setLoading(false);
                 })
                 .catch((error) => {
-                  //console.log(error);
                   setLoading(false);
                 })
             );
@@ -462,8 +468,6 @@ const index = () => {
           });
       } catch (err) {
         setLoading(false);
-
-        //console.log(err);
       }
     } else {
       openSweetAlert(`Now Device Selected`, "error");
@@ -571,15 +575,12 @@ const index = () => {
           axios
             .get(baseUrl + "/getPasswordGroupDropdown")
             .then((res) => {
-              //console.log("getPasswordGroupDropdown", res);
               setPasswordArray(res.data);
               setPassword_group(res.data[0]);
 
               setLoading(false);
             })
             .catch((error) => {
-              //console.log(error);
-              // openSweetAlert("Something Went Wrong!", "danger");
               setLoading(false);
             })
         );
@@ -1049,7 +1050,7 @@ const index = () => {
               </>
             ) : null}
             {tableName === "Add From Atom" ? (
-              <SpinLoading>
+              <SpinLoading spinning={dataSourceOfDeviceLoading}>
                 <div
                   style={{
                     overflowY: "scroll",

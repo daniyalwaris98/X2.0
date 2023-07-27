@@ -46,9 +46,9 @@ def GetAllAdmin(user_data):
         super_user = user_data['user_role']
 
         userList = []
-        results = db.session.query(UserTable, UserRolesTable).join(
-            UserRolesTable, UserTable.role_id == UserRolesTable.role_id).all()
-        end_user = EndUserTable.query.first()
+        results = db.session.query(User_Table, User_Roles_Table).join(
+            User_Roles_Table, User_Table.role_id == User_Roles_Table.role_id).all()
+        end_user = End_User_Table.query.first()
 
         for user, user_role in results:
             adminDataDict = {'id': user.id, 'user_id': user.user_id, 'name': user.name, 'email': user.email}
@@ -107,7 +107,7 @@ def DeleteUser(user_data):
             return "User ID Not Given", 500
         user_id = userObj['user_id']
 
-        user_exist = UserTable.query.filter_by(user_id=user_id).first()
+        user_exist = User_Table.query.filter_by(user_id=user_id).first()
 
         if user_exist is None:
             return "User Does Not Exist", 500
@@ -164,7 +164,7 @@ def EditAdminRole(user_data):
 @token_required
 def GetAllRoles(user_data):
     try:
-        roles = UserRolesTable.query.all()
+        roles = User_Roles_Table.query.all()
 
         role_list = []
         for role in roles:
@@ -183,7 +183,7 @@ def GetAllRoles(user_data):
 def GetAllAdminRole(user_data):
     try:
         adminObjsList = []
-        adminObjs = UserRolesTable.query.all()
+        adminObjs = User_Roles_Table.query.all()
         for adminObj in adminObjs:
             objDict = {'role_id': adminObj.role_id, 'role': adminObj.role,
                        'configuration': json.loads(adminObj.configuration)}
@@ -207,7 +207,7 @@ def DeleteAdmin(user_data):
             return "Role ID Not Given", 500
 
         role_id = roleObj['role_id']
-        user_role = UserRolesTable.query.filter_by(role_id=role_id).first()
+        user_role = User_Roles_Table.query.filter_by(role_id=role_id).first()
 
         if user_role is None:
             return "User Role Does Not Exist", 500
@@ -231,7 +231,7 @@ def DeleteAdmin(user_data):
 def EditAllEndUserDetails(user_date):
     try:
 
-        licenseObj = LicenseVerificationTable.query.first()
+        licenseObj = License_Verification_Table.query.first()
 
         endUserObj = request.get_json()
         response, status = addEndUserDetails(endUserObj, user_date, licenseObj.license_verification_key)
@@ -247,7 +247,7 @@ def EditAllEndUserDetails(user_date):
 @token_required
 def GetAllEndUserDetails(user_data):
     try:
-        endUserObj = EndUserTable.query.first()
+        endUserObj = End_User_Table.query.first()
         if endUserObj is not None:
             objDict = {'end_user_id': endUserObj.end_user_id, 'company_name': endUserObj.company_name,
                        'po_box': endUserObj.po_box, 'address': endUserObj.address,

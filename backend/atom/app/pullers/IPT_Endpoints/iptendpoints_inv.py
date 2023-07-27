@@ -66,7 +66,7 @@ class IPTENDPOINTSPuller(object):
             host_names = self.get_oid_data(engn, community, transport, cnxt, oids["hostname"])
             ip_addresses= self.get_oid_data(engn, community, transport, cnxt, oids["ip_address"])
             #mac_addresses= self.get_oid_data(engn, community, transport, cnxt, oids["mac_address"])
-            #utilities= self.get_oid_data(engn, community, transport, cnxt, oids["user"])
+            #users= self.get_oid_data(engn, community, transport, cnxt, oids["user"])
             #product_ids= self.get_oid_data(engn, community, transport, cnxt, oids["product_id"])
             #descriptions= self.get_oid_data(engn, community, transport, cnxt, oids["description"])
             firmwares= self.get_oid_data(engn, community, transport, cnxt, oids["firmware"])
@@ -76,7 +76,7 @@ class IPTENDPOINTSPuller(object):
                 host_names = executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["hostname"])
                 ip_addresses= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["ip_address"])
                 mac_addresses= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["mac_address"])
-                utilities= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["user"])
+                users= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["user"])
                 product_ids= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["product_id"])
                 descriptions= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["description"])
                 firmwares= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["firmware"])
@@ -84,7 +84,7 @@ class IPTENDPOINTSPuller(object):
             host_names= host_names.result()
             ip_addresses= ip_addresses.result()
             mac_addresses= mac_addresses.result()
-            utilities= utilities.result()
+            users= users.result()
             product_ids= product_ids.result()
             descriptions= descriptions.result()
             firmwares= firmwares.result()
@@ -116,7 +116,7 @@ class IPTENDPOINTSPuller(object):
                         telephone["mac_address"]=""
                     
                     #search Users
-                    user_exists=list(filter(lambda devices: devices['device'] == hosts["device"], utilities))
+                    user_exists=list(filter(lambda devices: devices['device'] == hosts["device"], users))
                     if user_exists:
                         telephone["user"]=user_exists[0].get("value")
                     else:
@@ -340,14 +340,14 @@ if __name__ == '__main__':
                 host_names = executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["hostname"])
                 ip_addresses= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["ip_address"])
                 mac_addresses= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["mac_address"])
-                utilities= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["user"])
+                users= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["user"])
                 product_ids= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["product_id"])
                 descriptions= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["description"])
                 firmwares= executor.submit(self.get_oid_data, engn, community, transport, cnxt, oids["firmware"])
             host_names= host_names.result()
             ip_addresses= ip_addresses.result()
             mac_addresses= mac_addresses.result()
-            utilities= utilities.result()
+            users= users.result()
             product_ids= product_ids.result()
             descriptions= descriptions.result()
             firmwares= firmwares.result()

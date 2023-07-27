@@ -5,8 +5,8 @@ import re, sys, time, json
 import threading
 import logging
 import logging.handlers
-from app.common_utils.insert_to_db import UamInventoryData
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.uam.uam_db_utils import UamInventoryData
+
 
 class XEPuller(object):
     
@@ -172,7 +172,7 @@ class XEPuller(object):
 
 
                 # print("$$$$$$$$$$$$$$$$$$$$$$$", self.inv_data,file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                self.failed = UamInventoryData(self.inv_data)
                 # print("<><><><><>", file=sys.stderr)
             except Exception as e:
                 print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)

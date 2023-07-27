@@ -1,8 +1,7 @@
-import { Row, Col, Progress, Table } from "antd";
+import { Row, Col, Progress } from "antd";
 import React, { useState, useEffect } from "react";
 import TopComponent from "./Header";
 import VendorChart from "./charts/VendorCharts";
-import SubnetSummary from "./charts/SubnetSummary";
 import axios, { baseUrl } from "../../utils/axios";
 import InterfacTable from "./Tables/InterfaceTable.jsx";
 import GeoMap from "./charts/GeoMap";
@@ -29,6 +28,7 @@ const index = () => {
     };
     serviceCalls();
   }, []);
+
   useEffect(() => {
     const serviceCalls = async () => {
       try {
@@ -66,8 +66,6 @@ const index = () => {
               baseUrl + "/getMonitoringDevicesCards ",
               { ip_address: text }
             );
-
-            console.log("getMonitoringDevicesCards", res);
 
             navigate("/monitoringsummary/main", {
               state: {

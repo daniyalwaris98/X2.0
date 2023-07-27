@@ -11,12 +11,12 @@ def addEndUserDetails(endUserObj, user_data, license_key):
         if licenseObj is None:
             return "Invalid License Key", 500
 
-        end_user = EndUserTable.query.first()
+        end_user = End_User_Table.query.first()
 
         update = True
 
         if end_user is None:
-            end_user = EndUserTable()
+            end_user = End_User_Table()
             update = False
         else:
             if user_data['user_role'] != "Super_Admin":
@@ -27,7 +27,7 @@ def addEndUserDetails(endUserObj, user_data, license_key):
                 return "Company Name Can Not Be Null", 500
             else:
                 if update:
-                    end_user_exist = EndUserTable.query.filter_by(company_name=endUserObj['company_name'].strip()).first()
+                    end_user_exist = End_User_Table.query.filter_by(company_name=endUserObj['company_name'].strip()).first()
                     if end_user_exist is None:
                         return "Company Name Can Not Be Updated", 500
                 else:
@@ -85,9 +85,9 @@ def addEndUserDetails(endUserObj, user_data, license_key):
             if end_user.company_name != licenseObj['company_name']:
                 return "License Key Does Not Match With End-User", 500
 
-            license_row = LicenseVerificationTable.query.first()
+            license_row = License_Verification_Table.query.first()
             if license_row is None:
-                license_row = LicenseVerificationTable()
+                license_row = License_Verification_Table()
                 license_row.company_name = licenseObj['company_name']
                 license_row.license_verification_key = license_key
                 license_row.start_date = licenseObj['start_date']
@@ -109,7 +109,7 @@ def addEndUserDetails(endUserObj, user_data, license_key):
 
 def addUserInDatabase(userObj, super_user):
     try:
-        user = UserTable()
+        user = User_Table()
 
         #
         # user id can not be null or duplicate
@@ -118,7 +118,7 @@ def addUserInDatabase(userObj, super_user):
 
             if user_id != "":
 
-                user_exists = UserTable.query.filter_by(user_id=user_id).first()
+                user_exists = User_Table.query.filter_by(user_id=user_id).first()
                 if user_exists is None:
                     user.user_id = user_id
                 else:
@@ -153,7 +153,7 @@ def addUserInDatabase(userObj, super_user):
             role = userObj['role'].strip()
             if role != "":
 
-                role_exist = UserRolesTable.query.filter_by(role=role).first()
+                role_exist = User_Roles_Table.query.filter_by(role=role).first()
                 if role_exist is not None:
 
                     if super_user:
@@ -172,7 +172,7 @@ def addUserInDatabase(userObj, super_user):
             else:
                 return "User Role Can Not Be Null", 500
         elif super_user:
-            role_exist = UserRolesTable.query.filter_by(role='Super_Admin').first()
+            role_exist = User_Roles_Table.query.filter_by(role='Super_Admin').first()
             if role_exist is not None:
                 user.role_id = role_exist.role_id
             else:
@@ -229,7 +229,7 @@ def addUserInDatabase(userObj, super_user):
 
         #
         # end user can not be null and must exist in end user table
-        end_user = EndUserTable.query.first()
+        end_user = End_User_Table.query.first()
 
         if end_user is not None:
             user.end_user_id = end_user.end_user_id
@@ -268,7 +268,7 @@ def EditUserInDatabase(userObj, user_data):
 
             if user_id != "":
 
-                user = UserTable.query.filter_by(user_id=user_id).first()
+                user = User_Table.query.filter_by(user_id=user_id).first()
 
             else:
                 return "User ID Can Not Be Null", 500
@@ -306,7 +306,7 @@ def EditUserInDatabase(userObj, user_data):
             role = userObj['role'].strip()
             if role != "":
 
-                role_exist = UserRolesTable.query.filter_by(role=role).first()
+                role_exist = User_Roles_Table.query.filter_by(role=role).first()
                 if role_exist is not None:
 
                     if super_user:
@@ -369,7 +369,7 @@ def EditUserInDatabase(userObj, user_data):
 
         #
         # end user can not be null and must exist in end user table
-        end_user = EndUserTable.query.first()
+        end_user = End_User_Table.query.first()
 
         if end_user is not None:
             user.end_user_id = end_user.end_user_id
@@ -389,7 +389,7 @@ def EditUserInDatabase(userObj, user_data):
 
 def addUserRoleInDatabase(roleObj):
     try:
-        role = UserRolesTable()
+        role = User_Roles_Table()
 
         #
         # role can not be null or duplicate
@@ -398,7 +398,7 @@ def addUserRoleInDatabase(roleObj):
 
             if role_id != "":
 
-                role_exists = UserRolesTable.query.filter_by(role_id=role_id).first()
+                role_exists = User_Roles_Table.query.filter_by(role_id=role_id).first()
                 if role_exists is None:
                     role.role_id = role_id
                 else:
@@ -444,7 +444,7 @@ def EditUserRoleInDatabase(roleObj):
 
             if role != "":
 
-                user_role = UserRolesTable.query.filter_by(role=role).first()
+                user_role = User_Roles_Table.query.filter_by(role=role).first()
 
             else:
                 return "User Role Can Not Be Null", 500

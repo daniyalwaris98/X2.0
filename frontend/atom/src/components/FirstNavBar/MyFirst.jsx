@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from "react";
 import logo from "./images/logo.svg";
-import light from "./images/light.svg";
 import notification from "./images/notification.svg";
 import setting from "./images/setting.svg";
 import logout from "./images/logout.svg";
@@ -8,9 +7,8 @@ import { useLocation } from "react-router-dom";
 import axios, { baseUrl } from "../../utils/axios";
 
 import profile from "./images/profile.svg";
-import { Divider, Input, Dropdown, Menu, Drawer } from "antd";
+import { Input, Dropdown, Menu, Drawer } from "antd";
 import { SearchOutlined, FlagOutlined } from "@ant-design/icons";
-// import ReactLanguageSelect from "react-languages-select";
 import ReactFlagsSelect from "react-flags-select";
 import { Row, Col } from "antd";
 import { StyledMenu, MainStyling } from "./FirstNavBar.styled.js";
@@ -20,7 +18,6 @@ import styled from "styled-components";
 
 const FirstNavBar = (props) => {
   const navigate = useNavigate();
-
   const [open, setOpen] = useState(false);
 
   const [selected, setSelected] = useState("");
@@ -47,7 +44,6 @@ const FirstNavBar = (props) => {
 
   const showDrawer = () => {
     setOpen(true);
-    console.log("asdfghjk");
   };
   const onClose = () => {
     setOpen(false);

@@ -22,7 +22,7 @@ def DiscoverIPList(ip_list, results):
 
             data_list = ExtractIpData(scanner,udp, host)
 
-            if data_list != Null:
+            if data_list != None:
                 results.append(data_list)
         except Exception as e:
             print("Error In DiscoverIPList For "+ip, file=sys.stderr)

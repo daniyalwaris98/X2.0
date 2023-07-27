@@ -9,7 +9,6 @@ import axios, { baseUrl } from "../../../../utils/axios";
 import { SpinLoading, RackDetail } from "../../../AllStyling/All.styled";
 
 const index = (props) => {
-  const [rackDetails, setRackDetails] = useState([DummyData]);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [Data, setData] = useState([]);
   const [loading, setLoading] = useState(false);
@@ -20,7 +19,6 @@ const index = (props) => {
       setLoading(true);
       try {
         const res = await axios.get(baseUrl + "/allRacks");
-        console.log("allRacks", res);
         setData(res.data);
         setLoading(false);
       } catch (err) {
@@ -31,34 +29,13 @@ const index = (props) => {
     allRacks();
   }, [props.dataSource]);
 
-  // const GetRacksDetail = async (index) => {
-  //   console.log("getRackDetail",index);
-  //   try {
-
-  //     const res = await axios.post(
-  //       baseUrl +
-  //       // "/getPhonesDetail",
-  //       {
-  //         // ip_address
-  //         :index}
-  //     );
-  //    setData(res.data)
-  //     // console.log("Data Second",res.data);
-  //   } catch (err) {
-  //     console.log(err);
-  //   }
-  // };
   const showRackDetail = async (record) => {
-    console.log(record);
     try {
       setLoading(true);
       const res = await axios.get(
         `${baseUrl}/getRackByRackName?rackname=${record}`
       );
-      console.log("getRackByRackName", res.data);
       setMyRackDetail(res.data);
-      // setRDData(res.data);
-      // setIsRDModalVisible(true);
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -68,16 +45,9 @@ const index = (props) => {
   const showModal = (index) => {
     showRackDetail(index);
     setIsModalVisible(true);
-    // GetRacksDetail(index)
-    // pass index to the function the end
-    // point to get the vaalue of the perticular rack
   };
 
   const handleOk = () => {
-    setIsModalVisible(false);
-  };
-
-  const handleCancel = () => {
     setIsModalVisible(false);
   };
 
@@ -93,17 +63,13 @@ const index = (props) => {
           {Data.map((item, index) => {
             return (
               <div key={index} style={{ marginRight: "5px" }}>
-                {/* <MyNew name={item.rack_name} 
-  />  */}
                 <RackDetail
                   bgcolor={index % 2 === 0}
                   style={{
                     textAlign: "center",
                     height: "65px",
                     borderBottom: "1px solid",
-                    // backgroundColor: "#66B127",
                     width: "100%",
-                    // marginRight: "35px",
                     color: "#fff",
                     borderRadius: "8px",
                     paddingTop: "18px",
@@ -127,9 +93,7 @@ const index = (props) => {
           padding: "20px",
         }}
         open={isModalVisible}
-        // onOk={handleOk}
         footer={null}
-        // style={{ padding: "20px" }}
       >
         <div
           style={{

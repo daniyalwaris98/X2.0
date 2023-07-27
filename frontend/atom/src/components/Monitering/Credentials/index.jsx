@@ -26,12 +26,10 @@ let v3excelData = [];
 
 const Atom = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [editRecord, setEditRecord] = useState(null);
   const [rowCount, setRowCount] = useState(0);
   const [v1v2rowCount, setv1v2RowCount] = useState(0);
   const [v3rowCount, setv3RowCount] = useState(0);
   const inputRef = useRef(null);
-  let [exportLoading, setExportLoading] = useState(false);
 
   let [dataSource, setDataSource] = useState(excelData);
   let [v1v2dataSource, setv1v2DataSource] = useState(v1v2excelData);
@@ -74,18 +72,14 @@ const Atom = () => {
   const showModalv3 = () => {
     setv3IsModalOpen(true);
   };
-  const handleOkv3 = () => {
-    setv3IsModalOpen(false);
-  };
+
   const handleCancelv3 = () => {
     setv3IsModalOpen(false);
   };
   const showModalwmi = () => {
     setwmiIsModalOpen(true);
   };
-  const handleOkwmi = () => {
-    setwmiIsModalOpen(false);
-  };
+
   const handleCancelwmi = () => {
     setwmiIsModalOpen(false);
   };
@@ -136,7 +130,6 @@ const Atom = () => {
             setPort("");
 
             setIsModalOpen(false);
-            setv1v2IsModalOpen(false);
             const promises = [];
             promises.push(
               axios
@@ -817,7 +810,7 @@ const Atom = () => {
           <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
             <CreBtnStyle onClick={showModalv1v2}>V 1 / V 2</CreBtnStyle>
 
-            <Modal open={v1v2isModalOpen} footer={false} closable={false}>
+            <Modal open={v1v2isModalOpen} footer={false}>
               <form
                 onSubmit={handleSubmit}
                 style={{
@@ -878,7 +871,7 @@ const Atom = () => {
                           borderRadius: "8px",
                         }}
                         color={"#BBBABA"}
-                        onClick={handleCancelv1v2}
+                        onClick={() => setv1v2IsModalOpen(false)}
                       >
                         Cancel
                       </StyledButton>

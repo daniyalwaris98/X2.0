@@ -1,5 +1,4 @@
-import React, { useState, useEffect, useRef } from "react";
-// import { Button, Row, Col, Input } from "antd";
+import React, { useState, useEffect } from "react";
 import styled from "styled-components";
 import FunctionBarChartMain from "./Charts/BarChart/FunctionBarChart.jsx";
 import BarChartMain from "./Charts/BarChart";
@@ -16,17 +15,16 @@ import axios, { baseUrl } from "../../../utils/axios";
 import { useNavigate } from "react-router-dom";
 import EditModal from "./EditSubnet";
 import "./style.css";
+import exportExcel from "../assets/exp.svg";
 import {
   Modal,
   Radio,
   Row,
   Col,
-  Checkbox,
   Table,
   notification,
   Button,
   Input,
-  Menu,
 } from "antd";
 
 import * as XLSX from "xlsx";
@@ -45,18 +43,16 @@ import {
   ColRowNumberStyle,
   MainDivStyle,
   AddButtonStyle,
+  StyledExportButton,
 } from "../../AllStyling/All.styled.js";
 
 import { columnSearch } from "../../../utils";
 import { getColumnSearchProps } from "./Filter.jsx";
-import { devices } from "../../../data/globalData.js";
+import { devices, functions, vendors } from "../../../data/globalData.js";
 let excelData = [];
 let columnFilters = {};
 let deviceExcelData = [];
 let DeviceColumnFilters = {};
-
-let popupExcelData = [];
-let popupColumnFilters = {};
 
 let autoDiscoveryExcelData = [];
 let autoDiscoveryColumnFilters = {};
@@ -68,7 +64,6 @@ const index = () => {
   const navigate = useNavigate();
   const [addLoading, setAddLoading] = useState(false);
   let [dataSource, setDataSource] = useState(excelData);
-  let [SubnetDataSource, setSubnetDataSource] = useState([]);
   let [dataSourceOfDevice, setDataSourceOfDevice] = useState(deviceExcelData);
   const [importBtnLoading, setImportBtnLoading] = useState(true);
 
@@ -79,7 +74,7 @@ const index = () => {
 
   const [mainModalVisible, setMainModalVisible] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [ipamDeviceLoading, setIpamDeviceLoading] = useState(false);
+  const [ipamDeviceLoading, setIpamDeviceLoading] = useState(true);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   const [autoDiscoverysearchText, setautoDiscoverySearchText] = useState(null);
@@ -87,7 +82,6 @@ const index = () => {
     useState(null);
 
   const [mainTableloading, setMainTableLoading] = useState(false);
-  const [rescanLoading, setRescanLoading] = useState(false);
   const [v1v2isModalOpen, setv1v2IsModalOpen] = useState(false);
   const [v3isModalOpen, setv3IsModalOpen] = useState(false);
   const [credentialIsModalOpen, setCredentialIsModalOpen] = useState(false);
@@ -102,7 +96,6 @@ const index = () => {
   const [myFunctionOther, setFunctionOther] = useState("");
   const [vendor, setVendor] = useState("Cisco");
   const [vendorOther, setVendorOther] = useState("");
-
   const [profileName, setProfileName] = useState("");
   const [description, setDescription] = useState("");
   const [community, setCommunity] = useState("");
@@ -110,7 +103,6 @@ const index = () => {
 
   const [profileNamev3, setProfileNamev3] = useState("");
   const [descriptionv3, setDescriptionv3] = useState("");
-
   const [portv3, setPortv3] = useState("");
   const [usernamev3, setUsernamev3] = useState("");
   const [authorizationProtocolv3, setaAuthorizationProtocolv3] =
@@ -138,9 +130,11 @@ const index = () => {
   const showModalCredential = () => {
     setCredentialIsModalOpen(true);
   };
+
   const handleOkCredential = () => {
     setCredentialIsModalOpen(false);
   };
+
   const handleCancelCredential = () => {
     setCredentialIsModalOpen(false);
   };
@@ -169,7 +163,6 @@ const index = () => {
     setwmiIsModalOpen(false);
   };
 
-  const [mainLoading, setMainLoading] = useState(false);
   const [deviceSelectedRowKeys, setDeviceSelectedRowKeys] = useState([]);
   const [deviceSearchText, setDeviceSearchText] = useState(null);
   const [deviceSearchedColumn, setDeviceSearchedColumn] = useState(null);
@@ -179,8 +172,7 @@ const index = () => {
   const [importLoading, setImportLoading] = useState(false);
 
   const [rowCount, setRowCount] = useState(0);
-  const [deviceowCount, setDeviceRowCount] = useState(0);
-  const [autoDiscoveryRowCount, setautoDiscoveryRowCount] = useState(0);
+  const [deviceRowCount, setDeviceRowCount] = useState(0); // don't remove it is used for filtering device
 
   let tableReload = false;
 
@@ -197,7 +189,7 @@ const index = () => {
       try {
         const res = await axios.get(baseUrl + "/getAllMonitoringDevices");
         excelData = res.data;
-
+        setIpamDeviceLoading(false);
         setDataSource(excelData);
         setRowCount(excelData.length);
 
@@ -205,6 +197,7 @@ const index = () => {
       } catch (err) {
         console.log(err.response);
         setMainTableLoading(false);
+        setIpamDeviceLoading(false);
       }
     };
     serviceCalls();
@@ -298,9 +291,9 @@ const index = () => {
     const serviceCalls = async () => {
       try {
         const res = await axios.get(baseUrl + "/getAtomInMonitoring");
-
         deviceExcelData = res.data;
         setDataSourceOfDevice(deviceExcelData);
+        setDeviceRowCount(deviceExcelData.length());
       } catch (err) {
         console.log(err.response);
         setMainTableLoading(false);
@@ -313,7 +306,6 @@ const index = () => {
     const serviceCalls = async () => {
       try {
         const res = await axios.get(baseUrl + "/getSubnetsFromDevice");
-
         autoDiscoveryExcelData = res.data;
         setAutoDiscovery(autoDiscoveryExcelData);
       } catch (err) {
@@ -332,11 +324,8 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getDevCredentials");
-
-        console.log("getDevCredentials", res);
         setcred(res.data);
         setCred_group(res.data[0]);
-
         setLoading(false);
       } catch (err) {
         console.log(err.response);
@@ -356,7 +345,6 @@ const index = () => {
       .then((response) => {
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
-
           setImportLoading(false);
         } else {
           setMainModalVisible(false);
@@ -369,7 +357,6 @@ const index = () => {
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
                 setDataSource(response?.data);
-
                 setImportLoading(false);
               })
               .catch((error) => {
@@ -395,7 +382,6 @@ const index = () => {
     deviceSelectedRowKeys,
     onChange: onDeviceSelectChange,
     selection: Table.SELECTION_ALL,
-
     getCheckboxProps: () => ({
       disabled: configData?.monitering.pages.device.read_only,
     }),
@@ -496,7 +482,7 @@ const index = () => {
       const headers = fileData[0];
       fileData.splice(0, 1);
       let data = convertToJson(headers, fileData);
-      validateExcelFile(data);
+      setImportFromExcel(data);
     };
   };
 
@@ -684,17 +670,13 @@ const index = () => {
     }
 
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addMonitoringDevice ", formData)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
-            console.log(response?.response?.data);
-            // openSweetAlert("Something Went Wrong!", "error");
             setAddLoading(false);
           } else {
-            // setMainModalVisible(false);
             if (deviceType === "Other") {
               setDeviceType("Juniper");
               setDeviceTypeOther("");
@@ -710,13 +692,6 @@ const index = () => {
 
             setIpAddress("");
             setDeviceName("");
-            // setActiveState("");
-            // setDeviceType("");
-            // setSource("");
-            // setVendor("");
-            // setFunction("");
-            // setStatus("");
-            // setPassword_group("");
             openSweetAlert(`Device Added Successfully`, "success");
             setLoading(false);
             const promises = [];
@@ -725,7 +700,6 @@ const index = () => {
                 .get(baseUrl + "/getAllMonitoringDevices")
                 .then((response) => {
                   setMainModalVisible(false);
-                  console.log(response.data);
                   setDataSource(response.data);
                   excelData = response.data;
                   setRowCount(response.data.length);
@@ -736,8 +710,6 @@ const index = () => {
                 .catch((error) => {
                   console.log(error);
                   setAddLoading(false);
-
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
@@ -747,7 +719,6 @@ const index = () => {
           setAddLoading(false);
 
           console.log("in add seed device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
       setAddLoading(false);
@@ -781,20 +752,14 @@ const index = () => {
       port,
       category: "v1/v2",
     };
-    console.log(v1v2Data);
     setv1v2IsModalOpen(false);
 
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addMonitoringCredentials ", v1v2Data)
         .then((response) => {
-          console.log("hahahehehoho");
-          // console.log(response.status);
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data.Response, "error");
-            console.log(response?.response?.data);
-            // openSweetAlert("Something Went Wrong!", "error");
             setLoading(false);
           } else {
             openSweetAlert("v1v2Data Added Successfully", "success");
@@ -807,14 +772,11 @@ const index = () => {
               axios
                 .get(baseUrl + "/getDevCredentials")
                 .then((response) => {
-                  console.log("getDevCredentials", response);
                   setcred(response.data);
                   setCred_group(response.data[0]);
                 })
                 .catch((error) => {
                   console.log(error);
-                  // openSweetAlert("Something Went Wrong!", "danger");
-                  // setLoading(false);
                 })
             );
             setLoading(false);
@@ -834,19 +796,13 @@ const index = () => {
       profile_name: profileNamewmi,
       category: "wmi",
     };
-    console.log(wmiData);
     setwmiIsModalOpen(false);
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addMonitoringCredentials ", wmiData)
         .then((response) => {
-          console.log("hahahehehoho");
-          // console.log(response.status);
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data.Response, "error");
-            console.log(response?.response?.data);
-            // openSweetAlert("Something Went Wrong!", "error");
             setLoading(false);
           } else {
             openSweetAlert("WMI Added Successfully", "success");
@@ -858,14 +814,11 @@ const index = () => {
               axios
                 .get(baseUrl + "/getDevCredentials")
                 .then((response) => {
-                  console.log("getDevCredentials", response);
                   setcred(response.data);
                   setCred_group(response.data[0]);
                 })
                 .catch((error) => {
                   console.log(error);
-                  // openSweetAlert("Something Went Wrong!", "danger");
-                  // setLoading(false);
                 })
             );
             setLoading(false);
@@ -890,19 +843,13 @@ const index = () => {
       encryption_protocol: encryptionProtocolv3,
       category: "v3",
     };
-    console.log(v3Data);
     setv3IsModalOpen(false);
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addMonitoringCredentials ", v3Data)
         .then((response) => {
-          console.log("hahahehehoho");
-          // console.log(response.status);
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data.Response, "error");
-            console.log(response?.response?.data);
-            // openSweetAlert("Something Went Wrong!", "error");
             setLoading(false);
           } else {
             openSweetAlert("v3 Added Successfully", "success");
@@ -911,23 +858,18 @@ const index = () => {
             setPortv3("");
             setUsernamev3("");
             setaAuthorizationPasswordv3("");
-            // setaAuthorizationProtocolv3("");
             setEncryptionPasswordv3("");
-            // setEncryptionProtocolv3("");
 
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + "/getDevCredentials")
                 .then((response) => {
-                  console.log("getDevCredentials", response);
                   setcred(response.data);
                   setCred_group(response.data[0]);
                 })
                 .catch((error) => {
                   console.log(error);
-                  // openSweetAlert("Something Went Wrong!", "danger");
-                  // setLoading(false);
                 })
             );
             setLoading(false);
@@ -952,20 +894,6 @@ const index = () => {
     getCheckboxProps: () => ({
       disabled: configData?.monitering.pages.device.read_only,
     }),
-  };
-
-  const showSubnetData = async (subnet) => {
-    try {
-      setLoading(true);
-      const res = await axios.post(
-        `${baseUrl}/getIpAddressesBySubnet?subnet_address=${subnet}`
-      );
-      setSubnetDataSource(res.data);
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      console.log(err);
-    }
   };
 
   const edit = (record) => {
@@ -1010,12 +938,9 @@ const index = () => {
       render: (text, record) => (
         <p
           style={{
-            // color: "#66B127",
-            // textDecoration: "underline",
             textAlign: "left",
             paddingTop: "10px",
             paddingLeft: "10px",
-            // cursor: "pointer",
           }}
         >
           {text}
@@ -1039,13 +964,10 @@ const index = () => {
       render: (text, record) => (
         <p
           onClick={async () => {
-            setMainLoading(true);
             const res = await axios.post(
               baseUrl + "/getMonitoringDevicesCards ",
               { ip_address: text }
             );
-
-            console.log("getMonitoringDevicesCards", res);
 
             navigate("/monitoringsummary/main", {
               state: {
@@ -1053,7 +975,6 @@ const index = () => {
                 res: res.data,
               },
             });
-            setMainLoading(false);
           }}
           style={{
             color: "#66B127",
@@ -1135,12 +1056,6 @@ const index = () => {
               <span style={{ textAlign: "center" }}>{text}</span>
             </>
           ) : null}
-          {/* {text === "" ? (
-            <>
-              <img src={inactive} alt="" /> &nbsp;{" "}
-              <span style={{ textAlign: "center" }}>Inactive</span>
-            </>
-          ) : null} */}
         </div>
       ),
 
@@ -1161,12 +1076,9 @@ const index = () => {
       render: (text, record) => (
         <p
           style={{
-            // color: "#66B127",
-            // textDecoration: "underline",
             textAlign: "center",
             paddingTop: "10px",
             paddingTop: "10px",
-            // cursor: "pointer",
           }}
         >
           {text}
@@ -1190,12 +1102,9 @@ const index = () => {
       render: (text, record) => (
         <p
           style={{
-            // color: "#66B127",
-            // textDecoration: "underline",
             textAlign: "center",
             paddingTop: "10px",
             paddingTop: "10px",
-            // cursor: "pointer",
           }}
         >
           {text}
@@ -1219,12 +1128,9 @@ const index = () => {
       render: (text, record) => (
         <p
           style={{
-            // color: "#66B127",
-            // textDecoration: "underline",
             textAlign: "center",
             paddingTop: "10px",
             paddingTop: "10px",
-            // cursor: "pointer",
           }}
         >
           {text}
@@ -1248,12 +1154,9 @@ const index = () => {
       render: (text, record) => (
         <p
           style={{
-            // color: "#66B127",
-            // textDecoration: "underline",
             textAlign: "center",
             paddingTop: "10px",
             paddingTop: "10px",
-            // cursor: "pointer",
           }}
         >
           {text}
@@ -1271,35 +1174,6 @@ const index = () => {
       ellipsis: true,
     },
 
-    // {
-    //   title: "Types",
-    //   dataIndex: "types",
-    //   key: "types",
-    //   render: (text, record) => (
-    //     <p
-    //       style={{
-    //         // color: "#66B127",
-    //         // textDecoration: "underline",
-    //         textAlign: "center",
-    //         paddingTop: "10px",
-    //         paddingTop: "10px",
-    //         // cursor: "pointer",
-    //       }}
-    //     >
-    //       {text}
-    //     </p>
-    //   ),
-
-    //   ...getColumnSearchProps(
-    //     "types",
-    //     "Types",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "Credentials",
       dataIndex: "credentials",
@@ -1307,12 +1181,9 @@ const index = () => {
       render: (text, record) => (
         <p
           style={{
-            // color: "#66B127",
-            // textDecoration: "underline",
             textAlign: "center",
             paddingTop: "10px",
             paddingTop: "10px",
-            // cursor: "pointer",
           }}
         >
           {text}
@@ -1331,7 +1202,6 @@ const index = () => {
     },
   ];
 
-  /* (bug fix) monitoring/device add from atom / Import from excel / export template */
   let seedTemp = [
     {
       ip_address: "",
@@ -1347,15 +1217,12 @@ const index = () => {
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
+      onClick: () => {},
     });
   };
 
   const exportTemplate = () => {
     templeteExportFile(seedTemp);
-    // openNotification();
   };
 
   const templeteExportFile = (atomData) => {
@@ -1367,8 +1234,6 @@ const index = () => {
   };
 
   const handleReScan = async (record) => {
-    setRescanLoading(true);
-
     const scanData = [
       {
         subnet_address: record.subnet_address,
@@ -1386,36 +1251,22 @@ const index = () => {
             axios
               .get(baseUrl + "/getAllMonitoringDevices")
               .then((response) => {
-                console.log(response.data);
                 excelData = response.data;
                 setDataSource(response.data);
                 setRowCount(response.data.length);
-                // excelData = response.data;
-                setRescanLoading(false);
               })
               .catch((error) => {
                 console.log(error);
-                setRescanLoading(false);
-
-                //  openSweetAlert("Something Went Wrong!", "error");
               })
           );
           return Promise.all(promises);
         })
         .catch((error) => {
-          setRescanLoading(false);
-
           console.log("in add seed device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
-      setRescanLoading(false);
-
       console.log(err);
     }
-    // } else {
-    //   openSweetAlert(`No Device Selected`, "error");
-    // }
   };
 
   const atomColumns = [
@@ -1425,7 +1276,6 @@ const index = () => {
       key: "ip_address",
       render: (text, record) => (
         <p
-          //   onClick={ServernameClicked}
           style={{
             color: "#66B127",
             textDecoration: "underline",
@@ -1455,7 +1305,6 @@ const index = () => {
       key: "device_type",
       render: (text, record) => (
         <p
-          //   onClick={ServernameClicked}
           style={{
             color: "#66B127",
             textDecoration: "underline",
@@ -1488,7 +1337,6 @@ const index = () => {
       key: "ip_address",
       render: (text, record) => (
         <p
-          //   onClick={ServernameClicked}
           style={{
             color: "#66B127",
             textDecoration: "underline",
@@ -1505,7 +1353,6 @@ const index = () => {
       ...getColumnSearchPropsAutoDiscovery(
         "ip_address",
         "IP Address",
-        setautoDiscoveryRowCount,
         setAutoDiscovery,
         autoDiscoveryExcelData,
         autoDiscoveryColumnFilters
@@ -1518,14 +1365,9 @@ const index = () => {
       key: "status",
       render: (text, record) => (
         <p
-          //   onClick={ServernameClicked}
           style={{
-            // color: "#66B127",
-            // textDecoration: "underline",
             textAlign: "center",
             paddingTop: "10px",
-            // paddingTop: "10px",
-            // cursor: "pointer",
           }}
         >
           {text}
@@ -1535,7 +1377,6 @@ const index = () => {
       ...getColumnSearchPropsAutoDiscovery(
         "status",
         "Ping Status",
-        setautoDiscoveryRowCount,
         setAutoDiscovery,
         autoDiscoveryExcelData,
         autoDiscoveryColumnFilters
@@ -1547,6 +1388,36 @@ const index = () => {
   const monitoringDeviceType = devices.filter((device) =>
     device.module.includes("monitoring")
   );
+
+  const monitoringVendors = vendors.filter((vendor) =>
+    vendor.module.includes("monitoring")
+  );
+
+  const monitoringFunctions = functions.filter((montiFunction) =>
+    montiFunction.module.includes("monitoring")
+  );
+
+  const jsonToExcel = (monitoringData) => {
+    if (rowCount !== 0) {
+      let wb = XLSX.utils.book_new();
+      let binaryMonitoringData = XLSX.utils.json_to_sheet(monitoringData);
+      XLSX.utils.book_append_sheet(
+        wb,
+        binaryMonitoringData,
+        "Monitoring_Devices"
+      );
+      XLSX.writeFile(wb, "Monitoring_Devices.xlsx");
+    }
+  };
+
+  const exportSeed = async () => {
+    if (excelData.length > 0) {
+      jsonToExcel(dataSource);
+      openNotification();
+    } else {
+      openSweetAlert("No Data Found!", "info");
+    }
+  };
 
   return (
     <SpinLoading spinning={addLoading} tip="Loading...">
@@ -1571,7 +1442,6 @@ const index = () => {
                   borderTopLeftRadius: "6px",
                   paddingLeft: "13px",
                   alignItems: "left",
-                  // marginLeft: '-6px',
                   textAlign: "left",
                   paddingTop: "8px",
                   fontWeight: "bold",
@@ -1582,7 +1452,6 @@ const index = () => {
               <BarChartMain
                 rowCount={rowCount}
                 setVendorValue={setVendorValue}
-                // venderVal={venderVal}
                 vendorVal={vendorVal}
               />
             </div>
@@ -1628,6 +1497,22 @@ const index = () => {
             marginRight: "27px",
           }}
         >
+          <StyledExportButton
+            onClick={exportSeed}
+            style={{
+              marginRight: "12px",
+            }}
+          >
+            <img
+              src={exportExcel}
+              alt=""
+              width="15px"
+              height="15px"
+              style={{ marginBottom: "3px" }}
+            />
+            &nbsp;&nbsp; Export
+          </StyledExportButton>
+
           {configData?.monitering.pages.device.read_only ? (
             <AddButtonStyle
               disabled
@@ -1677,7 +1562,6 @@ const index = () => {
                 padding: "5px",
               }}
             >
-              {/* <br /> */}
               <MainTableMainDiv>
                 <MainTableMainP
                   active={"Add Device" === tableName}
@@ -1775,7 +1659,6 @@ const index = () => {
                                           paddingLeft: "8px",
                                         }}
                                         required
-                                        // placeholder="Device Name"
                                         value={deviceTypeOther}
                                         onChange={(e) =>
                                           setDeviceTypeOther(e.target.value)
@@ -1795,6 +1678,9 @@ const index = () => {
                                             setDeviceType(e.target.value)
                                           }
                                         >
+                                          <option value="">
+                                            Select Device Type
+                                          </option>
                                           {monitoringDeviceType.map(
                                             (device, index) => (
                                               <option
@@ -1832,13 +1718,11 @@ const index = () => {
                                       <StyledselectIpam
                                         style={{
                                           width: "100%",
-                                          // marginLeft: "10px",
                                           height: "2rem",
                                           border: "1px solid #cfcfcf",
                                           borderRadius: "3px",
                                         }}
                                         required
-                                        // value={activeState}
                                         onChange={(e) =>
                                           setActiveState(e.target.value)
                                         }
@@ -1873,7 +1757,6 @@ const index = () => {
                                           paddingLeft: "8px",
                                         }}
                                         required
-                                        // placeholder="Device Name"
                                         value={vendorOther}
                                         onChange={(e) =>
                                           setVendorOther(e.target.value)
@@ -1884,24 +1767,23 @@ const index = () => {
                                         <StyledselectIpam
                                           style={{
                                             width: "100%",
-                                            // marginLeft: "10px",
                                             height: "2rem",
                                             border: "1px solid #cfcfcf",
                                             borderRadius: "3px",
                                           }}
                                           required
-                                          // value={activeState}
                                           onChange={(e) =>
                                             setVendor(e.target.value)
                                           }
                                         >
-                                          {monitoringDeviceType.map(
-                                            (device, index) => (
+                                          <option>Select Vendors</option>
+                                          {monitoringVendors.map(
+                                            (vendor, index) => (
                                               <option
                                                 key={index}
-                                                value={device.name}
+                                                value={vendor.name}
                                               >
-                                                {device.name}
+                                                {vendor.name}
                                               </option>
                                             )
                                           )}
@@ -1915,12 +1797,9 @@ const index = () => {
                                 style={{
                                   textAlign: "center",
                                   marginTop: "25px",
-                                  // marginRight: "100px",
-                                  // marginLeft: "100px",
                                 }}
                               >
                                 <Col span={11}>
-                                  {/* <div style={{ marginLeft: "10px" }}> */}
                                   <label style={{ float: "left" }}>
                                     Function
                                   </label>
@@ -1939,7 +1818,6 @@ const index = () => {
                                         paddingLeft: "8px",
                                       }}
                                       required
-                                      // placeholder="Device Name"
                                       value={myFunctionOther}
                                       onChange={(e) =>
                                         setFunctionOther(e.target.value)
@@ -1950,73 +1828,36 @@ const index = () => {
                                       <StyledselectIpam
                                         style={{
                                           width: "100%",
-                                          // marginLeft: "10px",
                                           height: "2rem",
                                           border: "1px solid #cfcfcf",
                                           borderRadius: "3px",
                                         }}
                                         required
-                                        // value={activeState}
                                         onChange={(e) =>
                                           setFunction(e.target.value)
                                         }
                                       >
-                                        <option value="Router">Router</option>
-                                        <option value="Switch">Switch</option>
-                                        <option value="Wireless">
-                                          Wireless
+                                        <option value="">
+                                          Select Function
                                         </option>
-                                        <option value="Firewall">
-                                          Firewall
-                                        </option>
-                                        <option value="VM">VM</option>
-                                        <option value="EXSI">EXSI</option>
-                                        <option value="Load Balancer">
-                                          Load Balancer
-                                        </option>
-                                        <option value="WAF">WAF</option>
-                                        <option value="Other">Other</option>
+                                        {monitoringFunctions.map(
+                                          (montiFunction, index) => {
+                                            return (
+                                              <option
+                                                value={montiFunction.name}
+                                                key={index}
+                                              >
+                                                {montiFunction.name}
+                                              </option>
+                                            );
+                                          }
+                                        )}
                                       </StyledselectIpam>
                                     </div>
                                   )}
-                                  {/* <br />
-                                <StyledInputForm
-                                  style={{
-                                    width: "100%",
-                                    height: "2rem",
-                                    border: "0.3px solid rgba(0,0,0,0.2)",
-                                    paddingLeft: "8px",
-                                  }}
-                                  required
-                                  placeholder="Function"
-                                  value={myFunction}
-                                  onChange={(e) => setFunction(e.target.value)}
-                                /> */}
                                 </Col>
                                 <Col span={2}></Col>
                                 <Col span={11}>
-                                  {/* <div>
-                                  <label style={{ float: "left" }}>
-                                    Status
-                                  </label>
-                                  &nbsp;
-                                  <span style={{ color: "red", float: "left" }}>
-                                    *
-                                  </span>
-                                  <br />
-                                  <StyledInputForm
-                                    style={{
-                                      width: "100%",
-                                      height: "2rem",
-                                      border: "0.3px solid rgba(0,0,0,0.2)",
-                                      paddingLeft: "8px",
-                                    }}
-                                    required
-                                    placeholder="Status"
-                                    value={status}
-                                    onChange={(e) => setStatus(e.target.value)}
-                                  />
-                                </div> */}
                                   <div>
                                     <label style={{ float: "left" }}>
                                       Device Name
@@ -2027,29 +1868,6 @@ const index = () => {
                                       *
                                     </span>
                                     &nbsp;&nbsp;
-                                    {/* <div className="select_t">
-                                      <StyledselectIpam
-                                        style={{
-                                          width: "100%",
-                                          // marginLeft: "10px",
-                                          height: "2rem",
-                                          border: "1px solid #cfcfcf",
-                                          borderRadius: "3px",
-                                        }}
-                                        required
-                                        // value={activeState}
-                                        onChange={(e) =>
-                                          setTypes(e.target.value)
-                                        }
-                                      >
-                                        <option value="SNMP_V1_V2">
-                                          SNMP_V1_V2
-                                        </option>
-                                        <option value="SNMP_V3">SNMP_V3</option>
-                                        <option value="WMI">WMI</option>
-                                      </StyledselectIpam>
-                                    </div> */}
-                                    {/* <br /> */}
                                     <StyledInputForm
                                       style={{
                                         width: "100%",
@@ -2071,8 +1889,6 @@ const index = () => {
                                 style={{
                                   textAlign: "center",
                                   marginTop: "25px",
-                                  // marginRight: "100px",
-                                  // marginLeft: "100px",
                                 }}
                               >
                                 <Col span={11}>
@@ -2098,11 +1914,14 @@ const index = () => {
                                         setCred_group(e.target.value);
                                       }}
                                     >
+                                      <option value="">
+                                        Select Credentials
+                                      </option>
                                       {cred?.map((item, index) => {
                                         return (
-                                          <>
-                                            <option>{item}</option>
-                                          </>
+                                          <option key={index} value={item}>
+                                            {item}
+                                          </option>
                                         );
                                       })}
                                     </StyledselectIpam>
@@ -2128,17 +1947,6 @@ const index = () => {
                                     >
                                       <Row>
                                         <Col span={11}>
-                                          {/* <button
-                                          onClick={showModalv1v2}
-                                          style={{
-                                            width: "100%",
-                                            height: "50px",
-                                            cursor: "pointer",
-                                          }}
-                                        >
-                                          V1/V2
-                                        </button> */}
-
                                           <button
                                             style={{
                                               width: "100%",
@@ -2153,11 +1961,7 @@ const index = () => {
                                           </button>
 
                                           <Modal
-                                            // title="V1/V2"
-                                            // header={false}
                                             open={v1v2isModalOpen}
-                                            // onOk={handleOkv1v2}
-                                            // onCancel={handleCancelv1v2}
                                             footer={false}
                                             closable={false}
                                           >
@@ -2207,16 +2011,12 @@ const index = () => {
                                                           height: "30px",
                                                           borderRadius: "8px",
                                                         }}
-                                                        // color={"green"}
                                                         type="submit"
-                                                        // htmlFor="submit"
-                                                        // value="Done"
                                                       >
                                                         Done
                                                       </button>
                                                     ) : (
                                                       <button
-                                                        // onClick={handleSubmit}
                                                         disabled={true}
                                                         style={{
                                                           float: "right",
@@ -2229,16 +2029,11 @@ const index = () => {
                                                           borderRadius: "8px",
                                                           cursor: "no-drop",
                                                         }}
-                                                        // color={"green"}
-                                                        // type="submit"
-                                                        // htmlFor="submit"
-                                                        // value="Done"
                                                       >
                                                         Done
                                                       </button>
                                                     )}
-                                                    {/* Done
-                                                  </input> */}
+
                                                     <StyledButton
                                                       style={{
                                                         float: "right",
@@ -2248,7 +2043,6 @@ const index = () => {
                                                         marginRight: "10px",
                                                         height: "30px",
                                                         borderRadius: "8px",
-                                                        // paddingBottom: "5px",
                                                       }}
                                                       color={"#BBBABA"}
                                                       onClick={handleCancelv1v2}
@@ -2262,9 +2056,7 @@ const index = () => {
                                                   style={{ marginLeft: "6%" }}
                                                 >
                                                   <InputWrapper>
-                                                    Profile Name:
-                                                    {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                                                    &nbsp;&nbsp;
+                                                    Profile Name: &nbsp;&nbsp;
                                                     <StyledInput
                                                       value={profileName}
                                                       onChange={(e) =>
@@ -2275,13 +2067,10 @@ const index = () => {
                                                           )
                                                         )
                                                       }
-                                                      // required
                                                     />
                                                   </InputWrapper>
                                                   <InputWrapper>
-                                                    Description:
-                                                    {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                                                    &nbsp;&nbsp;
+                                                    Description: &nbsp;&nbsp;
                                                     <StyledInput
                                                       value={description}
                                                       onChange={(e) =>
@@ -2289,7 +2078,6 @@ const index = () => {
                                                           e.target.value
                                                         )
                                                       }
-                                                      // required
                                                     />
                                                   </InputWrapper>
                                                 </Col>
@@ -2298,9 +2086,7 @@ const index = () => {
                                                   style={{ marginLeft: "6%" }}
                                                 >
                                                   <InputWrapper>
-                                                    Community:
-                                                    {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                                                    &nbsp;&nbsp;
+                                                    Community: &nbsp;&nbsp;
                                                     <StyledInput
                                                       value={community}
                                                       onChange={(e) =>
@@ -2308,19 +2094,15 @@ const index = () => {
                                                           e.target.value
                                                         )
                                                       }
-                                                      // required
                                                     />
                                                   </InputWrapper>
                                                   <InputWrapper>
-                                                    Port:
-                                                    {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                                                    &nbsp;&nbsp;
+                                                    Port: &nbsp;&nbsp;
                                                     <StyledInput
                                                       value={port}
                                                       onChange={(e) =>
                                                         setPort(e.target.value)
                                                       }
-                                                      // required
                                                     />
                                                   </InputWrapper>
                                                 </Col>
@@ -2331,16 +2113,6 @@ const index = () => {
                                         </Col>
                                         <Col span={2}></Col>
                                         <Col span={11}>
-                                          {/* <button
-                                          onClick={showModalv3}
-                                          style={{
-                                            width: "100%",
-                                            height: "50px",
-                                            cursor: "pointer",
-                                          }}
-                                        >
-                                          V3
-                                        </button> */}
                                           <button
                                             style={{
                                               width: "100%",
@@ -2354,12 +2126,9 @@ const index = () => {
                                             V3
                                           </button>
                                           <Modal
-                                            // title="V3"
                                             open={v3isModalOpen}
                                             closable={false}
                                             footer={false}
-                                            // onOk={handleOkv3}
-                                            // onCancel={handleCancelv3}
                                           >
                                             <form
                                               onSubmit={handleSubmitv3}
@@ -2415,10 +2184,7 @@ const index = () => {
                                                           height: "30px",
                                                           borderRadius: "8px",
                                                         }}
-                                                        // color={"green"}
                                                         type="submit"
-                                                        // htmlFor="submit"
-                                                        // value="Done"
                                                       >
                                                         Done
                                                       </button>
@@ -2436,16 +2202,10 @@ const index = () => {
                                                           borderRadius: "8px",
                                                           cursor: "no-drop",
                                                         }}
-                                                        // color={"green"}
-                                                        // type="submit"
-                                                        // htmlFor="submit"
-                                                        // value="Done"
                                                       >
                                                         Done
                                                       </button>
                                                     )}
-                                                    {/* Done
-                                                  </input> */}
                                                     <StyledButton
                                                       style={{
                                                         float: "right",
@@ -2455,7 +2215,6 @@ const index = () => {
                                                         marginRight: "10px",
                                                         height: "30px",
                                                         borderRadius: "8px",
-                                                        // paddingBottom: "5px",
                                                       }}
                                                       color={"#BBBABA"}
                                                       onClick={handleCancelv3}
@@ -2469,9 +2228,7 @@ const index = () => {
                                                   style={{ marginLeft: "6%" }}
                                                 >
                                                   <InputWrapper>
-                                                    Profile Name:
-                                                    {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                                                    &nbsp;&nbsp;
+                                                    Profile Name: &nbsp;&nbsp;
                                                     <StyledInput
                                                       value={profileNamev3}
                                                       onChange={(e) =>
@@ -2482,13 +2239,10 @@ const index = () => {
                                                           )
                                                         )
                                                       }
-                                                      // required
                                                     />
                                                   </InputWrapper>
                                                   <InputWrapper>
-                                                    Description:
-                                                    {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                                                    &nbsp;&nbsp;
+                                                    Description: &nbsp;&nbsp;
                                                     <StyledInput
                                                       value={descriptionv3}
                                                       onChange={(e) =>
@@ -2496,7 +2250,6 @@ const index = () => {
                                                           e.target.value
                                                         )
                                                       }
-                                                      // required
                                                     />
                                                   </InputWrapper>
                                                 </Col>
@@ -2505,9 +2258,7 @@ const index = () => {
                                                   style={{ marginLeft: "6%" }}
                                                 >
                                                   <InputWrapper>
-                                                    Username:
-                                                    {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                                                    &nbsp;&nbsp;
+                                                    Username: &nbsp;&nbsp;
                                                     <StyledInput
                                                       value={usernamev3}
                                                       onChange={(e) =>
@@ -2515,13 +2266,10 @@ const index = () => {
                                                           e.target.value
                                                         )
                                                       }
-                                                      // required
                                                     />
                                                   </InputWrapper>
                                                   <InputWrapper>
-                                                    Port:
-                                                    {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                                                    &nbsp;&nbsp;
+                                                    Port: &nbsp;&nbsp;
                                                     <StyledInput
                                                       value={portv3}
                                                       onChange={(e) =>

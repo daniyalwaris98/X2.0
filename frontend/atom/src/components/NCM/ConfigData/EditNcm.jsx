@@ -5,7 +5,7 @@ import axios, { baseUrl } from "../../../utils/axios";
 import Swal from "sweetalert2";
 
 import { SpinLoading } from "../../AllStyling/All.styled";
-import { devices } from "../../../data/globalData";
+import { devices, functions, vendors } from "../../../data/globalData";
 const EditSubnet = (props) => {
   const getString = (str) => {
     return str ? str : "";
@@ -135,6 +135,12 @@ const EditSubnet = (props) => {
     getPasswordGroupDropdown();
   }, [password_group]);
 
+  const ncmVendors = vendors.filter((vendor) => vendor.module.includes("ncm"));
+
+  const ncmFunctions = functions.filter((ncmFunction) =>
+    ncmFunction.module.includes("ncm")
+  );
+
   return (
     <SpinLoading spinning={editLoading} tip="Loading...">
       <Modal
@@ -246,27 +252,18 @@ const EditSubnet = (props) => {
                     }}
                   >
                     <option>Select Vendor</option>
-                    <option value="Cisco">Cisco</option>
-                    <option value="Fortinet">Fortinet</option>
-                    <option value="Juniper">Juniper</option>
-                    <option value="PaloAlto">PaloAlto</option>
-                    <option value="Huawei">Huawei</option>
-                    <option value="Juniper">Juniper</option>
-                    <option value="Microsoft">Microsoft</option>
-                    <option value="Linux">Linux</option>
-                    <option value="Other">Other</option>
+                    {ncmVendors.map((vendor, index) => {
+                      return (
+                        <option value={vendor.name} key={index}>
+                          {vendor.name}
+                        </option>
+                      );
+                    })}
                   </Styledselect>
                 </div>
               </InputWrapper>
               <InputWrapper>
-                Function:
-                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                &nbsp;&nbsp;
-                {/* <StyledInput
-                value={myFunction}
-                onChange={(e) => setFunction(e.target.value)}
-                // required
-              /> */}
+                Function: &nbsp;&nbsp;
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
@@ -275,40 +272,19 @@ const EditSubnet = (props) => {
                     value={myFunction}
                     onChange={(e) => setFunction(e.target.value)}
                   >
-                    <option value="Router">Router</option>
-                    <option value="Switch">Switch</option>
-                    <option value="Wireless">Wireless</option>
-                    <option value="Firewall">Firewall</option>
-                    <option value="VM">VM</option>
-                    <option value="EXSI">EXSI</option>
-                    <option value="Load Balancer">Load Balancer</option>
-                    <option value="WAF">WAF</option>
-                    <option value="Other">Other</option>
+                    <option value="">Select Function</option>
+                    {ncmFunctions.map((ncmFunction, index) => {
+                      return (
+                        <option value={ncmFunction.name} key={index}>
+                          {ncmFunction.name}
+                        </option>
+                      );
+                    })}
                   </Styledselect>
                 </div>
               </InputWrapper>
               <InputWrapper>
-                Device Name :
-                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                &nbsp;&nbsp;
-                {/* <StyledInput
-                value={types}
-                onChange={(e) => setTypes(e.target.value)}
-                // required
-              /> */}
-                {/* <div className="select_type">
-                  <Styledselect
-                    className="rectangle"
-                    required
-                    placeholder="select"
-                    value={types}
-                    onChange={(e) => setTypes(e.target.value)}
-                  >
-                    <option value="SNMP_V1_V2">SNMP_V1_V2</option>
-                    <option value="SNMP_V3">SNMP_V3</option>
-                    <option value="WMI">WMI</option>
-                  </Styledselect>
-                </div> */}
+                Device Name : &nbsp;&nbsp;
                 <StyledInput
                   value={deviceName}
                   onChange={(e) => setDeviceName(e.target.value)}
@@ -317,12 +293,6 @@ const EditSubnet = (props) => {
               </InputWrapper>
               <InputWrapper>
                 Active :{/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                &nbsp;&nbsp;
-                {/* <StyledInput
-                value={actionState}
-                onChange={(e) => setActionState(e.target.value)}
-                // required
-              /> */}
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
@@ -339,9 +309,6 @@ const EditSubnet = (props) => {
               <InputWrapper>
                 Password Group: &nbsp;<span style={{ color: "red" }}>*</span>
                 &nbsp;&nbsp;
-                {/* {device ? (
-                  <StyledInput value={password_group} />
-                ) : ( */}
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
@@ -359,39 +326,9 @@ const EditSubnet = (props) => {
                     })}
                   </Styledselect>
                 </div>
-                {/* <StyledInput
-                value={password_group}
-                onChange={(e) => setPassword_group(e.target.value)}
-                required
-              /> */}
-                {/* )} */}
               </InputWrapper>
             </Col>
           </Row>
-          {/* <StyledSubmitButton
-          style={{
-            textAlign: "center",
-            width: "25%",
-            marginTop: "10px",
-          }}
-          color={"green"}
-          type="submit"
-          value="Done"
-        />
-        <br />
-        <StyledButton
-          style={{
-            textAlign: "center",
-            width: "25%",
-            marginTop: "10px",
-            marginLeft: "10px",
-            // paddingBottom: "5px",
-          }}
-          color={"red"}
-          onClick={handleCancel}
-        >
-          Cancel
-        </StyledButton> */}
           &nbsp; &nbsp;
         </form>
       </Modal>
@@ -419,21 +356,12 @@ const Styledselect = styled.select`
 const InputWrapper = styled.div`
   text-align: left;
   font-size: 12px;
-  // white-space: nowrap;
-  // display: flex;
-  // justify-content: space-between;
   padding-bottom: 10px;
 `;
 
 const StyledSubmitButton = styled(Input)`
   font-size: 15px;
-  // height: 27px;
-
-  // font-weight: bolder;
-  // width: 15%;
   padding: auto;
-  // text-align: center;
-  // font-family: Montserrat-Regular;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background-color: ${(props) => props.color};
   border-color: ${(props) => props.color};
@@ -449,11 +377,7 @@ const StyledSubmitButton = styled(Input)`
 `;
 
 const StyledButton = styled(Button)`
-  // height: 27px;
   font-size: 15px;
-  // font-weight: bolder;
-  // width: 15%;
-  // font-family: Montserrat-Regular;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background-color: ${(props) => props.color};
   border-color: ${(props) => props.color};

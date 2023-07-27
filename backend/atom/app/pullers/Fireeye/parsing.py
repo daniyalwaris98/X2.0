@@ -3,7 +3,8 @@ import paramiko
 import traceback
 import time, os , datetime, sys
 import textfsm, json
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.utilities.failed_utilts import addFailedDevice
+
 
 class Parse(object):
     def __init__(self):

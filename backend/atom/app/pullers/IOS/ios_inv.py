@@ -7,8 +7,8 @@ from datetime import datetime
 import re, sys, time, json
 import threading
 from app import app
-from app.common_utils.insert_to_db import UamInventoryData
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.uam.uam_db_utils import UamInventoryData
+from app.utilities.failed_utilts import addFailedDevice
 
 class IOSPuller(object):
     
@@ -62,7 +62,9 @@ class IOSPuller(object):
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
             date = datetime.now()
             self.failed = True
-            addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            
+            
             # file_name = time.strftime("%d-%m-%Y")+".txt"
             # failed_device=[]
             #Read existing file
@@ -173,14 +175,21 @@ class IOSPuller(object):
                                                     "stack":(stack-1) if stack>1 else stack
                                                     
                                                     }})
+                
                 inv =[x for x in inv if x['sn']]
+                
                 self.get_boards(host, inv, version)   
+                
                 self.get_sub_boards(host, inv, version)
+                
                 self.get_sfps(host, inv, device)
+                
                 self.get_license(host, device)
+                
                 self.inv_data[host['ip_address']].update({'status': 'success'})
                 print(self.inv_data,file=sys.stderr)
-                UamInventoryData(self.inv_data)
+                
+                self.failed = UamInventoryData(self.inv_data)
             except Exception as e:
                 print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
                 if host['ip_address'] in self.inv_data:

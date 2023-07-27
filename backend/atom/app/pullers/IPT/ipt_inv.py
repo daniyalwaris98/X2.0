@@ -2,7 +2,7 @@ from datetime import datetime
 import re, sys, time, json
 import threading
 from pysnmp.hlapi import *
-from app.monitoring.common_utils.utils import addFailedDevice
+
 
 class IPTPuller(object):
     

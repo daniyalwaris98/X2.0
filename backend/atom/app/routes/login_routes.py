@@ -18,7 +18,7 @@ def Login():
         username = postData['user']
         password = postData['pass']
 
-        user_exists = UserTable.query.filter_by(user_id=username).first()
+        user_exists = User_Table.query.filter_by(user_id=username).first()
 
         if user_exists:
 
@@ -27,7 +27,7 @@ def Login():
                                current_time, "User Inactive")
                 return jsonify({'message': 'User is Inactive'}), 401
 
-            user_role = UserRolesTable.query.filter_by(
+            user_role = User_Roles_Table.query.filter_by(
                 role_id=user_exists.role_id).first()
 
             if user_role is None:
@@ -97,14 +97,14 @@ def GetUserByToken(user_Data):
 
 def checkLicense(username):
     try:
-        result = db.session.query(UserTable, EndUserTable, LicenseVerificationTable).join(
-            EndUserTable, UserTable.end_user_id == EndUserTable.end_user_id).join(
-            LicenseVerificationTable, EndUserTable.license_id == LicenseVerificationTable.license_id).filter(
-            UserTable.user_id == username).first()
+        result = db.session.query(User_Table, End_User_Table, License_Verification_Table).join(
+            End_User_Table, User_Table.end_user_id == End_User_Table.end_user_id).join(
+            License_Verification_Table, End_User_Table.license_id == License_Verification_Table.license_id).filter(
+            User_Table.user_id == username).first()
 
         if result is None:
             print("A valid licence does not exists", file=sys.stderr)
-            return None
+            return None, None, "A valid licence does not exists"
 
         user, end_user, license_verification = result
 
@@ -120,25 +120,25 @@ def checkLicense(username):
 
         if licenseObj is None:
             print("License Not Found", file=sys.stderr)
-            return None
+            return None, None, "License Not Found"
 
         if licenseObj['company_name'] != end_user['company_name']:
             print("Invalid License For Selected Company", file=sys.stderr)
-            return None
+            return None, None, "Invalid License For Selected Company"
 
         current_date = datetime.now()
         days_left = licenseObj['end_date'] - current_date
         days_left = days_left.days
         if days_left < 0:
             print("License Has Been Expired", file=sys.stderr)
-            return days_left
+            return days_left, licenseObj['end_date'], "License Has Been Expired"
         else:
-            return days_left
+            return days_left, licenseObj['end_date'], "License Is Verified"
 
     except Exception:
         traceback.print_exc()
         print("License Not Found", file=sys.stderr)
-        return None
+        return None, None, "License Not Found"
 
 
 @app.route('/trackLicenseTenure', methods=['POST'])
@@ -163,22 +163,28 @@ def TrackLicenseTenure(user_data):
         return "License Not Found", 500
 
 
-@app.route('/licenseValidationAfterLogin', methods=['POST'])
+@app.route('/licenseVerification', methods=['POST'])
 @token_required
 def LicenseValidationAfterLogin(user_data):
     try:
         userObj = request.get_json()
         userName = userObj['username']
 
-        days_left = checkLicense(userName)
-
+        days_left, expiry_date, message = checkLicense(userName)
+        
+        license_data = {
+            "day_left" : days_left,
+            "expiry_date" : expiry_date,
+            "message" : message,
+            "validaty" : "True"
+        }
+        
         if days_left is None:
-            return "False", 500
+            license_data['validaty'] = "False"
+        elif days_left <= 0:
+            license_data['validaty'] = "False"
 
-        if days_left < 0:
-            return "False", 500
-
-        return "TRUE", 200
+        return license_data, 200
 
     except Exception:
         traceback.print_exc()

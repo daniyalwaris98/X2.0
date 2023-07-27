@@ -4,7 +4,7 @@ from datetime import datetime
 import urllib3
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
-from app.monitoring.common_utils.utils import addFailedDevice
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
 

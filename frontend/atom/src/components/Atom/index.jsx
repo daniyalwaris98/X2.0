@@ -52,7 +52,6 @@ const Atom = () => {
         style={{
           margin: "0 auto",
           borderBottom: "1px solid #ccc",
-          // width: "820px",
           marginBottom: "10px",
         }}
       ></DivStratch>

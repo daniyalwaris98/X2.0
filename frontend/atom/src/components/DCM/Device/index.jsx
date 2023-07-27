@@ -1,30 +1,12 @@
 import React, { useState, useEffect } from "react";
-import {
-  Button,
-  Row,
-  Col,
-  Menu,
-  Space,
-  Input,
-  Modal,
-  Table,
-  notification,
-} from "antd";
+import { Row, Col, Menu, Input, Modal, Table, notification } from "antd";
 import Swal from "sweetalert2";
 import addatom from "../assets/addatom.svg";
-import adddevice from "../assets/adddevice.svg";
 import addnew from "../assets/addnew.svg";
 import axios, { baseUrl } from "../../../utils/axios";
 
 import * as XLSX from "xlsx";
-import {
-  ImportOutlined,
-  ExportOutlined,
-  EditOutlined,
-  DownOutlined,
-  SmileOutlined,
-  AlipayOutlined,
-} from "@ant-design/icons";
+import { EditOutlined } from "@ant-design/icons";
 import {
   TableStyling,
   StyledExportButton,
@@ -32,95 +14,53 @@ import {
   MainTableModal,
   MainTableMainP,
   MainTableMainDiv,
-  StyledSubmitButton,
-  MainTableDropDown,
-  MainTableColP,
   StyledselectIpam,
   InputWrapper,
-  OnBoardStyledButton,
   DeleteButton,
   AddButtonStyle,
   StyledInputForm,
 } from "../../AllStyling/All.styled";
 import exportExcel from "../../Atom/assets/exp.svg";
 import { columnSearch } from "../../../utils";
-import { atomColumnSearch } from "../../../utils";
-import { deviceColumnSearch } from "../../../utils";
 import EditModal from "./EditModal";
 import { useLocation } from "react-router-dom";
 
 let excelData = [];
 let columnFilters = {};
 let atomExcelData = [];
-let deviceExcelData = [];
 let atomColumnFilters = {};
-let deviceColumnFilters = {};
 const index = () => {
   const data = useLocation();
-  //console.log(data);
-  // const [subnetAddress, setSubnetAddress] = useState("");
-  // const subnetAddress = data.state.subnet ? data.state.subnet : "";
-  //console.log(data.state);
 
   if (data?.state?.source) {
-    // delete columnFilters["source"];
     columnFilters["source"] = data.state.source;
   }
-  // var filterSource = "";
-  // {
-  //   data.state === null ? null : (filterSource = data.state.source);
-  // }
-  // useEffect(() => {
-  //   data.state === null ? null : (filterSource = data.state.source);
-  // }, [filterSource]);
-  // //console.log(filterSource);
 
   let [dataSource, setDataSource] = useState(excelData);
   let [atomDataSource, setAtomDataSource] = useState(atomExcelData);
-  let [deviceDataSource, setDeviceDataSource] = useState(deviceExcelData);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);
   const [editRecord, setEditRecord] = useState(null);
-
   const [loading, setLoading] = useState(false);
   const [allIpamDeviceLoading, setAllIpamDeviceLoading] = useState(false);
   const [ipamAtomLoading, setIpamAtomLoading] = useState(false);
-  const [ipamDeviceLoading, setIpamDeviceLoading] = useState(false);
-  const [exportLoading, setExportLoading] = useState(false);
-
   const [passGroup, setPassGroup] = useState("");
   const [username, setUsername] = useState("");
   const [pass, setPass] = useState("");
-
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [selectedAtomRowKeys, setSelectedAtomRowKeys] = useState([]);
-  const [selectedDeviceRowKeys, setSelectedDeviceRowKeys] = useState([]);
-
   const [searchText, setSearchText] = useState(null);
-
   const [searchedColumn, setSearchedColumn] = useState(null);
-
   const [atomSearchText, setAtomSearchText] = useState(null);
-
   const [atomSearchedColumn, setAtomSearchedColumn] = useState(null);
-  const [deviceSearchText, setDeviceSearchText] = useState(null);
-
-  const [deviceSearchedColumn, setDeviceSearchedColumn] = useState(null);
   const [rowCount, setRowCount] = useState(0);
-  const [atomRowCount, setAtomRowCount] = useState(0);
-  const [deviceRowCount, setDeviceRowCount] = useState(0);
   const [ip_address, setIpAddress] = useState("");
   const [device_type, setDeviceType] = useState("");
   const [device_name, setDeviceName] = useState("");
   const [password_group, setPassword_group] = useState("");
-  //   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [mainModalVisible, setMainModalVisible] = useState(false);
   const [configData, setConfigData] = useState(null);
-  // if (filterSource !== "") {
-  //   columnFilters = { source: filterSource };
-  //   // test(columnFilters, excelData, setRowCount, setDataSource);
-  // }
-  let allConfig;
+
   useEffect(() => {
     let user = localStorage.getItem("user");
     let userData = JSON.parse(user);
@@ -132,63 +72,40 @@ const index = () => {
     setConfigData(config);
   }, []);
 
-  const [isModalOpen, setIsModalOpen] = useState(false);
-
   let getColumnSearchProps = columnSearch(
     searchText,
     setSearchText,
     searchedColumn,
     setSearchedColumn
   );
+
   let getAtomColumnSearchProps = columnSearch(
     atomSearchText,
     setAtomSearchText,
     atomSearchedColumn,
     setAtomSearchedColumn
   );
-  let getDeviceColumnSearchProps = columnSearch(
-    deviceSearchText,
-    setDeviceSearchText,
-    deviceSearchedColumn,
-    setDeviceSearchedColumn
-  );
+
   const showModal = () => {
     setIsModalVisible(true);
   };
+
   const handleOk = () => {
     setIsModalVisible(false);
   };
+
   const handleCancel = () => {
     setIsModalVisible(false);
   };
+
   const jsonToExcel = (atomData) => {
     if (rowCount !== 0) {
       let wb = XLSX.utils.book_new();
       let binaryAtomData = XLSX.utils.json_to_sheet(atomData);
       XLSX.utils.book_append_sheet(wb, binaryAtomData, "ipam_devices");
       XLSX.writeFile(wb, "ipam_devices.xlsx");
-
-      // setExportLoading(false);
     }
   };
-  const menu = (
-    <Menu
-      items={[
-        {
-          key: "1",
-          label: (
-            <a
-              target="_blank"
-              rel="noopener noreferrer"
-              href="https://www.antgroup.com"
-            >
-              1st menu item
-            </a>
-          ),
-        },
-      ]}
-    />
-  );
 
   useEffect(() => {
     const serviceCalls = async () => {
@@ -196,19 +113,14 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllDcCapacityDevices");
-        //console.log("response Of Ipam", res);
 
         excelData = res.data;
         let source;
         if (data.state !== null) {
           source = data?.state?.subnet;
 
-          //console.log("source", source);
-
           let filteredSuggestions;
           if (source) {
-            // columnFilters["subnet"] = subnetAddress;
-
             filteredSuggestions = excelData.filter(
               (d) =>
                 JSON.stringify(d["source"])
@@ -227,43 +139,37 @@ const index = () => {
 
         setAllIpamDeviceLoading(false);
       } catch (err) {
-        //console.log(err.response);
         setAllIpamDeviceLoading(false);
       }
     };
     serviceCalls();
   }, []);
+
   useEffect(() => {
     const serviceCalls = async () => {
       setAllIpamDeviceLoading(true);
 
       try {
         const res = await axios.get(baseUrl + "/getDeviceinDccm");
-        //console.log("response Of Ipam", res);
         deviceExcelData = res.data;
-        setDeviceDataSource(deviceExcelData);
-        // setRowCount(deviceExcelData.length);
         setAllIpamDeviceLoading(false);
       } catch (err) {
-        //console.log(err.response);
         setAllIpamDeviceLoading(false);
       }
     };
     serviceCalls();
   }, []);
+
   useEffect(() => {
     const addIpamByAtom = async () => {
       setAllIpamDeviceLoading(true);
 
       try {
         const res = await axios.get(baseUrl + "/getAtomInDccm");
-        console.log("response Of Ipam", res);
         atomExcelData = res.data;
         setAtomDataSource(atomExcelData);
-        // setRowCount(atomExcelData.length);
         setAllIpamDeviceLoading(false);
       } catch (err) {
-        //console.log(err.response);
         setAllIpamDeviceLoading(false);
       }
     };
@@ -271,26 +177,22 @@ const index = () => {
   }, []);
 
   const exportSeed = async () => {
-    setExportLoading(true);
     if (excelData.length > 0) {
       jsonToExcel(dataSource);
       openNotification();
     } else {
       openSweetAlert("No Data Found!", "info");
     }
-    setExportLoading(false);
   };
+
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
-      onClick: () => {
-        //console.log("Notification Clicked!");
-      },
+      onClick: () => {},
     });
   };
   const edit = (record) => {
     setEditRecord(record);
-    // setAddRecord(record);
     setIsEditModalVisible(true);
   };
 
@@ -310,13 +212,9 @@ const index = () => {
                   textDecoration: "underline",
                   fontWeight: "400",
                   textAlign: "center",
-                  // color: "blue",
                   cursor: "no-drop",
                 }}
                 disabled
-                // onClick={() => {
-                //   edit(record);
-                // }}
               >
                 <EditOutlined
                   disabled
@@ -331,7 +229,6 @@ const index = () => {
                 textDecoration: "underline",
                 fontWeight: "400",
                 textAlign: "center",
-                // color: "blue",
                 cursor: "pointer",
               }}
               onClick={() => {
@@ -444,57 +341,6 @@ const index = () => {
     },
   ];
   const AddAtomColumns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "7%",
-
-    //   render: (text, record) => (
-    //     <>
-    //       {!configData?.ipam.pages.devices.read_only ? (
-    //         <>
-    //           <p
-    //             style={{
-    //               color: "#66B127",
-    //               textDecoration: "underline",
-    //               fontWeight: "400",
-    //               textAlign: "center",
-    //               // color: "blue",
-    //               cursor: "pointer",
-    //             }}
-    //             disabled
-    //             // onClick={() => {
-    //             //   edit(record);
-    //             // }}
-    //           >
-    //             <EditOutlined
-    //               style={{ paddingRight: "50px", color: "#66A111" }}
-    //             />
-    //           </p>
-    //         </>
-    //       ) : (
-    //         <p
-    //           style={{
-    //             color: "#66B127",
-    //             textDecoration: "underline",
-    //             fontWeight: "400",
-    //             textAlign: "center",
-    //             // color: "blue",
-    //             cursor: "pointer",
-    //           }}
-    //           onClick={() => {
-    //             edit(record);
-    //           }}
-    //         >
-    //           <EditOutlined
-    //             style={{ paddingRight: "50px", color: "#66A111" }}
-    //           />
-    //         </p>
-    //       )}
-    //     </>
-    //   ),
-    // },
-
     {
       title: "Ip Address",
       dataIndex: "ip_address",
@@ -506,7 +352,6 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "ip_address",
         "Ip Address",
-        setAtomRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
@@ -524,31 +369,12 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "device_name",
         "Device Name",
-        setAtomRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
       ),
       ellipsis: true,
     },
-    // {
-    //   title: "Domain",
-    //   dataIndex: "domain",
-    //   key: "domain",
-    //   render: (text, record) => (
-    //     <p style={{ textAlign: "left", paddingLeft: "15px" }}>{text}</p>
-    //   ),
-
-    //   ...getAtomColumnSearchProps(
-    //     "domain",
-    //     "Domain",
-    //     setAtomRowCount,
-    //     setAtomDataSource,
-    //     atomExcelData,
-    //     atomColumnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "Function",
       dataIndex: "function",
@@ -560,7 +386,6 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "function",
         "Function",
-        setAtomRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
@@ -578,7 +403,6 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "onboard_status",
         "Device Type",
-        setAtomRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
@@ -596,171 +420,9 @@ const index = () => {
       ...getAtomColumnSearchProps(
         "onboard_status",
         "OnBoard Status",
-        setAtomRowCount,
         setAtomDataSource,
         atomExcelData,
         atomColumnFilters
-      ),
-      ellipsis: true,
-    },
-  ];
-  const AddDeviceColumns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "2%",
-
-    //   render: (text, record) => (
-    //     <>
-    //       {!configData?.ipam.pages.devices.read_only ? (
-    //         <>
-    //           <p
-    //             style={{
-    //               color: "#66B127",
-    //               textDecoration: "underline",
-    //               fontWeight: "400",
-    //               textAlign: "center",
-    //               // color: "blue",
-    //               cursor: "pointer",
-    //             }}
-    //             disabled
-    //             // onClick={() => {
-    //             //   edit(record);
-    //             // }}
-    //           >
-    //             <EditOutlined
-    //               style={{ paddingRight: "50px", color: "#66A111" }}
-    //             />
-    //           </p>
-    //         </>
-    //       ) : (
-    //         <p
-    //           style={{
-    //             color: "#66B127",
-    //             textDecoration: "underline",
-    //             fontWeight: "400",
-    //             textAlign: "center",
-    //             // color: "blue",
-    //             cursor: "pointer",
-    //           }}
-    //           onClick={() => {
-    //             edit(record);
-    //           }}
-    //         >
-    //           <EditOutlined
-    //             style={{ paddingRight: "50px", color: "#66A111" }}
-    //           />
-    //         </p>
-    //       )}
-    //     </>
-    //   ),
-    // },
-
-    {
-      title: "Ip Address",
-      dataIndex: "ip_address",
-      key: "ip_address",
-      render: (text, record) => (
-        <p style={{ textAlign: "left", paddingLeft: "15px" }}>{text}</p>
-      ),
-
-      ...getDeviceColumnSearchProps(
-        "ip_address",
-        "Ip Address",
-        setDeviceRowCount,
-        setDeviceDataSource,
-        deviceExcelData,
-        deviceColumnFilters
-      ),
-      ellipsis: true,
-    },
-    {
-      title: "Device Name",
-      dataIndex: "device_name",
-      key: "device_name",
-      render: (text, record) => (
-        <p style={{ textAlign: "left", paddingLeft: "15px" }}>{text}</p>
-      ),
-
-      ...getDeviceColumnSearchProps(
-        "device_name",
-        "Device Name",
-        setDeviceRowCount,
-        setDeviceDataSource,
-        deviceExcelData,
-        deviceColumnFilters
-      ),
-      ellipsis: true,
-    },
-    {
-      title: "Device Type",
-      dataIndex: "device_type",
-      key: "device_type",
-      render: (text, record) => (
-        <p style={{ textAlign: "left", paddingLeft: "15px" }}>{text}</p>
-      ),
-
-      ...getDeviceColumnSearchProps(
-        "device_type",
-        "Device Type",
-        setDeviceRowCount,
-        setDeviceDataSource,
-        deviceExcelData,
-        deviceColumnFilters
-      ),
-      ellipsis: true,
-    },
-    // {
-    //   title: "Domain",
-    //   dataIndex: "domain",
-    //   key: "domain",
-    //   render: (text, record) => (
-    //     <p style={{ textAlign: "left", paddingLeft: "15px" }}>{text}</p>
-    //   ),
-
-    //   ...getDeviceColumnSearchProps(
-    //     "domain",
-    //     "Domain",
-    //     setDeviceRowCount,
-    //     setDeviceDataSource,
-    //     deviceExcelData,
-    //     deviceColumnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-    {
-      title: "Function",
-      dataIndex: "function",
-      key: "function",
-      render: (text, record) => (
-        <p style={{ textAlign: "left", paddingLeft: "15px" }}>{text}</p>
-      ),
-
-      ...getDeviceColumnSearchProps(
-        "function",
-        "Function",
-        setDeviceRowCount,
-        setDeviceDataSource,
-        deviceExcelData,
-        deviceColumnFilters
-      ),
-      ellipsis: true,
-    },
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      render: (text, record) => (
-        <p style={{ textAlign: "left", paddingLeft: "15px" }}>{text}</p>
-      ),
-
-      ...getDeviceColumnSearchProps(
-        "status",
-        "Status",
-        setDeviceRowCount,
-        setDeviceDataSource,
-        deviceExcelData,
-        deviceColumnFilters
       ),
       ellipsis: true,
     },
@@ -769,7 +431,6 @@ const index = () => {
   const deleteRow = async () => {
     if (selectedRowKeys.length > 0) {
       try {
-        ////console.log(device);
         await axios
           .post(baseUrl + "/deleteDccmDevice ", selectedRowKeys)
           .then((response) => {
@@ -779,33 +440,23 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllDcCapacityDevices")
                 .then((response) => {
-                  //console.log(response.data);
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
                   setSelectedRowKeys([]);
-                  // excelData = response.data;
                   setLoading(false);
                 })
                 .catch((error) => {
-                  //console.log(error);
                   setLoading(false);
-
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
           })
           .catch((error) => {
             setLoading(false);
-
-            //console.log("in add seed device catch ==> " + error);
-            // openSweetAlert("Something Went Wrong!", "error");
           });
       } catch (err) {
         setLoading(false);
-
-        //console.log(err);
       }
     } else {
       openSweetAlert(`Now Device Selected`, "error");
@@ -813,9 +464,9 @@ const index = () => {
   };
 
   const onSelectChange = (selectedRowKeys) => {
-    //console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
+
   const rowSelection = {
     columnWidth: 140,
     selectedRowKeys,
@@ -825,31 +476,18 @@ const index = () => {
       disabled: configData?.ipam.pages.devices.read_only,
     }),
   };
+
   const onSelectAtomChange = (selectedAtomRowKeys) => {
-    //console.log("selectedAtomRowKeys changed: ", selectedAtomRowKeys);
     setSelectedAtomRowKeys(selectedAtomRowKeys);
   };
-  const onSelectDeviceChange = (selectedDeviceRowKeys) => {
-    //console.log("selectedDeviceRowKeys changed: ", selectedDeviceRowKeys);
-    setSelectedDeviceRowKeys(selectedDeviceRowKeys);
-  };
-  // //console.log(selectedRowKeys);
+
   const atomRowSelection = {
     selectedAtomRowKeys,
     onChange: onSelectAtomChange,
     selection: Table.SELECTION_ALL,
-    getCheckboxProps: () => ({
-      // disabled: !configData?.ipam.pages.devices.read_only,
-    }),
+    getCheckboxProps: () => ({}),
   };
-  const deviceRowSelection = {
-    selectedDeviceRowKeys,
-    onChange: onSelectDeviceChange,
-    selection: Table.SELECTION_ALL,
-    getCheckboxProps: () => ({
-      // disabled: !configData?.ipam.pages.devices.read_only,
-    }),
-  };
+
   const handleMainOk = () => {
     setMainModalVisible(false);
   };
@@ -860,30 +498,14 @@ const index = () => {
 
   const showMainModal = (ipAddress) => {
     setMainModalVisible(true);
-    // showSiteData(ipAddress);
-    // showRackData(ipAddress);
-    // showDeviceData(ipAddress);
-    // showBoardData(ipAddress);
-    // showSubBoardData(ipAddress);
-    // showSFPData(ipAddress);
-    // showLicenseData(ipAddress);
   };
 
   const handleFormSubmit = async (e) => {
     e.preventDefault();
     const formData = { ip_address, device_type, device_name, password_group };
-    //console.log(formData);
     setLoading(true);
-    // try {
-    //   await axios.post(baseUrl + "/addIpamStatically", formData);
-    //   setLoading(false);
-    // } catch (err) {
-    //   //console.log(err);
-    //   setLoading(false);
 
-    // }
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addDccmStatically", formData)
         .then((response) => {
@@ -898,19 +520,15 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllDcCapacityDevices")
                 .then((response) => {
-                  console.log(response.data);
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
 
-                  // excelData = response.data;
                   setLoading(false);
                 })
                 .catch((error) => {
                   console.log(error);
                   setLoading(false);
-
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
@@ -920,7 +538,6 @@ const index = () => {
           setLoading(false);
 
           console.log("in add seed device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
       setLoading(false);
@@ -928,6 +545,7 @@ const index = () => {
       console.log(err);
     }
   };
+
   const handlePassGroupFormSubmit = async (e) => {
     e.preventDefault();
     const passGroupformData = {
@@ -935,25 +553,11 @@ const index = () => {
       username: username,
       password: pass,
     };
-    //console.log(passGroupformData);
     setLoading(true);
-    // try {
-    //   await axios.post(baseUrl + "/addUser", passGroupformData);
-    //   setPassGroup("");
-    //   setUsername("");
-    //   setPass("");
-    //   setIsModalVisible(false);
-    //   setLoading(false);
-    // } catch (err) {
-    //   //console.log(err);
-    //   setLoading(false);
-    // }
 
     await axios
       .post(baseUrl + "/addUser", passGroupformData)
       .then((response) => {
-        //console.log("hahahehehoho");
-        // //console.log(response.status);
         setPassGroup("");
         setUsername("");
         setPass("");
@@ -965,15 +569,12 @@ const index = () => {
           axios
             .get(baseUrl + "/getPasswordGroupDropdown")
             .then((res) => {
-              //console.log("getPasswordGroupDropdown", res);
               setPasswordArray(res.data);
               setPassword_group(res.data[0]);
 
               setLoading(false);
             })
             .catch((error) => {
-              //console.log(error);
-              // openSweetAlert("Something Went Wrong!", "danger");
               setLoading(false);
             })
         );
@@ -982,10 +583,10 @@ const index = () => {
       })
       .catch((err) => {
         openSweetAlert("Device/Ip Address already exists", "error");
-        //console.log("error ==> " + err);
         setLoading(false);
       });
   };
+
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -996,27 +597,14 @@ const index = () => {
   };
 
   const handleAtomDevices = async (e) => {
-    // e.preventDefault();
-    // const formData = { ip_address, device_type, password_group };
-    // //console.log(formData);
-    // try {
-    //   setIpamAtomLoading(true);
-    //   await axios.post(baseUrl + "/addIpamByAtom", selectedRowKeys);
-    //   setIpamAtomLoading(false);
-    // } catch (err) {
-    //   //console.log(err);
-    //   setIpamAtomLoading(false);
-    // }
     setLoading(true);
     if (selectedAtomRowKeys.length > 0) {
       try {
-        ////console.log(device);
         await axios
           .post(baseUrl + "/addDccmByAtom ", selectedAtomRowKeys)
           .then((response) => {
             if (response?.response?.status == 500) {
               openSweetAlert(response?.response?.data, "error");
-              //console.log(response?.response?.data);
             } else {
               openSweetAlert(`Device Added Successfully`, "success");
               const promises = [];
@@ -1024,18 +612,13 @@ const index = () => {
                 axios
                   .get(baseUrl + "/getAllDcCapacityDevices")
                   .then((response) => {
-                    //console.log(response.data);
                     setDataSource(response.data);
                     excelData = response.data;
                     setRowCount(response.data.length);
-                    // excelData = response.data;
                     setLoading(false);
                   })
                   .catch((error) => {
-                    //console.log(error);
                     setLoading(false);
-
-                    //  openSweetAlert("Something Went Wrong!", "error");
                   })
               );
               return Promise.all(promises);
@@ -1044,75 +627,16 @@ const index = () => {
           .catch((error) => {
             setLoading(false);
 
-            //console.log("in add seed device catch ==> " + error);
             openSweetAlert("Device/Ip Address already exists", "error");
           });
       } catch (err) {
         setLoading(false);
-
-        //console.log(err);
       }
     } else {
       openSweetAlert("No Device Selected!", "error");
     }
   };
-  const handleDevices = async (e) => {
-    // e.preventDefault();
-    // const formData = { ip_address, device_type, password_group };
-    // //console.log(formData);
-    // try {
-    //   setIpamDeviceLoading(true);
-    //   await axios.post(baseUrl + "/addIpamByDevice", selectedRowKeys);
-    //   setIpamDeviceLoading(false);
-    // } catch (err) {
-    //   //console.log(err);
-    //   setIpamDeviceLoading(false);
-    // }
 
-    setLoading(true);
-    try {
-      ////console.log(device);
-      await axios
-        .post(baseUrl + "/addIpamByDevice ", selectedDeviceRowKeys)
-        .then((response) => {
-          if (response?.response?.status == 500) {
-            openSweetAlert(response?.response?.data, "error");
-          } else {
-            openSweetAlert(`Device Added Successfully`, "success");
-            const promises = [];
-            promises.push(
-              axios
-                .get(baseUrl + "/getAllDcCapacityDevices")
-                .then((response) => {
-                  //console.log(response.data);
-                  setDataSource(response.data);
-                  excelData = response.data;
-                  setRowCount(response.data.length);
-                  excelData = response.data;
-                  setLoading(false);
-                })
-                .catch((error) => {
-                  //console.log(error);
-                  setLoading(false);
-
-                  //  openSweetAlert("Something Went Wrong!", "error");
-                })
-            );
-            return Promise.all(promises);
-          }
-        })
-        .catch((error) => {
-          setLoading(false);
-
-          //console.log("in add seed device catch ==> " + error);
-          openSweetAlert("Device/Ip Address already exists", "error");
-        });
-    } catch (err) {
-      setLoading(false);
-
-      //console.log(err);
-    }
-  };
   const [passwordArray, setPasswordArray] = useState([]);
 
   useEffect(() => {
@@ -1121,20 +645,18 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getPasswordGroupDropdown");
-
-        //console.log("getPasswordGroupDropdown", res);
         setPasswordArray(res.data);
         setPassword_group(res.data[0]);
-
         setLoading(false);
       } catch (err) {
-        //console.log(err.response);
         setLoading(false);
       }
     };
     getPasswordGroupDropdown();
   }, []);
+
   const [tableName, setTableName] = useState("Add New");
+
   const showTable = (myDataTable) => {
     if (myDataTable === "Add New") {
       setTableName(myDataTable);
@@ -1172,14 +694,10 @@ const index = () => {
               cursor: "no-drop",
             }}
           >
-            {" "}
             + Add Devices
           </AddButtonStyle>
         ) : (
-          <AddButtonStyle onClick={showMainModal}>
-            {" "}
-            + Add Devices
-          </AddButtonStyle>
+          <AddButtonStyle onClick={showMainModal}>+ Add Devices</AddButtonStyle>
         )}
       </div>
       <br />
@@ -1209,14 +727,10 @@ const index = () => {
         <div style={{ float: "right", marginRight: "15px" }}>
           <StyledExportButton
             onClick={exportSeed}
-            // type="primary"
             style={{
               marginRight: "12px",
-              // marginLeft: "5px",
-              // color: "#9F9F9F",
             }}
           >
-            {/* {<ExportOutlined />} */}
             <img
               src={exportExcel}
               alt=""
@@ -1232,9 +746,7 @@ const index = () => {
 
       <MainTableModal
         width={"75%"}
-        // title="Basic Modal"
         open={mainModalVisible}
-        // closable={false}
         footer={false}
         onOk={handleMainOk}
         onCancel={handleMainCancel}
@@ -1250,22 +762,7 @@ const index = () => {
             <div style={{ float: "left" }}>
               <h2>Add Device</h2>
             </div>
-            <div style={{ float: "right" }}>
-              {/* <StyledSubmitButton
-                style={{
-                  float: "right",
-                  width: "60px",
-                  marginTop: "10px",
-                  background:
-                    "linear-gradient(270deg, #4AA446 0%, #6AB344 100%)",
-                  border: "0px",
-                }}
-                color={"green"}
-                type="submit"
-                onClick={handleMainOk}
-                value="OK"
-              /> */}
-            </div>
+            <div style={{ float: "right" }}></div>
           </div>
           <br />
           <br />
@@ -1292,28 +789,13 @@ const index = () => {
                 <img src={addatom} alt="" width="25px" height="25px" /> Add From
                 Atom
               </MainTableMainP>{" "}
-              &nbsp;&nbsp;
-              {/* <MainTableMainP
-                active={"Add From Device" === tableName}
-                onClick={() => showTable("Add From Device")}
-              >
-                <img src={adddevice} alt="" width="25px" height="25px" /> Add
-                From Device
-              </MainTableMainP>{" "} */}
-              &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
-              {/* <MainTableMainP onClick={() => showTable("Boards")}>
-                Boards
-              </MainTableMainP>
-              <MainTableMainP onClick={() => showTable("SubBoard")}>
-                Sub Board
-              </MainTableMainP> */}
+              &nbsp;&nbsp; &nbsp;&nbsp;&nbsp;&nbsp;&nbsp;&nbsp;
             </MainTableMainDiv>
             {tableName === "Add New" ? (
               <>
                 <SpinLoading spinning={loading}>
                   <div
                     style={{
-                      //   overflowY: "scroll",
                       height: "250px",
                       paddingTop: "50px",
                     }}
@@ -1328,7 +810,6 @@ const index = () => {
                               style={{
                                 width: "100%",
                                 height: "2rem",
-                                // border: "0.3px solid rgba(0,0,0,0.2)",
                                 paddingLeft: "8px",
                               }}
                               required
@@ -1347,7 +828,6 @@ const index = () => {
                               style={{
                                 width: "100%",
                                 height: "2rem",
-                                // border: "0.3px solid rgba(0,0,0,0.2)",
                                 paddingLeft: "8px",
                               }}
                               required
@@ -1365,7 +845,6 @@ const index = () => {
                               style={{
                                 width: "100%",
                                 height: "2rem",
-                                // border: "0.3px solid rgba(0,0,0,0.2)",
                                 paddingLeft: "8px",
                               }}
                               required
@@ -1377,14 +856,6 @@ const index = () => {
                         </Col>
                         <Col span={6}>
                           <div style={{ marginLeft: "10px" }}>
-                            {/* <label>Password Group</label>&nbsp;
-                            <span style={{ color: "red" }}>*</span>
-                            <Input
-                              required
-                              placeholder="Password Group"
-                              value={passwordGroup}
-                              onChange={(e) => setPasswordGroup(e.target.value)}
-                            /> */}
                             <InputWrapper>
                               Password Group: &nbsp;
                               <span style={{ color: "red" }}>*</span>
@@ -1424,10 +895,7 @@ const index = () => {
                         footer={false}
                         onCancel={handleCancel}
                       >
-                        <form
-                          //   onSubmit={handlePassGroupFormSubmit}
-                          style={{ padding: "25px" }}
-                        >
+                        <form style={{ padding: "25px" }}>
                           <div>
                             <label>Password Group</label>&nbsp;
                             <span style={{ color: "red" }}>*</span>
@@ -1492,7 +960,6 @@ const index = () => {
                                 width: "100%",
                                 height: "35px",
                                 border: "none",
-                                //   width: "120px",
                                 cursor: "Pointer",
                               }}
                             >
@@ -1557,11 +1024,9 @@ const index = () => {
                 >
                   <TableStyling
                     rowSelection={atomRowSelection}
-                    // scroll={{ x: 4000 }}
                     rowKey="ip_address"
                     columns={AddAtomColumns}
                     dataSource={atomDataSource}
-                    // pagination={false}
                     style={{ width: "100%", padding: "2%" }}
                   />
                 </div>
@@ -1569,12 +1034,6 @@ const index = () => {
                   <AddButtonStyle
                     onClick={handleAtomDevices}
                     style={{
-                      // marginTop: "15px",
-                      // backgroundColor: "#66B127",
-                      // color: "white",
-                      // height: "35px",
-                      // border: "none",
-                      //   width: "120px",
                       cursor: "Pointer",
                     }}
                   >
@@ -1583,41 +1042,6 @@ const index = () => {
                 </div>
               </SpinLoading>
             ) : null}
-            {/* {tableName === "Add From Device" ? (
-              <SpinLoading spinning={ipamDeviceLoading}>
-                <div
-                  style={{
-                    overflowY: "scroll",
-                    textAlign: "center",
-                    height: "450px",
-                  }}
-                >
-                  <TableStyling
-                    rowSelection={deviceRowSelection}
-                    // scroll={{ x: 4000 }}
-                    rowKey="ip_address"
-                    columns={AddDeviceColumns}
-                    dataSource={deviceDataSource}
-                    // pagination={false}
-                    style={{ width: "100%", padding: "2%" }}
-                  />
-                  <Button
-                    onClick={handleDevices}
-                    style={{
-                      marginTop: "15px",
-                      backgroundColor: "#66B127",
-                      color: "white",
-                      height: "35px",
-                      border: "none",
-                      //   width: "120px",
-                      cursor: "Pointer",
-                    }}
-                  >
-                    <b>+</b> Add Device
-                  </Button>
-                </div>
-              </SpinLoading>
-            ) : null} */}
           </div>
         </div>
       </MainTableModal>
@@ -1630,7 +1054,6 @@ const index = () => {
           dataSource={dataSource}
           setDataSource={setDataSource}
           excelData={excelData}
-          // setRowCount={setRowCount}
           editRecord={editRecord}
           centered={true}
         />
@@ -1639,11 +1062,9 @@ const index = () => {
       <SpinLoading spinning={allIpamDeviceLoading} tip="Loading...">
         <TableStyling
           rowSelection={rowSelection}
-          // scroll={{ x: 4000 }}
           rowKey="ip_address"
           columns={columns}
           dataSource={dataSource}
-          // pagination={false}
           style={{ width: "100%", padding: "2%" }}
         />
       </SpinLoading>

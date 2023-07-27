@@ -114,6 +114,7 @@ import LicenseKey from "../LicenseKey";
 import LicenseRenewal from "../licenseRenewal";
 import axios, { baseUrl } from "../../utils/axios";
 import NewDashboard from "../NewDashboard";
+import Dashboard from "../../pages/Dashboard/Dashboard";
 
 const SecondNavBar = () => {
   const { pathname } = useLocation();
@@ -202,7 +203,9 @@ const SecondNavBar = () => {
                 path="/license-renewal"
                 element={<Navigate to="/" replace />}
               />
-              <Route path="/" element={<NewDashboard />} />
+              <Route path="/" element={<Dashboard />} />
+
+              <Route path="/new" element={<NewDashboard />} />
 
               <Route path="/license-key" element={<LicenseKey />} />
 

@@ -1,1 +1,0 @@
-[{"ip_address": "192.168.1.2", "date": "03-08-2022", "time": "12-15-12", "reason": "TCP connection to device failed.\n\nCommon causes of this problem are:\n1. Incorrect hostname or IP address.\n2. Wrong TCP port.\n3. Intermediate firewall blocking access.\n\nDevice settings: fortinet 192.168.1.2:22\n\n"}]

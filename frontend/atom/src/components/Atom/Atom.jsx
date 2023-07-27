@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Table, notification } from "antd";
+import { Button, Dropdown, notification, Select } from "antd";
 import Modal from "./AddAtom";
 import EditModal from "./EditAtom";
 import RackNameModel from "./RackNameModel";
@@ -7,6 +7,8 @@ import StaticOnBoardModal from "./StaticOnBoardModal";
 import tempexp from "./assets/exp.svg";
 import hoverexp from "./assets/activeexport.svg";
 import trash from "./assets/trash.svg";
+import Swal from "sweetalert2";
+import * as XLSX from "xlsx";
 
 import { ImportOutlined, EditOutlined } from "@ant-design/icons";
 import {
@@ -19,12 +21,248 @@ import {
   DeleteButton,
 } from "../AllStyling/All.styled.js";
 
-import Swal from "sweetalert2";
-import * as XLSX from "xlsx";
 import { columnSearch } from "../../utils";
-
 import axios, { baseUrl } from "../../utils/axios";
 import SiteNameModel from "./SiteNameModel";
+import CustomModal from "../ReusableComponents/CustomModal/CustomModal";
+import Table from "../ReusableComponents/Table/Table";
+import LoadingButton from "../ReusableComponents/LoadingButton/LoadingButton";
+import { AtomStyle, DiscoverTableModelStyle } from "./Dashboard.styled";
+import { CheckMarkIcon, ErrorIcon, ExportIcon } from "../../svg";
+
+const DiscoverTableModel = (props) => {
+  const {
+    isDiscoveryItemActive,
+    setDiscoverItemAcitve,
+    serviceCalls,
+    openSweetAlert,
+  } = props;
+  const [searchText, setSearchText] = useState(null);
+  const [searchedColumn, setSearchedColumn] = useState(null);
+  const [rowCount, setRowCount] = useState(0);
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [configData, setConfigData] = useState(null);
+  const [loading, setLoading] = useState(false);
+  const [subnetDevices, setSubnetDevices] = useState([]);
+
+  useEffect(() => {
+    let user = localStorage.getItem("user");
+    let userData = JSON.parse(user);
+
+    let test = userData.monetx_configuration;
+    const t = eval(test);
+    let config = JSON.parse(t);
+    setConfigData(config);
+  }, []);
+
+  let excelData = [];
+  const [dataSource, setDataSource] = useState(excelData);
+
+  let getColumnSearchProps = columnSearch(
+    searchText,
+    setSearchText,
+    searchedColumn,
+    setSearchedColumn
+  );
+
+  const onSelectChange = (selectedRowKeys) => {
+    setSelectedRowKeys(selectedRowKeys);
+  };
+
+  const rowSelection = {
+    columnWidth: 40,
+    selectedRowKeys,
+    onChange: onSelectChange,
+    selection: Table.SELECTION_ALL,
+    getCheckboxProps: () => ({
+      disabled: configData?.atom.pages.atom.read_only,
+    }),
+  };
+
+  useEffect(() => {
+    handleChange();
+    getSubnetDevices();
+  }, []);
+
+  const handleChange = async (value) => {
+    let subnets;
+
+    if (value) {
+      subnets = value;
+    } else {
+      subnets = "All";
+    }
+
+    await axios
+      .post(`${baseUrl}/getDiscoveryForTransition`, {
+        subnet: subnets,
+      })
+      .then((res) => {
+        setDataSource(res.data);
+        setRowCount(res.data.length);
+      })
+      .catch((err) => console.log("err========>", err));
+  };
+
+  const getSubnetDevices = async () => {
+    await axios
+      .get(`${baseUrl}/getSubnetsDropdown`)
+      .then((res) => {
+        setSubnetDevices(res.data);
+      })
+      .catch((err) => console.log(err));
+  };
+
+  const columns = [
+    {
+      title: "IP Address",
+      dataIndex: "ip_address",
+      key: "ip_address",
+      render: (text, record) => (
+        <p
+          style={{ textAlign: "left", marginLeft: "12px", paddingTop: "16px" }}
+        >
+          {text}
+        </p>
+      ),
+
+      ...getColumnSearchProps(
+        "ip_address",
+        "Ip Address",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+    {
+      title: (
+        <Select defaultValue="All" suffixIcon={"V"} onChange={handleChange}>
+          {subnetDevices.map((device, index) => {
+            return (
+              <Select.Option key={index} value={device}>
+                {device}
+              </Select.Option>
+            );
+          })}
+        </Select>
+      ),
+      dataIndex: "subnet",
+      key: "subnet",
+    },
+    {
+      title: "Make & Model",
+      dataIndex: "make_model",
+      key: "make_model",
+      render: (text, record) => (
+        <p style={{ textAlign: "center", paddingTop: "16px" }}>{text}</p>
+      ),
+
+      ...getColumnSearchProps(
+        "make_model",
+        "Make & Model",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+    {
+      title: "OS Type",
+      dataIndex: "os_type",
+      key: "os_type",
+      render: (text, record) => (
+        <p style={{ textAlign: "center", paddingTop: "16px" }}>{text}</p>
+      ),
+
+      ...getColumnSearchProps(
+        "os_type",
+        "OS Type",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+
+    {
+      title: "Vendor",
+      dataIndex: "vendor",
+      key: "vendor",
+      render: (text, record) => (
+        <p style={{ textAlign: "center", paddingTop: "16px" }}>{text}</p>
+      ),
+
+      ...getColumnSearchProps(
+        "vendor",
+        "Vendor",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+  ];
+
+  const addDevices = async () => {
+    if (selectedRowKeys.length > 0) {
+      setLoading(true);
+      await axios
+        .post(`${baseUrl}/transitDicoveryData`, selectedRowKeys)
+        .then((res) => {
+          if (res.status == 200) {
+            console.log(res);
+            setTimeout(() => {
+              setDiscoverItemAcitve(false);
+              setLoading(false);
+              serviceCalls();
+              openSweetAlert(
+                "Devices Inserted",
+                "success",
+                res.data.error_list
+              );
+            }, 3000);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    }
+  };
+
+  return (
+    <CustomModal
+      isModalOpen={isDiscoveryItemActive}
+      setIsModalOpen={setDiscoverItemAcitve}
+      width="100%"
+      footer={null}
+      title="Add Devices from Descovery"
+    >
+      <DiscoverTableModelStyle>
+        <Table
+          columns={columns}
+          data={dataSource}
+          pagination={5}
+          rowSelection={rowSelection}
+          rowKey="ip_address"
+        />
+
+        <article className="button-wrapper">
+          <LoadingButton
+            onClick={() => addDevices()}
+            btnText="+ Add Device"
+            loading={loading}
+            disabled={selectedRowKeys.length == 0}
+          />
+        </article>
+      </DiscoverTableModelStyle>
+    </CustomModal>
+  );
+};
 
 let excelData = [];
 let columnFilters = {};
@@ -136,16 +374,29 @@ const Atom = () => {
     }
   };
 
-  const exportSeed = async () => {
+  const exportSeed = async (data) => {
     const UpdatedExcelData = excelData.map((data) => {
       delete data.inserted;
       delete data.exception;
       delete data.updated;
-
       return data;
     });
 
-    jsonToExcel(UpdatedExcelData);
+    let UpdatedFilterExcelData;
+
+    if (data == "completed") {
+      UpdatedFilterExcelData = UpdatedExcelData.filter(
+        (data) => data.status == 200
+      );
+    } else if (data == "Not Completed") {
+      UpdatedFilterExcelData = UpdatedExcelData.filter(
+        (data) => data.status == 500
+      );
+    } else {
+      UpdatedFilterExcelData = UpdatedExcelData;
+    }
+
+    jsonToExcel(UpdatedFilterExcelData);
   };
 
   const openNotification = () => {
@@ -194,8 +445,6 @@ const Atom = () => {
       XLSX.utils.book_append_sheet(wb, binaryAtomData, "atom_devices");
       XLSX.writeFile(wb, "atom_devices.xlsx");
       openNotification();
-
-      // setExportLoading(false);
     } else {
       openSweetAlert("No Data Found!", "error");
     }
@@ -222,7 +471,7 @@ const Atom = () => {
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
-
+                  setSelectedRowKeys([]);
                   setOnboardLoading(false);
                 })
                 .catch((error) => {
@@ -286,23 +535,27 @@ const Atom = () => {
       });
   };
 
-  useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
+  const [isStatusDataFilter, setStatusDataFilter] = useState([]);
 
-      try {
-        const res = await axios.get(baseUrl + "/getAtoms");
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
+  useEffect(() => {
     serviceCalls();
   }, []);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getAtoms");
+      excelData = res.data;
+      setDataSource(excelData);
+      setStatusDataFilter(excelData);
+      setRowCount(excelData.length);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
 
   const convertToJson = (headers, fileData) => {
     let rows = [];
@@ -386,6 +639,34 @@ const Atom = () => {
       setLoading(false);
       console.log(err);
     }
+  };
+
+  // const handleChange = (status) => {
+  //   const filterStatusData = dataSource.filter((data) => data.status == status);
+  //   console.log("filterStatusData", filterStatusData);
+  //   setDataSource(filterStatusData);
+  // };
+
+  const [filteredInfo, setFilteredInfo] = useState({});
+  const [sortedInfo, setSortedInfo] = useState({});
+
+  const handleChange = (pagination, filters, sorter) => {
+    console.log("Various parameters", pagination, filters, sorter);
+    setFilteredInfo(filters);
+    setSortedInfo(sorter);
+  };
+  const clearFilters = () => {
+    setFilteredInfo({});
+  };
+  const clearAll = () => {
+    setFilteredInfo({});
+    setSortedInfo({});
+  };
+  const setAgeSort = () => {
+    setSortedInfo({
+      order: "descend",
+      columnKey: "age",
+    });
   };
 
   const columns = [
@@ -476,7 +757,34 @@ const Atom = () => {
         </>
       ),
     },
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: "5%",
+      render: (text, record) => {
+        return (
+          <span className="status-icon" title={record.message}>
+            {text == 200 ? <CheckMarkIcon /> : <ErrorIcon />}
+          </span>
+        );
+      },
 
+      filters: [
+        {
+          text: "Completed",
+          value: "200",
+        },
+        {
+          text: "Not Completed",
+          value: "500",
+        },
+      ],
+      filteredValue: filteredInfo.name || null,
+      onFilter: (value, record) => record.name.includes(value),
+
+      ellipsis: true,
+    },
     {
       title: "IP Address",
       dataIndex: "ip_address",
@@ -575,7 +883,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Site Name",
       dataIndex: "site_name",
@@ -639,7 +946,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Password Group",
       dataIndex: "password_group",
@@ -658,7 +964,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Device RU",
       dataIndex: "device_ru",
@@ -695,7 +1000,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Section",
       dataIndex: "section",
@@ -714,7 +1018,6 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-
     {
       title: "Virtual",
       dataIndex: "virtual",
@@ -749,13 +1052,42 @@ const Atom = () => {
     }),
   };
 
+  const [isDiscoveryItemActive, setDiscoverItemAcitve] = useState(false);
+
+  const items = [
+    {
+      key: "1",
+      label: <p onClick={() => exportSeed("all")}>All Devices</p>,
+    },
+    {
+      key: "2",
+      label: <p onClick={() => exportSeed("completed")}>Completed</p>,
+    },
+    {
+      key: "3",
+      label: <p onClick={() => exportSeed("Not Completed")}>Not Complete</p>,
+    },
+  ];
+
   return (
-    <SpinLoading spinning={onBoardLoading} tip="Loading...">
+    <AtomStyle>
+      <AddAtomStyledButton
+        onClick={() => setDiscoverItemAcitve(true)}
+        disabled={configData?.atom.pages.atom.read_only}
+        style={{
+          marginRight: "30px",
+          float: "right",
+          borderRadius: "8px",
+        }}
+      >
+        + Add devices from discovery
+      </AddAtomStyledButton>
+
       <AddAtomStyledButton
         onClick={showModal}
         disabled={configData?.atom.pages.atom.read_only}
         style={{
-          marginRight: "30px",
+          marginRight: "10px",
           float: "right",
           borderRadius: "8px",
         }}
@@ -824,7 +1156,7 @@ const Atom = () => {
             &nbsp; Export Template
           </StyledExportButton>
 
-          <StyledExportButton
+          {/* <StyledExportButton
             onClick={exportSeed}
             style={{
               marginRight: "5px",
@@ -834,7 +1166,22 @@ const Atom = () => {
             <img src={tempexp} alt="" width="15px" height="15px" />
             <img src={hoverexp} alt="" width="15px" height="15px" />
             &nbsp; Export
-          </StyledExportButton>
+          </StyledExportButton> */}
+
+          <Dropdown
+            menu={{
+              items,
+            }}
+            placement="bottomLeft"
+            className="export-dropdown"
+          >
+            <Button>
+              <span className="icon">
+                <ExportIcon />
+              </span>
+              Export
+            </Button>
+          </Dropdown>
           <div>
             <StyledImportFileInput
               disabled={configData?.atom.pages.atom.read_only}
@@ -859,6 +1206,16 @@ const Atom = () => {
       </div>
       <br />
       <br />
+
+      {isDiscoveryItemActive && (
+        <DiscoverTableModel
+          isDiscoveryItemActive={isDiscoveryItemActive}
+          setDiscoverItemAcitve={setDiscoverItemAcitve}
+          serviceCalls={serviceCalls}
+          openSweetAlert={openSweetAlert}
+        />
+      )}
+
       {isModalVisible && (
         <Modal
           style={{ padding: "0px" }}
@@ -873,6 +1230,7 @@ const Atom = () => {
           centered={true}
         />
       )}
+
       {isEditModalVisible && (
         <EditModal
           style={{ padding: "0px" }}
@@ -890,6 +1248,7 @@ const Atom = () => {
           centered={true}
         />
       )}
+
       {isStaticModalVisible && (
         <StaticOnBoardModal
           style={{ padding: "0px" }}
@@ -903,6 +1262,7 @@ const Atom = () => {
           centered={true}
         />
       )}
+
       {siteNameModalVisible && (
         <SiteNameModel
           siteNameModalVisible={siteNameModalVisible}
@@ -910,6 +1270,7 @@ const Atom = () => {
           dataSource={siteData}
         />
       )}
+
       {rackNameModalVisible && (
         <RackNameModel
           rackNameModalVisible={rackNameModalVisible}
@@ -917,9 +1278,11 @@ const Atom = () => {
           dataSource={rackData}
         />
       )}
+
       <SpinLoading spinning={loading} tip="Loading...">
         <div style={{ padding: "25px" }}>
-          <TableStyling
+          <Table
+            className="atom-table"
             rowSelection={rowSelection}
             scroll={{ x: 4000 }}
             rowKey="ip_address"
@@ -929,7 +1292,7 @@ const Atom = () => {
           />
         </div>
       </SpinLoading>
-    </SpinLoading>
+    </AtomStyle>
   );
 };
 

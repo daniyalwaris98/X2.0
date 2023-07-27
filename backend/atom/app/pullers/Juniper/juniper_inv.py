@@ -3,8 +3,8 @@ from netmiko import Netmiko
 from datetime import datetime
 import re, sys, time, json
 import threading
-from app.common_utils.insert_to_db import UamInventoryData
-from app.monitoring.common_utils.utils import addFailedDevice
+from app.uam.uam_db_utils import UamInventoryData
+
 
 class JuniperPuller(object):
     
@@ -116,9 +116,8 @@ class JuniperPuller(object):
                 self.inv_data[host['ip_address']].update({'status': 'success'})
                 print(self.inv_data,file=sys.stderr)
                 
-                response = UamInventoryData(self.inv_data)
-                if not response:
-                    self.failed = True
+                self.failed = UamInventoryData(self.inv_data)
+                
             except Exception as e:
                 traceback.print_exc()
                 self.failed = True

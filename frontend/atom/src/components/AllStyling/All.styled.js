@@ -104,30 +104,15 @@ export const ExportRowButton = styled.button`
   border-radius: 8px;
   width: 100%;
   cursor: pointer;
-  /* box-shadow: rgba(99, 99, 99, 0.2) 0px 1px 5px 0px; */
-
-  /* border: 1px solid #86a8bb !important; */
-
-  /* // height: 40px; */
 
   font-weight: 500;
   font-size: 14px;
-  /* &:active {
-    /* color: #66b127; */
-  /* color: #fff; */
-  //   border-bottom:2px solid #66B127;
-  //   cursor:pointer;
-  /*  */
+
   &:hover {
-    /* border: 1px solid #66b127 !important; */
     color: #fff;
     box-shadow: rgba(99, 99, 99, 0.2) 0px 1px 5px 0px;
     border-radius: 8px;
     background-color: #86a8bb;
-
-    // color:#71b626;
-
-    // font-weight: 500;
   }
 `;
 
@@ -160,15 +145,6 @@ export const TableStyling = styled(Table)`
     padding: 5px !important;
   }
 
-  /* .ant-pagination-disabled > .ant-pagination-item-link {
-    border-radius: 15px;
-    color: #3d9e47;
-    &:hover {
-      border: 1px solid #3d9e47 !important;
-      border-radius: 15px;
-    }
-  } */
-
   .ant-pagination-next > .ant-pagination-item-link {
     border-radius: 15px;
     color: #3d9e47;
@@ -199,10 +175,6 @@ export const TableStyling = styled(Table)`
   .ant-pagination-item-active a {
     color: #fff !important;
   }
-
-  /* .ant-pagination-item {
-    border-color: #fff;
-  } */
 
   .ant-pagination-item a {
     font-weight: 700;
@@ -313,12 +285,6 @@ export const TableStyling = styled(Table)`
     }
   }
 
-  /* .ant-pagination-item a {
-    display: block;
-    padding: 0 6px;
-    color: #fff;
-  } */
-
   .ant-pagination-jump-prev
     .ant-pagination-item-container
     .ant-pagination-item-ellipsis,
@@ -349,10 +315,10 @@ export const TableStyling = styled(Table)`
     color: #fff;
   }
 `;
+
 export const IPHistoryTableStyling = styled(Table)`
 
 box-shadow: rgba(99, 99, 99, 0.2) 0px 1px 5px 0px;
-// border-radius:12px;
 
 
 .ant-select-selection {
@@ -465,44 +431,9 @@ border-radius:15px;
 
 
 
-  // margin-top: 10px;
-  // .ant-table-container {
-  //   .ant-table-content {
-  //     table {
-  //       thead.ant-table-thead {
-  //         tr {
-  //           th.ant-table-cell {
-  //             font-size: 12px;
-  //             margin: 0 !important;
-  //             padding: 0 !important;
-  //             padding: 5px 10px 5px 10px !important;
-
-  //             font-weight: 600;
-  //           }
-  //         }
-  //       }
-  //       tbody.ant-table-tbody {
-  //         tr.ant-table-row {
-  //           td.ant-table-cell {
-  //             font-size: 11px !important;
-  //             margin: 0 !important;
-  //             padding: 0 !important;
-  //             padding-left: 10px !important;
-  //             height: ${(p) => p.cellHeight || "33px"} !important;
-  //           }
-  //         }
-  //         tr.dark {
-  //         }
-  //         tr.light {
-  //         }
-  //       }
-  //     }
-  //   }
-  // }
+  
   margin-top: 10px;
-  /* table tr:nth-child(2n) td {
-    background-color: #F1FFE1;
-    } */
+
  
     && tbody > tr:hover > td {
       background: #D3F3AE;
@@ -515,11 +446,8 @@ border-radius:15px;
 
     }
 
-    /* .duplicate-row {
-      table tr:nth-child(2n) td {
-      background: #D3F;
-    }
-  } */
+   
+  }
 
 
   .ant-table-container {
@@ -714,6 +642,7 @@ border-radius:15px;
   }
 
 `;
+
 export const OnBoardStyledButton = styled(Button)`
   background-color: #c6fb8959;
   color: #9f9f9f;
@@ -2152,22 +2081,16 @@ export const DivStyleCre = styled.div`
 
 export const PStyleCre = styled.p`
   cursor: pointer;
-font-size:15px;
-color: ${(props) => (props.active ? "#6ab127" : "#000")};
-// fontSize: "22px",
-// fontWeight: 700,
-font-weight: ${(props) => (props.active ? "700" : "500")};
+  font-size: 15px;
+  color: ${(props) => (props.active ? "#6ab127" : "#000")};
 
-color: ${(props) => (props.active ? "#6ab127" : "#000")};
+  font-weight: ${(props) => (props.active ? "700" : "500")};
 
-// padding: "0px",
- margin: 0px;
- padding: 5px;
+  color: ${(props) => (props.active ? "#6ab127" : "#000")};
 
- padding-top:12px;
- padding-bottom:12px;
-}}
-//   background-color: ${(props) =>
-  props.active ? "rgba(146, 146, 146, 0.08)" : "#fff"};
-  background-color: transparent;
+  margin: 0px;
+  padding: 5px;
+
+  padding-top: 12px;
+  padding-bottom: 12px;
 `;

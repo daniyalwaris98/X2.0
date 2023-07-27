@@ -5,7 +5,7 @@ import axios, { baseUrl } from "../../utils/axios";
 import Swal from "sweetalert2";
 import "../AllStyling/CSSStyling.css";
 import "./main.css";
-import { devices } from "../../data/globalData";
+import { devices, functions } from "../../data/globalData";
 
 const AddAtom = (props) => {
   const [isPassModalVisible, setIsPassModalVisible] = useState(false);
@@ -53,7 +53,6 @@ const AddAtom = (props) => {
       password: pass,
     };
     console.log(passGroupformData);
-    setLoading(true);
 
     await axios
       .post(baseUrl + "/addUser", passGroupformData)
@@ -62,7 +61,7 @@ const AddAtom = (props) => {
         setUsername("");
         setPass("");
         setIsPassModalVisible(false);
-        setLoading(false);
+
         openSweetAlert(response?.data, "success");
         const promises = [];
         promises.push(
@@ -72,21 +71,17 @@ const AddAtom = (props) => {
               console.log("getPasswordGroupDropdown", res);
               setPasswordArray(res.data);
               setPassword_group(res.data[0]);
-
-              setLoading(false);
             })
             .catch((error) => {
               console.log(error);
-              setLoading(false);
             })
         );
-        setLoading(false);
+
         return Promise.all(promises);
       })
       .catch((err) => {
         openSweetAlert(response?.data, "error");
         console.log("error ==> " + err);
-        setLoading(false);
       });
   };
 
@@ -131,11 +126,8 @@ const AddAtom = (props) => {
                   setSiteArrayR(res.data);
                   setSiteNameR(res.data[0]);
                   setIsSiteModalVisible(false);
-                  setLoading(false);
                 })
-                .catch((error) => {
-                  setLoading(false);
-                })
+                .catch((error) => {})
             );
             return Promise.all(promises);
           }
@@ -208,13 +200,10 @@ const AddAtom = (props) => {
                   setRackArray(res.data);
                   // console.log("a", res.data[0]);
                   setRack_name(res.data[0]);
-
-                  setLoading(false);
                 })
                 .catch((error) => {
                   console.log(error);
                   // openSweetAlert("Something Went Wrong!", "danger");
-                  setLoading(false);
                 })
             );
             return Promise.all(promises);
@@ -284,7 +273,6 @@ const AddAtom = (props) => {
     }
   };
 
-  const [loading, setLoading] = useState(false);
   let [device, setDevice] = useState(props.addRecord);
 
   let [ip_address, setIp] = useState(
@@ -329,11 +317,14 @@ const AddAtom = (props) => {
     device.module.includes("atom")
   );
 
+  const atomFunctions = functions.filter((atomFunction) =>
+    atomFunction.module.includes("atom")
+  );
+
   const changeSelectOptionHandler = async (event) => {
     setSite_name(event.target.value);
     // const res = await axios.get(baseUrl + "/getSitesForDropdown");
     // setSite_name(res.data);
-    // setLoading(false);
   };
 
   const algorithm = [
@@ -367,20 +358,16 @@ const AddAtom = (props) => {
 
   useEffect(() => {
     const getSitesForDropdown = async () => {
-      setLoading(true);
-
       try {
         const res = await axios.get(baseUrl + "/getSitesForDropdown");
 
         setSiteArray(res.data);
         setSite_name(res.data[0]);
-        setLoading(false);
+
         setSiteArrayR(res.data);
         setSiteNameR(res.data[0]);
-        setLoading(false);
       } catch (err) {
         console.log(err.response);
-        setLoading(false);
       }
     };
     getSitesForDropdown();
@@ -388,17 +375,17 @@ const AddAtom = (props) => {
 
   // useEffect(() => {
   //   const getSitesForDropdown = async () => {
-  //     setLoading(true);
+  //
 
   //     try {
   //       const res = await axios.get(baseUrl + "/getSitesForDropdown");
 
   //       setSiteArrayR(res.data);
   //       setSiteNameR(res.data[0]);
-  //       setLoading(false);
+  //
   //     } catch (err) {
   //       console.log(err.response);
-  //       setLoading(false);
+  //
   //     }
   //   };
   //   getSitesForDropdown();
@@ -408,18 +395,14 @@ const AddAtom = (props) => {
 
   useEffect(() => {
     const getRacksBySiteDropdown = async () => {
-      setLoading(true);
-
       try {
         const res = await axios.get(
           `${baseUrl}/getRacksBySiteDropdown?site_name=${site_name}`
         );
         setRackArray(res.data);
         setRack_name(res.data[0]);
-        setLoading(false);
       } catch (err) {
         console.log(err.response);
-        setLoading(false);
       }
     };
     getRacksBySiteDropdown();
@@ -429,19 +412,14 @@ const AddAtom = (props) => {
 
   useEffect(() => {
     const getPasswordGroupDropdown = async () => {
-      setLoading(true);
-
       try {
         const res = await axios.get(baseUrl + "/getPasswordGroupDropdown");
 
         console.log("getPasswordGroupDropdown", res);
         setPasswordArray(res.data);
         setPassword_group(res.data[0]);
-
-        setLoading(false);
       } catch (err) {
         console.log(err.response);
-        setLoading(false);
       }
     };
     getPasswordGroupDropdown();
@@ -667,15 +645,13 @@ const AddAtom = (props) => {
                         Select Function
                       </option>
 
-                      <option value="Router">Router</option>
-                      <option value="Switch">Switch</option>
-                      <option value="Wireless">Wireless</option>
-                      <option value="Firewall">Firewall</option>
-                      <option value="VM">VM</option>
-                      <option value="EXSI">EXSI</option>
-                      <option value="Load Balancer">Load Balancer</option>
-                      <option value="WAF">WAF</option>
-                      <option value="Other">Other</option>
+                      {atomFunctions.map((atomFunction, index) => {
+                        return (
+                          <option value={atomFunction.name} key={index}>
+                            {atomFunction.name}
+                          </option>
+                        );
+                      })}
                     </Styledselect>
                   </div>
                 </AdjustInputWrapper>

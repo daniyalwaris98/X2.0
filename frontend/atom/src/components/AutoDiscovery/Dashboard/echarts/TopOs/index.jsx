@@ -12,7 +12,6 @@ const Index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getTopOsForDiscovery");
-        console.log("res===============> os autodescovery", res);
         setMyFunction(res.data);
         setLoading(false);
       } catch (err) {

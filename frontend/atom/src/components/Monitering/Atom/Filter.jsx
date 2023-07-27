@@ -29,7 +29,6 @@ const ColumnHeader = ({
             .indexOf(value.replace(" ", "").toLowerCase()) > -1
       );
     }
-    console.log("columnFilters", columnFilters);
     setRowCount(filteredSuggestions.length);
     setDataSource(filteredSuggestions);
   };
@@ -76,12 +75,6 @@ export const getColumnSearchProps = (
   excelData,
   columnFilters
 ) => {
-  if (dataIndex === "subnet" || dataIndex === "open_ports") {
-    console.log(
-      "columnFilterscolumnFilterscolumnFilterscolumnFilterscolumnFilterscolumnFilterscolumnFilterscolumnFilterscolumnFilters",
-      columnFilters
-    );
-  }
   return {
     title: (
       <ColumnHeader

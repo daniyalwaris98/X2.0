@@ -39,8 +39,6 @@ const index_Main = () => {
   const findInput = useRef(null);
   const ipAddress = data?.state?.ip_address;
 
-  console.log("COnfig data================>>", data);
-
   const handleFindNext = () => {
     const searchTerm = findInput.current.value;
     window.find(searchTerm, false, false, false, false, true, true);
@@ -189,8 +187,6 @@ const index_Main = () => {
     await axios
       .post(baseUrl + "/backupConfigurations", ipData)
       .then((response) => {
-        console.log("IP response ==============>", response);
-
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
           setLoading(false);

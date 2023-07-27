@@ -88,14 +88,6 @@ const Index = () => {
       render: (text, record) => (
         <p
           style={{
-            // color: "#66B127",
-            // textDecoration: "underline",
-            // fontWeight: "400",
-            // // textAlign: "center",
-            // paddingLeft: "20px",
-            // // color: "blue",
-            // cursor: "pointer",
-
             height: "18px",
             fontWeight: "500",
             fontSize: "13px",

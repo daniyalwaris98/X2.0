@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Modal, Input, Select } from "antd";
+import { Row, Col, Modal, Input } from "antd";
 import axios, { baseUrl } from "../../utils/axios";
 import Swal from "sweetalert2";
 import "../AllStyling/CSSStyling.css";
-import { devices } from "../../data/globalData";
+import { devices, functions } from "../../data/globalData";
 
 const EditAtom = (props) => {
   const getString = (str) => {
@@ -23,7 +23,7 @@ const EditAtom = (props) => {
   const postDevice = async (device) => {
     try {
       await axios
-        .post(baseUrl + "/addAtomDevice ", device)
+        .post(baseUrl + "/editAtom ", device)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
@@ -101,6 +101,10 @@ const EditAtom = (props) => {
 
   const atomDeviceType = devices.filter((device) =>
     device.module.includes("atom")
+  );
+
+  const atomFunctions = functions.filter((atomFunction) =>
+    atomFunction.module.includes("atom")
   );
 
   const handleSubmit = (e) => {
@@ -223,47 +227,41 @@ const EditAtom = (props) => {
               <StyledInput
                 value={ip_address}
                 onChange={(e) => setIp(e.target.value)}
-                required
+                readOnly
               />
             </InputWrapper>
             <InputWrapper>
-              Site Name: &nbsp;<span style={{ color: "red" }}>*</span>
+              Site Name:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               <br />
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
                   value={site_name}
                   onChange={(e) => changeSelectOptionHandler(e)}
-                  required
+                  // required
                 >
                   {siteArray?.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
             </InputWrapper>
             <InputWrapper>
-              Rack Name: &nbsp;<span style={{ color: "red" }}>*</span>
+              Rack Name:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
                   value={rack_name}
-                  required
+                  // required
                   onChange={(e) => {
                     setRack_name(e.target.value);
                   }}
                 >
                   {rackArray?.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
@@ -282,12 +280,13 @@ const EditAtom = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Device RU: &nbsp;<span style={{ color: "red" }}>*</span>
+              Device RU:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
-                  required
+                  // required
                   placeholder="select"
                   value={device_ru}
                   onChange={(e) => {
@@ -295,11 +294,7 @@ const EditAtom = (props) => {
                   }}
                 >
                   {Ru.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
@@ -330,27 +325,27 @@ const EditAtom = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Function: &nbsp;<span style={{ color: "red" }}>*</span>
+              Function:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
-                  required
+                  // required
                   placeholder="select"
                   value={myfunction}
                   onChange={(e) => {
                     setMyfunction(e.target.value);
                   }}
                 >
-                  <option value="ROUTER">ROUTER</option>
-                  <option value="SWITCH">SWITCH</option>
-                  <option value="Wireless">Wireless</option>
-                  <option value="Firewall">Firewall</option>
-                  <option value="VM">VM</option>
-                  <option value="EXSI">EXSI</option>
-                  <option value="Load Balancer">Load Balancer</option>
-                  <option value="WAF">WAF</option>
-                  <option value="Other">Other</option>
+                  <option value="">Select Function</option>
+                  {atomFunctions.map((atomFunction, index) => {
+                    return (
+                      <option value={atomFunction.name} key={index}>
+                        {atomFunction.name}
+                      </option>
+                    );
+                  })}
                 </Styledselect>
               </div>
             </InputWrapper>
@@ -368,12 +363,13 @@ const EditAtom = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Device Type: &nbsp;<span style={{ color: "red" }}>*</span>
+              Device Type:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
-                  required
+                  // required
                   placeholder="select"
                   value={device_type}
                   onChange={(e) => {
@@ -395,35 +391,23 @@ const EditAtom = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Password Group: &nbsp;<span style={{ color: "red" }}>*</span>
+              Password Group:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={password_group} />
-                ) : ( */}
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
                   value={password_group}
-                  required
+                  // required
                   onChange={(e) => {
                     setPassword_group(e.target.value);
                   }}
                 >
                   {passwordArray.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
+                    return <option key={index}>{item}</option>;
                   })}
                 </Styledselect>
               </div>
-              {/* <StyledInput
-                value={password_group}
-                onChange={(e) => setPassword_group(e.target.value)}
-                required
-              /> */}
-              {/* )} */}
             </InputWrapper>
           </Col>
         </Row>
@@ -444,7 +428,6 @@ const EditAtom = (props) => {
                   width: "120px",
                   marginLeft: "10px",
                   marginRight: "10px",
-                  // paddingBottom: "5px",
                 }}
                 color={"#BBBABA"}
                 onClick={handleCancel}

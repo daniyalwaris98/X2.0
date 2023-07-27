@@ -30,7 +30,7 @@ import {
   DownloadButton,
 } from "../../AllStyling/All.styled.js";
 
-import { devices } from "../../../data/globalData";
+import { devices, functions, vendors } from "../../../data/globalData";
 import Container from "../../ReusableComponents/Container/Container";
 import { ConfigDataStyle } from "./ConfigData.style";
 import VerticalBarChart from "../../ReusableComponents/Carts/VerticalBarChart/VerticalBarChart";
@@ -76,6 +76,11 @@ const indexMain = () => {
 
   const location = useLocation(); // for future use to filter out table
   // console.log("location=========>", location.state);
+
+  const ncmVendors = vendors.filter((vendor) => vendor.module.includes("ncm"));
+  const ncmFunctions = functions.filter((ncmFunction) =>
+    ncmFunction.module.includes("ncm")
+  );
 
   useEffect(() => {
     getSeverityData();
@@ -214,7 +219,6 @@ const indexMain = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAtomInNcm");
-
         deviceExcelData = res.data;
         setDataSourceOfDevice(deviceExcelData);
         setDataSourceOfDeviceLoading(false);
@@ -1350,9 +1354,6 @@ const indexMain = () => {
                                     Vendor
                                   </label>
                                   &nbsp;
-                                  {/* <span style={{ color: "red", float: "left" }}>
-                                    *
-                                  </span> */}
                                   <div className="select_t">
                                     <StyledselectIpam
                                       style={{
@@ -1366,16 +1367,16 @@ const indexMain = () => {
                                       }
                                     >
                                       <option>Select Vendor</option>
-                                      <option value="Cisco">Cisco</option>
-                                      <option value="Fortinet">Fortinet</option>
-                                      <option value="Juniper">Juniper</option>
-                                      <option value="PaloAlto">PaloAlto</option>
-                                      <option value="Huawei">Huawei</option>
-                                      <option value="Juniper">Juniper</option>
-                                      <option value="Microsoft">
-                                        Microsoft
-                                      </option>
-                                      <option value="Linux">Linux</option>
+                                      {ncmVendors.map((vendor, index) => {
+                                        return (
+                                          <option
+                                            value={vendor.name}
+                                            key={index}
+                                          >
+                                            {vendor.name}
+                                          </option>
+                                        );
+                                      })}
                                     </StyledselectIpam>
                                   </div>
                                 </div>
@@ -1403,16 +1404,17 @@ const indexMain = () => {
                                       setFunction(e.target.value)
                                     }
                                   >
-                                    <option value="Router">Router</option>
-                                    <option value="Switch">Switch</option>
-                                    <option value="Wireless">Wireless</option>
-                                    <option value="Firewall">Firewall</option>
-                                    <option value="VM">VM</option>
-                                    <option value="EXSI">EXSI</option>
-                                    <option value="Load Balancer">
-                                      Load Balancer
-                                    </option>
-                                    <option value="WAF">WAF</option>
+                                    <option value="">Select Funtion</option>
+                                    {ncmFunctions.map((ncmFunction, index) => {
+                                      return (
+                                        <option
+                                          value={ncmFunction.name}
+                                          key={index}
+                                        >
+                                          {ncmFunction.name}
+                                        </option>
+                                      );
+                                    })}
                                   </StyledselectIpam>
                                 </div>
                               </Col>
@@ -1574,7 +1576,6 @@ const indexMain = () => {
               <SpinLoading spinning={dataSourceOfDeviceLoading}>
                 <div
                   style={{
-                    //   overflowY: "scroll",
                     height: "440px",
                     paddingTop: "80px",
                     textAlign: "center",

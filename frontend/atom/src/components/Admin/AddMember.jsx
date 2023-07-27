@@ -313,6 +313,7 @@ const AddMember = (props) => {
                   value={company_name}
                   onChange={(e) => setcompany_name(e.target.value)}
                 >
+                  <option value="">Select Company</option>
                   {companies.map((company, index) => (
                     <option key={index} value={company}>
                       {company}

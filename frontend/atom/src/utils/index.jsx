@@ -2,6 +2,7 @@ import React from "react";
 import { SearchOutlined } from "@ant-design/icons";
 import { InputField } from "./Input.Styled.js";
 import "../App.css";
+
 const ColumnHeader = ({
   dataIndex,
   title,
@@ -14,7 +15,6 @@ const ColumnHeader = ({
     if (dataIndex in columnFilters) {
       if (e.target.value.length > 0) {
         columnFilters[dataIndex] = e.target.value;
-        console.log(columnFilters[dataIndex]);
       } else {
         delete columnFilters[dataIndex];
       }

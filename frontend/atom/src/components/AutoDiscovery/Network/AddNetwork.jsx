@@ -41,14 +41,14 @@ const AddAtom = (props) => {
                   props.setRowCount(response.data.length);
                 })
                 .catch((error) => {
-                  console.log("errorerrorerrorerrorerror", error);
+                  console.log(error);
                 })
             );
             return Promise.all(promises);
           }
         })
         .catch((error) => {
-          console.log("in add seed device catch ==> " + error);
+          console.log(error);
           openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
@@ -56,12 +56,13 @@ const AddAtom = (props) => {
     }
   };
 
-  let [device, setDevice] = useState(props.addRecord);
+  const device = props.addRecord;
 
   let [networkName, setNetworkName] = useState(
     device ? getString(device.network_name) : ""
   );
   let [subnet, setSubnet] = useState(device ? getString(device.subnet) : "");
+
   let [noOfDevices, setNoOfDevices] = useState(
     device ? getString(device.no_of_devices) : ""
   );
@@ -204,7 +205,8 @@ const AddAtom = (props) => {
               </div>
             </InputWrapper>
             <InputWrapper>
-              Excluded Ip Range: &nbsp;&nbsp;
+              Excluded Ip Range: &nbsp;<span style={{ color: "red" }}>*</span>
+              <br />
               <StyledInput
                 value={excludedIpRange}
                 required

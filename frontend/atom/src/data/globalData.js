@@ -1,7 +1,7 @@
 export const devices = [
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "cisco_ios",
+    name: "a10",
   },
   // {
   //   module: ["atom", "monitoring", "ipam", "ncm"],
@@ -9,15 +9,47 @@ export const devices = [
   // },
   {
     module: ["atom", "monitoring", "ipam", "ncm"],
-    name: "cisco-asa",
+    name: "arbor",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "cisco_nx_os",
+    name: "arista",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "cisco_xe",
+    name: "cisco_aci",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_aireos",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_apic",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_asa",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_nxos",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_ios",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_ios_xe",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_ios_xr",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_ucs",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
@@ -25,19 +57,7 @@ export const devices = [
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "fortinet",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "paloalto",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "arista_eos",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "huawei",
+    name: "extream_os",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
@@ -45,59 +65,7 @@ export const devices = [
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "juniper_screenos",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "junos_os",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "a10_networks_acos",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "arbor",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "fireeye_OS",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "greatbay",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "infoblox",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "prime",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "pulse_secure",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "cisco_ics_firmware",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "wire_filter",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "cisco_apic_firmware",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "symantec",
-  },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "extreme_xos",
+    name: "fireeye",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
@@ -105,32 +73,146 @@ export const devices = [
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "window",
-  },
-  {
-    module: ["ipam", "monitoring", "ncm", "atom"],
-    name: "cisco_aci",
-  },
-  {
-    module: ["ipam", "monitoring", "ncm", "atom"],
-    name: "cisco_aireos",
-  },
-  {
-    module: ["ipam", "monitoring", "ncm", "atom"],
-    name: "cisco_apic",
+    name: "fortinet",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "palow",
+    name: "greatbay",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "huawei",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "infobox",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "juniper",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "juniper_screenos",
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
     name: "linux",
   },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "paloalto",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "prime",
+  },
+  {
+    module: ["ipam", "monitoring", "ncm", "atom"],
+    name: "pulse_secure",
+  },
+  {
+    module: ["ipam", "monitoring", "ncm", "atom"],
+    name: "symantec",
+  },
+  {
+    module: ["ipam", "monitoring", "ncm", "atom"],
+    name: "wire_filter",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "window",
+  },
+  // {
+  //   module: ["atom", "ipam", "monitoring", "ncm"],
+  //   name: "linux",
+  // },
   // {
   //   module: ["atom", "ipam", "monitoring", "ncm"],
   //   name: "Other",
   // },
+];
+
+export const vendors = [
+  {
+    module: ["ncm", "monitoring"],
+    name: "cisco",
+  },
+  {
+    module: ["ncm", "monitoring"],
+    name: "extreme",
+  },
+  {
+    module: ["monitoring", "ncm"],
+    name: "fortinet",
+  },
+  {
+    module: ["monitoring", "ncm"],
+    name: "paloalto",
+  },
+  {
+    module: ["monitoring", "ncm"],
+    name: "huawei",
+  },
+  {
+    module: ["ncm", "monitoring"],
+    name: "juniper",
+  },
+  {
+    module: ["ncm", "monitoring"],
+    name: "microsoft",
+  },
+  {
+    module: ["monitoring", "ncm"],
+    name: "linux",
+  },
+  {
+    module: ["monitoring", "ncm"],
+    name: "h3c",
+  },
+];
+
+export const functions = [
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "Router",
+  },
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "Switch",
+  },
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "Wireless",
+  },
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "Firewall",
+  },
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "VM",
+  },
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "EXSI",
+  },
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "Load Balancer",
+  },
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "WAF",
+  },
+  {
+    module: ["atom", "monitoring", "ncm"],
+    name: "Controller",
+  },
+  {
+    module: ["atom", "monitoring"],
+    name: "Other",
+  },
 ];
 
 export const companies = ["NETS International LLC", "Extravise", "Test"];

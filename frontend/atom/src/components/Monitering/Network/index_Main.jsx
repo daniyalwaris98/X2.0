@@ -1,12 +1,8 @@
-import { DivStratch } from "./main.styled.js";
-import Network_Navigation from "./Sub_Navigation";
-
 import React, { useState, useEffect } from "react";
 import axios, { baseUrl } from "../../../utils/axios";
 import active from "../assets/active.svg";
 import inactive from "../assets/inactive.svg";
 import { useNavigate } from "react-router-dom";
-import { Table } from "antd";
 import {
   TableStyling,
   SpinLoading,
@@ -32,8 +28,6 @@ const index_Main = () => {
     searchedColumn,
     setSearchedColumn
   );
-
-  console.log("dataSource ========>", dataSource);
 
   useEffect(() => {
     const serviceCalls = async () => {
