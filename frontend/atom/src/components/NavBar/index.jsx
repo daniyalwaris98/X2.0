@@ -147,19 +147,23 @@ const SecondNavBar = () => {
 
   const data = localStorage.getItem("user");
   const [keyResp, setKeyResp] = useState("");
+
   useEffect(() => {
     if (data !== null) {
       const licenseData = async () => {
         const a = JSON.parse(data);
 
-        const res = await axios.post(baseUrl + "/licenseValidationAfterLogin", {
+        const res = await axios.post(baseUrl + "/licenseVerification", {
           username: a.user_name,
         });
+
+        console.log("res====>", res.data);
+
         setKeyResp(res.data);
       };
       licenseData();
     }
-  }, [keyResp, data]);
+  }, []);
 
   useEffect(() => {
     if (keyResp !== "" && keyResp !== "TRUE") {

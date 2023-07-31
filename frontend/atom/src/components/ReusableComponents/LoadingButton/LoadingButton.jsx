@@ -1,6 +1,6 @@
 import React from "react";
 import { LoadingButtonStyle } from "./LoadingButton.style";
-import Loader from "../../../assets/button-loader.gif";
+import Loader from "../../../assets/gifs/button-loader.gif";
 
 function LoadingButton(props) {
   const { onClick, loading, btnText, ...otherBtnProps } = props;

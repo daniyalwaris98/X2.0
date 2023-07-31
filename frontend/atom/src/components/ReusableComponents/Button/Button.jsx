@@ -1,5 +1,5 @@
 import React from "react";
-import Spinner from "../../../assets/button-loader.gif";
+import Spinner from "../../../assets/gifs/button-loader.gif";
 import { ButtonStyle } from "./Button.style";
 
 function Button(props) {

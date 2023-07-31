@@ -1,24 +1,27 @@
 import React, { useEffect, useState } from "react";
-
+import { useNavigate } from "react-router";
 import { Form, Select, message } from "antd";
-import illustration from "./assets/login.gif";
-import { useNavigate } from "react-router-dom";
-import axios, { baseUrl } from "../../utils/axios";
 import { CloseOutlined } from "@ant-design/icons";
 
-import { LoginPassword, LoginUser } from "../../svg/index.js";
-import Loader from "../Loader/Loader.jsx";
-import CustomModal from "../ReusableComponents/CustomModal/CustomModal.jsx";
-import CustomInput from "../ReusableComponents/FormComponents/CustomInput/CustomInput.jsx";
-import { Button } from "../ReusableComponents/index.js";
-import "./main.css";
+import axios, { baseUrl } from "../../utils/axios";
 import {
-  LoginContainer,
-  LoginStyledInput,
-  LoginPassStyledInput,
+  Button,
+  CustomModal,
+  CustomInput,
+  Loader,
+} from "../../components/ReusableComponents";
+import { LoginPassword, LoginUser } from "../../svg";
+import illustration from "../../assets/gifs/login.gif";
+
+import {
+  LoginStyle,
   LicenseFormModalStyle,
   SuperAdminModalStyle,
-} from "./Login.styled.js";
+} from "./Login.style";
+import {
+  LoginPassStyledInput,
+  LoginStyledInput,
+} from "../../components/AllStyling/All.styled";
 
 const SuperAdminModal = (props) => {
   const { isModalOpen, setIsModalOpen } = props;
@@ -325,7 +328,7 @@ const LicenseFormModal = (props) => {
   );
 };
 
-const index = () => {
+function Login() {
   const navigate = useNavigate();
   const [user, setUser] = useState(null);
   const [pass, setPass] = useState(null);
@@ -336,129 +339,6 @@ const index = () => {
   useEffect(() => {
     handleOneTimeSetup();
   }, []);
-
-  const handleOneTimeSetup = async () => {
-    await axios
-      .get(`${baseUrl}/oneTimeSetup`)
-      .then((res) => {
-        console.log(res);
-
-        if (
-          res.data.admin == false &&
-          res.data.end_user == false &&
-          res.data.license == false
-        ) {
-          setLicenseModalOpen(true);
-          setSuperAdminModalOpen(false);
-        } else if (
-          res.data.admin == false &&
-          res.data.end_user == true &&
-          res.data.license == true
-        ) {
-          setLicenseModalOpen(false);
-          setSuperAdminModalOpen(true);
-        } else {
-          setLicenseModalOpen(false);
-          setSuperAdminModalOpen(false);
-        }
-      })
-      .catch((err) => {
-        console.log(err);
-      });
-  };
-
-  const config = {
-    dashboard: {
-      view: true,
-      pages: {
-        dashboard: { view: true, read_only: true },
-      },
-    },
-    atom: {
-      view: true,
-      pages: {
-        atom: { view: true, read_only: true },
-        password_group: { view: true, read_only: true },
-      },
-    },
-
-    autoDiscovery: {
-      view: true,
-      pages: {
-        dashboard: { view: true, read_only: true },
-        manageNetwork: { view: true, read_only: true },
-        discovery: { view: true, read_only: true },
-        manageDevices: { view: true, read_only: true },
-        manageCredentials: { view: true, read_only: true },
-      },
-    },
-
-    uam: {
-      view: true,
-      pages: {
-        uam: { view: true, read_only: true },
-        sites: { view: true, read_only: true },
-        racks: { view: true, read_only: true },
-        devices: { view: true, read_only: true },
-        boards: { view: true, read_only: true },
-        subboards: { view: true, read_only: true },
-        sfps: { view: true, read_only: true },
-        license: { view: true, read_only: true },
-      },
-    },
-
-    network_mapping: {
-      view: true,
-      pages: {
-        network_mapping: { view: true, read_only: true },
-      },
-    },
-
-    ipam: {
-      view: true,
-      pages: {
-        ipam: { view: true, read_only: true },
-        dhcp_servers: { view: true, read_only: true },
-        dhcp_scope: { view: true, read_only: true },
-        dns_servers: { view: true, read_only: true },
-        dns_zones: { view: true, read_only: true },
-        devices: { view: true, read_only: true },
-        devices_subnet: { view: true, read_only: true },
-        subnet: { view: true, read_only: true },
-        dashboard: { view: true, read_only: true },
-
-        ip_detail: { view: true, read_only: true },
-        discover_subnet: { view: true, read_only: true },
-        ip_history: { view: true, read_only: true },
-
-        dns_records: { view: true, read_only: true },
-      },
-    },
-
-    monitering: {
-      view: true,
-      pages: {
-        monitering: { view: true, read_only: true },
-      },
-    },
-
-    dcm: {
-      view: true,
-      pages: {
-        dcm: { view: true, read_only: true },
-      },
-    },
-
-    admin: {
-      view: true,
-      pages: {
-        admin: { view: true, read_only: true },
-        show_member: { view: true, read_only: true },
-        role: { view: true, read_only: true },
-        failed_devices: { view: true, read_only: true },
-      },
-    },
-  };
 
   const getError = (error) => {
     return (
@@ -535,8 +415,36 @@ const index = () => {
     return <Loader />;
   }
 
+  const handleOneTimeSetup = async () => {
+    await axios
+      .get(`${baseUrl}/oneTimeSetup`)
+      .then((res) => {
+        if (
+          res.data.admin == false &&
+          res.data.end_user == false &&
+          res.data.license == false
+        ) {
+          setLicenseModalOpen(true);
+          setSuperAdminModalOpen(false);
+        } else if (
+          res.data.admin == false &&
+          res.data.end_user == true &&
+          res.data.license == true
+        ) {
+          setLicenseModalOpen(false);
+          setSuperAdminModalOpen(true);
+        } else {
+          setLicenseModalOpen(false);
+          setSuperAdminModalOpen(false);
+        }
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  };
+
   return (
-    <LoginContainer>
+    <LoginStyle>
       {isLicenseModalOpen && (
         <LicenseFormModal
           isModalOpen={isLicenseModalOpen}
@@ -639,8 +547,8 @@ const index = () => {
           <img src={illustration} alt="Montex Gif" />
         </picture>
       </article>
-    </LoginContainer>
+    </LoginStyle>
   );
-};
+}
 
-export default index;
+export default Login;

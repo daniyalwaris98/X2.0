@@ -1,6 +1,6 @@
 import React from "react";
 import { LoaderStyle } from "./Loader.style";
-import PreLoader from "../../assets/gifs/loader.gif";
+import PreLoader from "../../assets/loader.gif";
 
 function Loader() {
   return (
