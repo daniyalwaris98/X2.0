@@ -9,7 +9,7 @@ import React, { useEffect, useState } from "react";
 import Navigation from "./Navigation";
 import Atom from "../Atom";
 import PasswordGroup from "../PasswordGroup";
-import Login from "../Login";
+// import Login from "../Login";
 import UAM from "../UAM";
 import UAMData from "../UAM/UamData";
 import Sites from "../UAM/Sites";
@@ -115,6 +115,7 @@ import LicenseRenewal from "../licenseRenewal";
 import axios, { baseUrl } from "../../utils/axios";
 import NewDashboard from "../NewDashboard";
 import Dashboard from "../../pages/Dashboard/Dashboard";
+import Login from "../../pages/Login/Login";
 
 const SecondNavBar = () => {
   const { pathname } = useLocation();

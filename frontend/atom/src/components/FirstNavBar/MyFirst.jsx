@@ -128,11 +128,11 @@ const FirstNavBar = (props) => {
     if (data) {
       const licenseData = async () => {
         const a = JSON.parse(data);
-        const res = await axios.post(baseUrl + "/trackLicenseTenure", {
+        const res = await axios.post(baseUrl + "/licenseVerification", {
           username: a.user_name,
         });
-        console.log("trackLicenseTenure", res.data);
-        setDaysLeft(res.data);
+        console.log("licenseVerification", res.data.day_left);
+        setDaysLeft(res.data.day_left);
       };
       licenseData();
     }

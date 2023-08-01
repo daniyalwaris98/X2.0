@@ -25,12 +25,14 @@ const index = () => {
   const SubmitKey = async () => {
     try {
       await axios
-        .post(baseUrl + "/decryptCredentialsLicenseKey ", {
-          serial_key: liscKey,
+        .post(baseUrl + "/decodeLicense ", {
+          license_key: liscKey,
         })
         .then((response) => {
+          console.log("response", response);
+
           if (response?.response?.status == 500) {
-            message.error("Please Enter the Correct License Key");
+            message.error(response?.response?.data);
           } else {
             message.success("License Key Verified Successfully");
           }

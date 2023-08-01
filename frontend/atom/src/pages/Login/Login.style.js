@@ -1,72 +1,150 @@
 import styled from "styled-components";
 import {
+  Button,
   FlexboxStyle,
   GridBoxStyle,
   Poisitioning,
 } from "../../styles/commonStyle";
 
-export const LoginStyle = styled.article`
-  display: grid;
-  place-items: center;
-  height: 100vh;
+export const LoginStyle = styled.section`
+  ${GridBoxStyle({ columns: "1fr 1.2fr", align: "stretch" })};
 
-  .login-container {
-    ${GridBoxStyle({ columns: "1fr 1fr", align: "flex-start" })}
+  padding: 20px;
+  background: ${({ theme }) => theme.colors.BACKGROUND_COLOR};
 
-    max-width: 1200px;
-    margin: auto;
+  @media (max-width: ${({ theme }) => theme.breakPoints.tablets}) {
+    grid-template-columns: 1fr;
+    height: 100vh;
+  }
 
-    place-items: center;
+  .login-greetings {
+    ${FlexboxStyle({ direction: "column", justify: "center" })};
 
-    .form-container {
-      .welcome-text {
-        font-weight: 600;
+    background: url("./images/common-images/login-triangle-top.png") no-repeat
+        top left,
+      url("./images/common-images/login-rope-top.png") no-repeat top 5% right
+        10%,
+      url("./images/common-images/login-triangle-bottom.png") no-repeat bottom
+        right,
+      url("./images/common-images/login-rope-bottom.png") no-repeat bottom 5%
+        left 10%,
+      ${({ theme }) => theme.gradients.PRIMARY_GRADIENT};
+
+    padding: 20px 60px;
+    border-radius: 10px;
+    height: calc(100vh - 40px);
+
+    @media (max-width: ${({ theme }) => theme.breakPoints.tablets}) {
+      display: none;
+    }
+
+    .section-header {
+      color: ${({ theme }) => theme.colors.WHITE_COLOR};
+
+      margin-bottom: 50px;
+
+      .heading {
+        font-size: 32px;
+        font-weight: 700;
         margin: 0;
       }
 
-      .logo {
-        margin-bottom: 20px;
-        width: 256px;
-      }
-
-      .greeting-text {
-        line-height: 16px;
-        font-weight: 500;
+      .description {
         margin: 0;
+        font-size: 16px;
       }
+    }
 
-      .input-form-wrapper {
-        margin: 0;
+    .login-img {
+      display: block;
+      width: 400px;
+
+      img {
+        max-width: 100%;
       }
+    }
+  }
 
-      .login-form-button {
-        background: linear-gradient(
-          269.92deg,
-          #3d9e47 -32.33%,
-          #6fb544 108.19%
-        );
-        border-radius: 6px;
-        color: #fff;
-        border: none;
-        padding: 12px;
+  .login-form {
+    ${FlexboxStyle({ direction: "column" })};
+    ${Poisitioning}
+
+    .form-content {
+      ${FlexboxStyle({ direction: "column", justify: "center" })};
+
+      flex: 1;
+
+      max-width: 360px;
+      width: 100%;
+
+      .form-header {
         width: 100%;
-        margin-top: 15px;
-        font-weight: 500;
+        margin-bottom: 30px;
+        color: ${({ theme }) => theme.colors.FONT_COLOR};
 
-        transition: all.3s all linear;
-        cursor: pointer;
+        .site-logo {
+          display: block;
 
-        &:hover {
-          background: #3d9e47;
+          img {
+            max-width: 100%;
+          }
+        }
+      }
+
+      .error {
+        color: ${({ theme }) => theme.colors.RED_COLOR};
+      }
+
+      form {
+        margin-top: 20px;
+        width: inherit;
+
+        .form-input {
+          margin-bottom: 25px;
+        }
+
+        .more-options {
+          ${FlexboxStyle};
+
+          margin-bottom: 60px;
+
+          .rember-me {
+            span {
+              color: ${({ theme }) => theme.colors.FONT_COLOR};
+            }
+          }
+
+          .link {
+            color: ${({ theme }) => theme.colors.PRIMARY_COLOR};
+
+            &:hover {
+              color: ${({ theme }) => theme.colors.DARK_PRIMARY_COLOR};
+            }
+          }
+        }
+
+        .login-btn {
+          box-shadow: 1px 2px 9px 0px rgba(102, 177, 39, 0.36);
+          width: 100%;
+          padding: 0.7rem;
         }
       }
     }
 
-    .login-gif-wrapper {
-      width: 100%;
+    .login-menus {
+      ${FlexboxStyle({ gap: "40px" })};
 
-      img {
-        max-width: 100%;
+      list-style: none;
+
+      li {
+        .menu-item-link {
+          font-size: 12px;
+          color: ${({ theme }) => theme.colors.GRAY_COLOR};
+
+          &:hover {
+            color: ${({ theme }) => theme.colors.PRIMARY_COLOR};
+          }
+        }
       }
     }
   }

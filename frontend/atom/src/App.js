@@ -1,19 +1,21 @@
-import "./App.css";
+import React, { useEffect, useState, Suspense, useContext } from "react";
 import "leaflet/dist/leaflet.css";
 import "antd/dist/antd.min.css";
+import theme from "./styles/theme";
 import i18n from "i18next";
-import React, { useEffect, useState, Suspense } from "react";
 import { initReactI18next } from "react-i18next";
 import tEn from "./components/Languages/English/Eng.json";
 import tDu from "./components/Languages/Dutch/Du.json";
 import Loader from "./components/Loader/Loader";
 import ChatBot from "./components/Dashboard/bot/ChatBot";
 import { ThemeProvider } from "styled-components";
-import theme from "./styles/theme";
+import "./App.css";
 const NavBar = React.lazy(() => import("./components/NavBar"));
 
 import "/node_modules/react-grid-layout/css/styles.css";
 import "/node_modules/react-resizable/css/styles.css";
+import { CreateThemeContext } from "./context/ThemeContext";
+import { GlobalStyle } from "./styles/GlobalStyle";
 
 i18n
   .use(initReactI18next) // passes i18n down to react-i18next
@@ -35,16 +37,23 @@ i18n
   });
 
 function App() {
+  const { isColorActive } = useContext(CreateThemeContext);
   const [currentLang, setCurrentLang] = useState(localStorage.getItem("lang"));
   useEffect(() => {
     //  let language=;
     setCurrentLang(currentLang);
     i18n.changeLanguage(currentLang);
   }, [currentLang]);
-  console.warn = () => {};
+
   return (
-    <ThemeProvider theme={theme}>
+    <ThemeProvider theme={isColorActive ? theme.darkMode : theme.lightMode}>
       <Suspense fallback={<Loader />}>
+        <GlobalStyle />
+        {/* <Routes>
+          <Route path="/" exact element={<Atom />} />
+          <Route path="/login" exact element={<Login />} />
+        </Routes> */}
+
         <NavBar i18n={i18n} />
         <ChatBot />
       </Suspense>
