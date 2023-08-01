@@ -16,22 +16,22 @@ def FormatDate(date):
 
     return result
 
-# def FormatStringDate(date):
-#     print(f"String Date : {date}", file=sys.stderr)
+def FormatStringDate(date):
+    print(f"String Date : {date}", file=sys.stderr)
     
-#     try:
-#         if date is not None:
-#             if "-" in date:
-#                 return datetime.strptime(date, "%d-%m-%Y")
-#             elif "/" in date:
-#                 return datetime.strptime(date, "%d/%m/%Y")
-#             else:
-#                 print("Incorrect date format", file=sys.stderr)
-#     except Exception as e:
-#         traceback.print_exc()
-#         print(f"Date format exception - {e}", file=sys.stderr)
+    try:
+        if date is not None:
+            if "-" in date:
+                return datetime.strptime(date, "%d-%m-%Y")
+            elif "/" in date:
+                return datetime.strptime(date, "%d/%m/%Y")
+            else:
+                print("Incorrect date format", file=sys.stderr)
+    except Exception as e:
+        traceback.print_exc()
+        print(f"Date format exception - {e}", file=sys.stderr)
     
-#     return date
+    return None
 
 
 def GetAllUamDevices():

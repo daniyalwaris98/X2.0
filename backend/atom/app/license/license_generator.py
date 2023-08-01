@@ -113,7 +113,7 @@ def DecodeLicenseKey():
             return "License has been added", 200
         else:
             UpdateDBData(licenseObj)
-            return "License has been updated", 500
+            return "License has been updated", 200
 
 
     except Exception:
