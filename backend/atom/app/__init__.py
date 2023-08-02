@@ -136,13 +136,14 @@ from app.atom import atom_onboard_routes
 from app.auto_discovery import auto_discovery_routes
 from app.auto_discovery import auto_discovery_dashboard_routes
 
-from app.uam import uam_inventory_routes
-from app.uam import uam_dashboard_routes
-from app.uam import uam_device_routes
-from app.uam import sfp_routes
-from app.uam import module_routes
 from app.uam import site_routes
 from app.uam import rack_routes
+from app.uam import uam_device_routes
+from app.uam import module_routes
+from app.uam import sfp_routes
+from app.uam import aps_routes
+from app.uam import license_routes
+
 
 
 try:

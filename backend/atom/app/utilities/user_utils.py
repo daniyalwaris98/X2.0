@@ -93,7 +93,7 @@ def addEndUserDetails(endUserObj, user_data, license_key):
                 license_row.start_date = licenseObj['start_date']
                 license_row.end_date = licenseObj['end_date']
 
-                UpdateDBData(license_row)
+                InsertDBData(license_row)
 
             end_user.license_id = license_row.license_id
 
