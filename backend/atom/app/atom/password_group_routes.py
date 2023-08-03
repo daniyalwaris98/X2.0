@@ -81,51 +81,46 @@ def EditUser(user_data):
 @token_required
 def DeletePasswordGroup(user_data):
     try:
-        responses = []
-        response = False
-        response1 = False
-        response2 = False
         passwordGroups = request.get_json()
+        errorList = []
+        responseList = []
+        
         for passwordGroup in passwordGroups:
-            queryString = f"select count(*) from atom_table where password_group='{passwordGroup}';"
-            queryString1 = f"select count(*) from ipam_devices_table where password_group='{passwordGroup}';"
-
-            result = db.session.execute(queryString).scalar()
-            result1 = db.session.execute(queryString1).scalar()
-            if result > 0:
-                response = 'atom'
-                responses.append(response)
-
-            elif result1 > 0:
-                response1 = 'ipam'
-                responses.append(response1)
-
-            else:
-
-                db.session.execute(
-                    f"delete from password_group_table where PASSWORD_GROUP='{passwordGroup}';")
+            try:
+                
+                password = Password_Group_Table.query.filter_by(password_group=passwordGroup).first()
+                if password is None:
+                    errorList.append(f"{passwordGroup} : Password Group Does Not Exist")
+                    continue
+                
+                atom = Atom_Table.query.filter_by(
+                    password_group=password.password_group
+                ).first()
+                
+                if atom is not None:
+                    errorList.append(f"{passwordGroup} : Password Group Is In Use In Atom")
+                    continue
+                
+                # add NCM and IPAM Here
+                #
+                
+                db.session.delete(password)
                 db.session.commit()
-                response2 = 'deleted'
-                responses.append(response2)
-        responses = set(responses)
-        responses = list(responses)
-        if len(responses) == 1:
-            if responses[0] == 'atom':
-                return "Password Group Found in Atom", 500
-            elif responses[0] == 'ipam':
-                return "Password Group Found in IPAM", 500
-            elif responses[0] == 'deleted':
-                return "Deleted Successfully", 200
-        elif len(responses) == 3:
-            return "Some Deleted and Some are Found in IPAM and Atom", 200
-        elif len(responses) == 2:
-            if 'atom' in responses and 'ipam' in responses:
-                return "Password Group Found in Atom and IPAM", 500
-            elif 'atom' in responses and 'deleted' in responses:
-                return "Some Delete and Some Found in Atom", 200
-            elif 'ipam' in responses and 'deleted' in responses:
-                return "Some Deleted and Some Found in Atom", 200
+                responseList.append(f"{passwordGroup} : Password Group Deleted Successfully")   
+                
+            except Exception:
+                traceback.print_exc()
+                errorList.append(f"{passwordGroup} : Exception")
+        
+        responseDict = {
+            "success": len(responseList),
+            "error": len(errorList),
+            "error_list": errorList,
+            "success_list": responseList,
+        }
 
+        return jsonify(responseDict), 200
+                
     except Exception as e:
         traceback.print_exc()
         return "Server Error While Deleting Password Groups", 500

@@ -200,7 +200,7 @@ def DeleteAtom(user_data):
                     )
                     continue
 
-                db.session.delete(atom_transit)
+                db.session.delete(atom)
                 db.session.commit()
                 responseList.append(f"{ip} : Device Deleted Successfully")
                 continue
