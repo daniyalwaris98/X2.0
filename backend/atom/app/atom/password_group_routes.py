@@ -25,7 +25,7 @@ def AddPasswordGroup(user_date):
     except Exception as e:
         traceback.print_exc()
         print(str(e), file=sys.stderr)
-        return "Server Error", 500
+        return "Server Error While Adding Password Group", 500
 
 
 @app.route("/addPasswordGroups", methods=['POST'])
@@ -59,7 +59,7 @@ def AddPasswordGroups(user_data):
     except Exception as e:
         traceback.print_exc()
         print(str(e), file=sys.stderr)
-        return "Server Error", 500
+        return "Server Error While Adding Password Groups", 500
     
 
 @app.route("/editPasswordGroup", methods=['POST'])
@@ -74,7 +74,7 @@ def EditUser(user_data):
         return response, status
     except Exception as e:
         traceback.print_exc()
-        return str(e), 500
+        return "Server Error While Updating Password Group", 500
 
 
 @app.route('/deletePasswordGroup', methods=['POST'])
@@ -128,7 +128,7 @@ def DeletePasswordGroup(user_data):
 
     except Exception as e:
         traceback.print_exc()
-        return str(e), 500
+        return "Server Error While Deleting Password Groups", 500
 
 
 @app.route("/getPasswordGroups", methods=['GET'])
@@ -152,7 +152,7 @@ def GetUsers(user_data):
         return response
     except Exception as e:
         traceback.print_exc()
-        return str(e), 500
+        return "Server Error While Fetching Password Groups", 500
     
 
 @app.route('/getPasswordGroupDropdown', methods=['GET'])
@@ -169,4 +169,4 @@ def GetPasswordGroupDropdown(user_data):
         return jsonify(objList), 200
     except Exception as e:
         traceback.print_exc()
-        return str(e), 500
+        return "Server Error While Fetching Password Groups", 500
