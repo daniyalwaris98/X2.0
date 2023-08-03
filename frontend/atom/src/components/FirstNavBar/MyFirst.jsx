@@ -131,7 +131,7 @@ const FirstNavBar = (props) => {
         const res = await axios.post(baseUrl + "/licenseVerification", {
           username: a.user_name,
         });
-        console.log("licenseVerification", res.data.day_left);
+
         setDaysLeft(res.data.day_left);
       };
       licenseData();

@@ -902,13 +902,14 @@ const index = () => {
                                     {" "}
                                     <p>Add New</p>
                                   </option>
-                                  {passwordArray.map((item, index) => {
-                                    return (
-                                      <>
-                                        <option>{item}</option>
-                                      </>
-                                    );
-                                  })}
+                                  {passwordArray &&
+                                    passwordArray.map((item, index) => {
+                                      return (
+                                        <>
+                                          <option>{item}</option>
+                                        </>
+                                      );
+                                    })}
                                 </StyledselectIpam>
                               </div>
                             </InputWrapper>

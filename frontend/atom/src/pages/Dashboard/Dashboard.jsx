@@ -227,6 +227,7 @@ const MenusWrapper = () => {
   const getRouting = async () => {
     try {
       const res = await axios.get(baseUrl + "/dashboardCards");
+      console.log(res);
       setMenus(res.data);
     } catch (err) {
       console.log(err.response);
@@ -277,21 +278,22 @@ const MenusWrapper = () => {
   return (
     <MenusWrapperStyle>
       <article className="menus">
-        {menus.map((item, index) => {
-          return (
-            <article
-              key={index}
-              onClick={() => pages(item.name)}
-              className="tab"
-            >
-              <span className="icon">{icon(item.name)}</span>
-              <article>
-                <p>{item.name}</p>
-                <h2>{item.value}</h2>
+        {menus &&
+          menus.map((item, index) => {
+            return (
+              <article
+                key={index}
+                onClick={() => pages(item.name)}
+                className="tab"
+              >
+                <span className="icon">{icon(item.name)}</span>
+                <article>
+                  <p>{item.name}</p>
+                  <h2>{item.value}</h2>
+                </article>
               </article>
-            </article>
-          );
-        })}
+            );
+          })}
       </article>
     </MenusWrapperStyle>
   );

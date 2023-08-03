@@ -167,7 +167,8 @@ const SecondNavBar = () => {
   }, []);
 
   useEffect(() => {
-    if (keyResp !== "" && keyResp !== "TRUE") {
+    if (keyResp != "" && keyResp.validaty != "TRUE") {
+      console.log("working!!!!!");
       navigate("/license-renewal");
     }
   }, [keyResp]);
@@ -190,7 +191,7 @@ const SecondNavBar = () => {
 
       <Routes>
         {token ? (
-          keyResp !== "TRUE" && keyResp !== "" ? (
+          keyResp.validaty !== "TRUE" && keyResp !== "" ? (
             <>
               <Route path="/license-renewal" element={<LicenseRenewal />} />
 

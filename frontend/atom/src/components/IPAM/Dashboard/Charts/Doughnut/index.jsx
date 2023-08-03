@@ -33,52 +33,54 @@ const index = () => {
           padding: "10px",
         }}
       >
-        <Doughnut
-          data={{
-            labels: Object.keys(dnsSummary),
-            datasets: [
-              {
-                label: "# of Values",
-                backgroundColor: ["#FB7457", "#89F597", "#2D9CDB"],
-                borderColor: "white",
-                borderWidth: 2,
-                hoverOffset: 15,
+        {dnsSummary && (
+          <Doughnut
+            data={{
+              labels: dnsSummary && Object.keys(dnsSummary),
+              datasets: [
+                {
+                  label: "# of Values",
+                  backgroundColor: ["#FB7457", "#89F597", "#2D9CDB"],
+                  borderColor: "white",
+                  borderWidth: 2,
+                  hoverOffset: 15,
 
-                data: Object.values(dnsSummary),
-              },
-            ],
-          }}
-          options={{
-            cutout: "60%",
-
-            responsive: true,
-            maintainAspectRatio: false,
-            layout: {
-              padding: {
-                top: 20,
-                left: 15,
-                bottom: 40,
-              },
-            },
-            plugins: {
-              legend: {
-                onClick: function (e) {
-                  e.stopPropagation();
+                  data: dnsSummary && Object.values(dnsSummary),
                 },
-                paddingBottom: 50,
-                labels: {
-                  padding: 20,
+              ],
+            }}
+            options={{
+              cutout: "60%",
 
-                  boxWidth: 10,
-                  usePointStyle: true,
+              responsive: true,
+              maintainAspectRatio: false,
+              layout: {
+                padding: {
+                  top: 20,
+                  left: 15,
+                  bottom: 40,
                 },
-
-                display: true,
-                position: "right",
               },
-            },
-          }}
-        />
+              plugins: {
+                legend: {
+                  onClick: function (e) {
+                    e.stopPropagation();
+                  },
+                  paddingBottom: 50,
+                  labels: {
+                    padding: 20,
+
+                    boxWidth: 10,
+                    usePointStyle: true,
+                  },
+
+                  display: true,
+                  position: "right",
+                },
+              },
+            }}
+          />
+        )}
       </div>
     </SpinLoading>
   );

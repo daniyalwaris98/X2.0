@@ -656,21 +656,22 @@ const index = () => {
             >
               <div>
                 <SpinLoading spinning={loading} tip="Loading...">
-                  {siteDeviceVendor.map((item, index) => (
-                    <CardMargin
-                      key={index}
-                      onClick={() => nameFun(item.name)}
-                      style={{ cursor: "pointer" }}
-                      marginBottom={index !== 2}
-                    >
-                      <SiteDeviceVender
-                        // style={{ marginBottom: "15px" }}
-                        Name={item.name}
-                        myImg={imgFun(item.name)}
-                        myNumber={item.value}
-                      />
-                    </CardMargin>
-                  ))}
+                  {siteDeviceVendor &&
+                    siteDeviceVendor.map((item, index) => (
+                      <CardMargin
+                        key={index}
+                        onClick={() => nameFun(item.name)}
+                        style={{ cursor: "pointer" }}
+                        marginBottom={index !== 2}
+                      >
+                        <SiteDeviceVender
+                          // style={{ marginBottom: "15px" }}
+                          Name={item.name}
+                          myImg={imgFun(item.name)}
+                          myNumber={item.value}
+                        />
+                      </CardMargin>
+                    ))}
                 </SpinLoading>
                 {/* <SiteDeviceVender
                   Name={"SITES"}

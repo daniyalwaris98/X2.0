@@ -842,7 +842,9 @@ const index = () => {
               }}
             >
               <SpinLoading spinning={alertStatusLoading}>
-                <h2 style={{ fontWeight: 700 }}>{discoveryCount.snmp_v2}</h2>
+                <h2 style={{ fontWeight: 700 }}>
+                  {discoveryCount && discoveryCount.snmp_v2}
+                </h2>
                 <p>SNMP V2</p>
               </SpinLoading>
             </div>
@@ -860,7 +862,9 @@ const index = () => {
               }}
             >
               <SpinLoading spinning={alertStatusLoading}>
-                <h2 style={{ fontWeight: 700 }}>{discoveryCount.snmp_v3}</h2>
+                <h2 style={{ fontWeight: 700 }}>
+                  {discoveryCount && discoveryCount.snmp_v3}
+                </h2>
                 <p>SNMP V3</p>
               </SpinLoading>
             </div>
@@ -877,7 +881,9 @@ const index = () => {
               }}
             >
               <SpinLoading spinning={alertStatusLoading}>
-                <h2 style={{ fontWeight: 700 }}>{discoveryCount.login}</h2>
+                <h2 style={{ fontWeight: 700 }}>
+                  {discoveryCount && discoveryCount.login}
+                </h2>
                 <p>SSH Login</p>
               </SpinLoading>
             </div>

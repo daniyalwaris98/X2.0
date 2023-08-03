@@ -138,45 +138,41 @@ const index = () => {
   useEffect(() => {
     const getAllIpamFetchDevices = async () => {
       setAllIpamDeviceLoading(true);
-      const status = await axios.get(baseUrl + "/getIpamFetchStatus");
-      if (status.data.fetch_status === "Running") {
-        setFetchLoading("true");
-        setBackgroundColor("red");
-      } else if (status.data.fetch_status === "Completed") {
-        setFetchLoading("false");
-        setBackgroundColor("green");
-      } else {
-        setFetchLoading("empty");
-      }
-      setFetchDate(status.data.fetch_date);
 
-      try {
-        const res = await axios.get(baseUrl + "/getAllIpamFetchDevices");
+      await axios
+        .get(baseUrl + "/getIpamFetchStatus")
+        .then(async (res) => {
+          if (res.data.fetch_status === "Running") {
+            setFetchLoading("true");
+            setBackgroundColor("red");
+          } else if (res.data.fetch_status === "Completed") {
+            setFetchLoading("false");
+            setBackgroundColor("green");
+          } else {
+            setFetchLoading("empty");
+          }
+          setFetchDate(res.data.fetch_date);
 
-        console.log("getAllIpamFetchDevices", res);
+          try {
+            const res = await axios.get(baseUrl + "/getAllIpamFetchDevices");
 
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setAllIpamDeviceLoading(false);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
+            excelData = res.data;
+            setDataSource(excelData);
+            setRowCount(excelData.length);
+            setAllIpamDeviceLoading(false);
+            setLoading(false);
+          } catch (err) {
+            console.log(err.response);
+            setLoading(false);
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
     getAllIpamFetchDevices();
   }, []);
-  // const jsonToExcel = (atomData) => {
-  //   if (rowCount !== 0) {
-  //     let wb = XLSX.utils.book_new();
-  //     let binaryAtomData = XLSX.utils.json_to_sheet(atomData);
-  //     XLSX.utils.book_append_sheet(wb, binaryAtomData, "devices_subnet");
-  //     XLSX.writeFile(wb, "devices_subnet.xlsx");
 
-  //     // setExportLoading(false);
-  //   }
-  // };
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -187,95 +183,22 @@ const index = () => {
   };
 
   const handleOnboard = async () => {
-    // setOnboardLoading(true);
     setFetchLoading("true");
     setFetchDate(new Date().toLocaleString());
     setBackgroundColor("red");
     axios
       .get(baseUrl + "/fetchIpamDevices")
-      .then((response) => {
-        console.log("fetchIpamDevices", response.data);
-        // if (response.data === "Success") {
-        //   setFetchLoading("empty");
-        // }
-        // setOnboardLoading(false);
-      })
+      .then((response) => {})
       .catch((error) => {
         console.log(error);
-        // openSweetAlert("Something Went Wrong!", "error");
-
-        // setOnboardLoading(false);
       })
-      //   );
-      //   return Promise.all(promises);
-      // })
+
       .catch((err) => {
         console.log(err);
         openSweetAlert("Something Went Wrong!", "error");
-        // setLoading(false);
       });
-    // setLoading(false);
-    // } else {
-    //   setOnboardLoading(false);
-    //   openSweetAlert("No device is selected.!", "error");
-    // }
-
-    // setDataSource(
-    //   dataSource.filter((item) => selectedDevices.includes(item.ne_ip_address))
-    // );
   };
   const columns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "2%",
-
-    //   render: (text, record) => (
-    //     <>
-    //       {!configData?.ipam.pages.devices.read_only ? (
-    //         <>
-    //           <p
-    //             style={{
-    //               color: "#66B127",
-    //               textDecoration: "underline",
-    //               fontWeight: "400",
-    //               textAlign: "center",
-    //               // color: "blue",
-    //               cursor: "pointer",
-    //             }}
-    //             disabled
-    //             // onClick={() => {
-    //             //   edit(record);
-    //             // }}
-    //           >
-    //             <EditOutlined
-    //               style={{ paddingRight: "50px", color: "#66A111" }}
-    //             />
-    //           </p>
-    //         </>
-    //       ) : (
-    //         <p
-    //           style={{
-    //             color: "#66B127",
-    //             textDecoration: "underline",
-    //             fontWeight: "400",
-    //             textAlign: "center",
-    //             // color: "blue",
-    //             cursor: "pointer",
-    //           }}
-    //           onClick={() => {
-    //             edit(record);
-    //           }}
-    //         >
-    //           <EditOutlined
-    //             style={{ paddingRight: "50px", color: "#66A111" }}
-    //           />
-    //         </p>
-    //       )}
-    //     </>
-    //   ),
-    // },
-
     {
       title: "Ip Address",
       dataIndex: "ip_address",
@@ -312,22 +235,6 @@ const index = () => {
       ),
       ellipsis: true,
     },
-    // {
-    //   title: "Host Name",
-    //   dataIndex: "host_name",
-    //   key: "host_name",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "host_name",
-    //     "Host Name",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "Interface",
       dataIndex: "interface",
@@ -509,19 +416,13 @@ const index = () => {
       ellipsis: true,
     },
   ];
-  // const exportSeed = async () => {
-  //   setExportLoading(true);
-  //   jsonToExcel(excelData);
-  //   openNotification();
-  //   setExportLoading(false);
-  // };
+
   const handleChange = async (value) => {
     console.log(`selected ${value}`);
     setLoading(true);
     await axios
       .post(baseUrl + "/getIpamByDate", { dict: value })
       .then((response) => {
-        // setExcelData(response.data);
         excelData = response.data;
         setDataSource(response.data);
         setRowCount(excelData.length);
@@ -532,7 +433,6 @@ const index = () => {
         setLoading(false);
       });
     setLoading(false);
-    // console.log(`selected ${value}`);
   };
   return (
     <SpinLoading spinning={onboardLoading}>
@@ -593,14 +493,10 @@ const index = () => {
           <div style={{ float: "right", marginRight: "15px", display: "flex" }}>
             <StyledExportButton
               onClick={exportSeed}
-              // type="primary"
               style={{
                 marginRight: "12px",
-                // marginLeft: "5px",
-                // color: "#9F9F9F",
               }}
             >
-              {/* {<ExportOutlined />} */}
               <img
                 src={exportExcel}
                 alt=""
@@ -615,17 +511,7 @@ const index = () => {
               className="select_type"
               style={{ marginLeft: "5px", float: "right" }}
             >
-              {/* <label>Password Group</label>&nbsp;
-                            <span style={{ color: "red" }}>*</span>
-                            <Input
-                              required
-                              placeholder="Password Group"
-                              value={passwordGroup}
-                              onChange={(e) => setPasswordGroup(e.target.value)}
-                            /> */}
-
               <Select
-                // className="rectangle"
                 required
                 placeholder="Select Date"
                 style={{
@@ -634,21 +520,18 @@ const index = () => {
                   borderRadius: "8px",
                   marginTop: "-0.2px",
                 }}
-                // value={ipamDate}
                 onChange={handleChange}
-                // onChange={(e) => {
-                //   setPassword_group(e.target.value);
-                // }}
               >
-                {dateArray.map((item, index) => {
-                  return (
-                    <>
-                      <Option key={index} value={item}>
-                        {item}
-                      </Option>
-                    </>
-                  );
-                })}
+                {dateArray &&
+                  dateArray.map((item, index) => {
+                    return (
+                      <>
+                        <Option key={index} value={item}>
+                          {item}
+                        </Option>
+                      </>
+                    );
+                  })}
               </Select>
             </div>
           </div>

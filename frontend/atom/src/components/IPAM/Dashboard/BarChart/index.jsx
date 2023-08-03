@@ -57,7 +57,7 @@ const index = () => {
           }}
           data={{
             // labels: ["a", "s", "e", "d"],
-            labels: Object.keys(myTopSites),
+            labels: myTopSites && Object.keys(myTopSites),
             datasets: [
               {
                 // label: "# of Values",
@@ -85,7 +85,7 @@ const index = () => {
                   anchor: "end",
                   align: "top",
                 },
-                data: Object.values(myTopSites),
+                data: myTopSites && Object.values(myTopSites),
                 // data: [3, 7, 1, 9],
               },
             ],

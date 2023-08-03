@@ -653,19 +653,20 @@ const index = () => {
               }}
             >
               <SpinLoading spinning={loading}>
-                {rackDeviceUnit.map((item, index) => (
-                  <div
-                    key={index}
-                    style={{ marginBottom: "5px", cursor: "pointer" }}
-                    onClick={() => nameFun(item.name)}
-                  >
-                    <RackDeviceUnits
-                      Name={item.name}
-                      myImg={imgFun(item.name)}
-                      myNumber={item.value}
-                    />
-                  </div>
-                ))}
+                {rackDeviceUnit &&
+                  rackDeviceUnit.map((item, index) => (
+                    <div
+                      key={index}
+                      style={{ marginBottom: "5px", cursor: "pointer" }}
+                      onClick={() => nameFun(item.name)}
+                    >
+                      <RackDeviceUnits
+                        Name={item.name}
+                        myImg={imgFun(item.name)}
+                        myNumber={item.value}
+                      />
+                    </div>
+                  ))}
               </SpinLoading>
             </div>
           </Col>

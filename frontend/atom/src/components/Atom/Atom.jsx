@@ -1156,18 +1156,6 @@ const Atom = () => {
             &nbsp; Export Template
           </StyledExportButton>
 
-          {/* <StyledExportButton
-            onClick={exportSeed}
-            style={{
-              marginRight: "5px",
-              display: "flex",
-            }}
-          >
-            <img src={tempexp} alt="" width="15px" height="15px" />
-            <img src={hoverexp} alt="" width="15px" height="15px" />
-            &nbsp; Export
-          </StyledExportButton> */}
-
           <Dropdown
             menu={{
               items,

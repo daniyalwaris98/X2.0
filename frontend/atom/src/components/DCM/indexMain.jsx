@@ -88,12 +88,11 @@ const index = () => {
     const getAllIpamFetchDevices = async () => {
       setAllIpamDeviceLoading(true);
       const status = await axios.get(baseUrl + "/getEdnDcCapacityFetchStatus");
-      console.log("popooooooooooooooo");
-      console.log(status);
-      if (status.data.fetch_status === "Running") {
+
+      if (status && status.data.fetch_status === "Running") {
         setFetchLoading("true");
         setBackgroundColor("red");
-      } else if (status.data.fetch_status === "Completed") {
+      } else if (status && status.data.fetch_status === "Completed") {
         setFetchLoading("false");
         setBackgroundColor("green");
       } else {
@@ -103,8 +102,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllDcCapacity");
-
-        console.log("getAllDcCapacity", res);
 
         excelData = res.data;
         setDataSource(excelData);
@@ -1211,15 +1208,16 @@ const index = () => {
                 //   setPassword_group(e.target.value);
                 // }}
               >
-                {dateArray.map((item, index) => {
-                  return (
-                    <>
-                      <Option key={index} value={item}>
-                        {item}
-                      </Option>
-                    </>
-                  );
-                })}
+                {dateArray &&
+                  dateArray.map((item, index) => {
+                    return (
+                      <>
+                        <Option key={index} value={item}>
+                          {item}
+                        </Option>
+                      </>
+                    );
+                  })}
               </Select>
             </div>
           </div>

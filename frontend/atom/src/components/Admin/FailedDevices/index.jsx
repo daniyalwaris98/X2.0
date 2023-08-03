@@ -235,7 +235,7 @@ const index = () => {
           }}
         >
           <img src={uam} alt="" style={{ marginTop: "10px" }} />
-          <p style={{ marginTop: "15px" }}>{uamCard.name}</p>
+          <p style={{ marginTop: "15px" }}>{uamCard && uamCard.name}</p>
           <p
             style={{
               fontSize: "40px",
@@ -243,7 +243,7 @@ const index = () => {
               marginTop: "-10px",
             }}
           >
-            {uamCard.value}
+            {uamCard && uamCard.value}
           </p>
         </div>
 
@@ -259,7 +259,7 @@ const index = () => {
           }}
         >
           <img src={device} alt="" style={{ marginTop: "10px" }} />
-          <p style={{ marginTop: "15px" }}>{networkCard.name}</p>
+          <p style={{ marginTop: "15px" }}>{networkCard && networkCard.name}</p>
           <p
             style={{
               fontSize: "40px",
@@ -267,7 +267,7 @@ const index = () => {
               marginTop: "-10px",
             }}
           >
-            {networkCard.value}
+            {networkCard && networkCard.value}
           </p>
         </div>
 
@@ -284,7 +284,7 @@ const index = () => {
           }}
         >
           <img src={ipam} alt="" style={{ marginTop: "10px" }} />
-          <p style={{ marginTop: "15px" }}>{ipamCard.name}</p>
+          <p style={{ marginTop: "15px" }}>{ipamCard && ipamCard.name}</p>
           <p
             style={{
               fontSize: "40px",
@@ -292,7 +292,7 @@ const index = () => {
               marginTop: "-10px",
             }}
           >
-            {ipamCard.value}
+            {ipamCard && ipamCard.value}
           </p>
         </div>
 
@@ -317,7 +317,7 @@ const index = () => {
               marginTop: "-10px",
             }}
           >
-            {dcmCard.value}
+            {dcmCard && dcmCard.value}
           </p>
         </div>
 
@@ -334,7 +334,7 @@ const index = () => {
           }}
         >
           <img src={dcm} alt="" style={{ marginTop: "10px" }} />
-          <p style={{ marginTop: "15px" }}>{ncmCard.name}</p>
+          <p style={{ marginTop: "15px" }}>{ncmCard && ncmCard.name}</p>
           <p
             style={{
               fontSize: "40px",
@@ -342,7 +342,7 @@ const index = () => {
               marginTop: "-10px",
             }}
           >
-            {ncmCard.value}
+            {ncmCard && ncmCard.value}
           </p>
         </div>
       </article>

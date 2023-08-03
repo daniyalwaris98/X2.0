@@ -1414,7 +1414,7 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {getCount.devices}
+                      {getCount && getCount.devices}
                     </PStyle>
                     <PStyle
                       active={"Unknown Devices" === tableName}
@@ -1454,7 +1454,7 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {getCount.firewall}
+                      {getCount && getCount.firewall}
                     </PStyle>
                     <PStyle
                       active={"Firewalls" === tableName}
@@ -1494,7 +1494,7 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {getCount.switch}
+                      {getCount && getCount.switch}
                     </PStyle>
                     <PStyle
                       active={"Switches" === tableName}
@@ -1534,7 +1534,7 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {getCount.router}
+                      {getCount && getCount.router}
                     </PStyle>
                     <PStyle
                       active={"Routers" === tableName}
@@ -1574,7 +1574,7 @@ const indexMain = () => {
                         padding: "auto",
                       }}
                     >
-                      {getCount.other}
+                      {getCount && getCount.other}
                     </PStyle>
                     <PStyle
                       active={"Other Devices" === tableName}

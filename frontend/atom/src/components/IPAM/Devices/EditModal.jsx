@@ -232,13 +232,14 @@ const EditAtom = (props) => {
                 >
                   <option value="">Select</option>
 
-                  {passwordArray.map((item, index) => {
-                    return (
-                      <>
-                        <option>{item}</option>
-                      </>
-                    );
-                  })}
+                  {passwordArray &&
+                    passwordArray.map((item, index) => {
+                      return (
+                        <>
+                          <option>{item}</option>
+                        </>
+                      );
+                    })}
                 </Styledselect>
               </div>
             </InputWrapper>

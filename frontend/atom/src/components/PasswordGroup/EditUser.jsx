@@ -5,8 +5,6 @@ import axios, { baseUrl } from "../../utils/axios";
 import Swal from "sweetalert2";
 
 const EditUser = (props) => {
-  const { Option } = Select;
-
   const getString = (str) => {
     return str ? str : "";
   };

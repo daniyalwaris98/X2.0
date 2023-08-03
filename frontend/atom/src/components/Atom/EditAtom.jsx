@@ -28,7 +28,7 @@ const EditAtom = (props) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert(response.data.Response, "success");
+            openSweetAlert(response?.data, "success");
             const promises = [];
             promises.push(
               axios
@@ -215,6 +215,7 @@ const EditAtom = (props) => {
                 float: "left",
                 display: "flex",
                 marginLeft: "6%",
+                marginBottom: "30px",
               }}
             >
               Edit Atom
@@ -403,9 +404,10 @@ const EditAtom = (props) => {
                     setPassword_group(e.target.value);
                   }}
                 >
-                  {passwordArray.map((item, index) => {
-                    return <option key={index}>{item}</option>;
-                  })}
+                  {passwordArray &&
+                    passwordArray.map((item, index) => {
+                      return <option key={index}>{item}</option>;
+                    })}
                 </Styledselect>
               </div>
             </InputWrapper>

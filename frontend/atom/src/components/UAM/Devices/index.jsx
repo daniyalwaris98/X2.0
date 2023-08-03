@@ -978,69 +978,71 @@ const index = () => {
                   float: "right",
                 }}
               >
-                {totalDeviceCount.name} : <b>{totalDeviceCount.value}</b>
+                {totalDeviceCount && totalDeviceCount.name} :{" "}
+                <b>{totalDeviceCount && totalDeviceCount.value}</b>
               </h4>
 
               <br />
               <br />
               <Row>
-                {myDeviceStatus.map((item, index) => {
-                  return (
-                    <Col xs={{ span: 12 }} md={{ span: 12 }} lg={{ span: 6 }}>
-                      <SpinLoading spinning={loading}>
-                        <div
-                          style={{
-                            display: "flex",
-                            margin: "0 auto",
-                            marginTop: "65px",
-                            marginBottom: "50px",
-                          }}
-                        >
-                          <div key={index} style={{ paddingRight: "20px" }}>
-                            <ProgressStyled
-                              style={{
-                                textAlign: "center",
-                                padding: "10px",
-                                paddingRight: 25,
-                                display: "block",
-                              }}
-                              strokeColor={
-                                (index === 0 ? "#66B127" : null) ||
-                                (index === 1 ? "#db5" : null) ||
-                                (index === 2 ? "#DC3938" : null) ||
-                                (index === 3 ? "#878787" : null)
-                              }
-                              type="dashboard"
-                              percent={item.value}
-                              success={{ percent: 0 }}
-                            />
-                            <DSO
-                              bg={index === 0}
-                              color={index === 0}
-                              bgone={index === 1}
-                              colorone={index === 1}
-                              bgtwo={index === 2}
-                              colortwo={index === 2}
-                              style={{
-                                marginRight: "5px",
-                                textAlign: "center",
-                                margin: "15px",
-                                borderRadius: "15px",
-                                padding: "5px",
-                                fontSize: "10px",
-                                fontWeight: "600",
-                              }}
-                            >
-                              <img src={imgFun(item.name)} alt="" /> &nbsp;
-                              &nbsp;
-                              {item.name}
-                            </DSO>
+                {myDeviceStatus &&
+                  myDeviceStatus.map((item, index) => {
+                    return (
+                      <Col xs={{ span: 12 }} md={{ span: 12 }} lg={{ span: 6 }}>
+                        <SpinLoading spinning={loading}>
+                          <div
+                            style={{
+                              display: "flex",
+                              margin: "0 auto",
+                              marginTop: "65px",
+                              marginBottom: "50px",
+                            }}
+                          >
+                            <div key={index} style={{ paddingRight: "20px" }}>
+                              <ProgressStyled
+                                style={{
+                                  textAlign: "center",
+                                  padding: "10px",
+                                  paddingRight: 25,
+                                  display: "block",
+                                }}
+                                strokeColor={
+                                  (index === 0 ? "#66B127" : null) ||
+                                  (index === 1 ? "#db5" : null) ||
+                                  (index === 2 ? "#DC3938" : null) ||
+                                  (index === 3 ? "#878787" : null)
+                                }
+                                type="dashboard"
+                                percent={item.value}
+                                success={{ percent: 0 }}
+                              />
+                              <DSO
+                                bg={index === 0}
+                                color={index === 0}
+                                bgone={index === 1}
+                                colorone={index === 1}
+                                bgtwo={index === 2}
+                                colortwo={index === 2}
+                                style={{
+                                  marginRight: "5px",
+                                  textAlign: "center",
+                                  margin: "15px",
+                                  borderRadius: "15px",
+                                  padding: "5px",
+                                  fontSize: "10px",
+                                  fontWeight: "600",
+                                }}
+                              >
+                                <img src={imgFun(item.name)} alt="" /> &nbsp;
+                                &nbsp;
+                                {item.name}
+                              </DSO>
+                            </div>
                           </div>
-                        </div>
-                      </SpinLoading>
-                    </Col>
-                  );
-                })}
+                        </SpinLoading>
+                      </Col>
+                    );
+                  })}
               </Row>
             </div>
           </Col>

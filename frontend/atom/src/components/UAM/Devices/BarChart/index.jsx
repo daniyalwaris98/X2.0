@@ -51,7 +51,7 @@ const index = () => {
     >
       <Bar
         data={{
-          labels: Object.keys(mytopFunctions),
+          labels: mytopFunctions && Object.keys(mytopFunctions),
           datasets: [
             {
               categoryPercentage: 0.2, // notice here
@@ -75,7 +75,7 @@ const index = () => {
               //   anchor: "end",
               //   align: "top",
               // },
-              data: Object.values(mytopFunctions),
+              data: mytopFunctions && Object.values(mytopFunctions),
             },
           ],
         }}

@@ -39,7 +39,7 @@ const index = () => {
       >
         <Bar
           data={{
-            labels: Object.keys(myTopSites),
+            labels: myTopSites && Object.keys(myTopSites),
             datasets: [
               {
                 categoryPercentage: 0.3,
@@ -48,7 +48,7 @@ const index = () => {
                 borderColor: "#66B127",
                 hoverOffset: 15,
                 borderRadius: 5,
-                data: Object.values(myTopSites),
+                data: myTopSites && Object.values(myTopSites),
               },
             ],
           }}

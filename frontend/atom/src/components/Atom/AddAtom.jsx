@@ -6,23 +6,15 @@ import Swal from "sweetalert2";
 import "../AllStyling/CSSStyling.css";
 import "./main.css";
 import { devices, functions } from "../../data/globalData";
+import PasswordGroupModel from "../PasswordGroup/PasswordGroupModal/PasswordGroupModel";
 
 const AddAtom = (props) => {
   const [isPassModalVisible, setIsPassModalVisible] = useState(false);
   const [isSiteModalVisible, setIsSiteModalVisible] = useState(false);
   const [isRackModalVisible, setIsRackModalVisible] = useState(false);
-  const [passGroup, setPassGroup] = useState("");
-  const [username, setUsername] = useState("");
-  const [pass, setPass] = useState("");
 
   const showModal = () => {
     setIsPassModalVisible(true);
-  };
-  const handleOk = () => {
-    setIsPassModalVisible(false);
-  };
-  const handleCancelPasPopup = () => {
-    setIsPassModalVisible(false);
   };
 
   const showSiteModal = () => {
@@ -45,43 +37,19 @@ const AddAtom = (props) => {
     setIsRackModalVisible(false);
   };
 
-  const handlePassGroupFormSubmit = async (e) => {
-    e.preventDefault();
-    const passGroupformData = {
-      password_group: passGroup,
-      username: username,
-      password: pass,
-    };
-    console.log(passGroupformData);
+  useEffect(() => {
+    getPassWordGroup();
+  }, [isPassModalVisible]);
 
+  const getPassWordGroup = async () => {
     await axios
-      .post(baseUrl + "/addUser", passGroupformData)
-      .then((response) => {
-        setPassGroup("");
-        setUsername("");
-        setPass("");
-        setIsPassModalVisible(false);
-
-        openSweetAlert(response?.data, "success");
-        const promises = [];
-        promises.push(
-          axios
-            .get(baseUrl + "/getPasswordGroupDropdown")
-            .then((res) => {
-              console.log("getPasswordGroupDropdown", res);
-              setPasswordArray(res.data);
-              setPassword_group(res.data[0]);
-            })
-            .catch((error) => {
-              console.log(error);
-            })
-        );
-
-        return Promise.all(promises);
+      .get(baseUrl + "/getPasswordGroupDropdown")
+      .then((res) => {
+        setPasswordArray(res.data);
+        setPassword_group(res.data[0]);
       })
-      .catch((err) => {
-        openSweetAlert(response?.data, "error");
-        console.log("error ==> " + err);
+      .catch((error) => {
+        console.log(error);
       });
   };
 
@@ -127,7 +95,9 @@ const AddAtom = (props) => {
                   setSiteNameR(res.data[0]);
                   setIsSiteModalVisible(false);
                 })
-                .catch((error) => {})
+                .catch((error) => {
+                  console.log(error);
+                })
             );
             return Promise.all(promises);
           }
@@ -239,7 +209,7 @@ const AddAtom = (props) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data.Response, "error");
           } else {
-            openSweetAlert(response?.data?.Response, "success");
+            openSweetAlert(response?.data, "success");
 
             const promises = [];
 
@@ -373,24 +343,6 @@ const AddAtom = (props) => {
     getSitesForDropdown();
   }, []);
 
-  // useEffect(() => {
-  //   const getSitesForDropdown = async () => {
-  //
-
-  //     try {
-  //       const res = await axios.get(baseUrl + "/getSitesForDropdown");
-
-  //       setSiteArrayR(res.data);
-  //       setSiteNameR(res.data[0]);
-  //
-  //     } catch (err) {
-  //       console.log(err.response);
-  //
-  //     }
-  //   };
-  //   getSitesForDropdown();
-  // }, []);
-
   const [rackArray, setRackArray] = useState([]);
 
   useEffect(() => {
@@ -430,7 +382,7 @@ const AddAtom = (props) => {
     const device = {
       ip_address,
       atom_id,
-      site_name: site_name.trim().toLowerCase(),
+      site_name,
       rack_name,
       device_name,
       device_ru,
@@ -483,6 +435,7 @@ const AddAtom = (props) => {
                   float: "left",
                   display: "flex",
                   marginLeft: "6%",
+                  marginBottom: "30px",
                 }}
               >
                 Add Atom
@@ -499,12 +452,12 @@ const AddAtom = (props) => {
                 />
               </InputWrapper>
               <InputWrapper>
-                Site Name: &nbsp;<span style={{ color: "red" }}>*</span>
+                Site Name:
+                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
                 <br />
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
-                    required
                     onChange={changeSelectOptionHandler}
                   >
                     {siteArray.map((item, index) => {
@@ -527,12 +480,12 @@ const AddAtom = (props) => {
               </label>
               <br />
               <InputWrapper>
-                Rack Name: &nbsp;<span style={{ color: "red" }}>*</span>
+                Rack Name:
+                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
                 <br />
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
-                    required
                     value={rack_name}
                     onChange={(e) => {
                       setRack_name(e.target.value);
@@ -558,7 +511,8 @@ const AddAtom = (props) => {
               </label>
               <br />
               <InputWrapper>
-                Device Name: &nbsp;<span style={{ color: "red" }}>*</span>
+                Device Name:
+                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
                 &nbsp;&nbsp;
                 <StyledInput
                   value={device_name}
@@ -570,29 +524,25 @@ const AddAtom = (props) => {
                       )
                     )
                   }
-                  required
                 />
               </InputWrapper>
               <InputWrapper>
-                Device RU: &nbsp;<span style={{ color: "red" }}>*</span>
-                &nbsp;&nbsp;
+                Device RU:
+                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
+                {/* &nbsp;&nbsp; */}
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
-                    required
                     placeholder="select"
                     value={device_ru}
                     onChange={(e) => {
                       setDevice_ru(e.target.value);
                     }}
                   >
-                    {Ru.map((item, index) => {
-                      return (
-                        <>
-                          <option>{item}</option>
-                        </>
-                      );
-                    })}
+                    {Ru &&
+                      Ru.map((item, index) => {
+                        return <option key={index}>{item}</option>;
+                      })}
                   </Styledselect>
                 </div>
               </InputWrapper>
@@ -629,12 +579,12 @@ const AddAtom = (props) => {
               </InputWrapper>
               <InputWrapper>
                 <AdjustInputWrapper>
-                  Function: &nbsp;<span style={{ color: "red" }}>*</span>
-                  &nbsp;&nbsp;
+                  Function:
+                  {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
+                  {/* &nbsp;&nbsp; */}
                   <div className="select_type">
                     <Styledselect
                       className="rectangle"
-                      required
                       placeholder="select"
                       value={myfunction}
                       onChange={(e) => {
@@ -672,12 +622,12 @@ const AddAtom = (props) => {
               </AdjustInputWrapper>
 
               <AdjustInputWrappernext>
-                Device Type: &nbsp;<span style={{ color: "red" }}>*</span>
-                &nbsp;&nbsp;
+                Device Type:
+                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
+                {/* &nbsp;&nbsp; */}
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
-                    required
                     placeholder="select"
                     value={device_type}
                     onChange={(e) => {
@@ -694,29 +644,25 @@ const AddAtom = (props) => {
                 </div>
               </AdjustInputWrappernext>
               <InputWrapper>
-                Password Group: &nbsp;<span style={{ color: "red" }}>*</span>
-                &nbsp;&nbsp;
+                Password Group:
+                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
+                {/* &nbsp;&nbsp; */}
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
-                    required
                     value={password_group}
                     onChange={(e) => {
                       setPassword_group(e.target.value);
                     }}
                   >
-                    {passwordArray.map((item, index) => {
-                      return (
-                        <>
-                          <option>{item}</option>
-                        </>
-                      );
-                    })}
+                    {passwordArray &&
+                      passwordArray.map((item, index) => {
+                        return <option key={index}>{item}</option>;
+                      })}
                   </Styledselect>
                 </div>
               </InputWrapper>
               <label
-                // onClick={() => navigate("/atom/password-group")}
                 onClick={showModal}
                 style={{
                   float: "right",
@@ -775,7 +721,12 @@ const AddAtom = (props) => {
         </form>
       </Modal>
 
-      <Modal
+      <PasswordGroupModel
+        isModalOpen={isPassModalVisible}
+        setIsModalOpen={setIsPassModalVisible}
+      />
+
+      {/* <Modal
         width={"30%"}
         title="Add New Password Group"
         open={isPassModalVisible}
@@ -855,7 +806,7 @@ const AddAtom = (props) => {
             </button>
           </div>
         </form>
-      </Modal>
+      </Modal> */}
 
       <Modal
         width={"70%"}

@@ -35,95 +35,97 @@ const index = () => {
   return (
     <SpinLoading spinning={loading}>
       <div style={{ marginTop: "20px", width: "100%", height: "320px" }}>
-        <Bar
-          data={{
-            labels: Object.keys(mysfpmode),
-            datasets: [
-              {
-                categoryPercentage: 0.08, // notice here
-                barPercentage: 1,
-                label: "# of Values",
-                backgroundColor: [
-                  "#6EDE7A",
-                  "#8DD5EC",
-                  "#8CA9EE",
-                  "#66B127",
-                  "#A6FA27",
-                  "#AAA127",
-                  "#66B1FF",
-                  "#AAA127",
-                  "#66EE97",
-                  "#66B7",
-                  "#6627",
+        {mysfpmode && (
+          <Bar
+            data={{
+              labels: mysfpmode && Object.keys(mysfpmode),
+              datasets: [
+                {
+                  categoryPercentage: 0.08, // notice here
+                  barPercentage: 1,
+                  label: "# of Values",
+                  backgroundColor: [
+                    "#6EDE7A",
+                    "#8DD5EC",
+                    "#8CA9EE",
+                    "#66B127",
+                    "#A6FA27",
+                    "#AAA127",
+                    "#66B1FF",
+                    "#AAA127",
+                    "#66EE97",
+                    "#66B7",
+                    "#6627",
+                  ],
+                  // borderColor: "#66B127",
+                  borderWidth: 1,
+                  hoverOffset: 15,
+                  borderRadius: 8,
+                  data: mysfpmode && Object.values(mysfpmode),
+                },
+              ],
+            }}
+            options={{
+              responsive: true,
+              maintainAspectRatio: false,
+              layout: {
+                padding: {
+                  top: 15,
+                },
+              },
+              plugins: {
+                legend: {
+                  labels: { boxWidth: 10, usePointStyle: true },
+
+                  display: true,
+
+                  display: false,
+
+                  position: "top",
+                },
+              },
+              // animation: {
+              //   tension: {
+              //     duration: 1000,
+              //     easing: "linear",
+              //     from: 1,
+              //     to: 0,
+              //     loop: true,
+              //   },
+              // },
+              scales: {
+                yAxes: [
+                  {
+                    gridLines: {
+                      display: false,
+                      drawBorder: false,
+                    },
+                  },
                 ],
-                // borderColor: "#66B127",
-                borderWidth: 1,
-                hoverOffset: 15,
-                borderRadius: 8,
-                data: Object.values(mysfpmode),
-              },
-            ],
-          }}
-          options={{
-            responsive: true,
-            maintainAspectRatio: false,
-            layout: {
-              padding: {
-                top: 15,
-              },
-            },
-            plugins: {
-              legend: {
-                labels: { boxWidth: 10, usePointStyle: true },
-
-                display: true,
-
-                display: false,
-
-                position: "top",
-              },
-            },
-            // animation: {
-            //   tension: {
-            //     duration: 1000,
-            //     easing: "linear",
-            //     from: 1,
-            //     to: 0,
-            //     loop: true,
-            //   },
-            // },
-            scales: {
-              yAxes: [
-                {
-                  gridLines: {
+                xAxes: [
+                  {
+                    barPercentage: 0.1,
+                    gridLines: {
+                      display: false,
+                      drawBorder: false,
+                    },
+                  },
+                ],
+                x: {
+                  grid: {
                     display: false,
-                    drawBorder: false,
                   },
                 },
-              ],
-              xAxes: [
-                {
-                  barPercentage: 0.1,
-                  gridLines: {
+                y: {
+                  grid: {
                     display: false,
-                    drawBorder: false,
+                    borderWidth: 0,
                   },
                 },
-              ],
-              x: {
-                grid: {
-                  display: false,
-                },
               },
-              y: {
-                grid: {
-                  display: false,
-                  borderWidth: 0,
-                },
-              },
-            },
-          }}
-        />
+            }}
+          />
+        )}
       </div>
     </SpinLoading>
   );

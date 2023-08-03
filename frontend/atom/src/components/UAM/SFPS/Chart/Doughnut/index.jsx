@@ -34,56 +34,58 @@ const index = () => {
           paddingRight: "20px",
         }}
       >
-        <Doughnut
-          data={{
-            labels: Object.keys(mysfpstatus),
-            datasets: [
-              {
-                label: "# of Values",
-                backgroundColor: [
-                  "#6EDE7A",
-                  "#8DD5EC",
-                  "#8CA9EE",
-                  "#66B127",
-                  "#FFB127",
-                  "#A6FA27",
-                  "#66B1FF",
-                  "#AAA127",
-                  "#66EE97",
-                  "#66B7",
-                  "#6627",
-                ],
-                borderColor: "rgba(25,199,132,1)",
-                borderWidth: 1,
-                hoverOffset: 15,
+        {mysfpstatus && (
+          <Doughnut
+            data={{
+              labels: mysfpstatus && Object.keys(mysfpstatus),
+              datasets: [
+                {
+                  label: "# of Values",
+                  backgroundColor: [
+                    "#6EDE7A",
+                    "#8DD5EC",
+                    "#8CA9EE",
+                    "#66B127",
+                    "#FFB127",
+                    "#A6FA27",
+                    "#66B1FF",
+                    "#AAA127",
+                    "#66EE97",
+                    "#66B7",
+                    "#6627",
+                  ],
+                  borderColor: "rgba(25,199,132,1)",
+                  borderWidth: 1,
+                  hoverOffset: 15,
 
-                data: Object.values(mysfpstatus),
-              },
-            ],
-          }}
-          options={{
-            cutout: "70%",
-            responsive: true,
-            maintainAspectRatio: false,
-            layout: {
-              padding: {
-                top: 15,
-                bottom: 30,
-              },
-            },
-            plugins: {
-              legend: {
-                onClick: function (e) {
-                  e.stopPropagation();
+                  data: mysfpstatus && Object.values(mysfpstatus),
                 },
-                labels: { boxWidth: 10, usePointStyle: true },
-
-                display: true,
-                position: "top",
+              ],
+            }}
+            options={{
+              cutout: "70%",
+              responsive: true,
+              maintainAspectRatio: false,
+              layout: {
+                padding: {
+                  top: 15,
+                  bottom: 30,
+                },
               },
-            },
-          }}
-        />
+              plugins: {
+                legend: {
+                  onClick: function (e) {
+                    e.stopPropagation();
+                  },
+                  labels: { boxWidth: 10, usePointStyle: true },
+
+                  display: true,
+                  position: "top",
+                },
+              },
+            }}
+          />
+        )}
       </div>
     </SpinLoading>
   );

@@ -305,82 +305,83 @@ const Index = () => {
                 Hardware Health Overview
               </h3>
               <Row>
-                {myDeviceStatus.map((item, index) => (
-                  <Col xs={{ span: 12 }} md={{ span: 12 }} lg={{ span: 12 }}>
-                    <SpinLoading spinning={loading}>
-                      <div
-                        style={{
-                          height: "181px",
-                        }}
-                      >
+                {myDeviceStatus &&
+                  myDeviceStatus.map((item, index) => (
+                    <Col xs={{ span: 12 }} md={{ span: 12 }} lg={{ span: 12 }}>
+                      <SpinLoading spinning={loading}>
                         <div
                           style={{
-                            display: "grid",
-                            placeItems: "center",
-                            cursor: "default",
-                            marginTop: "15px",
-                            marginBottom: "20px",
-                            width: "120px",
-                            marginLeft: "10%",
-                            paddingBottom: "14px",
+                            height: "181px",
                           }}
                         >
                           <div
-                            key={index}
                             style={{
-                              paddingRight: "20px",
+                              display: "grid",
+                              placeItems: "center",
+                              cursor: "default",
+                              marginTop: "15px",
+                              marginBottom: "20px",
+                              width: "120px",
+                              marginLeft: "10%",
+                              paddingBottom: "14px",
                             }}
                           >
-                            <ProgressStyled
+                            <div
+                              key={index}
                               style={{
-                                textAlign: "center",
-                                margin: "0 auto",
-                                padding: "10px",
-                                paddingRight: 25,
-                                display: "block",
-                                cursor: "default",
-                              }}
-                              strokeColor={
-                                (index === 0 ? "#66B127" : null) ||
-                                (index === 1 ? "#db5" : null) ||
-                                (index === 2 ? "#DC3938" : null) ||
-                                (index === 3 ? "#878787" : null)
-                              }
-                              type="dashboard"
-                              percent={item.value}
-                              format={(percent) => `${percent}%`}
-                            />
-
-                            <DSO
-                              bg={index === 0}
-                              color={index === 0}
-                              bgone={index === 1}
-                              colorone={index === 1}
-                              bgtwo={index === 2}
-                              colortwo={index === 2}
-                              style={{
-                                marginRight: "30px",
-                                textAlign: "center",
-                                margin: "15px",
-                                marginTop: "-8px",
-                                borderRadius: "15px",
-                                padding: "5px",
-                                fontSize: "10px",
-                                fontWeight: "600",
-                                cursor: "default",
-                                width: "150px",
+                                paddingRight: "20px",
                               }}
                             >
-                              <img src={imgFun(item.name)} alt="" /> &nbsp;
-                              &nbsp;
-                              {item.name}
-                            </DSO>
+                              <ProgressStyled
+                                style={{
+                                  textAlign: "center",
+                                  margin: "0 auto",
+                                  padding: "10px",
+                                  paddingRight: 25,
+                                  display: "block",
+                                  cursor: "default",
+                                }}
+                                strokeColor={
+                                  (index === 0 ? "#66B127" : null) ||
+                                  (index === 1 ? "#db5" : null) ||
+                                  (index === 2 ? "#DC3938" : null) ||
+                                  (index === 3 ? "#878787" : null)
+                                }
+                                type="dashboard"
+                                percent={item.value}
+                                format={(percent) => `${percent}%`}
+                              />
+
+                              <DSO
+                                bg={index === 0}
+                                color={index === 0}
+                                bgone={index === 1}
+                                colorone={index === 1}
+                                bgtwo={index === 2}
+                                colortwo={index === 2}
+                                style={{
+                                  marginRight: "30px",
+                                  textAlign: "center",
+                                  margin: "15px",
+                                  marginTop: "-8px",
+                                  borderRadius: "15px",
+                                  padding: "5px",
+                                  fontSize: "10px",
+                                  fontWeight: "600",
+                                  cursor: "default",
+                                  width: "150px",
+                                }}
+                              >
+                                <img src={imgFun(item.name)} alt="" /> &nbsp;
+                                &nbsp;
+                                {item.name}
+                              </DSO>
+                            </div>
                           </div>
                         </div>
-                      </div>
-                    </SpinLoading>
-                  </Col>
-                ))}
+                      </SpinLoading>
+                    </Col>
+                  ))}
               </Row>
             </div>
           </Col>

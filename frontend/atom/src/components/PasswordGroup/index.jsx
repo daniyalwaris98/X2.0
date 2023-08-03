@@ -5,14 +5,8 @@ import EditModal from "./EditUser";
 import AtomNavigation from "../AtomNavigation";
 import exportExcel from "../Atom/assets/exp.svg";
 import atomicon from "./assets/atomicon.svg";
-// import atomicon from "../Atom/assets/atomicon.svg";
 import trash from "./assets/trash.svg";
 
-// import RackNameModel from "./RackNameModel";
-
-// import { AddAtomStyledButton } from "../../ReuseStyle/AddWidgetButton/button.styled.js";
-// import { StyledExportButton } from "../../ReuseStyle/ExportExcelButton/button.styled.js";
-// import { OnBoardStyledButton } from "../../ReuseStyle/OnboardButton/Onboard.styled.js";
 import {
   ImportOutlined,
   ExportOutlined,
@@ -41,7 +35,7 @@ import * as XLSX from "xlsx";
 import { columnSearch } from "../../utils";
 
 import axios, { baseUrl } from "../../utils/axios";
-// import SiteNameModel from "./SiteNameModel";
+import PasswordGroupModel from "./PasswordGroupModal/PasswordGroupModel";
 
 let excelData = [];
 let columnFilters = {};
@@ -64,16 +58,8 @@ const Atom = () => {
   let [inputValue, setInputValue] = useState("");
   const [searchText, setSearchText] = useState(null);
   const [searchedColumn, setSearchedColumn] = useState(null);
-  const [siteData, setSiteData] = useState(null);
-  const [rackData, setRackData] = useState(null);
 
-  const [rackNameModalVisible, setRackNameModalVisible] = useState(false);
-  const [siteNameModalVisible, setSiteNameModalVisible] = useState(false);
   const [configData, setConfigData] = useState(null);
-
-  const checkPasswordGroup = (allData) => {
-    excelData = allData;
-  };
 
   const onChangeSwitch = (isChecked, id) => {
     if (isChecked) {
@@ -82,9 +68,7 @@ const Atom = () => {
       let tempArray = [...checked];
       const index = tempArray.indexOf(id);
       if (index > -1) {
-        // only splice array when item is found
         tempArray.splice(index, 1);
-        // 2nd parameter means remove one item only
         setChecked(tempArray);
       }
     }
@@ -94,15 +78,15 @@ const Atom = () => {
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
+
   let getColumnSearchProps = columnSearch(
     searchText,
     setSearchText,
     searchedColumn,
     setSearchedColumn
   );
-  // Alert
+
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -111,12 +95,13 @@ const Atom = () => {
       confirmButtonColor: "#66B127",
     });
   };
+
   const exportSeed = async () => {
     setExportLoading(true);
     jsonToExcel(excelData);
-    // openNotification();
     setExportLoading(false);
   };
+
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
@@ -142,9 +127,11 @@ const Atom = () => {
       password_group: "",
     },
   ];
+
   const exportTemplate = async () => {
     jsonToExcel(seedTemp);
   };
+
   const jsonToExcel = (atomData) => {
     if (rowCount !== 0) {
       let wb = XLSX.utils.book_new();
@@ -152,8 +139,6 @@ const Atom = () => {
       XLSX.utils.book_append_sheet(wb, binaryAtomData, "password_group");
       XLSX.writeFile(wb, "password_group.xlsx");
       openNotification();
-
-      // setExportLoading(false);
     } else {
       openSweetAlert("No Data Found!", "info");
     }
@@ -173,40 +158,26 @@ const Atom = () => {
       openSweetAlert("No device is selected to onboard.", "danger");
     }
   };
+
   const postSeed = async (seed) => {
     setLoading(true);
     await axios
-      .post(baseUrl + "/addUsers", seed)
+      .post(baseUrl + "/getPasswordGroups", seed)
       .then((response) => {
-        console.log("hahahehehoho");
-        console.log(response.status);
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
-          console.log(response?.data);
           setLoading(false);
         } else {
           openSweetAlert(response?.data, "success");
-          console.log(response?.data);
           const promises = [];
           promises.push(
             axios
               .get(baseUrl + "/getUsers")
               .then((response) => {
-                // console.log("response===>", response);
-                // setExcelData(response.data);
-
-                console.log(response.data);
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
                 setDataSource(response?.data);
 
-                console.log(response.data);
-                //
-                //              excelData = response.data;
-                //  setDataSource(excelData);
-
-                // // setRowCount(response.data.length);
-                //setDataSource(response.data);
                 setLoading(false);
               })
               .catch((error) => {
@@ -226,22 +197,23 @@ const Atom = () => {
   };
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/getUsers");
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
     serviceCalls();
-  }, []);
+  }, [isModalVisible]);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getPasswordGroups");
+      excelData = res.data;
+      setDataSource(excelData);
+      setRowCount(excelData.length);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
 
   const convertToJson = (headers, fileData) => {
     let rows = [];
@@ -255,6 +227,7 @@ const Atom = () => {
     rows = rows.filter((value) => JSON.stringify(value) !== "{}");
     return rows;
   };
+
   useEffect(() => {
     inputRef.current.addEventListener("input", importExcel);
   }, []);
@@ -273,49 +246,11 @@ const Atom = () => {
         raw: false,
       });
       const headers = fileData[0];
-      // const heads = headers.map((head) => ({ title: head, field: head }));
       fileData.splice(0, 1);
       let data = convertToJson(headers, fileData);
-      // console.log(excelData);
       postSeed(data);
-      // setRowCount(data.length);
-      // setDataSource(data);
     };
   };
-
-  //   useEffect(() => {
-  //     const GetCpeDetail = async () => {
-  //     //     try {
-  //     //       const res = await axios.get(
-  //     //         baseUrl + "/getCpeDetail",
-
-  //     //       );
-  //     //       setAllData(res.data)
-  //     //       // console.log("Data",res.data.cpe_ip_address);
-  //     //     } catch (err) {
-  //     //       console.log(err);
-  //     //     }
-  //     //   };
-  //     //   GetCpeDetail();
-
-  //       }, []);
-
-  //   useEffect(() => {
-  //     const serviceCalls = async () => {
-  //       setLoading(true);
-  //       try {
-  //         const res = await axios.get(baseUrl + "/getSeeds");
-  //         excelData = res.data;
-  //         setDataSource(excelData);
-  //         setRowCount(excelData.length);
-  //         setLoading(false);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //         setLoading(false);
-  //       }
-  //     };
-  //     serviceCalls();
-  //   }, []);
 
   const showModal = () => {
     setEditRecord(null);
@@ -323,55 +258,9 @@ const Atom = () => {
     setIsModalVisible(true);
   };
 
-  //   const showOnboardModal = (record) => {
-  //     setOnboardRecord(record);
-  //     setIsOnboardModalVisible(true);
-  //   };
-
-  const showEditModal = () => {
-    setIsModalVisible(true);
-  };
   const edit = (record) => {
     setEditRecord(record);
-    setIsEditModalVisible(true);
-    // setAddRecord(record);
-  };
-
-  const showSiteName = async (record) => {
-    // console.log(record);
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `${baseUrl}/getSiteBySiteName?site_name=${record.site_name}`
-      );
-      console.log(res.data);
-      setSiteData(res.data);
-      // setSiteData(record);
-      setSiteNameModalVisible(true);
-      console.log("Site Name");
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      console.log(err);
-    }
-  };
-  const showRackName = async (record) => {
-    console.log(record);
-    try {
-      setLoading(true);
-      const res = await axios.get(
-        `${baseUrl}/getRacksByRackName?rack_name=${record.rack_name}`
-      );
-      console.log(res.data);
-      setRackData(res.data);
-      // setRackData(record);
-      setRackNameModalVisible(true);
-      console.log("Rack Name");
-      setLoading(false);
-    } catch (err) {
-      setLoading(false);
-      console.log(err);
-    }
+    setIsModalVisible(true);
   };
 
   const columns = [
@@ -466,12 +355,6 @@ const Atom = () => {
       title: "password",
       dataIndex: "password",
       key: "password",
-      // render: (text, record) => (
-      //   <p style={{ textAlign: "center", paddingTop: "5px" }}>
-      //     <Switch defaultChecked onChange={onChangeSwitch} />
-      //     {text}
-      //   </p>
-      // ),
 
       ...getColumnSearchProps(
         "password",
@@ -520,7 +403,6 @@ const Atom = () => {
   const deleteRow = async () => {
     if (selectedRowKeys.length > 0) {
       try {
-        //console.log(device);
         await axios
           .post(baseUrl + "/deletePasswordGroup", selectedRowKeys)
           .then((response) => {
@@ -542,14 +424,11 @@ const Atom = () => {
                     setRowCount(response.data.length);
                     setSelectedRowKeys([]);
 
-                    // excelData = response.data;
                     setLoading(false);
                   })
                   .catch((error) => {
                     console.log(error);
                     setLoading(false);
-
-                    //  openSweetAlert("Something Went Wrong!", "error");
                   })
               );
               return Promise.all(promises);
@@ -559,7 +438,6 @@ const Atom = () => {
             setLoading(false);
 
             console.log("in add seed device catch ==> " + error);
-            // openSweetAlert("Something Went Wrong!", "error");
           });
       } catch (err) {
         setLoading(false);
@@ -570,6 +448,7 @@ const Atom = () => {
       openSweetAlert(`No Device Selected`, "error");
     }
   };
+
   return (
     <div style={{ backgroundColor: "#FFFFFF" }}>
       <AddAtomStyledButton
@@ -613,7 +492,6 @@ const Atom = () => {
                 marginLeft: "10px",
                 float: "right",
                 marginRight: "20px",
-                // fontWeight: "bold",
               }}
             >
               Col :{" "}
@@ -631,7 +509,6 @@ const Atom = () => {
                 marginLeft: "10px",
                 float: "right",
                 marginRight: "10px",
-                // fontWeight: "bold",
               }}
             >
               Row :{" "}
@@ -649,17 +526,12 @@ const Atom = () => {
 
         <div style={{ float: "right", display: "flex", marginTop: "15px" }}>
           <StyledExportButton
-            // color={"#F3F3F3"}
-
             onClick={exportTemplate}
             style={{
               display: "none",
               marginRight: "10px",
-              // color: "#9F9F9F",
-              // marginLeft: "10px",
             }}
           >
-            {/* {<ExportOutlined />}  */}
             <img
               src={exportExcel}
               alt=""
@@ -669,17 +541,12 @@ const Atom = () => {
             />{" "}
             &nbsp;&nbsp; Export Template
           </StyledExportButton>
-          {/* <Spin spinning={exportLoading}> */}
           <StyledExportButton
             onClick={exportSeed}
-            // type="primary"
             style={{
               marginRight: "12px",
-              // marginLeft: "5px",
-              // color: "#9F9F9F",
             }}
           >
-            {/* {<ExportOutlined />} */}
             <img
               src={exportExcel}
               alt=""
@@ -689,7 +556,7 @@ const Atom = () => {
             />
             &nbsp;&nbsp; Export
           </StyledExportButton>
-          {/* </Spin> */}
+
           <div style={{}}>
             <StyledImportFileInput
               disabled={!configData?.atom.pages.password_group.read_only}
@@ -700,50 +567,18 @@ const Atom = () => {
               onChange={() => importExcel}
               ref={inputRef}
               prefix={<ImportOutlined />}
-              // style={{
-              //   color: "white",
-              //   marginRight: "10px",
-              //   borderRadius: "3px",
-              //   marginLeft: "5px",
-              //   backgroundColor: "#059142",
-              //   border: "0px",
-              // }}
             />
           </div>
-          {/* {<ImportOutlined />} Import from Excel
-          </StyledImportFileInput> */}
         </div>
       </div>
 
-      {isModalVisible && (
-        <Modal
-          style={{ padding: "0px" }}
-          isModalVisible={isModalVisible}
-          setIsModalVisible={setIsModalVisible}
-          dataSource={dataSource}
-          setDataSource={setDataSource}
-          excelData={excelData}
-          setRowCount={setRowCount}
-          checkPasswordGroup={checkPasswordGroup}
-          addRecord={addRecord}
-          centered={true}
-        />
-      )}
-      {isEditModalVisible && (
-        <EditModal
-          style={{ padding: "0px" }}
-          isEditModalVisible={isEditModalVisible}
-          setIsEditModalVisible={setIsEditModalVisible}
-          dataSource={dataSource}
-          setDataSource={setDataSource}
-          excelData={excelData}
-          setRowCount={setRowCount}
-          editRecord={editRecord}
-          centered={true}
-        />
-      )}
+      <PasswordGroupModel
+        isModalOpen={isModalVisible}
+        setIsModalOpen={setIsModalVisible}
+        editRecord={editRecord}
+      />
 
-      <div style={{ padding: "25px", marginTop: "10px" }}>
+      <div style={{ padding: "25px", marginTop: "50px" }}>
         <TableStyling
           rowSelection={rowSelection}
           rowKey="password_group"

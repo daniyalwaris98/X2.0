@@ -24,14 +24,18 @@ function HorizontalBarChart(props) {
       });
   };
 
-  const labels = Object.keys(vendors);
-  const modifiedLabels = labels.map((label) => {
-    if (label.length > 8) {
-      return label.substring(0, 8) + "...";
-    } else {
-      return label;
-    }
-  });
+  console.log("vendors", vendors);
+
+  const labels = vendors && Object.keys(vendors);
+  const modifiedLabels =
+    vendors &&
+    labels.map((label) => {
+      if (label.length > 8) {
+        return label.substring(0, 8) + "...";
+      } else {
+        return label;
+      }
+    });
 
   return (
     <HorizontalBarChartStyle>
@@ -58,7 +62,7 @@ function HorizontalBarChart(props) {
               borderColor: "#66B127",
               hoverOffset: 15,
               borderRadius: 5,
-              data: Object.values(vendors),
+              data: vendors && Object.values(vendors),
             },
           ],
         }}

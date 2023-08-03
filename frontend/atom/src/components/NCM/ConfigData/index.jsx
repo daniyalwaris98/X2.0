@@ -1335,11 +1335,14 @@ const indexMain = () => {
                                           setPassword_group(e.target.value);
                                         }}
                                       >
-                                        {passwordArray.map((item, index) => {
-                                          return (
-                                            <option key={index}>{item}</option>
-                                          );
-                                        })}
+                                        {passwordArray &&
+                                          passwordArray.map((item, index) => {
+                                            return (
+                                              <option key={index}>
+                                                {item}
+                                              </option>
+                                            );
+                                          })}
                                       </StyledselectIpam>
                                     </div>
                                   )}

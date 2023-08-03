@@ -92,7 +92,7 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/totalSites");
-        console.log("res2", res.data);
+
         setSiteDeviceVendor(res.data);
       } catch (err) {
         console.log(err.response);

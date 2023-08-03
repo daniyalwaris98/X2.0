@@ -7,52 +7,12 @@ import Swal from "sweetalert2";
 const AddAtom = (props) => {
   const { Option } = Select;
 
-  const correctDatePattern = (date) => {
-    if (date != null) {
-      let d = date.split(date[10]);
-      return d[0] + " " + d[1];
-    } else return;
-  };
-
   const getString = (str) => {
     return str ? str : "";
   };
 
-  const getDateString = (dateStr) => {
-    return dateStr; // ? correctDatePattern(dateStr) : "";
-  };
-
-  let [siteIds, setSiteIds] = useState([]);
-  let [siteIdOptions, setSiteIdOptions] = useState([]);
-  let [rackIds, setRackIds] = useState([]);
   let [rackIdOptions, setRackIdOptions] = useState([]);
 
-  // useEffect(() => {
-  //     (async () => {
-  //       try {
-  //         const res1 = await axios.get(baseUrl + "/getAllSiteIDs");
-  //         setSiteIds(res1.data);
-  //         const res2 = await axios.get(baseUrl + "/getAllRackIDs");
-  //         setRackIds(res2.data);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //       }
-  //     })();
-  //   }, []);
-
-  // useEffect(() => {
-  //     getSiteIdOptions(siteIds);
-  //     getRackIdOptions(rackIds);
-  //   }, [siteIds, rackIds]);
-
-  //   const getSiteIdOptions = (values = []) => {
-  //     let options = [];
-  //     values.map((value) => {
-  //       options.push(<Option value={value}>{value}</Option>);
-  //     });
-  //     setSiteIdOptions(options);
-  //     // return options;
-  //   };
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -64,15 +24,12 @@ const AddAtom = (props) => {
 
   const postDevice = async (device) => {
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addUser", device)
 
         .then((response) => {
-          // console.log(response?.status);
           console.log(response?.response?.status);
           if (response?.response?.status == 500) {
-            // openSweetAlert(response?.response?.data?.response, "error");
             openSweetAlert(response?.response?.data, "error");
           } else {
             openSweetAlert(response?.data, "success");
@@ -131,6 +88,7 @@ const AddAtom = (props) => {
   const handleCancel = () => {
     props.setIsModalVisible(false);
   };
+
   const getRackIdOptions = (values = []) => {
     let options = [];
     values.map((value) => {
@@ -198,7 +156,6 @@ const AddAtom = (props) => {
                   width: "120px",
                   marginLeft: "10px",
                   marginRight: "10px",
-                  // paddingBottom: "5px",
                 }}
                 color={"#BBBABA"}
                 onClick={handleCancel}
@@ -216,81 +173,30 @@ const AddAtom = (props) => {
                 onChange={(e) => setPassword_group(e.target.value)}
                 required
               />
-              {/* <StyledSelect
-                value={password_group}
-                style={{ width: "100%", borderRadius: "20px" }}
-                onChange={(value) => {
-                  setPassword_group(value);
-                }}
-              >
-                {getOptions([
-                  "Low",
-                  "Moderate",
-                  "High",
-                  "Significant",
-                  "Critical",
-                ])}
-              </StyledSelect> */}
-              {/* <StyledInput
-                value={criticality}
-                onChange={(e) => setCriticality(e.target.value)}
-              /> */}
             </InputWrapper>
             <InputWrapper>
               Password: &nbsp;<span style={{ color: "red" }}>*</span>
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={ip_address} />
-                ) : ( */}
               <StyledInput
                 type="password"
                 value={password}
                 onChange={(e) => setPassword(e.target.value)}
                 required
               />
-              {/* )} */}
             </InputWrapper>
           </Col>
           <Col span={10} style={{ marginLeft: "6%" }}>
             <InputWrapper>
               Username: &nbsp;<span style={{ color: "red" }}>*</span>
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={criticality} />
-                ) : ( */}
               <StyledInput
                 value={username}
                 onChange={(e) => setUsername(e.target.value)}
                 required
               />
-              {/* )} */}
             </InputWrapper>
           </Col>
         </Row>
-        {/* <StyledSubmitButton
-          style={{
-            textAlign: "center",
-            width: "25%",
-            marginTop: "10px",
-          }}
-          color={"green"}
-          type="submit"
-          value="Done"
-        />
-        <br />
-        <StyledButton
-          style={{
-            textAlign: "center",
-            width: "25%",
-            marginTop: "10px",
-            marginLeft: "10px",
-            // paddingBottom: "5px",
-          }}
-          color={"red"}
-          onClick={handleCancel}
-        >
-          Cancel
-        </StyledButton> */}
         &nbsp; &nbsp;
       </form>
     </Modal>
@@ -317,21 +223,12 @@ const StyledSelect = styled(Select)`
 const InputWrapper = styled.div`
   text-align: left;
   font-size: 12px;
-  // white-space: nowrap;
-  // display: flex;
-  // justify-content: space-between;
   padding-bottom: 10px;
 `;
 
 const StyledSubmitButton = styled(Input)`
   font-size: 15px;
-  // height: 27px;
-
-  // font-weight: bolder;
-  // width: 15%;
   padding: auto;
-  // text-align: center;
-  // font-family: Montserrat-Regular;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background-color: ${(props) => props.color};
   border-color: ${(props) => props.color};
@@ -347,11 +244,7 @@ const StyledSubmitButton = styled(Input)`
 `;
 
 const StyledButton = styled(Button)`
-  // height: 27px;
   font-size: 15px;
-  // font-weight: bolder;
-  // width: 15%;
-  // font-family: Montserrat-Regular;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background-color: ${(props) => props.color};
   border-color: ${(props) => props.color};

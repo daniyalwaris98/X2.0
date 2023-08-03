@@ -25,7 +25,7 @@ function BarChartBold() {
     <BarChartBoldStyle>
       <Bar
         data={{
-          labels: Object.keys(data),
+          labels: data && Object.keys(data),
           datasets: [
             {
               categoryPercentage: 0.3,
@@ -36,7 +36,7 @@ function BarChartBold() {
               hoverOffset: 15,
               borderRadius: 5,
 
-              data: Object.values(data),
+              data: data && Object.values(data),
             },
           ],
         }}
