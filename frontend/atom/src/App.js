@@ -1,4 +1,4 @@
-import React, { useEffect, useState, Suspense, useContext } from "react";
+import React, { useEffect, useState, Suspense } from "react";
 import "leaflet/dist/leaflet.css";
 import "antd/dist/antd.min.css";
 import theme from "./styles/theme";
@@ -14,7 +14,7 @@ const NavBar = React.lazy(() => import("./components/NavBar"));
 
 import "/node_modules/react-grid-layout/css/styles.css";
 import "/node_modules/react-resizable/css/styles.css";
-import { CreateThemeContext } from "./context/ThemeContext";
+
 import { GlobalStyle } from "./styles/GlobalStyle";
 
 i18n
@@ -37,7 +37,6 @@ i18n
   });
 
 function App() {
-  const { isColorActive } = useContext(CreateThemeContext);
   const [currentLang, setCurrentLang] = useState(localStorage.getItem("lang"));
   useEffect(() => {
     //  let language=;
@@ -46,7 +45,7 @@ function App() {
   }, [currentLang]);
 
   return (
-    <ThemeProvider theme={isColorActive ? theme.darkMode : theme.lightMode}>
+    <ThemeProvider theme={theme}>
       <Suspense fallback={<Loader />}>
         <GlobalStyle />
         {/* <Routes>
