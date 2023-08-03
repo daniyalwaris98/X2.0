@@ -126,6 +126,7 @@ from app.license import license_generator
 from app.routes import one_time_setup
 from app.routes import login_routes
 from app.routes import admin_routes
+from app.routes import test_routes
 
 from app.atom import atom_routes
 from app.atom import atom_transition_routes
