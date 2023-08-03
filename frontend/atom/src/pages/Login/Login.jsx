@@ -1,7 +1,8 @@
 import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router";
+import illustration from "../../assets/gifs/login.gif";
 
-import { Checkbox, Select } from "antd";
+import { Form, message, Select } from "antd";
 import Api from "../../global/insistance";
 import { CreateThemeContext } from "../../context/ThemeContext";
 
@@ -11,17 +12,16 @@ import {
   Button,
   CustomModal,
   CustomInput,
-  Switch,
-  MasterInput,
 } from "../../components/ReusableComponents";
-import { EyeIcon, LoginUser } from "../../svg";
+import { LoginPassword, LoginUser } from "../../svg";
 
 import {
   LoginStyle,
   LicenseFormModalStyle,
   SuperAdminModalStyle,
+  LoginStyledInput,
+  LoginPassStyledInput,
 } from "./Login.style";
-import { setData } from "../../global/globals";
 
 const SuperAdminModal = (props) => {
   const { isModalOpen, setIsModalOpen } = props;
@@ -330,20 +330,15 @@ const LicenseFormModal = (props) => {
 
 function Login() {
   const navigate = useNavigate();
-  const { isColorActive } = useContext(CreateThemeContext);
+
   const [loading, setLoading] = useState(false);
+  const [user, setUser] = useState(null);
+  const [pass, setPass] = useState(null);
   const [isLicenseModalOpen, setLicenseModalOpen] = useState(false);
   const [isSupperAdminModalOpen, setSuperAdminModalOpen] = useState(false);
   const [isErrorActive, setErrorActive] = useState(false);
-  const [errorMessage, setErrorMessage] = useState("");
 
   const loginUrl = `${baseUrl}/login`;
-  const [formInput, setFormInput] = useState({
-    username: "",
-    password: "",
-  });
-
-  let loginImage;
 
   const config = {
     dashboard: {
@@ -438,149 +433,78 @@ function Login() {
     },
   };
 
-  if (isColorActive) {
-    loginImage = {
-      greetingImage: "./images/switch-images/login-two.png",
-      logo: "./images/switch-images/logo-light.png",
-    };
-  } else {
-    loginImage = {
-      greetingImage: "./images/switch-images/login-one.png",
-      logo: "./images/switch-images/logo-dark.png",
-    };
-  }
-
-  const handleInput = (e) => {
-    setFormInput({
-      ...formInput,
-      [e.target.name]: e.target.value,
-    });
-  };
-
-  // const handleSubmit = async (e) => {
-  //   e.preventDefault();
-
-  //   if (formInput.username.length !== 0 && formInput.password.length !== 0) {
-  //     setLoading(true);
-
-  //     await axios
-  //       .post(loginUrl, {
-  //         user: formInput.username,
-  //         pass: formInput.password,
-  //       })
-  //       .then(async (res) => {
-  //         if (res.data.code == 200) {
-  //           localStorage.setItem("token", res.data["auth-key"]);
-
-  //           await Api.get("/getUserByToken")
-  //             .then((response) => {
-  //               localStorage.setItem("user", JSON.stringify(response.data));
-  //               setLoading(false);
-
-  //               console.log("response", response);
-
-  //               setData(
-  //                 response.data.user_role,
-  //                 response.data.user_name,
-  //                 response.data.monetx_configuration
-  //               );
-  //               navigate("/");
-  //             })
-  //             .catch((err) => {
-  //               console.log("err====>", err);
-  //             });
-  //         }
-  //       })
-  //       .catch((err) => {
-  //         console.log("err", err);
-  //         setLoading(false);
-  //         setErrorActive(true);
-  //         setErrorMessage(err.response.data.message);
-  //       });
-  //   } else {
-  //     setErrorActive(true);
-  //   }
-  // };
-
   useEffect(() => {
     handleOneTimeSetup();
   }, []);
 
-  // const getError = (error) => {
-  //   return (
-  //     <div
-  //       style={{
-  //         backgroundColor: "red",
-  //         color: "white",
-  //         padding: "3px 10px 3px 10px",
-  //         borderRadius: "7px",
-  //         marginBottom: "10px",
-  //       }}
-  //     >
-  //       {error}
-  //       <a style={{ color: "white", float: "right" }}>
-  //         <CloseOutlined style={{ color: "white" }} />
-  //       </a>
-  //     </div>
-  //   );
-  // };
+  const getError = (error) => {
+    return (
+      <div
+        style={{
+          backgroundColor: "red",
+          color: "white",
+          padding: "3px 10px 3px 10px",
+          borderRadius: "7px",
+          marginBottom: "10px",
+        }}
+      >
+        {error}
+        <a style={{ color: "white", float: "right" }}>
+          <CloseOutlined style={{ color: "white" }} />
+        </a>
+      </div>
+    );
+  };
 
-  const onFinish = async (e) => {
-    e.preventDefault();
-
+  const onFinish = async () => {
     let userData = {
-      user: formInput.username,
-      pass: formInput.password,
+      user: user,
+      pass: pass,
     };
 
-    if (formInput.username.length !== 0 && formInput.password.length !== 0) {
-      setLoading(true);
+    setLoading(true);
 
-      await axios
-        .post(loginUrl, userData)
-        .then((res) => {
-          const promises = [];
+    await axios
+      .post(loginUrl, userData)
+      .then((res) => {
+        const promises = [];
 
-          if (res.data.response === "Login Successful") {
-            localStorage.setItem("monetx_token", res.data["auth-key"]);
+        if (res.data.response === "Login Successful") {
+          localStorage.setItem("monetx_token", res.data["auth-key"]);
 
-            promises.push(
-              axios
-                .get(baseUrl + "/getUserByToken")
-                .then((response) => {
-                  localStorage.setItem("user", JSON.stringify(response.data));
-                  setTimeout(() => {
-                    localStorage.setItem(
-                      "monetx_configuration",
-                      JSON.stringify(config)
-                    );
+          promises.push(
+            axios
+              .get(baseUrl + "/getUserByToken")
+              .then((response) => {
+                localStorage.setItem("user", JSON.stringify(response.data));
+                setTimeout(() => {
+                  localStorage.setItem(
+                    "monetx_configuration",
+                    JSON.stringify(config)
+                  );
 
-                    navigate("/");
-                    window.location.reload();
-                  }, 0);
-                  setLoading(false);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  setLoading(false);
-                })
-            );
-            setLoading(false);
-            return Promise.all(promises);
-          } else {
-            setLoading(false);
-          }
-        })
-        .catch((err) => {
-          console.log("err", err);
-
+                  navigate("/");
+                  window.location.reload();
+                }, 0);
+                setLoading(false);
+              })
+              .catch((error) => {
+                console.log(error);
+                setLoading(false);
+              })
+          );
           setLoading(false);
-          setErrorActive(true);
-          // setErrorMessage(err.response.data.message);
-        });
-    } else {
-      setErrorActive(true);
-    }
+          return Promise.all(promises);
+        } else {
+          setLoading(false);
+        }
+      })
+      .catch((err) => {
+        console.log("err", err);
+
+        setLoading(false);
+        setErrorActive(true);
+      });
   };
 
   const handleOneTimeSetup = async () => {
@@ -626,99 +550,7 @@ function Login() {
         />
       )}
 
-      <article className="login-greetings">
-        <article className="section-header">
-          <h2 className="heading">One Stop, Many Solution</h2>
-          <p className="description">
-            One Solution that Speed up your Device Reports and Make Efficient
-            way to organize your data.
-          </p>
-        </article>
-
-        <picture className="login-img">
-          <img src={loginImage.greetingImage} alt="Login Image" />
-        </picture>
-      </article>
-
-      <article className="login-form">
-        <Switch />
-        <article className="form-content">
-          <article className="form-header">
-            <picture className="site-logo">
-              <img src={loginImage.logo} alt="Site Logo" />
-            </picture>
-
-            <p className="note">Sign in to you account</p>
-          </article>
-
-          {isErrorActive && (
-            <p className="error">
-              {errorMessage == ""
-                ? "Please Provide Valid Credentials"
-                : errorMessage}
-            </p>
-          )}
-
-          <form onSubmit={onFinish}>
-            <MasterInput
-              placeholder="Username"
-              className="form-input"
-              icon={<LoginUser />}
-              onChange={handleInput}
-              name="username"
-              value={formInput.username}
-              required
-            />
-            <MasterInput
-              placeholder="Password"
-              type="password"
-              value={formInput.password}
-              className="form-input"
-              icon={<EyeIcon />}
-              name="password"
-              onChange={handleInput}
-              required
-            />
-
-            <article className="more-options">
-              <article className="rember-me">
-                <Checkbox>Remember me</Checkbox>
-              </article>
-
-              <a href="#" className="link">
-                Forgot Password?
-              </a>
-            </article>
-
-            <Button
-              btnText="Login"
-              type="submit"
-              className="login-btn"
-              loading={loading}
-            />
-          </form>
-        </article>
-
-        <ul className="login-menus">
-          <li>
-            <a href="" className="menu-item-link">
-              2023 All rights reserved
-            </a>
-          </li>
-          <li>
-            <a href="" className="menu-item-link">
-              Privacy Policy
-            </a>
-          </li>
-          <li>
-            <a href="" className="menu-item-link">
-              Terms & Conditions
-            </a>
-          </li>
-        </ul>
-      </article>
-
-      {/* <article className="login-container">
+      <article className="login-container">
         <div className="form-container">
           <p className="welcome-text">Welcome to</p>
 
@@ -806,7 +638,7 @@ function Login() {
         <picture className="login-gif-wrapper">
           <img src={illustration} alt="Montex Gif" />
         </picture>
-      </article> */}
+      </article>
     </LoginStyle>
   );
 }
