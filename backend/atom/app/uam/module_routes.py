@@ -15,9 +15,15 @@ import traceback
 @token_required
 def GetBoardDetailsByIpAddress(user_data):
     try:
-        ip_address = request.args.get("ipaddress")
+        ip_address = None
+        try:
+            ip_address = request.args.get("ipaddress")
+        except Exception:
+            traceback.print_exc()
+            return "Ip Address Is Missing From URL", 500
 
-        if ip_address:
+        if ip_address is not None:
+
             results = (
                 db.session.query(Board_Table, UAM_Device_Table, Atom_Table)
                 .join(UAM_Device_Table, Board_Table.uam_id == UAM_Device_Table.uam_id)
@@ -60,8 +66,14 @@ def GetBoardDetailsByIpAddress(user_data):
 @token_required
 def GetSubBoardDetailsByIpAddress(user_data):
     try:
-        ip_address = request.args.get("ipaddress")
-        if ip_address:
+        ip_address = None
+        try:
+            ip_address = request.args.get("ipaddress")
+        except Exception:
+            traceback.print_exc()
+            return "Ip Address Is Missing From URL", 500
+
+        if ip_address is not None:
             results = (
                 db.session.query(Subboard_Table, UAM_Device_Table, Atom_Table)
                 .join(
@@ -243,7 +255,7 @@ def EditBoard(user_data):
         if UpdateDBData(board) == 200:
             return "Board Updated Successfully", 200
         else:
-            return "Error While Updating Board"
+            return "Error While Updating Board", 500
     except Exception as e:
         traceback.print_exc()
         return "Server Error", 500
@@ -269,7 +281,7 @@ def EditSubBoard(user_data):
         if UpdateDBData(subBoard) == 200:
             return "Sub-Board Updated Successfully", 200
         else:
-            return "Error While Updating Sub-Board"
+            return "Error While Updating Sub-Board", 500
     
     except Exception as e:
         traceback.print_exc()

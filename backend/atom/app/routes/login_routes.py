@@ -176,7 +176,7 @@ def LicenseValidationAfterLogin(user_data):
             "day_left" : days_left,
             "expiry_date" : expiry_date,
             "message" : message,
-            "validaty" : "True"
+            "validaty" : "TRUE"
         }
         
         if days_left is None:

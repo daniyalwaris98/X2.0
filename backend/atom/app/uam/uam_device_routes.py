@@ -9,6 +9,19 @@ from flask import request
 import traceback
 
 
+@app.route("/totalDevicesInDeviceDashboard", methods=["GET"])
+@token_required
+def TotalDevicesInDeviceDashboard(user_data):
+    try:
+        queryString = f"select count(*) from uam_device_table"
+        result = db.session.execute(queryString).scalar()
+        objList = {"name": "Total Device Count", "value": result}
+        return jsonify(objList), 200
+    except Exception as e:
+        traceback.print_exc()
+        return "Server Error", 500
+
+
 @app.route("/getAllDevices", methods=["GET"])
 @token_required
 def getAllUamDevices(user_data):
@@ -460,62 +473,246 @@ def GetDeviceDetailsByIpAddress(user_data):
         return "Can not Get Ip Address from URL", 500
 
 
-@app.route("/getLicenseDetailsByIpAddress", methods=["GET"])
+@app.route("/dismantleOnBoardedDevice", methods=["POST"])
 @token_required
-def GetLicenseDetailsByIpAddress(user_data):
-    return jsonify(list()), 200
-    if True:
-        ip_address = request.args.get("ipaddress")
-        # ip_address = '1.1.1.1'
-        if ip_address:
+def DismantleOnBoardDevice(user_data):
+    try:
+        deviceIDs = request.get_json()
+        print(deviceIDs, file=sys.stderr)
+        
+        errorList = []
+        responseList = []
+
+        for ip in deviceIDs:
             try:
-                
-                
-                
-                queryString = f"select LICENSE_NAME,LICENSE_DESCRIPTION,DEVICE_NAME,RFS_DATE,ACTIVATION_DATE,EXPIRY_DATE,GRACE_PERIOD,SERIAL_NUMBER,CREATION_DATE,MODIFICATION_DATE,STATUS,CAPACITY,`USAGE`,PN_CODE from license_table where DEVICE_NAME in (select DEVICE_NAME from device_table where IP_ADDRESS='{ip_address}');"
-                result = db.session.execute(queryString)
-                objList = []
-                for row in result:
-                    license_name = row[0]
-                    license_description = row[1]
-                    ne_name = row[2]
-                    # rfs_date = row[3]
-                    activation_date = row[4]
-                    expiry_date = row[5]
-                    # grace_period = row[6]
-                    # serial_number = row[7]
-                    creation_date = row[8]
-                    modification_date = row[9]
-                    status = row[10]
-                    # capacity = row[11]
-                    # usage = row[12]
-                    pn_code = row[13]
-                    objDict = {}
-                    objDict["license_name"] = license_name
-                    objDict["license_description"] = license_description
-                    objDict["ne_name"] = ne_name
-                    # objDict['rfs_date'] = FormatDate((rfs_date))
-                    objDict["activation_date"] = FormatDate((activation_date))
-                    objDict["expiry_date"] = FormatDate((expiry_date))
-                    # objDict['grace_period'] = grace_period
-                    # objDict['serial_number'] = serial_number
-                    objDict["creation_date"] = FormatDate((creation_date))
-                    objDict["modification_date"] = FormatDate((modification_date))
-                    objDict["status"] = status
-                    # objDict['capacity'] = capacity
-                    # objDict['usage'] = usage
-                    objDict["pn_code"] = pn_code
-                    objList.append(objDict)
+                result = (
+                    db.session.query(UAM_Device_Table, Atom_Table)
+                    .join(Atom_Table, UAM_Device_Table.atom_id == Atom_Table.atom_id)
+                    .filter(Atom_Table.ip_address == ip)
+                    .first()
+                )
 
-                return jsonify(objList), 200
-            except Exception as e:
+                if result is None:
+                    errorList.append(f"{ip} : No Device Found")
+                    continue
+
+                uam, atom = result
+                atom.onboard_status = "False"
+
+                if UpdateDBData(atom) == 200:
+                    print(
+                        f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr
+                    )
+
+                    # change status to dismantle in device table
+                    uam.status = "Dismantled"
+                    if UpdateDBData(uam) == 200:
+                        print(
+                            f"DEVICE {atom.device_name} SUCCESSFULLY DISMANTLED",
+                            file=sys.stderr,
+                        )
+                        # change all board status
+                        boardObjs = (
+                            db.session.query(Board_Table)
+                            .filter(Board_Table.uam_id == uam.uam_id)
+                            .all()
+                        )
+
+                        for boardObj in boardObjs:
+                            boardObj.status = "Dismantled"
+                            UpdateDBData(boardObj)
+                            print(
+                                f"MODULE {boardObj.board_name} SUCCESSFULLY DISMANTLED",
+                                file=sys.stderr,
+                            )
+
+                        # change all sub-board status
+                        subboardObjs = (
+                            db.session.query(Subboard_Table)
+                            .filter(Subboard_Table.uam_id == uam.uam_id)
+                            .all()
+                        )
+
+                        for subboardObj in subboardObjs:
+                            subboardObj.status = "Dismantled"
+                            subboardObj.modification_date = datetime.now()
+                            UpdateDBData(subboardObj)
+                            print(
+                                f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY DISMANTLED",
+                                file=sys.stderr,
+                            )
+
+                        # change all SFP status
+                        sfpObjs = (
+                            db.session.query(Sfps_Table)
+                            .filter(Sfps_Table.uam_id == uam.uam_id)
+                            .all()
+                        )
+
+                        for sfpObj in sfpObjs:
+                            sfpObj.status = "Dismantled"
+                            sfpObj.modification_date = datetime.now()
+                            UpdateDBData(sfpObj)
+                            print(
+                                f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY DISMANTLED",
+                                file=sys.stderr,
+                            )
+                        
+                        responseList.append(f"{ip} : Device Dismantled Successfully")    
+                            
+                    else:
+                        errorList.append(f"{ip} : Error While Updating Device Status In UAM")
+                else:
+                    errorList.append(f"{ip} : Error While Updating Device Status In Atom")
+            except Exception:
                 traceback.print_exc()
-                print(str(e), file=sys.stderr)
-                return str(e), 500
+                errorList.append(f"{ip} : Error Occured While Dismentaling")
+                
+    except Exception as e:
+        traceback.print_exc()
+        return "Error While Updating Status", 500
+    
 
-        else:
-            print("Can not Get Ip Address from URL", file=sys.stderr)
-            return jsonify({"response": "Can not Get Ip Address from URL"}), 500
+
+@app.route("/maintenanceOnBoardedDevice", methods=["POST"])
+@token_required
+def MaintenanceOnBoardDevice(user_data):
+    if True:
+        try:
+            deviceIDs = request.get_json()
+            print(deviceIDs, file=sys.stderr)
+            for ip in deviceIDs:
+                atomObj = db.session.query(Atom).filter_by(ip_address=ip).first()
+                atomObj.onboard_status = "False"
+                UpdateData(atomObj)
+                print(f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr)
+                deviceObj = (
+                    db.session.query(Device_Table).filter_by(ip_address=ip).first()
+                )
+
+                # change status to Maintenance in device table
+                deviceObj.status = "Maintenance"
+                deviceObj.modification_date = datetime.now()
+                UpdateData(deviceObj)
+                print(
+                    f"DEVICE {deviceObj.device_name} SUCCESSFULLY under Maintenance",
+                    file=sys.stderr,
+                )
+                # change all board status
+                boardObjs = db.session.query(Board_Table).filter_by(
+                    device_name=deviceObj.device_name
+                )
+                for boardObj in boardObjs:
+                    boardObj.status = "Maintenance"
+                    boardObj.modification_date = datetime.now()
+                    UpdateData(boardObj)
+                    print(
+                        f"MODULE {boardObj.board_name} SUCCESSFULLY under Maintenance",
+                        file=sys.stderr,
+                    )
+                # change all sub-board status
+                subboardObjs = db.session.query(Subboard_Table).filter_by(
+                    device_name=deviceObj.device_name
+                )
+                for subboardObj in subboardObjs:
+                    subboardObj.status = "Maintenance"
+                    subboardObj.modification_date = datetime.now()
+                    UpdateData(subboardObj)
+                    print(
+                        f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY under Maintenance",
+                        file=sys.stderr,
+                    )
+
+                # change all SFP status
+                sfpObjs = db.session.query(Sfps_Table).filter_by(
+                    device_name=deviceObj.device_name
+                )
+                for sfpObj in sfpObjs:
+                    sfpObj.status = "Maintenance"
+                    sfpObj.modification_date = datetime.now()
+                    UpdateData(sfpObj)
+                    print(
+                        f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY under Maintenance",
+                        file=sys.stderr,
+                    )
+
+            return "SUCCESSFULLY Under Maintenance", 200
+        except Exception as e:
+            traceback.print_exc()
+            print(str(e), file=sys.stderr)
+            return str(e), 500
     else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+        print("Authentication Failed", file=sys.stderr)
+        return jsonify({"message": "Authentication Failed"}), 401
+
+
+@app.route("/undefinedOnBoardedDevice", methods=["POST"])
+@token_required
+def UndefinedOnBoardDevice(user_data):
+    if True:
+        try:
+            deviceIDs = request.get_json()
+            print(deviceIDs, file=sys.stderr)
+            for ip in deviceIDs:
+                atomObj = db.session.query(Atom).filter_by(ip_address=ip).first()
+                atomObj.onboard_status = "False"
+                UpdateData(atomObj)
+                print(f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr)
+                deviceObj = (
+                    db.session.query(Device_Table).filter_by(ip_address=ip).first()
+                )
+
+                # change status to Maintenance in device table
+                deviceObj.status = "Undefined"
+                deviceObj.modification_date = datetime.now()
+                UpdateData(deviceObj)
+                print(
+                    f"DEVICE {deviceObj.device_name} SUCCESSFULLY under Undefined state",
+                    file=sys.stderr,
+                )
+                # change all board status
+                boardObjs = db.session.query(Board_Table).filter_by(
+                    device_name=deviceObj.device_name
+                )
+                for boardObj in boardObjs:
+                    boardObj.status = "Undefined"
+                    boardObj.modification_date = datetime.now()
+                    UpdateData(boardObj)
+                    print(
+                        f"MODULE {boardObj.board_name} SUCCESSFULLY under Undefined state",
+                        file=sys.stderr,
+                    )
+                # change all sub-board status
+                subboardObjs = db.session.query(Subboard_Table).filter_by(
+                    device_name=deviceObj.device_name
+                )
+                for subboardObj in subboardObjs:
+                    subboardObj.status = "Undefined"
+                    subboardObj.modification_date = datetime.now()
+                    UpdateData(subboardObj)
+                    print(
+                        f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY under Undefined state",
+                        file=sys.stderr,
+                    )
+
+                # change all SFP status
+                sfpObjs = db.session.query(Sfps_Table).filter_by(
+                    device_name=deviceObj.device_name
+                )
+                for sfpObj in sfpObjs:
+                    sfpObj.status = "Undefined"
+                    sfpObj.modification_date = datetime.now()
+                    UpdateData(sfpObj)
+                    print(
+                        f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY under Undefined state",
+                        file=sys.stderr,
+                    )
+
+            return "SUCCESSFULLY Under Undefined state", 200
+        except Exception as e:
+            traceback.print_exc()
+            print(str(e), file=sys.stderr)
+            return str(e), 500
+    else:
+        print("Authentication Failed", file=sys.stderr)
+        return jsonify({"message": "Authentication Failed"}), 401

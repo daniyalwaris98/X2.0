@@ -417,6 +417,10 @@ class SNTC_TABLE(db.Model):
     modification_date = db.Column(
         db.DateTime, default=datetime.now(), onupdate=datetime.now()
     )
+    
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 
 
@@ -434,6 +438,10 @@ class APS_TABLE(db.Model):
     creation_date = db.Column(db.DateTime, default=datetime.now())
     modification_date = db.Column(
         db.DateTime, default=datetime.now(), onupdate=datetime.now())
+    
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
 
 
 #
