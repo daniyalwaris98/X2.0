@@ -62,7 +62,6 @@ const SuperAdminModal = (props) => {
         email: email,
       })
       .then((res) => {
-        console.log("createSuperUser res", res);
         if (res.status == 200) {
           setLoading(false);
           setIsModalOpen(false);

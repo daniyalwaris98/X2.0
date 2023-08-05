@@ -42,7 +42,6 @@ const DiscoverTableModel = (props) => {
   const [rowCount, setRowCount] = useState(0);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [configData, setConfigData] = useState(null);
-  const [loading, setLoading] = useState(false);
   const [subnetDevices, setSubnetDevices] = useState([]);
 
   useEffect(() => {
@@ -210,7 +209,6 @@ const DiscoverTableModel = (props) => {
 
   const addDevices = async () => {
     if (selectedRowKeys.length > 0) {
-      setLoading(true);
       await axios
         .post(`${baseUrl}/transitDicoveryData`, selectedRowKeys)
         .then((res) => {
@@ -218,7 +216,7 @@ const DiscoverTableModel = (props) => {
             console.log(res);
             setTimeout(() => {
               setDiscoverItemAcitve(false);
-              setLoading(false);
+
               serviceCalls();
               openSweetAlert(
                 "Devices Inserted",
@@ -255,7 +253,6 @@ const DiscoverTableModel = (props) => {
           <LoadingButton
             onClick={() => addDevices()}
             btnText="+ Add Device"
-            loading={loading}
             disabled={selectedRowKeys.length == 0}
           />
         </article>
@@ -737,7 +734,7 @@ const Atom = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      width: "5%",
+      width: "6%",
       render: (text, record) => {
         return (
           <span className="status-icon" title={record.message}>
@@ -746,19 +743,28 @@ const Atom = () => {
         );
       },
 
-      filters: [
-        {
-          text: "true",
-          value: "200",
-        },
-        {
-          text: "false",
-          value: "500",
-        },
-      ],
-      filteredValue: filteredInfo.status || null,
-      onFilter: (value, record) =>
-        setFilteredInfo(record.status.includes(value)),
+      ...getColumnSearchProps(
+        "status",
+        "Search by 200 / 500",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+
+      // filters: [
+      //   {
+      //     text: "true",
+      //     value: "200",
+      //   },
+      //   {
+      //     text: "false",
+      //     value: "500",
+      //   },
+      // ],
+      // filteredValue: filteredInfo.status || null,
+      // onFilter: (value, record) =>
+      //   setFilteredInfo(record.status.includes(value)),
       ellipsis: true,
     },
     {

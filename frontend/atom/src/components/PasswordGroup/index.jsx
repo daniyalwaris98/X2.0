@@ -72,7 +72,6 @@ const Atom = () => {
         setChecked(tempArray);
       }
     }
-    console.log(`switch to ${id}`);
   };
 
   useEffect(() => {
@@ -110,6 +109,7 @@ const Atom = () => {
       },
     });
   };
+
   let seedTemp = [
     {
       ip_address: "",
@@ -325,6 +325,25 @@ const Atom = () => {
       ...getColumnSearchProps(
         "password_group",
         "Password Group",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+    {
+      title: "Secret Password",
+      dataIndex: "secret_password",
+      key: "secret_password",
+      align: "center",
+      render: (text, record) => (
+        <p style={{ textAlign: "center", paddingTop: "10px" }}>{text}</p>
+      ),
+
+      ...getColumnSearchProps(
+        "secret_password",
+        "Secret Password",
         setRowCount,
         setDataSource,
         excelData,

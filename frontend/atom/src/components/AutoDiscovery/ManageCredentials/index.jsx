@@ -1129,6 +1129,7 @@ const index = () => {
                         fontSize: "22px",
                         float: "left",
                         display: "flex",
+                        marginBottom: "30px",
                       }}
                     >
                       Add SNMP V3

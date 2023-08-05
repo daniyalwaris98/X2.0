@@ -117,7 +117,14 @@ const AddAtom = (props) => {
       >
         <Row style={{ alignContent: "center" }}>
           <Col span={24} style={{}}>
-            <p style={{ fontSize: "22px", float: "left", display: "flex" }}>
+            <p
+              style={{
+                fontSize: "22px",
+                float: "left",
+                display: "flex",
+                marginBottom: "30px",
+              }}
+            >
               Add Network
             </p>
             <div style={{ float: "right", display: "flex" }}>
@@ -205,11 +212,12 @@ const AddAtom = (props) => {
               </div>
             </InputWrapper>
             <InputWrapper>
-              Excluded Ip Range: &nbsp;<span style={{ color: "red" }}>*</span>
-              <br />
+              Excluded Ip Range:
+              {/* &nbsp;<span style={{ color: "red" }}>*</span>
+              <br /> */}
               <StyledInput
                 value={excludedIpRange}
-                required
+                // required
                 onChange={(e) =>
                   setExcludedIpRange(e.target.value.replace(/[^0-9-]+/g, ""))
                 }
