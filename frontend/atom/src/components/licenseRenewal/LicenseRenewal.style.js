@@ -14,7 +14,7 @@ export const LicenseRenewalStyle = styled.article`
     padding: 5px;
     -webkit-clip-path: polygon(0 0, 100% 0%, 100% 100%, 25% 100%);
     clip-path: polygon(0 0, 100% 0%, 100% 100%, 25% 100%);
-    width: 323px;
+    width: 430px;
 
     .date {
       font-size: 12px;

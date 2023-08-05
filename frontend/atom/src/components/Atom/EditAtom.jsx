@@ -242,8 +242,13 @@ const EditAtom = (props) => {
                   onChange={(e) => changeSelectOptionHandler(e)}
                   // required
                 >
+                  <option value="">Select Site Name</option>
                   {siteArray?.map((item, index) => {
-                    return <option key={index}>{item}</option>;
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
                   })}
                 </Styledselect>
               </div>
@@ -261,8 +266,13 @@ const EditAtom = (props) => {
                     setRack_name(e.target.value);
                   }}
                 >
+                  <option value="">Select Rack Name</option>
                   {rackArray?.map((item, index) => {
-                    return <option key={index}>{item}</option>;
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
                   })}
                 </Styledselect>
               </div>
@@ -294,8 +304,13 @@ const EditAtom = (props) => {
                     setDevice_ru(e.target.value);
                   }}
                 >
+                  <option value="">Select Device RU</option>
                   {Ru.map((item, index) => {
-                    return <option key={index}>{item}</option>;
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
                   })}
                 </Styledselect>
               </div>
@@ -377,9 +392,7 @@ const EditAtom = (props) => {
                     setDevice_type(e.target.value);
                   }}
                 >
-                  <option value="" style={{ color: "rgba(0,0,0,0.1)" }}>
-                    Select Device Type
-                  </option>
+                  <option value="">Select Device Type</option>
                   {atomDeviceType.map((device, index) => {
                     return (
                       <option key={index} value={device.name}>
@@ -404,9 +417,14 @@ const EditAtom = (props) => {
                     setPassword_group(e.target.value);
                   }}
                 >
+                  <option value="">Select Password Group</option>
                   {passwordArray &&
                     passwordArray.map((item, index) => {
-                      return <option key={index}>{item}</option>;
+                      return (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      );
                     })}
                 </Styledselect>
               </div>

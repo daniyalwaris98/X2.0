@@ -158,8 +158,6 @@ const SecondNavBar = () => {
           username: a.user_name,
         });
 
-        console.log("res====>", res.data);
-
         setKeyResp(res.data);
       };
       licenseData();
@@ -168,7 +166,6 @@ const SecondNavBar = () => {
 
   useEffect(() => {
     if (keyResp != "" && keyResp.validaty != "TRUE") {
-      console.log("working!!!!!");
       navigate("/license-renewal");
     }
   }, [keyResp]);

@@ -77,8 +77,10 @@ const AddAtom = (props) => {
       await axios
         .post(baseUrl + "/addSite ", allSiteData)
         .then((response) => {
+          console.log("response", response);
+
           if (response?.response?.status == 500) {
-            openSweetAlert(response?.response?.data?.response, "error");
+            openSweetAlert(response?.response?.data, "error");
           } else {
             openSweetAlert(
               `Site ${device ? "Added" : "Added"} Successfully`,
@@ -147,33 +149,38 @@ const AddAtom = (props) => {
     };
 
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addRack ", allRackData)
         .then((response) => {
           if (response?.response?.status == 500) {
-            openSweetAlert(response?.response?.data?.response, "error");
+            openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert(
-              // `Rack ${device ? "Added" : "Added"} Successfully`,
-              response?.data,
-              "success"
-            );
+            openSweetAlert(response?.data, "success");
             setIsRackModalVisible(false);
+            setSiteNameR("");
+            setRackName("");
+            setserialNumber("");
+            setUnit_position("");
+            setRackStatus("");
+            setRu("");
+            setRfs_dt("");
+            setHeight("");
+            setMyWidth("");
+            setDepth("");
+            setPnCode("");
+            setRackModel("");
+            setBrand("");
+
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + `/getRacksBySiteDropdown?site_name=${site_name}`)
                 .then((res) => {
-                  console.log("getRacksBySiteDropdown", res);
-
                   setRackArray(res.data);
-                  // console.log("a", res.data[0]);
                   setRack_name(res.data[0]);
                 })
                 .catch((error) => {
                   console.log(error);
-                  // openSweetAlert("Something Went Wrong!", "danger");
                 })
             );
             return Promise.all(promises);
@@ -181,7 +188,6 @@ const AddAtom = (props) => {
         })
         .catch((error) => {
           console.log("in add seed device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
       console.log(err);
@@ -207,9 +213,22 @@ const AddAtom = (props) => {
         .post(baseUrl + "/addAtomDevice", device)
         .then((response) => {
           if (response?.response?.status == 500) {
-            openSweetAlert(response?.response?.data.Response, "error");
+            openSweetAlert(response?.response?.data, "error");
           } else {
             openSweetAlert(response?.data, "success");
+
+            setIp("");
+            setAtom_id("");
+            setSite_name("");
+            setRack_name("");
+            setDevice_name("");
+            setDevice_ru("");
+            setDepartment("");
+            setSection("");
+            setMyfunction("");
+            setVirtual("");
+            setDevice_type("");
+            setPassword_group("");
 
             const promises = [];
 
@@ -217,15 +236,9 @@ const AddAtom = (props) => {
               axios
                 .get(baseUrl + "/getAtoms")
                 .then((response) => {
-                  console.log("1", response.data);
                   props.setDataSource(response.data);
-                  console.log("2", response.data);
-
                   props.checkAtom(response.data);
-                  console.log("3", response.data);
-
                   props.setRowCount(response.data.length);
-                  console.log("4", response.data);
                 })
                 .catch((error) => {
                   openSweetAlert("Something Went Wrong!", "error");
@@ -460,8 +473,13 @@ const AddAtom = (props) => {
                     className="rectangle"
                     onChange={changeSelectOptionHandler}
                   >
+                    <option value="">Select Site Name</option>
                     {siteArray.map((item, index) => {
-                      return <option>{item}</option>;
+                      return (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      );
                     })}
                   </Styledselect>
                 </div>
@@ -486,13 +504,17 @@ const AddAtom = (props) => {
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
-                    value={rack_name}
                     onChange={(e) => {
                       setRack_name(e.target.value);
                     }}
                   >
+                    <option value="">Select Rack Name</option>
                     {rackArray?.map((item, index) => {
-                      return <option>{item}</option>;
+                      return (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      );
                     })}
                   </Styledselect>
                 </div>
@@ -650,14 +672,18 @@ const AddAtom = (props) => {
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
-                    value={password_group}
                     onChange={(e) => {
                       setPassword_group(e.target.value);
                     }}
                   >
+                    <option value="">Select Password Group</option>
                     {passwordArray &&
                       passwordArray.map((item, index) => {
-                        return <option key={index}>{item}</option>;
+                        return (
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
+                        );
                       })}
                   </Styledselect>
                 </div>
@@ -864,6 +890,7 @@ const AddAtom = (props) => {
                     marginLeft: "10px",
                     marginRight: "10px",
                   }}
+                  type="button"
                   color={"#BBBABA"}
                   onClick={handleCancelSitePopup}
                 >
@@ -928,11 +955,13 @@ const AddAtom = (props) => {
                       setStatus(e.target.value);
                     }}
                   >
+                    <option>Select Status</option>
+
                     {statusType.map((item, index) => {
                       return (
-                        <>
-                          <option>{item}</option>
-                        </>
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
                       );
                     })}
                   </Styledselect>
@@ -999,6 +1028,7 @@ const AddAtom = (props) => {
                     marginLeft: "10px",
                     marginRight: "10px",
                   }}
+                  type="button"
                   onClick={() => setIsRackModalVisible(false)}
                 >
                   Cancel
@@ -1063,11 +1093,20 @@ const AddAtom = (props) => {
             </Col>
             <Col span={7} style={{ marginLeft: "1%" }}>
               <InputWrapper>
-                Status: &nbsp;&nbsp;
-                <StyledInput
+                Status:&nbsp;<span style={{ color: "red" }}>*</span>
+                <br />
+                <Styledselect
+                  className="rectangle"
                   value={rackStatus}
-                  onChange={(e) => setRackStatus(e.target.value)}
-                />
+                  required
+                  onChange={(e) => {
+                    setRackStatus(e.target.value);
+                  }}
+                >
+                  <option>Selet Status</option>
+                  <option value="Production">Production</option>
+                  <option value="Not Production">Not Production</option>
+                </Styledselect>
               </InputWrapper>
               <InputWrapper>
                 RU: &nbsp;&nbsp;

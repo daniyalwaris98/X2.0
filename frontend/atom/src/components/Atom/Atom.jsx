@@ -466,6 +466,8 @@ const Atom = () => {
               axios
                 .get(baseUrl + "/getAtoms")
                 .then((response) => {
+                  console.log("response======>", response);
+
                   openSweetAlert(`Devices Onboarded Successfully`, "success");
 
                   excelData = response.data;
@@ -641,33 +643,7 @@ const Atom = () => {
     }
   };
 
-  // const handleChange = (status) => {
-  //   const filterStatusData = dataSource.filter((data) => data.status == status);
-  //   console.log("filterStatusData", filterStatusData);
-  //   setDataSource(filterStatusData);
-  // };
-
-  const [filteredInfo, setFilteredInfo] = useState({});
-  const [sortedInfo, setSortedInfo] = useState({});
-
-  const handleChange = (pagination, filters, sorter) => {
-    console.log("Various parameters", pagination, filters, sorter);
-    setFilteredInfo(filters);
-    setSortedInfo(sorter);
-  };
-  const clearFilters = () => {
-    setFilteredInfo({});
-  };
-  const clearAll = () => {
-    setFilteredInfo({});
-    setSortedInfo({});
-  };
-  const setAgeSort = () => {
-    setSortedInfo({
-      order: "descend",
-      columnKey: "age",
-    });
-  };
+  const [filteredInfo, setFilteredInfo] = useState("");
 
   const columns = [
     {
@@ -772,17 +748,17 @@ const Atom = () => {
 
       filters: [
         {
-          text: "Completed",
+          text: "true",
           value: "200",
         },
         {
-          text: "Not Completed",
+          text: "false",
           value: "500",
         },
       ],
-      filteredValue: filteredInfo.name || null,
-      onFilter: (value, record) => record.name.includes(value),
-
+      filteredValue: filteredInfo.status || null,
+      onFilter: (value, record) =>
+        setFilteredInfo(record.status.includes(value)),
       ellipsis: true,
     },
     {

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import axios, { baseUrl } from "../../utils/axios";
 import { message } from "antd";
 import cert from "./cert.svg";
@@ -9,6 +9,8 @@ import CustomInput from "../ReusableComponents/FormComponents/CustomInput/Custom
 const index = () => {
   const [liscKey, setLiscKey] = useState("");
   const [isModalOpen, setIsModalOpen] = useState(true);
+  const [licenseData, setLicenseData] = useState({});
+  const data = localStorage.getItem("user");
 
   const handleOk = () => {
     setIsModalOpen(false);
@@ -29,8 +31,6 @@ const index = () => {
           license_key: liscKey,
         })
         .then((response) => {
-          console.log("response", response);
-
           if (response?.response?.status == 500) {
             message.error(response?.response?.data);
           } else {
@@ -45,9 +45,28 @@ const index = () => {
     }
   };
 
+  useEffect(() => {
+    getLicenseStatus();
+  }, []);
+
+  const getLicenseStatus = async () => {
+    const userData = JSON.parse(data);
+
+    await axios
+      .post(baseUrl + "/licenseVerification", {
+        username: userData.user_name,
+      })
+      .then((res) => {
+        setLicenseData(res.data);
+      })
+      .catch((err) => {
+        console.log("err", err);
+      });
+  };
+
   return (
     <CustomModal
-      title="License Renewal"
+      title={`License Renewal (${licenseData.message})`}
       isModalOpen={isModalOpen}
       setIsModalOpen={handleOk}
       footer={false}
@@ -57,7 +76,7 @@ const index = () => {
       <LicenseRenewalStyle>
         <article className="date-of-expiry">
           <h3 className="date">
-            License Expiry Date : <span>12 Mar 2023</span>
+            License Expiry Date : <span>{licenseData.expiry_date}</span>
           </h3>
         </article>
 

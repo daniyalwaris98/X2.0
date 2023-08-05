@@ -22,9 +22,10 @@ import {
   LoginStyledInput,
   LoginPassStyledInput,
 } from "./Login.style";
+import { ResponseModel } from "../../components/ReusableComponents/ResponseModel/ResponseModel";
 
 const SuperAdminModal = (props) => {
-  const { isModalOpen, setIsModalOpen } = props;
+  const { isModalOpen, setIsModalOpen, handleOneTimeSetup } = props;
   const [userInput, setUserInput] = useState({
     name: "",
     userId: "",
@@ -61,9 +62,14 @@ const SuperAdminModal = (props) => {
         email: email,
       })
       .then((res) => {
+        console.log("createSuperUser res", res);
         if (res.status == 200) {
           setLoading(false);
           setIsModalOpen(false);
+          handleOneTimeSetup();
+          ResponseModel(res.data, "Success");
+        } else {
+          ResponseModel(res.response.data, "error");
         }
       })
       .catch((err) => {
@@ -149,7 +155,7 @@ const SuperAdminModal = (props) => {
 };
 
 const LicenseFormModal = (props) => {
-  const { isModalOpen, setIsModalOpen } = props;
+  const { isModalOpen, setIsModalOpen, handleOneTimeSetup } = props;
   const [loading, setLoading] = useState(false);
   const [formInput, setFormInput] = useState({
     license: "",
@@ -203,9 +209,15 @@ const LicenseFormModal = (props) => {
         country,
       })
       .then((res) => {
-        if (res) {
-          console.log("res", res);
+        console.log("addEndUserDetails res", res);
+
+        if (res?.response?.status == 500) {
+          ResponseModel(res?.response.data, "error");
           setLoading(false);
+        } else {
+          ResponseModel(res.data, "success");
+          setLoading(false);
+          handleOneTimeSetup();
         }
       })
       .catch((err) => console.log(err));
@@ -336,7 +348,7 @@ function Login() {
   const [pass, setPass] = useState(null);
   const [isLicenseModalOpen, setLicenseModalOpen] = useState(false);
   const [isSupperAdminModalOpen, setSuperAdminModalOpen] = useState(false);
-  const [isErrorActive, setErrorActive] = useState(false);
+  const [isResponseUpdate, setResponseUpdate] = useState({});
 
   const loginUrl = `${baseUrl}/login`;
 
@@ -437,25 +449,6 @@ function Login() {
     handleOneTimeSetup();
   }, []);
 
-  const getError = (error) => {
-    return (
-      <div
-        style={{
-          backgroundColor: "red",
-          color: "white",
-          padding: "3px 10px 3px 10px",
-          borderRadius: "7px",
-          marginBottom: "10px",
-        }}
-      >
-        {error}
-        <a style={{ color: "white", float: "right" }}>
-          <CloseOutlined style={{ color: "white" }} />
-        </a>
-      </div>
-    );
-  };
-
   const onFinish = async () => {
     let userData = {
       user: user,
@@ -503,13 +496,14 @@ function Login() {
         console.log("err", err);
 
         setLoading(false);
-        setErrorActive(true);
       });
   };
 
   const handleOneTimeSetup = async () => {
     await Api.get("/oneTimeSetup")
       .then((res) => {
+        setResponseUpdate(res.data);
+
         if (
           res.data.admin == false &&
           res.data.end_user == false &&
@@ -534,12 +528,22 @@ function Login() {
       });
   };
 
+  const clearSetup = async () => {
+    await axios
+      .get(`${baseUrl}/clearSetup`)
+      .then((res) => {
+        console.log("res=>", res);
+      })
+      .catch((err) => console.log("err", err));
+  };
+
   return (
     <LoginStyle>
       {isLicenseModalOpen && (
         <LicenseFormModal
           isModalOpen={isLicenseModalOpen}
           setIsModalOpen={setLicenseModalOpen}
+          handleOneTimeSetup={handleOneTimeSetup}
         />
       )}
 
@@ -547,6 +551,7 @@ function Login() {
         <SuperAdminModal
           isModalOpen={isSupperAdminModalOpen}
           setIsModalOpen={setSuperAdminModalOpen}
+          handleOneTimeSetup={handleOneTimeSetup}
         />
       )}
 
@@ -634,6 +639,8 @@ function Login() {
               </button>
             </Form.Item>
           </Form>
+
+          {/* <button onClick={clearSetup}>Clear Ots Setup</button> */}
         </div>
         <picture className="login-gif-wrapper">
           <img src={illustration} alt="Montex Gif" />
