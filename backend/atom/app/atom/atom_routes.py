@@ -153,13 +153,11 @@ def GetAtoms(user_data):
 
 @app.route("/editAtom", methods=["POST"])
 @token_required
-def EditAtom(user_data):
+def editAtom(user_data):
     try:
         atomObj = request.get_json()
-        response, status = AddCompleteAtom(atomObj, 1, True)
-
-        if status == 500:
-            response, status = AddTansitionAtom(atomObj, 1, True)
+        
+        response, status = EditAtom(atomObj, 1)
 
         return response, status
     except Exception as e:

@@ -5,6 +5,33 @@ from app.utilities.db_utils import *
 from app.atom.static_list import *
 
 
+def EditAtom(device, row):
+    try:
+        if 'ip_address' not in device:
+            return f"Row {row} : Ip Address Is Missing", 500
+
+        if device['ip_address'] is None:
+            error = f"Row {row} : Ip Address Is Missing"
+            return error, 500
+        
+        device['ip_address'] = device['ip_address'].strip()
+        if device['ip_address'] == "":
+            return f"Row {row} : Ip Address Is Missing", 500
+        
+        if Atom_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
+            return AddCompleteAtom(device, 1, True)
+
+        elif Atom_Transition_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
+            return AddTansitionAtom(device, 1, True)
+        
+        else:
+            return f"{device['ip_address']} : Device Not Found", 500
+    except Exception:
+        error = f"Error - Row {row} : Exception"
+        print(error, file=sys.stderr)
+        traceback.print_exc()
+        return error, 500
+
 def ValidateAtom(device, row, update):
     try:
         if 'ip_address' not in device:
@@ -41,7 +68,7 @@ def ValidateAtom(device, row, update):
             device_name=device['device_name']).first()
         if atom is not None:
             if atom.ip_address != device['ip_address'].strip():
-                error = f"{device['ip_address']} : Device Already Assigned To An Other Device"
+                error = f"{device['ip_address']} : Device Name Already Assigned To An Other Device"
                 return error, 500
 
         if 'function' not in device:
