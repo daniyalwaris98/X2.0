@@ -498,8 +498,9 @@ function Login() {
       });
   };
 
+  console.log(axios)
   const handleOneTimeSetup = async () => {
-    await Api.get("/oneTimeSetup")
+    await axios.get(`${baseUrl}/oneTimeSetup`)
       .then((res) => {
         setResponseUpdate(res.data);
 
