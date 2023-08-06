@@ -160,40 +160,44 @@ const Atom = () => {
   };
 
   const postSeed = async (seed) => {
-    setLoading(true);
-    await axios
-      .post(baseUrl + "/getPasswordGroups", seed)
-      .then((response) => {
-        if (response?.response?.status == 500) {
-          openSweetAlert(response?.response?.data, "error");
-          setLoading(false);
-        } else {
-          openSweetAlert(response?.data, "success");
-          const promises = [];
-          promises.push(
-            axios
-              .get(baseUrl + "/getUsers")
-              .then((response) => {
-                excelData = response?.data;
-                setRowCount(response?.data?.length);
-                setDataSource(response?.data);
+    console.log("seed=======>", seed);
 
-                setLoading(false);
-              })
-              .catch((error) => {
-                console.log(error);
-                setLoading(false);
-              })
-          );
-          setLoading(false);
-          return Promise.all(promises);
-        }
-      })
-      .catch((err) => {
-        openSweetAlert(err, "error");
-        console.log("error ==> " + err);
-        setLoading(false);
-      });
+    // setLoading(true);
+    // await axios
+    //   .post(baseUrl + "/getPasswordGroups", seed)
+    //   .then((response) => {
+    //     console.log("response", response);
+
+    //     // if (response?.response?.status == 500) {
+    //     //   openSweetAlert(response?.response?.data, "error");
+    //     //   setLoading(false);
+    //     // } else {
+    //     //   openSweetAlert(response?.data, "success");
+    //     //   const promises = [];
+    //     //   promises.push(
+    //     //     axios
+    //     //       .get(baseUrl + "/getUsers")
+    //     //       .then((response) => {
+    //     //         excelData = response?.data;
+    //     //         setRowCount(response?.data?.length);
+    //     //         setDataSource(response?.data);
+
+    //     //         setLoading(false);
+    //     //       })
+    //     //       .catch((error) => {
+    //     //         console.log(error);
+    //     //         setLoading(false);
+    //     //       })
+    //     //   );
+    //     //   setLoading(false);
+    //     //   return Promise.all(promises);
+    //     // }
+    //   })
+    //   .catch((err) => {
+    //     openSweetAlert(err, "error");
+    //     console.log("error ==> " + err);
+    //     setLoading(false);
+    //   });
   };
 
   useEffect(() => {

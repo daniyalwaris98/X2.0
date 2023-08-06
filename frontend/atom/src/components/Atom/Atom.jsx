@@ -213,21 +213,28 @@ const DiscoverTableModel = (props) => {
         .post(`${baseUrl}/transitDicoveryData`, selectedRowKeys)
         .then((res) => {
           if (res.status == 200) {
-            console.log(res);
-            setTimeout(() => {
-              setDiscoverItemAcitve(false);
+            console.log(res.data);
 
-              serviceCalls();
+            if (res.data.error_list.length > 0) {
               openSweetAlert(
-                "Devices Inserted",
+                "Operation Perform ",
                 "success",
                 res.data.error_list
               );
-            }, 3000);
+              serviceCalls();
+              setDiscoverItemAcitve(true);
+            } else {
+              setDiscoverItemAcitve(false);
+              openSweetAlert(
+                "Devices Inserted",
+                "success",
+                res.data.success_list
+              );
+            }
           }
         })
         .catch((err) => {
-          console.log(err);
+          console.log("err", err);
         });
     }
   };
@@ -335,7 +342,7 @@ const Atom = () => {
           .then((response) => {
             if (response?.response?.status == 500) {
               openSweetAlert(response?.response?.data, "error");
-              setOnboardLoading(false);
+              setLoading(false);
             } else {
               openSweetAlert(`Atom Deleted Successfully`, "success");
               const promises = [];
@@ -448,7 +455,7 @@ const Atom = () => {
   };
 
   const handleOnboard = async () => {
-    setOnboardLoading(true);
+    setLoading(true);
 
     if (selectedRowKeys.length > 0) {
       await axios
@@ -456,27 +463,24 @@ const Atom = () => {
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
-            setOnboardLoading(false);
+            setLoading(false);
           } else {
+            openSweetAlert(response.data, "success");
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + "/getAtoms")
                 .then((response) => {
-                  console.log("response======>", response);
-
-                  openSweetAlert(`Devices Onboarded Successfully`, "success");
-
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
                   setSelectedRowKeys([]);
-                  setOnboardLoading(false);
+                  setLoading(false);
                 })
                 .catch((error) => {
                   console.log(error);
 
-                  setOnboardLoading(false);
+                  setLoading(false);
                 })
             );
             return Promise.all(promises);
@@ -489,7 +493,7 @@ const Atom = () => {
         });
       setLoading(false);
     } else {
-      setOnboardLoading(false);
+      setLoading(false);
       openSweetAlert("No device is selected.!", "error");
     }
   };
@@ -640,7 +644,7 @@ const Atom = () => {
     }
   };
 
-  const [filteredInfo, setFilteredInfo] = useState("");
+  // const [filteredInfo, setFilteredInfo] = useState("");
 
   const columns = [
     {

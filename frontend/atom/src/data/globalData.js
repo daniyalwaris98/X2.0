@@ -21,6 +21,10 @@ export const devices = [
   },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
+    name: "cisco_ftd",
+  },
+  {
+    module: ["atom", "ipam", "monitoring", "ncm"],
     name: "cisco_aireos",
   },
   {

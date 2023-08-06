@@ -46,7 +46,6 @@ const AddAtom = (props) => {
       .get(baseUrl + "/getPasswordGroupDropdown")
       .then((res) => {
         setPasswordArray(res.data);
-        setPassword_group(res.data[0]);
       })
       .catch((error) => {
         console.log(error);
@@ -128,6 +127,22 @@ const AddAtom = (props) => {
   let [pn_code, setPnCode] = useState("");
   let [rack_model, setRackModel] = useState("");
   let [brand, setBrand] = useState("");
+  let [device, setDevice] = useState("");
+
+  let [ip_address, setIp] = useState("");
+  let [atom_id, setAtom_id] = useState("");
+  let [site_name, setSite_name] = useState("");
+  let [rack_name, setRack_name] = useState("");
+  let [device_name, setDevice_name] = useState("");
+  let [device_ru, setDevice_ru] = useState("");
+  let [department, setDepartment] = useState("");
+  let [section, setSection] = useState("");
+  const [isSelectSiteName, setSelectSiteName] = useState("");
+
+  let [myfunction, setMyfunction] = useState("");
+  let [virtual, setVirtual] = useState("");
+  let [device_type, setDevice_type] = useState("");
+  const [isSelectPasswordGroup, setSelectPassWordGroup] = useState("");
 
   const RackData = async (e) => {
     e.preventDefault();
@@ -216,7 +231,6 @@ const AddAtom = (props) => {
             openSweetAlert(response?.response?.data, "error");
           } else {
             openSweetAlert(response?.data, "success");
-
             setIp("");
             setAtom_id("");
             setSite_name("");
@@ -228,10 +242,8 @@ const AddAtom = (props) => {
             setMyfunction("");
             setVirtual("");
             setDevice_type("");
-            setPassword_group("");
-
+            setSelectPassWordGroup("");
             const promises = [];
-
             promises.push(
               axios
                 .get(baseUrl + "/getAtoms")
@@ -256,39 +268,6 @@ const AddAtom = (props) => {
     }
   };
 
-  let [device, setDevice] = useState(props.addRecord);
-
-  let [ip_address, setIp] = useState(
-    device ? getString(device.ip_address) : ""
-  );
-  let [atom_id, setAtom_id] = useState(device ? getString(device.atom_id) : "");
-  let [site_name, setSite_name] = useState(
-    device ? getString(device.site_name) : ""
-  );
-  let [rack_name, setRack_name] = useState(
-    device ? getString(device.rack_name) : ""
-  );
-  let [device_name, setDevice_name] = useState(
-    device ? getString(device.device_name) : ""
-  );
-  let [device_ru, setDevice_ru] = useState(
-    device ? getString(device.device_ru) : 1
-  );
-  let [department, setDepartment] = useState(
-    device ? getString(device.department) : ""
-  );
-  let [section, setSection] = useState(device ? getString(device.section) : "");
-
-  let [myfunction, setMyfunction] = useState(
-    device ? getString(device.function) : ""
-  );
-  let [virtual, setVirtual] = useState(device ? getString(device.virtual) : "");
-  let [device_type, setDevice_type] = useState(
-    device ? getString(device.device_type) : ""
-  );
-  let [password_group, setPassword_group] = useState(
-    device ? getString(device.password_group) : ""
-  );
   const Ru = [
     1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
     22, 23, 24, 25, 26, 27, 28, 29, 30,
@@ -304,8 +283,8 @@ const AddAtom = (props) => {
     atomFunction.module.includes("atom")
   );
 
-  const changeSelectOptionHandler = async (event) => {
-    setSite_name(event.target.value);
+  const changeSelectOptionHandler = (event) => {
+    setSelectSiteName(event.target.value);
     // const res = await axios.get(baseUrl + "/getSitesForDropdown");
     // setSite_name(res.data);
   };
@@ -362,7 +341,7 @@ const AddAtom = (props) => {
     const getRacksBySiteDropdown = async () => {
       try {
         const res = await axios.get(
-          `${baseUrl}/getRacksBySiteDropdown?site_name=${site_name}`
+          `${baseUrl}/getRacksBySiteDropdown?site_name=${isSelectSiteName}`
         );
         setRackArray(res.data);
         setRack_name(res.data[0]);
@@ -371,7 +350,7 @@ const AddAtom = (props) => {
       }
     };
     getRacksBySiteDropdown();
-  }, [site_name]);
+  }, [isSelectSiteName]);
 
   const [passwordArray, setPasswordArray] = useState([]);
 
@@ -380,9 +359,7 @@ const AddAtom = (props) => {
       try {
         const res = await axios.get(baseUrl + "/getPasswordGroupDropdown");
 
-        console.log("getPasswordGroupDropdown", res);
         setPasswordArray(res.data);
-        setPassword_group(res.data[0]);
       } catch (err) {
         console.log(err.response);
       }
@@ -395,7 +372,7 @@ const AddAtom = (props) => {
     const device = {
       ip_address,
       atom_id,
-      site_name,
+      site_name: isSelectSiteName,
       rack_name,
       device_name,
       device_ru,
@@ -404,7 +381,7 @@ const AddAtom = (props) => {
       function: myfunction,
       virtual,
       device_type,
-      password_group,
+      password_group: isSelectPasswordGroup,
     };
 
     props.setIsModalVisible(false);
@@ -471,6 +448,7 @@ const AddAtom = (props) => {
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
+                    value={isSelectSiteName}
                     onChange={changeSelectOptionHandler}
                   >
                     <option value="">Select Site Name</option>
@@ -504,6 +482,7 @@ const AddAtom = (props) => {
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
+                    value={rack_name}
                     onChange={(e) => {
                       setRack_name(e.target.value);
                     }}
@@ -561,9 +540,14 @@ const AddAtom = (props) => {
                       setDevice_ru(e.target.value);
                     }}
                   >
+                    <option value="">Select Device RU</option>
                     {Ru &&
                       Ru.map((item, index) => {
-                        return <option key={index}>{item}</option>;
+                        return (
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
+                        );
                       })}
                   </Styledselect>
                 </div>
@@ -672,8 +656,9 @@ const AddAtom = (props) => {
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
+                    value={isSelectPasswordGroup}
                     onChange={(e) => {
-                      setPassword_group(e.target.value);
+                      setSelectPassWordGroup(e.target.value);
                     }}
                   >
                     <option value="">Select Password Group</option>
@@ -1178,6 +1163,7 @@ const StyledInput = styled(Input)`
     border: 1px solid #6ab344 !important;
   }
 `;
+
 const Styledselect = styled.select`
   height: 2.2rem;
   border-radius: 12px;
@@ -1207,6 +1193,7 @@ const InputWrapper = styled.div`
 
   padding-bottom: 10px;
 `;
+
 const AdjustInputWrapper = styled.div`
   margin-top: 5px;
   text-align: left;
@@ -1214,6 +1201,7 @@ const AdjustInputWrapper = styled.div`
 
   padding-bottom: 10px;
 `;
+
 const AdjustInputWrappernext = styled.div`
   margin-top: 22px;
   text-align: left;
