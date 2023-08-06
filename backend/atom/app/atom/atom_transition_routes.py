@@ -37,7 +37,7 @@ def TransitDicoveryData(user_data):
                 device['device_type'] = device['os_type']
                 row = row + 1
 
-                msg, status = AddTansitionAtom(device, row)
+                msg, status = AddTansitionAtom(device, row, False)
 
                 if status == 200:
                     successList.append(msg)
