@@ -416,7 +416,11 @@ const Atom = () => {
       UpdatedFilterExcelData = UpdatedExcelData;
     }
 
-    jsonToExcel(UpdatedFilterExcelData);
+    if (UpdatedFilterExcelData.length > 0) {
+      jsonToExcel(UpdatedFilterExcelData);
+    } else {
+      ResponseModel("No Data Found", "error");
+    }
   };
 
   const openNotification = () => {
