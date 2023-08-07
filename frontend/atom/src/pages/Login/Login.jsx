@@ -70,6 +70,7 @@ const SuperAdminModal = (props) => {
           ResponseModel(res.data, "Success");
         } else {
           ResponseModel(res.response.data, "error");
+          setLoading(false);
         }
       })
       .catch((err) => {
