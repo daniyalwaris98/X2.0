@@ -1,12 +1,4 @@
-from app import app
-from app.models.inventory_models import *
-from app.middleware import token_required
 from app.uam.uam_utils import *
-
-from flask_jsonpify import jsonify
-from flask import request
-
-import traceback
 
 
 @app.route("/sfpStatus", methods=["GET"])

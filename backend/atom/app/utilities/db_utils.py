@@ -2,8 +2,6 @@ from app import db
 import sys
 import traceback
 
-from app.models.inventory_models import *
-
 
 def InsertDBData(obj):
     try:
@@ -45,16 +43,16 @@ def DeleteDBData(obj):
         return 500
 
 
-def login_activity(user_id, operation, status, timestamp, description):
-    try:
-        activity = Login_Activity_Table()
-        activity.user_id = user_id
-        activity.operation = operation
-        activity.description = description
-        activity.status = status
-        activity.timestamp = timestamp
+# def login_activity(user_id, operation, status, timestamp, description):
+#     try:
+#         activity = Login_Activity_Table()
+#         activity.user_id = user_id
+#         activity.operation = operation
+#         activity.description = description
+#         activity.status = status
+#         activity.timestamp = timestamp
 
-        db.session.add(activity)
-        db.session.commit()
-    except Exception:
-        print("Error While Saving Login Activity")
+#         db.session.add(activity)
+#         db.session.commit()
+#     except Exception:
+#         print("Error While Saving Login Activity")

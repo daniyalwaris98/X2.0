@@ -1,21 +1,7 @@
-from flask import Flask, request, jsonify
-from app import app, db
-from app.auto_discovery import auto_discover
-import sys
-import paramiko
-from app.middleware import token_required
-import re
-import ipaddress
-import traceback
-from app.models.inventory_models import *
-from datetime import datetime
-
 from app.auto_discovery.auto_discovery_utils import *
 
 
-
-
-@app.route('/addNetwork', methods=['POST'])
+@app.route("/addNetwork", methods=["POST"])
 @token_required
 def addNetwork(user_data):
     if True:
@@ -28,7 +14,8 @@ def addNetwork(user_data):
             traceback.print_exc()
             return "Server Error", 500
 
-@app.route('/editNetwork', methods=['POST'])
+
+@app.route("/editNetwork", methods=["POST"])
 @token_required
 def editNetwork(user_data):
     try:
@@ -41,7 +28,7 @@ def editNetwork(user_data):
         return "Server Error", 500
 
 
-@app.route('/addNetworks', methods=['POST'])
+@app.route("/addNetworks", methods=["POST"])
 @token_required
 def addNetworks(user_data):
     try:
@@ -58,12 +45,11 @@ def addNetworks(user_data):
             else:
                 errorList.append(response)
 
-
         responseDict = {
             "success": len(responseList),
             "error": len(errorList),
             "error_list": errorList,
-            "success_list": responseList
+            "success_list": responseList,
         }
 
         return jsonify(responseDict), 200
@@ -73,7 +59,7 @@ def addNetworks(user_data):
         return "Server Error", 500
 
 
-@app.route('/getAllNetworks', methods=['GET'])
+@app.route("/getAllNetworks", methods=["GET"])
 @token_required
 def GetAllNetworks(user_data):
     if True:
@@ -82,15 +68,14 @@ def GetAllNetworks(user_data):
             objList = []
             for networkObj in networkObjs:
                 objDict = {}
-                objDict['network_id'] = networkObj.network_id
-                objDict['network_name'] = networkObj.network_name
-                objDict['subnet'] = networkObj.subnet
-                objDict['no_of_devices'] = networkObj.no_of_devices
-                objDict['scan_status'] = networkObj.scan_status
-                objDict['excluded_ip_range'] = networkObj.excluded_ip_range
-                objDict['creation_date'] = FormatDate(networkObj.creation_date)
-                objDict['modification_date'] = FormatDate(
-                    networkObj.modification_date)
+                objDict["network_id"] = networkObj.network_id
+                objDict["network_name"] = networkObj.network_name
+                objDict["subnet"] = networkObj.subnet
+                objDict["no_of_devices"] = networkObj.no_of_devices
+                objDict["scan_status"] = networkObj.scan_status
+                objDict["excluded_ip_range"] = networkObj.excluded_ip_range
+                objDict["creation_date"] = FormatDate(networkObj.creation_date)
+                objDict["modification_date"] = FormatDate(networkObj.modification_date)
                 objList.append(objDict)
             return jsonify(objList), 200
         except Exception as e:
@@ -99,7 +84,7 @@ def GetAllNetworks(user_data):
             return str(e), 500
 
 
-@app.route('/deleteNetworks', methods=['POST'])
+@app.route("/deleteNetworks", methods=["POST"])
 @token_required
 def DeleteNetworks(user_data):
     if True:
@@ -111,12 +96,10 @@ def DeleteNetworks(user_data):
             for networkObj in networkObjs:
                 row = row + 1
                 try:
-
                     queryString = f"select subnet from auto_discovery_network_table where network_id='{networkObj}';"
                     subnet = db.session.execute(queryString).fetchone()
 
                     if subnet is not None:
-
                         queryString = f"delete from auto_discovery_network_table where network_id='{networkObj}';"
                         db.session.execute(queryString)
                         db.session.commit()
@@ -135,20 +118,20 @@ def DeleteNetworks(user_data):
                     errorList.append(f"Row {row} : Error While Deleting")
 
             response = {
-                'success' : len(successList),
-                'error' : len(errorList),
-                "success_list" : successList,
-                'error_list' : errorList
+                "success": len(successList),
+                "error": len(errorList),
+                "success_list": successList,
+                "error_list": errorList,
             }
 
             return jsonify(response), 200
-            
+
         except Exception as e:
             print(str(e), file=sys.stderr)
             return "Server Error", 500
 
 
-@app.route('/getSubnetsDropdown', methods=['GET'])
+@app.route("/getSubnetsDropdown", methods=["GET"])
 @token_required
 def GetSubnetsDropdown(user_data):
     if True:
@@ -168,36 +151,33 @@ def GetSubnetsDropdown(user_data):
 
 
 def ValidateIPRange(range):
-    pattern = r'^(\d{1,3}\.){3}\d{1,3}\-\d{1,3}$'
+    pattern = r"^(\d{1,3}\.){3}\d{1,3}\-\d{1,3}$"
     if re.match(pattern, range):
-        index1 = range.rfind('-')
+        index1 = range.rfind("-")
         start = range[:index1]
 
-        index2 = start.rfind('.')
-        end = start[:index2+1]
+        index2 = start.rfind(".")
+        end = start[: index2 + 1]
 
-        end += range[index1+1:]
+        end += range[index1 + 1 :]
 
         if int(ipaddress.IPv4Address(start)) > int(ipaddress.IPv4Address(end)):
             return None
         else:
-            return {
-                'start_ip': start,
-                'end_ip': end
-            }
+            return {"start_ip": start, "end_ip": end}
 
     else:
         print("Invalid Ip Range Formate", file=sys.stderr)
         return None
 
 
-@app.route('/autoDiscover', methods=['POST'])
+@app.route("/autoDiscover", methods=["POST"])
 def Discovers():
     try:
         discoveryObj = request.get_json()
         print(discoveryObj, file=sys.stderr)
 
-        if discoveryObj['subnet'] == "All":
+        if discoveryObj["subnet"] == "All":
             return "Select a subnet to scan", 500
 
         queryString = f"select * from auto_discovery_network_table where subnet = '{discoveryObj['subnet']}';"
@@ -206,15 +186,16 @@ def Discovers():
         results = None
         if network is not None:
             results = auto_discover.GetSubnetInventoryData(
-                network['SUBNET'],network['EXCLUDED_IP_RANGE'])
+                network["SUBNET"], network["EXCLUDED_IP_RANGE"]
+            )
         else:
-            if discoveryObj['subnet'].strip() == 'All':
+            if discoveryObj["subnet"].strip() == "All":
                 return "Select a subnet to start scanning", 500
-            
+
             return "Subnet doesn't exit", 500
 
         if results is None:
-            return "Error While Scanning Subnet", 500  
+            return "Error While Scanning Subnet", 500
 
         # if 'range' in discoveryObj:
         #     range = ValidateIPRange(discoveryObj['range'])
@@ -228,6 +209,7 @@ def Discovers():
         queryString = f"select IP_ADDRESS from auto_discovery_table;"
         rows = db.session.execute(queryString)
         from datetime import datetime
+
         date = datetime.now()
         for row in rows:
             ipAddressList.append(row[0])
@@ -238,15 +220,15 @@ def Discovers():
                 db.session.execute(queryString)
                 db.session.commit()
                 print(
-                    f"Successfully Inserted to Database for {host[0]}", file=sys.stderr)
+                    f"Successfully Inserted to Database for {host[0]}", file=sys.stderr
+                )
             else:
                 queryString = f"UPDATE auto_discovery_table SET IP_ADDRESS='{host[0]}',SUBNET='{network['SUBNET']}',OS_TYPE='{host[1]}',MAKE_MODEL='{host[2]}',`FUNCTION`='{host[3]}',VENDOR='{host[4]}',SNMP_STATUS='{host[5]}',SNMP_VERSION='{host[6]}',MODIFICATION_DATE='{date}' where IP_ADDRESS='{host[0]}';"
                 db.session.execute(queryString)
                 db.session.commit()
                 print(
-                    f"Successfully Updated to Database for {host[0]}", file=sys.stderr)
-
-        
+                    f"Successfully Updated to Database for {host[0]}", file=sys.stderr
+                )
 
         queryString = f"select SUBNET from auto_discovery_network_table;"
         result = db.session.execute(queryString)
@@ -263,98 +245,102 @@ def Discovers():
     except Exception as e:
         print(e, file=sys.stderr)
         return "Error", 500
-    
 
-@app.route('/getDiscoveryFunctionCount',methods=['POST'])
+
+@app.route("/getDiscoveryFunctionCount", methods=["POST"])
 def GetDiscoveryFunctionCount():
     try:
         subnet = request.get_json()
-        subnet = subnet['subnet']
+        subnet = subnet["subnet"]
         count = {}
-        if subnet == 'All':
-
+        if subnet == "All":
             queryString = f"select count(*) from auto_discovery_table;"
             row = db.session.execute(queryString).fetchone()[0]
-            count['devices'] = row
+            count["devices"] = row
 
             queryString = f"select count(*) from auto_discovery_table where `FUNCTION`='firewall';"
             row = db.session.execute(queryString).fetchone()[0]
-            count['firewall'] = row
+            count["firewall"] = row
 
-            queryString = f"select count(*) from auto_discovery_table where `FUNCTION`='router';"
+            queryString = (
+                f"select count(*) from auto_discovery_table where `FUNCTION`='router';"
+            )
             row = db.session.execute(queryString).fetchone()[0]
-            count['router'] = row
-            
-            queryString = f"select count(*) from auto_discovery_table where `FUNCTION`='switch';"
+            count["router"] = row
+
+            queryString = (
+                f"select count(*) from auto_discovery_table where `FUNCTION`='switch';"
+            )
             row = db.session.execute(queryString).fetchone()[0]
-            count['switch'] = row
-            
+            count["switch"] = row
+
             queryString = f"select count(*) from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall';"
             row = db.session.execute(queryString).fetchone()[0]
-            count['other'] = row
-            
-            
+            count["other"] = row
+
         else:
-            
-            queryString = f"select count(*) from auto_discovery_table where subnet = '{subnet}';"
+            queryString = (
+                f"select count(*) from auto_discovery_table where subnet = '{subnet}';"
+            )
             row = db.session.execute(queryString).fetchone()[0]
-            count['devices'] = row
+            count["devices"] = row
 
             queryString = f"select count(*) from auto_discovery_table where `FUNCTION`='firewall' and subnet = '{subnet}';"
             row = db.session.execute(queryString).fetchone()[0]
-            count['firewall'] = row
+            count["firewall"] = row
 
             queryString = f"select count(*) from auto_discovery_table where `FUNCTION`='router' and subnet = '{subnet}';"
             row = db.session.execute(queryString).fetchone()[0]
-            count['router'] = row
-            
+            count["router"] = row
+
             queryString = f"select count(*) from auto_discovery_table where `FUNCTION`='switch' and subnet = '{subnet}';"
             row = db.session.execute(queryString).fetchone()[0]
-            count['switch'] = row
-            
+            count["switch"] = row
+
             queryString = f"select count(*) from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall' and subnet = '{subnet}';"
             row = db.session.execute(queryString).fetchone()[0]
-            count['other'] = row
+            count["other"] = row
 
-        return jsonify(count),200
+        return jsonify(count), 200
     except Exception as e:
         traceback.print_exc()
-        print(e,file=sys.stderr)
-        return "Error",500
+        print(e, file=sys.stderr)
+        return "Error", 500
 
 
-@app.route('/getDiscoveryData', methods=['POST'])
+@app.route("/getDiscoveryData", methods=["POST"])
 # @token_required
 def GetDiscoveryData():
     if True:
         try:
-
             subnet = request.get_json()
-            subnet = subnet['subnet']
-            
+            subnet = subnet["subnet"]
+
             queryString = f"select * from auto_discovery_table;"
-            
-            if subnet != 'All':
-                queryString = f"select * from auto_discovery_table where subnet ='{subnet}';"
-            
+
+            if subnet != "All":
+                queryString = (
+                    f"select * from auto_discovery_table where subnet ='{subnet}';"
+                )
+
             result = db.session.execute(queryString)
             objList = []
             for row in result:
                 objDict = {}
-                objDict['discovery_id'] = row[0]
-                objDict['ip_address'] = row[1]
-                objDict['subnet'] = row[2]
-                objDict['os_type'] = row[3]
-                objDict['make_model'] = row[4]
-                objDict['function'] = row[5]
-                objDict['vendor'] = row[6]
-                objDict['snmp_status'] = row[7]
-                objDict['snmp_version'] = row[8]
-                objDict['creation_date'] = FormatDate(row[9])
-                objDict['modification_date'] = FormatDate(row[10])
+                objDict["discovery_id"] = row[0]
+                objDict["ip_address"] = row[1]
+                objDict["subnet"] = row[2]
+                objDict["os_type"] = row[3]
+                objDict["make_model"] = row[4]
+                objDict["function"] = row[5]
+                objDict["vendor"] = row[6]
+                objDict["snmp_status"] = row[7]
+                objDict["snmp_version"] = row[8]
+                objDict["creation_date"] = FormatDate(row[9])
+                objDict["modification_date"] = FormatDate(row[10])
                 objList.append(objDict)
 
-            print(subnet,file=sys.stderr)
+            print(subnet, file=sys.stderr)
             return jsonify(objList), 200
 
         except Exception as e:
@@ -362,36 +348,36 @@ def GetDiscoveryData():
             return "Error", 500
 
 
-@app.route('/getDiscoveryDataFirewalls', methods=['POST'])
+@app.route("/getDiscoveryDataFirewalls", methods=["POST"])
 # @token_required
 def GetDiscoveryDataFirewalls():
     if True:
         try:
-
             subnet = request.get_json()
-            subnet = subnet['subnet']
-            
-            queryString = f"select * from auto_discovery_table where `FUNCTION`='firewall';"
-            
-            if subnet != 'All':
+            subnet = subnet["subnet"]
+
+            queryString = (
+                f"select * from auto_discovery_table where `FUNCTION`='firewall';"
+            )
+
+            if subnet != "All":
                 queryString = f"select * from auto_discovery_table where subnet ='{subnet}' and `FUNCTION`='firewall';"
-            
-            
+
             result = db.session.execute(queryString)
             objList = []
             for row in result:
                 objDict = {}
-                objDict['discovery_id'] = row[0]
-                objDict['ip_address'] = row[1]
-                objDict['subnet'] = row[2]
-                objDict['os_type'] = row[3]
-                objDict['make_model'] = row[4]
-                objDict['function'] = row[5]
-                objDict['vendor'] = row[6]
-                objDict['snmp_status'] = row[7]
-                objDict['snmp_version'] = row[8]
-                objDict['creation_date'] = FormatDate(row[9])
-                objDict['modification_date'] = FormatDate(row[10])
+                objDict["discovery_id"] = row[0]
+                objDict["ip_address"] = row[1]
+                objDict["subnet"] = row[2]
+                objDict["os_type"] = row[3]
+                objDict["make_model"] = row[4]
+                objDict["function"] = row[5]
+                objDict["vendor"] = row[6]
+                objDict["snmp_status"] = row[7]
+                objDict["snmp_version"] = row[8]
+                objDict["creation_date"] = FormatDate(row[9])
+                objDict["modification_date"] = FormatDate(row[10])
                 objList.append(objDict)
             return jsonify(objList), 200
 
@@ -400,36 +386,36 @@ def GetDiscoveryDataFirewalls():
             return "Error", 500
 
 
-@app.route('/getDiscoveryDataRouters', methods=['POST'])
+@app.route("/getDiscoveryDataRouters", methods=["POST"])
 # @token_required
 def GetDiscoveryDataRouters():
     if True:
         try:
-            
             subnet = request.get_json()
-            subnet = subnet['subnet']
-            
-            queryString = f"select * from auto_discovery_table where `FUNCTION`='router';"
-            
-            if subnet != 'All':
+            subnet = subnet["subnet"]
+
+            queryString = (
+                f"select * from auto_discovery_table where `FUNCTION`='router';"
+            )
+
+            if subnet != "All":
                 queryString = f"select * from auto_discovery_table where subnet ='{subnet}' and `FUNCTION`='router';"
-            
 
             result = db.session.execute(queryString)
             objList = []
             for row in result:
                 objDict = {}
-                objDict['discovery_id'] = row[0]
-                objDict['ip_address'] = row[1]
-                objDict['subnet'] = row[2]
-                objDict['os_type'] = row[3]
-                objDict['make_model'] = row[4]
-                objDict['function'] = row[5]
-                objDict['vendor'] = row[6]
-                objDict['snmp_status'] = row[7]
-                objDict['snmp_version'] = row[8]
-                objDict['creation_date'] = FormatDate(row[9])
-                objDict['modification_date'] = FormatDate(row[10])
+                objDict["discovery_id"] = row[0]
+                objDict["ip_address"] = row[1]
+                objDict["subnet"] = row[2]
+                objDict["os_type"] = row[3]
+                objDict["make_model"] = row[4]
+                objDict["function"] = row[5]
+                objDict["vendor"] = row[6]
+                objDict["snmp_status"] = row[7]
+                objDict["snmp_version"] = row[8]
+                objDict["creation_date"] = FormatDate(row[9])
+                objDict["modification_date"] = FormatDate(row[10])
                 objList.append(objDict)
             return jsonify(objList), 200
 
@@ -438,35 +424,36 @@ def GetDiscoveryDataRouters():
             return "Error", 500
 
 
-@app.route('/getDiscoveryDataSwitches', methods=['POST'])
+@app.route("/getDiscoveryDataSwitches", methods=["POST"])
 # @token_required
 def GetDiscoveryDataSwitches():
     if True:
         try:
-            
             subnet = request.get_json()
-            subnet = subnet['subnet']
-            
-            queryString = f"select * from auto_discovery_table where `FUNCTION`='switch';"
-            
-            if subnet != 'All':
+            subnet = subnet["subnet"]
+
+            queryString = (
+                f"select * from auto_discovery_table where `FUNCTION`='switch';"
+            )
+
+            if subnet != "All":
                 queryString = f"select * from auto_discovery_table where subnet ='{subnet}' and `FUNCTION`='switch';"
-            
+
             result = db.session.execute(queryString)
             objList = []
             for row in result:
                 objDict = {}
-                objDict['discovery_id'] = row[0]
-                objDict['ip_address'] = row[1]
-                objDict['subnet'] = row[2]
-                objDict['os_type'] = row[3]
-                objDict['make_model'] = row[4]
-                objDict['function'] = row[5]
-                objDict['vendor'] = row[6]
-                objDict['snmp_status'] = row[7]
-                objDict['snmp_version'] = row[8]
-                objDict['creation_date'] = FormatDate(row[9])
-                objDict['modification_date'] = FormatDate(row[10])
+                objDict["discovery_id"] = row[0]
+                objDict["ip_address"] = row[1]
+                objDict["subnet"] = row[2]
+                objDict["os_type"] = row[3]
+                objDict["make_model"] = row[4]
+                objDict["function"] = row[5]
+                objDict["vendor"] = row[6]
+                objDict["snmp_status"] = row[7]
+                objDict["snmp_version"] = row[8]
+                objDict["creation_date"] = FormatDate(row[9])
+                objDict["modification_date"] = FormatDate(row[10])
                 objList.append(objDict)
             return jsonify(objList), 200
 
@@ -475,35 +462,34 @@ def GetDiscoveryDataSwitches():
             return "Error", 500
 
 
-@app.route('/getDiscoveryDataOthers', methods=['POST'])
+@app.route("/getDiscoveryDataOthers", methods=["POST"])
 # @token_required
 def GetDiscoveryDataOthers():
     if True:
         try:
-            
             subnet = request.get_json()
-            subnet = subnet['subnet']
-            
+            subnet = subnet["subnet"]
+
             queryString = f"select * from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall';"
-            
-            if subnet != 'All':
+
+            if subnet != "All":
                 queryString = f"select * from auto_discovery_table where subnet ='{subnet}' and `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall';"
-            
+
             result = db.session.execute(queryString)
             objList = []
             for row in result:
                 objDict = {}
-                objDict['discovery_id'] = row[0]
-                objDict['ip_address'] = row[1]
-                objDict['subnet'] = row[2]
-                objDict['os_type'] = row[3]
-                objDict['make_model'] = row[4]
-                objDict['function'] = row[5]
-                objDict['vendor'] = row[6]
-                objDict['snmp_status'] = row[7]
-                objDict['snmp_version'] = row[8]
-                objDict['creation_date'] = FormatDate(row[9])
-                objDict['modification_date'] = FormatDate(row[10])
+                objDict["discovery_id"] = row[0]
+                objDict["ip_address"] = row[1]
+                objDict["subnet"] = row[2]
+                objDict["os_type"] = row[3]
+                objDict["make_model"] = row[4]
+                objDict["function"] = row[5]
+                objDict["vendor"] = row[6]
+                objDict["snmp_status"] = row[7]
+                objDict["snmp_version"] = row[8]
+                objDict["creation_date"] = FormatDate(row[9])
+                objDict["modification_date"] = FormatDate(row[10])
                 objList.append(objDict)
             return jsonify(objList), 200
 
@@ -512,7 +498,7 @@ def GetDiscoveryDataOthers():
             return "Error", 500
 
 
-@app.route('/autoDiscoveryFunctionCount', methods=['GET'])
+@app.route("/autoDiscoveryFunctionCount", methods=["GET"])
 # @token_required
 def AutoDiscoveryFunctionCount():
     if True:
@@ -522,15 +508,15 @@ def AutoDiscoveryFunctionCount():
             objDict = {}
             count = 0
             for row in result:
-                if row[0] == 'switch':
-                    objDict['Switches'] = row[1]
-                elif row[0] == 'firewall':
-                    objDict['Firewalls'] = row[1]
-                elif row[0] == 'router':
-                    objDict['Routers'] = row[1]
+                if row[0] == "switch":
+                    objDict["Switches"] = row[1]
+                elif row[0] == "firewall":
+                    objDict["Firewalls"] = row[1]
+                elif row[0] == "router":
+                    objDict["Routers"] = row[1]
                 else:
                     count += row[1]
-            objDict['Others'] = count
+            objDict["Others"] = count
 
             print(objDict, file=sys.stderr)
             return objDict, 200
@@ -539,10 +525,9 @@ def AutoDiscoveryFunctionCount():
             return "Error", 500
 
 
-@app.route('/getManageDevices', methods=['GET'])
+@app.route("/getManageDevices", methods=["GET"])
 @token_required
 def GetManageDevices(user_data):
-
     try:
         queryString = f"select IP_ADDRESS,OS_TYPE,`FUNCTION`,VENDOR,SNMP_STATUS from auto_discovery_table;"
         result = db.session.execute(queryString)
@@ -554,18 +539,16 @@ def GetManageDevices(user_data):
             function = row[2]
             vendor = row[3]
             snmp_status = row[4]
-            objDict['ip_address'] = ip_address
-            objDict['os_type'] = os_type
-            objDict['function'] = function
-            objDict['vendor'] = vendor
-            objDict['snmp_status'] = snmp_status
+            objDict["ip_address"] = ip_address
+            objDict["os_type"] = os_type
+            objDict["function"] = function
+            objDict["vendor"] = vendor
+            objDict["snmp_status"] = snmp_status
             objList.append(objDict)
         return jsonify(objList), 200
     except Exception as e:
         print(e, file=sys.stderr)
         return "Error", 500
-        
-
 
 
 # def CheckSSHConnection(ip_address, username, password):
@@ -848,5 +831,3 @@ def GetManageDevices(user_data):
 #         traceback.print_exc()
 #         print(e, file=sys.stderr)
 #         return "Error", 500
-
-

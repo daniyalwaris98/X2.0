@@ -1,14 +1,6 @@
-import base64
-import gzip
-import json
-from flask_jsonpify import jsonify
-from flask import request, make_response
-from app.middleware import token_required
-from app import app
-from app.mail import *
-import hashlib
 
-from app.utilities.user_utils import *
+
+from app.users.user_utils import *
 
 hashDict = {}
 
@@ -302,10 +294,10 @@ def EncryptCredentialsLicenseKey():
             with open("/app/hashFile", "w") as outfile:
                 json.dump(hashDict, outfile)
 
-            send_mail(send_from="hamza.zahid@nets-international.com", send_to=["amna.ateq@nets-international.com"],
-                      subject="License Key",
-                      message=f"Dear Valuable Customer,\nHopefully this mail finds you well.\nPlease find the below the attached License Key valid for {date} months.\n\n\n{hashedString}\n\n\t***\tThis is an Automated Email\t***",
-                      username='hamza.zahid@nets-international.com', password='Cyprus@123')
+            # send_mail(send_from="hamza.zahid@nets-international.com", send_to=["amna.ateq@nets-international.com"],
+            #           subject="License Key",
+            #           message=f"Dear Valuable Customer,\nHopefully this mail finds you well.\nPlease find the below the attached License Key valid for {date} months.\n\n\n{hashedString}\n\n\t***\tThis is an Automated Email\t***",
+            #           username='hamza.zahid@nets-international.com', password='Cyprus@123')
             import time
             time.sleep(5)
             return (hashedString), 200

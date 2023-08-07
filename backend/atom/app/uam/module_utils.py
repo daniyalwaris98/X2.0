@@ -1,7 +1,5 @@
-from app.models.inventory_models import *
-from app.utilities.db_utils import *
 
-import traceback
+from app.uam.uam_utils import *
 
 def AddBoard(boardObj):
     try:

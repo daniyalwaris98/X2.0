@@ -1,15 +1,5 @@
-from flask_jsonpify import jsonify
-import json
-from flask import request, make_response
 
-import sys
-import traceback
-import gzip
-
-from app import app
 from app.atom.atom_utils import *
-from app.middleware import token_required
-from app.utilities.db_utils import *
 
 @app.route("/addPasswordGroup", methods=['POST'])
 @token_required

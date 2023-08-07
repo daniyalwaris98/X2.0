@@ -1,13 +1,4 @@
-from flask_jsonpify import jsonify
-from flask import request
-
-from app import app
-from app.middleware import token_required
-from app.models.inventory_models import *
 from app.atom.atom_utils import *
-
-import traceback
-import sys
 
 
 @app.route("/transitDicoveryData", methods=["POST"])
@@ -17,13 +8,15 @@ def TransitDicoveryData(user_data):
         ipList = request.get_json()
         errorList = []
         successList = []
-        
+
         deviceObjs = []
         try:
             for ip in ipList:
                 device = Auto_Discovery_Table.query.filter_by(ip_address=ip).first()
                 if device is None:
-                    errorList.append(f"{device['ip_address']} : Error - IP Address Not Found In Discovery Data")
+                    errorList.append(
+                        f"{device['ip_address']} : Error - IP Address Not Found In Discovery Data"
+                    )
                 else:
                     deviceObjs.append(device.as_dict())
         except Exception:
@@ -34,7 +27,7 @@ def TransitDicoveryData(user_data):
         try:
             row = 0
             for device in deviceObjs:
-                device['device_type'] = device['os_type']
+                device["device_type"] = device["os_type"]
                 row = row + 1
 
                 msg, status = AddTansitionAtom(device, row, False)
@@ -62,7 +55,6 @@ def TransitDicoveryData(user_data):
         return "Error While Moving Data", 500
 
 
-
 # @app.route("/getTransitionData", methods=["GET"])
 # @token_required
 # def GetTransitionData(user_data):
@@ -84,8 +76,6 @@ def TransitDicoveryData(user_data):
 #         return "Error While Fetching Data", 500
 
 
-
-
 def GetAtomList():
     atomList = []
     try:
@@ -96,6 +86,7 @@ def GetAtomList():
         traceback.print_exc()
 
     return atomList
+
 
 def GetTransitionAtomList():
     atomList = []
@@ -109,26 +100,25 @@ def GetTransitionAtomList():
     return atomList
 
 
-@app.route("/getDiscoveryForTransition", methods=['POST'])
+@app.route("/getDiscoveryForTransition", methods=["POST"])
 @token_required
 def GetDiscoveryForTransition(user_data):
     try:
         data = request.get_json()
-        if 'subnet' not in data.keys(): 
+        if "subnet" not in data.keys():
             return "Subnet is missing", 500
 
         discoveryList = []
         atomList = GetAtomList()
         transitionList = GetTransitionAtomList()
-        
+
         results = None
-        if data['subnet'].strip() == 'All' or data['subnet'].strip() == '':
+        if data["subnet"].strip() == "All" or data["subnet"].strip() == "":
             results = Auto_Discovery_Table.query.all()
         else:
-            results = Auto_Discovery_Table.query.filter_by(subnet=data['subnet']).all()
+            results = Auto_Discovery_Table.query.filter_by(subnet=data["subnet"]).all()
 
         for result in results:
-
             if result.ip_address not in atomList:
                 discoveryList.append(result.as_dict())
 

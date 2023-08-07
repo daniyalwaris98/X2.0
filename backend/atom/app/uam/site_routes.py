@@ -1,14 +1,4 @@
-from app import app
-from app.models.inventory_models import *
-from app.middleware import token_required
 from app.uam.site_utils import *
-
-from flask_jsonpify import jsonify
-from flask import request
-
-import traceback
-import sys
-
 
 @app.route("/addSite", methods=["POST"])
 @token_required

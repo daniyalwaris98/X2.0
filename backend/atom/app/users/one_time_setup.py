@@ -1,8 +1,4 @@
-from flask_jsonpify import jsonify
-from flask import request
-from app import app
-from app.utilities.user_utils import *
-from app.license.license_decoder import *
+from app.users.user_utils import *
 
 
 @app.route('/oneTimeSetup', methods=['GET'])

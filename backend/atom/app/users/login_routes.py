@@ -1,12 +1,5 @@
-import gzip
-from flask_jsonpify import jsonify
-from flask import request, make_response
-from app import app
-import jwt
-from datetime import timedelta
-from app.middleware import token_required
-from app.license.license_decoder import *
-from app.utilities.user_utils import *
+
+from app.users.user_utils import *
 
 
 
@@ -23,8 +16,8 @@ def Login():
         if user_exists:
 
             if user_exists.status != "Active":
-                login_activity(username, 'Login', "Failed",
-                               current_time, "User Inactive")
+                # login_activity(username, 'Login', "Failed",
+                #                current_time, "User Inactive")
                 return jsonify({'message': 'User is Inactive'}), 401
 
             user_role = User_Roles_Table.query.filter_by(
@@ -49,14 +42,14 @@ def Login():
                 user_exists.last_login = current_time
                 UpdateDBData(user_exists)
 
-                login_activity(username, 'Login', "Success",
-                               current_time, "User Logged In")
+                # login_activity(username, 'Login', "Success",
+                #                current_time, "User Logged In")
                 return jsonify({'response': "Login Successful", "code": "200", "auth-key": token})
 
             else:
                 print("Invalid Username or Password", file=sys.stderr)
-                login_activity(username, 'Login', "Failed",
-                               current_time, "Invalid Credentials")
+                # login_activity(username, 'Login', "Failed",
+                #                current_time, "Invalid Credentials")
                 return jsonify({'message': 'Invalid Username or Password'}), 401
         else:
             print("Invalid Username or Password", file=sys.stderr)
