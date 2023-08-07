@@ -12,6 +12,7 @@ from app.utilities.db_utils import *
 from app.atom.static_list import *
 
 from app.models.atom_models import *
+from app.models.auto_discovery_models import *
 
 from app.pullers.NXOS.nxos_inv import NXOSPuller
 from app.pullers.IOSXR.ios_xr_inv import XRPuller
@@ -506,7 +507,7 @@ def addPasswordGroup(passObj, row):
         if 'password_group_type' in passObj.keys():
             if passObj['password_group_type'] is not None:
                 
-                if str(passObj['password_group_type']).lower == 'telnet':
+                if str(passObj['password_group_type']).lower() == 'telnet':
                     password_group.password_group_type = 'Telnet'
 
                     if 'secret_password' not in passObj.keys():
