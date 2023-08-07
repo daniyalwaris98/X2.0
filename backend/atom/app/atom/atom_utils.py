@@ -13,6 +13,8 @@ from app.atom.static_list import *
 
 from app.models.atom_models import *
 from app.models.auto_discovery_models import *
+from app.models.uam_models import *
+from app.models.monitoring_models import *
 
 from app.pullers.NXOS.nxos_inv import NXOSPuller
 from app.pullers.IOSXR.ios_xr_inv import XRPuller
