@@ -29,6 +29,7 @@ import Table from "../ReusableComponents/Table/Table";
 import LoadingButton from "../ReusableComponents/LoadingButton/LoadingButton";
 import { AtomStyle, DiscoverTableModelStyle } from "./Dashboard.styled";
 import { CheckMarkIcon, ErrorIcon, ExportIcon } from "../../svg";
+import { ResponseModel } from "../ReusableComponents/ResponseModel/ResponseModel";
 
 const DiscoverTableModel = (props) => {
   const {
@@ -93,13 +94,20 @@ const DiscoverTableModel = (props) => {
       subnets = "All";
     }
 
+    console.log(subnets);
+
     await axios
       .post(`${baseUrl}/getDiscoveryForTransition`, {
         subnet: subnets,
       })
       .then((res) => {
-        setDataSource(res.data);
-        setRowCount(res.data.length);
+        console.log("res", res);
+        if (res.status == 500) {
+          ResponseModel(res.response.data, "error");
+        } else {
+          setDataSource(res.data);
+          setRowCount(res.data.length);
+        }
       })
       .catch((err) => console.log("err========>", err));
   };
@@ -345,7 +353,14 @@ const Atom = () => {
               openSweetAlert(response?.response?.data, "error");
               setLoading(false);
             } else {
-              openSweetAlert(`Atom Deleted Successfully`, "success");
+              openSweetAlert(
+                `
+              Devices Deleted : ${response?.data?.success}
+              Devices Not Deleted : ${response?.data?.error}
+              `,
+                "success",
+                response?.data?.error_list
+              );
               const promises = [];
               promises.push(
                 axios
