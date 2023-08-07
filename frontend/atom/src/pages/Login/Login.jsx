@@ -466,9 +466,7 @@ function Login() {
       .then((res) => {
         const promises = [];
 
-        console.log("res=======>", res);
-
-        if (res.data.response === "Login Successful") {
+        if (res?.data?.response === "Login Successful") {
           localStorage.setItem("monetx_token", res.data["auth-key"]);
 
           promises.push(
@@ -488,7 +486,7 @@ function Login() {
                 setLoading(false);
               })
               .catch((error) => {
-                console.log(error);
+                console.log("error======>", error);
                 setLoading(false);
               })
           );
@@ -500,7 +498,7 @@ function Login() {
       })
       .catch((err) => {
         console.log("err", err);
-        ResponseModel(err.response.data.message, "error");
+        ResponseModel(err?.response?.data?.message, "error");
         setLoading(false);
       });
   };
