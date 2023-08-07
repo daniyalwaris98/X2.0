@@ -279,8 +279,6 @@ const Atom = () => {
   const [rowCount, setRowCount] = useState(0);
   const inputRef = useRef(null);
 
-  const [onBoardLoading, setOnboardLoading] = useState(false);
-
   let [dataSource, setDataSource] = useState(excelData);
   const [isModalVisible, setIsModalVisible] = useState(false);
   const [isEditModalVisible, setIsEditModalVisible] = useState(false);

@@ -2,11 +2,11 @@ import React, { useEffect, useState, useContext } from "react";
 import { useNavigate } from "react-router";
 import illustration from "../../assets/gifs/login.gif";
 
-import { Form, message, Select } from "antd";
-import Api from "../../global/insistance";
+import { Form, Select } from "antd";
+
 import { CreateThemeContext } from "../../context/ThemeContext";
 
-import axios, { baseUrl } from "../../utils/axios/index";
+import api, { baseUrl } from "../../utils/axios/index";
 
 import {
   Button,
@@ -23,6 +23,7 @@ import {
   LoginPassStyledInput,
 } from "./Login.style";
 import { ResponseModel } from "../../components/ReusableComponents/ResponseModel/ResponseModel";
+import axios from "axios";
 
 const SuperAdminModal = (props) => {
   const { isModalOpen, setIsModalOpen, handleOneTimeSetup } = props;
@@ -52,7 +53,7 @@ const SuperAdminModal = (props) => {
     e.preventDefault();
     setLoading(true);
 
-    await axios
+    await api
       .post(`${baseUrl}/createSuperUser`, {
         user_id: userId,
         name: name,
@@ -194,7 +195,7 @@ const LicenseFormModal = (props) => {
 
     setLoading(true);
 
-    await axios
+    await api
       .post(`${baseUrl}/addEndUserDetails`, {
         company_name: companyName,
         po_box: poBox,
@@ -461,11 +462,13 @@ function Login() {
       .then((res) => {
         const promises = [];
 
+        console.log("res=======>", res);
+
         if (res.data.response === "Login Successful") {
           localStorage.setItem("monetx_token", res.data["auth-key"]);
 
           promises.push(
-            axios
+            api
               .get(baseUrl + "/getUserByToken")
               .then((response) => {
                 localStorage.setItem("user", JSON.stringify(response.data));
@@ -493,13 +496,14 @@ function Login() {
       })
       .catch((err) => {
         console.log("err", err);
-
+        ResponseModel(err.response.data.message, "error");
         setLoading(false);
       });
   };
 
   const handleOneTimeSetup = async () => {
-    await axios.get(`${baseUrl}/oneTimeSetup`)
+    await api
+      .get(`${baseUrl}/oneTimeSetup`)
       .then((res) => {
         setResponseUpdate(res.data);
 
