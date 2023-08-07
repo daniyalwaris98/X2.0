@@ -82,6 +82,8 @@ const SuperAdminModal = (props) => {
       isModalOpen={isModalOpen}
       setIsModalOpen={setIsModalOpen}
       footer={null}
+      maskClosable={false}
+      closable={false}
       title="Create User"
     >
       <SuperAdminModalStyle onSubmit={handleSubmit}>
@@ -209,8 +211,6 @@ const LicenseFormModal = (props) => {
         country,
       })
       .then((res) => {
-        console.log("addEndUserDetails res", res);
-
         if (res?.response?.status == 500) {
           ResponseModel(res?.response.data, "error");
           setLoading(false);
@@ -229,6 +229,8 @@ const LicenseFormModal = (props) => {
       isModalOpen={isModalOpen}
       setIsModalOpen={setIsModalOpen}
       footer={null}
+      maskClosable={false}
+      closable={false}
       title=" Please add your details to first time setup the MonetX platform."
     >
       <LicenseFormModalStyle>
@@ -644,7 +646,7 @@ function Login() {
             </Form.Item>
           </Form>
 
-          <button onClick={clearSetup}>Clear Ots Setup</button>
+          {/* <button onClick={clearSetup}>Clear Ots Setup</button> */}
         </div>
         <picture className="login-gif-wrapper">
           <img src={illustration} alt="Montex Gif" />
