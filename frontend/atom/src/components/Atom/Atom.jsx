@@ -36,6 +36,7 @@ const DiscoverTableModel = (props) => {
     setDiscoverItemAcitve,
     serviceCalls,
     openSweetAlert,
+    getAtomData,
   } = props;
   const [searchText, setSearchText] = useState(null);
   const [searchedColumn, setSearchedColumn] = useState(null);
@@ -213,8 +214,6 @@ const DiscoverTableModel = (props) => {
         .post(`${baseUrl}/transitDicoveryData`, selectedRowKeys)
         .then((res) => {
           if (res.status == 200) {
-            console.log(res.data);
-
             if (res.data.error_list.length > 0) {
               openSweetAlert(
                 "Operation Perform ",
@@ -230,6 +229,7 @@ const DiscoverTableModel = (props) => {
                 "success",
                 res.data.success_list
               );
+              getAtomData();
             }
           }
         })
@@ -498,6 +498,26 @@ const Atom = () => {
     }
   };
 
+  useEffect(() => {
+    getAtomData();
+  }, []);
+
+  const getAtomData = async () => {
+    axios
+      .get(baseUrl + "/getAtoms")
+      .then((response) => {
+        excelData = response?.data;
+        setRowCount(response?.data?.length);
+        setDataSource(response?.data);
+        setLoading(false);
+      })
+      .catch((error) => {
+        console.log(error);
+
+        setLoading(false);
+      });
+  };
+
   const postSeed = async (seed) => {
     setLoading(true);
     await axios
@@ -513,19 +533,7 @@ const Atom = () => {
           );
 
           setLoading(true);
-          return axios
-            .get(baseUrl + "/getAtoms")
-            .then((response) => {
-              excelData = response?.data;
-              setRowCount(response?.data?.length);
-              setDataSource(response?.data);
-              setLoading(false);
-            })
-            .catch((error) => {
-              console.log(error);
-
-              setLoading(false);
-            });
+          getAtomData();
         } else {
           openSweetAlert(response?.response?.data, "error");
 
@@ -1191,6 +1199,7 @@ const Atom = () => {
           setDiscoverItemAcitve={setDiscoverItemAcitve}
           serviceCalls={serviceCalls}
           openSweetAlert={openSweetAlert}
+          getAtomData={getAtomData}
         />
       )}
 
