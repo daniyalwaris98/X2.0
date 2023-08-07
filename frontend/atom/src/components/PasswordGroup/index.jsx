@@ -148,8 +148,8 @@ const Atom = () => {
         } else {
           ResponseModel(
             `
-          Devices Not Imported: ${response?.data.error}
-          Devices Imported : ${response?.data.success}
+          Password Group Not Imported: ${response?.data.error}
+          Password Group Imported : ${response?.data.success}
           `,
             "success",
             response?.data.error_list
@@ -414,8 +414,8 @@ const Atom = () => {
             } else {
               ResponseModel(
                 `
-                Devices Not Deleted : ${response.data.error}
-                Devices Deleted : ${response.data.success}
+                Password Group Not Deleted : ${response.data.error}
+                Password Group Deleted : ${response.data.success}
               `,
                 "success",
                 response.data.error_list
