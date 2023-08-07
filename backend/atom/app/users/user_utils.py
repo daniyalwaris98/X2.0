@@ -1,5 +1,6 @@
 import hashlib
 import gzip
+import jwt
 
 from flask_jsonpify import jsonify
 from flask import request, make_response
