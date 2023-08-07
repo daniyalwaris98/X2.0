@@ -607,6 +607,10 @@ def UamInventoryData(pullerData):
                 status_code, uam_id = InsertUamDeviceData(data, atom, ip_addr)
 
                 if status_code == 200 and uam_id != 0:
+                    
+                    if data["device"]["manufecturer"] is not None:
+                        atom.vendor = data["device"]["manufecturer"]
+                    
                     atom.onboard_status = "True"
                     UpdateDBData(atom)
 

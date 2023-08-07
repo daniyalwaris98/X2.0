@@ -277,6 +277,13 @@ def AddCompleteAtom(device, row, update):
             atom.virtual = 'N/A'
 
         atom.onboard_status = "False"
+        
+        if "vendor" in device.keys():
+            if device['vendor'] is not None:
+                device['vendor'] = str(device['vendor']).strip()
+                if device['vendor'] != "" and device['vendor'] != "Unknown":
+                    atom.vendor = device['vendor']
+            
 
         msg = ""
         status = 500
