@@ -294,6 +294,8 @@ const Atom = () => {
   const [siteNameModalVisible, setSiteNameModalVisible] = useState(false);
   const [configData, setConfigData] = useState(null);
 
+  const [onBoardStatus, setOnBoardStatus] = useState(false);
+
   useEffect(() => {
     let user = localStorage.getItem("user");
     let userData = JSON.parse(user);
@@ -1022,8 +1024,10 @@ const Atom = () => {
     },
   ];
 
-  const onSelectChange = (selectedRowKeys) => {
+  const onSelectChange = (selectedRowKeys, selectedRows) => {
     setSelectedRowKeys(selectedRowKeys);
+
+    setOnBoardStatus(selectedRows.some((obj) => obj.status === 200));
   };
 
   const rowSelection = {
@@ -1031,7 +1035,7 @@ const Atom = () => {
     selectedRowKeys,
     onChange: onSelectChange,
     selection: Table.SELECTION_ALL,
-    getCheckboxProps: () => ({
+    getCheckboxProps: (record) => ({
       disabled: configData?.atom.pages.atom.read_only,
     }),
   };
@@ -1094,7 +1098,9 @@ const Atom = () => {
           <OnBoardStyledButton
             onClick={handleOnboard}
             style={{ fontSize: "14px" }}
-            disabled={configData?.atom.pages.atom.read_only}
+            disabled={
+              onBoardStatus == false || configData?.atom.pages.atom.read_only
+            }
           >
             + On Board
           </OnBoardStyledButton>
