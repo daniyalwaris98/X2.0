@@ -1,12 +1,4 @@
-import sys
-import traceback
-
-from app import app ,db 
-from app.models.inventory_models import *
-from app.middleware import token_required
-
-from datetime import datetime
-from flask_jsonpify import jsonify
+from app.auto_discovery.auto_discovery_utils import *
 
 
 def FormatDate(date):

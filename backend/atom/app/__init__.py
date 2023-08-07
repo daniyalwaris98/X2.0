@@ -98,34 +98,12 @@ client = InfluxDBClient(url="http://updated_influxdb:8086", token=token, org=org
 bandwidth_time = 900000
 
 
-# from app.routes import uam_inventory_routes
-# from app.routes import uam_dashboard_routes
-# from app.routes import ipam_routes
-# from app.routes import dc_capacity_routes
-# from app.routes import dashboard_routes
-# from app.common_utils import insert_to_db
-# from app.monitoring.routes import monitoring_routes
-
-# from app import scheduler
-# from app.routes import ipam_dashboard_routes
-# from app.monitoring.routes import monitoring_dashboard_routes
-# from app.monitoring.routes import alerts_routes
-# from app.routes import ncm_routes
-# from app.routes import ncm_dashboard_routes
-# # from app.routes import practice_routes
-# from app.routes import auto_discovery_routes
-# from app.routes import aws_routes
-# from app import aws_scheduler
-# from app.routes import auto_discovery_dashboard_routes
-# from app.routes import firebase_notification_routes
-
-# from app import ncm_scheduler
 
 from app.license import license_generator
 
-from app.routes import one_time_setup
-from app.routes import login_routes
-from app.routes import admin_routes
+from app.users import one_time_setup
+from app.users import login_routes
+from app.users import admin_routes
 from app.routes import test_routes
 
 from app.atom import atom_routes
@@ -145,10 +123,14 @@ from app.uam import sfp_routes
 from app.uam import aps_routes
 from app.uam import license_routes
 
+from app.monitoring.device_monitoring import device_monitoring_routes
+from app.monitoring.device_monitoring import device_monitoring_dashboard_routes
+from app.monitoring.device_monitoring import alerts_routes
+
 
 
 try:
-    from app.models.inventory_models import *
+    from app.models.users_model import *
     from app.utilities.db_utils import *
 
     configuration = (
