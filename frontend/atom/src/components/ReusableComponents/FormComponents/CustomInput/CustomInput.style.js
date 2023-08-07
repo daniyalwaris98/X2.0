@@ -26,6 +26,14 @@ export const CustomInputStyle = styled.article`
       &::placeholder {
         color: ${({ theme }) => theme.colors.GRAY_COLOR};
       }
+
+      &[type="number"] {
+        &::-webkit-inner-spin-button,
+        &::-webkit-outer-spin-button {
+          -webkit-appearance: none;
+          margin: 0;
+        }
+      }
     }
   }
 `;

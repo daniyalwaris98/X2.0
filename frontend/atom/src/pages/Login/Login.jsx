@@ -301,6 +301,7 @@ const LicenseFormModal = (props) => {
             />
             <CustomInput
               title="Phone Number"
+              type="number"
               required
               value={phoneNo}
               name="phoneNo"
@@ -643,7 +644,7 @@ function Login() {
             </Form.Item>
           </Form>
 
-          {/* <button onClick={clearSetup}>Clear Ots Setup</button> */}
+          <button onClick={clearSetup}>Clear Ots Setup</button>
         </div>
         <picture className="login-gif-wrapper">
           <img src={illustration} alt="Montex Gif" />
