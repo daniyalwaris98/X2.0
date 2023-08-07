@@ -1,41 +1,25 @@
 import React, { useState, useRef, useEffect } from "react";
-import { Button, Table, Space, notification, Spin, Input, Switch } from "antd";
-import Modal from "./AddUser";
-import EditModal from "./EditUser";
-import AtomNavigation from "../AtomNavigation";
+import { Table, notification, Switch } from "antd";
+
 import exportExcel from "../Atom/assets/exp.svg";
-import atomicon from "./assets/atomicon.svg";
 import trash from "./assets/trash.svg";
 
-import {
-  ImportOutlined,
-  ExportOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
+import { ImportOutlined, EditOutlined } from "@ant-design/icons";
 import {
   TableStyling,
   StyledImportFileInput,
-  StyledButton,
   OnBoardStyledButton,
   AddAtomStyledButton,
   StyledExportButton,
-  StyledInput,
-  Styledselect,
-  InputWrapper,
-  StyledSubmitButton,
-  StyledModalButton,
-  ColStyling,
-  AddStyledButton,
-  TableStyle,
   DeleteButton,
 } from "../AllStyling/All.styled.js";
-import { ColumnHeader } from "../../utils/index.jsx";
 import Swal from "sweetalert2";
 import * as XLSX from "xlsx";
 import { columnSearch } from "../../utils";
 
 import axios, { baseUrl } from "../../utils/axios";
 import PasswordGroupModel from "./PasswordGroupModal/PasswordGroupModel";
+import { ResponseModel } from "../ReusableComponents/ResponseModel/ResponseModel";
 
 let excelData = [];
 let columnFilters = {};
@@ -144,35 +128,32 @@ const Atom = () => {
     }
   };
   const handleOnboard = () => {
-    // history.push('/onboard')
     if (selectedRowKeys.length > 0) {
       let filterRes = dataSource.filter((item) =>
         selectedRowKeys.includes(item.ne_ip_address)
       );
-
-      // history.push({
-      //   pathname: "/onboard",
-      //   state: { detail: filterRes },
-      // });
     } else {
       openSweetAlert("No device is selected to onboard.", "danger");
     }
   };
 
   const postSeed = async (seed) => {
-    console.log("seed=======>", seed);
-
     setLoading(true);
     await axios
       .post(baseUrl + "/addPasswordGroups", seed)
       .then((response) => {
-        console.log("response", response);
-
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
           setLoading(false);
         } else {
-          openSweetAlert(response?.data, "success");
+          ResponseModel(
+            `
+          Devices Not Imported: ${response?.data.error}
+          Devices Imported : ${response?.data.success}
+          `,
+            "success",
+            response?.data.error_list
+          );
           const promises = [];
           promises.push(
             axios
@@ -181,7 +162,6 @@ const Atom = () => {
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
                 setDataSource(response?.data);
-
                 setLoading(false);
               })
               .catch((error) => {
@@ -414,7 +394,6 @@ const Atom = () => {
   ];
 
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -432,16 +411,20 @@ const Atom = () => {
             if (response?.response?.status == 500) {
               openSweetAlert(response?.response?.data, "error");
               setSelectedRowKeys([]);
-
-              console.log(response?.response?.data);
             } else {
-              openSweetAlert(`Password Group Deleted Successfully`, "success");
+              ResponseModel(
+                `
+                Devices Not Deleted : ${response.data.error}
+                Devices Deleted : ${response.data.success}
+              `,
+                "success",
+                response.data.error_list
+              );
               const promises = [];
               promises.push(
                 axios
-                  .get(baseUrl + "/getUsers")
+                  .get(baseUrl + "/getPasswordGroups")
                   .then((response) => {
-                    console.log(response.data);
                     excelData = response.data;
                     setDataSource(response.data);
                     setRowCount(response.data.length);
