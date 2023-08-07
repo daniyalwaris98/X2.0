@@ -5,63 +5,12 @@ import axios, { baseUrl } from "../../utils/axios";
 import Swal from "sweetalert2";
 
 const StaticOnBoardModal = (props) => {
-  const { Option } = Select;
-  const children = [];
-
-  // for (let i = 10; i < 36; i++) {
-  //   children.push(
-  //     <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
-  //   );
-  // }
-  // const [selected, setSelected] = useState("");
-  // const [lang, setLang] = useState("");
-
-  const correctDatePattern = (date) => {
-    if (date != null) {
-      let d = date.split(date[10]);
-      return d[0] + " " + d[1];
-    } else return;
-  };
+  const { staticOnBoardRecord } = props;
 
   const getString = (str) => {
     return str ? str : "";
   };
 
-  const getDateString = (dateStr) => {
-    return dateStr; // ? correctDatePattern(dateStr) : "";
-  };
-
-  let [siteIds, setSiteIds] = useState([]);
-  let [siteIdOptions, setSiteIdOptions] = useState([]);
-  let [rackIds, setRackIds] = useState([]);
-  let [rackIdOptions, setRackIdOptions] = useState([]);
-
-  // useEffect(() => {
-  //     (async () => {
-  //       try {
-  //         const res1 = await axios.get(baseUrl + "/getAllSiteIDs");
-  //         setSiteIds(res1.data);
-  //         const res2 = await axios.get(baseUrl + "/getAllRackIDs");
-  //         setRackIds(res2.data);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //       }
-  //     })();
-  //   }, []);
-
-  // useEffect(() => {
-  //     getSiteIdOptions(siteIds);
-  //     getRackIdOptions(rackIds);
-  //   }, [siteIds, rackIds]);
-
-  //   const getSiteIdOptions = (values = []) => {
-  //     let options = [];
-  //     values.map((value) => {
-  //       options.push(<Option value={value}>{value}</Option>);
-  //     });
-  //     setSiteIdOptions(options);
-  //     // return options;
-  //   };
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -73,7 +22,6 @@ const StaticOnBoardModal = (props) => {
 
   const postDevice = async (device) => {
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addDeviceStatically ", device)
         .then((response) => {
@@ -89,7 +37,6 @@ const StaticOnBoardModal = (props) => {
               axios
                 .get(baseUrl + "/getAtoms")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -122,12 +69,8 @@ const StaticOnBoardModal = (props) => {
   let [ip_address, setipaddress] = useState(
     device ? getString(device.ip_address) : ""
   );
-  let [rack_name, setRack_name] = useState(
-    device ? getString(device.rack_name) : ""
-  );
-  let [site_name, setSite_name] = useState(
-    device ? getString(device.site_name) : ""
-  );
+  let [rack_name, setRack_name] = useState("");
+  let [site_name, setSite_name] = useState("");
   let [domain, setdomain] = useState(device ? getString(device.domain) : "");
   let [section, setSection] = useState(device ? getString(device.section) : "");
 
@@ -135,10 +78,6 @@ const StaticOnBoardModal = (props) => {
     device ? getString(device.department) : ""
   );
   let [virtual, setVirtual] = useState(device ? getString(device.virtual) : "");
-
-  let [device_ru, setDevice_ru] = useState(
-    device ? getString(device.device_ru) : ""
-  );
 
   let [authentication, setauthentication] = useState(
     device ? getString(device.authentication) : ""
@@ -192,9 +131,7 @@ const StaticOnBoardModal = (props) => {
   );
 
   let [ru, setru] = useState(device ? getString(device.ru) : "");
-  let [site_type, setsite_type] = useState(
-    device ? getString(device.site_type) : ""
-  );
+  let [site_type, setsite_type] = useState("");
   let [manufacturer, setmanufacturer] = useState(
     device ? getString(device.manufacturer) : ""
   );
@@ -206,14 +143,24 @@ const StaticOnBoardModal = (props) => {
 
   const changeSelectOptionHandler = (event) => {
     setSite_name(event.target.value);
-    // setRack_name(event.target.value);
-    console.log(site_name);
-    console.log(rack_name);
   };
+
   useEffect(() => {
-    console.log(site_name);
-    console.log(rack_name);
-  }, [site_name, rack_name]);
+    if (staticOnBoardRecord) {
+      setdevice_name(staticOnBoardRecord.device_name);
+      setipaddress(staticOnBoardRecord.ip_address);
+      setRack_name(staticOnBoardRecord.rack_name);
+      setSite_name(staticOnBoardRecord.site_name);
+      setSection(staticOnBoardRecord.section);
+      setDepartment(staticOnBoardRecord.department);
+      setVirtual(staticOnBoardRecord.virtual);
+      setru(staticOnBoardRecord.device_ru);
+      setsite_type(staticOnBoardRecord.device_type);
+      setmanufacturer(staticOnBoardRecord.creation_date);
+      setstatus(staticOnBoardRecord.status);
+    }
+  }, [staticOnBoardRecord]);
+
   const algorithm = [
     "Searching Algorithm",
     "Sorting Algorithm",
@@ -251,7 +198,6 @@ const StaticOnBoardModal = (props) => {
 
       try {
         const res = await axios.get(baseUrl + "/getSitesForDropdown");
-        console.log("getSitesForDropdown", res);
         setSiteArray(res.data);
         setSite_name(res.data[0]);
         setLoading(false);
@@ -273,9 +219,8 @@ const StaticOnBoardModal = (props) => {
         const res = await axios.get(
           `${baseUrl}/getRacksBySiteDropdown?site_name=${site_name}`
         );
-        console.log("getRacksBySiteDropdown", res);
         setRackArray(res.data);
-        setRack_name(res.data[0]);
+
         setLoading(false);
       } catch (err) {
         console.log(err.response);
@@ -284,25 +229,6 @@ const StaticOnBoardModal = (props) => {
     };
     getRacksBySiteDropdown();
   }, [site_name]);
-  const [passwordArray, setPasswordArray] = useState([]);
-
-  // useEffect(() => {
-  //   const getPasswordGroupDropdown = async () => {
-  //     setLoading(true);
-
-  //     try {
-  //       const res = await axios.get(baseUrl + "/getPasswordGroupDropdown");
-
-  //       console.log("getRacksBySiteDropdown", res);
-  //       setPasswordArray(res.data);
-  //       setLoading(false);
-  //     } catch (err) {
-  //       console.log(err.response);
-  //       setLoading(false);
-  //     }
-  //   };
-  //   getPasswordGroupDropdown();
-  // }, [password_group]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -369,28 +295,11 @@ const StaticOnBoardModal = (props) => {
     };
 
     props.setIsStaticModalVisible(false);
-    console.log("devices", device);
     postDevice(device);
   };
 
   const handleCancel = () => {
     props.setIsStaticModalVisible(false);
-  };
-  const getRackIdOptions = (values = []) => {
-    let options = [];
-    values.map((value) => {
-      options.push(<Option value={value}>{value}</Option>);
-    });
-    setRackIdOptions(options);
-    // return options;
-  };
-
-  const getOptions = (values = []) => {
-    let options = [];
-    values.map((value) => {
-      options.push(<Option value={value}>{value}</Option>);
-    });
-    return options;
   };
 
   return (
@@ -475,11 +384,12 @@ const StaticOnBoardModal = (props) => {
                 onChange={changeSelectOptionHandler}
                 // style={{ color: "#f41" }}
               >
+                <option value="">Select Sitename</option>
                 {siteArray.map((item, index) => {
                   return (
-                    <>
-                      <option>{item}</option>
-                    </>
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
                   );
                 })}
 
@@ -509,11 +419,12 @@ const StaticOnBoardModal = (props) => {
                   setRack_name(e.target.value);
                 }}
               >
+                <option value="">Select Rack Name</option>
                 {rackArray?.map((item, index) => {
                   return (
-                    <>
-                      <option>{item}</option>
-                    </>
+                    <option key={index} value={item}>
+                      {item}
+                    </option>
                   );
                 })}
               </Styledselect>

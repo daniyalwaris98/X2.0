@@ -293,6 +293,7 @@ const Atom = () => {
   const [rackNameModalVisible, setRackNameModalVisible] = useState(false);
   const [siteNameModalVisible, setSiteNameModalVisible] = useState(false);
   const [configData, setConfigData] = useState(null);
+  const [staticOnBoardRecord, setStaticOnBoardRecord] = useState({});
 
   const [onBoardStatus, setOnBoardStatus] = useState(false);
 
@@ -618,8 +619,9 @@ const Atom = () => {
     setIsEditModalVisible(true);
   };
 
-  const StaticOnBoard = () => {
+  const StaticOnBoard = (record) => {
     setIsStaticModalVisible(true);
+    setStaticOnBoardRecord(record);
   };
 
   const showSiteName = async (record) => {
@@ -1247,6 +1249,7 @@ const Atom = () => {
           setRowCount={setRowCount}
           staticRecord={staticRecord}
           centered={true}
+          staticOnBoardRecord={staticOnBoardRecord}
         />
       )}
 

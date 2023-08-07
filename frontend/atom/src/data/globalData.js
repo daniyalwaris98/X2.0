@@ -15,10 +15,10 @@ export const devices = [
     module: ["atom", "ipam", "monitoring", "ncm"],
     name: "arista",
   },
-  {
-    module: ["atom", "ipam", "monitoring", "ncm"],
-    name: "cisco_aci",
-  },
+  // {
+  //   module: ["atom", "ipam", "monitoring", "ncm"],
+  //   name: "cisco_aci",
+  // },
   {
     module: ["atom", "ipam", "monitoring", "ncm"],
     name: "cisco_ftd",
