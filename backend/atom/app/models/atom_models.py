@@ -87,6 +87,8 @@ class Atom_Table(db.Model):
     )
     onboard_status = db.Column(db.String(50))
     scop = db.Column(db.String(50), default="Atom")
+    
+    vendor = db.Column(db.String(50))
 
     creation_date = db.Column(db.DateTime, default=datetime.now())
     modification_date = db.Column(

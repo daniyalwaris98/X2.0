@@ -197,6 +197,13 @@ def DeleteAtom(user_data):
                         f"{ip} : Device Is Being Used In UAM. Therefore Can't Be Deleted"
                     )
                     continue
+                
+                device = Monitoring_Devices_Table.query.filter_by(atom_id=atom.atom_id).first()
+                if device is not None:
+                    errorList.append(
+                        f"{ip} : Device Is Being Used In Monitoring. Therefore Can't Be Deleted"
+                    )
+                    continue
 
                 db.session.delete(atom)
                 db.session.commit()
