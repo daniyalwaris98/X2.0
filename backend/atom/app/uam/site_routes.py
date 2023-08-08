@@ -32,48 +32,34 @@ def editSite(user_data):
 
 @app.route("/deleteSite", methods=["POST"])
 @token_required
-def DeleteSite(user_data):
-    if True:
-        try:
-            response = False
-            siteIds = request.get_json()
-            print("SITEEEEEEEEE", siteIds, file=sys.stderr)
-            for siteId in siteIds:
-                queryString1 = f"select count(*) from atom_table where SITE_NAME=(select SITE_NAME from phy_table where SITE_ID={siteId});"
-                result1 = db.session.execute(queryString1).scalar()
-                queryString2 = f"select count(*) from device_table where SITE_NAME=(select SITE_NAME from phy_table where SITE_ID ={siteId});"
-                result2 = db.session.execute(queryString2).scalar()
-                queryString3 = f"select count(*) from rack_table where SITE_NAME= (select SITE_NAME from phy_table where SITE_ID ={siteId});"
-                result3 = db.session.execute(queryString3).scalar()
-                print("RESULTSSSSSSSSS", result1, result2, result3, file=sys.stderr)
-                if result1 > 0 and result2 > 0 and result3 > 0:
-                    return "Site Name Found in Atom, Rack and Device", 500
-                if result1 > 0 and result2 > 0:
-                    return "Site Name Found in Atom and Device", 500
-                if result1 > 0 and result3 > 0:
-                    return "Site Name Found in Atom and Rack", 500
-                if result2 > 0 and result3 > 0:
-                    return "Site Name Found in Device and Rack", 500
-                if result1 > 0:
-                    return "Site Name Found in Atom", 500
-                if result2 > 0:
-                    return "Site Name Found in Device", 500
-                if result3 > 0:
-                    return "Site Name Found in Rack", 500
-                else:
-                    queryString = f"delete from phy_table where site_id = '{siteId}';"
-                    db.session.execute(queryString)
-                    db.session.commit()
-                    response = True
-            if response == True:
-                return "Site Deleted Successfully", 200
-        except Exception as e:
-            traceback.print_exc()
-            return "Site name is already in use\nSite can not be deleted", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+def deleteSite(user_data):
+    try:
+        site_names = request.get_json()
+        
+        responseList = []
+        errorList = []
+        
+        for site_name in site_names:
+            msg, status = DeleteSite(site_name)
+            
+            if status == 200:
+                responseList.append(msg)
+            else:
+                errorList.append(msg)
 
+        responseDict = {
+            "success": len(responseList),
+            "error": len(errorList),
+            "error_list": errorList,
+            "success_list": responseList,
+        }
+            
+        return jsonify(responseDict), 200
+        
+    except Exception as e:
+        traceback.print_exc()
+        return "Server Error While Deleting Site", 500
+    
 
 @app.route("/getSiteBySiteName", methods=["GET"])
 @token_required
