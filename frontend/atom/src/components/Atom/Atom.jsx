@@ -12,7 +12,6 @@ import * as XLSX from "xlsx";
 
 import { ImportOutlined, EditOutlined } from "@ant-design/icons";
 import {
-  TableStyling,
   StyledImportFileInput,
   OnBoardStyledButton,
   AddAtomStyledButton,
