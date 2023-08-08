@@ -498,7 +498,7 @@ function Login() {
       })
       .catch((err) => {
         console.log("err", err);
-        ResponseModel(err?.message, "error");
+        ResponseModel(err?.response?.data?.message, "error");
         setLoading(false);
       });
   };
