@@ -42,14 +42,14 @@ def AddSite(siteObj, update):
         if siteObj["status"] is None:
             return "Status Must Be Defined", 500
 
-        siteObj["status"] = siteObj["status"].strip()
+        siteObj["status"] = str(siteObj["status"]).strip()
 
         if siteObj["status"] == "":
             return "Status Must Be Defined (Production / Not Production)", 500
 
         if (
-            siteObj["status"].capitalize() != "Production"
-            and siteObj["status"].capitalize() != "Not Production"
+            siteObj["status"].title() != "Production"
+            and siteObj["status"].title() != "Not Production"
         ):
             return "Status Must Be Defined (Production / Not Production)", 500
 
