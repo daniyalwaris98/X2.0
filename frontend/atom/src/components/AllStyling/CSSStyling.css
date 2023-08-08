@@ -2,7 +2,6 @@ select {
   -webkit-appearance: none;
   appearance: none;
   border: none;
-  /* background-color: yellow; */
 }
 .select_type {
   position: relative;
@@ -18,12 +17,10 @@ select {
   color: #c6c1c1;
   top: 7px;
   position: absolute;
-  /* background-color: yellow; */
 }
 .rectangle {
   width: 100%;
   padding-left: 12px;
-  /* background-color: yellow; */
 }
 .hover_img {
   display: none;

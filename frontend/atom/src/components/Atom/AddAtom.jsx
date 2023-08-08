@@ -76,8 +76,6 @@ const AddAtom = (props) => {
       await axios
         .post(baseUrl + "/addSite ", allSiteData)
         .then((response) => {
-          console.log("response", response);
-
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
           } else {
@@ -209,10 +207,6 @@ const AddAtom = (props) => {
     }
   };
 
-  const getString = (str) => {
-    return str ? str : "";
-  };
-
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -285,8 +279,6 @@ const AddAtom = (props) => {
 
   const changeSelectOptionHandler = (event) => {
     setSelectSiteName(event.target.value);
-    // const res = await axios.get(baseUrl + "/getSitesForDropdown");
-    // setSite_name(res.data);
   };
 
   const algorithm = [
@@ -299,9 +291,6 @@ const AddAtom = (props) => {
 
   /** Type variable to store different array for different dropdown */
   let type = null;
-
-  /** This will be used to create set of options that user will see */
-  let options = null;
 
   /** Setting Type variable zaccording to dropdown */
   if (site_name === "Algorithm") {
@@ -383,9 +372,19 @@ const AddAtom = (props) => {
       device_type,
       password_group: isSelectPasswordGroup,
     };
-
     props.setIsModalVisible(false);
     postDevice(device);
+  };
+
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      if (ip_address.trim().length > 0) {
+        handleSubmit(e);
+      } else {
+        console.log("workssssss");
+        props.setIsModalVisible(true);
+      }
+    }
   };
 
   const handleCancel = () => {
@@ -418,7 +417,7 @@ const AddAtom = (props) => {
           }}
         >
           <Row style={{ alignContent: "center" }}>
-            <Col span={24} style={{}}>
+            <Col span={24}>
               <p
                 style={{
                   fontSize: "22px",
@@ -439,6 +438,7 @@ const AddAtom = (props) => {
                   value={ip_address}
                   onChange={(e) => setIp(e.target.value)}
                   required
+                  onKeyDown={handleKeyPress}
                 />
               </InputWrapper>
               <InputWrapper>
@@ -450,6 +450,7 @@ const AddAtom = (props) => {
                     className="rectangle"
                     value={isSelectSiteName}
                     onChange={changeSelectOptionHandler}
+                    onKeyDown={handleKeyPress}
                   >
                     <option value="">Select Site Name</option>
                     {siteArray.map((item, index) => {
@@ -483,6 +484,7 @@ const AddAtom = (props) => {
                   <Styledselect
                     className="rectangle"
                     value={rack_name}
+                    onKeyDown={handleKeyPress}
                     onChange={(e) => {
                       setRack_name(e.target.value);
                     }}
@@ -517,6 +519,7 @@ const AddAtom = (props) => {
                 &nbsp;&nbsp;
                 <StyledInput
                   value={device_name}
+                  onKeyDown={handleKeyPress}
                   onChange={(e) =>
                     setDevice_name(
                       e.target.value.replace(
@@ -535,6 +538,7 @@ const AddAtom = (props) => {
                   <Styledselect
                     className="rectangle"
                     placeholder="select"
+                    onKeyDown={handleKeyPress}
                     value={device_ru}
                     onChange={(e) => {
                       setDevice_ru(e.target.value);
@@ -557,6 +561,7 @@ const AddAtom = (props) => {
                 Department: &nbsp;&nbsp;
                 <StyledInput
                   value={department}
+                  onKeyDown={handleKeyPress}
                   onChange={(e) =>
                     setDepartment(
                       e.target.value.replace(
@@ -573,6 +578,7 @@ const AddAtom = (props) => {
                 Section: &nbsp;&nbsp;
                 <StyledInput
                   value={section}
+                  onKeyDown={handleKeyPress}
                   onChange={(e) =>
                     setSection(
                       e.target.value.replace(
@@ -586,20 +592,17 @@ const AddAtom = (props) => {
               <InputWrapper>
                 <AdjustInputWrapper>
                   Function:
-                  {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                  {/* &nbsp;&nbsp; */}
                   <div className="select_type">
                     <Styledselect
                       className="rectangle"
                       placeholder="select"
+                      onKeyDown={handleKeyPress}
                       value={myfunction}
                       onChange={(e) => {
                         setMyfunction(e.target.value);
                       }}
                     >
-                      <option value="" style={{ color: "rgba(0,0,0,0.1)" }}>
-                        Select Function
-                      </option>
+                      <option value="">Select Function</option>
 
                       {atomFunctions.map((atomFunction, index) => {
                         return (
@@ -614,27 +617,29 @@ const AddAtom = (props) => {
               </InputWrapper>
               <AdjustInputWrapper>
                 Virtual: &nbsp;&nbsp;
-                <StyledInput
-                  value={virtual}
-                  onChange={(e) =>
-                    setVirtual(
-                      e.target.value.replace(
-                        /[!^=&\/\\#;,+()$~%'":*?<>{}]/g,
-                        ""
-                      )
-                    )
-                  }
-                />
+                <div className="select_type">
+                  <Styledselect
+                    placeholder="select"
+                    value={virtual}
+                    onKeyDown={handleKeyPress}
+                    onChange={(e) => {
+                      setVirtual(e.target.value);
+                    }}
+                  >
+                    <option value="">Select Virtual</option>
+                    <option value="virtual">Virtual</option>
+                    <option value="not Virtual">Not Virtual</option>
+                  </Styledselect>
+                </div>
               </AdjustInputWrapper>
 
               <AdjustInputWrappernext>
                 Device Type:
-                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                {/* &nbsp;&nbsp; */}
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
                     placeholder="select"
+                    onKeyDown={handleKeyPress}
                     value={device_type}
                     onChange={(e) => {
                       setDevice_type(e.target.value);
@@ -651,11 +656,10 @@ const AddAtom = (props) => {
               </AdjustInputWrappernext>
               <InputWrapper>
                 Password Group:
-                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-                {/* &nbsp;&nbsp; */}
                 <div className="select_type">
                   <Styledselect
                     className="rectangle"
+                    onKeyDown={handleKeyPress}
                     value={isSelectPasswordGroup}
                     onChange={(e) => {
                       setSelectPassWordGroup(e.target.value);
@@ -700,21 +704,19 @@ const AddAtom = (props) => {
               >
                 <StyledButton
                   style={{
-                    // float: "right",
                     marginTop: "10px",
                     width: "120px",
                     marginLeft: "10px",
                     marginRight: "10px",
-                    // paddingBottom: "5px",
                   }}
                   color={"#BBBABA"}
                   onClick={handleCancel}
+                  type="button"
                 >
                   Cancel
                 </StyledButton>
                 <StyledSubmitButton
                   style={{
-                    // float: "right",
                     width: "120px",
                     marginTop: "10px",
                     background:
@@ -736,88 +738,6 @@ const AddAtom = (props) => {
         isModalOpen={isPassModalVisible}
         setIsModalOpen={setIsPassModalVisible}
       />
-
-      {/* <Modal
-        width={"30%"}
-        title="Add New Password Group"
-        open={isPassModalVisible}
-        onOk={handleOk}
-        footer={false}
-        onCancel={handleCancelPasPopup}
-      >
-        <form
-          //   onSubmit={handlePassGroupFormSubmit}
-          style={{ padding: "25px", background: "#f5f5f5" }}
-        >
-          <div>
-            <label>Password Group</label>&nbsp;
-            <span style={{ color: "red" }}>*</span>
-            <StyledInput
-              style={{
-                width: "100%",
-                height: "2rem",
-                border: "0.3px solid rgba(0,0,0,0.2)",
-                paddingLeft: "8px",
-              }}
-              required
-              placeholder="password Group"
-              value={passGroup}
-              onChange={(e) => setPassGroup(e.target.value)}
-            />
-          </div>
-          <div style={{ marginTop: "15px" }}>
-            <label style={{ marginTop: "10px" }}>Username</label>
-            &nbsp;
-            <span style={{ color: "red" }}>*</span>
-            <StyledInput
-              style={{
-                width: "100%",
-                height: "2rem",
-                border: "0.3px solid rgba(0,0,0,0.2)",
-                paddingLeft: "8px",
-              }}
-              required
-              placeholder="Username"
-              value={username}
-              onChange={(e) => setUsername(e.target.value)}
-            />
-          </div>
-          <div style={{ marginTop: "15px" }}>
-            <label style={{ marginTop: "10px" }}>Password</label>
-            &nbsp;
-            <span style={{ color: "red" }}>*</span>
-            <StyledInput
-              style={{
-                width: "100%",
-                height: "2rem",
-                border: "0.3px solid rgba(0,0,0,0.2)",
-                paddingLeft: "8px",
-              }}
-              required
-              placeholder="Password"
-              value={pass}
-              onChange={(e) => setPass(e.target.value)}
-            />
-          </div>
-          <div style={{ marginTop: "20px" }}>
-            <button
-              type="submit"
-              onClick={handlePassGroupFormSubmit}
-              style={{
-                backgroundColor: "#66B127",
-                color: "white",
-                width: "100%",
-                height: "35px",
-                border: "none",
-                //   width: "120px",
-                cursor: "Pointer",
-              }}
-            >
-              Add Password Group
-            </button>
-          </div>
-        </form>
-      </Modal> */}
 
       <Modal
         width={"70%"}

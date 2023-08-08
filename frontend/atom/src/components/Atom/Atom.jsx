@@ -12,7 +12,6 @@ import * as XLSX from "xlsx";
 
 import { ImportOutlined, EditOutlined } from "@ant-design/icons";
 import {
-  TableStyling,
   StyledImportFileInput,
   OnBoardStyledButton,
   AddAtomStyledButton,
@@ -94,14 +93,11 @@ const DiscoverTableModel = (props) => {
       subnets = "All";
     }
 
-    console.log(subnets);
-
     await axios
       .post(`${baseUrl}/getDiscoveryForTransition`, {
         subnet: subnets,
       })
       .then((res) => {
-        console.log("res", res);
         if (res.status == 500) {
           ResponseModel(res.response.data, "error");
         } else {
