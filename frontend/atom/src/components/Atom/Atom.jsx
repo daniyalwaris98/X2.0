@@ -94,14 +94,11 @@ const DiscoverTableModel = (props) => {
       subnets = "All";
     }
 
-    console.log(subnets);
-
     await axios
       .post(`${baseUrl}/getDiscoveryForTransition`, {
         subnet: subnets,
       })
       .then((res) => {
-        console.log("res", res);
         if (res.status == 500) {
           ResponseModel(res.response.data, "error");
         } else {
