@@ -8,8 +8,8 @@ from pysnmp.hlapi import *
 from influxdb_client.client.write_api import SYNCHRONOUS
 
 from app import db
-from app.monitoring.device_monitoring.alerts_utils import *
-from app.monitoring.device_monitoring.ping_parse import *
+from app.monitoring_device.alerts_utils import *
+from app.monitoring_device.ping_parse import *
 from app.models.common_models import *
 
 
