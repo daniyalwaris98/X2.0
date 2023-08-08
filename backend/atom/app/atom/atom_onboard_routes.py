@@ -200,9 +200,10 @@ def OnBoardDevice(user_data):
                 errorList.append(f"{ip} : Error While Onboarding")
             else:
                 successList.append(f"{ip} : Device Onboarded Successfully")
+                
             
         
-        return f"** Onboard Summery **\nFailed : {len(errorList)}\nSuccessfull : {len(successList)}", 200
+        return f"** Onboard Summary **\nFailed : {len(errorList)}\nSuccessful : {len(successList)}", 200
             
     except Exception as e:
         traceback.print_exc()
