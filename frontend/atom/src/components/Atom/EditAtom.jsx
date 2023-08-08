@@ -129,6 +129,17 @@ const EditAtom = (props) => {
     postDevice(device);
   };
 
+  const handleKeyPress = (e) => {
+    if (e.key === "Enter") {
+      if (ip_address.trim().length > 0) {
+        handleSubmit(e);
+      } else {
+        console.log("workssssss");
+        props.setIsModalVisible(true);
+      }
+    }
+  };
+
   const changeSelectOptionHandler = (event) => {
     setSite_name(event.target.value);
   };
@@ -229,6 +240,7 @@ const EditAtom = (props) => {
                 value={ip_address}
                 onChange={(e) => setIp(e.target.value)}
                 readOnly
+                onKeyDown={handleKeyPress}
               />
             </InputWrapper>
             <InputWrapper>
@@ -239,6 +251,7 @@ const EditAtom = (props) => {
                 <Styledselect
                   className="rectangle"
                   value={site_name}
+                  onKeyDown={handleKeyPress}
                   onChange={(e) => changeSelectOptionHandler(e)}
                   // required
                 >
@@ -261,6 +274,7 @@ const EditAtom = (props) => {
                 <Styledselect
                   className="rectangle"
                   value={rack_name}
+                  onKeyDown={handleKeyPress}
                   // required
                   onChange={(e) => {
                     setRack_name(e.target.value);
@@ -281,6 +295,7 @@ const EditAtom = (props) => {
               Device Name: &nbsp;&nbsp;
               <StyledInput
                 value={device_name}
+                onKeyDown={handleKeyPress}
                 onChange={(e) =>
                   setDevice_name(
                     e.target.value.replace(/[!^=&\/\\#;,+()$~%'":*?<>{}]/g, "")
@@ -299,6 +314,7 @@ const EditAtom = (props) => {
                   className="rectangle"
                   // required
                   placeholder="select"
+                  onKeyDown={handleKeyPress}
                   value={device_ru}
                   onChange={(e) => {
                     setDevice_ru(e.target.value);
@@ -319,6 +335,7 @@ const EditAtom = (props) => {
               Section: &nbsp;&nbsp;
               <StyledInput
                 value={section}
+                onKeyDown={handleKeyPress}
                 onChange={(e) =>
                   setSection(
                     e.target.value.replace(/[!^=&\/\\#;,+()$~%'":*?<>{}]/g, "")
@@ -332,6 +349,7 @@ const EditAtom = (props) => {
               Department: &nbsp;&nbsp;
               <StyledInput
                 value={department}
+                onKeyDown={handleKeyPress}
                 onChange={(e) =>
                   setDepartment(
                     e.target.value.replace(/[!^=&\/\\#;,+()$~%'":*?<>{}]/g, "")
@@ -347,6 +365,7 @@ const EditAtom = (props) => {
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
+                  onKeyDown={handleKeyPress}
                   // required
                   placeholder="select"
                   value={myfunction}
@@ -370,6 +389,7 @@ const EditAtom = (props) => {
               Virtual: &nbsp;&nbsp;
               <StyledInput
                 value={virtual}
+                onKeyDown={handleKeyPress}
                 onChange={(e) =>
                   setVirtual(
                     e.target.value.replace(/[!^=&\/\\#;,+()$~%'":*?<>{}]/g, "")
@@ -385,6 +405,7 @@ const EditAtom = (props) => {
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
+                  onKeyDown={handleKeyPress}
                   // required
                   placeholder="select"
                   value={device_type}
@@ -411,6 +432,7 @@ const EditAtom = (props) => {
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
+                  onKeyDown={handleKeyPress}
                   value={password_group}
                   // required
                   onChange={(e) => {
@@ -451,6 +473,7 @@ const EditAtom = (props) => {
                 }}
                 color={"#BBBABA"}
                 onClick={handleCancel}
+                type="button"
               >
                 Cancel
               </StyledButton>
@@ -465,6 +488,7 @@ const EditAtom = (props) => {
                 }}
                 color={"green"}
                 onClick={handleSubmit}
+                type="submit"
               >
                 Done
               </StyledSubmitButton>
