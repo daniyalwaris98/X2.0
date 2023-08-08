@@ -1,5 +1,5 @@
-from app.monitoring.device_monitoring.puller_utils import *
-from app.monitoring.device_monitoring.ping_parse import *
+from app.monitoring_device.puller_utils import *
+from app.monitoring_device.ping_parse import *
 
 
 cisco_ios_oids = {

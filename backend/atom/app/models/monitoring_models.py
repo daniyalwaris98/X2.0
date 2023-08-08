@@ -36,7 +36,6 @@ class Monitoring_Devices_Table(db.Model):
     atom_id = db.Column(db.Integer, ForeignKey("atom_table.atom_id"))
 
     source = db.Column(db.String(50))
-    vendor = db.Column(db.String(50))
     active = db.Column(db.String(50))
     ping_status = db.Column(db.String(40))
     snmp_status = db.Column(db.String(40))

@@ -662,12 +662,7 @@ def UamInventoryData(pullerData):
 
                 else:
                     print("Device Not Found", file=sys.stderr)
-        else:
-            print(
-                f"Error while getting data from device {ip_addr} error {e}",
-                file=sys.stderr,
-            )
-            failed = True
+                    failed = True
 
     except Exception as e:
         traceback.print_exc()

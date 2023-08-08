@@ -3,7 +3,7 @@ import sys
 from flask import Flask
 import traceback
 from flask_jsonpify import jsonify
-from app.monitoring.device_monitoring import *
+from app.monitoring_device.alerts_utils import *
 from flask import request, make_response, Response, session
 from flask_jsonpify import jsonify
 import sys
