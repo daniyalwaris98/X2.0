@@ -116,4 +116,30 @@ def GetAllSites():
     except Exception:
         traceback.print_exc()
         return "Server Error", 500
+
+
+def DeleteSite(site_name):
+    try:
         
+        site = Site_Table.query.filter_by(site_name=site_name).first()
+        
+        if site is None:
+            return f"{site_name} : Site Name Not Found", 500
+        
+        racks = Rack_Table.query.filter_by(site_id=site.site_id).all()
+        for rack in racks:
+            
+            atoms = Atom_Table.query.filter_by(rack_id=rack.rack_id).all()
+            if len(atoms) > 0:
+                return f"{site_name} : Site Is In Use. Site Can Not Be Deleted", 500
+            else:
+                DeleteDBData(rack)
+        
+        if DeleteDBData(site) == 200:
+            return f"{site_name} : Site & Its Racks Deleted Successfully", 500
+        else:
+            return f"{site_name} : Error While Deleting Site", 500
+
+    except Exception as e:
+        traceback.print_exc()
+        return f"{site_name} : Exeption Occured While Deleting Site", 500
