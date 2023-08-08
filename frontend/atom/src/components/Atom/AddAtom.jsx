@@ -1088,7 +1088,7 @@ const AddAtom = (props) => {
                     setRackStatus(e.target.value);
                   }}
                 >
-                  <option>Selet Status</option>
+                  <option>Select Status</option>
                   <option value="Production">Production</option>
                   <option value="Not Production">Not Production</option>
                 </Styledselect>
