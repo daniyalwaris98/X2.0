@@ -4,7 +4,7 @@ import json
 import sys
 
 
-def decodeLicense(license_key):
+def DecodeLicense(license_key):
     try:
         decoded_data = base64.b64decode(license_key)
         res = decoded_data.decode()
