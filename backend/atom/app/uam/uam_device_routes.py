@@ -38,6 +38,15 @@ def deleteUamDevice(user_data):
                 success_list.append(msg)
             else:
                 error_list.append(msg)
+        
+        responseDict = {
+            "success": len(success_list),
+            "error": len(error_list),
+            "error_list": error_list,
+            "success_list": success_list,
+        }
+
+        return jsonify(responseDict), 200
     except Exception as e:
         traceback.print_exc()
         return "Server Error", 500
