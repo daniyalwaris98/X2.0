@@ -1,4 +1,3 @@
-
 from app.uam.rack_utils import *
 
 
@@ -73,7 +72,7 @@ def GetRacksBySiteDropdown(user_data):
         return jsonify(objList), 200
     except Exception as e:
         traceback.print_exc()
-        return str(e), 500
+        return "Server Error While Getting Racks", 500
 
 
 @app.route("/getRackByRackName", methods=["GET"])
@@ -104,7 +103,7 @@ def getAllRacks(user_data):
         return "Error While Fetching Data", 500
 
 
-@app.route('/totalRacks', methods=['GET'])
+@app.route("/totalRacks", methods=["GET"])
 @token_required
 def TotalRacks(user_data):
     try:
@@ -115,18 +114,9 @@ def TotalRacks(user_data):
         queryString2 = f"select sum(RU) from rack_table;"
         result2 = db.session.execute(queryString2).scalar()
         objList = [
-            {
-                "name": "Racks",
-                "value": result if result is not None else 0
-            },
-            {
-                "name": "Devices",
-                "value": result1 if result1 is not None else 0
-            },
-            {
-                "name": "Total RU",
-                "value": result2 if result2 is not None else 0
-            }
+            {"name": "Racks", "value": result if result is not None else 0},
+            {"name": "Devices", "value": result1 if result1 is not None else 0},
+            {"name": "Total RU", "value": result2 if result2 is not None else 0},
         ]
         print(objList, file=sys.stderr)
         return jsonify(objList), 200
@@ -135,7 +125,7 @@ def TotalRacks(user_data):
         return "Server Error", 500
 
 
-@app.route('/rackLeaflet', methods=['GET'])
+@app.route("/rackLeaflet", methods=["GET"])
 @token_required
 def RackLeaflet(user_data):
     try:
@@ -146,8 +136,8 @@ def RackLeaflet(user_data):
             longitude = row[0]
             latitude = row[1]
             objDict = {}
-            objDict['longitude'] = longitude
-            objDict['latitude'] = latitude
+            objDict["longitude"] = longitude
+            objDict["latitude"] = latitude
             objList.append(objDict)
         return jsonify(objList), 200
     except Exception as e:
@@ -155,47 +145,43 @@ def RackLeaflet(user_data):
         return "Server Error", 500
 
 
-@app.route('/allFloors', methods=['GET'])
+@app.route("/allFloors", methods=["GET"])
 @token_required
 def AllFloors(user_data):
-    return jsonify(list()), 200
-    if True:
-        try:
-            objList = []
-            queryString = f"select FLOOR from rack_table;"
-            result = db.session.execute(queryString)
-            for row in result:
-                floor = row[0]
-                objList.append(floor)
-            print(objList, file=sys.stderr)
-            return jsonify(objList), 200
-        except Exception as e:
-            traceback.print_exc()
-            return str(e), 500
-
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
+    try:
         
-@app.route('/allRacks', methods=['GET'])
+        objList = []
+        queryString = f"select FLOOR from rack_table;"
+        result = db.session.execute(queryString)
+        
+        for row in result:
+            floor = row[0]
+            objList.append(floor)
+        print(objList, file=sys.stderr)
+        return jsonify(objList), 200
+    
+    except Exception as e:
+        traceback.print_exc()
+        return "Server Error While Getting Floors", 500
+
+
+@app.route("/allRacks", methods=["GET"])
 @token_required
 def AllRacks(user_data):
     try:
         rackList = []
         racks = GetAllRacks()
         for rack in racks:
-            rackList.append(rack['rack_name'])
+            rackList.append(rack["rack_name"])
         print(rackList, file=sys.stderr)
-        
+
         return jsonify(rackList), 200
     except Exception as e:
         traceback.print_exc()
         return "Server Error", 500
-    
 
-@app.route('/topRacks', methods=['GET'])
+
+@app.route("/topRacks", methods=["GET"])
 @token_required
 def TopRacks(user_data):
     try:
@@ -206,11 +192,10 @@ def TopRacks(user_data):
             sites = row[0]
             count = row[1]
             objDict = {}
-            objDict['name'] = sites
-            objDict['value'] = count
+            objDict["name"] = sites
+            objDict["value"] = count
             objList.append(objDict)
         return jsonify(objList), 200
     except Exception as e:
         traceback.print_exc()
         return "Server Error", 500
-    
