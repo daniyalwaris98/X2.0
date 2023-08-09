@@ -4,7 +4,8 @@ from app import app
 from flask_jsonpify import jsonify
 from flask import request
 from app.utilities.db_utils import *
-import json
+from app.models.users_model import *
+from app.license.license_decoder import *
 
 
 def Hashing(string):
@@ -71,9 +72,8 @@ def GenerateLicenseKey():
 
 
 @app.route('/decodeLicense', methods=['POST'])
-def DecodeLicenseKey():
-    current_time = datetime.now()
-
+def decodeLicense():
+    
     data = request.get_json()
     license_key = ""
     if 'license_key' in data.keys():
@@ -82,31 +82,28 @@ def DecodeLicenseKey():
         return "License Key Is Missings", 500
 
     try:
-        decoded_data = base64.b64decode(license_key)
-        res = decoded_data.decode()
-
-        res = f"{res}".replace("\'", "\"")
-        print(res, file=sys.stderr)
-
-        objDict = json.loads(res)
+        
+        objDict = DecodeLicense(license_key)
+        
+        if objDict is None:
+            return "Invalid License Key", 500
 
         company_name = objDict['company_name']
-        start_date = datetime.strptime(objDict['start_date'], "%Y-%m-%d %H:%M:%S")
-        end_date = datetime.strptime(objDict['end_date'], "%Y-%m-%d %H:%M:%S")
 
         noneFlag = False
         licenseObj = License_Verification_Table.query.filter_by(company_name=company_name).first()
 
         if licenseObj is None:
-            noneFlag = True
-            licenseObj = License_Verification_Table()
-            licenseObj.company_name = company_name
-            licenseObj.creation_date = f"{current_time}"
+            return "Invalid License Key", 500
+            # noneFlag = True
+            # licenseObj = License_Verification_Table()
+            # licenseObj.company_name = company_name
+            # licenseObj.creation_date = f"{current_time}"
+        
 
         licenseObj.license_verification_key = license_key
-        licenseObj.start_date = f"{start_date}"
-        licenseObj.end_date = f"{end_date}"
-        licenseObj.modification_date = f"{current_time}"
+        licenseObj.start_date = f"{objDict['start_date']}"
+        licenseObj.end_date = f"{objDict['end_date']}"
 
         if noneFlag:
             InsertDBData(licenseObj)
