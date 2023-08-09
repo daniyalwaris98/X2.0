@@ -67,8 +67,6 @@ const AddRackModel = (props) => {
               axios
                 .get(baseUrl + "/getSitesForDropdown")
                 .then((res) => {
-                  console.log("getSitesForDropdown", res);
-
                   setSiteArray(res.data);
                   setsite_Name(res.data[0]);
                 })

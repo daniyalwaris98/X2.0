@@ -1,19 +1,7 @@
 import React, { useEffect, useState } from "react";
-import { Bar, Pie, Line, Doughnut, PolarArea } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import axios, { baseUrl } from "../../../../utils/axios";
 import "chartjs-plugin-zoom";
-import { Chart as ChartJS } from "chart.js/auto";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-import { Spin } from "antd";
-// import { SpinLoading } from "../AllStyling/All.styled.js";
-import { Chart } from "chart.js";
-
-// Chart.defaults.datasets.bar.barThickness = 25;
-// useEffect(() => {}, []);
-
-// useEffect(() => {
-//   Bar.register(zoomPlugin);
-// }, [zoomPlugin]);
 
 const index = () => {
   const [loading, setLoading] = useState(false);
@@ -25,11 +13,9 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/topFunctions");
-        console.log("topFunction", res.data);
+
         setTopFunctions(res.data);
         setLoading(false);
-
-        // setSiteDeviceVendor(res.data);
       } catch (err) {
         console.log(err.response);
         setLoading(false);

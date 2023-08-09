@@ -161,7 +161,6 @@ const EditAtom = (props) => {
     };
 
     props.setIsEditModalVisible(false);
-    console.log("devices", device);
     postDevice(device);
   };
   //   const changeSelectOptionHandler = (event) => {

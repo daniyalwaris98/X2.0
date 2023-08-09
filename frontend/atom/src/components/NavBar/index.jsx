@@ -116,6 +116,7 @@ import axios, { baseUrl } from "../../utils/axios";
 import NewDashboard from "../NewDashboard";
 import Dashboard from "../../pages/Dashboard/Dashboard";
 import Login from "../../pages/Login/Login";
+import { Database } from "../../pages";
 
 const SecondNavBar = () => {
   const { pathname } = useLocation();
@@ -165,7 +166,7 @@ const SecondNavBar = () => {
   }, []);
 
   useEffect(() => {
-    if (keyResp != "" && keyResp.validaty != "TRUE") {
+    if (keyResp != "" && keyResp?.validaty != "TRUE") {
       navigate("/license-renewal");
     }
   }, [keyResp]);
@@ -188,7 +189,7 @@ const SecondNavBar = () => {
 
       <Routes>
         {token ? (
-          keyResp.validaty !== "TRUE" && keyResp !== "" ? (
+          keyResp?.validaty !== "TRUE" && keyResp !== "" ? (
             <>
               <Route path="/license-renewal" element={<LicenseRenewal />} />
 

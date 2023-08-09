@@ -150,7 +150,6 @@ const EditAtom = (props) => {
     const getSitesForDropdown = async () => {
       try {
         const res = await axios.get(baseUrl + "/getSitesForDropdown");
-
         setSiteArray(res.data);
       } catch (err) {
         console.log(err.response);
@@ -387,15 +386,21 @@ const EditAtom = (props) => {
 
             <InputWrapper>
               Virtual: &nbsp;&nbsp;
-              <StyledInput
-                value={virtual}
-                onKeyDown={handleKeyPress}
-                onChange={(e) =>
-                  setVirtual(
-                    e.target.value.replace(/[!^=&\/\\#;,+()$~%'":*?<>{}]/g, "")
-                  )
-                }
-              />
+              <div className="select_type">
+                <Styledselect
+                  className="rectangle"
+                  placeholder="select"
+                  value={virtual}
+                  onKeyDown={handleKeyPress}
+                  onChange={(e) => {
+                    setVirtual(e.target.value);
+                  }}
+                >
+                  <option value="">Select Virtual</option>
+                  <option value="virtual">Virtual</option>
+                  <option value="not Virtual">Not Virtual</option>
+                </Styledselect>
+              </div>
             </InputWrapper>
 
             <InputWrapper>

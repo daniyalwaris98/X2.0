@@ -1,10 +1,7 @@
-import React, { useState, useRef, useMemo, useEffect } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import "./mymapp.css";
-// import 'leaflet/dist/leaflet.css';
-import { Spin } from "antd";
 import { SpinLoading } from "../../../AllStyling/All.styled.js";
-
-import { MapContainer, TileLayer, Marker, Popup, Tooltip } from "react-leaflet";
+import { MapContainer, TileLayer, Marker, Tooltip } from "react-leaflet";
 
 import * as L from "leaflet";
 delete L.Icon.Default.prototype._getIconUrl;
@@ -32,7 +29,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/phyLeaflet");
-        console.log("phyLeaflet", res.data);
         setMapData(res.data);
         setLoading(false);
       } catch (err) {
@@ -44,20 +40,6 @@ const index = () => {
   }, []);
 
   const mapRef = useRef();
-
-  const markerRef = useRef();
-
-  const eventHandlers = useMemo(
-    () => ({
-      mouseover() {
-        if (markerRef) markerRef.current.openPopup();
-      },
-      mouseout() {
-        if (markerRef) markerRef.current.closePopup();
-      },
-    }),
-    []
-  );
 
   return (
     <SpinLoading spinning={loading}>
@@ -71,16 +53,10 @@ const index = () => {
             ref={mapRef}
             style={{ borderRadius: "8px" }}
           >
-            <TileLayer
-              // attribution='&amp;copy <a href="http://osm.org/copyright">OpenStreetMap</a> contributors'
-              url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}"
-            />
+            <TileLayer url="https://server.arcgisonline.com/ArcGIS/rest/services/Canvas/World_Light_Gray_Base/MapServer/tile/{z}/{y}/{x}" />
             {mapData.map((item, index) => (
               <div key={index}>
-                <Marker
-                  // position={[67, -100]}
-                  position={[`${item.latitude}`, `${item.longitude}`]}
-                >
+                <Marker position={[`${item.latitude}`, `${item.longitude}`]}>
                   <Tooltip>
                     {item.site_name}
                     <br />
@@ -89,34 +65,6 @@ const index = () => {
                 </Marker>
               </div>
             ))}
-
-            {/* <Marker
-            position={[30.3753, 69.3451]}
-            eventHandlers={{
-              mouseover: (event) => event.target.openPopup("hello"),
-            }}
-          >
-         
-            <Tooltip>Pakistan</Tooltip>
-          </Marker> */}
-            {/* <Marker
-            position={[31.5204, 74.3587]}
-            eventHandlers={{
-              mouseover: (event) => event.target.openPopup("hello"),
-            }}
-          >
-       
-            <Tooltip>Pakistan</Tooltip>
-          </Marker> */}
-            {/* <Marker
-            position={[33.6141, 73.0516]}
-            eventHandlers={{
-              mouseover: (event) => event.target.openPopup("hello"),
-            }}
-          >
-        
-            <Tooltip>Pakistan</Tooltip>
-          </Marker> */}
           </MapContainer>
         </div>
       </div>

@@ -66,7 +66,7 @@ const index = () => {
 
   return (
     <CustomModal
-      title={`License Renewal (${licenseData.message})`}
+      title={`License Renewal (${licenseData?.message})`}
       isModalOpen={isModalOpen}
       setIsModalOpen={handleOk}
       footer={false}
@@ -76,7 +76,7 @@ const index = () => {
       <LicenseRenewalStyle>
         <article className="date-of-expiry">
           <h3 className="date">
-            License Expiry Date : <span>{licenseData.expiry_date}</span>
+            License Expiry Date : <span>{licenseData?.expiry_date}</span>
           </h3>
         </article>
 
