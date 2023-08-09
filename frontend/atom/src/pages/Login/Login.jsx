@@ -447,6 +447,9 @@ function Login() {
         failed_devices: { view: true, read_only: true },
       },
     },
+    database: {
+      view: true,
+    },
   };
 
   useEffect(() => {

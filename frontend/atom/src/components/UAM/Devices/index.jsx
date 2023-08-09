@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Table, Menu } from "antd";
+import { Table } from "antd";
 import BarChart from "./BarChart";
 import critical from "./assets/critical.svg";
 import undefined from "./assets/undefined.svg";
@@ -33,6 +33,7 @@ import {
 } from "../../AllStyling/All.styled.js";
 
 import { columnSearch } from "../../../utils";
+import { ResponseModel } from "../../ReusableComponents/ResponseModel/ResponseModel";
 
 let excelData = [];
 let columnFilters = {};
@@ -55,21 +56,22 @@ const index = () => {
   const [myDeviceStatus, setMyDevicesStatus] = useState([]);
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/getAllDevices");
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setLoading(false);
-      } catch (err) {
-        setLoading(false);
-      }
-    };
     serviceCalls();
   }, []);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getAllDevices");
+      excelData = res.data;
+      setDataSource(excelData);
+      setRowCount(excelData.length);
+      setLoading(false);
+    } catch (err) {
+      setLoading(false);
+    }
+  };
 
   const confirm = async (e) => {
     e.stopPropagation();
@@ -79,6 +81,8 @@ const index = () => {
       await axios
         .post(baseUrl + "/dismantleOnBoardedDevice", selectedRowKeys)
         .then((response) => {
+          console.log("response ======>", response);
+
           const promises = [];
           promises.push(
             axios
@@ -128,7 +132,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/totalDevicesInDeviceDashboard");
-
         setTotalDeviceCount(res.data);
         setLoading(false);
       } catch (err) {
@@ -209,9 +212,7 @@ const index = () => {
       const res = await axios.get(
         `${baseUrl}/getBoardDetailsByIpAddress?ipaddress=${ipAddress}`
       );
-
       setAllBoardData(res.data);
-
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -224,9 +225,7 @@ const index = () => {
       const res = await axios.get(
         `${baseUrl}/getSubBoardDetailsByIpAddress?ipaddress=${ipAddress}`
       );
-
       setAllSubBoardData(res.data);
-
       setLoading(false);
     } catch (err) {
       setLoading(false);
@@ -300,7 +299,28 @@ const index = () => {
     }),
   };
 
-  console.log("rowSelection=======>", rowSelection);
+  const deleteDevice = async () => {
+    if (selectedRowKeys.length > 0) {
+      await axios
+        .post(`${baseUrl}/deleteDevice`, selectedRowKeys)
+        .then((res) => {
+          if (res.status == 200) {
+            ResponseModel(
+              `
+              Devices Not Deleted : ${res.data.error}
+              Devices Deleted : ${res.data.success}
+            `,
+              "success",
+              res.data.error_list
+            );
+            serviceCalls();
+          }
+        })
+        .catch((err) => {
+          console.log("delete Error", err);
+        });
+    }
+  };
 
   const exportSeed = async () => {
     jsonToExcel(excelData);
@@ -1117,7 +1137,30 @@ const index = () => {
             <AddStyledButton onClick={showModal} style={{ display: "none" }}>
               + Add Device
             </AddStyledButton>
-            <div style={{ display: "flex", marginTop: "3px" }}>
+
+            <div
+              style={{
+                display: "flex",
+                alignItems: "flex-start",
+                marginTop: "3px",
+              }}
+            >
+              {selectedRowKeys.length > 0 && (
+                <button
+                  style={{
+                    padding: " 5px 10px",
+                    background: "red",
+                    color: "white",
+                    borderRadius: "8px",
+                    border: "none",
+                    cursor: "pointer",
+                  }}
+                  onClick={() => deleteDevice()}
+                >
+                  Delete
+                </button>
+              )}
+
               <h3
                 style={{
                   marginLeft: "10px",

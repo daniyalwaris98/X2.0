@@ -5,7 +5,8 @@ import axios, { baseUrl } from "../../../../utils/axios/index";
 
 import { BarChartBoldStyle } from "./BarChartBold.style";
 
-function BarChartBold() {
+function BarChartBold(props) {
+  const { endPoint } = props;
   const [data, setData] = useState("");
 
   useEffect(() => {
@@ -14,7 +15,7 @@ function BarChartBold() {
 
   const getData = async () => {
     await axios
-      .get(`${baseUrl}/topOpenPorts`)
+      .get(`${baseUrl}/${endPoint}`)
       .then((res) => {
         setData(res.data);
       })

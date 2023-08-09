@@ -1,14 +1,11 @@
-import React, { useEffect, useState } from "react";
+import React, { useState } from "react";
 import styled from "styled-components";
 import { Row, Col, Modal, Input, Button, Select } from "antd";
 import axios, { baseUrl } from "../../../utils/axios";
 import Swal from "sweetalert2";
 import sites from "./assets/sites.svg";
-import { StyledselectIpam } from "../../AllStyling/All.styled.js";
 
 const AddSiteModel = (props) => {
-  const { Option } = Select;
-
   const getString = (str) => {
     return str ? str : "";
   };
@@ -30,12 +27,9 @@ const AddSiteModel = (props) => {
         .post(baseUrl + "/addSite ", device)
         .then((response) => {
           if (response?.response?.status == 500) {
-            openSweetAlert(response?.response?.data?.response, "error");
+            openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert(
-              `Site ${device ? "Added" : "Added"} Successfully`,
-              "success"
-            );
+            openSweetAlert(response?.data, "success");
             const promises = [];
             promises.push(
               axios
@@ -48,7 +42,6 @@ const AddSiteModel = (props) => {
                 })
                 .catch((error) => {
                   console.log(error);
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
@@ -56,7 +49,6 @@ const AddSiteModel = (props) => {
         })
         .catch((error) => {
           console.log("in add seed device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
       console.log(err);
@@ -178,6 +170,7 @@ const AddSiteModel = (props) => {
                 }}
                 color={"#BBBABA"}
                 onClick={handleCancel}
+                type="button"
               >
                 Cancel
               </StyledButton>

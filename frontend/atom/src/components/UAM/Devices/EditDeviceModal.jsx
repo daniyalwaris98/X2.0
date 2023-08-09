@@ -7,63 +7,10 @@ import devices from "./assets/devices.svg";
 import "../../AllStyling/CSSStyling.css";
 
 const EditDevicesModel = (props) => {
-  const { Option } = Select;
-  const children = [];
-
-  // for (let i = 10; i < 36; i++) {
-  //   children.push(
-  //     <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
-  //   );
-  // }
-  // const [selected, setSelected] = useState("");
-  // const [lang, setLang] = useState("");
-
-  const correctDatePattern = (date) => {
-    if (date != null) {
-      let d = date.split(date[10]);
-      return d[0] + " " + d[1];
-    } else return;
-  };
-
   const getString = (str) => {
     return str ? str : "";
   };
 
-  const getDateString = (dateStr) => {
-    return dateStr; // ? correctDatePattern(dateStr) : "";
-  };
-
-  let [siteIds, setSiteIds] = useState([]);
-  let [siteIdOptions, setSiteIdOptions] = useState([]);
-  let [rackIds, setRackIds] = useState([]);
-  let [rackIdOptions, setRackIdOptions] = useState([]);
-
-  // useEffect(() => {
-  //     (async () => {
-  //       try {
-  //         const res1 = await axios.get(baseUrl + "/getAllSiteIDs");
-  //         setSiteIds(res1.data);
-  //         const res2 = await axios.get(baseUrl + "/getAllRackIDs");
-  //         setRackIds(res2.data);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //       }
-  //     })();
-  //   }, []);
-
-  // useEffect(() => {
-  //     getSiteIdOptions(siteIds);
-  //     getRackIdOptions(rackIds);
-  //   }, [siteIds, rackIds]);
-
-  //   const getSiteIdOptions = (values = []) => {
-  //     let options = [];
-  //     values.map((value) => {
-  //       options.push(<Option value={value}>{value}</Option>);
-  //     });
-  //     setSiteIdOptions(options);
-  //     // return options;
-  //   };
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -75,23 +22,18 @@ const EditDevicesModel = (props) => {
 
   const postDevice = async (device) => {
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addDevice ", device)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data?.response, "error");
           } else {
-            openSweetAlert(
-              `Device ${device ? "Updated" : "Updated"} Successfully`,
-              "success"
-            );
+            openSweetAlert(`Device Updated Successfully`, "success");
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + "/getAllDevices")
                 .then((response) => {
-                  console.log("res edit model", response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -99,7 +41,6 @@ const EditDevicesModel = (props) => {
                 })
                 .catch((error) => {
                   console.log(error);
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
@@ -107,7 +48,6 @@ const EditDevicesModel = (props) => {
         })
         .catch((error) => {
           console.log("in edit device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
       console.log(err);
@@ -122,9 +62,6 @@ const EditDevicesModel = (props) => {
   let [site_name, setsite_name] = useState(
     device ? getString(device.site_name) : ""
   );
-  //   let [site_name, setSite_name] = useState(
-  //     device ? getString(device.site_name) : ""
-  //   );
 
   let [rack_name, setrack_name] = useState(
     device ? getString(device.rack_name) : ""
@@ -146,9 +83,7 @@ const EditDevicesModel = (props) => {
   let [status, setStatus] = useState(device ? getString(device.status) : "");
 
   let [ru, setRu] = useState(device ? getString(device.ru) : "");
-  //   let [rfs_dt, setRfs_dt] = useState(
-  //     device ? getString(device.rfs_dt) : ''
-  //   );
+
   let [department, setDepartment] = useState(
     device ? getString(device.department) : ""
   );
@@ -159,7 +94,6 @@ const EditDevicesModel = (props) => {
   let [myfunction, setMyfunction] = useState(
     device ? getString(device.function) : ""
   );
-  // let [domain, setDomain] = useState(device ? getString(device.domain) : "");
   let [manufacturer, setManufacturer] = useState(
     device ? getString(device.manufacturer) : ""
   );
@@ -176,9 +110,7 @@ const EditDevicesModel = (props) => {
     device ? getString(device.sw_eol_date) : ""
   );
   let [virtual, setVirtual] = useState(device ? getString(device.virtual) : "");
-  // let [rfs_date, setRfs_dt] = useState(
-  //   device ? getString(device.rfs_date) : ""
-  // );
+
   let [authentication, setAuthentication] = useState(
     device ? getString(device.authentication) : ""
   );
@@ -194,12 +126,6 @@ const EditDevicesModel = (props) => {
   );
   const [loading, setLoading] = useState(false);
 
-  // let [max_power, setMax_power] = useState(
-  //   device ? getString(device.max_power) : ""
-  // );
-  // let [site_type, setsite_type] = useState(
-  //   device ? getString(device.site_type) : ""
-  // );
   let [source, setsource] = useState(device ? getString(device.source) : "");
   let [stack, setstack] = useState(device ? getString(device.stack) : "");
   let [contract_number, setcontract_number] = useState(
@@ -209,42 +135,12 @@ const EditDevicesModel = (props) => {
     device ? getString(device.contract_expiry) : ""
   );
 
-  //   const changeSelectOptionHandler = (event) => {
-  //     setSite_name(event.target.value);
-  //     setRack_name(event.target.value);
-  //     console.log(site_name);
-  //     console.log(rack_name);
-  //   };
-  //   useEffect(() => {
-  //     console.log(site_name);
-  //     console.log(rack_name);
-  //   }, [site_name, rack_name]);
-  const algorithm = [
-    "Searching Algorithm",
-    "Sorting Algorithm",
-    "Graph Algorithm",
-  ];
-  const language = ["C++", "Java", "Python", "C#"];
-  const dataStructure = ["Arrays", "LinkedList", "Stack", "Queue"];
-
   /** Type variable to store different array for different dropdown */
   let type = null;
 
   /** This will be used to create set of options that user will see */
   let options = null;
 
-  /** Setting Type variable according to dropdown */
-  //   if (site_name === "Algorithm") {
-  //     type = algorithm;
-  //   } else if (site_name === "Language") {
-  //     type = language;
-  //   } else if (site_name === "Data Structure") {
-  //     type = dataStructure;
-  //   }
-
-  /** If "Type" is null or undefined then options will be null,
-   * otherwise it will create a options iterable based on our array
-   */
   if (type) {
     options = type.map((option) => <option>{option}</option>);
   }
@@ -264,18 +160,12 @@ const EditDevicesModel = (props) => {
       function: myfunction,
       status,
       manufacturer,
-      // hw_eos_date,
-      // hw_eol_date,
-      // sw_eos_date,
-      // sw_eol_date,
       software_type,
       virtual,
-
       authentication,
       serial_number,
       pn_code,
       subrack_id_number,
-      // manufacturer_date,
 
       source,
       stack,
@@ -289,18 +179,11 @@ const EditDevicesModel = (props) => {
   const [siteArray, setSiteArray] = useState([]);
   useEffect(() => {
     const getSitesForDropdown = async () => {
-      // setLoading(true);
-
       try {
         const res = await axios.get(baseUrl + "/getSitesForDropdown");
-        console.log("getSitesForDropdown", res);
         setSiteArray(res.data);
-        // console.log("a", res.data[0]);
-        // setsite_name(res.data[0]);
-        // setLoading(false);
       } catch (err) {
         console.log(err.response);
-        // setLoading(false);
       }
     };
     getSitesForDropdown();
@@ -316,12 +199,7 @@ const EditDevicesModel = (props) => {
         const res = await axios.get(
           `${baseUrl}/getRacksBySiteDropdown?site_name=${site_name}`
         );
-        console.log("getRacksBySiteDropdown", res);
         setRackArray(res.data);
-        console.log(res.data[0]);
-        // setRack_name(res.data[0]);
-        // setRack_name(rack_name);
-        // setRack_name(rack_name);
         setrack_name(res.data[0]);
         setLoading(false);
       } catch (err) {
@@ -334,22 +212,6 @@ const EditDevicesModel = (props) => {
 
   const handleCancel = () => {
     props.setIsEditModalVisible(false);
-  };
-  const getRackIdOptions = (values = []) => {
-    let options = [];
-    values.map((value) => {
-      options.push(<Option value={value}>{value}</Option>);
-    });
-    setRackIdOptions(options);
-    // return options;
-  };
-
-  const getOptions = (values = []) => {
-    let options = [];
-    values.map((value) => {
-      options.push(<Option value={value}>{value}</Option>);
-    });
-    return options;
   };
 
   return (

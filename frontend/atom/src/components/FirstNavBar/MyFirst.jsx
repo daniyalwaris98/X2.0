@@ -132,7 +132,7 @@ const FirstNavBar = (props) => {
           username: a.user_name,
         });
 
-        setDaysLeft(res.data.day_left);
+        setDaysLeft(res?.data?.day_left);
       };
       licenseData();
     }

@@ -1,10 +1,10 @@
 import React, { useState, useEffect } from "react";
 import axios, { baseUrl } from "../../../utils/axios";
 import { TableStyling } from "../../AllStyling/All.styled.js";
-import {Progress} from "antd";
+import { Progress } from "antd";
 const index = () => {
   const [cpuFunc, setCpuFunc] = useState([]);
-  const [loading,setLoading]=useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const cpuFunc = async () => {
@@ -12,7 +12,6 @@ const index = () => {
       try {
         const res = await axios.get(baseUrl + "/getCpuDashboard");
         setCpuFunc(res.data);
-        console.log(cpuFunc);
         setLoading(false);
       } catch (err) {
         console.log(err.response);

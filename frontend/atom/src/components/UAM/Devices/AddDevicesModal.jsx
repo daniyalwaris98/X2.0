@@ -79,10 +79,8 @@ const AddDevicesModal = (props) => {
 
       try {
         const res = await axios.get(baseUrl + "/getSitesForDropdown");
-        console.log("getSitesForDropdown", res);
         setSiteArray(res.data);
-        // console.log("a", res.data[0]);
-        setsite_Name(res.data[0]);
+        setsite_name(res.data[0]);
         setLoading(false);
       } catch (err) {
         console.log(err.response);
