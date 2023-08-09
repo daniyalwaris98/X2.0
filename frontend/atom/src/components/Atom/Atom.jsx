@@ -470,8 +470,10 @@ const Atom = () => {
     }
   };
 
+  const [onBoardSpinActive, setOnBoardSpinActive] = useState(false);
+
   const handleOnboard = async () => {
-    setLoading(true);
+    setOnBoardSpinActive(true);
 
     if (selectedRowKeys.length > 0) {
       await axios
@@ -479,7 +481,7 @@ const Atom = () => {
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
-            setLoading(false);
+            setOnBoardSpinActive(false);
           } else {
             openSweetAlert(response.data, "success");
             const promises = [];
@@ -491,12 +493,12 @@ const Atom = () => {
                   setDataSource(response.data);
                   setRowCount(response.data.length);
                   setSelectedRowKeys([]);
-                  setLoading(false);
+                  setOnBoardSpinActive(false);
                 })
                 .catch((error) => {
                   console.log(error);
 
-                  setLoading(false);
+                  setOnBoardSpinActive(false);
                 })
             );
             return Promise.all(promises);
@@ -1120,15 +1122,17 @@ const Atom = () => {
             display: "flex",
           }}
         >
-          <OnBoardStyledButton
-            onClick={handleOnboard}
-            style={{ fontSize: "14px" }}
-            disabled={
-              onBoardStatus == false || configData?.atom.pages.atom.read_only
-            }
-          >
-            + On Board
-          </OnBoardStyledButton>
+          <SpinLoading spinning={onBoardSpinActive}>
+            <OnBoardStyledButton
+              onClick={handleOnboard}
+              style={{ fontSize: "14px" }}
+              disabled={
+                onBoardStatus == false || configData?.atom.pages.atom.read_only
+              }
+            >
+              + On Board
+            </OnBoardStyledButton>
+          </SpinLoading>
           {selectedRowKeys.length > 0 ? (
             <DeleteButton onClick={deleteRow}>
               <img src={trash} width="18px" height="18px" alt="" />
