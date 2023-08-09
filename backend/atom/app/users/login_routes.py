@@ -108,7 +108,7 @@ def checkLicense(username):
         print(end_user, file=sys.stderr)
         print(license_verification, file=sys.stderr)
 
-        licenseObj = decodeLicense(
+        licenseObj = DecodeLicense(
             license_verification['license_verification_key'])
 
         if licenseObj is None:
@@ -174,7 +174,7 @@ def LicenseValidationAfterLogin(user_data):
         
         if days_left is None:
             license_data['validaty'] = "False"
-        elif days_left <= 0:
+        elif days_left < 0:
             license_data['validaty'] = "False"
 
         return license_data, 200
