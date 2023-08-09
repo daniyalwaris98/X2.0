@@ -249,7 +249,7 @@ const DiscoverTableModel = (props) => {
       setIsModalOpen={setDiscoverItemAcitve}
       width="100%"
       footer={null}
-      title="Add Devices from Descovery"
+      title="Add Devices from Discovery"
     >
       <DiscoverTableModelStyle>
         <Table
