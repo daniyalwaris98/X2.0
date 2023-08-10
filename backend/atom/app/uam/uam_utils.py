@@ -112,6 +112,11 @@ def DeleteUamDevice(ip_address):
         
         uam, atom = device
         
+        if uam.status is not None:
+            if uam.status == 'Production':
+                return f"{ip_address} : Device Is In Production Therefore Can Not Be Deleted", 500
+        
+        
         if DeleteDBData(uam) == 200:
             return f"{ip_address} : Device Deleted Successfully", 200
         else:
