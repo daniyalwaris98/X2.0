@@ -99,24 +99,24 @@ def GetAllUamDevices():
     return deviceList
 
 
-def DeleteUamDevice(device_name):
+def DeleteUamDevice(ip_address):
     try:
         device = (
             db.session.query(UAM_Device_Table, Atom_Table)
-            .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id).filter(Atom_Table.device_name==device_name)
+            .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id).filter(Atom_Table.ip_address==ip_address)
             .first()
         )
         
         if device is None:
-            return f"{device_name} : Device Not Found", 500
+            return f"{ip_address} : Device Not Found", 500
         
         uam, atom = device
         
         if DeleteDBData(uam) == 200:
-            return f"{device_name} : Device Deleted Successfully", 200
+            return f"{ip_address} : Device Deleted Successfully", 200
         else:
-            return f"{device_name} : Error While Deleting Device", 500
+            return f"{ip_address} : Error While Deleting Device", 500
         
     except Exception:
         traceback.print_exc()
-        return f"{device_name} : Exceprtion Occured", 500
+        return f"{ip_address} : Exceprtion Occured", 500
