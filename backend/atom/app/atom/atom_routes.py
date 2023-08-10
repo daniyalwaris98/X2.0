@@ -201,15 +201,15 @@ def DeleteAtom(user_data):
                     )
                     continue
 
-                device = Monitoring_Devices_Table.query.filter(
-                    Monitoring_Devices_Table.atom_id == atom.atom_id,
-                    Monitoring_Devices_Table.active == "Active",
-                ).first()
-                if device is not None:
-                    errorList.append(
-                        f"{ip} : Device Is Active In Monitoring. Therefore Can't Be Deleted"
-                    )
-                    continue
+                # device = Monitoring_Devices_Table.query.filter(
+                #     Monitoring_Devices_Table.atom_id == atom.atom_id,
+                #     Monitoring_Devices_Table.active == "Active",
+                # ).first()
+                # if device is not None:
+                #     errorList.append(
+                #         f"{ip} : Device Is Active In Monitoring. Therefore Can't Be Deleted"
+                #     )
+                #     continue
 
                 uams = UAM_Device_Table.query.filter(
                     UAM_Device_Table.atom_id == atom.atom_id
@@ -217,11 +217,11 @@ def DeleteAtom(user_data):
                 for uam in uams:
                     DeleteDBData(uam)
 
-                devices = Monitoring_Devices_Table.query.filter(
-                    Monitoring_Devices_Table.atom_id == atom.atom_id
-                ).all()
-                for device in devices:
-                    DeleteDBData(device)
+                # devices = Monitoring_Devices_Table.query.filter(
+                #     Monitoring_Devices_Table.atom_id == atom.atom_id
+                # ).all()
+                # for device in devices:
+                #     DeleteDBData(device)
 
                 db.session.delete(atom)
                 db.session.commit()
