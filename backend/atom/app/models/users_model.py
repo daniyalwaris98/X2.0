@@ -15,11 +15,11 @@ from datetime import datetime
 
 class License_Verification_Table(db.Model):
     __tablename__ = "license_verification_table"
-    license_id = db.Column(db.Integer, primary_key=True)
-    license_verification_key = db.Column(db.String(2500))
-    company_name = db.Column(db.String(500))
-    start_date = db.Column(db.DateTime)
-    end_date = db.Column(db.DateTime)
+    license_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
+    license_verification_key = db.Column(db.String(2500), nullable=False)
+    company_name = db.Column(db.String(500), nullable=False)
+    start_date = db.Column(db.DateTime, nullable=False)
+    end_date = db.Column(db.DateTime, nullable=False)
 
     creation_date = db.Column(db.DateTime, default=datetime.now())
     modification_date = db.Column(
@@ -33,19 +33,19 @@ class License_Verification_Table(db.Model):
 class End_User_Table(db.Model):
     __tablename__ = "end_user_table"
     end_user_id = db.Column(db.Integer, primary_key=True)
-    company_name = db.Column(db.String(500))
-    po_box = db.Column(db.String(50))
+    company_name = db.Column(db.String(500), nullable=False)
+    po_box = db.Column(db.String(50), nullable=False)
     address = db.Column(db.String(2500))
     street_name = db.Column(db.String(500))
     city = db.Column(db.String(500))
     country = db.Column(db.String(500))
-    contact_person = db.Column(db.String(500))
-    contact_number = db.Column(db.String(500))
+    contact_person = db.Column(db.String(500), nullable=False)
+    contact_number = db.Column(db.String(500), nullable=False)
     email = db.Column(db.String(500))
     domain_name = db.Column(db.String(500))
     industry_type = db.Column(db.String(500))
     license_id = db.Column(
-        db.Integer, ForeignKey("license_verification_table.license_id")
+        db.Integer, ForeignKey("license_verification_table.license_id"), nullable=False
     )
 
     creation_date = db.Column(db.DateTime, default=datetime.now())
