@@ -6,7 +6,7 @@ import Swal from "sweetalert2";
 import racks from "./assets/racks.svg";
 
 const EditRackModel = (props) => {
-  const { Option } = Select;
+  const { deviceInformation } = props;
 
   const getString = (str) => {
     return str ? str : "";
@@ -24,21 +24,18 @@ const EditRackModel = (props) => {
   const postDevice = async (device) => {
     try {
       await axios
-        .post(baseUrl + "/addRack ", device)
+        .post(baseUrl + "/editRack ", device)
         .then((response) => {
           if (response?.response?.status == 500) {
-            openSweetAlert(response?.response?.statusText, "error");
+            openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert(
-              `Rack ${device ? "Updated" : "Updated"} Successfully`,
-              "success"
-            );
+            openSweetAlert(response.data, "success");
+            deviceInformation();
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + "/getAllRacks")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -58,6 +55,7 @@ const EditRackModel = (props) => {
       console.log(err);
     }
   };
+
   const DType = ["Production", "Not Production"];
 
   let [device, setDevice] = useState(props.editRecord);
@@ -83,16 +81,12 @@ const EditRackModel = (props) => {
 
   let [height, setHeight] = useState(device ? getString(device.height) : "");
   let [myWidth, setMyWidth] = useState(device ? getString(device.width) : "");
-  // let [pn_code, setPnCode] = useState(device ? getString(device.pn_code) : "");
   let [rack_model, setRackModel] = useState(
     device ? getString(device.rack_model) : ""
   );
   let [floor, setFloor] = useState(device ? getString(device.brand) : "");
 
   let type = null;
-
-  /** This will be used to create set of options that user will see */
-  let options = null;
 
   if (type) {
     options = type.map((option) => <option>{option}</option>);
@@ -198,7 +192,6 @@ const EditRackModel = (props) => {
                   width: "120px",
                   marginLeft: "10px",
                   marginRight: "10px",
-                  // paddingBottom: "5px",
                 }}
                 color={"#BBBABA"}
                 onClick={handleCancel}
@@ -208,42 +201,15 @@ const EditRackModel = (props) => {
             </div>
           </Col>
           <Col span={7} style={{ marginLeft: "6%" }}>
-            {/* <InputWrapper>
-              Site Name: &nbsp;<span style={{ color: "red" }}>*</span>
-              &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={ip_address} />
-                ) : ( */}
-            {/* <StyledInput
-                value={site_name}
-                onChange={(e) => setSiteId(e.target.value)}
-                required
-              /> */}
-            {/* )} */}
-            {/* </InputWrapper> */}
             <InputWrapper>
               Rack Name: &nbsp;<span style={{ color: "red" }}>*</span>
               <br />
-              {/* &nbsp;&nbsp; */}
-              {/* {device ? (
-                  <StyledInput value={site_name} />
-                ) : ( */}
-              {/* <Styledselect
-                onChange={changeSelectOptionHandler}
-                // style={{ color: "#f41" }}
-              >
-                <option>Choose...</option>
-                <option>Algorithm</option>
-                <option>Language</option>
-                <option>Data Structure</option>
-              </Styledselect> */}
               <StyledInput
-                // readOnly
                 value={rack_name}
                 onChange={(e) => setRackName(e.target.value)}
                 required
+                readOnly
               />
-              {/* )} */}
             </InputWrapper>
             <InputWrapper>
               Site Name: &nbsp;<span style={{ color: "red" }}>*</span>
@@ -251,117 +217,32 @@ const EditRackModel = (props) => {
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
-                  // value={site_name}
                   required
+                  value={site_name}
                   onChange={(e) => {
                     setsite_Name(e.target.value);
                   }}
                 >
-                  {/* <option>Seleect Site Name</option> */}
-
+                  <option value="">Select Site Name</option>
                   {siteArray.map((item, index) => {
                     return (
-                      <>
-                        <option>{item}</option>
-                      </>
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
                     );
                   })}
-
-                  {/* <option>Choose...</option>
-
-                <option>Algorithm</option>
-                <option>Language</option>
-                <option>Data Structure</option> */}
                 </Styledselect>
               </div>
-              {/* <StyledInput
-                value={site_name}
-                onChange={(e) => setSite_name(e.target.value)}
-                required
-              /> */}
-              {/* )} */}
             </InputWrapper>
-            {/* <label
-              onClick={() => navigate("/uam/sites")}
-              style={{
-                float: "right",
-                fontWeight: "600",
-                color: "#6ab344",
-                textDecoration: "underline",
-                cursor: "pointer",
-                marginRight: "10px",
-              }}
-            >
-              + Add Site
-            </label>
-            <br /> */}
-            {/* <InputWrapper> */}
-            {/* Site Name: */}
-            {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-            {/* &nbsp;&nbsp; */}
-            {/* {device ? (
-                  <StyledInput value={ip_address} />
-                ) : ( */}
-            {/* <StyledInput
-                value={site_name}
-                onChange={(e) => setsite_Name(e.target.value)} */}
-            {/* // required */}
-            {/* /> */}
-            {/* )} */}
-            {/* </InputWrapper> */}
-            {/* <InputWrapper>
-                Atom ID:
-                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-            {/* &nbsp;&nbsp;
-                {device ? (
-                  <StyledInput value={atom_id}  />
-                ) : (
-                  <StyledInput
-                    value={atom_id}
-                    onChange={(e) => setAtom_id(e.target.value)}
-                  />
-                )}
-              </InputWrapper> */}
             <InputWrapper>
               Serial Number:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={device_ru} />
-                ) : ( */}
               <StyledInput
                 value={serial_number}
                 onChange={(e) => setserialNumber(e.target.value)}
-                // required
               />
-              {/* )} */}
             </InputWrapper>
-            {/* <InputWrapper>
-              Manufacture Date:
-              &nbsp;<span style={{ color: "red" }}>*</span>
-              &nbsp;&nbsp;
-              {device ? (
-                  <StyledInput value={department} />
-                ) : (
-              <StyledInput
-                value={manufacturer_date}
-                onChange={(e) => setmanufacture_date(e.target.value)}
-                // required
-              />
-             
-            </InputWrapper> */}
-            {/* <InputWrapper>
-              Unit Position:
-              &nbsp;<span style={{ color: "red" }}>*</span>
-              &nbsp;&nbsp;
-             
-              <StyledInput
-                value={unit_position}
-                onChange={(e) => setUnit_position(e.target.value)}
-                // required
-              />
-           
-            </InputWrapper> */}
             <InputWrapper>
               Status: &nbsp;<span style={{ color: "red" }}>*</span>
               &nbsp;&nbsp;
@@ -375,14 +256,12 @@ const EditRackModel = (props) => {
                     setStatus(e.target.value);
                   }}
                 >
-                  {/* <option value="" style={{ color: "rgba(0,0,0,0.1)" }}>
-                      Select Status
-                    </option> */}
+                  <option value="">Select Status</option>
                   {DType.map((item, index) => {
                     return (
-                      <>
-                        <option>{item}</option>
-                      </>
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
                     );
                   })}
                 </Styledselect>
@@ -394,124 +273,56 @@ const EditRackModel = (props) => {
               RU:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={myfunction} />
-                ) : ( */}
               <StyledInput
                 value={ru}
                 onChange={(e) => setRu(e.target.value)}
                 // required
               />
-              {/* )} */}
             </InputWrapper>
-            {/* <InputWrapper>
-              RFS Date:
-              &nbsp;<span style={{ color: "red" }}>*</span>
-              &nbsp;&nbsp;
-             
-              <StyledInput
-                value={rfs_date}
-                onChange={(e) => setRfs_dt(e.target.value)}
-                // required
-              />
-             
-            </InputWrapper> */}
+
             <InputWrapper>
               Height:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={myfunction} />
-                ) : ( */}
               <StyledInput
                 value={height}
                 onChange={(e) => setHeight(e.target.value)}
                 // required
               />
-              {/* )} */}
             </InputWrapper>
-            {/* <InputWrapper>
-              Total Count:
-               &nbsp;<span style={{ color: "red" }}>*</span> 
-              &nbsp;&nbsp;
-               {device ? (
-                  <StyledInput value={myfunction} />
-                ) : ( 
-              <StyledInput
-                value={total_count}
-                onChange={(e) => setTotalCount(e.target.value)}
-                // required
-              />
 
-            </InputWrapper> */}
             <InputWrapper>
               Width:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={myfunction} />
-                ) : ( */}
               <StyledInput
                 value={myWidth}
                 onChange={(e) => setMyWidth(e.target.value)}
                 // required
               />
-              {/* )} */}
             </InputWrapper>
-            {/* <InputWrapper>
-              Depth:
-              &nbsp;<span style={{ color: "red" }}>*</span>
-              &nbsp;&nbsp;
-
-              <StyledInput
-                value={depth}
-                onChange={(e) => setDepth(e.target.value)}
-                // required
-              />
-            
-            </InputWrapper> */}
           </Col>
           <Col span={7} style={{ marginLeft: "1%" }}>
-            {/* <InputWrapper>
-              PN Code:
-              &nbsp;<span style={{ color: "red" }}>*</span>
-              &nbsp;&nbsp;
-            
-              <StyledInput
-                value={pn_code}
-                onChange={(e) => setPnCode(e.target.value)}
-                // required
-              />
-            
-            </InputWrapper> */}
             <InputWrapper>
               Rack Modal:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={myfunction} />
-                ) : ( */}
               <StyledInput
                 value={rack_model}
                 onChange={(e) => setRackModel(e.target.value)}
                 // required
               />
-              {/* )} */}
             </InputWrapper>
 
             <InputWrapper>
               Brand:
               {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={myfunction} />
-                ) : ( */}
               <StyledInput
                 value={floor}
                 onChange={(e) => setFloor(e.target.value)}
                 // required
               />
-              {/* )} */}
             </InputWrapper>
           </Col>
         </Row>
@@ -542,20 +353,13 @@ const Styledselect = styled.select`
 const InputWrapper = styled.div`
   text-align: left;
   font-size: 12px;
-  // white-space: nowrap;
-  // display: flex;
-  // justify-content: space-between;
+
   padding-bottom: 10px;
 `;
 
 const StyledSubmitButton = styled(Input)`
   font-size: 15px;
-
-  // font-weight: bolder;
-  // width: 15%;
   padding: auto;
-  // text-align: center;
-  // font-family: Montserrat-Regular;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background-color: ${(props) => props.color};
   border-color: ${(props) => props.color};
@@ -574,9 +378,6 @@ const StyledSubmitButton = styled(Input)`
 
 const StyledButton = styled(Button)`
   font-size: 15px;
-  // font-weight: bolder;
-  // width: 15%;
-  // font-family: Montserrat-Regular;
   box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 8px;
   background-color: ${(props) => props.color};
   border-color: ${(props) => props.color};

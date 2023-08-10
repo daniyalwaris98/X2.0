@@ -6,6 +6,8 @@ import Swal from "sweetalert2";
 import racks from "./assets/rks.svg";
 
 const AddRackModel = (props) => {
+  const { deviceInformation } = props;
+
   const getString = (str) => {
     return str ? str : "";
   };
@@ -100,9 +102,10 @@ const AddRackModel = (props) => {
         .post(baseUrl + "/addRack ", device)
         .then((response) => {
           if (response?.response?.status == 500) {
-            openSweetAlert(response?.response?.statusText, "error");
+            openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert(`Rack Added Successfully`, "success");
+            openSweetAlert(response.data, "success");
+            deviceInformation();
             const promises = [];
             promises.push(
               axios
@@ -133,17 +136,14 @@ const AddRackModel = (props) => {
   let [rack_name, setRackName] = useState(
     device ? getString(device.rack_name) : ""
   );
-  let [site_name, setsite_Name] = useState(
-    device ? getString(device.site_name) : ""
-  );
+
+  let [site_name, setsite_Name] = useState("");
 
   let [serial_number, setserialNumber] = useState(
     device ? getString(device.serial_number) : ""
   );
 
-  let [status, setStatus] = useState(
-    device ? getString(device.status) : "Production"
-  );
+  let [status, setStatus] = useState("");
 
   let [ru, setRu] = useState(device ? getString(device.ru) : "");
   let [height, setHeight] = useState(device ? getString(device.height) : "");
@@ -176,13 +176,14 @@ const AddRackModel = (props) => {
     props.setIsModalVisible(false);
     postDevice(device);
   };
+
   const [siteArray, setSiteArray] = useState([]);
+
   useEffect(() => {
     const getSitesForDropdown = async () => {
       try {
         const res = await axios.get(baseUrl + "/getSitesForDropdown");
         setSiteArray(res.data);
-        setsite_Name(res.data[0]);
       } catch (err) {
         console.log(err.response);
       }
@@ -235,6 +236,7 @@ const AddRackModel = (props) => {
                   float: "right",
                   display: "flex",
                   marginRight: "45px",
+                  marginBottom: "30px",
                 }}
               >
                 <StyledSubmitButton
@@ -282,12 +284,18 @@ const AddRackModel = (props) => {
                   <Styledselect
                     className="rectangle"
                     required
+                    value={site_name}
                     onChange={(e) => {
                       setsite_Name(e.target.value);
                     }}
                   >
+                    <option value="">Select Site Name</option>
                     {siteArray.map((item, index) => {
-                      return <option key={index}>{item}</option>;
+                      return (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      );
                     })}
                   </Styledselect>
                 </div>
@@ -328,8 +336,13 @@ const AddRackModel = (props) => {
                       setStatus(e.target.value);
                     }}
                   >
+                    <option value="">Select Status</option>
                     {DType.map((item, index) => {
-                      return <option>{item}</option>;
+                      return (
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
+                      );
                     })}
                   </Styledselect>
                 </div>
