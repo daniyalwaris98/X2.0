@@ -314,6 +314,7 @@ const index = () => {
               res.data.error_list
             );
             serviceCalls();
+            onSelectChange("");
           }
         })
         .catch((err) => {

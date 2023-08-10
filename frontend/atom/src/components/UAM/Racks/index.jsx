@@ -26,6 +26,7 @@ import {
   DeleteButton,
 } from "../../AllStyling/All.styled.js";
 import trash from "./assets/trash.svg";
+import { ResponseModel } from "../../ReusableComponents/ResponseModel/ResponseModel.jsx";
 
 let excelData = [];
 let columnFilters = {};
@@ -51,28 +52,28 @@ const index = () => {
   const [rackDeviceUnit, setRackDeviceUnit] = useState([]);
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
-      try {
-        const res = await axios.get(baseUrl + "/getAllRacks");
-        console.log("rees", res);
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
     serviceCalls();
   }, []);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+    try {
+      const res = await axios.get(baseUrl + "/getAllRacks");
+      excelData = res.data;
+      setDataSource(excelData);
+      setRowCount(excelData.length);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
+
   useEffect(() => {
     const totalRacks = async () => {
       setLoading(true);
       try {
         const res = await axios.get(baseUrl + "/totalRacks");
-        console.log("totalRacks", res);
         setRackDeviceUnit(res.data);
         setLoading(false);
       } catch (err) {
@@ -86,11 +87,9 @@ const index = () => {
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
 
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -136,90 +135,21 @@ const index = () => {
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
     });
   };
-
-  const postSeed = async (seed) => {
-    setLoading(true);
-    await axios
-      .post(baseUrl + "/addDevice", seed)
-      .then((response) => {
-        console.log("hahahehehoho");
-        console.log(response.status);
-        if (response?.response?.status == 500) {
-          openSweetAlert(response?.response?.data?.response, "error");
-          setLoading(false);
-        } else {
-          openSweetAlert("Site Added Successfully", "success");
-          const promises = [];
-          promises.push(
-            axios
-              .get(baseUrl + "/getAllRacks")
-              .then((response) => {
-                console.log("response===>", response);
-                // setExcelData(response.data);
-
-                console.log(response.data);
-                console.log("asd", response);
-                excelData = response?.data;
-                setRowCount(response?.data?.length);
-                setDataSource(response?.data);
-
-                console.log(response.data);
-
-                excelData = response.data;
-                setDataSource(excelData);
-
-                setRowCount(response.data.length);
-                setDataSource(response.data);
-                setLoading(false);
-              })
-              .catch((error) => {
-                console.log(error);
-                setLoading(false);
-              })
-          );
-          setLoading(false);
-          return Promise.all(promises);
-        }
-      })
-      .catch((err) => {
-        // openSweetAlert("Something Went Wrong!", "danger");
-        console.log("error ==> " + err);
-        setLoading(false);
-      });
-  };
-
-  const convertToJson = (headers, fileData) => {
-    let rows = [];
-    fileData.forEach((row) => {
-      const rowData = {};
-      row.forEach((element, index) => {
-        rowData[headers[index]] = element;
-      });
-      rows.push(rowData);
-    });
-    rows = rows.filter((value) => JSON.stringify(value) !== "{}");
-    return rows;
-  };
-  // useEffect(() => {
-  //   inputRef.current.addEventListener("input", importExcel);
-  // }, []);
 
   const showModal = () => {
     setEditRecord(null);
     setAddRecord(null);
     setIsModalVisible(true);
   };
+
   const showEditModal = () => {
     setIsModalVisible(true);
   };
+
   const edit = (record) => {
     setEditRecord(record);
-    // setAddRecord(record);
     setIsEditModalVisible(true);
   };
 
@@ -255,21 +185,23 @@ const index = () => {
   ];
 
   useEffect(() => {
-    const deviceInformation = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/topRacks");
-        console.log("deviceInformation", res);
-        setTopRacksDataSource(res.data);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
     deviceInformation();
   }, []);
+
+  const deviceInformation = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/topRacks");
+      setTopRacksDataSource(res.data);
+      setLoading(false);
+      console.log("Top Racks res", res);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
+
   const nameFun = (name) => {
     if (name === "Sites") {
       navigate("/uam/sites");
@@ -290,12 +222,7 @@ const index = () => {
         <>
           {!configData?.uam.pages.racks.read_only ? (
             <>
-              <a
-                disabled
-                // onClick={() => {
-                //   edit(record);
-                // }}
-              >
+              <a disabled>
                 <EditOutlined style={{ paddingRight: "50px" }} />
               </a>
             </>
@@ -459,22 +386,6 @@ const index = () => {
       ),
       ellipsis: true,
     },
-    // {
-    //   title: "rfs_date",
-    //   dataIndex: "rfs_date",
-    //   key: "rfs_date",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "rfs_date",
-    //     "RFS Date",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "height",
       dataIndex: "height",
@@ -507,79 +418,34 @@ const index = () => {
       ),
       ellipsis: true,
     },
-    // {
-    //   title: "depth",
-    //   dataIndex: "depth",
-    //   key: "depth",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "depth",
-    //     "Depth",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-    // {
-    //   title: "pn_code",
-    //   dataIndex: "pn_code",
-    //   key: "pn_code",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "pn_code",
-    //     "PN Code",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-
-    // {
-    //   title: "total_count",
-    //   dataIndex: "total_count",
-    //   key: "total_count",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "total_count",
-    //     "Total Count",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
   ];
 
   const deleteRow = async () => {
     if (selectedRowKeys.length > 0) {
       try {
-        //console.log(device);
         await axios
           .post(baseUrl + "/deleteRack", selectedRowKeys)
           .then((response) => {
             if (response?.response?.status == 500) {
               openSweetAlert(response?.response?.data, "error");
             } else {
-              openSweetAlert(response?.data, "success");
-
+              ResponseModel(
+                `
+              Racks Not Deleted : ${response?.data?.error}
+              Racks Deleted : ${response?.data?.success}
+            `,
+                "success",
+                response?.data?.error_list
+              );
+              deviceInformation();
               const promises = [];
               promises.push(
                 axios
                   .get(baseUrl + "/getAllRacks")
                   .then((response) => {
-                    console.log(response.data);
                     excelData = response.data;
                     setDataSource(response.data);
                     setRowCount(response.data.length);
-                    // excelData = response.data;
                     setSelectedRowKeys([]);
 
                     setLoading(false);
@@ -822,6 +688,7 @@ const index = () => {
             setRowCount={setRowCount}
             addRecord={addRecord}
             centered={true}
+            deviceInformation={deviceInformation}
           />
         )}
 
@@ -836,6 +703,7 @@ const index = () => {
             setRowCount={setRowCount}
             editRecord={editRecord}
             centered={true}
+            deviceInformation={deviceInformation}
           />
         )}
         <SpinLoading spinning={loading} tip="Loading...">

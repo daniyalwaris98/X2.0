@@ -26,6 +26,7 @@ import {
 import SiteDeviceVender from "../FirstCard/FirstCol/SiteDeviceVender.jsx";
 import Doughnut from "../FirstCard/Charts/Doughnut";
 import BarChartBold from "../../ReusableComponents/Carts/BarChartBold/BarChartBold";
+import { ResponseModel } from "../../ReusableComponents/ResponseModel/ResponseModel";
 
 let excelData = [];
 let columnFilters = {};
@@ -202,7 +203,6 @@ const index = () => {
         </>
       ),
     },
-
     {
       title: "site_name",
       dataIndex: "site_name",
@@ -433,12 +433,17 @@ const index = () => {
         await axios
           .post(baseUrl + "/deleteSite ", selectedRowKeys)
           .then((response) => {
-            console.log("deleteSite", response);
-
             if (response?.response?.status == 500) {
               openSweetAlert(response?.response?.data, "error");
             } else {
-              openSweetAlert(response?.data, "success");
+              ResponseModel(
+                `
+                Sites Not Deleted : ${response?.data?.error}
+                Sites Deleted : ${response?.data?.success}
+              `,
+                "success",
+                response.data.error_list
+              );
               const promises = [];
               promises.push(
                 axios
