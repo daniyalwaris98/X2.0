@@ -484,6 +484,7 @@ const Atom = () => {
             setOnBoardSpinActive(false);
           } else {
             openSweetAlert(response.data, "success");
+            setOnBoardStatus(false);
             const promises = [];
             promises.push(
               axios
