@@ -7,62 +7,11 @@ import devices from "./assets/devices.svg";
 
 const AddDevicesModal = (props) => {
   const { Option } = Select;
-  const children = [];
-
-  // for (let i = 10; i < 36; i++) {
-  //   children.push(
-  //     <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
-  //   );
-  // }
-  // const [selected, setSelected] = useState("");
-  // const [lang, setLang] = useState("");
-
-  const correctDatePattern = (date) => {
-    if (date != null) {
-      let d = date.split(date[10]);
-      return d[0] + " " + d[1];
-    } else return;
-  };
 
   const getString = (str) => {
     return str ? str : "";
   };
 
-  const getDateString = (dateStr) => {
-    return dateStr; // ? correctDatePattern(dateStr) : "";
-  };
-
-  let [siteIds, setSiteIds] = useState([]);
-  let [siteIdOptions, setSiteIdOptions] = useState([]);
-  let [rackIds, setRackIds] = useState([]);
-  let [rackIdOptions, setRackIdOptions] = useState([]);
-
-  // useEffect(() => {
-  //     (async () => {
-  //       try {
-  //         const res1 = await axios.get(baseUrl + "/getAllSiteIDs");
-  //         setSiteIds(res1.data);
-  //         const res2 = await axios.get(baseUrl + "/getAllRackIDs");
-  //         setRackIds(res2.data);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //       }
-  //     })();
-  //   }, []);
-
-  // useEffect(() => {
-  //     getSiteIdOptions(siteIds);
-  //     getRackIdOptions(rackIds);
-  //   }, [siteIds, rackIds]);
-
-  //   const getSiteIdOptions = (values = []) => {
-  //     let options = [];
-  //     values.map((value) => {
-  //       options.push(<Option value={value}>{value}</Option>);
-  //     });
-  //     setSiteIdOptions(options);
-  //     // return options;
-  //   };
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -92,7 +41,6 @@ const AddDevicesModal = (props) => {
 
   const postDevice = async (device) => {
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addDevice ", device)
         .then((response) => {
@@ -108,7 +56,6 @@ const AddDevicesModal = (props) => {
               axios
                 .get(baseUrl + "/getAllDevices")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -140,9 +87,6 @@ const AddDevicesModal = (props) => {
   let [site_name, setsite_name] = useState(
     device ? getString(device.site_name) : ""
   );
-  //   let [site_name, setSite_name] = useState(
-  //     device ? getString(device.site_name) : ""
-  //   );
 
   let [rack_name, setrack_name] = useState(
     device ? getString(device.rack_name) : ""
@@ -164,20 +108,16 @@ const AddDevicesModal = (props) => {
   let [status, setStatus] = useState(device ? getString(device.status) : "");
 
   let [ru, setRu] = useState(device ? getString(device.ru) : "");
-  //   let [rfs_dt, setRfs_dt] = useState(
-  //     device ? getString(device.rfs_dt) : ''
-  //   );
+
   let [department, setDepartment] = useState(
     device ? getString(device.department) : ""
   );
   let [section, setSection] = useState(device ? getString(device.section) : "");
-  // let [criticality, setCriticality] = useState(
-  //   device ? getString(device.criticality) : ""
-  // );
+
   let [myfunction, setMyfunction] = useState(
     device ? getString(device.function) : ""
   );
-  // let [domain, setDomain] = useState(device ? getString(device.domain) : "");
+
   let [manufacturer, setManufacturer] = useState(
     device ? getString(device.manufacturer) : ""
   );
