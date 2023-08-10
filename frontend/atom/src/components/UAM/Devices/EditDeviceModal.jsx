@@ -28,7 +28,7 @@ const EditDevicesModel = (props) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data?.response, "error");
           } else {
-            openSweetAlert(`Device Updated Successfully`, "success");
+            openSweetAlert(response.data, "success");
             const promises = [];
             promises.push(
               axios
@@ -255,6 +255,7 @@ const EditDevicesModel = (props) => {
                 float: "right",
                 display: "flex",
                 marginRight: "55px",
+                marginBottom: "30px",
               }}
             >
               <StyledSubmitButton

@@ -90,8 +90,6 @@ const index = () => {
 
   const onSelectChange = (selectedRowKeys) => {
     setSelectedRowKeys(selectedRowKeys);
-
-    console.log("selectedRowKeys", selectedRowKeys);
   };
 
   const rowSelection = {
