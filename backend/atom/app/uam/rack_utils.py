@@ -111,7 +111,7 @@ def AddRack(rackObj, update):
 		if rackObj["status"] == "":
 			return "Status Must Be Defined (Production / Not Production)", 500
 		
-		if rackObj["status"].capitalize() != "Production" and rackObj["status"].capitalize() != "Not Production":
+		if rackObj["status"].title() != "Production" and rackObj["status"].title() != "Not Production":
 			return "Status Must Be Defined (Production / Not Production)", 500
 		
 		rack_exist.status = rackObj['status']
