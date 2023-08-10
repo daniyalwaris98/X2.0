@@ -70,7 +70,7 @@ class Rack_Table(db.Model):
 
 class Atom_Table(db.Model):
     __tablename__ = "atom_table"
-    atom_id = db.Column(db.Integer, primary_key=True)
+    atom_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     rack_id = db.Column(db.Integer, ForeignKey("rack_table.rack_id"))
     device_name = db.Column(db.String(50))
     ip_address = db.Column(db.String(50))

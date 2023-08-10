@@ -136,7 +136,7 @@ def DeleteSite(site_name):
                 DeleteDBData(rack)
         
         if DeleteDBData(site) == 200:
-            return f"{site_name} : Site & Its Racks Deleted Successfully", 500
+            return f"{site_name} : Site & Its Racks Deleted Successfully", 200
         else:
             return f"{site_name} : Error While Deleting Site", 500
 

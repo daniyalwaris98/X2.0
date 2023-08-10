@@ -112,6 +112,11 @@ def DeleteUamDevice(ip_address):
         
         uam, atom = device
         
+        if uam.status is not None:
+            if uam.status == 'Production':
+                return f"{ip_address} : Device Is In Production Therefore Can Not Be Deleted", 500
+        
+        
         if DeleteDBData(uam) == 200:
             return f"{ip_address} : Device Deleted Successfully", 200
         else:
@@ -120,3 +125,55 @@ def DeleteUamDevice(ip_address):
     except Exception:
         traceback.print_exc()
         return f"{ip_address} : Exceprtion Occured", 500
+    
+    
+def EditUamDevice(deviceObj):
+    try:
+        result = (
+            db.session.query(UAM_Device_Table, Atom_Table)
+            .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id)
+            .filter(Atom_Table.device_name == deviceObj["device_name"])
+            .first()
+        )
+        
+        if result is None:
+            return "Device Not Found", 500
+        
+        device, atom = result
+        
+        if 'rack_name' not in deviceObj.keys():
+            return "Rack Can Not Be Empty", 500
+        
+        if deviceObj["rack_name"] is None:
+            return "Rack Can Not Be Empty", 500    
+        
+        rack = Rack_Table.query.filter(Rack_Table.rack_name == deviceObj["rack_name"]).first()
+        if rack is None:
+            return "Invalid Rack Name", 500
+        
+        atom.rack_id = rack.rack_id
+        atom.function = deviceObj["function"]
+        atom.ru = deviceObj["ru"]
+        atom.department = deviceObj["department"]
+        atom.section = deviceObj["section"]
+        atom.criticality = deviceObj["criticality"]
+        atom.virtual = deviceObj["virtual"]
+        
+        UpdateDBData(atom)
+        
+        device.software_version = deviceObj["software_version"]
+        device.manufacturer = deviceObj["manufacturer"]
+        device.authentication = deviceObj["authentication"]
+        device.serial_number = deviceObj["serial_number"]
+        device.pn_code = deviceObj["pn_code"]
+        device.subrack_id_number = deviceObj["subrack_id_number"]
+        device.source = deviceObj["source"]
+        device.stack = deviceObj["stack"]
+        device.contract_number = deviceObj["contract_number"]
+
+        UpdateDBData(device)
+        
+        return "Device Updated Successfully", 200
+    except Exception:
+        traceback.print_exc()
+        return "Exeception Occured", 500
