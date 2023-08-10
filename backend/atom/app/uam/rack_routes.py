@@ -21,7 +21,7 @@ def addRack(user_data):
 def editRack(user_data):
     try:
         rackObj = request.get_json()
-        msg, status = AddRack(rackObj, False)
+        msg, status = AddRack(rackObj, True)
 
         print(msg, file=sys.stderr)
 
