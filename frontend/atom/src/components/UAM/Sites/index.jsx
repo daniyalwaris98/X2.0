@@ -90,6 +90,8 @@ const index = () => {
 
   const onSelectChange = (selectedRowKeys) => {
     setSelectedRowKeys(selectedRowKeys);
+
+    console.log("selectedRowKeys", selectedRowKeys);
   };
 
   const rowSelection = {
@@ -122,46 +124,6 @@ const index = () => {
         console.log("Notification Clicked!");
       },
     });
-  };
-
-  const postSeed = async (seed) => {
-    setLoading(true);
-    await axios
-      .post(baseUrl + "/addSite", seed)
-      .then((response) => {
-        if (response?.response?.status == 500) {
-          openSweetAlert(response?.response?.data?.response, "error");
-          setLoading(false);
-        } else {
-          openSweetAlert("Site Added Successfully", "success");
-          const promises = [];
-          promises.push(
-            axios
-              .get(baseUrl + "/getAllSites")
-              .then((response) => {
-                excelData = response?.data;
-                setRowCount(response?.data?.length);
-                setDataSource(response?.data);
-                excelData = response.data;
-                setDataSource(excelData);
-
-                setRowCount(response.data.length);
-                setDataSource(response.data);
-                setLoading(false);
-              })
-              .catch((error) => {
-                console.log(error);
-                setLoading(false);
-              })
-          );
-          setLoading(false);
-          return Promise.all(promises);
-        }
-      })
-      .catch((err) => {
-        console.log("error ==> " + err);
-        setLoading(false);
-      });
   };
 
   const showModal = () => {
@@ -203,6 +165,7 @@ const index = () => {
         </>
       ),
     },
+
     {
       title: "site_name",
       dataIndex: "site_name",
@@ -334,11 +297,6 @@ const index = () => {
     },
   ];
 
-  const exportTemplate = async () => {
-    jsonToExcel(seedTemp);
-    openNotification();
-  };
-
   const jsonToExcel = (atomData) => {
     if (rowCount !== 0) {
       let wb = XLSX.utils.book_new();
@@ -350,55 +308,6 @@ const index = () => {
       openSweetAlert("No Data Found!", "danger");
     }
   };
-  // const postSeed = async (seed) => {
-  //   setLoading(true);
-  //   await axios
-  //     .post(baseUrl + "/addAtomDevices", seed)
-  //     .then((response) => {
-  //       console.log("hahahehehoho");
-  //       console.log(response.status);
-  //       if (response?.response?.status == 500) {
-  //         openSweetAlert(response?.response?.data?.response, "error");
-  //         setLoading(false);
-  //       } else {
-  //         openSweetAlert("Atom Added Successfully", "success");
-  //         const promises = [];
-  //         promises.push(
-  //           axios
-  //             .get(baseUrl + "/getAtoms")
-  //             .then((response) => {
-  //               // console.log("response===>", response);
-  //               // setExcelData(response.data);
-
-  //               console.log(response.data);
-  //               excelData = response?.data;
-  //               setRowCount(response?.data?.length);
-  //               setDataSource(response?.data);
-
-  //               console.log(response.data);
-
-  //               excelData = response.data;
-  //               setDataSource(excelData);
-
-  //               setRowCount(response.data.length);
-  //               setDataSource(response.data);
-  //               setLoading(false);
-  //             })
-  //             .catch((error) => {
-  //               console.log(error);
-  //               setLoading(false);
-  //             })
-  //         );
-  //         setLoading(false);
-  //         return Promise.all(promises);
-  //       }
-  //     })
-  //     .catch((err) => {
-  //       // openSweetAlert("Something Went Wrong!", "danger");
-  //       console.log("error ==> " + err);
-  //       setLoading(false);
-  //     });
-  // };
 
   const imgFun = (myimg) => {
     if (myimg === "Sites") {
@@ -694,7 +603,7 @@ const index = () => {
             <TableStyling
               rowSelection={rowSelection}
               scroll={{ x: 2430 }}
-              rowKey="site_id"
+              rowKey="site_name"
               columns={columns}
               dataSource={dataSource}
               style={{ width: "100%", padding: "2%" }}

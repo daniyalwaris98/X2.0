@@ -68,6 +68,8 @@ const index = () => {
       setDataSource(excelData);
       setRowCount(excelData.length);
       setLoading(false);
+
+      console.log("table response =====>", res);
     } catch (err) {
       setLoading(false);
     }
@@ -81,8 +83,6 @@ const index = () => {
       await axios
         .post(baseUrl + "/dismantleOnBoardedDevice", selectedRowKeys)
         .then((response) => {
-          console.log("response ======>", response);
-
           const promises = [];
           promises.push(
             axios
@@ -2751,7 +2751,7 @@ const index = () => {
             <TableStyling
               rowSelection={rowSelection}
               scroll={{ x: 8500 }}
-              rowKey="ip_address"
+              rowKey="site_name"
               columns={SecColumns}
               dataSource={dataSource}
               style={{ width: "100%", padding: "2%" }}
