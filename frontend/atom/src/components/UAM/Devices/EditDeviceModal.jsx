@@ -23,7 +23,7 @@ const EditDevicesModel = (props) => {
   const postDevice = async (device) => {
     try {
       await axios
-        .post(baseUrl + "/addDevice ", device)
+        .post(baseUrl + "/editDevice ", device)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data?.response, "error");

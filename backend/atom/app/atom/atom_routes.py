@@ -156,7 +156,7 @@ def GetAtoms(user_data):
 def editAtom(user_data):
     try:
         atomObj = request.get_json()
-        
+
         response, status = EditAtom(atomObj, 1)
 
         return response, status
@@ -191,19 +191,37 @@ def DeleteAtom(user_data):
                     errorList.append(f"{ip} : Ip Address Not Found In Atom")
                     continue
 
-                uam = UAM_Device_Table.query.filter_by(atom_id=atom.atom_id).first()
+                uam = UAM_Device_Table.query.filter(
+                    UAM_Device_Table.atom_id == atom.atom_id,
+                    UAM_Device_Table.status == "Production",
+                ).first()
                 if uam is not None:
                     errorList.append(
-                        f"{ip} : Device Is Being Used In UAM. Therefore Can't Be Deleted"
+                        f"{ip} : Device Is In Production In UAM. Therefore Can't Be Deleted"
                     )
                     continue
-                
-                device = Monitoring_Devices_Table.query.filter_by(atom_id=atom.atom_id).first()
+
+                device = Monitoring_Devices_Table.query.filter(
+                    Monitoring_Devices_Table.atom_id == atom.atom_id,
+                    Monitoring_Devices_Table.active == "Active",
+                ).first()
                 if device is not None:
                     errorList.append(
-                        f"{ip} : Device Is Being Used In Monitoring. Therefore Can't Be Deleted"
+                        f"{ip} : Device Is Active In Monitoring. Therefore Can't Be Deleted"
                     )
                     continue
+
+                uams = UAM_Device_Table.query.filter(
+                    UAM_Device_Table.atom_id == atom.atom_id
+                ).all()
+                for uam in uams:
+                    DeleteDBData(uam)
+
+                devices = Monitoring_Devices_Table.query.filter(
+                    Monitoring_Devices_Table.atom_id == atom.atom_id
+                ).all()
+                for device in devices:
+                    DeleteDBData(device)
 
                 db.session.delete(atom)
                 db.session.commit()

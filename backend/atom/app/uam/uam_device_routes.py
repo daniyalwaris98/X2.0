@@ -135,128 +135,13 @@ def deleteUamDevice(user_data):
 
 @app.route("/editDevice", methods=["POST"])
 @token_required
-def EditDevice(user_data):
+def editUamDevice(user_data):
     try:
         deviceObj = request.get_json()
-
-        device = (
-            UAM_Device_Table.query.with_entities(UAM_Device_Table)
-            .filter_by(device_name=deviceObj["device_name"])
-            .first()
-        )
-
-        device = (
-            db.session.query(UAM_Device_Table, Atom_Table)
-            .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id)
-            .filter(Atom_Table.device_name == deviceObj["device_name"])
-            .first()
-        )
-        
-        if device is None:
-            return "Device Not Found", 500
-
-        device.site_name = deviceObj["site_name"]
-        device.rack_name = deviceObj["rack_name"]
-        
-        device.software_version = deviceObj["software_version"]
-        # device.patch_version = deviceObj['patch_version']
-        device.modification_date = datetime.now()
-        # device.status = deviceObj['status']
-        device.ru = deviceObj["ru"]
-        device.department = deviceObj["department"]
-        device.section = deviceObj["section"]
-        device.criticality = deviceObj["criticality"]
-        device.function = deviceObj["function"]
-        # device.domain = deviceObj['domain']
-        device.manufacturer = deviceObj["manufacturer"]
-        # device.hw_eos_date = (deviceObj['hw_eos_date'])
-        # device.hw_eol_date = (deviceObj['hw_eol_date'])
-        # device.sw_eos_date = (deviceObj['sw_eos_date'])
-        # device.sw_eol_date = (deviceObj['sw_eol_date'])
-        device.virtual = deviceObj["virtual"]
-        # device.rfs_date = (deviceObj['rfs_date'])
-        device.authentication = deviceObj["authentication"]
-        device.serial_number = deviceObj["serial_number"]
-        device.pn_code = deviceObj["pn_code"]
-        device.subrack_id_number = deviceObj["subrack_id_number"]
-        # device.manufacturer_date = (deviceObj['manufacturer_date'])
-        # device.max_power = deviceObj['max_power']
-        # device.site_type = deviceObj['site_type']
-        device.source = deviceObj["source"]
-        device.stack = deviceObj["stack"]
-        device.contract_number = deviceObj["contract_number"]
-        # device.contract_expiry = deviceObj['contract_expiry']
-
-        UpdateData(device)
-        print("Updated Device " + deviceObj["device_name"], file=sys.stderr)
-
-        # Updating device parameters in Atom
-        queryString = f"update atom_table set SITE_NAME='{deviceObj['site_name']}' where DEVICE_NAME='{deviceObj['device_name']}';"
-        db.session.execute(queryString)
-        db.session.commit()
-        print(
-            f"SITE NAME SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",
-            file=sys.stderr,
-        )
-
-        queryString = f"update atom_table set RACK_NAME='{deviceObj['rack_name']}' where DEVICE_NAME='{deviceObj['device_name']}';"
-        db.session.execute(queryString)
-        db.session.commit()
-        print(
-            f"RACK NAME SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",
-            file=sys.stderr,
-        )
-
-        # queryString = f"update atom_table set STATUS='{device.status}' where DEVICE_NAME='{deviceObj['device_name']}';"
-        # db.session.execute(queryString)
-        # db.session.commit()
-        # print(f"STATUS SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",file=sys.stderr)
-
-        queryString = f"update atom_table set DEPARTMENT='{deviceObj['department']}' where DEVICE_NAME='{deviceObj['device_name']}';"
-        db.session.execute(queryString)
-        db.session.commit()
-        print(
-            f"DEPARTMENT SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",
-            file=sys.stderr,
-        )
-
-        queryString = f"update atom_table set SECTION='{deviceObj['section']}' where DEVICE_NAME='{deviceObj['device_name']}';"
-        db.session.execute(queryString)
-        db.session.commit()
-        print(
-            f"SECTION SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",
-            file=sys.stderr,
-        )
-
-        queryString = f"update atom_table set `FUNCTION`='{deviceObj['function']}' where DEVICE_NAME='{deviceObj['device_name']}';"
-        db.session.execute(queryString)
-        db.session.commit()
-        print(
-            f"FUNCTION SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",
-            file=sys.stderr,
-        )
-
-        queryString = f"update atom_table set `VIRTUAL`='{deviceObj['virtual']}' where DEVICE_NAME='{deviceObj['device_name']}';"
-        db.session.execute(queryString)
-        db.session.commit()
-        print(
-            f"VIRTUAL SUCCESSFULLY UPDATED IN ATOM FOR {deviceObj['device_name']}",
-            file=sys.stderr,
-        )
-
-        # Updating Modules
-        queryString = f"update board_table set SOFTWARE_VERSION='{deviceObj['software_version']}' DEVICE_NAME='{deviceObj['device_name']}';"
-        db.session.execute(queryString)
-        db.session.commit()
-        print(
-            f"SOFTWARE VERSION SUCCESSFULLY UPDATED IN MODULES FOR {deviceObj['device_name']}"
-        )
-
-        return "Device Updated Successfully", 200
-
+        return EditUamDevice(deviceObj)
     except Exception as e:
         traceback.print_exc()
-        return str(e), 500
+        return "Server Error While Updating Device", 500
 
 
 @app.route("/deviceStatus", methods=["GET"])
