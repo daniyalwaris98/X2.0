@@ -68,6 +68,8 @@ const index = () => {
       setDataSource(excelData);
       setRowCount(excelData.length);
       setLoading(false);
+
+      console.log(excelData);
     } catch (err) {
       setLoading(false);
     }
@@ -81,23 +83,32 @@ const index = () => {
       await axios
         .post(baseUrl + "/dismantleOnBoardedDevice", selectedRowKeys)
         .then((response) => {
-          console.log("response ======>", response);
+          if (response.status == 200) {
+            ResponseModel(
+              `
+              Site Dismantled : ${response.data.success}
+              Site Not Dismantle : ${response.data.error}
+            `,
+              "success",
+              response.data.error_list
+            );
 
-          const promises = [];
-          promises.push(
-            axios
-              .get(baseUrl + "/getAllDevices")
-              .then((response) => {
-                setDataSource(response.data);
-
-                setRowCount(excelData.length);
-                setDismantleLoading(false);
-              })
-              .catch((error) => {
-                setDismantleLoading(false);
-              })
-          );
-          return Promise.all(promises);
+            const promises = [];
+            promises.push(
+              axios
+                .get(baseUrl + "/getAllDevices")
+                .then((response) => {
+                  setDataSource(response.data);
+                  setRowCount(excelData.length);
+                  setDismantleLoading(false);
+                })
+                .catch((error) => {
+                  setDismantleLoading(false);
+                  console.log("error", error);
+                })
+            );
+            return Promise.all(promises);
+          }
         })
         .catch((err) => {
           openSweetAlert("Something Went Wrong!", "error");
