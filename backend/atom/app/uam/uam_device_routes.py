@@ -30,10 +30,10 @@ def deleteUamDevice(user_data):
     try:
         success_list = []
         error_list = []
-        deviceNames = request.get_json()
+        ip_addresses = request.get_json()
 
-        for deviceName in deviceNames:
-            msg, status = DeleteUamDevice(deviceName)
+        for ip_address in ip_addresses:
+            msg, status = DeleteUamDevice(ip_address)
             if status == 200:
                 success_list.append(msg)
             else:
