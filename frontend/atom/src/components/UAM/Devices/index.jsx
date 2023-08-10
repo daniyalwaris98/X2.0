@@ -69,7 +69,7 @@ const index = () => {
       setRowCount(excelData.length);
       setLoading(false);
 
-      console.log("table response =====>", res);
+      console.log(excelData);
     } catch (err) {
       setLoading(false);
     }
@@ -83,21 +83,32 @@ const index = () => {
       await axios
         .post(baseUrl + "/dismantleOnBoardedDevice", selectedRowKeys)
         .then((response) => {
-          const promises = [];
-          promises.push(
-            axios
-              .get(baseUrl + "/getAllDevices")
-              .then((response) => {
-                setDataSource(response.data);
+          if (response.status == 200) {
+            ResponseModel(
+              `
+              Site Dismantled : ${response.data.success}
+              Site Not Dismantle : ${response.data.error}
+            `,
+              "success",
+              response.data.error_list
+            );
 
-                setRowCount(excelData.length);
-                setDismantleLoading(false);
-              })
-              .catch((error) => {
-                setDismantleLoading(false);
-              })
-          );
-          return Promise.all(promises);
+            const promises = [];
+            promises.push(
+              axios
+                .get(baseUrl + "/getAllDevices")
+                .then((response) => {
+                  setDataSource(response.data);
+                  setRowCount(excelData.length);
+                  setDismantleLoading(false);
+                })
+                .catch((error) => {
+                  setDismantleLoading(false);
+                  console.log("error", error);
+                })
+            );
+            return Promise.all(promises);
+          }
         })
         .catch((err) => {
           openSweetAlert("Something Went Wrong!", "error");
@@ -2751,7 +2762,7 @@ const index = () => {
             <TableStyling
               rowSelection={rowSelection}
               scroll={{ x: 8500 }}
-              rowKey="site_name"
+              rowKey="ip_address"
               columns={SecColumns}
               dataSource={dataSource}
               style={{ width: "100%", padding: "2%" }}
