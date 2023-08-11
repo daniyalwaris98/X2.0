@@ -7,15 +7,6 @@ import board from "../assets/boards.svg";
 
 const EditSFPSModel = (props) => {
   const { Option } = Select;
-  const children = [];
-
-  // for (let i = 10; i < 36; i++) {
-  //   children.push(
-  //     <Option key={i.toString(36) + i}>{i.toString(36) + i}</Option>
-  //   );
-  // }
-  // const [selected, setSelected] = useState("");
-  // const [lang, setLang] = useState("");
 
   const correctDatePattern = (date) => {
     if (date != null) {
@@ -28,13 +19,6 @@ const EditSFPSModel = (props) => {
     return str ? str : "";
   };
 
-  const getDateString = (dateStr) => {
-    return dateStr; // ? correctDatePattern(dateStr) : "";
-  };
-
-  let [siteIds, setSiteIds] = useState([]);
-  let [siteIdOptions, setSiteIdOptions] = useState([]);
-  let [rackIds, setRackIds] = useState([]);
   let [rackIdOptions, setRackIdOptions] = useState([]);
 
   // useEffect(() => {
@@ -63,6 +47,7 @@ const EditSFPSModel = (props) => {
   //     setSiteIdOptions(options);
   //     // return options;
   //   };
+
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -74,23 +59,18 @@ const EditSFPSModel = (props) => {
 
   const postDevice = async (device) => {
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/editSfps ", device)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data?.response, "error");
           } else {
-            openSweetAlert(
-              `SFP ${device ? "Updated" : "Updated"} Successfully`,
-              "success"
-            );
+            openSweetAlert(`SFP updated Successfully`, "success");
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + "/getAllSfps")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -98,7 +78,6 @@ const EditSFPSModel = (props) => {
                 })
                 .catch((error) => {
                   console.log(error);
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
@@ -106,7 +85,6 @@ const EditSFPSModel = (props) => {
         })
         .catch((error) => {
           console.log("in add seed device catch ==> " + error);
-          // openSweetAlert("Something Went Wrong!", "error");
         });
     } catch (err) {
       console.log(err);
@@ -171,42 +149,11 @@ const EditSFPSModel = (props) => {
     device ? getString(device.serial_number) : ""
   );
 
-  //   const changeSelectOptionHandler = (event) => {
-  //     setSite_name(event.target.value);
-  //     setRack_name(event.target.value);
-  //     console.log(site_name);
-  //     console.log(rack_name);
-  //   };
-  //   useEffect(() => {
-  //     console.log(site_name);
-  //     console.log(rack_name);
-  //   }, [site_name, rack_name]);
-  const algorithm = [
-    "Searching Algorithm",
-    "Sorting Algorithm",
-    "Graph Algorithm",
-  ];
-  const language = ["C++", "Java", "Python", "C#"];
-  const dataStructure = ["Arrays", "LinkedList", "Stack", "Queue"];
-
-  /** Type variable to store different array for different dropdown */
   let type = null;
 
   /** This will be used to create set of options that user will see */
   let options = null;
 
-  /** Setting Type variable according to dropdown */
-  //   if (site_name === "Algorithm") {
-  //     type = algorithm;
-  //   } else if (site_name === "Language") {
-  //     type = language;
-  //   } else if (site_name === "Data Structure") {
-  //     type = dataStructure;
-  //   }
-
-  /** If "Type" is null or undefined then options will be null,
-   * otherwise it will create a options iterable based on our array
-   */
   if (type) {
     options = type.map((option) => <option>{option}</option>);
   }
@@ -236,28 +183,11 @@ const EditSFPSModel = (props) => {
     };
 
     props.setIsEditModalVisible(false);
-    console.log("devices", device);
     postDevice(device);
   };
 
   const handleCancel = () => {
     props.setIsEditModalVisible(false);
-  };
-  const getRackIdOptions = (values = []) => {
-    let options = [];
-    values.map((value) => {
-      options.push(<Option value={value}>{value}</Option>);
-    });
-    setRackIdOptions(options);
-    // return options;
-  };
-
-  const getOptions = (values = []) => {
-    let options = [];
-    values.map((value) => {
-      options.push(<Option value={value}>{value}</Option>);
-    });
-    return options;
   };
 
   return (
