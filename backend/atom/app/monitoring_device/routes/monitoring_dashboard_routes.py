@@ -11,6 +11,8 @@ from datetime import datetime
 from app.middleware import token_required
 from app import client
 
+from app.monitoring_device.monitoring_utils import *
+
 
 @app.route("/getavailabilityTimeline", methods=["POST"])
 # @token_required
@@ -51,16 +53,20 @@ def GetAvailabilityTimeline():
 
 
 @app.route("/getMonitoringDevicesCards", methods=["GET", "POST"])
-@token_required
-def GetMonitoringDevicesCards(user_data):
-    if True:
+# @token_required
+def GetMonitoringDevicesCards():
+    try:
+        ip_address = "None"
+
         try:
             x = request.get_json()
             ip_address = x.get("ip_address")
+        except Exception:
+            traceback.print_exc()
+            return "Ip Address Not Found In URL", 500
 
-            org = "monetx"
-
-            query_api = client.query_api()
+        globalDict = {"device": [], "interfaces": [], "alerts": []}
+        try:
             query = f'import "strings"\
             import "influxdata/influxdb/schema"\
             from(bucket: "monitoring")\
@@ -71,543 +77,194 @@ def GetMonitoringDevicesCards(user_data):
             |> schema.fieldsAsCols()\
             |> highestMax(n:1,column: "_time")'
 
-            cardsresult = query_api.query(org="monetx", query=query)
-            globalDict = {}
+            globalDict["device"] = GetDeviceInfluxData(query)
 
-            cardslist = []
-            objDictip = {}
-            objDict2 = {}
-            objDict3 = {}
-            objDict4 = {}
-            objDict5 = {}
-            objDict6 = {}
-            objDict7 = {}
-            objDict8 = {}
-            objDict9 = {}
-            objDict10 = {}
-            objDict11 = {}
-            objDict12 = {}
-            objDict13 = {}
-            objDict14 = {}
-            objDict15 = {}
-            objDict16 = {}
-            objDict17 = {}
-            objDictAccess = {}
-            objDictClients = {}
+        except Exception:
+            traceback.print_exc()
+            return "Server Error While Getting Device Data", 500
+
+        if len(globalDict["device"]) > 0:
             try:
-                for table in cardsresult:
-                    for record in table.records:
-                        try:
-                            if record["IP_ADDRESS"]:
-                                objDictip["name"] = "IP ADDRESS"
-                                objDictip["value"] = record["IP_ADDRESS"]
-                                cardslist.append(objDictip)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["FUNCTION"]:
-                                objDict2["name"] = "Function"
-                                objDict2["value"] = record["FUNCTION"]
-                                cardslist.append(objDict2)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-
-                        try:
-                            if record["Response"]:
-                                objDict3["name"] = "response_time"
-                                objDict3["value"] = round(float(record["Response"]), 2)
-
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["STATUS"]:
-                                objDict4["name"] = "availability"
-                                if record["STATUS"] == "Up":
-                                    objDict4["value"] = 100
-                                else:
-                                    objDict4["value"] = 0
-
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-
-                        try:
-                            if record["Uptime"]:
-                                objDict5["name"] = "Uptime"
-                                objDict5["value"] = record["Uptime"]
-
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-
-                        try:
-                            if record["Access_Points"]:
-                                objDictAccess["name"] = "Access Points"
-                                objDictAccess["value"] = record["Access_Points"]
-                                cardslist.append(objDictAccess)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-
-                        try:
-                            if record["Clients"]:
-                                objDictClients["name"] = "Clients"
-                                objDictClients["value"] = record["Clients"]
-                                cardslist.append(objDictClients)
-
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["VENDOR"]:
-                                objDict17["name"] = "Vendor"
-                                objDict17["value"] = record["VENDOR"]
-                                cardslist.append(objDict17)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["CPU"]:
-                                objDict6["name"] = "cpu_utilization"
-                                objDict6["value"] = round(float(record["CPU"]), 2)
-
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["Memory"]:
-                                objDict7["name"] = "memory_utilization"
-                                objDict7["value"] = round(float(record["Memory"]), 2)
-
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["PACKETS_LOSS"]:
-                                objDict8["name"] = "packet_loss"
-                                new_packet = record["PACKETS_LOSS"]
-                                objDict8["value"] = float(new_packet)
-
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["DEVICE_NAME"]:
-                                objDict9["name"] = "Device Name"
-                                objDict9["value"] = record["DEVICE_NAME"]
-                                cardslist.append(objDict9)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["INTERFACES"]:
-                                objDict10["name"] = "interfaces"
-                                objDict10["value"] = record["INTERFACES"]
-                                # cardslist.append(objDict10)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["Date"]:
-                                objDict11["name"] = "date"
-                                objDict11["value"] = record["Date"]
-                                # cardslist.append(objDict11)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["DEVICE_DESCRIPTION"]:
-                                objDict12["name"] = "Device Description"
-                                objDict12["value"] = record["DEVICE_DESCRIPTION"]
-                                cardslist.append(objDict12)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        try:
-                            if record["DISCOVERED_TIME"]:
-                                objDict13["name"] = "discovered time"
-                                objDict13["value"] = record["DISCOVERED_TIME"]
-                                # cardslist.append(objDict13)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-                        # str(datetime.strptime((str(datetime.now()).split('.')[0]),"%Y-%m-%d %H:%M:%S")-datetime.strptime((record['discovered_time'].discovered_time.split('.'))[0],"%Y-%m-%d %H:%M:%S"))
-                        try:
-                            if record["DEVICE_TYPE"]:
-                                objDict15["name"] = "Device Type"
-                                objDict15["value"] = record["DEVICE_TYPE"]
-                                cardslist.append(objDict15)
-                        except Exception as e:
-                            print("error", str(e), file=sys.stderr)
-                            pass
-
-                # return jsonify(cardslist),200
-            except Exception as e:
-                print("Error", str(e), file=sys.stderr)
-                traceback.print_exc()
-                return "Error ", 500
-
-            finalcardslist = [
-                i for n, i in enumerate(cardslist) if i not in cardslist[n + 1 :]
-            ]
-            globalDict["cards"] = finalcardslist
-
-            # queryString = f"select TYPE from monitoring_devices_table where IP_ADDRESS='{ip_address}';"
-            # result = db.session.execute(queryString)
-            # for row in result:
-            #     objDict14['name'] = 'Fetching Method'
-            #     objDict14['value'] = row[0]
-            #     cardslist.append(objDict14)
-            objDict16["name"] = "Poll Using"
-            objDict16["value"] = "IP Address"
-            objDict1 = {}
-            objDict1["name"] = "Monitoring Via"
-            objDict1["value"] = "ICMP"
-            cardslist.append(objDict16)
-            cardslist.append(objDict1)
-
-            if len(objDict4) >= 1:
-                globalDict[objDict4["name"]] = objDict4["value"]
-            if len(objDict3) > 1:
-                globalDict[objDict3["name"]] = objDict3["value"]
-            if len(objDict6) > 1:
-                globalDict[objDict6["name"]] = objDict6["value"]
-            if len(objDict7) > 1:
-                globalDict[objDict7["name"]] = objDict7["value"]
-            if len(objDict8) > 1:
-                globalDict[objDict8["name"]] = objDict8["value"]
-            print(globalDict, file=sys.stderr)
-
-            # 2
-            # Query script
-
-            try:
-                # if objDict4['value'] == 100:
-                ip = x["ip_address"]
-
-                query_api = client.query_api()
                 query = f'import "strings"\
                 import "influxdata/influxdb/schema"\
                 from(bucket: "monitoring")\
                 |> range(start: -1d)\
                 |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
-                |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip}")\
+                |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip_address}")\
                 |> schema.fieldsAsCols()\
                 |> sort(columns: ["_time"], desc: true)\
                 |> unique(column: "Interface_Name")\
                 |> yield(name: "unique")'
 
-                result = query_api.query(org="monetx", query=query)
-                interresults = []
-                print("$$$$$$$$$$$$$$", result, file=sys.stderr)
+                globalDict["interfaces"] = GetInterfaceInfluxData(query)
 
-                try:
-                    for table in result:
-                        for record in table.records:
-                            print("#####result of recods", record, file=sys.stderr)
+            except Exception:
+                traceback.print_exc()
 
-                            objDict = {}
-                            try:
-                                if record["IP_ADDRESS"]:
-                                    objDict["ip_address"] = record["IP_ADDRESS"]
-                            except Exception as e:
-                                print("error", str(e), file=sys.stderr)
-                                pass
-                            try:
-                                if record["DEVICE_NAME"]:
-                                    objDict["device_name"] = record["DEVICE_NAME"]
-                            except Exception as e:
-                                print("error", str(e), file=sys.stderr)
-                                pass
-                            try:
-                                if record["FUNCTION"]:
-                                    objDict["function"] = record["FUNCTION"]
-                            except Exception as e:
-                                print("error", str(e), file=sys.stderr)
-                                pass
-                            try:
-                                if record["Status"]:
-                                    objDict["interface_status"] = record["Status"]
-                            except Exception as e:
-                                print("error", str(e), file=sys.stderr)
-                                pass
-                            try:
-                                if record["VENDOR"]:
-                                    objDict["vendor"] = record["VENDOR"]
-                            except Exception as e:
-                                print("error", str(e), file=sys.stderr)
-                                pass
-                            try:
-                                if (
-                                    record["Interface_Name"] == None
-                                    or record["Interface_Name"] == ""
-                                ):
-                                    continue
-                                else:
-                                    objDict["interface_name"] = record["Interface_Name"]
-                            except Exception as e:
-                                print("error", str(e), file=sys.stderr)
-                                continue
-                            try:
-                                if record["Interface Description"]:
-                                    objDict["interface_description"] = record[
-                                        "Interface Description"
-                                    ]
-                            except Exception as e:
-                                print("error", str(e), file=sys.stderr)
-                                pass
-                            # try:
-                            #     if record['Download']:
-                            #         objDict['download_speed'] = record['Download']
-                            # except Exception as e:
-                            #     print("error",str(e),file=sys.stderr)
-                            #     pass
-                            # try:
-                            #     if record['Upload']:
-                            #         objDict['upload_speed'] = record['Upload']
-                            # except Exception as e:
-                            #     print("error",str(e),file=sys.stderr)
-                            #     pass
-                            try:
-                                if (
-                                    record["Download"] == None
-                                    or record["Download"] == ""
-                                ):
-                                    objDict["download_speed"] = 0
-                                else:
-                                    objDict["download_speed"] = round(
-                                        float(record["Download"]), 2
-                                    )
-                            except Exception as e:
-                                objDict["download_speed"] = 0
-                                print("error", str(e), file=sys.stderr)
-                                pass
-                            try:
-                                if record["Upload"] == None or record["Upload"] == "":
-                                    objDict["upload_speed"] = 0
-                                else:
-                                    objDict["upload_speed"] = round(
-                                        float(record["Upload"]), 2
-                                    )
-                            except Exception as e:
-                                objDict["upload_speed"] = 0
-                                print("error", str(e), file=sys.stderr)
-                                pass
-                            try:
-                                if record["Date"]:
-                                    temp = datetime.strptime(
-                                        record["Date"], "%m-%d-%y %H:%M:%S"
-                                    )
-                                    objDict["date"] = str(temp.time())
-                            except Exception as e:
-                                try:
-                                    temp = datetime.strptime(
-                                        record["Date"], "%y-%m-%d %H:%M:%S"
-                                    )
-                                    objDict["date"] = str(temp.time())
-                                except Exception as e:
-                                    print("error", str(e), file=sys.stderr)
-                                pass
-                            try:
-                                if record["DEVICE_NAME"]:
-                                    objDict["device_name"] = record["DEVICE_NAME"]
-                            except Exception as e:
-                                print("error", str(e), file=sys.stderr)
-                                pass
+            try:
+                MonitoringAlertsList = []
 
-                            # str(datetime.strptime((str(datetime.now()).split('.')[0]),"%Y-%m-%d %H:%M:%S")-datetime.strptime((record['discovered_time'].discovered_time.split('.'))[0],"%Y-%m-%d %H:%M:%S"))
-
-                            interresults.append(objDict)
-
-                    # [i for n, i in enumerate(cardslist) if i not in cardslist[n + 1:]]
-                    final_interfaces = list(
-                        {
-                            dictionary["interface_name"]: dictionary
-                            for dictionary in interresults
-                        }.values()
+                results = (
+                    db.session.query(
+                        Monitoring_Alerts_Table, Monitoring_Devices_Table, Atom_Table
                     )
-                    print("printing interfaces of ", final_interfaces, file=sys.stderr)
-                    # list(map(dict, set(tuple(d.items()) for d in interresults)))
+                    .join(
+                        Monitoring_Devices_Table,
+                        Monitoring_Alerts_Table.monitoring_device_id
+                        == Monitoring_Devices_Table.monitoring_device_id,
+                    )
+                    .join(
+                        Atom_Table,
+                        Monitoring_Devices_Table.atom_id == Atom_Table.atom_id,
+                    )
+                    .filter(Atom_Table.ip_address == ip_address)
+                    .all()
+                )
+                
+                MonitoringAlertsList = []
+                for alert, monitoring, atom in results:
+                    MonitoringDataDict = {}
+                    MonitoringDataDict["alarm_id"] = alert.monitoring_alert_id
+                    MonitoringDataDict["ip_address"] = atom.ip_address
+                    MonitoringDataDict["description"] = alert.description
+                    MonitoringDataDict["alert_type"] = alert.alert_type
+                    MonitoringDataDict["function"] = atom.function
+                    MonitoringDataDict["mail_status"] = alert.mail_status
+                    MonitoringDataDict["date"] = alert.start_date
 
-                    print(cardslist, file=sys.stderr)
-                    globalDict["interfaces"] = final_interfaces
-                except Exception as e:
-                    print("Error", str(e), file=sys.stderr)
-                    traceback.print_exc()
-                    return "Error ", 500
-                # else:
-                #     globalDict['interfaces'] = []
-            except:
-                globalDict["interfaces"] = []
+                    MonitoringAlertsList.append(MonitoringDataDict)
+                
+                globalDict["alerts"] = MonitoringAlertsList    
+            except Exception:
+                traceback.print_exc()
 
-            MonitoringAlertsList = []
+        return jsonify(globalDict), 200
 
-            queryString = f"select * from alerts_table where ip_address='{ip_address}';"
-            results = db.session.execute(queryString)
-
-            for MonitoringObj in results:
-                MonitoringDataDict = {}
-                MonitoringDataDict["alarm_id"] = MonitoringObj[0]
-                MonitoringDataDict["ip_address"] = MonitoringObj[1]
-                MonitoringDataDict["description"] = MonitoringObj[2]
-                MonitoringDataDict["alert_type"] = MonitoringObj[3]
-                MonitoringDataDict["function"] = MonitoringObj[4]
-                MonitoringDataDict["mail_status"] = MonitoringObj[5]
-                MonitoringDataDict["date"] = MonitoringObj[8]
-
-                MonitoringAlertsList.append(MonitoringDataDict)
-
-            globalDict["alerts"] = MonitoringAlertsList
-            return globalDict, 200
-        except Exception as e:
-            print("Error", str(e), file=sys.stderr)
-            traceback.print_exc()
-            return "Error ", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route("/interfacelist", methods=["POST"])
-@token_required
-def GetPacketLoss(user_data):
-    if True:
-        try:
-            queryString = f"select PACKETS_LOSS from monitoring_network_devices_table  where date > now() - interval 1 day;"
-            result = db.session.execute(queryString)
-            for row in result:
-                pass
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route("/getAvailabilityStatus", methods=["GET"])
-@token_required
-def GetAvailabilityStatus(user_data):
-    if True:
-        try:
-            queryString = f"select STATUS from monitoring_network_devices_table  where date > now() - interval 1 day;"
-            result = db.session.execute(queryString)
-            for row in result:
-                pass
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route("/getCpuUtilization", methods=["GET"])
-@token_required
-def GetCpuUtilization(user_data):
-    if True:
-        try:
-            queryString = f"select CPU from monitoring_network_devices_table  where date > now() - interval 1 day;"
-            result = db.session.execute(queryString)
-            for row in result:
-                pass
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route("/getMemoryUtilization", methods=["GET"])
-@token_required
-def GetMemoryUtilization(user_data):
-    if True:
-        try:
-            queryString = f"select MEMORY from monitoring_network_devices_table  where date > now() - interval 1 day;"
-            result = db.session.execute(queryString)
-            for row in result:
-                pass
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route("/getinterfacedata", methods=["POST"])
-def int_fetching1():
-    jsonObj = request.get_json()
-
-    # 1
-    # Store the URL of your InfluxDB instance
-
-    org = "monetx"
-
-    # 2
-    # Query script
-    ip = jsonObj["ip_address"]
-    query_api = client.query_api()
-    query = f'import "strings"\
-    import "influxdata/influxdb/schema"\
-    from(bucket: "monitoring")\
-    |> range(start: -60d)\
-    |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
-    |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip}")\
-    |> schema.fieldsAsCols()'
-
-    result = query_api.query(org="monetx", query=query)
-    resultd = []
-    resultu = []
-    resulta = []
-    objDict = {}
-
-    try:
-        for table in result:
-            for record in table.records:
-                if record["Interface_Name"] == jsonObj["interface_name"]:
-                    print("printing record:", record, file=sys.stderr)
-                    objDict1 = {}
-                    objDict2 = {}
-                    objDict3 = {}
-                    if record["Download"]:
-                        objDict1["name"] = record["Interface_Name"]
-                        objDict1["value"] = record["Download"]
-                        objDict3["name"] = record["Interface_Name"]
-                        objDict3["download"] = record["Download"]
-                        objDict3["date"] = record["Date"]
-                        objDict1["date"] = record["Date"]
-
-                    if record["Upload"]:
-                        objDict2["name"] = record["Interface_Name"]
-                        objDict2["value"] = record["Upload"]
-                        objDict3["upload"] = record["Upload"]
-                        objDict2["date"] = record["Date"]
-
-                    # str(datetime.strptime((str(datetime.now()).split('.')[0]),"%Y-%m-%d %H:%M:%S")-datetime.strptime((record['discovered_time'].discovered_time.split('.'))[0],"%Y-%m-%d %H:%M:%S"))
-
-                    resultd.append(objDict1)
-                    resultu.append(objDict2)
-                    resulta.append(objDict3)
-                    objDict["Download"] = resultd
-                    objDict["Upload"] = resultu
-                    objDict["All"] = resulta
-
-        # print(results,file= sys.stderr)
-        return jsonify(objDict)
-
-    except Exception as e:
-        print("Error", str(e), file=sys.stderr)
+    except Exception:
         traceback.print_exc()
-        return "Error ", 500
+        return "Server Error", 500
+
+
+
+# @app.route("/getAvailabilityStatus", methods=["GET"])
+# @token_required
+# def GetAvailabilityStatus(user_data):
+#     if True:
+#         try:
+#             queryString = f"select STATUS from monitoring_network_devices_table  where date > now() - interval 1 day;"
+#             result = db.session.execute(queryString)
+#             for row in result:
+#                 pass
+#         except Exception as e:
+#             print(str(e), file=sys.stderr)
+#             traceback.print_exc()
+#             return str(e), 500
+#     else:
+#         print("Service not Available", file=sys.stderr)
+#         return jsonify({"Response": "Service not Available"}), 503
+
+
+# @app.route("/getCpuUtilization", methods=["GET"])
+# @token_required
+# def GetCpuUtilization(user_data):
+#     if True:
+#         try:
+#             queryString = f"select CPU from monitoring_network_devices_table  where date > now() - interval 1 day;"
+#             result = db.session.execute(queryString)
+#             for row in result:
+#                 pass
+#         except Exception as e:
+#             print(str(e), file=sys.stderr)
+#             traceback.print_exc()
+#             return str(e), 500
+#     else:
+#         print("Service not Available", file=sys.stderr)
+#         return jsonify({"Response": "Service not Available"}), 503
+
+
+# @app.route("/getMemoryUtilization", methods=["GET"])
+# @token_required
+# def GetMemoryUtilization(user_data):
+#     if True:
+#         try:
+#             queryString = f"select MEMORY from monitoring_network_devices_table  where date > now() - interval 1 day;"
+#             result = db.session.execute(queryString)
+#             for row in result:
+#                 pass
+#         except Exception as e:
+#             print(str(e), file=sys.stderr)
+#             traceback.print_exc()
+#             return str(e), 500
+#     else:
+#         print("Service not Available", file=sys.stderr)
+#         return jsonify({"Response": "Service not Available"}), 503
+
+
+# @app.route("/getinterfacedata", methods=["POST"])
+# def int_fetching1():
+#     jsonObj = request.get_json()
+
+#     # 1
+#     # Store the URL of your InfluxDB instance
+
+#     org = "monetx"
+
+#     # 2
+#     # Query script
+#     ip = jsonObj["ip_address"]
+#     query_api = client.query_api()
+#     query = f'import "strings"\
+#     import "influxdata/influxdb/schema"\
+#     from(bucket: "monitoring")\
+#     |> range(start: -60d)\
+#     |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
+#     |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip}")\
+#     |> schema.fieldsAsCols()'
+
+#     result = query_api.query(org="monetx", query=query)
+#     resultd = []
+#     resultu = []
+#     resulta = []
+#     objDict = {}
+
+#     try:
+#         for table in result:
+#             for record in table.records:
+#                 if record["Interface_Name"] == jsonObj["interface_name"]:
+#                     print("printing record:", record, file=sys.stderr)
+#                     objDict1 = {}
+#                     objDict2 = {}
+#                     objDict3 = {}
+#                     if record["Download"]:
+#                         objDict1["name"] = record["Interface_Name"]
+#                         objDict1["value"] = record["Download"]
+#                         objDict3["name"] = record["Interface_Name"]
+#                         objDict3["download"] = record["Download"]
+#                         objDict3["date"] = record["Date"]
+#                         objDict1["date"] = record["Date"]
+
+#                     if record["Upload"]:
+#                         objDict2["name"] = record["Interface_Name"]
+#                         objDict2["value"] = record["Upload"]
+#                         objDict3["upload"] = record["Upload"]
+#                         objDict2["date"] = record["Date"]
+
+#                     # str(datetime.strptime((str(datetime.now()).split('.')[0]),"%Y-%m-%d %H:%M:%S")-datetime.strptime((record['discovered_time'].discovered_time.split('.'))[0],"%Y-%m-%d %H:%M:%S"))
+
+#                     resultd.append(objDict1)
+#                     resultu.append(objDict2)
+#                     resulta.append(objDict3)
+#                     objDict["Download"] = resultd
+#                     objDict["Upload"] = resultu
+#                     objDict["All"] = resulta
+
+#         # print(results,file= sys.stderr)
+#         return jsonify(objDict)
+
+#     except Exception as e:
+#         print("Error", str(e), file=sys.stderr)
+#         traceback.print_exc()
+#         return "Error ", 500
 
 
 @app.route("/getinterfaceband", methods=["POST"])
@@ -631,11 +288,7 @@ def int_band():
     |> schema.fieldsAsCols()'
 
     result = query_api.query(org="monetx", query=query)
-    print(
-        "##############################%$^%^45printing result value ",
-        result,
-        file=sys.stderr,
-    )
+    
     resulta = []
     objDict = {}
     upload = []
@@ -764,34 +417,3 @@ def GetAllMonitoringFunctions(user_data):
         traceback.print_exc()
         return "Server Error ", 500
 
-
-@app.route("/getIPAlerts", methods=["POST"])
-@token_required
-def GetIPAlerts(user_data):
-    try:
-        jsonObj = request.get_json()
-        # 1
-        # Store the URL of your InfluxDB instance
-        ip_address = jsonObj["ip_address"]
-        MonitoringAlertsList = []
-
-        queryString = f"select * from alerts_table where ip_address='{ip_address}';"
-        results = db.session.execute(queryString)
-
-        for MonitoringObj in results:
-            MonitoringDataDict = {}
-            MonitoringDataDict["alarm_id"] = MonitoringObj[0]
-            MonitoringDataDict["ip_address"] = MonitoringObj[1]
-            MonitoringDataDict["description"] = MonitoringObj[2]
-            MonitoringDataDict["alert_type"] = MonitoringObj[3]
-            MonitoringDataDict["function"] = MonitoringObj[4]
-            MonitoringDataDict["mail_status"] = MonitoringObj[5]
-            MonitoringDataDict["date"] = MonitoringObj[8]
-
-            MonitoringAlertsList.append(MonitoringDataDict)
-
-        return jsonify(MonitoringAlertsList), 200
-    except Exception as e:
-        print("Error", str(e), file=sys.stderr)
-        traceback.print_exc()
-        return "Error ", 500

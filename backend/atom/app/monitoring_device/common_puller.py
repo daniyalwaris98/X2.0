@@ -1,5 +1,6 @@
 from app.monitoring_device.puller_utils import *
 from app.monitoring_device.ping_parse import *
+from app.utilities.db_utils import *
 
 
 cisco_ios_oids = {
@@ -222,43 +223,44 @@ class CommonPuller(object):
         pass
 
     def poll(self, host):
+        atom, monitoring, credentials = host
         output = dict()
 
         status = ping(host[1])[0]
-        print(host[1]+" : "+status, file=sys.stderr)
-        updatequery = f"update monitoring_devices_table set status = '{status}' where ip_address='{host[1]}';"
-        db.session.execute(updatequery)
-        db.session.commit()
+        print(f"{atom.ip_address} : {status}", file=sys.stderr)
+        
+        monitoring.ping_status = status
+        UpdateDBData(monitoring)
 
         # if status == "Down":
         #     return
 
-        if host[2].lower() == "cisco_asa":
+        if atom.device_type == "cisco_asa":
             output = getSnmpData(host, cisco_asa_oids)
-        elif host[2].lower() == "cisco_apic":
+        elif atom.device_type == "cisco_apic":
             output = getSnmpData(host, cisco_apic_oids)
-        elif host[2].lower() == "cisco_ios":
+        elif atom.device_type == "cisco_ios":
             output = getSnmpData(host, cisco_ios_oids)
-        elif host[2].lower() == "cisco_ios_xe":
+        elif atom.device_type == "cisco_ios_xe":
             output = getSnmpData(host, cisco_ios_oids)
-        elif host[2].lower() == "cisco_ios_xr":
+        elif atom.device_type == "cisco_ios_xr":
             output = getSnmpData(host, cisco_ios_xr_oids)
-        elif host[2].lower() == "cisco_nxos":
+        elif atom.device_type == "cisco_nxos":
             output = getSnmpData(host, cisco_nxos_oids)
-        elif host[2].lower() == "cisco_wlc":
+        elif atom.device_type == "cisco_wlc":
             output = getSnmpData(host, cisco_wlc_oids)
-        elif host[2].lower() == "extream":
+        elif atom.device_type == "extream":
             output = getSnmpData(host, extream_oids)
-        elif host[2].lower() == "fortinet":
+        elif atom.device_type == "fortinet":
             output = getSnmpData(host, fortinet_oids)
-        elif host[2].lower() == "juniper":
+        elif atom.device_type == "juniper":
             output = getSnmpData(host, juniper_oids)
-        elif host[2].lower() == "linux":
+        elif atom.device_type == "linux":
             output = getSnmpData(host, linux_oids)
-        elif host[2].lower() == "paloalto":
+        elif atom.device_type == "paloalto":
             output = getSnmpData(host, palo_oids)
-        elif host[2].lower() == "window":
+        elif atom.device_type == "window":
             output = getSnmpData(host, windows_oids)
         else:
             print(
-                f"\n-------- {host[1]}: Support Not Available for {host[2]} --------\n", file=sys.stderr)
+                f"\n-------- {atom.ip_address}: Support Not Available for {atom.ip_address} --------\n", file=sys.stderr)
