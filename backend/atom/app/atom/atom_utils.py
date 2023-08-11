@@ -212,10 +212,15 @@ def AddCompleteAtom(device, row, update):
 
         rack = Rack_Table.query.filter_by(
             rack_name=device['rack_name'].strip()).first()
+        
+        password = Password_Group_Table.query.filter_by(password_group=device['password_group'].strip()).first()
+        
         atom.rack_id = rack.rack_id
         atom.device_name = device['device_name'].strip()
         atom.device_type = device['device_type'].strip()
-        atom.password_group = device['password_group'].strip()
+        if password is not None:
+            atom.password_group_id = password.password_group_id
+            
         atom.function = device['function'].strip()
 
         if "device_ru" in device.keys():

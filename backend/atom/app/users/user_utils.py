@@ -17,7 +17,7 @@ from app.models.users_model import *
 def addEndUserDetails(endUserObj, user_data, license_key):
     try:
 
-        licenseObj = decodeLicense(license_key)
+        licenseObj = DecodeLicense(license_key)
 
         if licenseObj is None:
             return "Invalid License Key", 500
