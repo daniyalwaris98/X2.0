@@ -3,7 +3,7 @@ services:
   updated_atom_db:
     image: mysql:latest
     restart: always
-    container_name: Update_Atom_DATABASE_Container
+    container_name: Updated_Atom_Database_Container
     ports:
       - "3306:3306"
     environment:
@@ -13,7 +13,7 @@ services:
       - ./db/atom.sql:/docker-entrypoint-initdb.d/atom.sql
 
   updated_atom_flask:
-    container_name: Update_Atom_Flask_Container
+    container_name: Updated_Atom_Flask_Container
     restart: always
     build: backend/atom
     # cap_add:
@@ -27,18 +27,7 @@ services:
       - ./backend/atom:/app
     depends_on:
       - updated_atom_db
-      - updated_influxdb
-    # extra_hosts:
-    #   - "host.docker.internal:host-gateway"
-
-  # uam_flask:
-  #   container_name: UAM_Flask_Container
-  #   restart: always
-  #   build: backend/uam
-  #   ports:
-  #     - "5001:5001"
-  #   volumes:
-  #     - ./backend/uam:/app
+      - updated_influx_db
 
   updated_atom_react:
     container_name: Updated_Atom_React_Container
@@ -55,9 +44,9 @@ services:
     depends_on:
       - updated_atom_flask
 
-  updated_influxdb:
+  updated_influx_db:
     image: influxdb:latest
-    container_name: Updated_NEW_MONITORING_CONTAINER
+    container_name: Updated_Monitoring_Container
     ports:
       - "8086:8086"
     volumes:

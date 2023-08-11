@@ -11,7 +11,7 @@ from pandas import read_excel
 from app.uam.uam_db_utils import UamInventoryData
 
 from app import db
-from app.models.inventory_models import *
+from app.models.uam_models import *
 
 def InsertData(obj):
     #add data to db
@@ -120,7 +120,7 @@ class WLCPuller(object):
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
             self.failed = True
             date = datetime.now()
-            addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
             
             
         if is_login==True:

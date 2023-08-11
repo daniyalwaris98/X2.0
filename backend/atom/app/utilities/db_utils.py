@@ -3,6 +3,7 @@ import sys
 import traceback
 
 
+
 def InsertDBData(obj):
     try:
         db.session.add(obj)
