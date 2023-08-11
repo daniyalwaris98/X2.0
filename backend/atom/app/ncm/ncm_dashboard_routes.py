@@ -1,5 +1,5 @@
 import traceback
-from app import app, db,render_template
+from app import app, db
 from flask import request, make_response, Response, session
 from app.models.inventory_models import *
 from flask_jsonpify import jsonify
