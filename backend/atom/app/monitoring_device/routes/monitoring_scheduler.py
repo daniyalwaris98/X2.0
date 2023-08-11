@@ -1,15 +1,5 @@
-
-# from app.monitoring.pullers.general import GeneralPuller
-# from app.monitoring.pullers.window import WindowPuller
-# from app.monitoring.pullers.linux import LinuxPuller
-# from app.monitoring.pullers.cisco_asa import ASAPuller
-# from app.monitoring.pullers.juniper import JuniperPuller
-# from app.monitoring.pullers.fortinet import FortinetPuller
-# from app.monitoring.pullers.cisco_wlc import WLCSPuller
-# from app.monitoring.pullers.cisco_ios import IOSPuller
-
-from app.monitoring.pullers.common_puller import CommonPuller
-from app.monitoring.common_utils.utils import *
+from app.monitoring_device.monitoring_utils import *
+from app.monitoring_device.common_puller import CommonPuller
 from flask_apscheduler import APScheduler
 from app import app, db
 import sys
@@ -30,9 +20,9 @@ scheduler.start()
 def GenerateAlertMails():
     from datetime import datetime, timedelta
     from app.mail import send_mail
+
     print("\n### Generating Mails For Monitoring Alerts ###\n", file=sys.stderr)
     try:
-
         mailQuery = "select * from mail_credentials where status = 'active'"
         mail_cred = db.session.execute(mailQuery).fetchone()
         if mail_cred is None:
@@ -62,8 +52,9 @@ def GenerateAlertMails():
 
         for row in results:
             print(
-                f"-----> Sendig Mail for alert id = {row[0]} <------\n", file=sys.stderr)
-            
+                f"-----> Sendig Mail for alert id = {row[0]} <------\n", file=sys.stderr
+            )
+
             try:
                 # recipents = [
                 # 'najam.hassan@nets-international.com',
@@ -85,16 +76,18 @@ def GenerateAlertMails():
 
                 # sending email
                 print(
-                    f"-----> Sendig Mail for alert id = {row[0]} <------\n", file=sys.stderr)
+                    f"-----> Sendig Mail for alert id = {row[0]} <------\n",
+                    file=sys.stderr,
+                )
 
                 send_mail(
-                    send_from=mail_cred['MAIL'],
+                    send_from=mail_cred["MAIL"],
                     send_to=recipents,
                     subject=subject,
                     message=msg,
-                    username=mail_cred['MAIL'],
-                    password=mail_cred['PASSWORD'],
-                    server=mail_cred['SERVER']
+                    username=mail_cred["MAIL"],
+                    password=mail_cred["PASSWORD"],
+                    server=mail_cred["SERVER"],
                 )
 
                 query = f"update alerts_table set mail_status='yes' where alert_id = {row[0]};"
@@ -113,7 +106,6 @@ def GenerateAlertMails():
 
 
 def creatMonitoringPoll(devicePoll):
-
     threads = []
     for host in devicePoll:
         obj = CommonPuller()
@@ -128,7 +120,6 @@ def creatMonitoringPoll(devicePoll):
 def MonitoringOperations():
     iteration = 1
     while True:
-
         print(f"\n\n\n** Iteration : {iteration} **\n\n\n", file=sys.stderr)
         iteration = iteration + 1
 
@@ -139,25 +130,32 @@ def MonitoringOperations():
         print(f"Running Monitoring Schedular\n", file=sys.stderr)
 
         try:
-            queryString = f"select * from monitoring_devices_table where active='Active';"
-            results = db.session.execute(queryString)
+            results = (
+                db.session.query(
+                    Atom_Table, Monitoring_Devices_Table, Monitoring_Credentails_Table
+                )
+                .join(
+                    Atom_Table, Atom_Table.atom_id == Monitoring_Devices_Table.atom_id
+                )
+                .join(
+                    Monitoring_Credentails_Table,
+                    Monitoring_Credentails_Table.monitoring_credentials_id
+                    == Monitoring_Devices_Table.monitoring_credentials_id,
+                )
+                .all()
+            )
 
             devicePoll = []
             for result in results:
+                atom, monitoring_device, credentials = result
                 try:
-
-                    community_string = f"select * from monitoring_credentials_table where profile_name='{result[4]}';"
-                    community_result = db.session.execute(community_string)
-                    community = None
-                    for communityv in community_result:
-                        community = communityv[:]
-
-                    if community is not None:
-                        result = list(result) + list(community)
-                        devicePoll.append(result)
+                    if credentials is None:
+                        print(
+                            f"{atom.ip_address} : Error - No SNMP Credentials",
+                            file=sys.stderr,
+                        )
                     else:
-                        print(f"{result[1]}: Error : No SNMP Credentials")
-
+                        devicePoll.append(result)
                 except Exception as e:
                     traceback.print_exc()
 
@@ -178,9 +176,7 @@ def MonitoringOperations():
             traceback.print_exc()
 
 
-
 def RunningActiveDevices():
-
     # @scheduler.task('interval', id="testingpolls", seconds=300)
     try:
         monitoringThread = threading.Thread(target=MonitoringOperations)
@@ -189,7 +185,7 @@ def RunningActiveDevices():
         traceback.print_exc()
 
 
-@app.route("/runactive", methods=['GET'])
+@app.route("/runactive", methods=["GET"])
 # @token_required
 def runactivedevice():
     try:
@@ -218,11 +214,37 @@ def runactivedevice():
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'ReadOnlyAtheeb_MPLS', '161']
 # host = ['0', '91.147.128.26', 'cisco_ios', 'Edge_Ro-1', '4', '5', '6', '7', '8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'public', '161']
-host = ['0', '192.168.10.36', 'cisco_ios', '3', '4', '5', '6', '7', '8', '9', '10',
-        '11', '12', '13', 'v3', '15', '16', '17', '18', 'public', '161', 'nets', 'netsauth', 'netsencr', 'SHA-128', 'AES']
+host = [
+    "0",
+    "192.168.10.36",
+    "cisco_ios",
+    "3",
+    "4",
+    "5",
+    "6",
+    "7",
+    "8",
+    "9",
+    "10",
+    "11",
+    "12",
+    "13",
+    "v3",
+    "15",
+    "16",
+    "17",
+    "18",
+    "public",
+    "161",
+    "nets",
+    "netsauth",
+    "netsencr",
+    "SHA-128",
+    "AES",
+]
 
 
-@app.route("/testPuller", methods=['GET'])
+@app.route("/testPuller", methods=["GET"])
 def TestPuller():
     puller = CommonPuller()
     puller.poll(host)
@@ -257,7 +279,7 @@ def TestPuller():
     return "OK", 200
 
 
-@app.route("/pingTest", methods=['GET'])
+@app.route("/pingTest", methods=["GET"])
 def PingShed():
     queryString = f"select ip_address from monitoring_devices_table;"
     results = db.session.execute(queryString)
@@ -265,7 +287,7 @@ def PingShed():
     for result in results:
         ip_address = result[0].strip()
         status = ping(ip_address)
-        print(ip_address+" : "+status, file=sys.stderr)
+        print(ip_address + " : " + status, file=sys.stderr)
         updatequery = f"update monitoring_devices_table set status = '{status}' where ip_address='{ip_address}';"
         db.session.execute(updatequery)
         db.session.commit()
@@ -288,7 +310,6 @@ def PingShed():
 # @token_required
 def alarmactivedevice():
     try:
-
         # host = request.get_json()
 
         print(" I am in try block  of alarmactivedevices", file=sys.stderr)
@@ -313,18 +334,22 @@ def AlarmOperations():
         error = "Something Went Wrong:", type(e).__name__, str(e)
         print(" I am in excp block  of alarm scheduler", error, file=sys.stderr)
         return error
+
+
 # def alarms():
 #         @scheduler.task('interval', id="testingalrams", seconds=60)#
 #         Ala
 
 
-def alert_manage(alert):  # (`IP_ADDRESS`,`DESCRIPTION`,,`ALERT_TYPE`,`MAIL_STATUS`,`DATE`)
+def alert_manage(
+    alert,
+):  # (`IP_ADDRESS`,`DESCRIPTION`,,`ALERT_TYPE`,`MAIL_STATUS`,`DATE`)
     try:
-
         if alert[3] == "memory" or alert[3] == "cpu":
-            temptime = datetime.strptime((str(datetime.now()).split(
-                '.')[0]), "%Y-%m-%d %H:%M:%S") - datetime.strptime(alert[4], "%Y-%m-%d %H:%M:%S")
-            time = temptime.total_seconds()/60
+            temptime = datetime.strptime(
+                (str(datetime.now()).split(".")[0]), "%Y-%m-%d %H:%M:%S"
+            ) - datetime.strptime(alert[4], "%Y-%m-%d %H:%M:%S")
+            time = temptime.total_seconds() / 60
 
             # if time > 5:
             #         # if alert[2]=="informational":

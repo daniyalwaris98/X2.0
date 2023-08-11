@@ -12,6 +12,8 @@ from app.monitoring_device.alerts_utils import *
 from app.monitoring_device.ping_parse import *
 from app.models.common_models import *
 
+from app.models.monitoring_models import *
+
 
 #
 # Method to create SNMP V1/V2 Object
@@ -20,8 +22,7 @@ def createSnmpObjectV2(ip, string, port):
     try:
         print(f"{ip}: Creating SNMP V1/V2 Object", file=sys.stderr)
         engin = SnmpEngine()
-        community = CommunityData(
-            mpModel=1, communityIndex=ip, communityName=string)
+        community = CommunityData(mpModel=1, communityIndex=ip, communityName=string)
         transport = UdpTransportTarget((ip, port), timeout=5.0, retries=1)
         context = ContextData()
 
@@ -31,50 +32,58 @@ def createSnmpObjectV2(ip, string, port):
         traceback.print_exc()
         return None
 
+
 #
 # Method to create SNMP V3 Object
 #
-
-
-def createSnmpObjectV3(host):
+def createSnmpObjectV3(credentials, ip_address):
     try:
         auth_proc = None
         encryp_proc = None
-        if host[24] == "MD5":
+        if credentials.authentication_method == "MD5":
             auth_proc = usmHMACMD5AuthProtocol
-        if host[24] == "SHA":
+        if credentials.authentication_method == "SHA":
             auth_proc = usmHMACSHAAuthProtocol
-        if host[24] == "SHA-128":
-            auth_proc =usmHMAC128SHA224AuthProtocol
-        if host[24] == "SHA-256":
+        if credentials.authentication_method == "SHA-128":
+            auth_proc = usmHMAC128SHA224AuthProtocol
+        if credentials.authentication_method == "SHA-256":
             auth_proc = usmHMAC192SHA256AuthProtocol
-        if host[24] == "SHA-512":
+        if credentials.authentication_method == "SHA-512":
             auth_proc = usmHMAC384SHA512AuthProtocol
 
-        if host[25] == "DES":
+        if credentials.encryption_method == "DES":
             encryp_proc = usmDESPrivProtocol
-        if host[25] == "AES-128" or host[25] == "AES":
+        if credentials.encryption_method == "AES-128" or credentials.encryption_method == "AES":
             encryp_proc = usmAesCfb128Protocol
-        if host[25] == "AES-192":
+        if credentials.encryption_method == "AES-192":
             encryp_proc = usmAesCfb192Protocol
-        if host[25] == "AES-256":
+        if credentials.encryption_method == "AES-256":
             encryp_proc = usmAesCfb256Protocol
 
         engin = SnmpEngine()
-        # community = CommunityData(mpModel=1,communityIndex=host[1], communityName= host[13])# snmp community
-        community = UsmUserData(userName=host[21], authKey=host[22], privKey=host[23],
-                                authProtocol=auth_proc, privProtocol=encryp_proc)  # snmp community
+        # community = CommunityData(mpModel=1,communityIndex=atom.ip_address, communityName= host[13])# snmp community
+        community = UsmUserData(
+            userName=credentials.username,
+            authKey=credentials.password,
+            privKey=credentials.encryption_password,
+            authProtocol=auth_proc,
+            privProtocol=encryp_proc,
+        )  # snmp community
         transport = UdpTransportTarget(
-            (host[1], host[20]), timeout=5.0, retries=1)
+            (ip_address, credentials.snmp_port), timeout=5.0, retries=1
+        )
         context = ContextData()
 
         return [engin, community, transport, context]
 
     except Exception as e:
         print(
-            f"{host[1]}: Exception While Creating SNMP V3 Object", file=sys.stderr)
+            f"{ip_address}: Exception While Creating SNMP V3 Object",
+            file=sys.stderr,
+        )
         traceback.print_exc()
         return None
+
 
 #
 # Method to Test SNMP V2 Connection
@@ -88,18 +97,16 @@ def testSnmpConnection(snmp):
         transport = snmp[2]
         cnxt = snmp[3]
 
-        oid = ObjectIdentity('SNMPv2-MIB', 'sysDescr', 0)
+        oid = ObjectIdentity("SNMPv2-MIB", "sysDescr", 0)
 
-        error_indication, error_status, error_index, var_binds = next(getCmd(engn,
-                                                                             community,
-                                                                             transport,
-                                                                             cnxt,
-                                                                             ObjectType(oid)))
+        error_indication, error_status, error_index, var_binds = next(
+            getCmd(engn, community, transport, cnxt, ObjectType(oid))
+        )
         # Check if SNMP query was successful
         if error_indication:
-            print(f"SNMP query failed: {error_indication}",file=sys.stderr)
+            print(f"SNMP query failed: {error_indication}", file=sys.stderr)
         elif error_status:
-            print(f"SNMP query failed: {error_status.prettyPrint()}",file=sys.stderr)
+            print(f"SNMP query failed: {error_status.prettyPrint()}", file=sys.stderr)
         else:
             return True
 
@@ -110,22 +117,27 @@ def testSnmpConnection(snmp):
 
 
 def get_oid_data(engn, community, transport, cnxt, oid):
-
     try:
         print(f"\nSNMP walk started for OID {oid}", file=sys.stderr)
 
         oid = ObjectType(ObjectIdentity(oid))
         all = []
 
-        for (errorIndication, errorStatus, errorIndex, varBinds) in nextCmd(engn, community, transport, cnxt, oid, lexicographicMode=False):
-
+        for errorIndication, errorStatus, errorIndex, varBinds in nextCmd(
+            engn, community, transport, cnxt, oid, lexicographicMode=False
+        ):
             if errorIndication:
-                print(f'error=>{errorIndication}', file=sys.stderr)
+                print(f"error=>{errorIndication}", file=sys.stderr)
                 return "NA"
 
             elif errorStatus:
-                print('%s at %s' % (errorStatus.prettyPrint(),
-                                    errorIndex and varBinds[int(errorIndex) - 1][0] or '?'))
+                print(
+                    "%s at %s"
+                    % (
+                        errorStatus.prettyPrint(),
+                        errorIndex and varBinds[int(errorIndex) - 1][0] or "?",
+                    )
+                )
                 return "NA"
             else:
                 for varBind in varBinds:
@@ -138,169 +150,199 @@ def get_oid_data(engn, community, transport, cnxt, oid):
 
 
 def getSnmpData(host, oids):
-    print(f"\n---------->>>>>>>> {host[1]} : Start <<<<<<<<-----------\n",file=sys.stderr)
-    
+    atom, monitoring_device, credentials = host
+    print(
+        f"\n---------->>>>>>>> {atom.ip_address} : Start <<<<<<<<-----------\n",
+        file=sys.stderr,
+    )
+
     status = dict()
     try:
-        status['status'], status['response'], status['packets'] = ping(host[1])
-        if status['status'] == "Up":
-            statusAlert(host,'Up')
+        status["status"], status["response"], status["packets"] = ping(atom.ip_address)
+        if status["status"] == "Up":
+            statusAlert(monitoring_device, "Up")
         else:
-            statusAlert(host,'Down')
+            statusAlert(monitoring_device, "Down")
     except Exception as e:
         traceback.print_exc()
-        print(f"{host[1]}: Error In Ping0", file=sys.stderr)
-        status['status'] = "Down"
-        status['response'] = 'NA'
+        print(f"{atom.ip_address}: Error In Ping0", file=sys.stderr)
+        status["status"] = "Down"
+        status["response"] = "NA"
         try:
-            statusAlert(host,'Down')
+            statusAlert(monitoring_device, "Down")
         except:
             traceback.print_exc()
-    
+
     # if status['status'] == 'Down':
     #     return
 
     snmp = None
     connection = False
 
-    if host[14].lower() == "v3":
-        snmp = createSnmpObjectV3(host)
+    if credentials.category == "v3":
+        snmp = createSnmpObjectV3(atom.ip_address, credentials)
         connection = testSnmpConnection(snmp)
-    elif host[14].lower() == "v1/v2":
-        snmp = createSnmpObjectV2(host[1], host[19], host[20])
-        connection = testSnmpConnection(snmp)
-    else:
-        print(f"{host[1]}: Error : SNMP Version Unkwon",file=sys.stderr)
 
+    elif credentials.category == "v1/v2":
+        snmp = createSnmpObjectV2(
+            atom.ip_address, credentials.snmp_read_community, credentials.snmp_port
+        )
+        connection = testSnmpConnection(snmp)
+
+    else:
+        print(f"{atom.ip_address}: Error : SNMP Version Unkwon", file=sys.stderr)
 
     # check snmp credentials
     if connection is False:
-        print(f"{host[1]}: Error : Check SNMP Credentials",file=sys.stderr)
-        snmpAlert(host,False)
+        print(f"{atom.ip_address}: Error : Check SNMP Credentials", file=sys.stderr)
+        snmpAlert(monitoring_device.monitoring_device_id, False)
         snmp = None
+
     else:
-        print(f"{host[1]}: SNMP Connection Successfull",file=sys.stderr)
-        snmpAlert(host,True)
+        print(f"{atom.ip_address}: SNMP Connection Successfull", file=sys.stderr)
+        snmpAlert(monitoring_device.monitoring_device_id, True)
 
     # check if snmp is not set up successfully
     if snmp is None:
-        print(f"{host[1]}: Exiting Poll. Failed",file=sys.stderr)
+        print(f"{atom.ip_address}: Exiting Poll. Failed", file=sys.stderr)
         return None
 
     device = dict()
     try:
         print(
-            f"\n---------->>>>>>>\n{host[1]}: Device Data Extraction/Insertion Started\n",file=sys.stderr)
+            f"\n---------->>>>>>>\n{atom.ip_address}: Device Data Extraction/Insertion Started\n",
+            file=sys.stderr,
+        )
+
         device = getDeviceData(host, snmp, oids)
         device.update(status)
-        dumpDeviceData(host, device)
+        dumpDeviceData(atom, device)
+
     except Exception as e:
         traceback.print_exc()
-        print(f"{host[1]}: Device Data Extraction/Insertion Failed",file=sys.stderr)
+        print(
+            f"{atom.ip_address}: Device Data Extraction/Insertion Failed",
+            file=sys.stderr,
+        )
+
     print(
-        f"\n{host[1]}: Device Data Extraction/Insertion Complete\n<<<<<---------------\n",file=sys.stderr)
+        f"\n{atom.ip_address}: Device Data Extraction/Insertion Complete\n<<<<<---------------\n",
+        file=sys.stderr,
+    )
 
     interface = dict()
     try:
         print(
-            f"\n---------->>>>>>>\n{host[1]}: Interface Data Extraction/Insertion Started\n",file=sys.stderr)
-        interface = getInterfaceData(host, snmp, oids)
+            f"\n---------->>>>>>>\n{atom.ip_address}: Interface Data Extraction/Insertion Started\n",
+            file=sys.stderr,
+        )
+
+        interface = getInterfaceData(atom.ip_address, snmp, oids)
         if interface is not None:
-            dumpInterfaceData(host, device, interface)
+            dumpInterfaceData(atom, device, interface)
+
     except Exception as e:
         traceback.print_exc()
-        print(f"{host[1]}: Interface Data Extraction/Insertion Failed",file=sys.stderr)
+        print(
+            f"{atom.ip_address}: Interface Data Extraction/Insertion Failed",
+            file=sys.stderr,
+        )
+
     print(
-        f"\n{host[1]}: Interface Data Extraction/Insertion Complete\n<<<<<---------------\n",file=sys.stderr)
+        f"\n{atom.ip_address}: Interface Data Extraction/Insertion Complete\n<<<<<---------------\n",
+        file=sys.stderr,
+    )
 
 
 def getDeviceData(host, snmp, oids):
+    atom, monitoring_device, credentials = host
     output = dict()
 
-    
-
     # Uptime
-    output['uptime'] = getUpTime(host, snmp, oids['uptime'])
+    output["uptime"] = getUpTime(atom.ip_address, snmp, oids["uptime"])
 
     # CPU Utilization
-    output['cpu'] = getCpuUtilization(host, snmp, oids['cpu_utilization'])
+    output["cpu"] = getCpuUtilization(atom, snmp, oids["cpu_utilization"])
     try:
-        cpuAlert(host,output["cpu"])
+        cpuAlert(atom.ip_address, monitoring_device, output["cpu"])
     except:
         traceback.print_exc()
 
     # Memory Utilization
-    output['memory'] = 0.0
-    output['memory'] = getMemoryUtilization(host, snmp, oids)
+    output["memory"] = 0.0
+    output["memory"] = getMemoryUtilization(atom, snmp, oids)
     try:
-        memoryAlert(host,int(output["memory"]))
+        memoryAlert(atom.ip_address, monitoring_device, int(output["memory"]))
     except:
         traceback.print_exc()
 
     # Device Description
-    output['device_name'] = getDeviceName(host, snmp, oids['device_name'])
+    output["device_name"] = getDeviceName(atom.ip_address, snmp, oids["device_name"])
 
     # Device Description
-    output['device_description'] = getDeviceDescription(
-        host, snmp, oids['device_description'])
+    output["device_description"] = getDeviceDescription(
+        atom.ip_address, snmp, oids["device_description"]
+    )
 
     return output
 
 
-def getInterfaceData(host, snmp, oids):
-    interfaces = getInterfaceList(host, snmp, oids['interfaces'])
+def getInterfaceData(ip_address, snmp, oids):
+    
+    interfaces = getInterfaceList(ip_address, snmp, oids["interfaces"])
     if interfaces == None:
         return None
 
-    interface_description = getInterfaceList(
-        host, snmp, oids['interface_description'])
+    interface_description = getInterfaceList(ip_address, snmp, oids["interface_description"])
     if interface_description == None:
         return None
 
-    interface_status = getInterfaceList(host, snmp, oids['interface_status'])
+    interface_status = getInterfaceList(ip_address, snmp, oids["interface_status"])
     if interface_status == None:
         interface_status = dict()
         for key in interfaces.keys():
-            interface_status[key] = ['NA']
+            interface_status[key] = ["NA"]
 
     # Get first snapshot
     start_time = datetime.now()
-    print(f"{host[1]}: Taking 1st Snapshot : {str(start_time)}",
-          file=sys.stderr)
-    download_counter_start = getInterfaceList(host, snmp, oids['download'])
+    print(
+        f"{ip_address}: Taking 1st Snapshot : {str(start_time)}", file=sys.stderr
+    )
+    download_counter_start = getInterfaceList(ip_address, snmp, oids["download"])
     if download_counter_start == None:
-        print(f"{host[1]}: Error in Interface Download", file=sys.stderr)
+        print(f"{ip_address}: Error in Interface Download", file=sys.stderr)
 
-    upload_counter_start = getInterfaceList(host, snmp, oids['upload'])
+    upload_counter_start = getInterfaceList(ip_address, snmp, oids["upload"])
     if upload_counter_start == None:
-        print(f"{host[1]}: Error in Interface Upload", file=sys.stderr)
+        print(f"{ip_address}: Error in Interface Upload", file=sys.stderr)
 
-    print(f"{host[1]}: Waiting For 2nd Snapshot", file=sys.stderr)
+    print(f"{ip_address}: Waiting For 2nd Snapshot", file=sys.stderr)
     try:
         time.sleep(10)
     except Exception as e:
         traceback.print_exc()
-        print(f"{host[1]}: Error in Waiting", file=sys.stderr)
+        print(f"{ip_address}: Error in Waiting", file=sys.stderr)
 
     end_time = datetime.now()
-    print(f"{host[1]}: Taking 2nd Snapshot : {str(end_time)}", file=sys.stderr)
+    print(f"{ip_address}: Taking 2nd Snapshot : {str(end_time)}", file=sys.stderr)
 
-    download_counter_end = getInterfaceList(host, snmp, oids['download'])
+    download_counter_end = getInterfaceList(ip_address, snmp, oids["download"])
     if download_counter_end == None:
-        print(f"{host[1]}: Error in Interface Download", file=sys.stderr)
+        print(f"{ip_address}: Error in Interface Download", file=sys.stderr)
 
-    upload_counter_end = getInterfaceList(host, snmp, oids['upload'])
+    upload_counter_end = getInterfaceList(ip_address, snmp, oids["upload"])
     if upload_counter_end == None:
-        print(f"{host[1]}: Error in Interface Upload", file=sys.stderr)
+        print(f"{ip_address}: Error in Interface Upload", file=sys.stderr)
 
     time_difference = (end_time - start_time).total_seconds()
-    print(f"{host[1]}: Time Difference : {str(time_difference)}",
-          file=sys.stderr)
+    print(
+        f"{ip_address}: Time Difference : {str(time_difference)}", file=sys.stderr
+    )
 
     interfaceList = dict()
     for key in interfaces.keys():
-        description = 'NA'
-        status = 'NA'
+        description = "NA"
+        status = "NA"
         download = 0.0
         upload = 0.0
 
@@ -308,19 +350,25 @@ def getInterfaceData(host, snmp, oids):
             description = interface_description[key][0]
 
         if key in interface_status.keys():
-            if interface_status[key][0] == '1':
-                status = 'Up'
+            if interface_status[key][0] == "1":
+                status = "Up"
             else:
-                status = 'Down'
+                status = "Down"
 
         try:
             if download_counter_start is not None and download_counter_end is not None:
-                if key in download_counter_start.keys() and key in download_counter_end.keys():
-                    download = int(
-                        download_counter_end[key][0]) - int(download_counter_start[key][0])
+                if (
+                    key in download_counter_start.keys()
+                    and key in download_counter_end.keys()
+                ):
+                    download = int(download_counter_end[key][0]) - int(
+                        download_counter_start[key][0]
+                    )
                     if download < 0:
                         print(
-                            f"{host[1]}: Error In Download Difference : {interfaces[key]} : {download}", file=sys.stderr)
+                            f"{ip_address}: Error In Download Difference : {interfaces[key]} : {download}",
+                            file=sys.stderr,
+                        )
                     else:
                         download = (download * 8) / time_difference  # bps
                         download = download / 1000  # Kbps
@@ -330,33 +378,43 @@ def getInterfaceData(host, snmp, oids):
         except Exception as e:
             traceback.print_exc()
             print(
-                f"{host[1]}: Error In Download Calculation : {interfaces[key]}", file=sys.stderr)
+                f"{ip_address}: Error In Download Calculation : {interfaces[key]}",
+                file=sys.stderr,
+            )
 
         try:
             if upload_counter_start is not None and upload_counter_end is not None:
-                if key in upload_counter_start.keys() and key in upload_counter_end.keys():
-                    upload = int(
-                        upload_counter_end[key][0]) - int(upload_counter_start[key][0])
+                if (
+                    key in upload_counter_start.keys()
+                    and key in upload_counter_end.keys()
+                ):
+                    upload = int(upload_counter_end[key][0]) - int(
+                        upload_counter_start[key][0]
+                    )
                     if upload < 0:
                         print(
-                            f"{host[1]}: Error In Upload Difference : {interfaces[key]} : {upload}", file=sys.stderr)
+                            f"{ip_address}: Error In Upload Difference : {interfaces[key]} : {upload}",
+                            file=sys.stderr,
+                        )
                     else:
                         upload = (upload * 8) / time_difference  # bps
-                        upload = upload/1000  # Kbps
-                        upload = upload/1000  # Mbps
+                        upload = upload / 1000  # Kbps
+                        upload = upload / 1000  # Mbps
                         upload = round(upload, 2)
 
         except Exception as e:
             traceback.print_exc()
             print(
-                f"{host[1]}: Error In Upload Calculation : {interfaces[key]}", file=sys.stderr)
+                f"{ip_address}: Error In Upload Calculation : {interfaces[key]}",
+                file=sys.stderr,
+            )
 
         interfaceObj = {
-            'name': interfaces[key][0],
-            'status': status,
-            'description': description,
-            'download': download,
-            'upload': upload
+            "name": interfaces[key][0],
+            "status": status,
+            "description": description,
+            "download": download,
+            "upload": upload,
         }
 
         interfaceList[key] = interfaceObj
@@ -364,7 +422,7 @@ def getInterfaceData(host, snmp, oids):
     return interfaceList
 
 
-def getInterfaceList(host, snmp, oid):
+def getInterfaceList(ip_address, snmp, oid):
     engn = snmp[0]
     community = snmp[1]
     transport = snmp[2]
@@ -372,19 +430,18 @@ def getInterfaceList(host, snmp, oid):
 
     interfaces = None
     try:
-        value = get_oid_data(
-            engn, community, transport, cnxt, oid)
+        value = get_oid_data(engn, community, transport, cnxt, oid)
         interfaces = parse_snmp_output(value)
     except:
-        print(f"{host[1]}: Error in Interfaces", file=sys.stderr)
+        print(f"{ip_address}: Error in Interfaces", file=sys.stderr)
         traceback.print_exc()
         return None
 
-    print(f"{host[1]}: Interfaces : {interfaces}", file=sys.stderr)
+    print(f"{ip_address}: Interfaces : {interfaces}", file=sys.stderr)
     return interfaces
 
 
-def getUpTime(host, snmp, oid):
+def getUpTime(ip_address, snmp, oid):
     engn = snmp[0]
     community = snmp[1]
     transport = snmp[2]
@@ -392,20 +449,19 @@ def getUpTime(host, snmp, oid):
 
     uptime = 0
     try:
-        value = get_oid_data(
-            engn, community, transport, cnxt, oid)
+        value = get_oid_data(engn, community, transport, cnxt, oid)
         uptime = int(parse_general(value))
         uptime = convert_time(uptime)
     except:
-        print(f"{host[1]}: Error in Up Time", file=sys.stderr)
+        print(f"{ip_address}: Error in Up Time", file=sys.stderr)
         traceback.print_exc()
         uptime = 0
 
-    print(f"{host[1]}: Up Time : {uptime}", file=sys.stderr)
+    print(f"{ip_address}: Up Time : {uptime}", file=sys.stderr)
     return uptime
 
 
-def getCpuUtilization(host, snmp, oid):
+def getCpuUtilization(atom, snmp, oid):
     engn = snmp[0]
     community = snmp[1]
     transport = snmp[2]
@@ -415,48 +471,48 @@ def getCpuUtilization(host, snmp, oid):
     try:
         value = None
         cpu_list = {}
-        if host[2].lower() == 'cisco_ios_xr':
-
+        if atom.device_type.lower() == "cisco_ios_xr":
             if len(oid) != 2:
-                print(f"{host[1]}: IOS-XR - Error in CPU - Invalid SNMP OID & Index", file=sys.stderr)
+                print(
+                    f"{atom.ip_address}: IOS-XR - Error in CPU - Invalid SNMP OID & Index",
+                    file=sys.stderr,
+                )
                 return "NA"
 
-            value = get_oid_data(
-            engn, community, transport, cnxt, oid[0])
+            value = get_oid_data(engn, community, transport, cnxt, oid[0])
 
-            if value is None or value == 'NA':
+            if value is None or value == "NA":
                 value = "NA"
             else:
                 cpu_list = parse_snmp_output(value)
 
                 if oid[1] in cpu_list.keys():
-                    cpu_list = {
-                        oid[1] : cpu_list[oid[1]]
-                    }
+                    cpu_list = {oid[1]: cpu_list[oid[1]]}
                 else:
-                    print(f"{host[1]}: IOS-XR - Error in CPU - SNMP Index Does Nor Match", file=sys.stderr)
+                    print(
+                        f"{atom.ip_address}: IOS-XR - Error in CPU - SNMP Index Does Nor Match",
+                        file=sys.stderr,
+                    )
         else:
-            value = get_oid_data(
-                engn, community, transport, cnxt, oid)
-            if value is None or value == 'NA':
+            value = get_oid_data(engn, community, transport, cnxt, oid)
+            if value is None or value == "NA":
                 value = "NA"
             else:
                 cpu_list = parse_snmp_output(value)
-        
- 
-        if value == 'NA':
-            cpu = 'NA'
+
+        if value == "NA":
+            cpu = "NA"
         else:
             for key in cpu_list.keys():
                 cpu += int(cpu_list[key][0])
             if cpu > 0:
-                cpu = int(cpu/(len(cpu_list.keys())))
+                cpu = int(cpu / (len(cpu_list.keys())))
     except:
-        print(f"{host[1]}: Error in CPU", file=sys.stderr)
+        print(f"{atom.ip_address}: Error in CPU", file=sys.stderr)
         traceback.print_exc()
         cpu = "NA"
 
-    print(f"{host[1]}: CPU Utilization : {cpu}", file=sys.stderr)
+    print(f"{atom.ip_address}: CPU Utilization : {cpu}", file=sys.stderr)
     return cpu
 
 
@@ -464,119 +520,133 @@ def parseMemory(memory_data):
     memory = 0.0
     memoryList = parse_snmp_output(memory_data)
     for key in memoryList.keys():
-                memory += float(memoryList[key][0])
-    
+        memory += float(memoryList[key][0])
+
     return memory, len(memoryList.keys())
 
 
 # Method to get memory utilization by extracting used and free memory
-def getMemoryUtilization(host, snmp, oids):
-
+def getMemoryUtilization(atom, snmp, oids):
     engn = snmp[0]
     community = snmp[1]
     transport = snmp[2]
     cnxt = snmp[3]
 
     memory_util = 0.0
-    if host[2].lower() == 'fortinet' or host[2].lower() == 'juniper':
-        if 'memory' in oids.keys():
+    if atom.device_type.lower() == "fortinet" or atom.device_type.lower() == "juniper":
+        if "memory" in oids.keys():
             try:
-                memory = get_oid_data(
-                    engn, community, transport, cnxt, oids['memory'])
+                memory = get_oid_data(engn, community, transport, cnxt, oids["memory"])
                 memory_util, count = parseMemory(memory)
 
                 if memory_util > 0.0 and count != 0:
                     memory_util = memory_util / count
 
-
             except Exception as e:
-                print(f"{host[1]}: Error in Memory Utilization",
-                      file=sys.stderr)
+                print(
+                    f"{atom.ip_address}: Error in Memory Utilization", file=sys.stderr
+                )
                 traceback.print_exc()
         else:
             print(
-                f"{host[1]}: Error : Memory Percent Utilization OID Not Given", file=sys.stderr)
+                f"{atom.ip_address}: Error : Memory Percent Utilization OID Not Given",
+                file=sys.stderr,
+            )
 
-    elif host[2].lower() == 'cisco_ios' or host[2].lower() == 'cisco_ios_xe' or host[2].lower() == 'cisco_ios_xr' or host[2].lower() == 'cisco_nxos' or host[2].lower() == 'cisco_apic':
+    elif (
+        atom.device_type.lower() == "cisco_ios"
+        or atom.device_type.lower() == "cisco_ios_xe"
+        or atom.device_type.lower() == "cisco_ios_xr"
+        or atom.device_type.lower() == "cisco_nxos"
+        or atom.device_type.lower() == "cisco_apic"
+    ):
         try:
-            if 'memory_used' in oids.keys() and 'memory_free' in oids.keys():
+            if "memory_used" in oids.keys() and "memory_free" in oids.keys():
                 memory_used = get_oid_data(
-                    engn, community, transport, cnxt, oids['memory_used'])
-                
+                    engn, community, transport, cnxt, oids["memory_used"]
+                )
+
                 memory_used = parseMemory(memory_used)[0]
-                print(f"{host[1]}: Memory Used: {memory_used}",
-                      file=sys.stderr)
+                print(f"{atom.ip_address}: Memory Used: {memory_used}", file=sys.stderr)
 
                 memory_free = get_oid_data(
-                    engn, community, transport, cnxt, oids['memory_free'])
+                    engn, community, transport, cnxt, oids["memory_free"]
+                )
                 memory_free = parseMemory(memory_free)[0]
-                print(f"{host[1]}: Memory Free: {memory_free}",
-                      file=sys.stderr)
+                print(f"{atom.ip_address}: Memory Free: {memory_free}", file=sys.stderr)
 
-                memory_util = (memory_used*100)/(memory_used+memory_free)
+                memory_util = (memory_used * 100) / (memory_used + memory_free)
             else:
                 print(
-                    f"{host[1]}: Error : Memory Used Or Memory Free OID Not Given", file=sys.stderr)
+                    f"{atom.ip_address}: Error : Memory Used Or Memory Free OID Not Given",
+                    file=sys.stderr,
+                )
         except Exception as e:
-            print(f"{host[1]}: Error in Memory Utilization", file=sys.stderr)
+            print(f"{atom.ip_address}: Error in Memory Utilization", file=sys.stderr)
             traceback.print_exc()
 
-    elif host[2].lower() == 'window' or host[2].lower() == 'paloalto':
+    elif atom.device_type.lower() == "window" or atom.device_type.lower() == "paloalto":
         try:
-
-            if 'memory_used' in oids.keys() and 'memory_total' in oids.keys():
+            if "memory_used" in oids.keys() and "memory_total" in oids.keys():
                 memory_used = get_oid_data(
-                    engn, community, transport, cnxt, oids['memory_used'])
+                    engn, community, transport, cnxt, oids["memory_used"]
+                )
                 memory_used = parseMemory(memory_used)[0]
-                print(f"{host[1]}: Memory Used: {memory_used}",
-                      file=sys.stderr)
+                print(f"{atom.ip_address}: Memory Used: {memory_used}", file=sys.stderr)
 
                 memory_total = get_oid_data(
-                    engn, community, transport, cnxt, oids['memory_total'])
+                    engn, community, transport, cnxt, oids["memory_total"]
+                )
                 memory_total = parseMemory(memory_total)[0]
-                print(f"{host[1]}: Memory Total: {memory_total}",
-                      file=sys.stderr)
+                print(
+                    f"{atom.ip_address}: Memory Total: {memory_total}", file=sys.stderr
+                )
 
-                memory_util = (memory_used*100)/(memory_total)
+                memory_util = (memory_used * 100) / (memory_total)
             else:
                 print(
-                    f"{host[1]}: Error : Memory Used Or Memory Total OID Not Given", file=sys.stderr)
+                    f"{atom.ip_address}: Error : Memory Used Or Memory Total OID Not Given",
+                    file=sys.stderr,
+                )
 
         except Exception as e:
-            print(f"{host[1]}: Error in Memory Utilization", file=sys.stderr)
+            print(f"{atom.ip_address}: Error in Memory Utilization", file=sys.stderr)
             traceback.print_exc()
 
-    elif host[2].lower() == 'extream' or host[2].lower() == 'linux':
+    elif atom.device_type.lower() == "extream" or atom.device_type.lower() == "linux":
         try:
-
-            if 'memory_free' in oids.keys() and 'memory_total' in oids.keys():
+            if "memory_free" in oids.keys() and "memory_total" in oids.keys():
                 memory_free = get_oid_data(
-                    engn, community, transport, cnxt, oids['memory_free'])
+                    engn, community, transport, cnxt, oids["memory_free"]
+                )
                 memory_free = float(parse_general(memory_free))
-                print(f"{host[1]}: Memory Free: {memory_free}",
-                      file=sys.stderr)
+                print(f"{atom.ip_address}: Memory Free: {memory_free}", file=sys.stderr)
 
                 memory_total = get_oid_data(
-                    engn, community, transport, cnxt, oids['memory_total'])
+                    engn, community, transport, cnxt, oids["memory_total"]
+                )
                 memory_total = int(parse_general(memory_total))
-                print(f"{host[1]}: Memory Total: {memory_total}",
-                      file=sys.stderr)
+                print(
+                    f"{atom.ip_address}: Memory Total: {memory_total}", file=sys.stderr
+                )
 
-                memory_util = (memory_total-memory_free*100)/(memory_total)
+                memory_util = (memory_total - memory_free * 100) / (memory_total)
             else:
                 print(
-                    f"{host[1]}: Error : Memory Used Or Memory Total OID Not Given", file=sys.stderr)
+                    f"{atom.ip_address}: Error : Memory Used Or Memory Total OID Not Given",
+                    file=sys.stderr,
+                )
 
         except Exception as e:
-            print(f"{host[1]}: Error in Memory Utilization", file=sys.stderr)
+            print(f"{atom.ip_address}: Error in Memory Utilization", file=sys.stderr)
             traceback.print_exc()
 
     memory_util = round(memory_util, 2)
-    print(f"{host[1]}: Memory Utilization : {memory_util}", file=sys.stderr)
+    print(f"{atom.ip_address}: Memory Utilization : {memory_util}", file=sys.stderr)
     return memory_util
 
 
-def getDeviceDescription(host, snmp, oid):
+def getDeviceDescription(ip_address, snmp, oid):
     engn = snmp[0]
     community = snmp[1]
     transport = snmp[2]
@@ -584,41 +654,39 @@ def getDeviceDescription(host, snmp, oid):
 
     device = "NA"
     try:
-        value = get_oid_data(
-            engn, community, transport, cnxt, oid)
+        value = get_oid_data(engn, community, transport, cnxt, oid)
         device = parse_general(value)
     except:
-        print(f"{host[1]}: Error in Device Description", file=sys.stderr)
+        print(f"{ip_address}: Error in Device Description", file=sys.stderr)
         traceback.print_exc()
 
-    print(f"{host[1]}: Device Description : {device}", file=sys.stderr)
+    print(f"{ip_address}: Device Description : {device}", file=sys.stderr)
     return device
 
 
-def getDeviceName(host, snmp, oid):
+def getDeviceName(ip_address, snmp, oid):
     engn = snmp[0]
     community = snmp[1]
     transport = snmp[2]
     cnxt = snmp[3]
 
-    device = 'NA'
+    device = "NA"
     try:
-        value = get_oid_data(
-            engn, community, transport, cnxt, oid)
+        value = get_oid_data(engn, community, transport, cnxt, oid)
         device = parse_general(value)
     except:
-        print(f"{host[1]}: Error in Device Name", file=sys.stderr)
+        print(f"{ip_address}: Error in Device Name", file=sys.stderr)
         traceback.print_exc()
 
-    print(f"{host[1]}: Device Name : {device}", file=sys.stderr)
+    print(f"{ip_address}: Device Name : {device}", file=sys.stderr)
     return device
 
 
 def parse_snmp_output(varbinds):
     intefaces_val = dict()
     for varbind in varbinds:
-        out = re.search(r'\d* .*', str(varbind)).group()
-        value = out.split('=')
+        out = re.search(r"\d* .*", str(varbind)).group()
+        value = out.split("=")
         intefaces_val[value[0].strip()] = [value[1].strip()]
 
     return intefaces_val
@@ -626,91 +694,96 @@ def parse_snmp_output(varbinds):
 
 def parse_general(varbinds):
     for varBind in varbinds:
-        res = ' = '.join([x.prettyPrint() for x in varBind])
-        if 'No Such Instance' not in res:
-            result = res.split('=')[1].strip()
+        res = " = ".join([x.prettyPrint() for x in varBind])
+        if "No Such Instance" not in res:
+            result = res.split("=")[1].strip()
             return result
 
 
-def dumpDeviceData(host, output):
-
+def dumpDeviceData(atom, output):
     from app import client
-    print(f"{host[1]}: Dumping Device Data",file=sys.stderr)
+
+    print(f"{atom.ip_address}: Dumping Device Data", file=sys.stderr)
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
     dictionary = [
         {
             "measurement": "Devices",
-            "tags":
-            {"DEVICE_NAME": output['device_name'],
-                "STATUS": output['status'],
-                "IP_ADDRESS": host[1],
-                "FUNCTION": host[7],
-                "VENDOR": host[6],
-                "DEVICE_TYPE":host[2],
-             },
+            "tags": {
+                "DEVICE_NAME": output["device_name"],
+                "STATUS": output["status"],
+                "IP_ADDRESS": atom.ip_address,
+                "FUNCTION": atom.function,
+                "VENDOR": atom.vendor,
+                "DEVICE_TYPE": atom.device_type,
+            },
             "time": datetime.now(),
-            "fields":
-            {
+            "fields": {
                 "INTERFACES": 22,
                 "DISCOVERED_TIME": str(datetime.now()),
-                "DEVICE_DESCRIPTION": output['device_description'],
-                "CPU": output['cpu'],
-                "Memory": output['memory'],
-                "PACKETS_LOSS": output['packets'],
-                "Response": output['response'],
-                "Uptime": output['uptime'],
-                "Date": str(datetime.now())
-            }
-        }]
-    if dictionary[0]['fields']['CPU'] == 'NA':
-        dictionary[0]['fields']['CPU'] = 0
+                "DEVICE_DESCRIPTION": output["device_description"],
+                "CPU": output["cpu"],
+                "Memory": output["memory"],
+                "PACKETS_LOSS": output["packets"],
+                "Response": output["response"],
+                "Uptime": output["uptime"],
+                "Date": str(datetime.now()),
+            },
+        }
+    ]
+    if dictionary[0]["fields"]["CPU"] == "NA":
+        dictionary[0]["fields"]["CPU"] = 0
 
-    if dictionary[0]['fields']['Memory'] == 'NA':
-        dictionary[0]['fields']['Memory'] = 0.0
+    if dictionary[0]["fields"]["Memory"] == "NA":
+        dictionary[0]["fields"]["Memory"] = 0.0
 
     try:
-        write_api.write(bucket='monitoring', record=dictionary)
+        write_api.write(bucket="monitoring", record=dictionary)
     except Exception as e:
         traceback.print_exc()
         print(
-            f"{host[1]}: Influx Connection Issue For Device: {e}", file=sys.stderr)
+            f"{atom.ip_address}: Influx Connection Issue For Device: {e}",
+            file=sys.stderr,
+        )
 
 
-def dumpInterfaceData(host, output, interfaces):
+def dumpInterfaceData(atom, output, interfaces):
     from app import client
+
     write_api = client.write_api(write_options=SYNCHRONOUS)
 
     if len(interfaces.items()) > 0:
-
         for k in interfaces.keys():
-            dictionary1 = [{
-                "measurement": "Interfaces",
-                "tags":
-                {"DEVICE_NAME": output['device_name'],
-                 "STATUS": output['status'],
-                 "IP_ADDRESS": host[1],
-                 "FUNCTION": host[7],
-                 "VENDOR": host[6],
-                 "DEVICE_TYPE":host[2],
-                 },
-                "time": datetime.now(),
-                "fields":
+            dictionary1 = [
                 {
-                    "Interface_Name": interfaces[k]['name'],
-                    "Status": interfaces[k]['status'],
-                    "Download": float(interfaces[k]['download']),
-                    "Upload": float(interfaces[k]['upload']),
-                    "Interface Description":interfaces[k]['description'],
-                    "Date": str(datetime.now())
-
-                }}]
+                    "measurement": "Interfaces",
+                    "tags": {
+                        "DEVICE_NAME": output["device_name"],
+                        "STATUS": output["status"],
+                        "IP_ADDRESS": atom.ip_address,
+                        "FUNCTION": atom.function,
+                        "VENDOR": atom.vendor,
+                        "DEVICE_TYPE": atom.device_type,
+                    },
+                    "time": datetime.now(),
+                    "fields": {
+                        "Interface_Name": interfaces[k]["name"],
+                        "Status": interfaces[k]["status"],
+                        "Download": float(interfaces[k]["download"]),
+                        "Upload": float(interfaces[k]["upload"]),
+                        "Interface Description": interfaces[k]["description"],
+                        "Date": str(datetime.now()),
+                    },
+                }
+            ]
 
             try:
-                write_api.write(bucket='monitoring', record=dictionary1)
+                write_api.write(bucket="monitoring", record=dictionary1)
             except Exception as e:
                 print(
-                    f"{host[1]}: Influx Connection Issue For Interface: {interfaces[k]['name']}: {e}", file=sys.stderr)
+                    f"{atom.ip_address}: Influx Connection Issue For Interface: {interfaces[k]['name']}: {e}",
+                    file=sys.stderr,
+                )
 
 
 #
@@ -723,35 +796,33 @@ def dumpInterfaceData(host, output, interfaces):
 #
 
 
-def InsertData(obj):
-    # add data to db
-    try:
-        db.session.add(obj)
-        db.session.commit()
+# def InsertData(obj):
+#     # add data to db
+#     try:
+#         db.session.add(obj)
+#         db.session.commit()
 
-    except Exception as e:
-        db.session.rollback()
-        print(
-            f"Something else went wrong in Database Insertion {e}", file=sys.stderr)
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f"Something else went wrong in Database Insertion {e}", file=sys.stderr)
 
-    return True
+#     return True
 
 
-def UpdateData(obj):
-    # add data to db
-    # print(obj, file=sys.stderr)
-    try:
-        # db.session.flush()
+# def UpdateData(obj):
+#     # add data to db
+#     # print(obj, file=sys.stderr)
+#     try:
+#         # db.session.flush()
 
-        db.session.merge(obj)
-        db.session.commit()
+#         db.session.merge(obj)
+#         db.session.commit()
 
-    except Exception as e:
-        db.session.rollback()
-        print(
-            f"Something else went wrong during Database Update {e}", file=sys.stderr)
+#     except Exception as e:
+#         db.session.rollback()
+#         print(f"Something else went wrong during Database Update {e}", file=sys.stderr)
 
-    return True
+#     return True
 
 
 def addFailedDevice(ip, date, device_type, failure_reason, module):
@@ -761,13 +832,17 @@ def addFailedDevice(ip, date, device_type, failure_reason, module):
     failed.device_type = device_type
     failed.failure_reason = failure_reason
     failed.module = module
-    if FAILED_DEVICES_TABLE.query.with_entities(FAILED_DEVICES_TABLE.ip_address).filter_by(ip_address=ip) is not None:
-
-        print("Updated "+ip, file=sys.stderr)
-        UpdateData(failed)
+    if (
+        FAILED_DEVICES_TABLE.query.with_entities(
+            FAILED_DEVICES_TABLE.ip_address
+        ).filter_by(ip_address=ip)
+        is not None
+    ):
+        print("Updated " + ip, file=sys.stderr)
+        UpdateDBData(failed)
     else:
         print("Inserted ", ip, file=sys.stderr)
-        InsertData(failed)
+        InsertDBData(failed)
 
 
 def convert_time(seconds):
@@ -782,9 +857,9 @@ def convert_time(seconds):
 
 def general(varbinds):
     for varBind in varbinds:
-        res = ' = '.join([x.prettyPrint() for x in varBind])
-        if 'No Such Instance' not in res:
-            result = res.split('=')[1].strip()
+        res = " = ".join([x.prettyPrint() for x in varBind])
+        if "No Such Instance" not in res:
+            result = res.split("=")[1].strip()
 
             return result
 
