@@ -52,10 +52,8 @@ const index = () => {
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -67,6 +65,7 @@ const index = () => {
       disabled: !configData?.uam.pages.racks.read_only,
     }),
   };
+
   const exportSeed = async () => {
     setExportLoading(true);
     jsonToExcel(excelData);
@@ -81,17 +80,14 @@ const index = () => {
       XLSX.utils.book_append_sheet(wb, binaryAtomData, "stack_switches");
       XLSX.writeFile(wb, "stack_switches.xlsx");
       openNotification();
-      // setExportLoading(false);
     } else {
       openSweetAlert("No Data Found!", "info");
     }
   };
+
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
     });
   };
 
@@ -146,22 +142,23 @@ const index = () => {
   // };
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/getAllSubBoards");
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
     serviceCalls();
   }, []);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getAllSubBoards");
+      excelData = res.data;
+      setDataSource(excelData);
+      setRowCount(excelData.length);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
 
   const convertToJson = (headers, fileData) => {
     let rows = [];

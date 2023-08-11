@@ -1,15 +1,8 @@
 import React, { useState, useEffect } from "react";
-import { Bar, Pie, Line, Doughnut, PolarArea } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import "chartjs-plugin-zoom";
 import axios, { baseUrl } from "../../../../../utils/axios";
 import { SpinLoading } from "../../../../AllStyling/All.styled";
-import { Chart as ChartJS } from "chart.js/auto";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-// useEffect(() => {}, []);
-
-// useEffect(() => {
-//   Bar.register(zoomPlugin);
-// }, [zoomPlugin]);
 
 const index = () => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +14,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/sfpMode");
-        // console.log("sfpMode", res);
         setMySfpMode(res.data);
         setLoading(false);
       } catch (err) {
@@ -57,7 +49,6 @@ const index = () => {
                     "#66B7",
                     "#6627",
                   ],
-                  // borderColor: "#66B127",
                   borderWidth: 1,
                   hoverOffset: 15,
                   borderRadius: 8,
@@ -84,15 +75,7 @@ const index = () => {
                   position: "top",
                 },
               },
-              // animation: {
-              //   tension: {
-              //     duration: 1000,
-              //     easing: "linear",
-              //     from: 1,
-              //     to: 0,
-              //     loop: true,
-              //   },
-              // },
+
               scales: {
                 yAxes: [
                   {

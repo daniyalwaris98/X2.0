@@ -81,16 +81,12 @@ const EditSubBoardModel = (props) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data?.response, "error");
           } else {
-            openSweetAlert(
-              `SubBoard ${device ? "Updated" : "Updated"} Successfully`,
-              "success"
-            );
+            openSweetAlert(`SubBoard updated Successfully`, "success");
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + "/getAllSubBoards")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
