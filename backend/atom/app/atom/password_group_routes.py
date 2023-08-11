@@ -84,7 +84,7 @@ def DeletePasswordGroup(user_data):
                     continue
                 
                 atom = Atom_Table.query.filter_by(
-                    password_group=password.password_group
+                    password_group_id=password.password_group_id
                 ).first()
                 
                 if atom is not None:

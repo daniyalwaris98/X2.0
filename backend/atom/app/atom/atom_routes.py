@@ -103,7 +103,7 @@ def GetAtoms(user_data):
             db.session.query(Atom_Table, Rack_Table, Site_Table, Password_Group_Table)
             .join(
                 Password_Group_Table,
-                Atom_Table.password_group == Password_Group_Table.password_group,
+                Atom_Table.password_group_id == Password_Group_Table.password_group_id,
             )
             .join(Rack_Table, Atom_Table.rack_id == Rack_Table.rack_id)
             .join(Site_Table, Rack_Table.site_id == Site_Table.site_id)

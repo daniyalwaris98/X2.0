@@ -5,14 +5,15 @@ device_type_list = [
     "cisco_aireos",
     "cisco_apic",
     "cisco_asa",
-    "cisco_nxos",
+    "cisco_ftd",
     "cisco_ios",
     "cisco_ios_xe",
     "cisco_ios_xr",
+    "cisco_nxos",
     "cisco_ucs",
     "cisco_wlc",
     "extream_os",
-    "f5_itm",
+    "f5_ltm",
     "fireeye",
     "firepower",
     "fortinet",
@@ -29,5 +30,50 @@ device_type_list = [
     "symantec",
     "wire_filter",
     "window",
-    "other"
+    "other",
 ]
+
+
+device_type_ssh_dictionary = {
+    "a10": "a10",
+    "arista": "arista_eos",
+    "cisco_asa": "cisco_asa",
+    "cisco_ftd": "cisco_ftd",
+    "cisco_ios": "cisco_ios",
+    "cisco_ios_xe": "cisco_xe",
+    "cisco_ios_xr": "cisco_xr",
+    "cisco_nxos": "cisco_nxos",
+    "cisco_wlc": "cisco_wlc",
+    "extream_os": "extreme_exos",
+    "f5_ltm": "f5_ltm",
+    "fortinet": "fortinet",
+    "huawei": "huawei",
+    "h3c": "hp_comware",
+    "juniper": "juniper",
+    "juniper_screenos": "juniper_screenos",
+    "linux": "linux",
+    "paloalto": "paloalto_panos",
+}
+
+
+device_type_telnet_dictionary = {
+    "arista": "arista_eos_telnet",
+    "cisco_ios": "cisco_ios_telnet",
+    "cisco_ios_xr": "cisco_xr_telnet",
+    "extream_os": "extreme_exos_telnet",
+    "huawei": "huawei_telnet",
+    "h3c": "hp_comware_telnet",
+    "paloalto": "paloalto_panos_telnet",
+}
+
+
+ncm_command_list = {
+    "cisco_asa": ["show running-config", "show ip interface brief", "show version"],
+    "cisco_ftd": ["show running-config", "show ip interface brief", "show version"],
+    "cisco_ios": ["show running-config", "show ip interface brief", "show version"],
+    "cisco_ios_xe": ["show running-config", "show ip interface brief", "show version"],
+    "cisco_ios_xr": ["show running-config", "show ip interface brief", "show version"],
+    "cisco_nxos": ["show running-config", "show ip interface brief", "show version"],
+    "cisco_wlc": ["show running-config", "show ip interface brief", "show version"],
+    "fortinet": ["show full-configuration", "show ip interface brief", "show version"],
+}

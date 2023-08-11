@@ -18,7 +18,7 @@ def OnBoardDevice(user_data):
         for ip in postData:
             print(ip, file=sys.stderr)
             
-            result = db.session.query(Atom_Table, Password_Group_Table).join(Password_Group_Table, Password_Group_Table.password_group==Atom_Table.password_group).filter(Atom_Table.ip_address==ip).first()
+            result = db.session.query(Atom_Table, Password_Group_Table).join(Password_Group_Table, Password_Group_Table.password_group_id==Atom_Table.password_group_id).filter(Atom_Table.ip_address==ip).first()
             response = True
             if result is None:
                 pass
