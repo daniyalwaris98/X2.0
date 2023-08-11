@@ -22,6 +22,7 @@ const index = () => {
     };
     sfpStatus();
   }, []);
+
   return (
     <SpinLoading spinning={loading}>
       <div

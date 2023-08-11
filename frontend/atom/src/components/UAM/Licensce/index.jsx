@@ -194,9 +194,6 @@ const index = () => {
     rows = rows.filter((value) => JSON.stringify(value) !== "{}");
     return rows;
   };
-  // useEffect(() => {
-  //   inputRef.current.addEventListener("input", importExcel);
-  // }, []);
 
   const showModal = () => {
     setEditRecord(null);
@@ -213,33 +210,6 @@ const index = () => {
   };
 
   const columns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "2%",
-
-    //   render: (text, record) => (
-    //     <a>
-    //       <EditOutlined
-    //         style={{ paddingRight: "50px" }}
-    //         onClick={() => {
-    //           edit(record);
-    //         }}
-    //       />
-    //     </a>
-    //   ),
-    // },
-    // {
-    //   ...getColumnSearchProps(
-    //     'license_id',
-    //     'license_id',
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "license_name",
       dataIndex: "license_name",
@@ -288,22 +258,6 @@ const index = () => {
       ),
       ellipsis: true,
     },
-    // {
-    //   title: "rfs_date",
-    //   dataIndex: "rfs_date",
-    //   key: "rfs_date",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "rfs_date",
-    //     "RFS Date",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "activation_date",
       dataIndex: "activation_date",
@@ -336,38 +290,6 @@ const index = () => {
       ),
       ellipsis: true,
     },
-    // {
-    //   title: "grace_period",
-    //   dataIndex: "grace_period",
-    //   key: "grace_period",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "grace_period",
-    //     "Grace Period",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-    // {
-    //   title: "serial_number",
-    //   dataIndex: "serial_number",
-    //   key: "serial_number",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "serial_number",
-    //     "Serial Number",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "creation_date",
       dataIndex: "creation_date",
@@ -417,49 +339,6 @@ const index = () => {
       ),
       ellipsis: true,
     },
-    // {
-    //   ...getColumnSearchProps(
-    //     'tag_id',
-    //     'tag_id',
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-    // {
-    //   title: "capacity",
-    //   dataIndex: "capacity",
-    //   key: "capacity",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "capacity",
-    //     "Capacity",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
-    // {
-    //   title: "usage",
-    //   dataIndex: "usage",
-    //   key: "usage",
-    //   render: (text, record) => <p style={{ textAlign: "center" }}>{text}</p>,
-
-    //   ...getColumnSearchProps(
-    //     "usage",
-    //     "Usage",
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "pn_code",
       dataIndex: "pn_code",
@@ -493,9 +372,7 @@ const index = () => {
               <h3
                 style={{
                   marginLeft: "10px",
-                  // float: "right",
                   marginRight: "20px",
-                  // fontWeight: "bold",
                 }}
               >
                 Row :<b style={{ color: "#3D9E47" }}> {rowCount}</b>
@@ -503,9 +380,7 @@ const index = () => {
               <h3
                 style={{
                   marginLeft: "10px",
-                  // float: "right",
                   marginRight: "20px",
-                  // fontWeight: "bold",
                 }}
               >
                 Col : <b style={{ color: "#3D9E47" }}> 14</b>
@@ -522,7 +397,6 @@ const index = () => {
             <StyledExportButton
               onClick={exportSeed}
               style={{
-                // float: 'right',
                 paddingTop: "4px",
               }}
             >
@@ -542,7 +416,6 @@ const index = () => {
             setDataSource={setDataSource}
             excelData={excelData}
             setRowCount={setRowCount}
-            // editRecord={editRecord}
             addRecord={addRecord}
             centered={true}
           />
@@ -563,20 +436,14 @@ const index = () => {
         <SpinLoading spinning={loading} tip="Loading...">
           <div style={{ padding: "25px" }}>
             <TableStyling
-              // rowSelection=
-              // {rowSelection}
               scroll={{ x: 4000 }}
               rowKey="ip_address"
               columns={columns}
               dataSource={dataSource}
-              // pagination={false}
               style={{ width: "100%", padding: "2%" }}
             />
           </div>
         </SpinLoading>
-        {/* <div style={{ position: "fixed", bottom: "20px", right: "20px" }}>
-          <img src={message} alt="" />
-        </div> */}
       </div>
     </>
   );

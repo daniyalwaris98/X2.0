@@ -11,34 +11,13 @@ import EditModal from "./EditSFPSModal.jsx";
 import axios, { baseUrl } from "../../../utils/axios";
 import * as XLSX from "xlsx";
 
-// import { Table } from 'antd';
-import {
-  ImportOutlined,
-  ExportOutlined,
-  EditOutlined,
-} from "@ant-design/icons";
+import {} from "@ant-design/icons";
 import {
   TableStyling,
-  StyledImportFileInput,
-  StyledButton,
-  OnBoardStyledButton,
-  AddAtomStyledButton,
   StyledExportButton,
-  StyledInput,
-  Styledselect,
-  InputWrapper,
-  StyledSubmitButton,
-  StyledModalButton,
-  ColStyling,
   AddStyledButton,
-  TableStyle,
   SpinLoading,
 } from "../../AllStyling/All.styled.js";
-// import {
-//   AddAtomStyledButton,
-//   StyledExportButton,
-//   TableStyling,
-// } from './SFPS.styled.js';
 
 import Doughnut from "./Chart/Doughnut";
 import BarChart from "./Chart/Bar";
@@ -48,11 +27,6 @@ let columnFilters = {};
 
 const index = () => {
   let [dataSource, setDataSource] = useState(excelData);
-
-  const [Name, setSiteName] = useState("");
-  const [myImg, setMyImg] = useState("");
-  const [myNumber, setMyNumber] = useState("");
-
   const [searchText, setSearchText] = useState(null);
   const [searchedColumn, setSearchedColumn] = useState(null);
   const [rowCount, setRowCount] = useState(0);
@@ -67,11 +41,12 @@ const index = () => {
   let [exportLoading, setExportLoading] = useState(false);
 
   const [configData, setConfigData] = useState(null);
+
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
+
   let getColumnSearchProps = columnSearch(
     searchText,
     setSearchText,
@@ -80,7 +55,6 @@ const index = () => {
   );
 
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -106,7 +80,6 @@ const index = () => {
       XLSX.utils.book_append_sheet(wb, binaryAtomData, "sfps");
       XLSX.writeFile(wb, "sfps.xlsx");
       openNotification();
-      // setExportLoading(false);
     } else {
       openSweetAlert("No Data Found!", "danger");
     }
@@ -188,39 +161,6 @@ const index = () => {
     serviceCalls();
   }, []);
 
-  useEffect(() => {
-    const sfpStatus = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/sfpStatus");
-        console.log("sfpStatus", res.data);
-
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
-    sfpStatus();
-  }, []);
-  useEffect(() => {
-    const sfpMode = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/sfpMode");
-        console.log("sfpMode", res);
-
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
-    sfpMode();
-  }, []);
-
   const convertToJson = (headers, fileData) => {
     let rows = [];
     fileData.forEach((row) => {
@@ -233,9 +173,6 @@ const index = () => {
     rows = rows.filter((value) => JSON.stringify(value) !== "{}");
     return rows;
   };
-  // useEffect(() => {
-  //   inputRef.current.addEventListener("input", importExcel);
-  // }, []);
 
   const showModal = () => {
     setEditRecord(null);
@@ -245,6 +182,7 @@ const index = () => {
   const showEditModal = () => {
     setIsModalVisible(true);
   };
+
   const edit = (record) => {
     setEditRecord(record);
     // setAddRecord(record);
