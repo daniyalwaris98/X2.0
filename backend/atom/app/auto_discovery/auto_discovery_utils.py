@@ -76,10 +76,10 @@ def AddNetwork(networkObj, row, update):
         else:
             networkObj['scan_status'] = "Active"
 
-        exist = False
+        exist = True
         network = Auto_Discovery_Network_Table.query.filter_by(network_name=networkObj['network_name'], subnet=networkObj['subnet']).first()
         if network is None:
-            exist = True
+            exist = False
             network = Auto_Discovery_Network_Table()
             network.network_name = networkObj['network_name']
             network.subnet = networkObj['subnet']
