@@ -1,13 +1,11 @@
 import sys
-from app import db
-from datetime import datetime, timedelta
+from datetime import datetime
 
 from app.models.ncm_models import *
 from app.utilities.db_utils import *
 
 
 def insert_login_alarm(atom, ncm):
-    current_time = datetime.now()
 
     alarm_description = (
         "1. The credentials (username or password) on the device have been changed\n"

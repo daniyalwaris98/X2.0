@@ -1,15 +1,20 @@
-import traceback
+import os
 import sys
+import traceback
 from datetime import datetime
-from flask_jsonpify import jsonify
-from flask import request
 
-from app.middleware import token_required
+from flask_jsonpify import jsonify
+from flask import request, render_template
 
 from app import app, db
-from app.models.ncm_models import *
+from app.middleware import token_required
 from app.utilities.db_utils import *
+
+from app.models.atom_models import *
+from app.models.ncm_models import *
+
 from app.ncm.ncm_pullers.ncm_puller import NCMPuller
+from app.conf_diff_main.conf_diff import ConfDiff
 
 
 @app.route("/addNcmDevice", methods=["POST"])
@@ -201,7 +206,7 @@ def GetAllNcmDevices(user_data):
                     password_group = password.password_group
 
             ncmDict = {}
-            ncmDict["ncm_id"] = ncm.ncm_device_id
+            ncmDict["ncm_device_id"] = ncm.ncm_device_id
             ncmDict["ip_address"] = atom.ip_address
             ncmDict["device_name"] = atom.device_name
             ncmDict["device_type"] = atom.device_type
@@ -213,7 +218,6 @@ def GetAllNcmDevices(user_data):
             ncmDict["vendor"] = atom.vendor
             ncmDict["status"] = ncm.status
             ncmDict["backup_status"] = ncm.backup_status
-            
 
             ncmObjList.append(ncmDict)
         return jsonify(ncmObjList), 200
@@ -228,19 +232,18 @@ def GetAllNcmDevices(user_data):
 @token_required
 def GetAtomInNcm(user_data):
     try:
-        
         atom_ids = []
         ncm_devices = NCM_Device_Table.query.all()
         for ncm in ncm_devices:
             atom_ids.append(ncm.atom_id)
 
         results = Atom_Table.query.all()
-        
+
         atomObjList = []
         for atom in results:
             if atom.atom_id in atom_ids:
                 continue
-            
+
             password_group = None
             if atom.password_group_id is not None:
                 password = Password_Group_Table.query.filter(
@@ -255,10 +258,10 @@ def GetAtomInNcm(user_data):
             objDict["device_name"] = atom.device_name
             objDict["device_type"] = atom.device_type
             objDict["password_group"] = password_group
-            objDict['vendor'] = atom.vendor
+            objDict["vendor"] = atom.vendor
             objDict["function"] = atom.function
             atomObjList.append(objDict)
-            
+
         return jsonify(atomObjList), 200
     except Exception as e:
         print(str(e), file=sys.stderr)
@@ -271,25 +274,26 @@ def GetAtomInNcm(user_data):
 def AddNcmFromAtom(user_data):
     try:
         ips = request.get_json()
-        
+
         successList = []
         errorList = []
         for ip in ips:
-            
             atom = Atom_Table.query.filter(Atom_Table.ip_address == ip).first()
             if atom is not None:
                 ncm = NCM_Device_Table()
                 ncm.atom_id = atom.atom_id
                 ncm.status = "Active"
-                
+
                 if InsertDBData(ncm) == 200:
                     successList.append(f"{atom.ip_address} : Device Added Successfully")
                 else:
-                    errorList.append(f"{atom.ip_address} : Exception Occurred While Insertion")
-            
+                    errorList.append(
+                        f"{atom.ip_address} : Exception Occurred While Insertion"
+                    )
+
             else:
                 errorList.append(f"{atom.ip_address} : IP Address Not Found In Atom")
-            
+
         # responseDict = {
         #     "success": len(successList),
         #     "error": len(errorList),
@@ -298,9 +302,9 @@ def AddNcmFromAtom(user_data):
         # }
 
         # return jsonify(responseDict), 200
-        
+
         msg = f"** NCM Import Summary **\nSuccessful : {len(successList)}\nFailed : {len(errorList)}"
-        
+
         return msg, 200
 
     except Exception as e:
@@ -309,29 +313,134 @@ def AddNcmFromAtom(user_data):
         return str(e), 500
 
 
-
 @app.route("/deleteNcmDevice", methods=["POST"])
 @token_required
 def DeleteNcmDevice(user_data):
-    if True:
-        try:
-            ipObjs = request.get_json()
-            for ip in ipObjs:
-                queryString = f"delete from ncm_table where IP_ADDRESS='{ip}';"
-                db.session.execute(queryString)
-                queryString1 = f"delete from ncm_configuration_status_table where IP_ADDRESS='{ip}';"
-                db.session.execute(queryString1)
-                db.session.commit()
-                print(f"DEVICE {ip} DELETED SUCCESSFULLY", file=sys.stderr)
+    try:
+        ipObjs = request.get_json()
+        for ip in ipObjs:
+            queryString = f"delete from ncm_table where IP_ADDRESS='{ip}';"
+            db.session.execute(queryString)
+            queryString1 = (
+                f"delete from ncm_configuration_status_table where IP_ADDRESS='{ip}';"
+            )
+            db.session.execute(queryString1)
+            db.session.commit()
+            print(f"DEVICE {ip} DELETED SUCCESSFULLY", file=sys.stderr)
 
-            return "DELETION SUCCESSFUL", 200
-        except Exception as e:
-            print(str(e), file=sys.sytderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
+        return "DELETION SUCCESSFUL", 200
+    except Exception as e:
+        print(str(e), file=sys.sytderr)
+        traceback.print_exc()
+        return str(e), 500
+
+
+@app.route("/getAllConfigurations", methods=["POST"])
+@token_required
+def GetAllConfigurationDates(user_data):
+    try:
+        ncmObj = request.get_json()
+
+        if "ncm_device_id" not in ncmObj.keys():
+            return "NCM Device ID Is Missing", 500
+
+        if ncmObj["ncm_device_id"] is None:
+            return "NCM Device ID Is Empty", 500
+
+        results = NCM_History_Table.query.filter(
+            NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"]
+        ).all()
+
+        objList = []
+        for history in results:
+            objDict = {}
+            objDict["ncm_history_id"] = history.ncm_history_id
+            objDict["date"] = (history.configuration_date).strftime("%Y-%m-%d %H:%M:%S")
+            objDict["file_name"] = history.file_name
+
+            objList.append(objDict)
+
+        return jsonify(objList), 200
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Server Error While Fetching Backup History", 500
+
+
+def CheckPath(file_path):
+    from pathlib import Path
+
+    # create a Path object with the path to the file
+    path = Path(file_path)
+
+    return path.is_file()
+
+
+@app.route("/getAllConfigurationDatesInString", methods=["POST"])
+@token_required
+def GetAllConfigurationDatesInString(user_data):
+    try:
+        ncmObj = request.get_json()
+
+        if "ncm_device_id" not in ncmObj.keys():
+            return "NCM Device ID Is Missing", 500
+
+        if ncmObj["ncm_device_id"] is None:
+            return "NCM Device ID Is Empty", 500
+
+        results = (
+            NCM_History_Table.query()
+            .filter(NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"])
+            .all()
+        )
+
+        objList = []
+        for history in results:
+            date = (history.configuration_date).strftime("%Y-%m-%d %H:%M:%S")
+            objList.append(date)
+
+        return jsonify(objList), 200
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Server Error While Fetching Configuration Dates", 500
+
+
+@app.route("/getConfigurationFromDate", methods=["POST"])
+@token_required
+def GetConfigurationFromDate(user_data):
+    try:
+        ncmObj = request.get_json()
+
+        if "ncm_device_id" not in ncmObj.keys():
+            return "NCM Device ID Is Missing", 500
+
+        if ncmObj["ncm_device_id"] is None:
+            return "NCM Device ID Is Empty", 500
+
+        history = NCM_History_Table.query.filter(
+            NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
+            NCM_History_Table.configuration_date == ncmObj["date"],
+        ).first()
+
+        if history is None:
+            return "Backup File Not Found", 500
+
+        cwd = os.getcwd()
+        file_path = cwd + "/app/configuration_backups/" + history.file_name
+        pathFlag = CheckPath(file_path)
+
+        if pathFlag:
+            f = open(file_path, "r")
+            configuration = f.read()
+            return configuration, 200
+        else:
+            DeleteDBData(history)
+            return "Configuration Does Not Exist", 500
+
+    except Exception as e:
+        traceback.print_exc()
+        return "Server Error While Fetching Backup", 500
 
 
 @app.route("/sendCommand", methods=["POST"])
@@ -368,171 +477,29 @@ def SendCommand(user_data):
 
 @app.route("/backupConfigurations", methods=["POST"])
 def BackupConfigurations():
-    if True:
-        try:
-            ncmObj = request.get_json()
-            queryString = f"select IP_ADDRESS,DEVICE_TYPE,PASSWORD_GROUP,DEVICE_NAME from ncm_table where IP_ADDRESS='{ncmObj['ip_address']}';"
-            result = db.session.execute(queryString)
+    try:
+        ncmObj = request.get_json()
 
-            for row in result:
-                objDict = {}
-                ip_address = row[0]
-                device_type = row[1]
-                password_group = row[2]
-                device_name = row[3]
-                objDict["ip_address"] = ip_address
-                objDict["device_type"] = device_type
-                objDict["device_name"] = device_name
-                queryString2 = f"select USERNAME,PASSWORD from password_group_table where password_group='{password_group}';"
-                result2 = db.session.execute(queryString2)
-                for row2 in result2:
-                    username = row2[0]
-                    password = row2[1]
-                    username = username.strip()
-                    password = password.strip()
-                    objDict["username"] = username
-                    objDict["password"] = password
+        ncmPuller = NCMPuller()
+        ncmPuller.setup_puller(ncmObj)
 
-            # objDict = {
-            #     'username':'nets','password':'Nets@123','device_type':'cisco_ios','ip_address':'192.168.30.151'
-            # }
-            command = ""
-            device_type = device_type.strip()
-            if device_type == "cisco_ios_xe":
-                device_type = "cisco_xe"
-                command = "show running-conf"
-            if device_type == "cisco_ios_xr":
-                device_type = "cisco_xr"
-                command = "show running-conf"
-            if (
-                device_type == "cisco_ios"
-                or device_type == "cisco_xr"
-                or device_type == "cisco_xe"
-                or device_type == "cisco_asa"
-                or device_type == "cisco_nxos"
-                or device_type == "cisco_wlc"
-                or device_type == "cisco_ftd"
-            ):
-                command = "show running-config"
-            elif device_type == "fortinet":
-                command = "show full-configuration"
-            configurationPuller = Puller()
+        if ncmPuller.status == 500:
+            return ncmPuller.response, 500
 
-            output = configurationPuller.poll(objDict, device_type, command)
+        ncmPuller.backup_config()
 
-            if configurationPuller.Success() == True:
-                return "Configuration Backup Successful", 200
-            elif configurationPuller.Exists() == True:
-                return "Configuration Already Exists", 500
-            elif configurationPuller.FailedLogin() == True:
-                return "Failed to Login into Device", 500
-            else:
-                return "Something Went Wrong", 500
-            # print(f" OUTPUT IN API IS {(output)}",file=sys.stderr)
-            # return "Configuration Backup Successful",200
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
+        return ncmPuller.response, ncmPuller.status
+
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Server Error In Configuration Backup", 500
 
 
-@app.route("/getAllConfigurationDates", methods=["POST"])
-@token_required
-def GetAllConfigurationDates(user_data):
-    if True:
-        try:
-            ipObjs = request.get_json()
-            print(f"%%%GETALLCONFIGURATIONDATES", ipObjs, file=sys.stderr)
-            queryString = f"select CONFIGURATION_DATE from ncm_history_table where IP_ADDRESS='{ipObjs['ip_address']}';"
-            objList = []
-            result = db.session.execute(queryString)
-            for row in result:
-                objDict = {}
-                objDict["date"] = (row[0]).strftime("%Y-%m-%d %H:%M:%S")
-                objList.append(objDict)
-            return jsonify(objList), 200
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
-
-
-def CheckPath(file_path):
-    from pathlib import Path
-
-    # create a Path object with the path to the file
-    path = Path(file_path)
-
-    return path.is_file()
-
-
-@app.route("/getConfigurationFromDate", methods=["POST"])
-@token_required
-def GetConfigurationFromDate(user_data):
-    if True:
-        try:
-            file_name = ""
-            dateObj = request.get_json()
-            print(f"%DATEE IS {dateObj}", file=sys.stderr)
-            queryString = f"select FILE_NAME from ncm_history_table where CONFIGURATION_DATE='{dateObj['date']}';"
-            result = db.session.execute(queryString)
-            for row in result:
-                file_name = row[0]
-
-            # os.chdir(os.getcwd()+'/app/configuration_backups')
-            cwd = os.getcwd()
-            file_path = cwd + "/app/configuration_backups/" + file_name + ".cfg"
-            pathFlag = CheckPath(file_path)
-            if pathFlag:
-                f = open(file_path, "r")
-                configuration = f.read()
-                return configuration, 200
-            else:
-                queryString1 = f"delete from ncm_history_table where CONFIGURATION_DATE='{dateObj['date']}';"
-                db.session.execute(queryString1)
-                db.session.commit()
-                return "Does Not Exists", 500
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
-
-
-# @app.route("/testing_configuration")
-# def path_test():
-#     queryString = f"select FILE_NAME from ncm_history_table where file_name='LAB_SW_06_2023-01-06 11:06:24.655025';"
-#     result = db.session.execute(queryString)
-#     file_name = ""
-#     for row in result:
-#         file_name = row[0]
-#         # print(file_name,file=sys.stderr)
-
-
-#     cwd = os.getcwd()
-#     path = f"{cwd}/app/configuration_backups/{file_name}.cfg"
-#     f = open(path,"r")
-#     output = ""
-#     lines = f.readlines()
-#     # print(f.readlines(),file=sys.stderr)
-#     for line in lines:
-#         if "! Last configuration change" in line:
-#             pass
-#         else:
-#             output+=line
-#     # return os.getcwd()
-#     return output,200
 @app.route("/restoreConfiguration", methods=["POST"])
 @token_required
 def RestoreConfiguration(user_data):
+    return "Service Not Available At This Time", 500
     if True:
         try:
             ncmObj = request.get_json()
@@ -587,51 +554,64 @@ def RestoreConfiguration(user_data):
 @app.route("/configurationComparison", methods=["POST"])
 @token_required
 def ConfigurationComparison(user_data):
-    if True:
-        try:
-            cwd = os.getcwd()
-            existingPath = f"{cwd}/app/templates/html_diff_output.html"
-            existingPath1 = os.path.exists(existingPath)
-            if existingPath1:
-                print("Existing File Removed", file=sys.stderr)
-                os.remove(existingPath)
-            else:
-                pass
-            ncmObj = request.get_json()
-            queryString = f"select FILE_NAME from ncm_history_table where IP_ADDRESS='{ncmObj['ip_address']}' and CONFIGURATION_DATE='{ncmObj['date1']}';"
-            result = db.session.execute(queryString)
-            file_name1 = ""
-            for row in result:
-                file_name1 += row[0]
-            queryString1 = f"select FILE_NAME from ncm_history_table where IP_ADDRESS='{ncmObj['ip_address']}' and CONFIGURATION_DATE='{ncmObj['date2']}';"
-            result1 = db.session.execute(queryString1)
-            file_name2 = ""
-            for row in result1:
-                file_name2 = row[0]
+    try:
+        ncmObj = request.get_json()
 
-            if file_name1 == "" or file_name2 == "" or file_name1 == file_name2:
-                return "One of the Configurations Not Found", 500
+        if "ncm_device_id" not in ncmObj.keys():
+            return "NCM Device ID Is Missing", 500
 
-            else:
-                cwd = os.getcwd()
-                path = f"{cwd}/app/configuration_backups/"
-                path1 = f"/app/app/templates/html_diff_output.html"
-                html_diff = ConfDiff(
-                    f"{path}{file_name1}.cfg", f"{path}{file_name2}.cfg", path1
-                )
-                difference = html_diff.diff()
+        if ncmObj["ncm_device_id"] is None:
+            return "NCM Device ID Is Empty", 500
 
-                if difference == None:
-                    return "No Difference Found In Configurations", 500
+        history1 = (
+            NCM_History_Table.query()
+            .filter(
+                NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
+                NCM_History_Table.configuration_date == ncmObj["date1"],
+            )
+            .first()
+        )
 
-                return render_template("html_diff_output.html"), 200
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
+        history2 = (
+            NCM_History_Table.query()
+            .filter(
+                NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
+                NCM_History_Table.configuration_date == ncmObj["date2"],
+            )
+            .first()
+        )
+
+        if history1 is None or history2 is None:
+            return "One of the Configurations Not Found", 500
+
+        if history1.ncm_history_id == history2.ncm_history_id:
+            return "One of the Configurations Not Found", 500
+
+        cwd = os.getcwd()
+        existingPath = f"{cwd}/app/templates/html_diff_output.html"
+        existingPath1 = os.path.exists(existingPath)
+        if existingPath1:
+            print("Existing File Removed", file=sys.stderr)
+            os.remove(existingPath)
+        else:
+            pass
+
+        cwd = os.getcwd()
+        path = f"{cwd}/app/configuration_backups/"
+        path1 = f"/app/app/templates/html_diff_output.html"
+        html_diff = ConfDiff(
+            f"{path}{history1.file_name}", f"{path}{history2.file_name2}", path1
+        )
+        difference = html_diff.diff()
+
+        if difference == None:
+            return "No Difference Found In Configurations", 500
+
+        return render_template("html_diff_output.html"), 200
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return str(e), 500
 
 
 # @app.route('/recentConfigrations',methods = ["GET"])
@@ -788,30 +768,6 @@ def BulkBackupConfigurations(user_data):
         return jsonify({"message": "Authentication Failed"}), 401
 
 
-@app.route("/getAllConfigurationDatesInString", methods=["POST"])
-@token_required
-def GetAllConfigurationDatesInString(user_data):
-    if True:
-        try:
-            ipObjs = request.get_json()
-            # print(f"%%%GETALLCONFIGURATIONDATES",ipObjs,file=sys.stderr)
-            queryString = f"select CONFIGURATION_DATE from ncm_history_table where IP_ADDRESS='{ipObjs['ip_address']}';"
-            objList = []
-            result = db.session.execute(queryString)
-            for row in result:
-                # objDict = {}
-                date = (row[0]).strftime("%Y-%m-%d %H:%M:%S")
-                objList.append(date)
-            return jsonify(objList), 200
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
-
-
 @app.route("/downloadConfiguration", methods=["POST"])
 @token_required
 def DownloadConfiguration(user_data):
@@ -941,25 +897,23 @@ def DownloadBulkConfiguration(user_data):
 @app.route("/deleteConfigurations", methods=["POST"])
 @token_required
 def DeleteConfigurations(user_data):
-    if True:
-        try:
-            configurationObjs = request.get_json()
-            for configurationObj in configurationObjs:
-                queryString = f"delete from ncm_history_table where FILE_NAME='{configurationObj}';"
-                db.session.execute(queryString)
-                db.session.commit()
-                if os.path.exists(f"{configurationObj}.cfg"):
-                    os.remove(f"{configurationObj}.cfg")
-                else:
-                    print("The file does not exist")
-            return "Configurations Deleted Successfully", 200
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
+    try:
+        configurationObjs = request.get_json()
+        for configurationObj in configurationObjs:
+            queryString = (
+                f"delete from ncm_history_table where FILE_NAME='{configurationObj}';"
+            )
+            db.session.execute(queryString)
+            db.session.commit()
+            if os.path.exists(f"{configurationObj}.cfg"):
+                os.remove(f"{configurationObj}.cfg")
+            else:
+                print("The file does not exist")
+        return "Configurations Deleted Successfully", 200
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return str(e), 500
 
 
 @app.route("/mostRecentChanges", methods=["GET"])

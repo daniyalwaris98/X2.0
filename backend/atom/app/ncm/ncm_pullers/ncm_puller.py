@@ -1,10 +1,10 @@
-import traceback
-from netmiko import Netmiko, ConnectHandler
-from datetime import datetime
 import sys
 import os
+import traceback
+from datetime import datetime
+from netmiko import Netmiko, ConnectHandler
 
-from app import app, db
+from app import db
 from app.models.atom_models import *
 from app.models.ncm_models import *
 from app.ncm.ncm_alarm_utils import *
@@ -23,30 +23,35 @@ class NCMPuller(object):
         self.connection = None
 
     def setup_puller(self, ncmObj):
-        if "ip_address" not in ncmObj.keys():
-            self.response = "IP Address Is Missing"
+        if "ncm_device_id" not in ncmObj.keys():
+            self.response = "NCM Device ID"
             self.status = 500
             return
 
-        elif ncmObj["ip_address"] is None:
-            self.response = "IP Address Is Empty"
+        elif ncmObj["ncm_device_id"] is None:
+            self.response = "NCM Device"
             self.status = 500
             return
-
-        ncmObj["ip_address"] = str(ncmObj["ip_address"]).strip()
-        if ncmObj["ip_address"] == "":
-            self.response = "IP Address Is Empty"
+        
+        # Check NCM
+        ncm = NCM_Device_Table.query.filter(
+            NCM_Device_Table.ncm_device_id == ncmObj["ncm_device_id"]
+        ).first()
+        if ncm is None:
+            self.response = (
+                f"{ncmObj['ip_address']} : No Device Found In NCM With Device ID"
+            )
+            self.status = 500
+            return
+        elif ncm.status == "Inactive":
+            self.response = f"{ncmObj['ip_address']} : Device Is InActive"
             self.status = 500
             return
 
         # Check Atom
         atom = Atom_Table.query.filter(
-            Atom_Table.ip_address == ncmObj["ip_address"]
+            Atom_Table.atom_id == ncm.atom_id
         ).first()
-        if atom is None:
-            self.response = f"{ncmObj['ip_address']} : No Device Found In Atom With Given IP Address"
-            self.status = 500
-            return
 
         # Check Password Group
         if atom.password_group_id is None:
@@ -63,22 +68,7 @@ class NCMPuller(object):
             self.response = f"{ncmObj['ip_address']} : Passowrd Group Not Found"
             self.status = 500
             return
-
-        # Check NCM
-        ncm = NCM_Device_Table.query.filter(
-            NCM_Device_Table.atom_id == atom.atom_id
-        ).first()
-        if ncm is None:
-            self.response = (
-                f"{ncmObj['ip_address']} : No Device Found In NCM With Given IP Address"
-            )
-            self.status = 500
-            return
-        elif ncm.status == "InActive":
-            self.response = "Device Is InActive"
-            self.status = 500
-            return
-
+        
         self.atom = atom
         self.credential = password
         self.ncm = ncm
@@ -202,7 +192,8 @@ class NCMPuller(object):
 
         if self.status == 200:
             self.save_configuration()
-            self.update_status()
+            
+        self.update_status()
 
     #
     # Method for getting command set ouput
