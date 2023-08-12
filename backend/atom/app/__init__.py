@@ -73,7 +73,6 @@ app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
 db = SQLAlchemy(app)
 
 
-
 token = "nItzto4Hc22kXuLsawB76lhKPM-wbK1DAQc7uBiFpYUCntoHDE6TC-uGeezzx7S89fyClKv2YXLfDi15Ujhn5A=="
 org = "monetx"
 bucket = "monitoring"
@@ -81,6 +80,23 @@ bucket = "monitoring"
 # client = InfluxDBClient(url="http://10.254.168.159:8086", token=token, org=org)
 # client = InfluxDBClient(url="http://influxdb:8086", token=token, org=org)
 client = InfluxDBClient(url="http://updated_influx_db:8086", token=token, org=org)
+
+import threading
+from app.db_migrations.migrations import *
+
+try:
+    run_migration()
+except Exception:
+    traceback.print_exc()
+
+try:
+    thread = threading.Thread(target=run_setup, args=())
+    thread.start()
+
+except Exception:
+    traceback.print_exc()
+
+# db.drop_all()
 
 
 from app.license import license_generator
@@ -113,24 +129,6 @@ from app.monitoring_device.routes import alerts_routes
 from app.monitoring_device.routes import monitoring_credentials_routes
 from app.monitoring_device.routes import monitoring_scheduler
 
-
 from app.ncm import ncm_routes
 from app.ncm import ncm_dashboard_routes
 
-import threading
-from app.db_migrations.migrations import *
-
-try:
-    run_migration()
-except Exception:
-    traceback.print_exc()
-
-try:
-    
-    thread = threading.Thread(target=run_setup, args=())
-    thread.start()
-    
-except Exception:
-    traceback.print_exc()
-
-# db.drop_all()
