@@ -2,8 +2,6 @@ from app import db
 from sqlalchemy import ForeignKey
 from datetime import datetime
 
-from app.models.atom_models import *
-
 
 class Monitoring_Credentails_Table(db.Model):
     __tablename__ = "monitoring_credentials_table"

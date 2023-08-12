@@ -1,20 +1,10 @@
-
-import traceback
 import sys
-import paramiko
-import re
-import ipaddress
+import traceback
 from datetime import datetime
 
-
-from flask import Flask, request, jsonify
-
-from app import app, db
-from app.middleware import token_required
 from app.models.auto_discovery_models import *
 from app.utilities.db_utils import *
 
-from app.auto_discovery import auto_discover
 
 
 def FormatDate(date):
