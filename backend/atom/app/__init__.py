@@ -109,7 +109,6 @@ from app.routes import test_routes
 from app.atom import atom_routes
 from app.atom import atom_transition_routes
 from app.atom import password_group_routes
-from app.atom import inventory_list_routes
 from app.atom import atom_onboard_routes
 
 from app.auto_discovery import auto_discovery_routes
