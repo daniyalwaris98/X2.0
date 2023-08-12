@@ -2,8 +2,6 @@ from app import db
 from sqlalchemy import ForeignKey
 from datetime import datetime
 
-from app.models.atom_models import *
-
 #
 #
 #
