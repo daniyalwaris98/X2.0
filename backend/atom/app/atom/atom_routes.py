@@ -1,15 +1,16 @@
-from flask_jsonpify import jsonify
+import sys
+import gzip
 import json
+import traceback
+
+from flask_jsonpify import jsonify
 from flask import request, make_response
 
-import sys
-import traceback
-import gzip
-
-from app import app
-from app.atom.atom_utils import *
+from app import app, db
 from app.middleware import token_required
+
 from app.utilities.db_utils import *
+from app.atom.atom_utils import *
 
 
 @app.route("/addAtomDevice", methods=["POST"])
