@@ -1,6 +1,7 @@
 import os
 import sys
 import traceback
+import threading
 from datetime import datetime
 
 from flask_jsonpify import jsonify
@@ -337,7 +338,6 @@ def DeleteNcmDevice(user_data):
                 responseList.append(f"{ip} : Device Deleted Successfully")
             else:
                 errorList.append(f"{ip} : Error While Deleting Device")
-            
 
         responseDict = {
             "success": len(responseList),
@@ -347,7 +347,7 @@ def DeleteNcmDevice(user_data):
         }
 
         return jsonify(responseDict), 200
-    
+
     except Exception as e:
         print(str(e), file=sys.stderr)
         traceback.print_exc()
@@ -582,14 +582,10 @@ def ConfigurationComparison(user_data):
         if ncmObj["ncm_device_id"] is None:
             return "NCM Device ID Is Empty", 500
 
-        history1 = (
-            NCM_History_Table.query()
-            .filter(
-                NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
-                NCM_History_Table.configuration_date == ncmObj["date1"],
-            )
-            .first()
-        )
+        history1 = NCM_History_Table.query.filter(
+            NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
+            NCM_History_Table.configuration_date == ncmObj["date1"],
+        ).first()
 
         history2 = (
             NCM_History_Table.query()
@@ -668,249 +664,178 @@ def ConfigurationComparison(user_data):
 @app.route("/bulkBackupConfigurations", methods=["POST"])
 @token_required
 def BulkBackupConfigurations(user_data):
-    if True:
-        try:
-            ncmObjs = request.get_json()
-            responses = []
-            print(f"%%%%%%", ncmObjs, file=sys.stderr)
-            for ncmObj in ncmObjs:
-                queryString = f"select IP_ADDRESS,DEVICE_TYPE,PASSWORD_GROUP,DEVICE_NAME,STATUS from ncm_table where IP_ADDRESS='{ncmObj}';"
-                result = db.session.execute(queryString)
+    try:
+        ids = request.get_json()
 
-                for row in result:
-                    objDict = {}
-                    ip_address = row[0]
-                    device_type = row[1]
-                    password_group = row[2]
-                    device_name = row[3]
-                    status = row[4]
-                    objDict["ip_address"] = ip_address
-                    objDict["device_type"] = device_type
-                    objDict["device_name"] = device_name
-                    if status == "InActive":
-                        responses.append("inactive")
+        errorList = []
+        responseList = []
 
-                    queryString2 = f"select USERNAME,PASSWORD from password_group_table where password_group='{password_group}';"
-                    result2 = db.session.execute(queryString2)
-                    for row2 in result2:
-                        username = row2[0]
-                        password = row2[1]
-                        username = username.strip()
-                        password = password.strip()
-                        objDict["username"] = username
-                        objDict["password"] = password
+        for id in ids:
+            ncmObj = {"ncm_device_id": id}
 
-                command = ""
-                device_type = device_type.strip()
-                if device_type == "cisco_ios_xe":
-                    device_type = "cisco_xe"
-                    command = "show running-conf"
-                if device_type == "cisco_ios_xr":
-                    device_type = "cisco_xr"
-                    command = "show running-conf"
-                if (
-                    device_type == "cisco_ios"
-                    or device_type == "cisco_xr"
-                    or device_type == "cisco_xe"
-                    or device_type == "cisco_asa"
-                    or device_type == "cisco_nxos"
-                    or device_type == "cisco_wlc"
-                    or device_type == "cisco_ftd"
-                ):
-                    command = "show running-config"
-                elif device_type == "fortinet":
-                    command = "show full-configuration"
-                configurationPuller = Puller()
-                output = configurationPuller.poll(objDict, device_type, command)
+            ncmPuller = NCMPuller()
+            ncmPuller.setup_puller(ncmObj)
 
-                if configurationPuller.Success() == True:
-                    responses.append("success")
+            if ncmPuller.status == 500:
+                errorList.append(ncmPuller.response)
+                continue
 
-                elif configurationPuller.Exists() == True:
-                    responses.append("exists")
+            ncmPuller.backup_config()
 
-                elif configurationPuller.FailedLogin() == True:
-                    responses.append("login_failed")
-
-                else:
-                    return "Something Went Wrong", 500
-            responses = set(responses)
-            responses = list(responses)
-            print(responses, file=sys.stderr)
-            if len(responses) == 1:
-                if responses[0] == "success":
-                    return "Configuration Backups Successfull", 200
-                elif responses[0] == "login_failed":
-                    return "Failed to Login into Devices", 500
-                elif responses[0] == "inactive":
-                    return "The Device Status is InActive", 500
-            elif len(responses) > 1:
-                if len(responses) == 4:
-                    return (
-                        "Some Backups were Successful,Some Configurations Already Exist, Some Failed to Login and Some Are InActive",
-                        200,
-                    )
-
-                elif "success" in responses and "exists" in responses:
-                    return (
-                        "Some Backups were Successful,Some Configurations Already Exist",
-                        200,
-                    )
-                elif "inactive" in responses and "exists" in responses:
-                    return "Some Devices are InActive", 500
-                elif "inactive" in responses and "login_failed" in responses:
-                    return "Some Devices are InActive", 200
-                elif (
-                    "inactive" in responses and "login_failed" or "success" in responses
-                ):
-                    return (
-                        "Some Devices are InActive and Some Backed Up Successfully",
-                        200,
-                    )
-                elif "success" in responses and "login_failed" in responses:
-                    return "Some Backups where Successful and Some Failed to Login", 200
-                elif "exists" in responses and "login_failed" in responses:
-                    return (
-                        "Some Configurations Already Exist and Some Failed to Login",
-                        500,
-                    )
-            elif "inactive" in responses:
-                return "Some Devices are InActive", 500
+            if ncmPuller.status == 200:
+                responseList.append(ncmPuller.response)
             else:
-                return "Something Went Wrong", 500
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
+                errorList.append(ncmPuller.response)
+
+        responseDict = {
+            "success": len(responseList),
+            "error": len(errorList),
+            "error_list": errorList,
+            "success_list": responseList,
+        }
+
+        return jsonify(responseDict), 200
+
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Server Error In Bulk Configuration Backup", 500
 
 
 @app.route("/downloadConfiguration", methods=["POST"])
 @token_required
 def DownloadConfiguration(user_data):
-    if True:
-        try:
-            ncmObj = request.get_json()
-            queryString = f"select FILE_NAME from ncm_history_table where IP_ADDRESS='{ncmObj['ip_address']}' and CONFIGURATION_DATE='{ncmObj['date']}';"
-            result = db.session.execute(queryString)
-            file_name = ""
-            dataString = ""
-            for row in result:
-                file_name += row[0]
-            if file_name != "":
-                cwd = os.getcwd()
-                path = cwd + f"/app/configuration_backups/{file_name}.cfg"
-                pathExists = os.path.exists(path)
-                if pathExists:
-                    f = open(path, "r")
-                    x = f.read()
-                    dataString += x
-                    if dataString == "":
-                        return "Configuration Does Not Exist", 500
+    try:
+        ncmObj = request.get_json()
 
+        if "ncm_history_id" not in ncmObj.keys():
+            return "NCM Device ID Is Missing", 500
+
+        if ncmObj["ncm_history_id"] is None:
+            return "NCM Device ID Is Empty", 500
+
+        history = NCM_History_Table.query.filter(
+            NCM_History_Table.ncm_history_id == ncmObj["ncm_history_id"]
+        ).first()
+        
+        if history is None:
+            return "Configuration Does Not Exits", 500
+
+        if history.file_name != "":
+            cwd = os.getcwd()
+            path = cwd + f"/app/configuration_backups/{history.file_name}"
+            pathExists = os.path.exists(path)
+            
+            if pathExists:
+                f = open(path, "r")
+                output = f.read()
+                if output == "":
+                    return "Configuration Does Not Exist", 500
                 else:
-                    path = ""
+                   return jsonify({
+                       'name': history.file_name,
+                       'value' : output
+                   }) , 200
 
             else:
                 return "File Does Not Exist", 500
-            if file_name != "" and dataString != "":
-                finalList = []
-                finalList.insert(0, file_name)
-                finalList.insert(1, dataString)
-                return jsonify(finalList), 200
-            else:
-                return "File Does Not Exist", 500
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
+        else:
+            return "File Does Not Exist", 500
+        
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Error While Downloading Backup File", 500
+
+
+def checkFile(id):
+    queryString = f"select file_name from ncm_history_table h1 where h1.ncm_device_id= {id} and h1.configuration_date = (SELECT MAX(h2.configuration_date) FROM ncm_history_table h2 WHERE h2.ncm_device_id = h1.ncm_device_id);"
+    result = db.session.execute(queryString)
+    file_name = ""
+    
+    for row in result:
+        file_name+=row[0]
+    
+    if file_name!="":
+
+        cwd = os.getcwd()
+        path = cwd+f"/app/configuration_backups/{file_name}"
+        pathExists = os.path.exists(path)
+        
+        output = ""
+        if pathExists:
+            
+            f = open(path,"r")
+            output = f.read()
+            if output == "":
+                return None    
+
+            return file_name, output
+
+        else:
+            return None
     else:
-        print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
+        return None
 
 
-@app.route("/downloadBulkConfiguration", methods=["POST"])
+
+def bulkDownloadThread(ncmObj, responseList, errorList):
+    ncmPuller = NCMPuller()
+    ncmPuller.setup_puller(ncmObj)
+
+    if ncmPuller.status == 500:
+        errorList.append(ncmPuller.response)
+    else:
+        ncmPuller.backup_config()
+        
+        if ncmPuller.status == 200:
+            responseList.append(ncmPuller.response)
+        else:
+            errorList.append(ncmPuller.response)
+
+
+@app.route('/downloadBulkConfiguration',methods = ['POST'])
 @token_required
 def DownloadBulkConfiguration(user_data):
     if True:
         try:
-            ncmObjs = request.get_json()
-            print(ncmObjs, file=sys.stderr)
+            ips = request.get_json()
+            print(ips,file=sys.stderr)
             finalResult = []
-            for ncmObj in ncmObjs:
-                queryString = f"select IP_ADDRESS,DEVICE_TYPE,PASSWORD_GROUP,DEVICE_NAME from ncm_table where IP_ADDRESS='{ncmObj}';"
-                result = db.session.execute(queryString)
-                objList = []
-                for row in result:
-                    objDict = {}
-                    ip_address = row[0]
-                    device_type = (row[1]).strip()
-                    password_group = row[2]
-                    device_name = row[3]
-                    objDict["ip_address"] = ip_address
-                    objDict["device_type"] = device_type
-                    objDict["device_name"] = device_name
-                    queryString2 = f"select USERNAME,PASSWORD from password_group_table where password_group='{password_group}';"
-                    result2 = db.session.execute(queryString2)
-                    for row2 in result2:
-                        username = row2[0]
-                        password = row2[1]
-                        username = username.strip()
-                        password = password.strip()
-                        objDict["username"] = username
-                        objDict["password"] = password
-                        objList.append(objDict)
+            
+            pullerList = []
+            for ip in ips:
+                
+                file_data = checkFile(ip)
+                
+                if file_data is None:
+                    pullerList.append(ip)
+                else:
+                    file_name, output = file_data
+                    finalResult.append({
+                        'name' : file_name,
+                        'value' : output
+                    })
+             
+            threads = []   
+            for ip in pullerList:    
+                thread = threading.Thread(target=bulkDownloadThread, args=(ip, finalResult, ))
+                thread.start()
+                threads.append(thread)
+            
+            for thread in threads:
+                thread.join()
 
-                print(len(objList), file=sys.stderr)
-                command = ""
-
-                for objDict in objList:
-                    if objDict["device_type"] == "cisco_ios_xe":
-                        objDict["device_type"] = "cisco_xe"
-                        command = "show running-conf"
-                    if objDict["device_type"] == "cisco_ios_xr":
-                        objDict["device_type"] = "cisco_xr"
-                        command = "show running-conf"
-                    if (
-                        objDict["device_type"] == "cisco_ios"
-                        or objDict["device_type"] == "cisco_xr"
-                        or objDict["device_type"] == "cisco_xe"
-                        or objDict["device_type"] == "cisco_asa"
-                        or objDict["device_type"] == "cisco_nxos"
-                        or objDict["device_type"] == "cisco_wlc"
-                        or objDict["device_type"] == "cisco_ftd"
-                    ):
-                        command = "show running-config"
-                    elif objDict["device_type"] == "fortinet":
-                        command = "show full-configuration"
-                    configurationPuller = DownloadPuller()
-                    output = configurationPuller.poll(objDict, device_type, command)
-                    if output == None:
-                        pass
-                    else:
-                        finalResult.append(output)
-
-            # print(len(finalResult),file=sys.stderr)
-
-            # if len(objList)==len(finalResult) or len(finalResult)>1:
-            #     return jsonify(finalResult),200
-            # elif len(finalResult)==0:
-            #     return "Failed to Login into All Devices",500
-            # print(finalResult,file=sys.stderr)
-            return jsonify(finalResult), 200
-            # else:
-            #     return "Something Went Wrong",500
-            # print(f" OUTPUT IN API IS {(output)}",file=sys.stderr)
-            # return "Configuration Backup Successful",200
+            
+            return jsonify(finalResult),200
+            
         except Exception as e:
-            print(str(e), file=sys.stderr)
+            print(str(e),file=sys.stderr)
             traceback.print_exc()
-            return str(e), 500
+            return str(e),500
     else:
         print("Authentication Failed", file=sys.stderr)
-        return jsonify({"message": "Authentication Failed"}), 401
+        return jsonify({'message': 'Authentication Failed'}), 401  
 
 
 @app.route("/deleteConfigurations", methods=["POST"])
