@@ -95,7 +95,6 @@ const index_Main = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllInterfacesInNetwork");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);
@@ -108,40 +107,6 @@ const index_Main = () => {
     serviceCalls();
   }, []);
   const columns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "2%",
-
-    //   render: (text, record) => (
-    //     <>
-    //       {!configData?.uam.pages.sites.read_only ? (
-    //         <>
-    //           <a
-    //             disabled
-    //             // onClick={() => {
-    //             //   edit(record);
-    //             // }}
-    //           >
-    //             <EditOutlined
-    //               style={{ paddingRight: "50px", color: "#66A111" }}
-    //             />
-    //           </a>
-    //         </>
-    //       ) : (
-    //         <a
-    //           onClick={() => {
-    //             edit(record);
-    //           }}
-    //         >
-    //           <EditOutlined
-    //             style={{ paddingRight: "50px", color: "#66A111" }}
-    //           />
-    //         </a>
-    //       )}
-    //     </>
-    //   ),
-    // },
     {
       title: "Device name",
       dataIndex: "device_name",

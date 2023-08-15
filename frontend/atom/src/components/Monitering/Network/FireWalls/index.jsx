@@ -91,7 +91,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllDevicesInFirewalls");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);

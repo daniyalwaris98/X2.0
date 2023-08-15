@@ -92,7 +92,6 @@ const index_Main = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllInterfacesInRouters");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);

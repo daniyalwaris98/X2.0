@@ -228,7 +228,7 @@ const indexMain = () => {
       }
     };
     serviceCalls();
-  }, [rowCount]);
+  }, []);
 
   const atomColumns = [
     {
@@ -251,7 +251,7 @@ const indexMain = () => {
       ...deviceGetColumnSearchProps(
         "ip_address",
         "IP Address",
-
+        setRowCount,
         setDataSourceOfDevice,
         deviceExcelData,
         DeviceColumnFilters
@@ -278,7 +278,7 @@ const indexMain = () => {
       ...deviceGetColumnSearchProps(
         "device_type",
         "Device Type",
-
+        setRowCount,
         setDataSourceOfDevice,
         deviceExcelData,
         DeviceColumnFilters
@@ -305,7 +305,7 @@ const indexMain = () => {
       ...deviceGetColumnSearchProps(
         "password_group",
         "Password Group",
-
+        setRowCount,
         setDataSourceOfDevice,
         deviceExcelData,
         DeviceColumnFilters
@@ -332,7 +332,7 @@ const indexMain = () => {
       ...deviceGetColumnSearchProps(
         "device_name",
         "Device Name",
-
+        setRowCount,
         setDataSourceOfDevice,
         deviceExcelData,
         DeviceColumnFilters
@@ -359,8 +359,11 @@ const indexMain = () => {
     setMainModalVisible(false);
   };
 
-  const onSelectChange = (selectedRowKeys) => {
+  const onSelectChange = (selectedRowKeys, selectedRows) => {
     setSelectedRowKeys(selectedRowKeys);
+
+    const ncmDevicesID = selectedRows.map((device) => device.ncm_device_id);
+    setDeviceID(selectedRows && ncmDevicesID);
   };
 
   const postSeed = async (importFromExcel) => {
@@ -487,12 +490,13 @@ const indexMain = () => {
   };
 
   const [backupLoading, setBackupLoading] = useState(false);
+  const [deviceID, setDeviceID] = useState("");
 
   const backedUp = async () => {
     try {
       setBackupLoading(true);
       await axios
-        .post(baseUrl + "/bulkBackupConfigurations", selectedRowKeys)
+        .post(baseUrl + "/bulkBackupConfigurations", deviceID)
         .then((response) => {
           if (response?.response?.status == 500) {
             setBackupLoading(false);
@@ -500,7 +504,14 @@ const indexMain = () => {
           } else {
             setBackupLoading(false);
 
-            openSweetAlert(response.data, "success");
+            ResponseModel(
+              `
+              Backup Completed : ${response.data.success}
+              Backup not Completed : ${response.data.error}
+            `,
+              "success",
+              response.data.error_list
+            );
           }
         })
         .catch((error) => {
@@ -589,6 +600,7 @@ const indexMain = () => {
                 state: {
                   ip_address: text,
                   id: record.ncm_device_id,
+                  res: record,
                 },
               });
             }}
@@ -643,17 +655,10 @@ const indexMain = () => {
             <img
               src={rcs}
               alt=""
-              onClick={async () => {
-                const datam = {
-                  ip_address: record.ip_address,
-                  vendor: record.vendor,
-                  device_name: record.device_name,
-                  function: record.function,
-                };
-
+              onClick={() => {
                 navigate("/ncmsummary/main", {
                   state: {
-                    res: datam,
+                    res: record,
                   },
                 });
               }}
@@ -962,7 +967,7 @@ const indexMain = () => {
       setDownLoadLoading(true);
       const res = await axios.post(
         baseUrl + "/downloadBulkConfiguration",
-        selectedRowKeys
+        deviceID
       );
 
       if (res?.response?.status == 500) {

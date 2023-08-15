@@ -27,7 +27,6 @@ const index = () => {
     const uamCardFailedDevices = async () => {
       try {
         const res = await axios.get(baseUrl + "/uamFailedDevicesCount");
-        console.log("res", res);
         setUamCard(res.data);
       } catch (err) {
         console.log(err.response);
@@ -40,7 +39,6 @@ const index = () => {
     const ncmCardFailedDevices = async () => {
       try {
         const res = await axios.get(baseUrl + "/ncmFailedDevicesCount");
-        console.log("res", res);
         setNcmCard(res.data);
       } catch (err) {
         console.log(err.response);
@@ -55,7 +53,6 @@ const index = () => {
         const res = await axios.get(
           baseUrl + "/networkMappingFailedDevicesCount"
         );
-        console.log("res", res);
         setNetworkCard(res.data);
       } catch (err) {
         console.log(err.response);
@@ -68,7 +65,6 @@ const index = () => {
     const ipamCardFailedDevices = async () => {
       try {
         const res = await axios.get(baseUrl + "/ipamFailedDevicesCount");
-        console.log("res", res);
         setIpamCard(res.data);
       } catch (err) {
         console.log(err.response);
@@ -81,7 +77,6 @@ const index = () => {
     const dcmCardFailedDevices = async () => {
       try {
         const res = await axios.get(baseUrl + "/dcmFailedDevicesCount");
-        console.log("res", res);
         setDcmCard(res.data);
       } catch (err) {
         console.log(err.response);

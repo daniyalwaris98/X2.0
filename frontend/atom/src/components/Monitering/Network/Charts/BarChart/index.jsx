@@ -21,7 +21,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllMonitoringVendors");
-        console.log("res", res);
         setVendorData(res.data);
       } catch (err) {
         console.log(err.response);
@@ -101,7 +100,7 @@ const index = () => {
           <Legend />
           <Bar
             dataKey="value"
-            barSize = {15}
+            barSize={15}
             stackId="a"
             fill="#66B127"
             radius={[5, 5, 5, 5]}

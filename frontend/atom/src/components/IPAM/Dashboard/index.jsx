@@ -28,7 +28,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/topTenSubnetsPercentage");
-        console.log("res Subnet MAin", res);
 
         // deviceExcelData = res.data;
         setTableData(res.data);
@@ -47,11 +46,8 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/ipAvailibity");
-        console.log("res Subnet MAin", res);
 
-        // deviceExcelData = res.data;
         setIpAvailibity(res.data);
-        // setRowCount(excelData.length);
         setIpAvailibityLoading(false);
       } catch (err) {
         console.log(err.response);

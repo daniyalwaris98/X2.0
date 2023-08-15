@@ -1,15 +1,6 @@
 import React, { useState, useEffect } from "react";
-import { Bar, Pie, Line, Doughnut, PolarArea } from "react-chartjs-2";
-import { Chart as ChartJS } from "chart.js/auto";
+import { Bar } from "react-chartjs-2";
 import axios, { baseUrl } from "../../../../utils/axios";
-// import {
-//   BarChart,
-//   Bar,
-//   CartesianGrid,
-//   XAxis,
-//   YAxis,
-//   ResponsiveContainer,
-// } from 'recharts';
 
 const Barchart = () => {
   const [loading, setLoading] = useState(false);
@@ -21,7 +12,6 @@ const Barchart = () => {
 
       try {
         const res = await axios.get(baseUrl + "/functions");
-        console.log("res", res);
         setMyFunction(res.data);
         setLoading(false);
       } catch (err) {
@@ -48,12 +38,9 @@ const Barchart = () => {
           labels: Object.keys(myFunction),
           datasets: [
             {
-              // label: "# of Values",
               backgroundColor: ["#66B127"],
               borderColor: "#66B127",
               borderWidth: 1,
-              // hoverOffset: 15,
-              // borderRadius: 8,
               data: Object.values(myFunction),
             },
           ],

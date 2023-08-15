@@ -291,7 +291,6 @@ const index = () => {
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
-            console.log("response=========>", response);
             setLoading(false);
           } else {
             openSweetAlert("v3 Added Successfully", "success");
@@ -349,8 +348,6 @@ const index = () => {
               axios
                 .get(baseUrl + "/getWMICredentials")
                 .then((response) => {
-                  console.log("getWMICredentials", response);
-
                   excelData = response.data;
                   setDataSource(excelData);
                 })

@@ -172,15 +172,10 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllDnsZones");
-
-        console.log("res", res);
         excelData = res.data;
         let serverName;
-        // let filterOpenPorts;
         if (data.state !== null) {
           serverName = data?.state?.server_name;
-          // filterOpenPorts = data?.state?.open_ports;
-          console.log("filterOpenPorts", serverName);
 
           let filteredSuggestions;
           if (data?.state?.server_name) {
@@ -194,28 +189,12 @@ const index = () => {
                   .indexOf(serverName.toLowerCase()) > -1
             );
           }
-          // else if (filterOpenPorts) {
-          //   // columnFilters["open_ports"] = filterOpenPorts;
-
-          //   filteredSuggestions = excelData.filter(
-          //     (d) =>
-          //       JSON.stringify(d["open_ports"])
-          //         .replace(" ", "")
-          //         .toLowerCase()
-          //         .indexOf(filterOpenPorts.toLowerCase()) > -1
-          //   );
-          // }
-
           setRowCount(filteredSuggestions.length);
           setDataSource(filteredSuggestions);
         } else {
           setDataSource(excelData);
           setRowCount(excelData.length);
         }
-
-        // excelData = res.data;
-        // setDataSource(excelData);
-        // setRowCount(excelData.length);
         setLoading(false);
       } catch (err) {
         console.log(err.response);
@@ -225,64 +204,7 @@ const index = () => {
     serviceCalls();
   }, []);
 
-  const convertToJson = (headers, fileData) => {
-    let rows = [];
-    fileData.forEach((row) => {
-      const rowData = {};
-      row.forEach((element, index) => {
-        rowData[headers[index]] = element;
-      });
-      rows.push(rowData);
-    });
-    rows = rows.filter((value) => JSON.stringify(value) !== "{}");
-    return rows;
-  };
-  // useEffect(() => {
-  //   inputRef.current.addEventListener("input", importExcel);
-  // }, []);
-
-  const showModal = () => {
-    setEditRecord(null);
-    setAddRecord(null);
-    setIsModalVisible(true);
-  };
-  const showEditModal = () => {
-    setIsModalVisible(true);
-  };
-  const edit = (record) => {
-    setEditRecord(record);
-    // setAddRecord(record);
-    setIsEditModalVisible(true);
-  };
-
   const columns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "2%",
-
-    //   render: (text, record) => (
-    //     <a>
-    //       <EditOutlined
-    //         style={{ paddingRight: "50px" }}
-    //         onClick={() => {
-    //           edit(record);
-    //         }}
-    //       />
-    //     </a>
-    //   ),
-    // },
-    // {
-    //   ...getColumnSearchProps(
-    //     'license_id',
-    //     'license_id',
-    //     setRowCount,
-    //     setDataSource,
-    //     excelData,
-    //     columnFilters
-    //   ),
-    //   ellipsis: true,
-    // },
     {
       title: "zone_name",
       dataIndex: "zone_name",

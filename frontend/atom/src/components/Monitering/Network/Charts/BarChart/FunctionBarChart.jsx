@@ -21,7 +21,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllMonitoringFunctions");
-        console.log("res", res);
         setFunctionData(res.data);
       } catch (err) {
         console.log(err.response);
@@ -102,7 +101,7 @@ const index = () => {
           <Bar
             dataKey="value"
             stackId="a"
-            barSize = {15}
+            barSize={15}
             fill="#66B127"
             radius={[5, 5, 5, 5]}
           />

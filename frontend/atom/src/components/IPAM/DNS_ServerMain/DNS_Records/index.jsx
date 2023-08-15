@@ -98,15 +98,10 @@ const index = () => {
       try {
         const res = await axios.get(baseUrl + "/getAllDnsServersRecord");
 
-        console.log("res", res);
         excelData = res.data;
         let zoneName;
-        // let filterOpenPorts;
         if (data.state !== null) {
           zoneName = data?.state?.zone_name;
-          // filterOpenPorts = data?.state?.open_ports;
-          console.log("filterOpenPorts", zoneName);
-
           let filteredSuggestions;
           if (zoneName) {
             columnFilters["zone_name"] = zoneName;

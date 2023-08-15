@@ -100,19 +100,7 @@ const index = () => {
   }, []);
 
   useEffect(() => {
-    const ipServiceCalls = async () => {
-      // setipTableLoading(true);
-      // try {
-      //   const res = await axios.get(baseUrl + "/ipDetailTable");
-      //   console.log("res", res);
-      //   ipexcelData = res.data;
-      //   setIpDataSource(ipexcelData);
-      //   setipTableLoading(false);
-      // } catch (err) {
-      //   console.log(err.response);
-      //   setipTableLoading(false);
-      // }
-    };
+    const ipServiceCalls = async () => {};
     ipServiceCalls();
   }, []);
 

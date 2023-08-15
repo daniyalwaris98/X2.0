@@ -21,7 +21,6 @@ const index = (props) => {
 
       try {
         const res = await axios.get(baseUrl + "/perFunctionCountNcm");
-        console.log("res", res);
         setFunctionData(res.data);
         setMainTableLoading(false);
       } catch (err) {

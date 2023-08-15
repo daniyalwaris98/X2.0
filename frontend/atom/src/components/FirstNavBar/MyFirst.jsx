@@ -3,9 +3,7 @@ import logo from "./images/logo.svg";
 import notification from "./images/notification.svg";
 import setting from "./images/setting.svg";
 import logout from "./images/logout.svg";
-import { useLocation } from "react-router-dom";
 import axios, { baseUrl } from "../../utils/axios";
-
 import profile from "./images/profile.svg";
 import { Input, Dropdown, Menu, Drawer } from "antd";
 import { SearchOutlined, FlagOutlined } from "@ant-design/icons";

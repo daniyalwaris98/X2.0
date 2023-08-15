@@ -1418,14 +1418,7 @@ const index = () => {
   };
   const handleReScan = async (record) => {
     setRescanLoading(true);
-    // const res = await axios.get(baseUrl + "/getAllSubnets");
-    // console.log("res Subnet MAin", res);
-    // excelData = res.data;
-    // setDataSource(excelData);
-    // setRowCount(excelData.length);
-    // setRescanLoading(false);
 
-    // if (selectedRowKeys.length > 0) {
     const scanData = [
       {
         subnet_address: record.subnet_address,
@@ -1435,12 +1428,9 @@ const index = () => {
       },
     ];
     try {
-      //console.log(device);
-
       await axios
         .post(baseUrl + "/addSubnetInSubnet ", scanData)
         .then((response) => {
-          // openSweetAlert(`Subnet Deleted Successfully`, "success");
           const promises = [];
           promises.push(
             axios
