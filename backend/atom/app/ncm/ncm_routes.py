@@ -318,17 +318,34 @@ def AddNcmFromAtom(user_data):
 def DeleteNcmDevice(user_data):
     try:
         ipObjs = request.get_json()
+        errorList = []
+        responseList = []
         for ip in ipObjs:
-            queryString = f"delete from ncm_table where IP_ADDRESS='{ip}';"
-            db.session.execute(queryString)
-            queryString1 = (
-                f"delete from ncm_configuration_status_table where IP_ADDRESS='{ip}';"
+            result = (
+                NCM_Device_Table.query(Atom_Table)
+                .join(Atom_Table, Atom_Table.atom_id == NCM_Device_Table.atom_id)
+                .filter(Atom_Table.ip_address == ip)
+                .first()
             )
-            db.session.execute(queryString1)
-            db.session.commit()
-            print(f"DEVICE {ip} DELETED SUCCESSFULLY", file=sys.stderr)
 
-        return "DELETION SUCCESSFUL", 200
+            if result is None:
+                errorList.append(f"{ip} : No Device Found")
+            
+            if DeleteDBData(result):
+                responseList.append(f"{ip} : Device Deleted Successfully")
+            else:
+                errorList.append(f"{ip} : Error While Deleting Device")
+            
+
+        responseDict = {
+            "success": len(responseList),
+            "error": len(errorList),
+            "error_list": errorList,
+            "success_list": responseList,
+        }
+
+        return jsonify(responseDict), 200
+    
     except Exception as e:
         print(str(e), file=sys.sytderr)
         traceback.print_exc()
