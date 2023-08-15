@@ -347,7 +347,7 @@ def DeleteNcmDevice(user_data):
         return jsonify(responseDict), 200
     
     except Exception as e:
-        print(str(e), file=sys.sytderr)
+        print(str(e), file=sys.stderr)
         traceback.print_exc()
         return str(e), 500
 
