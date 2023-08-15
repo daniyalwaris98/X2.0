@@ -322,7 +322,7 @@ def DeleteNcmDevice(user_data):
         responseList = []
         for ip in ipObjs:
             result = (
-                NCM_Device_Table.query(Atom_Table)
+                db.session.query(NCM_Device_Table, Atom_Table)
                 .join(Atom_Table, Atom_Table.atom_id == NCM_Device_Table.atom_id)
                 .filter(Atom_Table.ip_address == ip)
                 .first()
@@ -330,8 +330,10 @@ def DeleteNcmDevice(user_data):
 
             if result is None:
                 errorList.append(f"{ip} : No Device Found")
+
+            ncm, atom = result
             
-            if DeleteDBData(result):
+            if DeleteDBData(ncm):
                 responseList.append(f"{ip} : Device Deleted Successfully")
             else:
                 errorList.append(f"{ip} : Error While Deleting Device")
@@ -406,7 +408,7 @@ def GetAllConfigurationDatesInString(user_data):
             return "NCM Device ID Is Empty", 500
 
         results = (
-            NCM_History_Table.query()
+            NCM_History_Table.query
             .filter(NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"])
             .all()
         )

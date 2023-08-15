@@ -16,7 +16,6 @@ function DonutChart(props) {
     await axios
       .get(`${baseUrl}/${endPoint}`)
       .then((res) => {
-        console.log("alarms Response=======>", res);
         setData(res.data);
       })
       .catch((err) => console.log(err));

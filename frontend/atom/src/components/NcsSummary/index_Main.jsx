@@ -244,7 +244,7 @@ const index_Main = () => {
     await axios
       .post(baseUrl + "/sendCommand", Data)
       .then((response) => {
-        // console.log(response.status);
+        console.log("Command response", response);
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
 

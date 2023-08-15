@@ -34,6 +34,7 @@ import { devices, functions, vendors } from "../../../data/globalData";
 import Container from "../../ReusableComponents/Container/Container";
 import { ConfigDataStyle } from "./ConfigData.style";
 import VerticalBarChart from "../../ReusableComponents/Carts/VerticalBarChart/VerticalBarChart";
+import { ResponseModel } from "../../ReusableComponents/ResponseModel/ResponseModel";
 
 let excelData = [];
 let columnFilters = {};
@@ -75,7 +76,6 @@ const indexMain = () => {
   const [severityData, setSeverityData] = useState([]);
 
   const location = useLocation(); // for future use to filter out table
-  // console.log("location=========>", location.state);
 
   const ncmVendors = vendors.filter((vendor) => vendor.module.includes("ncm"));
   const ncmFunctions = functions.filter((ncmFunction) =>
@@ -341,7 +341,7 @@ const indexMain = () => {
     },
   ];
 
-  const onDeviceSelectChange = (deviceSelectedRowKeys) => {
+  const onDeviceSelectChange = (deviceSelectedRowKeys, selectedRows) => {
     setDeviceSelectedRowKeys(deviceSelectedRowKeys);
   };
 
@@ -404,22 +404,23 @@ const indexMain = () => {
   };
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setmainTableloadingData(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/getAllNcmDevices");
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setmainTableloadingData(false);
-      } catch (err) {
-        console.log(err.response);
-        setmainTableloadingData(false);
-      }
-    };
     serviceCalls();
   }, []);
+
+  const serviceCalls = async () => {
+    setmainTableloadingData(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getAllNcmDevices");
+      excelData = res.data;
+      setDataSource(excelData);
+      setRowCount(excelData.length);
+      setmainTableloadingData(false);
+    } catch (err) {
+      console.log(err.response);
+      setmainTableloadingData(false);
+    }
+  };
 
   const rowSelection = {
     columnWidth: 140,
@@ -440,26 +441,35 @@ const indexMain = () => {
         await axios
           .post(baseUrl + "/deleteNcmDevice", selectedRowKeys)
           .then((response) => {
-            openSweetAlert(`Device Deleted Successfully`, "success");
-            const promises = [];
-            promises.push(
-              axios
-                .get(baseUrl + "/getAllNcmDevices")
-                .then((response) => {
-                  console.log(response.data);
-                  excelData = response.data;
-                  setDataSource(response.data);
-                  setRowCount(response.data.length);
-                  setSelectedRowKeys([]);
+            if (response.status == 200) {
+              ResponseModel(
+                `
+                Device deleted : ${response.data.success}
+                Device not deleted : ${response.data.error}
+              `,
+                "success",
 
-                  setLoading(false);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  setLoading(false);
-                })
-            );
-            return Promise.all(promises);
+                response.data.error_list
+              );
+              const promises = [];
+              promises.push(
+                axios
+                  .get(baseUrl + "/getAllNcmDevices")
+                  .then((response) => {
+                    excelData = response.data;
+                    setDataSource(response.data);
+                    setRowCount(response.data.length);
+                    setSelectedRowKeys([]);
+
+                    setLoading(false);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    setLoading(false);
+                  })
+              );
+              return Promise.all(promises);
+            }
           })
           .catch((error) => {
             setLoading(false);
@@ -574,16 +584,11 @@ const indexMain = () => {
           </p>
         ) : (
           <p
-            onClick={async () => {
-              const res = await axios.post(
-                baseUrl + "/getAllConfigurationDates",
-                { ip_address: record.ip_address }
-              );
-
+            onClick={() => {
               navigate("/ncmconfig-management/main", {
                 state: {
                   ip_address: text,
-                  res: res.data,
+                  id: record.ncm_device_id,
                 },
               });
             }}
@@ -901,29 +906,32 @@ const indexMain = () => {
         await axios
           .post(baseUrl + "/addNcmFromAtom ", deviceSelectedRowKeys)
           .then((response) => {
-            openSweetAlert(`Device Added Successfully`, "success");
+            if (response.status == 200) {
+              openSweetAlert(response.data, "success");
 
-            const promises = [];
-            promises.push(
-              axios
-                .get(baseUrl + "/getAllNcmDevices")
-                .then((response) => {
-                  console.log(response.data);
-                  excelData = response.data;
-                  setDataSource(response.data);
-                  setRowCount(response.data.length);
+              const promises = [];
+              promises.push(
+                axios
+                  .get(baseUrl + "/getAllNcmDevices")
+                  .then((response) => {
+                    excelData = response.data;
+                    setDataSource(response.data);
+                    setRowCount(response.data.length);
 
-                  setLoading(false);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  setLoading(false);
-                })
-            );
-            return Promise.all(promises);
+                    setLoading(false);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    setLoading(false);
+                  })
+              );
+
+              return Promise.all(promises);
+            }
           })
           .catch((error) => {
             setLoading(false);
+            console.log("error", error);
           });
       } catch (err) {
         setLoading(false);

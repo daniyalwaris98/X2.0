@@ -6,6 +6,7 @@ import Swal from "sweetalert2";
 
 import { SpinLoading } from "../../AllStyling/All.styled";
 import { devices, functions, vendors } from "../../../data/globalData";
+
 const EditSubnet = (props) => {
   const getString = (str) => {
     return str ? str : "";
@@ -34,13 +35,11 @@ const EditSubnet = (props) => {
           } else {
             openSweetAlert(response?.data, "success");
 
-            // openSweetAlert("Device Updated Successfully", "success");
             const promises = [];
             promises.push(
               axios
                 .get(baseUrl + "/getAllNcmDevices")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -50,7 +49,6 @@ const EditSubnet = (props) => {
                 .catch((error) => {
                   console.log(error);
                   setEditLoading(false);
-                  // openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);

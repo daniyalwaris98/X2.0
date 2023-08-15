@@ -28,6 +28,7 @@ import {
 import { columnSearch } from "../../../utils";
 import Highlighter from "react-highlight-words";
 import { ConfigManagmentStyle } from "./ConfigManagment.style";
+import { ResponseModel } from "../../ReusableComponents/ResponseModel/ResponseModel";
 
 let excelData = [];
 let excelDataRestore = [];
@@ -38,6 +39,7 @@ const index_Main = () => {
   const targetRef = useRef(null);
   const findInput = useRef(null);
   const ipAddress = data?.state?.ip_address;
+  const deviceId = data?.state?.id;
 
   const handleFindNext = () => {
     const searchTerm = findInput.current.value;
@@ -74,31 +76,23 @@ const index_Main = () => {
   const [date1Array, setdate1Array] = useState([]);
   const [date2Array, setdate2Array] = useState([]);
 
-  const showModal = async (ip) => {
+  const showModal = async (id) => {
     setIsModalOpen(true);
-
-    try {
-      const resDate1 = await axios.post(
-        baseUrl + "/getAllConfigurationDatesInString",
-        { ip_address: ip }
-      );
-      setdate1Array(resDate1.data);
-      setDate1(resDate1.data[0]);
-    } catch (err) {
-      console.log(err);
-    }
-
-    try {
-      const resDate2 = await axios.post(
-        baseUrl + "/getAllConfigurationDatesInString",
-        { ip_address: ip }
-      );
-      setdate2Array(resDate2.data);
-
-      setDate2(resDate2.data[0]);
-    } catch (err) {
-      console.log(err);
-    }
+    await axios
+      .post(baseUrl + "/getAllConfigurationDatesInString", {
+        ncm_device_id: id,
+      })
+      .then((res) => {
+        if (res.response.status == 500) {
+          ResponseModel(res?.response?.data, "error");
+        } else {
+          setdate1Array(res.data);
+          setDate1(res.data[0]);
+          setdate2Array(res.data);
+          setDate2(res.data[0]);
+        }
+      })
+      .catch((err) => console.log(err));
   };
 
   const handleOk = () => {
@@ -151,18 +145,20 @@ const index_Main = () => {
   );
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
-      const res = await axios.post(baseUrl + "/getAllConfigurationDates", {
-        ip_address: ipAddress,
-      });
-      excelData = res.data;
-      setDataSource(excelData);
-      setRowCount(excelData.length);
-      setLoading(false);
-    };
     serviceCalls();
   }, [rowCount]);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+    const res = await axios.post(baseUrl + "/getAllConfigurations", {
+      ncm_device_id: deviceId,
+    });
+    excelData = res.data;
+    setDataSource(excelData && excelData);
+    setRowCount(excelData && excelData.length);
+
+    setLoading(false);
+  };
 
   useEffect(() => {
     const serviceCalls = async () => {
@@ -178,14 +174,13 @@ const index_Main = () => {
 
   const handleBackup = async (e) => {
     e.preventDefault();
-    const ipData = {
-      ip_address: ipAddress,
-    };
 
     setLoading(true);
 
     await axios
-      .post(baseUrl + "/backupConfigurations", ipData)
+      .post(baseUrl + "/backupConfigurations", {
+        ncm_device_id: deviceId,
+      })
       .then((response) => {
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
@@ -194,7 +189,9 @@ const index_Main = () => {
           openSweetAlert(response?.data, "success");
 
           axios
-            .post(baseUrl + "/getAllConfigurationDates", ipData)
+            .post(baseUrl + "/getAllConfigurations", {
+              ncm_device_id: deviceId,
+            })
             .then((response) => {
               excelData = response.data;
               setDataSource(excelData);
@@ -232,7 +229,7 @@ const index_Main = () => {
     setCompareSection(true);
 
     const Data = {
-      ip_address: ipAddress,
+      ncm_device_id: deviceId,
       date1,
       date2,
     };
@@ -240,6 +237,8 @@ const index_Main = () => {
     await axios
       .post(baseUrl + "/configurationComparison", Data)
       .then((response) => {
+        console.log("config response", response);
+
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
         } else {
@@ -262,7 +261,7 @@ const index_Main = () => {
         </div>
       </Menu.Item>
       <Menu.Item>
-        <div onClick={() => showModal(ipAddress)}>
+        <div onClick={() => showModal(deviceId)}>
           <span style={{ color: "#66b127" }}>
             <p style={{ color: "#66b127" }}>Compare</p>
           </span>
