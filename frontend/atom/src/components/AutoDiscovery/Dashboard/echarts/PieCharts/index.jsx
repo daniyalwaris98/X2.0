@@ -12,7 +12,6 @@ const Index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getSnmpStatusGraph");
-        console.log("getSnmpStatusGraph", res);
         setMyFunction(res.data);
         setLoading(false);
       } catch (err) {

@@ -37,24 +37,23 @@ const index = () => {
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      try {
-        const res = await axios.get(baseUrl + "/getAllSites");
-        excelData = res.data;
-        setDataSource(excelData);
-      } catch (err) {
-        console.log(err.response);
-      }
-    };
     serviceCalls();
   }, []);
 
+  const serviceCalls = async () => {
+    try {
+      const res = await axios.get(baseUrl + "/getAllSites");
+      excelData = res.data;
+      setDataSource(excelData);
+    } catch (err) {
+      console.log(err.response);
+    }
+  };
+
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -334,10 +333,8 @@ const index = () => {
           style={{
             fontSize: "14px",
             padding: "10px",
-            // backgroundColor: "#71B626",
             borderRadius: "8px",
             fontWeight: "600",
-            // color: "white",
             border: "none",
             border: "1px solid #0000001A",
 
@@ -353,10 +350,8 @@ const index = () => {
           style={{
             fontSize: "14px",
             padding: "10px",
-            // backgroundColor: "#FFFFFF",
             borderRadius: "8px",
             fontWeight: "600",
-            // color: "#8B8B8B",
             paddingRight: "25px",
             paddingLeft: "25px",
             border: "1px solid #0000001A",

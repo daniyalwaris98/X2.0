@@ -55,17 +55,12 @@ const index = () => {
   const [isShown, setIsShown] = useState(true);
 
   const handleShowHide = (event) => {
-    // 👇️ toggle shown state
     setIsShown((current) => !current);
-
-    // 👇️ or simply set it to true
-    // setIsShown(true);
   };
 
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
 
   useEffect(() => {
@@ -74,7 +69,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllSites");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);
@@ -86,6 +80,7 @@ const index = () => {
     };
     serviceCalls();
   }, []);
+
   useEffect(() => {
     const totalSites = async () => {
       setLoading(true);
@@ -101,24 +96,8 @@ const index = () => {
     };
     totalSites();
   }, []);
-  // useEffect(() => {
-  //   const dataCenterStatus = async () => {
-  //     setLoading(true);
-
-  //     try {
-  //       const res = await axios.get(baseUrl + "/dataCentreStatus");
-  //       console.log("dataCenterStatus", res);
-  //       setDoughnutData(res.data);
-  //     } catch (err) {
-  //       console.log(err.response);
-  //       setLoading(false);
-  //     }
-  //   };
-  //   dataCenterStatus();
-  // }, []);
 
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -138,108 +117,15 @@ const index = () => {
     searchedColumn,
     setSearchedColumn
   );
-  // Alert
-  // const openSweetAlert = (title, type) => {
-  //   Swal.fire({
-  //     title,
-  //     type,
-  //   });
-  // };
-  const exportSeed = async () => {
-    setExportLoading(true);
-    jsonToExcel(excelData);
-    openNotification();
-    setExportLoading(false);
 
-    // console.log(first);
-  };
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
     });
   };
 
-  const postSeed = async (seed) => {
-    setLoading(true);
-    await axios
-      .post(baseUrl + "/addSite", seed)
-      .then((response) => {
-        console.log("hahahehehoho");
-        console.log(response.status);
-        if (response?.response?.status == 500) {
-          openSweetAlert(response?.response?.data?.response, "error");
-          setLoading(false);
-        } else {
-          openSweetAlert("Site Added Successfully", "success");
-          const promises = [];
-          promises.push(
-            axios
-              .get(baseUrl + "/getAllSites")
-              .then((response) => {
-                console.log("response===>", response);
-                // setExcelData(response.data);
-
-                console.log(response.data);
-                console.log("asd", response);
-                excelData = response?.data;
-                setRowCount(response?.data?.length);
-                setDataSource(response?.data);
-
-                console.log(response.data);
-
-                excelData = response.data;
-                setDataSource(excelData);
-
-                setRowCount(response.data.length);
-                setDataSource(response.data);
-                setLoading(false);
-              })
-              .catch((error) => {
-                console.log(error);
-                setLoading(false);
-              })
-          );
-          setLoading(false);
-          return Promise.all(promises);
-        }
-      })
-      .catch((err) => {
-        // openSweetAlert("Something Went Wrong!", "danger");
-        console.log("error ==> " + err);
-        setLoading(false);
-      });
-  };
-
-  const convertToJson = (headers, fileData) => {
-    let rows = [];
-    fileData.forEach((row) => {
-      const rowData = {};
-      row.forEach((element, index) => {
-        rowData[headers[index]] = element;
-      });
-      rows.push(rowData);
-    });
-    rows = rows.filter((value) => JSON.stringify(value) !== "{}");
-    return rows;
-  };
-  // useEffect(() => {
-  //   inputRef.current.addEventListener("input", importExcel);
-  // }, []);
-
-  const showModal = () => {
-    setEditRecord(null);
-    setAddRecord(null);
-    setIsModalVisible(true);
-  };
-  const showEditModal = () => {
-    setIsModalVisible(true);
-  };
   const edit = (record) => {
     setEditRecord(record);
-    // setAddRecord(record);
     setIsEditModalVisible(true);
   };
 
@@ -419,25 +305,6 @@ const index = () => {
       ellipsis: true,
     },
   ];
-
-  const exportTemplate = async () => {
-    jsonToExcel(seedTemp);
-    openNotification();
-  };
-  const jsonToExcel = (atomData) => {
-    if (rowCount !== 0) {
-      let wb = XLSX.utils.book_new();
-      let binaryAtomData = XLSX.utils.json_to_sheet(atomData);
-      XLSX.utils.book_append_sheet(wb, binaryAtomData, "sites");
-      XLSX.writeFile(wb, "sites.xlsx");
-      // setExportLoading(false);
-    } else {
-      openSweetAlert("No Data Found!", "danger");
-    }
-  };
-  const onChange = (checkedValues) => {
-    console.log("checked = ", checkedValues);
-  };
 
   return (
     <div>

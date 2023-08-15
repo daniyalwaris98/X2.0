@@ -26,10 +26,8 @@ const AddAtom = (props) => {
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
-            console.log(response?.data?.Response);
           } else {
             openSweetAlert(response?.data, "success");
-            console.log(response?.data?.Response);
 
             const promises = [];
             promises.push(

@@ -95,8 +95,6 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllDnsServers")
                 .then((response) => {
-                  console.log(response.data);
-
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
@@ -154,22 +152,23 @@ const index = () => {
   };
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/getAllDnsServers");
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
     serviceCalls();
   }, []);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getAllDnsServers");
+      excelData = res.data;
+      setDataSource(excelData);
+      setRowCount(excelData.length);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
 
   const showModal = () => {
     setEditRecord(null);

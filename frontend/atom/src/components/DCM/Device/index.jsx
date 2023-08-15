@@ -64,10 +64,8 @@ const index = () => {
   useEffect(() => {
     let user = localStorage.getItem("user");
     let userData = JSON.parse(user);
-
     let test = userData.monetx_configuration;
     const t = eval(test);
-    console.log(t);
     let config = JSON.parse(t);
     setConfigData(config);
   }, []);

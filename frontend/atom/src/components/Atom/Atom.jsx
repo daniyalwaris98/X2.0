@@ -422,9 +422,6 @@ const Atom = () => {
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
     });
   };
 

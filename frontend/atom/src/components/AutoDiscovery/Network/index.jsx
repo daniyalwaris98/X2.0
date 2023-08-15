@@ -21,6 +21,7 @@ import * as XLSX from "xlsx";
 import { columnSearch } from "../../../utils";
 
 import axios, { baseUrl } from "../../../utils/axios";
+import { ResponseModel } from "../../ReusableComponents/ResponseModel/ResponseModel";
 
 let excelData = [];
 let columnFilters = {};
@@ -45,8 +46,8 @@ const Atom = () => {
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
+
   let getColumnSearchProps = columnSearch(
     searchText,
     setSearchText,
@@ -67,54 +68,6 @@ const Atom = () => {
     });
   };
 
-  const deleteRow = async () => {
-    if (selectedRowKeys.length > 0) {
-      try {
-        await axios
-          .post(baseUrl + "/deleteNetworks", selectedRowKeys)
-          .then((response) => {
-            if (response?.response?.status == 500) {
-              openSweetAlert(response?.response?.data, "error");
-              console.log("logs", response?.response?.data);
-              setOnboardLoading(false);
-            } else {
-              openSweetAlert(`Network Deleted Successfully`, "success");
-              const promises = [];
-              promises.push(
-                axios
-                  .get(baseUrl + "/getAllNetworks")
-                  .then((response) => {
-                    console.log(response.data);
-                    excelData = response.data;
-                    setDataSource(response.data);
-                    setRowCount(response.data.length);
-                    setSelectedRowKeys([]);
-
-                    setLoading(false);
-                  })
-                  .catch((error) => {
-                    console.log(error);
-                    setLoading(false);
-                  })
-              );
-              return Promise.all(promises);
-            }
-          })
-          .catch((error) => {
-            setLoading(false);
-
-            console.log("in add seed device catch ==> " + error);
-          });
-      } catch (err) {
-        setLoading(false);
-
-        console.log(err);
-      }
-    } else {
-      openSweetAlert(`No Device Selected`, "error");
-    }
-  };
-
   const exportSeed = async () => {
     jsonToExcel(excelData);
   };
@@ -122,9 +75,6 @@ const Atom = () => {
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
     });
   };
 
@@ -172,7 +122,15 @@ const Atom = () => {
           openSweetAlert(response?.response?.data, "error");
           setLoading(false);
         } else {
-          openSweetAlert(response?.data, "success");
+          ResponseModel(
+            `
+            Network Inserted : ${response?.data?.success}
+            Network not Inserted : ${response?.data?.error}
+
+          `,
+            "success",
+            response?.data?.error_list
+          );
 
           const promises = [];
 
@@ -180,8 +138,6 @@ const Atom = () => {
             axios
               .get(baseUrl + "/getAllNetworks")
               .then((response) => {
-                console.log("response===============>====>", response);
-
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
                 setDataSource(response?.data);
@@ -202,38 +158,78 @@ const Atom = () => {
       });
   };
 
-  const validateSheet = (seeds) => {
-    console.log("seeds ========>", seeds);
+  const deleteRow = async () => {
+    if (selectedRowKeys.length > 0) {
+      try {
+        await axios
+          .post(baseUrl + "/deleteNetworks", selectedRowKeys)
+          .then((response) => {
+            if (response?.response?.status == 500) {
+              openSweetAlert(response?.response?.data, "error");
 
-    if (
-      seeds[0].scan_status == "Active" ||
-      seeds[0].scan_status == "inActive"
-    ) {
-      postSeed(seeds);
-    } else if (seeds[0].scan_status == "") {
-      openSweetAlert("scan status should not be empty", "error");
+              setOnboardLoading(false);
+            } else {
+              ResponseModel(
+                `
+                Networks Deleted : ${response?.data?.success}
+                Networks not Deleted : ${response?.data?.error}
+              `,
+                "success",
+                response?.data?.error_list
+              );
+              const promises = [];
+              promises.push(
+                axios
+                  .get(baseUrl + "/getAllNetworks")
+                  .then((response) => {
+                    excelData = response.data;
+                    setDataSource(response.data);
+                    setRowCount(response.data.length);
+                    setSelectedRowKeys([]);
+
+                    setLoading(false);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    setLoading(false);
+                  })
+              );
+              return Promise.all(promises);
+            }
+          })
+          .catch((error) => {
+            setLoading(false);
+
+            console.log("in add seed device catch ==> " + error);
+          });
+      } catch (err) {
+        setLoading(false);
+
+        console.log(err);
+      }
     } else {
-      openSweetAlert("Please add valid scan status", "error");
+      openSweetAlert(`No Device Selected`, "error");
     }
   };
 
   useEffect(() => {
-    const serviceCalls = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/getAllNetworks");
-        excelData = res.data;
-        setDataSource(excelData);
-        setRowCount(excelData.length);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
     serviceCalls();
   }, []);
+
+  const serviceCalls = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getAllNetworks");
+      excelData = res.data;
+      setDataSource(excelData);
+      setRowCount(excelData.length);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
 
   const convertToJson = (headers, fileData) => {
     let rows = [];
@@ -254,23 +250,26 @@ const Atom = () => {
 
   const importExcel = (e) => {
     const file = e.target.files[0];
-    const reader = new FileReader();
-    reader.readAsBinaryString(file);
-    reader.onload = (e) => {
-      const bstr = e.target.result;
-      const workbook = XLSX.read(bstr, { type: "binary" });
-      const workSheetName = workbook.SheetNames[0];
-      const workSheet = workbook.Sheets[workSheetName];
-      const fileData = XLSX.utils.sheet_to_json(workSheet, {
-        header: 1,
-        raw: false,
-      });
-      const headers = fileData[0];
-      fileData.splice(0, 1);
-      let data = convertToJson(headers, fileData);
 
-      validateSheet(data);
-    };
+    if (file) {
+      const reader = new FileReader();
+      reader.readAsBinaryString(file);
+      reader.onload = (e) => {
+        const bstr = e.target.result;
+        const workbook = XLSX.read(bstr, { type: "binary" });
+        const workSheetName = workbook.SheetNames[0];
+        const workSheet = workbook.Sheets[workSheetName];
+        const fileData = XLSX.utils.sheet_to_json(workSheet, {
+          header: 1,
+          raw: false,
+        });
+        const headers = fileData[0];
+        fileData.splice(0, 1);
+        let data = convertToJson(headers, fileData);
+
+        postSeed(data);
+      };
+    }
   };
 
   const showModal = () => {
@@ -469,7 +468,6 @@ const Atom = () => {
   ];
 
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -509,13 +507,6 @@ const Atom = () => {
             display: "flex",
           }}
         >
-          {/* <OnBoardStyledButton
-            onClick={handleOnboard}
-            style={{ fontSize: "14px" }}
-            disabled={!configData?.atom.pages.atom.read_only}
-          >
-            + On Board
-          </OnBoardStyledButton> */}
           {selectedRowKeys.length > 0 ? (
             <DeleteButton onClick={deleteRow}>
               <img src={trash} width="18px" height="18px" alt="" />
