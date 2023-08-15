@@ -22,12 +22,12 @@ const EditAtom = (props) => {
   const postDevice = async (device) => {
     try {
       await axios
-        .post(baseUrl + "/addNetwork", device)
+        .post(baseUrl + "/editNetwork", device)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert("Network Updated Successfully", "success");
+            openSweetAlert(response.data, "success");
             const promises = [];
             promises.push(
               axios
@@ -40,7 +40,6 @@ const EditAtom = (props) => {
                 })
                 .catch((error) => {
                   console.log(error);
-                  // openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
@@ -199,19 +198,6 @@ const EditAtom = (props) => {
               />
               {/* )} */}
             </InputWrapper>
-            {/* <InputWrapper>
-                Atom ID:
-                {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-            {/* &nbsp;&nbsp;
-                {device ? (
-                  <StyledInput value={atom_id}  />
-                ) : (
-                  <StyledInput
-                    value={atom_id}
-                    onChange={(e) => setAtom_id(e.target.value)}
-                  />
-                )}
-              </InputWrapper> */}
 
             <InputWrapper>
               Subnet: &nbsp;<span style={{ color: "red" }}>*</span>
