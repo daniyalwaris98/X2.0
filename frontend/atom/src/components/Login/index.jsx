@@ -340,8 +340,6 @@ const index = () => {
     await axios
       .get(`${baseUrl}/oneTimeSetup`)
       .then((res) => {
-        console.log(res);
-
         if (
           res.data.admin == false &&
           res.data.end_user == false &&

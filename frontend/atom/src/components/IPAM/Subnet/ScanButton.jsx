@@ -53,13 +53,9 @@ const ButtonCell = ({
   const [configData, setConfigData] = useState(null);
 
   const onChangeScan = (checkedValues) => {
-    console.log("checked = ", checkedValues);
     setScanData(checkedValues);
   };
-  const onClick = ({ key }) => {
-    // message.info(`Click on item ${key}`);
-    console.log("portScan,dns_Scan", scanData);
-  };
+
   useEffect(() => {
     let user = localStorage.getItem("user");
     let userData = JSON.parse(user);
@@ -70,6 +66,7 @@ const ButtonCell = ({
     let config = JSON.parse(t);
     setConfigData(config);
   }, []);
+
   const menu = (
     <Menu
       onClick={onClick}
@@ -96,6 +93,7 @@ const ButtonCell = ({
       ]}
     />
   );
+
   return pending ? (
     <SpinLoading />
   ) : (
@@ -109,36 +107,17 @@ const ButtonCell = ({
               options: scanData,
               subnets: value,
             };
-            console.log("scanData", ScanData);
-
-            // // console.log(typeof singleSubnet, singleSubnet);
-            // // console.log("ScanDataScanDataScanDataScanDataScanData", singleSubnet);
-            console.log("ScanDataScanDataScanDataScanDataScanData", value);
-
-            // singleSubnet.push(selectedSubnetAddress);
-            // setSingleSubnet(singleSubnet);
 
             setSingleSubnet((prev) => {
               let tempSubnetArray = [...prev];
               tempSubnetArray.push(value);
               return tempSubnetArray;
             });
-            // console.log(typeof singleSubnet, singleSubnet);
-            // SubnetClicked = value;
-            // console.log(SubnetClicked);
-            console.log(singleSubnet);
+
             try {
-              //console.log(device);
               await axios
                 .post(baseUrl + "/scanSubnets", ScanData)
                 .then((response) => {
-                  // setMainModalVisible(false);
-                  // openSweetAlert(`Device Added Successfully`, "success");
-                  // setStatusLoading(false);
-
-                  //   setToggle((prev) => !prev);
-                  // setTimeout(() => {
-                  console.log("first");
                   setSingleSubnet((prev) => {
                     let tempSubnetArray = [...prev];
 
@@ -149,54 +128,27 @@ const ButtonCell = ({
                     return tempSubnetArray;
                   });
                   setPending(false);
-                  // }, 15000);
-                  //   setPending(false);
+
                   const promises = [];
                   promises.push(
                     axios
                       .get(baseUrl + "/getAllSubnets")
                       .then((response) => {
-                        var data = response.data;
-                        var i;
-                        // for (i = 0; i < data.length; i++) {
-                        //   // data[i].name
-                        //   if (data[i].status === "scanning") {
-                        //     setStatusLoading(true);
-                        //   } else {
-                        //     setStatusLoading(false);
-                        //   }
-                        // }
-                        // setSingleSubnet("");
-                        console.log(response.data);
                         setDataSource(response.data);
                         excelData = response.data;
                         setRowCount(response.data.length);
                         excelData = response.data;
-
-                        // setPending(false);
                       })
                       .catch((error) => {
                         console.log(error);
-                        // setPending(false);
-
-                        //  openSweetAlert("Something Went Wrong!", "error");
                       })
                   );
                   return Promise.all(promises);
                 })
-                .catch((error) => {
-                  //   setPending(false);
-
-                  console.log("in add seed device catch ==> " + error);
-                  // openSweetAlert("Something Went Wrong!", "error");
-                });
+                .catch((error) => {});
             } catch (err) {
-              //   setPending(false);
-
               console.log(err);
             }
-            // handleButtonClick(e, value);
-            // setPending(false);
           }}
           style={{ background: "#66b127 !important", cursor: "no-drop" }}
           overlay={menu}
@@ -213,36 +165,17 @@ const ButtonCell = ({
               options: scanData,
               subnets: value,
             };
-            console.log("scanData", ScanData);
-
-            // // console.log(typeof singleSubnet, singleSubnet);
-            // // console.log("ScanDataScanDataScanDataScanDataScanData", singleSubnet);
-            console.log("ScanDataScanDataScanDataScanDataScanData", value);
-
-            // singleSubnet.push(selectedSubnetAddress);
-            // setSingleSubnet(singleSubnet);
 
             setSingleSubnet((prev) => {
               let tempSubnetArray = [...prev];
               tempSubnetArray.push(value);
               return tempSubnetArray;
             });
-            // console.log(typeof singleSubnet, singleSubnet);
-            // SubnetClicked = value;
-            // console.log(SubnetClicked);
-            console.log(singleSubnet);
+
             try {
-              //console.log(device);
               await axios
                 .post(baseUrl + "/scanSubnets", ScanData)
                 .then((response) => {
-                  // setMainModalVisible(false);
-                  // openSweetAlert(`Device Added Successfully`, "success");
-                  // setStatusLoading(false);
-
-                  //   setToggle((prev) => !prev);
-                  // setTimeout(() => {
-                  console.log("first");
                   setSingleSubnet((prev) => {
                     let tempSubnetArray = [...prev];
 
@@ -253,54 +186,29 @@ const ButtonCell = ({
                     return tempSubnetArray;
                   });
                   setPending(false);
-                  // }, 15000);
-                  //   setPending(false);
+
                   const promises = [];
                   promises.push(
                     axios
                       .get(baseUrl + "/getAllSubnets")
                       .then((response) => {
-                        var data = response.data;
-                        var i;
-                        // for (i = 0; i < data.length; i++) {
-                        //   // data[i].name
-                        //   if (data[i].status === "scanning") {
-                        //     setStatusLoading(true);
-                        //   } else {
-                        //     setStatusLoading(false);
-                        //   }
-                        // }
-                        // setSingleSubnet("");
-                        console.log(response.data);
                         setDataSource(response.data);
                         excelData = response.data;
                         setRowCount(response.data.length);
                         excelData = response.data;
-
-                        // setPending(false);
                       })
                       .catch((error) => {
                         console.log(error);
-                        // setPending(false);
-
-                        //  openSweetAlert("Something Went Wrong!", "error");
                       })
                   );
                   return Promise.all(promises);
                 })
                 .catch((error) => {
-                  //   setPending(false);
-
                   console.log("in add seed device catch ==> " + error);
-                  // openSweetAlert("Something Went Wrong!", "error");
                 });
             } catch (err) {
-              //   setPending(false);
-
               console.log(err);
             }
-            // handleButtonClick(e, value);
-            // setPending(false);
           }}
           style={{ background: "#66b127 !important" }}
           overlay={menu}

@@ -24,19 +24,15 @@ const Navigation = () => {
   const [extendNavbar, setExtendNavbar] = useState(false);
   const [configData, setConfigData] = useState(null);
   let userData;
+
   useEffect(() => {
     let user = localStorage.getItem("user");
     userData = JSON.parse(user);
 
     const test = userData.monetx_configuration;
-    console.log(userData.user_role);
     let t = eval(test);
     let config = JSON.parse(t);
     setConfigData(config);
-
-    // let config = localStorage.getItem("monetx_configuration");
-    // setConfigData(JSON.parse(config));
-    // // console.log(JSON.parse(config));
   }, []);
   return (
     <div>
@@ -108,51 +104,9 @@ const Navigation = () => {
                   Failed Devices &nbsp;&nbsp;&nbsp;&nbsp;
                 </NavbarLink>
               ) : null}
-              {/* {configData?.admin.pages.failed_devices.view ? (
-                <NavbarLink
-                  to="/admin/enduser"
-                  mainLoc={pathname === "/admin/enduser"}
-
-                  // activeStyle
-                >
-                  <img
-                    src={failed}
-                    alt=""
-                    style={{
-                      marginRight: "10px",
-                      marginBottom: "5px",
-                      width: "20px",
-                      height: "20px",
-                      paddingTop: "4px",
-                    }}
-                  />
-                  End User &nbsp;&nbsp;&nbsp;&nbsp;
-                </NavbarLink>
-              ) : null} */}
             </NavbarLinkContainer>
           </CenterContainer>
         </NavbarInnerContainer>
-        {extendNavbar && (
-          <NavbarExtendedContainer>
-            {/* <NavbarLinkExtended to="/uam/sites">Sites</NavbarLinkExtended>
-            <NavbarLinkExtended to="/uam/racks">Racks</NavbarLinkExtended> */}
-            {/* <NavbarLinkExtended to="/atom/password-group">
-              Password Group
-            </NavbarLinkExtended> */}
-
-            {/* <NavbarLinkExtended to="/physical-mapping">
-              Physical Mapping
-            </NavbarLinkExtended>
-            <NavbarLinkExtended to="/ims"> IMS</NavbarLinkExtended>
-            <NavbarLinkExtended to="/inventry"> Inventry</NavbarLinkExtended>
-            <NavbarLinkExtended to="/monitering">Monitering</NavbarLinkExtended>
-            <NavbarLinkExtended to="/auto-discovery">
-              Auto Discovery
-            </NavbarLinkExtended>
-            <NavbarLinkExtended to="/ipam">IPAM</NavbarLinkExtended>
-            <NavbarLinkExtended to="/dcm">DCM</NavbarLinkExtended> */}
-          </NavbarExtendedContainer>
-        )}
       </NavbarContainer>
     </div>
   );
