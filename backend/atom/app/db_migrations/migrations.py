@@ -12,6 +12,32 @@ def run_migration():
     flag = True
     while flag:
         try:
+            
+            from app.models.atom_models import Password_Group_Table
+            from app.models.atom_models import Site_Table
+            from app.models.atom_models import Rack_Table
+            from app.models.atom_models import Atom_Table
+            from app.models.atom_models import Atom_Transition_Table
+            
+            from app.models.uam_models import UAM_Device_Table
+            from app.models.uam_models import Board_Table
+            from app.models.uam_models import Subboard_Table
+            from app.models.uam_models import Sfps_Table
+            from app.models.uam_models import License_Table
+            from app.models.uam_models import SNTC_TABLE
+            from app.models.uam_models import APS_TABLE
+            
+            from app.models.monitoring_models import Alert_Cpu_Threshold_Table
+            from app.models.monitoring_models import Alert_Memory_Threshold_Table
+            from app.models.monitoring_models import Monitoring_Credentails_Table
+            from app.models.monitoring_models import Monitoring_Devices_Table
+            from app.models.monitoring_models import Monitoring_Alerts_Table
+            
+            from app.models.ncm_models import NCM_Device_Table
+            from app.models.ncm_models import NCM_History_Table
+            from app.models.ncm_models import NCM_Alarm_Table
+            
+            
             db.create_all()
             flag = False
         except Exception:
