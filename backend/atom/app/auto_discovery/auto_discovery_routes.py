@@ -200,7 +200,7 @@ def Discovers():
         results = None
         if network is not None:
             results = auto_discover.GetSubnetInventoryData(
-                network["SUBNET"], network["EXCLUDED_IP_RANGE"]
+                network["subnet"], network["excluded_ip_range"]
             )
         else:
             if discoveryObj["subnet"].strip() == "All":
@@ -230,29 +230,29 @@ def Discovers():
 
         for host in results:
             if host[0] not in ipAddressList:
-                queryString = f"INSERT INTO auto_discovery_table (IP_ADDRESS,SUBNET,OS_TYPE,MAKE_MODEL,`FUNCTION`,VENDOR,SNMP_STATUS,SNMP_VERSION,CREATION_DATE,MODIFICATION_DATE) VALUES ('{host[0]}', '{network['SUBNET']}','{host[1]}', '{host[2]}', '{host[3]}', '{host[4]}', '{host[5]}', '{host[6]}','{date}','{date}');"
+                queryString = f"INSERT INTO auto_discovery_table (IP_ADDRESS,SUBNET,OS_TYPE,MAKE_MODEL,`FUNCTION`,VENDOR,SNMP_STATUS,SNMP_VERSION,CREATION_DATE,MODIFICATION_DATE) VALUES ('{host[0]}', '{network['subnet']}','{host[1]}', '{host[2]}', '{host[3]}', '{host[4]}', '{host[5]}', '{host[6]}','{date}','{date}');"
                 db.session.execute(queryString)
                 db.session.commit()
                 print(
                     f"Successfully Inserted to Database for {host[0]}", file=sys.stderr
                 )
             else:
-                queryString = f"UPDATE auto_discovery_table SET IP_ADDRESS='{host[0]}',SUBNET='{network['SUBNET']}',OS_TYPE='{host[1]}',MAKE_MODEL='{host[2]}',`FUNCTION`='{host[3]}',VENDOR='{host[4]}',SNMP_STATUS='{host[5]}',SNMP_VERSION='{host[6]}',MODIFICATION_DATE='{date}' where IP_ADDRESS='{host[0]}';"
+                queryString = f"UPDATE auto_discovery_table SET IP_ADDRESS='{host[0]}',SUBNET='{network['subnet']}',OS_TYPE='{host[1]}',MAKE_MODEL='{host[2]}',`FUNCTION`='{host[3]}',VENDOR='{host[4]}',SNMP_STATUS='{host[5]}',SNMP_VERSION='{host[6]}',MODIFICATION_DATE='{date}' where IP_ADDRESS='{host[0]}';"
                 db.session.execute(queryString)
                 db.session.commit()
                 print(
                     f"Successfully Updated to Database for {host[0]}", file=sys.stderr
                 )
 
-        queryString = f"select SUBNET from auto_discovery_network_table;"
+        queryString = f"select subnet from auto_discovery_network_table;"
         result = db.session.execute(queryString)
         for row in result:
             subnet = row[0]
-            queryString1 = f"select count(*) from auto_discovery_table where SUBNET='{network['SUBNET']}';"
+            queryString1 = f"select count(*) from auto_discovery_table where SUBNET='{network['subnet']}';"
             result1 = db.session.execute(queryString1)
             for row1 in result1:
                 count = row1[0]
-                queryString3 = f"update auto_discovery_network_table set NO_OF_DEVICES={count} where SUBNET='{network['SUBNET']}';"
+                queryString3 = f"update auto_discovery_network_table set NO_OF_DEVICES={count} where SUBNET='{network['subnet']}';"
                 db.session.execute(queryString3)
                 db.session.commit()
         return jsonify(results), 200
