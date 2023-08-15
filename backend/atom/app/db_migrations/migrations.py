@@ -19,6 +19,9 @@ def run_migration():
             from app.models.atom_models import Atom_Table
             from app.models.atom_models import Atom_Transition_Table
             
+            from app.models.auto_discovery_models import Auto_Discovery_Network_Table
+            from app.models.auto_discovery_models import Auto_Discovery_Table
+            
             from app.models.uam_models import UAM_Device_Table
             from app.models.uam_models import Board_Table
             from app.models.uam_models import Subboard_Table
