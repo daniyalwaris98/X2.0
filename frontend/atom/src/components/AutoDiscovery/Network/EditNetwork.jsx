@@ -6,55 +6,10 @@ import Swal from "sweetalert2";
 import "../../AllStyling/CSSStyling.css";
 
 const EditAtom = (props) => {
-  const { Option } = Select;
-
-  const correctDatePattern = (date) => {
-    if (date != null) {
-      let d = date.split(date[10]);
-      return d[0] + " " + d[1];
-    } else return;
-  };
-
   const getString = (str) => {
     return str ? str : "";
   };
 
-  const getDateString = (dateStr) => {
-    return dateStr; // ? correctDatePattern(dateStr) : "";
-  };
-
-  let [loading, setLoading] = useState(false);
-  let [siteIds, setSiteIds] = useState([]);
-  let [siteIdOptions, setSiteIdOptions] = useState([]);
-  let [rackIds, setRackIds] = useState([]);
-  let [rackIdOptions, setRackIdOptions] = useState([]);
-
-  // useEffect(() => {
-  //     (async () => {
-  //       try {
-  //         const res1 = await axios.get(baseUrl + "/getAllSiteIDs");
-  //         setSiteIds(res1.data);
-  //         const res2 = await axios.get(baseUrl + "/getAllRackIDs");
-  //         setRackIds(res2.data);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //       }
-  //     })();
-  //   }, []);
-
-  // useEffect(() => {
-  //     getSiteIdOptions(siteIds);
-  //     getRackIdOptions(rackIds);
-  //   }, [siteIds, rackIds]);
-
-  //   const getSiteIdOptions = (values = []) => {
-  //     let options = [];
-  //     values.map((value) => {
-  //       options.push(<Option value={value}>{value}</Option>);
-  //     });
-  //     setSiteIdOptions(options);
-  //     // return options;
-  //   };
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -66,7 +21,6 @@ const EditAtom = (props) => {
 
   const postDevice = async (device) => {
     try {
-      //console.log(device);
       await axios
         .post(baseUrl + "/addNetwork", device)
         .then((response) => {
@@ -79,7 +33,6 @@ const EditAtom = (props) => {
               axios
                 .get(baseUrl + "/getAllNetworks")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -165,124 +118,11 @@ const EditAtom = (props) => {
     };
 
     props.setIsEditModalVisible(false);
-    console.log("devices", device);
     postDevice(device);
   };
-  //   const changeSelectOptionHandler = (event) => {
-  //     setSite_name(event.target.value);
-  //     // setRack_name(event.target.value);
-  //     // const res = axios.get(baseUrl + "/getSitesForDropdown");
-  //     // console.log("getSitesForDropdown", res);
-  //     // // setSiteArray(res.data);
-  //     // console.log("a", res.data[0]);
-  //     // setSite_name(res.data);
-  //     // setLoading(false);
-  //     console.log(site_name);
-  //     console.log(rack_name);
-  //   };
-  //   useEffect(() => {
-  //     // const GroupDropdown = async (event) => {
-  //     //   setSite_name(event.target.value);
-  //     //   // setRack_name(event.target.value);
-  //     //   console.log(site_name);
-  //     //   console.log(rack_name);
-  //     // };
-  //     // GroupDropdown(event);
-
-  //     // const changeSelectOptionHandler = (event) => {
-  //     //   setSite_name(event.target.value);
-  //     //   // setRack_name(event.target.value);
-  //     //   console.log(site_name);
-  //     //   console.log(rack_name);
-  //     // };
-  //     // changeSelectOptionHandler(event);
-  //     console.log(site_name);
-  //     console.log(rack_name);
-  //   }, [site_name, rack_name]);
-
-  //   const [siteArray, setSiteArray] = useState([]);
-  //   useEffect(() => {
-  //     const getSitesForDropdown = async () => {
-  //       setLoading(true);
-
-  //       try {
-  //         const res = await axios.get(baseUrl + "/getSitesForDropdown");
-  //         console.log("getSitesForDropdown", res);
-  //         setSiteArray(res.data);
-  //         // setSite_name(res.data[0]);
-  //         setLoading(false);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //         setLoading(false);
-  //       }
-  //     };
-  //     getSitesForDropdown();
-  //   }, [site_name]);
-
-  //   const [rackArray, setRackArray] = useState([]);
-
-  //   useEffect(() => {
-  //     const getRacksBySiteDropdown = async () => {
-  //       setLoading(true);
-
-  //       try {
-  //         const res = await axios.get(
-  //           `${baseUrl}/getRacksBySiteDropdown?site_name=${site_name}`
-  //         );
-  //         console.log("getRacksBySiteDropdown", res);
-  //         setRackArray(res.data);
-  //         console.log(res.data[0]);
-  //         // setRack_name(res.data[0]);
-  //         // setRack_name(rack_name);
-  //         setRack_name(rack_name);
-  //         setLoading(false);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //         setLoading(false);
-  //       }
-  //     };
-  //     getRacksBySiteDropdown();
-  //   }, [site_name]);
-  //   const [passwordArray, setPasswordArray] = useState([]);
-
-  //   console.log(rack_name);
-
-  //   useEffect(() => {
-  //     const getPasswordGroupDropdown = async () => {
-  //       setLoading(true);
-
-  //       try {
-  //         const res = await axios.get(baseUrl + "/getPasswordGroupDropdown");
-
-  //         console.log("getRacksBySiteDropdown", res);
-  //         setPasswordArray(res.data);
-  //         setLoading(false);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //         setLoading(false);
-  //       }
-  //     };
-  //     getPasswordGroupDropdown();
-  //   }, [password_group]);
 
   const handleCancel = () => {
     props.setIsEditModalVisible(false);
-  };
-  const getRackIdOptions = (values = []) => {
-    let options = [];
-    values.map((value) => {
-      options.push(<Option value={value}>{value}</Option>);
-    });
-    setRackIdOptions(options);
-    // return options;
-  };
-
-  const getOptions = (values = []) => {
-    let options = [];
-    values.map((value) => {
-      options.push(<Option value={value}>{value}</Option>);
-    });
-    return options;
   };
 
   return (

@@ -124,28 +124,18 @@ const index = () => {
   const [rowCount, setRowCount] = useState(0);
   const [popupRowCount, setPopupRowCount] = useState(0);
   const [deviceowCount, setDeviceRowCount] = useState(0);
-  let [inputValue, setInputValue] = useState("");
-  const inputRef = useRef(null);
 
   const onValueChange = (e) => {
     setValue(e.target.value);
   };
   const [configData, setConfigData] = useState(null);
 
-  const [portScan, setPortScan] = useState("");
-  const [dns_Scan, setDnsScan] = useState("");
   const [scanData, setScanData] = useState([]);
 
-  // const onChangeDNS = (checkedValues) => {
-  //   console.log("checked = ", checkedValues.target.value);
-  //   setDnsScan(checkedValues);
-  // };
   const onChangeScan = (checkedValues) => {
     setScanData(checkedValues);
   };
-  const onClick = ({ key }) => {
-    // message.info(`Click on item ${key}`);
-  };
+
   const menu = (
     <Menu
       onClick={onClick}
@@ -173,121 +163,66 @@ const index = () => {
     />
   );
   const [singleSubnet, setSingleSubnet] = useState([]);
-  // const [singleSubnet, setSingleSubnet] = useState("");
 
-  const handleClick = async () => {
-    // message.info("Click on left button.");
-
+  const handleButtonClick = async () => {
+    setPending(true);
+    setStatusLoading(true);
     const ScanData = {
       options: scanData,
       subnets: selectedRowKeys,
     };
 
-    // setSingleSubnet(selectedSubnetAddress);
+    setSingleSubnet(selectedRowKeys);
+
     try {
-      await axios.post(baseUrl + "/scanSubnets", ScanData);
-      // openSweetAlert(`File Imported Successfully`, "success");
+      await axios
+        .post(baseUrl + "/scanSubnets", ScanData)
+        .then((response) => {
+          const promises = [];
+          promises.push(
+            axios
+              .get(baseUrl + "/getAllSubnets")
+              .then((response) => {
+                setMainModalVisible(false);
+                var data = response.data;
+                var i;
+                for (i = 0; i < data.length; i++) {
+                  // data[i].name
+                  if (data[i].status === "scanning") {
+                    setStatusLoading(true);
+                  } else {
+                    setStatusLoading(false);
+                  }
+                }
+
+                setDataSource(response.data);
+                excelData = response.data;
+                setRowCount(response.data.length);
+                excelData = response.data;
+
+                setPending(false);
+              })
+              .catch((error) => {
+                console.log(error);
+                setPending(false);
+
+                //  openSweetAlert("Something Went Wrong!", "error");
+              })
+          );
+          return Promise.all(promises);
+        })
+        .catch((error) => {
+          setPending(false);
+
+          console.log("in add seed device catch ==> " + error);
+          // openSweetAlert("Something Went Wrong!", "error");
+        });
     } catch (err) {
-      // setLoading(false);
+      setPending(false);
 
       console.log(err);
     }
   };
-  // useEffect(() => {
-  //   console.log(singleSubnet);
-  // }, [singleSubnet]);
-
-  const handleButtonClick = async () =>
-    // e
-    // selectedSubnetAddress
-    {
-      // e.preventDefault();
-      setPending(true);
-      // message.info("Click on left button.");
-      // console.log(typeof singleSubnet, singleSubnet);
-      setStatusLoading(true);
-      const ScanData = {
-        options: scanData,
-        subnets: selectedRowKeys,
-      };
-
-      // console.log(typeof singleSubnet, singleSubnet);
-      // console.log("ScanDataScanDataScanDataScanDataScanData", singleSubnet);
-      // singleSubnet.push(selectedSubnetAddress);
-      // setSingleSubnet(selectedSubnetAddress);
-
-      // singleSubnet.push(selectedSubnetAddress);
-      // setSingleSubnet(singleSubnet);
-      setSingleSubnet(selectedRowKeys);
-
-      // try {
-      //   await axios.post(baseUrl + "/scanSubnets", ScanData);
-      //   setStatusLoading(false);
-
-      //   // openSweetAlert(`File Imported Successfully`, "success");
-      // } catch (err) {
-      //   // setLoading(false);
-      //   setStatusLoading(false);
-
-      //   console.log(err);
-      // }
-
-      try {
-        //console.log(device);
-        await axios
-          .post(baseUrl + "/scanSubnets", ScanData)
-          .then((response) => {
-            // setMainModalVisible(false);
-            // openSweetAlert(`Device Added Successfully`, "success");
-            // setStatusLoading(false);
-            // setPending(false);
-            const promises = [];
-            promises.push(
-              axios
-                .get(baseUrl + "/getAllSubnets")
-                .then((response) => {
-                  setMainModalVisible(false);
-                  var data = response.data;
-                  var i;
-                  for (i = 0; i < data.length; i++) {
-                    // data[i].name
-                    if (data[i].status === "scanning") {
-                      setStatusLoading(true);
-                    } else {
-                      setStatusLoading(false);
-                    }
-                  }
-
-                  // setSingleSubnet("");
-                  console.log(response.data);
-                  setDataSource(response.data);
-                  excelData = response.data;
-                  setRowCount(response.data.length);
-                  excelData = response.data;
-
-                  setPending(false);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  setPending(false);
-
-                  //  openSweetAlert("Something Went Wrong!", "error");
-                })
-            );
-            return Promise.all(promises);
-          })
-          .catch((error) => {
-            setPending(false);
-
-            console.log("in add seed device catch ==> " + error);
-            // openSweetAlert("Something Went Wrong!", "error");
-          });
-      } catch (err) {
-        setPending(false);
-
-        console.log(err);
-      }
-    };
   useEffect(() => {
     let user = localStorage.getItem("user");
     let userData = JSON.parse(user);

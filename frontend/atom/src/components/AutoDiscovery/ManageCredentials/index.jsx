@@ -169,7 +169,7 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getDiscoveryCredentialsCount");
-        console.log("res", res);
+
         setDiscoveryCount(res.data);
         setAlertStatusLoading(false);
       } catch (err) {

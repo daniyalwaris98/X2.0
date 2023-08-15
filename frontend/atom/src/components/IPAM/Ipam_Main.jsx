@@ -75,15 +75,14 @@ const index = () => {
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
+
   useEffect(() => {
     const serviceCalls = async () => {
       setMainTableLoading(true);
 
       try {
         const res = await axios.get(baseUrl + "/getAllIpam");
-        console.log("res IPAM", res);
         excelData = res.data;
 
         setDataSource(excelData);
@@ -104,7 +103,6 @@ const index = () => {
       const res = await axios.get(
         `${baseUrl}/getSubnetInformation?subnet=${subnet}`
       );
-      console.log("subnet data", res.data);
       setMySubnetInformation(res.data);
       setLoading(false);
     } catch (err) {
@@ -119,7 +117,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/ipamCards");
-        console.log("ipamCards", res.data);
         setIpamCard(res.data);
         setLoading(false);
       } catch (err) {
@@ -136,7 +133,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/privateSubnet");
-        console.log("privateSubnet", res.data);
         setPrvtSubnet(res.data);
         setPrivateLoading(false);
       } catch (err) {
@@ -153,7 +149,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/publicSubnet");
-        console.log("publicSubnet", res.data);
         setPublicSubnet(res.data);
         setPublicLoading(false);
       } catch (err) {
@@ -163,21 +158,6 @@ const index = () => {
     };
     publicSubnets();
   }, []);
-  // useEffect(() => {
-  //   const dataCenterStatus = async () => {
-  //     setLoading(true);
-
-  //     try {
-  //       const res = await axios.get(baseUrl + "/dataCentreStatus");
-  //       console.log("dataCenterStatus", res);
-  //       setDoughnutData(res.data);
-  //     } catch (err) {
-  //       console.log(err.response);
-  //       setLoading(false);
-  //     }
-  //   };
-  //   dataCenterStatus();
-  // }, []);
 
   let getColumnSearchProps = columnSearch(
     searchText,
@@ -185,102 +165,6 @@ const index = () => {
     searchedColumn,
     setSearchedColumn
   );
-  // Alert
-  // const openSweetAlert = (title, type) => {
-  //   Swal.fire({
-  //     title,
-  //     type,
-  //   });
-  // };
-
-  const postSeed = async (seed) => {
-    setLoading(true);
-    await axios
-      .post(baseUrl + "/addSite", seed)
-      .then((response) => {
-        console.log("hahahehehoho");
-        console.log(response.status);
-        if (response?.response?.status == 500) {
-          openSweetAlert(response?.response?.data?.response, "error");
-          setLoading(false);
-        } else {
-          openSweetAlert("Site Added Successfully", "success");
-          const promises = [];
-          promises.push(
-            axios
-              .get(baseUrl + "/getAllSites")
-              .then((response) => {
-                console.log("response===>", response);
-                // setExcelData(response.data);
-
-                console.log(response.data);
-                console.log("asd", response);
-                excelData = response?.data;
-                setRowCount(response?.data?.length);
-                setDataSource(response?.data);
-
-                // console.log(response.data);
-
-                // excelData = response.data;
-                // setDataSource(excelData);
-
-                // setRowCount(response.data.length);
-                // setDataSource(response.data);
-                setLoading(false);
-              })
-              .catch((error) => {
-                console.log(error);
-                setLoading(false);
-              })
-          );
-          setLoading(false);
-          return Promise.all(promises);
-        }
-      })
-      .catch((err) => {
-        // openSweetAlert("Something Went Wrong!", "danger");
-        console.log("error ==> " + err);
-        setLoading(false);
-      });
-  };
-
-  const data = [
-    {
-      key: "1",
-      subnet_name: "John Brown",
-      space_used: "50",
-      ip_available: "12:35:33",
-      ip_used: 23,
-    },
-    {
-      key: "2",
-      subnet_name: "John Brown",
-      space_used: "60",
-      ip_available: "12:35:33",
-      ip_used: 23,
-    },
-    {
-      key: "3",
-      subnet_name: "John Brown",
-      space_used: "90",
-      ip_available: "12:35:33",
-      ip_used: 23,
-    },
-    {
-      key: "4",
-      subnet_name: "John Brown",
-      space_used: "43",
-      ip_available: "12:35:33",
-      ip_used: 23,
-    },
-    {
-      key: "5",
-      subnet_name: "John Brown",
-      space_used: "20",
-      ip_available: "12:35:33",
-      ip_used: 23,
-    },
-  ];
 
   const SubnetColumns = [
     {

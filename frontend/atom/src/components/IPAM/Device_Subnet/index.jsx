@@ -77,7 +77,6 @@ const index = () => {
       try {
         const res = await axios.get(baseUrl + "/getAllIpamDates");
 
-        console.log("getAllIpamDates", res);
         setDateArray(res.data);
         setIpamDate(res.data[0]);
 
@@ -103,16 +102,9 @@ const index = () => {
   const openNotification = () => {
     notification.open({
       message: "File Exported Successfully",
-      onClick: () => {
-        console.log("Notification Clicked!");
-      },
     });
   };
 
-  const exportTemplate = async () => {
-    jsonToExcel(seedTemp);
-    openNotification();
-  };
   const jsonToExcel = (atomData) => {
     if (rowCount !== 0) {
       let wb = XLSX.utils.book_new();
@@ -122,17 +114,7 @@ const index = () => {
     }
   };
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
-  };
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-    selection: Table.SELECTION_ALL,
-    getCheckboxProps: () => ({
-      disabled: configData?.ipam.pages.devices_subnet.read_only,
-    }),
   };
 
   useEffect(() => {

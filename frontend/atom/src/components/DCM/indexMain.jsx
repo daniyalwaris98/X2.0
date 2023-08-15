@@ -69,7 +69,6 @@ const index = () => {
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
 
   let getColumnSearchProps = columnSearch(
