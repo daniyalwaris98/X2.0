@@ -79,10 +79,7 @@ const AddAtom = (props) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert(
-              `Site ${device ? "Added" : "Added"} Successfully`,
-              "success"
-            );
+            openSweetAlert(`Site added Successfully`, "success");
             const promises = [];
             promises.push(
               axios
@@ -453,13 +450,14 @@ const AddAtom = (props) => {
                     onKeyDown={handleKeyPress}
                   >
                     <option value="">Select Site Name</option>
-                    {siteArray.map((item, index) => {
-                      return (
-                        <option key={index} value={item}>
-                          {item}
-                        </option>
-                      );
-                    })}
+                    {siteArray &&
+                      siteArray.map((item, index) => {
+                        return (
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
+                        );
+                      })}
                   </Styledselect>
                 </div>
               </InputWrapper>
@@ -490,13 +488,14 @@ const AddAtom = (props) => {
                     }}
                   >
                     <option value="">Select Rack Name</option>
-                    {rackArray?.map((item, index) => {
-                      return (
-                        <option key={index} value={item}>
-                          {item}
-                        </option>
-                      );
-                    })}
+                    {rackArray &&
+                      rackArray?.map((item, index) => {
+                        return (
+                          <option key={index} value={item}>
+                            {item}
+                          </option>
+                        );
+                      })}
                   </Styledselect>
                 </div>
               </InputWrapper>
@@ -741,7 +740,6 @@ const AddAtom = (props) => {
 
       <Modal
         width={"70%"}
-        title="Add New Site"
         open={isSiteModalVisible}
         onOk={handleOkSite}
         footer={false}
@@ -762,6 +760,7 @@ const AddAtom = (props) => {
                   fontSize: "22px",
                   float: "left",
                   display: "flex",
+                  marginBottom: "30px",
                 }}
               >
                 {/* <img src={sites} alt="" /> &nbsp;  */}

@@ -61,12 +61,9 @@ const index = () => {
             maintainAspectRatio: false,
 
             onClick: function (e, item) {
-              let datasetIndex = item[0].datasetIndex;
               let dataIndex = item[0].index;
-              let datasetLabel = e.chart.data.datasets[datasetIndex].label;
-              let value = e.chart.data.datasets[datasetIndex].data[dataIndex];
               let label = e.chart.data.labels[dataIndex];
-              console.log("In click", datasetLabel, label, value);
+
               navigate("/ipam/subnet/ip-details", {
                 state: {
                   open_ports: label,

@@ -684,6 +684,7 @@ const index = () => {
   ];
 
   const [creLoading, setCreLoading] = useState(false);
+
   const FetchDevices = async () => {
     setCreLoading(true);
 
@@ -692,9 +693,11 @@ const index = () => {
       await axios
         .get(baseUrl + "/checkCredentialsStatus")
         .then((response) => {
+          console.log("fetchResponse", response);
+
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
-            console.log("logs", response?.response?.data);
+
             setCreLoading(false);
           } else {
             openSweetAlert(response?.data, "success");
@@ -760,19 +763,6 @@ const index = () => {
       </div>
       <br />
 
-      {/* <AddAtomStyledButton
-        onClick={showModal}
-        // disabled={!configData?.atom.pages.password_group.read_only}
-        style={{
-          marginRight: "30px",
-          float: "right",
-          borderRadius: "8px",
-        }}
-      >
-        + Add Credentials
-      </AddAtomStyledButton>
-      <br />
-      <br /> */}
       <div>
         <SpinLoading spinning={loading} tip="Loading...">
           <div style={{ padding: "15px" }}>

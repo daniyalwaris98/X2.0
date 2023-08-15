@@ -33,7 +33,6 @@ function BarChartBold(props) {
               barPercentage: 1,
               backgroundColor: ["#66B127"],
               borderColor: "#66B127",
-
               hoverOffset: 15,
               borderRadius: 5,
 
