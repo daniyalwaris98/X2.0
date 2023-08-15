@@ -6,6 +6,7 @@ from flask import request
 from app import app, db
 from app.utilities.db_utils import *
 from app.models.uam_models import *
+from app.models.atom_models import *
 from app.middleware import token_required
 
 
