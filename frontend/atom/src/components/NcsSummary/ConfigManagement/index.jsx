@@ -41,8 +41,6 @@ const index_Main = () => {
   const ipAddress = data?.state?.ip_address;
   const deviceId = data?.state?.id;
 
-  console.log("data----------->?", data);
-
   const handleFindNext = () => {
     const searchTerm = findInput.current.value;
     window.find(searchTerm, false, false, false, false, true, true);
