@@ -22,7 +22,7 @@ from app.utilities.db_utils import *
 from app.monitoring_device.common_puller import *
 
 
-def AddMonitoringDevice(MonitoringObj, row):
+def AddMonitoringDevice(MonitoringObj, row, update):
     return "Currently Device Can Not Be Added Directly In Monitoring", 500
     try:
         if "ip_address" not in MonitoringObj.keys():
@@ -94,7 +94,7 @@ def AddMonitoringDevice(MonitoringObj, row):
         return "Updated Successfully", 200
 
 
-def GetDeviceTimeSeriesData(function, device_type, equal):
+def GetDeviceMonitoringData(function, device_type, equal):
     if equal:
         query = f'import "strings"\
                 import "influxdata/influxdb/schema"\
@@ -124,7 +124,53 @@ def GetDeviceTimeSeriesData(function, device_type, equal):
                 |> filter(fn: (r) => r["FUNCTION"] != "{function}")\
                 |> last()\
                 |> schema.fieldsAsCols()'
+    
+    return GetDeviceInfluxData(query)
 
+
+
+
+def GetInterfaceMonitoringData(function, device_type, equal):
+    if equal:
+        query = f'import "strings"\
+                import "influxdata/influxdb/schema"\
+                from(bucket: "monitoring")\
+                |> range(start: -60d)\
+                |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
+                |> filter(fn: (r) => r["FUNCTION"] == "{function}")\
+                |> schema.fieldsAsCols()\
+                |> sort(columns: ["_time"], desc: true)\
+                |> unique(column: "Interface_Name")\
+                |> yield(name: "unique")'
+
+        if device_type is not None:
+            query = f'import "strings"\
+                import "influxdata/influxdb/schema"\
+                from(bucket: "monitoring")\
+                |> range(start: -60d)\
+                |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
+                |> filter(fn: (r) => r["FUNCTION"] == "{function}")\
+                |> filter(fn: (r) => r["DEVICE_TYPE"] == "{device_type}")\
+                |> schema.fieldsAsCols()\
+                |> sort(columns: ["_time"], desc: true)\
+                |> unique(column: "Interface_Name")\
+                |> yield(name: "unique")'
+    else:
+        query = f'import "strings"\
+                import "influxdata/influxdb/schema"\
+                from(bucket: "monitoring")\
+                |> range(start: -60d)\
+                |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
+                |> filter(fn: (r) => r["FUNCTION"] != "{function}")\
+                |> schema.fieldsAsCols()\
+                |> sort(columns: ["_time"], desc: true)\
+                |> unique(column: "Interface_Name")\
+                |> yield(name: "unique")'
+    
+    return GetInterfaceInfluxData(query)
+
+
+def GetDeviceInfluxData(query):
     query_api = client.query_api()
     result = query_api.query(org="monetx", query=query)
     resultList = []
@@ -248,37 +294,8 @@ def GetDeviceTimeSeriesData(function, device_type, equal):
     return finalList
 
 
-def GetInterfaceTimeSeriesData(function, device_type, equal):
-    if equal:
-        query = f'import "strings"\
-                import "influxdata/influxdb/schema"\
-                from(bucket: "monitoring")\
-                |> range(start:-60d)\
-                |> filter(fn: (r) => r["_measurement"] == "Interface")\
-                |> filter(fn: (r) => r["FUNCTION"] == "{function}")\
-                |> last()\
-                |> schema.fieldsAsCols()'
 
-        if device_type is not None:
-            query = f'import "strings"\
-                import "influxdata/influxdb/schema"\
-                from(bucket: "monitoring")\
-                |> range(start:-60d)\
-                |> filter(fn: (r) => r["_measurement"] == "Interface")\
-                |> filter(fn: (r) => r["FUNCTION"] == "{function}")\
-                |> filter(fn: (r) => r["DEVICE_TYPE"] == "{device_type}")\
-                |> last()\
-                |> schema.fieldsAsCols()'
-    else:
-        query = f'import "strings"\
-                import "influxdata/influxdb/schema"\
-                from(bucket: "monitoring")\
-                |> range(start:-60d)\
-                |> filter(fn: (r) => r["_measurement"] == "Interface")\
-                |> filter(fn: (r) => r["FUNCTION"] != "{function}")\
-                |> last()\
-                |> schema.fieldsAsCols()'
-
+def GetInterfaceInfluxData(query):
     query_api = client.query_api()
     result = query_api.query(org="monetx", query=query)
     resultList = []
@@ -381,6 +398,7 @@ def GetInterfaceTimeSeriesData(function, device_type, equal):
 
                 except Exception:
                     traceback.print_exc()
+                    
 
         finalList = list(
             {

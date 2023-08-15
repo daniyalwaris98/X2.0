@@ -1,8 +1,10 @@
 import base64
 import hashlib
-from app import app
+
 from flask_jsonpify import jsonify
 from flask import request
+
+from app import app
 from app.utilities.db_utils import *
 from app.models.users_model import *
 from app.license.license_decoder import *

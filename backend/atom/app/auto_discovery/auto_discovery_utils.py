@@ -1,20 +1,10 @@
-
-import traceback
 import sys
-import paramiko
-import re
-import ipaddress
+import traceback
 from datetime import datetime
 
-
-from flask import Flask, request, jsonify
-
-from app import app, db
-from app.middleware import token_required
 from app.models.auto_discovery_models import *
 from app.utilities.db_utils import *
 
-from app.auto_discovery import auto_discover
 
 
 def FormatDate(date):
@@ -76,10 +66,10 @@ def AddNetwork(networkObj, row, update):
         else:
             networkObj['scan_status'] = "Active"
 
-        exist = False
+        exist = True
         network = Auto_Discovery_Network_Table.query.filter_by(network_name=networkObj['network_name'], subnet=networkObj['subnet']).first()
         if network is None:
-            exist = True
+            exist = False
             network = Auto_Discovery_Network_Table()
             network.network_name = networkObj['network_name']
             network.subnet = networkObj['subnet']

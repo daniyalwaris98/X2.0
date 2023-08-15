@@ -1,12 +1,11 @@
-# from app.auto_discovery import xnmap
-import nmap
-from pysnmp.hlapi import *
-from pysnmp.entity.rfc3413.oneliner import cmdgen
 import ipaddress
 import sys
 import threading
-from app import db
 import traceback
+import nmap
+
+from pysnmp.hlapi import *
+from pysnmp.entity.rfc3413.oneliner import cmdgen
 
 
 def DiscoverIPList(ip_list, results):

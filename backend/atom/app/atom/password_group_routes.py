@@ -1,4 +1,15 @@
+import sys
+import gzip
+import json
+import traceback
 
+from flask_jsonpify import jsonify
+from flask import request, make_response
+
+from app import app, db
+from app.middleware import token_required
+
+from app.utilities.db_utils import *
 from app.atom.atom_utils import *
 
 @app.route("/addPasswordGroup", methods=['POST'])
@@ -84,7 +95,7 @@ def DeletePasswordGroup(user_data):
                     continue
                 
                 atom = Atom_Table.query.filter_by(
-                    password_group=password.password_group
+                    password_group_id=password.password_group_id
                 ).first()
                 
                 if atom is not None:

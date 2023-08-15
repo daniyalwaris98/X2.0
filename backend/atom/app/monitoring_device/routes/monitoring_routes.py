@@ -270,9 +270,9 @@ def deleteAtomInMonitoring(user_data):
 #
 @app.route("/getAllDevicesInNetwork", methods=["GET"])
 @token_required
-def GetAllDevicesInNetwork():
+def GetAllDevicesInNetwork(user_data):
     try:
-        finalList = GetDeviceTimeSeriesData("VM", None, False)
+        finalList = GetDeviceMonitoringData("VM", None, False)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -280,11 +280,11 @@ def GetAllDevicesInNetwork():
         return "Error While Fetching Data", 500
 
 
-@app.route("/getAllInterfacesInNetwork", methods=["POST"])
+@app.route("/getAllInterfacesInNetwork", methods=["GET"])
 @token_required
-def GetAllInterfacesInNetwork():
+def GetAllInterfacesInNetwork(user_data):
     try:
-        finalList = GetInterfaceTimeSeriesData("VM", None, False)
+        finalList = GetInterfaceMonitoringData("VM", None, False)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -301,7 +301,7 @@ def GetAllInterfacesInNetwork():
 @token_required
 def GetAllDevicesInRouters(user_data):
     try:
-        finalList = GetDeviceTimeSeriesData("Router", None, True)
+        finalList = GetDeviceMonitoringData("Router", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -313,7 +313,7 @@ def GetAllDevicesInRouters(user_data):
 @token_required
 def GetAllInterfacesInRouters(user_data):
     try:
-        finalList = GetInterfaceTimeSeriesData("Router", None, True)
+        finalList = GetInterfaceMonitoringData("Router", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -330,7 +330,7 @@ def GetAllInterfacesInRouters(user_data):
 @token_required
 def GetAllDevicesInSwitches(user_data):
     try:
-        finalList = GetDeviceTimeSeriesData("Switch", None, True)
+        finalList = GetDeviceMonitoringData("Switch", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -342,7 +342,7 @@ def GetAllDevicesInSwitches(user_data):
 @token_required
 def GetAllInterfacesInSwitches(user_data):
     try:
-        finalList = GetInterfaceTimeSeriesData("Switch", None, True)
+        finalList = GetInterfaceMonitoringData("Switch", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -359,7 +359,7 @@ def GetAllInterfacesInSwitches(user_data):
 @token_required
 def GetAllDevicesInFirewalls(user_data):
     try:
-        finalList = GetDeviceTimeSeriesData("Firewall", None, True)
+        finalList = GetDeviceMonitoringData("Firewall", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -371,7 +371,7 @@ def GetAllDevicesInFirewalls(user_data):
 @token_required
 def GetAllInterfacesInFirewalls(user_data):
     try:
-        finalList = GetInterfaceTimeSeriesData("Firewall", None, True)
+        finalList = GetInterfaceMonitoringData("Firewall", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -388,7 +388,7 @@ def GetAllInterfacesInFirewalls(user_data):
 @token_required
 def GetAllDevicesInWireless(user_data):
     try:
-        finalList = GetDeviceTimeSeriesData("Wireless", None, True)
+        finalList = GetDeviceMonitoringData("Wireless", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -400,7 +400,7 @@ def GetAllDevicesInWireless(user_data):
 @token_required
 def GetAllInterfacesInWireless(user_data):
     try:
-        finalList = GetInterfaceTimeSeriesData("Wireless", None, True)
+        finalList = GetInterfaceMonitoringData("Wireless", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -417,7 +417,7 @@ def GetAllInterfacesInWireless(user_data):
 @token_required
 def GetAllDevicesInServers(user_data):
     try:
-        finalList = GetDeviceTimeSeriesData("VM", None, True)
+        finalList = GetDeviceMonitoringData("VM", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -429,7 +429,7 @@ def GetAllDevicesInServers(user_data):
 @token_required
 def GetAllInterfacesInServers(user_data):
     try:
-        finalList = GetInterfaceTimeSeriesData("VM", None, True)
+        finalList = GetInterfaceMonitoringData("VM", None, True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -446,7 +446,7 @@ def GetAllInterfacesInServers(user_data):
 @token_required
 def GetAllDevicesInLinux(user_data):
     try:
-        finalList = GetDeviceTimeSeriesData("VM", "Linux", True)
+        finalList = GetDeviceMonitoringData("VM", "Linux", True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -458,7 +458,7 @@ def GetAllDevicesInLinux(user_data):
 @token_required
 def GetAllInterfacesInLinux(user_data):
     try:
-        finalList = GetInterfaceTimeSeriesData("VM", "Linux", True)
+        finalList = GetInterfaceMonitoringData("VM", "Linux", True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -475,7 +475,7 @@ def GetAllInterfacesInLinux(user_data):
 @token_required
 def GetAllDevicesInWindows(user_data):
     try:
-        finalList = GetDeviceTimeSeriesData("VM", "Windows", True)
+        finalList = GetDeviceMonitoringData("VM", "Windows", True)
         return jsonify(finalList), 200
 
     except Exception as e:
@@ -487,7 +487,7 @@ def GetAllDevicesInWindows(user_data):
 @token_required
 def GetAllInterfacesInWindows(user_data):
     try:
-        finalList = GetInterfaceTimeSeriesData("VM", "Windows", True)
+        finalList = GetInterfaceMonitoringData("VM", "Windows", True)
         return jsonify(finalList), 200
 
     except Exception as e:

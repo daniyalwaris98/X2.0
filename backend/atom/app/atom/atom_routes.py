@@ -1,15 +1,16 @@
-from flask_jsonpify import jsonify
+import sys
+import gzip
 import json
+import traceback
+
+from flask_jsonpify import jsonify
 from flask import request, make_response
 
-import sys
-import traceback
-import gzip
-
-from app import app
-from app.atom.atom_utils import *
+from app import app, db
 from app.middleware import token_required
+
 from app.utilities.db_utils import *
+from app.atom.atom_utils import *
 
 
 @app.route("/addAtomDevice", methods=["POST"])
@@ -103,7 +104,7 @@ def GetAtoms(user_data):
             db.session.query(Atom_Table, Rack_Table, Site_Table, Password_Group_Table)
             .join(
                 Password_Group_Table,
-                Atom_Table.password_group == Password_Group_Table.password_group,
+                Atom_Table.password_group_id == Password_Group_Table.password_group_id,
             )
             .join(Rack_Table, Atom_Table.rack_id == Rack_Table.rack_id)
             .join(Site_Table, Rack_Table.site_id == Site_Table.site_id)

@@ -14,149 +14,84 @@ from datetime import datetime
 from app import client
 
 
-
-def FormatDate(date):
-    #print(date, file=sys.stderr)
-    if date is not None:
-        result = date.strftime('%d-%m-%Y')
-    else:
-        #result = datetime(2000, 1, 1)
-        result = datetime(1, 1, 2000)
-
-    return result
-
-
-
-
-def InsertData(obj):
-    # add data to db
-    print("in insertion", obj)
-    try:
-        db.session.add(obj)
-        db.session.commit()
-
-        print("data inserted", obj)
-
-    except Exception as e:
-
-        db.session.rollback()
-        print(
-            f"Something else went wrong in Database Insertion {e,type(e).__name__}", file=sys.stderr)
-
-    return True
-
-
-
-
-def UpdateData(obj):
-    # add data to db
-    #print(obj, file=sys.stderr)
-    try:
-        # db.session.flush()
-
-        db.session.merge(obj)
-        db.session.commit()
-
-    except Exception as e:
-        db.session.rollback()
-        print(
-            f"Something else went wrong during Database Update {e}", file=sys.stderr)
-
-    return True
-
-
-@app.route("/updateMonitoringAlertCPUThreshold",methods=['POST'])
+@app.route("/updateMonitoringAlertCPUThreshold", methods=["POST"])
 @token_required
 def updateMonitoringAlertCPUThreshold(user_data):
     try:
-
         pass
     except Exception as e:
-        print("Error While Udating Monitoring CPU Alert Threshold",file=sys.stderr)
+        print("Error While Udating Monitoring CPU Alert Threshold", file=sys.stderr)
         traceback.print_exc()
 
-@app.route("/getLowMonitoringAlerts", methods=['GET'])
-@token_required
-def lowalerts(user_data):
-    if True:
-        try:
-            MonitoringObjList = []
 
-            queryString = f"select * from alerts_table where alert_type='low' order by `date` desc;"
-            results = db.session.execute(queryString)
+@app.route("/getLowMonitoringAlerts", methods=["GET"])
+# @token_required
+def lowalerts():
+    try:
+        
+        return jsonify(GetLevelAlert("low")), 200
 
-            for MonitoringObj in results:
-                MonitoringDataDict = {}
-                MonitoringDataDict['alarm_id'] = MonitoringObj[0]
-                MonitoringDataDict['ip_address'] = MonitoringObj[1]
-                MonitoringDataDict['description'] = MonitoringObj[2]
-                MonitoringDataDict['alert_type'] = MonitoringObj[3]
-                MonitoringDataDict['mail_status'] = MonitoringObj[4]
-                MonitoringDataDict['date'] = MonitoringObj[8]
-
-                MonitoringObjList.append(MonitoringDataDict)
-
-            return jsonify(MonitoringObjList), 200
-
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+    except Exception as e:
+        traceback.print_exc()
+        return "Something Went Wrong!", 500
 
 
-@app.route("/getMedMonitoringAlerts", methods=['GET'])
+@app.route("/getMedMonitoringAlerts", methods=["GET"])
 @token_required
 def medalerts(user_data):
-    if True:
-        try:
-            MonitoringObjList = []
-
-            queryString = f"select * from alerts_table where alert_type='medium' order by `date` desc;"
-            results = db.session.execute(queryString)
-
-            for MonitoringObj in results:
-                MonitoringDataDict = {}
-                MonitoringDataDict['alarm_id'] = MonitoringObj[0]
-                MonitoringDataDict['ip_address'] = MonitoringObj[1]
-                MonitoringDataDict['description'] = MonitoringObj[2]
-                MonitoringDataDict['alert_type'] = MonitoringObj[3]
-                MonitoringDataDict['mail_status'] = MonitoringObj[4]
-                MonitoringDataDict['date'] = MonitoringObj[8]
-
-                MonitoringObjList.append(MonitoringDataDict)
-
-            return jsonify(MonitoringObjList), 200
-
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+    try:
+        
+        return jsonify(GetLevelAlert("medium")), 200
+    
+    except Exception as e:
+        traceback.print_exc()
+        return "Something Went Wrong!", 500
 
 
-@app.route("/getAllAlerts", methods=['GET'])
+@app.route("/getCriticalAlerts", methods=["GET"])
+# @token_required
+def criticalalerts():
+    try:
+        
+        return jsonify(GetLevelAlert("critical")), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        return "Something Went Wrong!", 500
+
+
+@app.route("/getInformationalAlerts", methods=["GET"])
+@token_required
+def informationalalerts(user_data):
+    try:
+        
+        return jsonify(GetLevelAlert("informational")), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        return "Something Went Wrong!", 500
+
+
+@app.route("/getAllAlerts", methods=["GET"])
 @token_required
 def hialerts(user_data):
     if True:
         try:
             MonitoringObjList = []
 
-            queryString = f"select * from alerts_table where date > now() - interval 1 day order by `date` desc;"
+            queryString = f"select * from monitoring_alerts_table where modification_date > now() - interval 1 day order by `modification_date` desc;"
             results = db.session.execute(queryString)
 
             for MonitoringObj in results:
                 MonitoringDataDict = {}
-                MonitoringDataDict['alarm_id'] = MonitoringObj[0]
-                MonitoringDataDict['ip_address'] = MonitoringObj[1]
-                MonitoringDataDict['description'] = MonitoringObj[2]
-                MonitoringDataDict['alert_type'] = MonitoringObj[3]
-                MonitoringDataDict['function'] = MonitoringObj[4]
-                MonitoringDataDict['alert_status'] = MonitoringObj[5]
-                MonitoringDataDict['mail_status'] = MonitoringObj[6]
-                MonitoringDataDict['date'] = MonitoringObj[8]
+                MonitoringDataDict["alarm_id"] = MonitoringObj[0]
+                MonitoringDataDict["ip_address"] = MonitoringObj[1]
+                MonitoringDataDict["description"] = MonitoringObj[2]
+                MonitoringDataDict["alert_type"] = MonitoringObj[3]
+                MonitoringDataDict["function"] = MonitoringObj[4]
+                MonitoringDataDict["alert_status"] = MonitoringObj[5]
+                MonitoringDataDict["mail_status"] = MonitoringObj[6]
+                MonitoringDataDict["date"] = MonitoringObj[8]
 
                 MonitoringObjList.append(MonitoringDataDict)
 
@@ -170,140 +105,85 @@ def hialerts(user_data):
         return jsonify({"Response": "Service not Available"}), 503
 
 
-@app.route("/getIPAlerts", methods=['GET'])
+@app.route("/getIPAlerts", methods=["GET"])
 @token_required
 def ipalerts(user_data):
-    if True:
-        try:
-            ipaddress = request.args.get('ipaddress')
-            print("printing ip address:", ipaddress, file=sys.stderr)
-            MonitoringObjList = []
+    try:
+        ipaddress = request.args.get("ipaddress")
 
-            queryString = f"select * from alerts_table where ip_address='{ipaddress}' order by `date` desc;"
-            results = db.session.execute(queryString)
+        MonitoringObjList = []
+        results = (
+            db.session.query(
+                Monitoring_Alerts_Table, Monitoring_Devices_Table, Atom_Table
+            )
+            .join(
+                Monitoring_Devices_Table,
+                Monitoring_Devices_Table.monitoring_device_id
+                == Monitoring_Alerts_Table.monitoring_device_id,
+            )
+            .join(Atom_Table, Atom_Table.atom_id == Monitoring_Devices_Table.atom_id)
+            .filter(Atom_Table.ip_address == ipaddress)
+            .order_by(Monitoring_Alerts_Table.modification_date.desc())
+            .all()
+        )
 
-            for MonitoringObj in results:
-                MonitoringDataDict = {}
-                MonitoringDataDict['alarm_id'] = MonitoringObj[0]
-                MonitoringDataDict['ip_address'] = MonitoringObj[1]
-                MonitoringDataDict['description'] = MonitoringObj[2]
-                MonitoringDataDict['alert_type'] = MonitoringObj[3]
-                MonitoringDataDict['function'] = MonitoringObj[4]
-                MonitoringDataDict['mail_status'] = MonitoringObj[5]
-                MonitoringDataDict['date'] = MonitoringObj[8]
+        for alert, monitoring, atom in results:
+            MonitoringDataDict = {}
+            MonitoringDataDict["alarm_id"] = alert.monitoring_alert_id
+            MonitoringDataDict["ip_address"] = atom.ip_address
+            MonitoringDataDict["description"] = alert.description
+            MonitoringDataDict["alert_type"] = alert.alert_type
+            MonitoringDataDict["mail_status"] = alert.mail_status
+            MonitoringDataDict["date"] = alert.modification_date
 
-                MonitoringObjList.append(MonitoringDataDict)
+            MonitoringObjList.append(MonitoringDataDict)
 
-            return jsonify(MonitoringObjList), 200
+        return jsonify(MonitoringObjList), 200
 
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+    except Exception as e:
+        traceback.print_exc()
+        return "Something Went Wrong!", 500
 
 
-@app.route("/getTotalAlerts", methods=['GET'])
+@app.route("/getTotalAlerts", methods=["GET"])
 @token_required
 def totalalerts(user_data):
-    if True:
-        try:
-            ipobj = request.get_json()
-            MonitoringObjList = []
+    try:
+        MonitoringObjList = []
 
-            queryString = f"select * from alerts_table' order by `date` desc;"
-            results = db.session.execute(queryString)
+        results = (
+            db.session.query(
+                Monitoring_Alerts_Table, Monitoring_Devices_Table, Atom_Table
+            )
+            .join(
+                Monitoring_Devices_Table,
+                Monitoring_Devices_Table.monitoring_device_id
+                == Monitoring_Alerts_Table.monitoring_device_id,
+            )
+            .join(Atom_Table, Atom_Table.atom_id == Monitoring_Devices_Table.atom_id)
+            .order_by(Monitoring_Alerts_Table.modification_date.desc())
+            .all()
+        )
 
-            for MonitoringObj in results:
-                MonitoringDataDict = {}
-                MonitoringDataDict['alarm_id'] = MonitoringObj[0]
-                MonitoringDataDict['ip_address'] = MonitoringObj[1]
-                MonitoringDataDict['description'] = MonitoringObj[2]
-                MonitoringDataDict['alert_type'] = MonitoringObj[3]
-                MonitoringDataDict['function'] = MonitoringObj[4]
-                MonitoringDataDict['mail_status'] = MonitoringObj[5]
-                MonitoringDataDict['date'] = MonitoringObj[8]
+        for alert, monitoring, atom in results:
+            MonitoringDataDict = {}
+            MonitoringDataDict["alarm_id"] = alert.monitoring_alert_id
+            MonitoringDataDict["ip_address"] = atom.ip_address
+            MonitoringDataDict["description"] = alert.description
+            MonitoringDataDict["alert_type"] = alert.alert_type
+            MonitoringDataDict["mail_status"] = alert.mail_status
+            MonitoringDataDict["date"] = alert.modification_date
 
-                MonitoringObjList.append(MonitoringDataDict)
+            MonitoringObjList.append(MonitoringDataDict)
 
-            return jsonify(MonitoringObjList), 200
+        return jsonify(MonitoringObjList), 200
 
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route("/getCriticalAlerts", methods=['GET'])
-# @token_required
-def criticalalerts():
-    if True:
-        try:
-            ipobj = request.get_json()
-            MonitoringObjList = []
-
-            queryString = f"select * from alerts_table where alert_type='critical' and date > now() - interval 1 day order by `date` desc;"
-            results = db.session.execute(queryString)
-
-            for MonitoringObj in results:
-                MonitoringDataDict = {}
-                MonitoringDataDict['alarm_id'] = MonitoringObj[0]
-                MonitoringDataDict['ip_address'] = MonitoringObj[1]
-                MonitoringDataDict['description'] = MonitoringObj[2]
-                MonitoringDataDict['alert_type'] = MonitoringObj[3]
-                MonitoringDataDict['function'] = MonitoringObj[4]
-                MonitoringDataDict['mail_status'] = MonitoringObj[5]
-                MonitoringDataDict['date'] = MonitoringObj[8]
-
-                MonitoringObjList.append(MonitoringDataDict)
-
-            return jsonify(MonitoringObjList), 200
-
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+    except Exception as e:
+        traceback.print_exc()
+        return "Something Went Wrong!", 500
 
 
-@app.route("/getInformationalAlerts", methods=['GET'])
-@token_required
-def informationalalerts(user_data):
-    if True:
-        try:
-            ipobj = request.get_json()
-            MonitoringObjList = []
-
-            queryString = f"select * from alerts_table where alert_type='informational'and date > now() - interval 1 day order by `date` desc;"
-            results = db.session.execute(queryString)
-
-            for MonitoringObj in results:
-                MonitoringDataDict = {}
-                MonitoringDataDict['alarm_id'] = MonitoringObj[0]
-                MonitoringDataDict['ip_address'] = MonitoringObj[1]
-                MonitoringDataDict['description'] = MonitoringObj[2]
-                MonitoringDataDict['alert_type'] = MonitoringObj[3]
-                MonitoringDataDict['function'] = MonitoringObj[4]
-                MonitoringDataDict['mail_status'] = MonitoringObj[5]
-                MonitoringDataDict['date'] = MonitoringObj[8]
-
-                MonitoringObjList.append(MonitoringDataDict)
-
-            return jsonify(MonitoringObjList), 200
-
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
-
-
-@app.route("/getDeviceAlerts", methods=['GET'])
+@app.route("/getDeviceAlerts", methods=["GET"])
 @token_required
 def devicealerts(user_data):
     if True:
@@ -311,22 +191,41 @@ def devicealerts(user_data):
             ipobj = request.get_json()
             MonitoringObjList = []
 
-            queryString = f"select * from alerts_table where (alert_type='device_down' or alert_type='device_up') and date > now() - interval 1 day order by `date` desc;"
+            queryString = f"select * from monitoring_alerts_table where (alert_type='device_down' or alert_type='device_up') and modification_date > now() - interval 1 day order by `modification_date` desc;"
             results = db.session.execute(queryString)
 
             for MonitoringObj in results:
+                if MonitoringObj[1] is None:
+                    continue
+
+                device = (
+                    db.session.query(Monitoring_Devices_Table, Atom_Table)
+                    .join(
+                        Atom_Table,
+                        Atom_Table.atom_id == Monitoring_Devices_Table.atom_id,
+                    )
+                    .filter(
+                        Monitoring_Devices_Table.monitoring_device_id
+                        == MonitoringObj[1]
+                    )
+                    .first()
+                )
+
+                if device is None:
+                    continue
+
+                monitoring_device, atom = device
+
                 MonitoringDataDict = {}
-                MonitoringDataDict['alarm_id'] = MonitoringObj[0]
-                MonitoringDataDict['ip_address'] = MonitoringObj[1]
-                MonitoringDataDict['description'] = MonitoringObj[2]
-                MonitoringDataDict['alert_type'] = MonitoringObj[3]
-                MonitoringDataDict['function'] = MonitoringObj[4]
-                MonitoringDataDict['mail_status'] = MonitoringObj[5]
-                MonitoringDataDict['date'] = MonitoringObj[8]
+                MonitoringDataDict["alarm_id"] = MonitoringObj[0]
+                MonitoringDataDict["ip_address"] = atom.ip_address
+                MonitoringDataDict["description"] = MonitoringObj[2]
+                MonitoringDataDict["alert_type"] = MonitoringObj[3]
+                MonitoringDataDict["function"] = atom.function
+                MonitoringDataDict["mail_status"] = MonitoringObj[5]
+                MonitoringDataDict["date"] = MonitoringObj[8]
 
                 MonitoringObjList.append(MonitoringDataDict)
-
-            
 
             return jsonify(MonitoringObjList), 200
 
@@ -338,92 +237,90 @@ def devicealerts(user_data):
         return jsonify({"Response": "Service not Available"}), 503
 
 
-@app.route("/alertStatus", methods=['GET'])
+@app.route("/alertStatus", methods=["GET"])
 # @token_required
 def alertstatus():
-    if True:
-        try:
-            MonitoringObjList = []
-            total = 0
-            queryString1 = f"select count(alert_type) from alerts_table where date > now() - interval 1 day;"
-            result = db.session.execute(queryString1).scalar()
-            total = result
-            queryString = f"select alert_type,count(alert_type) from alerts_table where date > now() - interval 1 day group by alert_type;"
-            results = db.session.execute(queryString)
-            for result in results:
-                alertDict = {}
+    try:
+        MonitoringObjList = []
+        total = 0
+        queryString1 = f"select count(alert_type) from monitoring_alerts_table where modification_date > now() - interval 1 day;"
+        result = db.session.execute(queryString1).scalar()
+        total = result
+        queryString = f"select alert_type,count(alert_type) from monitoring_alerts_table where modification_date > now() - interval 1 day group by alert_type;"
+        results = db.session.execute(queryString)
+        for result in results:
+            alertDict = {}
 
-                alertDict[result[0]] = result[1]
-                MonitoringObjList.append(alertDict)
+            alertDict[result[0]] = result[1]
+            MonitoringObjList.append(alertDict)
 
-            # total = len(results)
+        alert_dict = {}
+        for i in MonitoringObjList:
+            for j in i:
+                alert_dict[j] = i[j]
+        if "critical" in alert_dict.keys():
+            pass
+        else:
+            alert_dict["critical"] = 0
 
-            # queryString = f"select * from alerts_table where alert_type='low';"
-            # results = db.session.execute(queryString)
-            # formal = (len(results)/total) * 100
+        if "informational" in alert_dict.keys():
+            pass
+        else:
+            alert_dict["informational"] = 0
+        if "device_down" in alert_dict.keys():
+            pass
+        else:
+            alert_dict["device_down"] = 0
 
-            # queryString = f"select * from alerts_table where alert_type='medium';"
-            # results = db.session.execute(queryString)
-            # informal = (len(results)/total) * 100
+        alert_dict["total"] = total
 
-            # queryString = f"select * from alerts_table where alert_type='high';"
-            # results = db.session.execute(queryString)
-            # critical = (len(results)/total) * 100
+        return alert_dict, 200
+        # return jsonify(MonitoringObjList),200
 
-            y = {}
-            for i in MonitoringObjList:
-                for j in i:
-                    y[j] = i[j]
-            if 'critical' in y.keys():
-                pass
-            else:
-                y['critical'] = 0
-            
-            if 'informational' in y.keys():
-                pass
-            else:
-                y['informational'] = 0
-            if 'device_down' in y.keys():
-                pass
-            else:
-                y['device_down'] = 0
-            
-            y['total'] = total
-            
-            
-            return y, 200
-            # return jsonify(MonitoringObjList),200
-
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+    except Exception as e:
+        traceback.print_exc()
+        return "Something Went Wrong!", 500
 
 
-
-
-
-@app.route("/alertenter", methods=['GET'])
+@app.route("/getIPAlerts", methods=["POST"])
 @token_required
-def alerttest(user_data):
-    if True:
-        try:
-            func = 'Wireless'
-            des = f"An automated alarm generated,3245 is utilizing than 4353% of test"
-            sqlquery = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`FUNCTION`,`MAIL_STATUS`,`DATE`) values ('2424','{des}','critical','{func}','no','{datetime.now()}');"
-            db.session.execute(sqlquery)
-            db.session.commit()
+def GetIPAlerts(user_data):
+    try:
+        jsonObj = request.get_json()
+        # 1
+        # Store the URL of your InfluxDB instance
+        ip_address = jsonObj["ip_address"]
+        MonitoringAlertsList = []
 
-            return "inserted", 200
+        results = (
+            db.session.query(
+                Monitoring_Alerts_Table, Monitoring_Devices_Table, Atom_Table
+            )
+            .join(
+                Monitoring_Devices_Table,
+                Monitoring_Devices_Table.monitoring_device_id
+                == Monitoring_Alerts_Table.monitoring_device_id,
+            )
+            .join(Atom_Table, Atom_Table.atom_id == Monitoring_Devices_Table.atom_id)
+            .filter(Atom_Table.ip_address == ip_address)
+            .all()
+        )
+        
+        for alert, device, atom in results:
+            
+            MonitoringDataDict = {}
+            MonitoringDataDict["alarm_id"] = alert.monitoring_alert_id
+            MonitoringDataDict["ip_address"] = atom.ip_address
+            MonitoringDataDict["description"] = alert.description
+            MonitoringDataDict["alert_type"] = alert.alert_type
+            MonitoringDataDict["function"] = atom.function
+            MonitoringDataDict["mail_status"] = alert.mail_status
+            MonitoringDataDict["date"] = alert.modification_date
 
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+            MonitoringAlertsList.append(MonitoringDataDict)
 
-
-
+        return jsonify(MonitoringAlertsList), 200
+    except Exception as e:
+        print("Error", str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Error ", 500
