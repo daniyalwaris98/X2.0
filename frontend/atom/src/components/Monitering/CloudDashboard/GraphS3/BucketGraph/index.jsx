@@ -26,36 +26,15 @@ const index = (props) => {
             bucket_name: props.bucket_name,
           }
         );
-        var timeS = null;
-        // for (var i = 0; i <= res.data.length; i++) {
-        //   console.log("res", res.data[i].timestamp);
-        //   timeS = res.data[i].timestamp;
-        // }
-        // console.log(" list data 111111111111111111111", listData);
-        console.log(res.data);
-        // console.log("timeS", timeS);
-
-        // const options = res.data.map((item) => ({
-        //   cpu_utilization: item.cpu_utilization,
-        //   timeStamp: item.timestamp,
-        // }));
-        // console.log(options);
 
         const result = [];
 
-        // Loop through each object in the array
         res.data.forEach((item) => {
-          // Get the timestamp value from the object
           const timestamp = item.timestamp;
-
-          // Create a new Date object using the timestamp value
           const date = new Date(timestamp);
-
-          // Extract the hour and minute from the Date object
           const hour = date.getHours();
           const minute = date.getMinutes();
 
-          // Append the hour and minute to a new dictionary object
           const obj = {
             number_of_objects: item.number_of_objects,
             bucket_size: item.bucket_size,

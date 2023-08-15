@@ -93,7 +93,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllDevicesInSwitches");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);

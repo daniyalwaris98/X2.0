@@ -58,7 +58,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllSites");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);
@@ -72,7 +71,6 @@ const index = () => {
   }, []);
 
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
 
@@ -88,13 +86,7 @@ const index = () => {
     searchedColumn,
     setSearchedColumn
   );
-  // Alert
-  // const openSweetAlert = (title, type) => {
-  //   Swal.fire({
-  //     title,
-  //     type,
-  //   });
-  // };
+
   const exportSeed = async () => {
     jsonToExcel(excelData);
     // console.log(first);
@@ -125,20 +117,11 @@ const index = () => {
             axios
               .get(baseUrl + "/getAllSites")
               .then((response) => {
-                console.log("response===>", response);
-                // setExcelData(response.data);
-
-                console.log(response.data);
-                console.log("asd", response);
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
                 setDataSource(response?.data);
-
-                console.log(response.data);
-
                 excelData = response.data;
                 setDataSource(excelData);
-
                 setRowCount(response.data.length);
                 setDataSource(response.data);
                 setLoading(false);
@@ -153,40 +136,19 @@ const index = () => {
         }
       })
       .catch((err) => {
-        // openSweetAlert("Something Went Wrong!", "danger");
         console.log("error ==> " + err);
         setLoading(false);
       });
   };
 
-  const convertToJson = (headers, fileData) => {
-    let rows = [];
-    fileData.forEach((row) => {
-      const rowData = {};
-      row.forEach((element, index) => {
-        rowData[headers[index]] = element;
-      });
-      rows.push(rowData);
-    });
-    rows = rows.filter((value) => JSON.stringify(value) !== "{}");
-    return rows;
-  };
-  // useEffect(() => {
-  //   inputRef.current.addEventListener("input", importExcel);
-  // }, []);
-
   const showModal = () => {
     setIsModalVisible(true);
     setEditRecord(null);
     setAddRecord(null);
-    console.log("first");
   };
-  const showEditModal = () => {
-    setIsModalVisible(true);
-  };
+
   const edit = (record) => {
     setEditRecord(record);
-    // setAddRecord(record);
     setIsEditModalVisible(true);
   };
 

@@ -1,169 +1,29 @@
 import React, { useState, useEffect } from "react";
-import { Card, Col, Row, Table, Divider, Input, Button } from "antd";
-import ReactSpeedometer from "react-d3-speedometer";
+import { Table, Divider } from "antd";
 import axios, { baseUrl } from "../../utils/axios";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useLocation } from "react-router-dom";
 import Swal from "sweetalert2";
-
-import { DoubleLeftOutlined } from "@ant-design/icons";
 import rcs from "./assets/rcs.svg";
-import {
-  LineChart,
-  Line,
-  XAxis,
-  YAxis,
-  CartesianGrid,
-  Tooltip,
-  Legend,
-  ResponsiveContainer,
-} from "recharts";
 import "../../App.css";
 import {
-  MainTableFailedDevices,
-  MainTableFailedDevicesTitle,
-  TableStyling,
   SummaryDevices,
   MainTitle,
   SpinLoading,
-  ColRowNumberStyle,
   StyleCmdInput,
 } from "../AllStyling/All.styled.js";
-// import summary from "./assets/summary.svg";
-// import inter from "./assets/interface.svg";
-import { columnSearch } from "../../utils";
 
-let excelData = [];
-let columnFilters = {};
 const index_Main = () => {
-  const navigate = useNavigate();
   const data = useLocation();
-  console.log(data);
   const [loading, setLoading] = useState(false);
   const [ipAddress, setIpAddress] = useState(data?.state?.res?.ip_address);
   const [vendor, setvendor] = useState(data?.state?.res?.vendor);
   const [device_name, setdevice_name] = useState(data?.state?.res?.device_name);
   const [myFunction, setMyFunction] = useState(data?.state?.res?.function);
-  // const [configuration, setconfiguration] = useState(
-  //   data?.state?.res?.function
-  // );
   const [cmdOutputData, setCmdOutputData] = useState("");
-
-  let [dataSource, setDataSource] = useState(excelData);
-  const [mainModalVisible, setMainModalVisible] = useState(false);
-
-  const [ipamDeviceLoading, setIpamDeviceLoading] = useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [searchText, setSearchText] = useState(null);
   const [searchContext, setsearchContext] = useState("");
-  const [ipAddressData, setIpAddressData] = useState(data?.state?.res?.alerts);
-
-  // const [device_type, setDeviceType] = useState("");
-  // const [password_group, setPassword_group] = useState("");
-  const [rowCount, setRowCount] = useState(0);
-  const [mainTableloading, setMainTableLoading] = useState(false);
   const [configData, setConfigData] = useState(null);
 
-  var listData = [
-    {
-      hour: 1,
-      status: "down",
-    },
-    {
-      hour: 2,
-      status: "up",
-    },
-    {
-      hour: 3,
-      status: "up",
-    },
-    {
-      hour: 4,
-      status: "down",
-    },
-    {
-      hour: 5,
-      status: "NA",
-    },
-
-    {
-      hour: 6,
-      status: "up",
-    },
-    {
-      hour: 7,
-      status: "up",
-    },
-    {
-      hour: 8,
-      status: "down",
-    },
-    {
-      hour: 9,
-      status: "up",
-    },
-    {
-      hour: 10,
-      status: "up",
-    },
-    {
-      hour: 11,
-      status: "up",
-    },
-    {
-      hour: 12,
-      status: "up",
-    },
-    {
-      hour: 13,
-      status: "up",
-    },
-    {
-      hour: 14,
-      status: "down",
-    },
-    {
-      hour: 15,
-      status: "up",
-    },
-    {
-      hour: 16,
-      status: "up",
-    },
-    {
-      hour: 17,
-      status: "up",
-    },
-    {
-      hour: 18,
-      status: "up",
-    },
-    {
-      hour: 19,
-      status: "down",
-    },
-    {
-      hour: 20,
-      status: "down",
-    },
-    {
-      hour: 21,
-      status: "up",
-    },
-    {
-      hour: 22,
-      status: "down",
-    },
-    {
-      hour: 23,
-      status: "up",
-    },
-    {
-      hour: 24,
-      status: "down",
-    },
-    // 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    // 22, 23, 24,
-  ];
   const openSweetAlert = (title, type) => {
     Swal.fire({
       title,
@@ -175,18 +35,12 @@ const index_Main = () => {
   useEffect(() => {
     let config = localStorage.getItem("monetx_configuration");
     setConfigData(JSON.parse(config));
-    console.log(JSON.parse(config));
   }, []);
+
   const onSelectChange = (selectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", selectedRowKeys);
     setSelectedRowKeys(selectedRowKeys);
   };
-  //   let getColumnSearchProps = columnSearch(
-  //     searchText,
-  //     setSearchText,
-  //     searchedColumn,
-  //     setSearchedColumn
-  //   );
+
   const rowSelection = {
     selectedRowKeys,
 
@@ -197,45 +51,9 @@ const index_Main = () => {
     }),
   };
 
-  const [responseData, setResponseData] = useState(data?.state?.res?.cards);
-
-  const [availability, setAvailability] = useState(
-    data?.state?.res?.availability
-  );
-  const [packet_loss, setPacket_loss] = useState(data?.state?.res?.packet_loss);
-  const [cpu_utilization, setCpu_utilization] = useState(
-    data?.state?.res?.cpu_utilization
-  );
-  const [memory_utilization, setMemory_utilization] = useState(
-    data?.state?.res?.memory_utilization
-  );
-  const [responseTime, setResponseTime] = useState(
-    data?.state?.res?.response_time
-  );
-  const [interfaceData, setInterfaceData] = useState(
-    data?.state?.res?.interfaces
-  );
-
-  console.log(ipAddress, responseData);
-  //   useEffect(() => {
-  //     const serviceCalls = async () => {
-  //       setMainTableLoading(true);
-
-  //       try {
-  //         const res = await axios.get(baseUrl + "/getMonitoringDevicesCards");
-  //         console.log("getMonitoringDevicesCards", res);
-  //       } catch (err) {
-  //         console.log(err.response);
-  //         setMainTableLoading(false);
-  //       }
-  //     };
-  //     serviceCalls();
-  //   }, []);
-
   const handleCommand = async (e) => {
-    // e.preventDefault();
     const Data = {
-      ip_address: ipAddress,
+      ncm_device_id: data?.state?.res?.ncm_device_id,
       cmd: searchContext,
     };
 
@@ -244,21 +62,15 @@ const index_Main = () => {
     await axios
       .post(baseUrl + "/sendCommand", Data)
       .then((response) => {
-        console.log("Command response", response);
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
-
           setLoading(false);
         } else {
-          // openSweetAlert(response?.response?.data, "success");
-
           setCmdOutputData(response.data);
-
           setLoading(false);
         }
       })
       .catch((err) => {
-        // openSweetAlert(response?.data, "error");
         console.log("error ==> " + err);
         setLoading(false);
       });
@@ -284,28 +96,16 @@ const index_Main = () => {
       <div
         style={{
           width: "100%",
-          // boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
           display: "flex",
           justifyContent: "center",
           borderRadius: "5px",
-          // marginLeft: "15px",
         }}
       >
         <SummaryDevices
           active={"Summary" === tableName}
           onClick={() => showTable("Summary")}
-          // style={{
-          //   borderBottom: "2px solid ",
-          // }}
         >
           <div style={{ display: "flex" }}>
-            {/* <img
-              src={summary}
-              width="25px"
-              height="25px"
-              alt=""
-              style={{ marginLeft: "10px", marginTop: "8px" }}
-            /> */}
             <MainTitle
               active={"Summary" === tableName}
               style={{
@@ -317,30 +117,6 @@ const index_Main = () => {
             </MainTitle>
           </div>
         </SummaryDevices>
-        {/* <SummaryDevices
-          active={"Interface" === tableName}
-          onClick={() => showTable("Interface")}
-          
-        >
-          <div style={{ display: "flex" }}>
-            <img
-              src={inter}
-              width="25px"
-              height="25px"
-              alt=""
-              style={{ marginLeft: "10px", marginTop: "8px" }}
-            />
-            <MainTitle
-              active={"Interface" === tableName}
-              style={{
-                paddingLeft: "20px",
-                paddingTop: "10px",
-              }}
-            >
-              Interface
-            </MainTitle>
-          </div>
-        </SummaryDevices> */}
       </div>
 
       <div>
@@ -355,13 +131,11 @@ const index_Main = () => {
             >
               <h3
                 style={{
-                  // color: "#66b127",
                   borderLeft: "5px solid #66b127",
                   borderTopLeftRadius: "6px",
                   paddingLeft: "13px",
                   alignItems: "center",
                   textAlign: "left",
-                  // marginLeft: '-6px',
                   paddingTop: "8px",
                   fontWeight: "bold",
                 }}
@@ -472,7 +246,6 @@ const index_Main = () => {
                   onKeyDown={(e) => {
                     if (e.keyCode === 13) {
                       handleCommand();
-                      console.log("asdlk");
                     }
                   }}
                 />

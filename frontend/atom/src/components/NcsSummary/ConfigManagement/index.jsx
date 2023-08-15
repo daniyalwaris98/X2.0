@@ -41,6 +41,8 @@ const index_Main = () => {
   const ipAddress = data?.state?.ip_address;
   const deviceId = data?.state?.id;
 
+  console.log("data----------->?", data);
+
   const handleFindNext = () => {
     const searchTerm = findInput.current.value;
     window.find(searchTerm, false, false, false, false, true, true);
@@ -78,12 +80,13 @@ const index_Main = () => {
 
   const showModal = async (id) => {
     setIsModalOpen(true);
+
     await axios
       .post(baseUrl + "/getAllConfigurationDatesInString", {
         ncm_device_id: id,
       })
       .then((res) => {
-        if (res.response.status == 500) {
+        if (res?.response?.status == 500) {
           ResponseModel(res?.response?.data, "error");
         } else {
           setdate1Array(res.data);
@@ -160,17 +163,17 @@ const index_Main = () => {
     setLoading(false);
   };
 
-  useEffect(() => {
-    const serviceCalls = async () => {
-      try {
-        excelDataRestore = data?.state?.res;
-        setDataSourceRestore(excelDataRestore);
-      } catch (err) {
-        console.log(err.response);
-      }
-    };
-    serviceCalls();
-  }, []);
+  // useEffect(() => {
+  //   const serviceCalls = async () => {
+  //     try {
+  //       excelDataRestore = data?.state?.res;
+  //       setDataSourceRestore(excelDataRestore);
+  //     } catch (err) {
+  //       console.log(err.response);
+  //     }
+  //   };
+  //   serviceCalls();
+  // }, []);
 
   const handleBackup = async (e) => {
     e.preventDefault();
@@ -283,7 +286,7 @@ const index_Main = () => {
             try {
               const res = await axios.post(
                 baseUrl + "/getConfigurationFromDate",
-                { date: record.date }
+                { date: record.date, ncm_device_id: deviceId }
               );
               setRightSide(true);
 
@@ -628,7 +631,7 @@ const index_Main = () => {
                           </button>
                         </article>
                       </article>
-                      <code class="line-numbers">
+                      <code className="line-numbers">
                         <pre style={{ padding: "8px" }}>
                           <Highlighter
                             highlightClassName="rc-highlight"
@@ -746,11 +749,13 @@ const index_Main = () => {
                     setDate1(e.target.value);
                   }}
                 >
-                  <option value="" style={{ color: "rgba(0,0,0,0.1)" }}>
-                    Select Compare Date
-                  </option>
+                  <option value="">Select Compare Date</option>
                   {date1Array?.map((item, index) => {
-                    return <option key={index}>{item}</option>;
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
                   })}
                 </Styledselect>
               </div>
@@ -771,11 +776,13 @@ const index_Main = () => {
                     setDate2(e.target.value);
                   }}
                 >
-                  <option value="" style={{ color: "rgba(0,0,0,0.1)" }}>
-                    Select Compare Date
-                  </option>
+                  <option value="">Select Compare Date</option>
                   {date2Array?.map((item, index) => {
-                    return <option>{item}</option>;
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
                   })}
                 </Styledselect>
               </div>

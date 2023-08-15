@@ -1,15 +1,9 @@
 import React, { useState, useEffect } from "react";
 import {
   NavbarContainer,
-  LeftContainer,
-  RightContainer,
-  NavbarExtendedContainer,
   NavbarInnerContainer,
   NavbarLinkContainer,
   NavbarLink,
-  Logo,
-  OpenLinksButton,
-  NavbarLinkExtended,
   CenterContainer,
 } from "./Navigation.styled.js";
 
@@ -28,7 +22,6 @@ const Navigation = () => {
   useEffect(() => {
     let user = localStorage.getItem("user");
     userData = JSON.parse(user);
-
     const test = userData.monetx_configuration;
     let t = eval(test);
     let config = JSON.parse(t);

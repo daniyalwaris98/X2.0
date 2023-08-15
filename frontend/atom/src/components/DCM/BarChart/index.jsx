@@ -1,16 +1,9 @@
 import React, { useEffect, useState } from "react";
-import { Bar, Pie, Line, Doughnut, PolarArea } from "react-chartjs-2";
+import { Bar } from "react-chartjs-2";
 import "chartjs-plugin-zoom";
-import ChartDataLabels from "chartjs-plugin-datalabels";
-import { Chart as ChartJS } from "chart.js/auto";
 
-// useEffect(() => {}, []);
 import axios, { baseUrl } from "../../../utils/axios";
 import { SpinLoading } from "../../AllStyling/All.styled";
-
-// useEffect(() => {
-//   Bar.register(zoomPlugin);
-// }, [zoomPlugin]);
 
 const index = () => {
   const [loading, setLoading] = useState(false);
@@ -22,7 +15,7 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/totalPortsBarChart");
-        console.log("res", res);
+
         setMyFunction(res.data);
         setLoading(false);
       } catch (err) {

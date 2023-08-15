@@ -219,9 +219,6 @@ const index = () => {
             axios
               .get(baseUrl + "/getAtoms")
               .then((response) => {
-                // console.log("response===>", response);
-                // setExcelData(response.data);
-
                 console.log(response.data);
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
@@ -230,7 +227,6 @@ const index = () => {
               })
               .catch((error) => {
                 console.log(error);
-                // openSweetAlert("Something Went Wrong!", "danger");
                 setLoading(false);
               })
           );

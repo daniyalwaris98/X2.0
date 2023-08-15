@@ -89,7 +89,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/ipHistory");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);
@@ -103,56 +102,17 @@ const index = () => {
   }, []);
 
   const columns = [
-    // {
-    //   title: "",
-    //   key: "edit",
-    //   width: "2%",
-
-    //   render: (text, record) => (
-    //     <>
-    //       {!configData?.uam.pages.sites.read_only ? (
-    //         <>
-    //           <a
-    //             disabled
-    //             // onClick={() => {
-    //             //   edit(record);
-    //             // }}
-    //           >
-    //             <EditOutlined
-    //               style={{ paddingRight: "50px", color: "#66A111" }}
-    //             />
-    //           </a>
-    //         </>
-    //       ) : (
-    //         <a
-    //           onClick={() => {
-    //             edit(record);
-    //           }}
-    //         >
-    //           <EditOutlined
-    //             style={{ paddingRight: "50px", color: "#66A111" }}
-    //           />
-    //         </a>
-    //       )}
-    //     </>
-    //   ),
-    // },
-
     {
       title: "IP Address",
       dataIndex: "ip_address",
       key: "ip_address",
       render: (text, record) => (
         <p
-          //   onClick={ServernameClicked}
           style={{
-            // color: "#66B127",
-            //   textDecoration: "underline",
             textAlign: "left",
             paddingLeft: "15px",
             paddingTop: "10px",
             paddingTop: "10px",
-            //  cursor: "pointer",
           }}
         >
           {text}

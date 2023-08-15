@@ -29,7 +29,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getDCStatus");
-        console.log("res", res);
         setData(res.data);
         setMainTableLoading(false);
       } catch (err) {

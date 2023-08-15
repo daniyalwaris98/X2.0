@@ -109,7 +109,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllDiscoveredSubnets");
-        console.log("res getAllDiscoveredSubnets MAin", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);
@@ -123,7 +122,6 @@ const index = () => {
   }, []);
   const edit = (record) => {
     setEditRecord(record);
-    // setAddRecord(record);
     setIsEditModalVisible(true);
   };
   const columns = [

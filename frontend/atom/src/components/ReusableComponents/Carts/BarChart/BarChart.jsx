@@ -18,8 +18,6 @@ function BarChart(props) {
     await axios
       .get(`${baseUrl}/${endPoint}`)
       .then((res) => {
-        console.log("res", res);
-
         setName(res.data.name);
         setValue(res.data.value);
       })

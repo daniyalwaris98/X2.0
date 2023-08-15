@@ -95,7 +95,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllDevicesInLinux");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);

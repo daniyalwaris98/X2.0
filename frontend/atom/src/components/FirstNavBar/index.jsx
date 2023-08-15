@@ -5,26 +5,19 @@ import notification from "./images/notification.svg";
 import setting from "./images/setting.svg";
 import logout from "./images/logout.svg";
 import profile from "./images/profile.svg";
-import { Divider, Input } from "antd";
+import { Divider } from "antd";
 import { SearchOutlined, FlagOutlined } from "@ant-design/icons";
-// import ReactLanguageSelect from "react-languages-select";
 import ReactFlagsSelect from "react-flags-select";
-// import { US, GB } from "country-flag-icons/react/3x2";
 import { Row, Col } from "antd";
-import { StyledInput, MainStyling } from "./FirstNavBar.styled.js";
-
-//import css module
-// import "react-languages-select/css/react-languages-select.css";
+import { StyledInput } from "./FirstNavBar.styled.js";
 
 const FirstNavBar = () => {
   const [selected, setSelected] = useState("");
-  console.log(selected);
   const [userData, setUserData] = useState(null);
 
   useEffect(() => {
     Data = localStorage.getItem("user");
     setUserData(JSON.parse(Data));
-    console.log("username");
   }, []);
 
   return (
@@ -63,14 +56,6 @@ const FirstNavBar = () => {
       </div>
       <div style={{ display: "flex", float: "right" }}>
         <StyledInput
-          // style={{
-          //   margin: "8px",
-          //   backgroundColor: "#353639",
-          //   border: "none",
-          //   borderRadius: "5px",
-          //   paddingLeft: "10px",
-          //   color: "#fff",
-          // }}
           placeholder="Search..."
           icons={<SearchOutlined style={{ color: "white" }} />}
         />
@@ -101,39 +86,12 @@ const FirstNavBar = () => {
             marginBottom: "12px",
           }}
         />
-        {/* <ReactLanguageSelect
-          style={{
-            height: "20px",
-            marginLeft: "10px",
-            backgroundColor: "#839CA91A",
-            padding: "10px",
-            borderRadius: "50%",
-          }}
-          //   defaultLanguage="en"
-          //   languages={["en", "fr", "de", "it", "es"]}
-          //   placeholder={<SearchOutlined />}
-          //   alignOptions="left"
-          //   customLabels={{
-          //     en: <SearchOutlined />,
-          //     fr: "FR",
-          //     de: "DE",
-          //     it: "IT",
-          //   }}
-          searchable={true}
-          searchPlaceholder="Search for a language"
-        >
-          hello
-        </ReactLanguageSelect> */}
+
         <div
           style={{
-            // backgroundColor: "#839CA91A",
-            // padding: "10px",
-            // borderRadius: "50%",
             marginTop: "14px",
             marginBottom: "12px",
             marginLeft: "10px",
-            // width: "40px",
-            // height: "40px",
           }}
         >
           <ReactFlagsSelect

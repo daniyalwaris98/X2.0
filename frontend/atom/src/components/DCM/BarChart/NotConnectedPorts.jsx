@@ -21,7 +21,6 @@ const NotConnectedPorts = () => {
 
       try {
         const res = await axios.get(baseUrl + "/notConnectedPortsBarChart");
-        console.log("res", res);
         setMyFunction(res.data);
         setLoading(false);
       } catch (err) {

@@ -147,7 +147,6 @@ const index = () => {
 
   //     try {
   //       const res = await axios.get(baseUrl + "/getAllAlerts");
-  //       console.log("res", res);
   //       excelData = res.data;
   //       setDataSource(excelData);
   //       setRowCount(excelData.length);
@@ -165,7 +164,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/alertStatus");
-        console.log("res", res);
         setAlertStatus(res.data);
         setAlertStatusLoading(false);
       } catch (err) {
@@ -181,7 +179,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getInformationalAlerts");
-        console.log("res", res);
         // setInformationalAlerts(res.data);
         informationalExcelData = res.data;
         setInformationalDataSource(informationalExcelData);
@@ -200,7 +197,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getDeviceAlerts");
-        console.log("res", res);
         // setDeviceeDownAlerts(res.data);
         deviceDownExcelData = res.data;
         setDeviceDownDataSource(deviceDownExcelData);
@@ -220,7 +216,6 @@ const index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getAllAlerts");
-        console.log("res", res);
         excelData = res.data;
         setDataSource(excelData);
         setRowCount(excelData.length);
@@ -239,7 +234,6 @@ const index = () => {
       try {
         const res = await axios.get(baseUrl + "/getCriticalAlerts");
         // setCriticalAlerts(res.data);
-        console.log("res", res);
         criticalExcelData = res.data;
         setCriticalDataSource(criticalExcelData);
         setCriticalRowCount(criticalExcelData.length);
