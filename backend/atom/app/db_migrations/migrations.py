@@ -13,6 +13,12 @@ def run_migration():
     while flag:
         try:
             
+            from app.models.users_model import License_Verification_Table
+            from app.models.users_model import End_User_Table
+            from app.models.users_model import User_Roles_Table
+            from app.models.users_model import User_Table
+            from app.models.users_model import Login_Activity_Table
+            
             from app.models.atom_models import Password_Group_Table
             from app.models.atom_models import Site_Table
             from app.models.atom_models import Rack_Table
