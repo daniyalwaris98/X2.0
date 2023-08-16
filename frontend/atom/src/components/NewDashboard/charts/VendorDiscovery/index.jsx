@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactEcharts from "echarts-for-react";
 import axios, { baseUrl } from "../../../../utils/axios";
 import { SpinLoading } from "../../../AllStyling/All.styled";
+
 const Index = () => {
   const [loading, setLoading] = useState(false);
   const [myFunction, setMyFunction] = useState([]);
@@ -12,7 +13,6 @@ const Index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getTopVendorsForDiscovery");
-        console.log("getTopVendorsForDiscovery", res);
         setMyFunction(res.data);
         setLoading(false);
       } catch (err) {

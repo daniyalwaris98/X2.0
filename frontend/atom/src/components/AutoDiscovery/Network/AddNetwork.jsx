@@ -1,6 +1,6 @@
 import React, { useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Modal, Input, Button } from "antd";
+import { Row, Col, Modal, Input, Button, Slider } from "antd";
 import axios, { baseUrl } from "../../../utils/axios";
 import Swal from "sweetalert2";
 import "../../AllStyling/CSSStyling.css";
@@ -67,18 +67,18 @@ const AddAtom = (props) => {
   let [scanStatus, setscanStatus] = useState(
     device ? getString(device.scan_status) : ""
   );
-  let [excludedIpRange, setExcludedIpRange] = useState(
-    device ? getString(device.excluded_ip_range) : ""
-  );
+  let [excludedIpRange, setExcludedIpRange] = useState([]);
 
   const handleSubmit = (e) => {
+    const range = `${excludedIpRange[0]}-${excludedIpRange[1]}`;
+
     e.preventDefault();
     const device = {
       network_name: networkName,
       subnet,
       no_of_devices: noOfDevices,
       scan_status: scanStatus,
-      excluded_ip_range: excludedIpRange,
+      excluded_ip_range: range,
     };
 
     props.setIsModalVisible(false);
@@ -87,6 +87,10 @@ const AddAtom = (props) => {
 
   const handleCancel = () => {
     props.setIsModalVisible(false);
+  };
+
+  const handleSliderChange = (values) => {
+    setExcludedIpRange(values);
   };
 
   return (
@@ -211,14 +215,13 @@ const AddAtom = (props) => {
             </InputWrapper>
             <InputWrapper>
               Excluded Ip Range:
-              {/* &nbsp;<span style={{ color: "red" }}>*</span>
-              <br /> */}
-              <StyledInput
-                value={excludedIpRange}
-                // required
-                onChange={(e) =>
-                  setExcludedIpRange(e.target.value.replace(/[^0-9-]+/g, ""))
-                }
+              <Slider
+                range={{
+                  draggableTrack: true,
+                }}
+                min={0}
+                max={256}
+                onChange={handleSliderChange}
               />
             </InputWrapper>
           </Col>

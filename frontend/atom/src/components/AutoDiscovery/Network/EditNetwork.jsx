@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from "react";
 import styled from "styled-components";
-import { Row, Col, Modal, Input, Button, Select, Checkbox } from "antd";
+import { Row, Col, Modal, Input, Button, Slider } from "antd";
 import axios, { baseUrl } from "../../../utils/axios";
 import Swal from "sweetalert2";
 import "../../AllStyling/CSSStyling.css";
@@ -68,44 +68,19 @@ const EditAtom = (props) => {
   let [scanStatus, setscanStatus] = useState(
     device ? getString(device.scan_status) : ""
   );
-  let [excludedIpRange, setExcludedIpRange] = useState(
-    device ? getString(device.excluded_ip_range) : ""
-  );
+  let [excludedIpRange, setExcludedIpRange] = useState([]);
 
-  const Ru = [
-    1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21,
-    22, 23, 24, 25, 26, 27, 28, 29, 30,
-  ];
-  const DType = [
-    "cisco_ios",
-    "cisco_ios_xe",
-    "cisco_ios_xr",
-    "cisco_asa",
-    "cisco_nxos",
-    "cisco_wlc",
-    "fortinet",
-    "arista",
-    "huawei",
-    "f5_ltm",
-    "juniper",
-    "juniper_screenos",
-    "a10",
-    "arbor",
-    "fireeye",
-    "greatbay",
-    "infoblox",
-    "paloalto",
-    "prime",
-    "pulse_secure",
-    "ucs",
-    "wire_filter",
+  useEffect(() => {
+    if (device) {
+      const rangeData = device.excluded_ip_range.split("-").map(Number);
 
-    "cisco_APIC_server",
-    "symantec",
-    "firepower",
-  ];
+      setExcludedIpRange(rangeData);
+    }
+  }, [device]);
 
   const handleSubmit = (e) => {
+    const range = `${excludedIpRange[0]}-${excludedIpRange[1]}`;
+
     e.preventDefault();
     const device = {
       network_id,
@@ -113,7 +88,7 @@ const EditAtom = (props) => {
       subnet,
       no_of_devices: noOfDevices,
       scan_status: scanStatus,
-      excluded_ip_range: excludedIpRange,
+      excluded_ip_range: range,
     };
 
     props.setIsEditModalVisible(false);
@@ -122,6 +97,10 @@ const EditAtom = (props) => {
 
   const handleCancel = () => {
     props.setIsEditModalVisible(false);
+  };
+
+  const handleSliderChange = (values) => {
+    setExcludedIpRange(values);
   };
 
   return (
@@ -149,7 +128,7 @@ const EditAtom = (props) => {
         }}
       >
         <Row style={{ alignContent: "center" }}>
-          <Col span={24} style={{}}>
+          <Col span={24} style={{ marginBottom: "30px" }}>
             <p style={{ fontSize: "22px", float: "left", display: "flex" }}>
               Edit Network
             </p>
@@ -187,44 +166,26 @@ const EditAtom = (props) => {
             <InputWrapper>
               Network Name: &nbsp;<span style={{ color: "red" }}>*</span>
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={ip_address} />
-                ) : ( */}
               <StyledInput
                 value={networkName}
-                // pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
                 onChange={(e) => setNetworkName(e.target.value)}
                 required
               />
-              {/* )} */}
             </InputWrapper>
 
             <InputWrapper>
               Subnet: &nbsp;<span style={{ color: "red" }}>*</span>
               &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={device_name} />
-                ) : ( */}
               <StyledInput
                 value={subnet}
                 onChange={(e) => setSubnet(e.target.value)}
-                readOnly
-                style={{ cursor: "no-drop" }}
-                //   required
               />
-              {/* )
-                } */}
             </InputWrapper>
           </Col>
           <Col span={10} style={{ marginLeft: "6%" }}>
             <InputWrapper>
               Scan Status :{/* &nbsp;<span style={{ color: "red" }}>*</span> */}
               &nbsp;&nbsp;
-              {/* <StyledInput
-                value={actionState}
-                onChange={(e) => setActionState(e.target.value)}
-                // required
-              /> */}
               <div className="select_type">
                 <Styledselect
                   className="rectangle"
@@ -239,45 +200,19 @@ const EditAtom = (props) => {
               </div>
             </InputWrapper>
             <InputWrapper>
-              Excluded Ip Range:
-              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-              &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={myfunction} />
-                ) : ( */}
-              <StyledInput
+              Excluded Ip Range: &nbsp;&nbsp;
+              <Slider
+                range={{
+                  draggableTrack: true,
+                }}
+                min={0}
+                max={256}
                 value={excludedIpRange}
-                onChange={(e) => setExcludedIpRange(e.target.value)}
-                // required
+                onChange={handleSliderChange}
               />
-              {/* )} */}
             </InputWrapper>
           </Col>
         </Row>
-        {/* <StyledSubmitButton
-          style={{
-            textAlign: "center",
-            width: "25%",
-            marginTop: "10px",
-          }}
-          color={"green"}
-          type="submit"
-          value="Done"
-        />
-        <br />
-        <StyledButton
-          style={{
-            textAlign: "center",
-            width: "25%",
-            marginTop: "10px",
-            marginLeft: "10px",
-            // paddingBottom: "5px",
-          }}
-          color={"red"}
-          onClick={handleCancel}
-        >
-          Cancel
-        </StyledButton> */}
         &nbsp; &nbsp;
       </form>
     </Modal>

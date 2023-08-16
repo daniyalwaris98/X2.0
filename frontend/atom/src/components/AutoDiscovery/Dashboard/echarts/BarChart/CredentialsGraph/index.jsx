@@ -2,9 +2,9 @@ import React, { useState, useEffect } from "react";
 import ReactEcharts from "echarts-for-react";
 import axios, { baseUrl } from "../../../../../../utils/axios";
 import { SpinLoading } from "../../../../../AllStyling/All.styled";
+
 const Index = () => {
   const [loading, setLoading] = useState(false);
-//   const [funcLabel, setFuncLabel] = useState(false);
   const [myFunction, setMyFunction] = useState("");
   const [myFunctionLabal, setMyFunctionLabal] = useState("");
 
@@ -14,7 +14,6 @@ const Index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getCredentialsGraph");
-        console.log("getCredentialsGraph", res.data);
         setMyFunction(res.data.value);
         setMyFunctionLabal(res.data.name);
         setLoading(false);
@@ -25,67 +24,65 @@ const Index = () => {
     };
     serviceCalls();
   }, []);
- 
 
   const option = {
     tooltip: {
-        trigger: 'axis',
-        axisPointer: {
-          type: 'shadow'
-        }
+      trigger: "axis",
+      axisPointer: {
+        type: "shadow",
       },
+    },
     xAxis: {
-      type: 'category',
-      data: myFunctionLabal
-    //   data:['mon', 'tue', 'wed']
+      type: "category",
+      data: myFunctionLabal,
+      //   data:['mon', 'tue', 'wed']
     },
     yAxis: {
-      type: 'value'
+      type: "value",
     },
     color: [
-        "#91cc75",
-        "#3ba272",
-        "#fc8452",
-        "#fac858",
-        "#1a7ff1",
-    
-    
-        "#ee6666",
-        "#ffc0de",
-        "#11aab4",
-        "#1ff0",
-        "#9a60b4",
-        "#999",
-        
-        "#3ba272",
-        "#5470c6",
-    
-        "#ea7ccc",
-    
-        "#84C8C2",
-        "#F2BB72",
-        "#D18FCA",
-    
-        "#3F3C9D",
-        "#E9D756",
-    
-        "#D0E1F9",
-    
-        "#ED7D3A",
-    
-        "#B3C3BF",
-      ],
+      "#91cc75",
+      "#3ba272",
+      "#fc8452",
+      "#fac858",
+      "#1a7ff1",
+
+      "#ee6666",
+      "#ffc0de",
+      "#11aab4",
+      "#1ff0",
+      "#9a60b4",
+      "#999",
+
+      "#3ba272",
+      "#5470c6",
+
+      "#ea7ccc",
+
+      "#84C8C2",
+      "#F2BB72",
+      "#D18FCA",
+
+      "#3F3C9D",
+      "#E9D756",
+
+      "#D0E1F9",
+
+      "#ED7D3A",
+
+      "#B3C3BF",
+    ],
     series: [
       {
         data: myFunction,
-        type: 'bar',
+        type: "bar",
         showBackground: true,
-        barWidth: 35 ,
+        barWidth: 35,
         backgroundStyle: {
-          color: 'rgba(180, 180, 180, 0.2)'
-        }
-      }
-    ]
+          color: "rgba(180, 180, 180, 0.2)",
+        },
+      },
+    ],
   };
   return (
     <SpinLoading spinning={loading}>

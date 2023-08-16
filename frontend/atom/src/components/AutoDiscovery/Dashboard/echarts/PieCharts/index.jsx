@@ -2,6 +2,7 @@ import React, { useState, useEffect } from "react";
 import ReactEcharts from "echarts-for-react";
 import axios, { baseUrl } from "../../../../../utils/axios";
 import { SpinLoading } from "../../../../AllStyling/All.styled";
+
 const Index = () => {
   const [loading, setLoading] = useState(false);
   const [myFunction, setMyFunction] = useState([]);
@@ -23,11 +24,6 @@ const Index = () => {
   }, []);
 
   const option = {
-    // title: {
-    //   text: "Referer of a Website",
-    //   subtext: "Fake Data",
-    //   left: "center",
-    // },
     tooltip: {
       trigger: "item",
     },
@@ -36,19 +32,13 @@ const Index = () => {
       top: "0px",
       left: "center",
     },
-    color: [
-      // "#6ab15f",
-      // "rgba(255,0,0,0.6)",
-
-      "#5ad120",
-      "#dd3a3f",
-    ],
+    color: ["#5ad120", "#dd3a3f"],
     series: [
       {
         name: "",
         type: "pie",
         radius: "50%",
-        data: myFunction,
+        data: myFunction && myFunction,
         emphasis: {
           itemStyle: {
             shadowBlur: 10,

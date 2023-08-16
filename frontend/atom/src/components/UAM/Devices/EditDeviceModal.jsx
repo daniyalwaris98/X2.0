@@ -5,6 +5,7 @@ import axios, { baseUrl } from "../../../utils/axios";
 import Swal from "sweetalert2";
 import devices from "./assets/devices.svg";
 import "../../AllStyling/CSSStyling.css";
+import { functions } from "../../../data/globalData";
 
 const EditDevicesModel = (props) => {
   const getString = (str) => {
@@ -213,6 +214,10 @@ const EditDevicesModel = (props) => {
   const handleCancel = () => {
     props.setIsEditModalVisible(false);
   };
+
+  const uamFunction = functions.filter((functionData) =>
+    functionData.module.includes("uam")
+  );
 
   return (
     <Modal
@@ -571,18 +576,23 @@ const EditDevicesModel = (props) => {
             </InputWrapper>
 
             <InputWrapper>
-              Function:
-              {/* &nbsp;<span style={{ color: "red" }}>*</span> */}
-              &nbsp;&nbsp;
-              {/* {device ? (
-                  <StyledInput value={myfunction} />
-                ) : ( */}
-              <StyledInput
-                value={myfunction}
-                onChange={(e) => setMyfunction(e.target.value)}
-                // required
-              />
-              {/* )} */}
+              Function: &nbsp;&nbsp;
+              <div className="select_type">
+                <Styledselect
+                  className="rectangle"
+                  required
+                  value={myfunction}
+                  onChange={(e) => setMyfunction(e.target.value)}
+                >
+                  <option value="">Select Function</option>
+
+                  {uamFunction.map((data, index) => (
+                    <option value={data.name} key={index}>
+                      {data.name}
+                    </option>
+                  ))}
+                </Styledselect>
+              </div>
             </InputWrapper>
             <InputWrapper>
               Software Type:

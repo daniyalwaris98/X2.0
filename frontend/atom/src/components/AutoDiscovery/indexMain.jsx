@@ -30,7 +30,7 @@ let columnFilters = {};
 
 const indexMain = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [scanSubnet, setScanSubnet] = useState("All");
+  const [scanSubnet, setScanSubnet] = useState("");
   const [alertStatusLoading, setAlertStatusLoading] = useState(false);
   let [dataSource, setDataSource] = useState(excelData);
   let [SwitchesDataSource, setSwitchesDataSource] = useState(excelDataSwitches);
@@ -259,7 +259,6 @@ const indexMain = () => {
       try {
         const res = await axios.get(baseUrl + "/getSubnetsDropdown");
         setsubnetArray(res.data);
-        setScanSubnet(res.data[0]);
         setAlertStatusLoading(false);
       } catch (err) {
         console.log(err.response);
@@ -1271,6 +1270,8 @@ const indexMain = () => {
       await axios
         .post(baseUrl + "/autoDiscover", { subnet: scanSubnet })
         .then((response) => {
+          console.log("response", response);
+
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
             setSubnetScanLoading(false);
@@ -1364,8 +1365,13 @@ const indexMain = () => {
                         style={{ width: "18vw", textAlign: "center" }}
                         onChange={(e) => setScanSubnet(e.target.value)}
                       >
+                        <option value="">Select Network</option>
                         {subnetArray?.map((item, index) => {
-                          return <option key={index}>{item}</option>;
+                          return (
+                            <option key={index} value={item}>
+                              {item}
+                            </option>
+                          );
                         })}
                       </Styledselect>
                     </div>
