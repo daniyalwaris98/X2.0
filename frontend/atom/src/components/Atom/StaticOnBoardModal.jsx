@@ -141,10 +141,6 @@ const StaticOnBoardModal = (props) => {
     device ? getString(device.contract_expiry) : ""
   );
 
-  const changeSelectOptionHandler = (event) => {
-    setSite_name(event.target.value);
-  };
-
   useEffect(() => {
     if (staticOnBoardRecord) {
       setdevice_name(staticOnBoardRecord.device_name);
@@ -193,42 +189,45 @@ const StaticOnBoardModal = (props) => {
 
   const [siteArray, setSiteArray] = useState([]);
   useEffect(() => {
-    const getSitesForDropdown = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(baseUrl + "/getSitesForDropdown");
-        setSiteArray(res.data);
-        setSite_name(res.data[0]);
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
     getSitesForDropdown();
-  }, [site_name]);
+  }, []);
+
+  const getSitesForDropdown = async () => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(baseUrl + "/getSitesForDropdown");
+      setSiteArray(res.data);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
 
   const [rackArray, setRackArray] = useState([]);
 
   useEffect(() => {
-    const getRacksBySiteDropdown = async () => {
-      setLoading(true);
-
-      try {
-        const res = await axios.get(
-          `${baseUrl}/getRacksBySiteDropdown?site_name=${site_name}`
-        );
-        setRackArray(res.data);
-
-        setLoading(false);
-      } catch (err) {
-        console.log(err.response);
-        setLoading(false);
-      }
-    };
-    getRacksBySiteDropdown();
+    if (site_name) {
+      getRacksBySiteDropdown(site_name);
+    }
   }, [site_name]);
+
+  const getRacksBySiteDropdown = async (site_name) => {
+    setLoading(true);
+
+    try {
+      const res = await axios.get(
+        `${baseUrl}/getRacksBySiteDropdown?site_name=${site_name}`
+      );
+
+      setRackArray(res.data);
+      setLoading(false);
+    } catch (err) {
+      console.log(err.response);
+      setLoading(false);
+    }
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -327,7 +326,7 @@ const StaticOnBoardModal = (props) => {
         }}
       >
         <Row style={{ alignContent: "center" }}>
-          <Col span={24} style={{}}>
+          <Col span={24} style={{ marginBottom: "20px" }}>
             <p style={{ fontSize: "22px", float: "left", display: "flex" }}>
               Static On Boarding
             </p>
@@ -376,64 +375,44 @@ const StaticOnBoardModal = (props) => {
             <InputWrapper>
               Site Name: &nbsp;<span style={{ color: "red" }}>*</span>
               <br />
-              {/* &nbsp;&nbsp; */}
-              {/* {device ? (
-                  <StyledInput value={site_name} />
-                ) : ( */}
-              <Styledselect
-                onChange={changeSelectOptionHandler}
-                // style={{ color: "#f41" }}
-              >
-                <option value="">Select Sitename</option>
-                {siteArray.map((item, index) => {
-                  return (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  );
-                })}
-
-                {/* <option>Choose...</option>
-
-                <option>Algorithm</option>
-                <option>Language</option>
-                <option>Data Structure</option> */}
-              </Styledselect>
-              {/* <StyledInput
-                value={site_name}
-                onChange={(e) => setSite_name(e.target.value)}
-                required
-              /> */}
-              {/* )} */}
+              <div className="select_type">
+                <Styledselect
+                  className="rectangle"
+                  value={site_name}
+                  onChange={(e) => setSite_name(e.target.value)}
+                >
+                  <option value="">Select Site Name</option>
+                  {siteArray.map((item, index) => {
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
+                  })}
+                </Styledselect>
+              </div>
             </InputWrapper>
             <InputWrapper>
               Rack Name: &nbsp;<span style={{ color: "red" }}>*</span>
               <br />
-              {/* &nbsp;&nbsp; */}
-              {/* {device ? (
-                  <StyledInput value={rack_name} />
-                ) : ( */}
-              <Styledselect
-                value={rack_name}
-                onChange={(e) => {
-                  setRack_name(e.target.value);
-                }}
-              >
-                <option value="">Select Rack Name</option>
-                {rackArray?.map((item, index) => {
-                  return (
-                    <option key={index} value={item}>
-                      {item}
-                    </option>
-                  );
-                })}
-              </Styledselect>
-              {/* <StyledInput
-                value={rack_name}
-                onChange={(e) => setRack_name(e.target.value)}
-                required
-              /> */}
-              {/* )} */}
+              <div className="select_type">
+                <Styledselect
+                  className="rectangle"
+                  value={rack_name}
+                  onChange={(e) => {
+                    setRack_name(e.target.value);
+                  }}
+                >
+                  <option value="">Select Rack Name</option>
+                  {rackArray?.map((item, index) => {
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
+                  })}
+                </Styledselect>
+              </div>
             </InputWrapper>
             <InputWrapper>
               Domain:

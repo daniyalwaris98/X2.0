@@ -233,7 +233,11 @@ const AddMember = (props) => {
                   }}
                 >
                   {roleArray.map((item, index) => {
-                    return <option>{item}</option>;
+                    return (
+                      <option key={index} value={item}>
+                        {item}
+                      </option>
+                    );
                   })}
                 </Styledselect>
               </div>

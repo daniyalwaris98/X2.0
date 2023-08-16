@@ -115,7 +115,7 @@ const EditAtom = (props) => {
       atom_id,
       site_name,
       rack_name,
-      device_name: device_name.trim().toLowerCase(),
+      device_name,
       device_ru,
       department,
       section,
