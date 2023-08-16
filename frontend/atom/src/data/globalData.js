@@ -178,43 +178,43 @@ export const vendors = [
 
 export const functions = [
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "Router",
   },
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "Switch",
   },
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "Wireless",
   },
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "Firewall",
   },
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "VM",
   },
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "EXSI",
   },
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "Load Balancer",
   },
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "WAF",
   },
   {
-    module: ["atom", "monitoring", "ncm"],
+    module: ["atom", "monitoring", "ncm", "uam"],
     name: "Controller",
   },
   {
-    module: ["atom", "monitoring"],
+    module: ["atom", "monitoring", "uam"],
     name: "Other",
   },
 ];

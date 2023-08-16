@@ -68,8 +68,6 @@ const index = () => {
       setDataSource(excelData);
       setRowCount(excelData.length);
       setLoading(false);
-
-      console.log(excelData);
     } catch (err) {
       setLoading(false);
     }

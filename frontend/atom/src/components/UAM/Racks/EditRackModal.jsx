@@ -208,7 +208,6 @@ const EditRackModel = (props) => {
                 value={rack_name}
                 onChange={(e) => setRackName(e.target.value)}
                 required
-                readOnly
               />
             </InputWrapper>
             <InputWrapper>

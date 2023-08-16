@@ -6,15 +6,11 @@ import Swal from "sweetalert2";
 import sites from "./assets/sites.svg";
 
 const EditSiteModel = (props) => {
-  const { Option } = Select;
-
   const DType = ["Production", "Not Production"];
 
   const getString = (str) => {
     return str ? str : "";
   };
-
-  let [rackIdOptions, setRackIdOptions] = useState([]);
 
   const openSweetAlert = (title, type) => {
     Swal.fire({
@@ -40,6 +36,8 @@ const EditSiteModel = (props) => {
               axios
                 .get(baseUrl + "/getAllSites")
                 .then((response) => {
+                  console.log("response", response);
+
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -191,7 +189,6 @@ const EditSiteModel = (props) => {
                 value={site_name}
                 onChange={(e) => setSitename(e.target.value)}
                 required
-                readOnly
               />
             </InputWrapper>
             <InputWrapper>

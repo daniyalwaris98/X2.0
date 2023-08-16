@@ -63,6 +63,7 @@ const index = () => {
       try {
         const res = await axios.get(baseUrl + "/getAllSites");
         excelData = res.data;
+        console.log("excelData", excelData);
         setDataSource(excelData);
         setRowCount(excelData.length);
         setLoading(false);

@@ -12,7 +12,6 @@ const Index = () => {
 
       try {
         const res = await axios.get(baseUrl + "/getTopVendorsForDiscovery");
-        console.log("getTopVendorsForDiscovery", res);
         setMyFunction(res.data);
         setLoading(false);
       } catch (err) {
@@ -61,10 +60,6 @@ const Index = () => {
       "#B42B2B",
       "#D8801A",
 
-
-
-     
-
       "#fac858",
       "#91cc75",
 
@@ -75,7 +70,7 @@ const Index = () => {
       "#1ff0",
       "#9a60b4",
       "#999",
-      
+
       "#3ba272",
       "#5470c6",
 
