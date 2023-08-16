@@ -90,9 +90,9 @@ const indexMain = () => {
     await axios
       .get(baseUrl + "/ncmBackupSummeryDashboard")
       .then((res) => {
-        res.data[0].color = "#DC3938";
-        res.data[1].color = "#2D9CDB";
-        res.data[2].color = "#4BE58C";
+        res.data[0].color = "#4BE58C";
+        res.data[1].color = "#DC3938";
+        res.data[2].color = "#2D9CDB";
 
         setSeverityData(res.data);
       })
@@ -341,7 +341,7 @@ const indexMain = () => {
     },
   ];
 
-  const onDeviceSelectChange = (deviceSelectedRowKeys, selectedRows) => {
+  const onDeviceSelectChange = (deviceSelectedRowKeys) => {
     setDeviceSelectedRowKeys(deviceSelectedRowKeys);
   };
 
@@ -568,6 +568,36 @@ const indexMain = () => {
       ...getColumnSearchProps(
         "device_name",
         "Device Name",
+        setRowCount,
+        setDataSource,
+        excelData,
+        columnFilters
+      ),
+      ellipsis: true,
+    },
+    {
+      title: "Backup status",
+      dataIndex: "backup_status",
+      key: "backup_status",
+      render: (text, record) => {
+        text = JSON.stringify(text);
+
+        let color;
+
+        if (text == "true") {
+          color = "#4BE58C";
+        } else if (text == "false") {
+          color = "#FB7457";
+        } else {
+          color = "#2d9cdb";
+        }
+
+        return <p style={{ textAlign: "center", color: color }}>{text}</p>;
+      },
+
+      ...getColumnSearchProps(
+        "backup_status",
+        "Backup status",
         setRowCount,
         setDataSource,
         excelData,

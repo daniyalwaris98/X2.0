@@ -31,7 +31,29 @@ const indexMain = () => {
   }, []);
 
   const handleChartClick = (data) => {
-    navigate("/ncm/config-data", { state: data.data });
+    let graphData;
+
+    if (data.data.name == "Backup Successful") {
+      graphData = {
+        data: "true",
+        graphValue: data.data.value,
+        graphName: data.name,
+      };
+    } else if (data.data.name == "Not Backup") {
+      graphData = {
+        data: "false",
+        graphValue: data.data.value,
+        graphName: data.name,
+      };
+    } else {
+      graphData = {
+        data: "null",
+        graphValue: data.data.value,
+        graphName: data.name,
+      };
+    }
+
+    navigate("/ncm/config-data", { state: graphData });
   };
 
   const option = {
@@ -84,6 +106,7 @@ const indexMain = () => {
 
   useEffect(() => {
     getNcmDevicesSummary();
+    getAlarmSummary();
   }, []);
 
   const getNcmDevicesSummary = async () => {
@@ -95,6 +118,20 @@ const indexMain = () => {
       .catch((err) => {
         console.log("ncmDevicesErrro ============>", err);
       });
+  };
+
+  const [alarms, setAlarms] = useState([]);
+
+  console.log(alarms);
+
+  const getAlarmSummary = async () => {
+    await axios
+      .get(`${baseUrl}/ncmAlarmSummery`)
+      .then((res) => {
+        setAlarms(res.data);
+        console.log(res);
+      })
+      .catch((err) => console.log(err));
   };
 
   return (
@@ -123,51 +160,29 @@ const indexMain = () => {
         </Container>
 
         <Container title="Recent RCM Alarms" className="rcm-alarms-wrapper">
-          <DonutChart endPoint="ncmAlarmSummery" alertsCount={3} />
+          <DonutChart endPoint="ncmAlarmSummery" alertsCount={alarms.length} />
 
           <article className="alarms-wrapper">
             <h3 className="heading">Device Name</h3>
 
             <article className="alarms-list">
-              <article className="alarm">
-                <h3 className="alarm-title">
-                  Device Configuration Backup failed
-                </h3>
-                <h3 className="alarm-description">
-                  NETS-DMZ-C367.nets-international
-                </h3>
+              {alarms.length > 0 ? (
+                alarms.map((alarm, index) => {
+                  return (
+                    <article className="alarm">
+                      <h3 className="alarm-title">{alarm.device_name}</h3>
+                      <h3 className="alarm-description">{alarm.alarm_title}</h3>
 
-                <article className="time-and-date">
-                  <span className="date">28-Jan-2023</span>
-                  <span className="date">09:43:21 AM</span>
-                </article>
-              </article>
-              <article className="alarm">
-                <h3 className="alarm-title">
-                  Device Configuration Backup failed
-                </h3>
-                <h3 className="alarm-description">
-                  NETS-DMZ-C367.nets-international
-                </h3>
-
-                <article className="time-and-date">
-                  <span className="date">28-Jan-2023</span>
-                  <span className="date">09:43:21 AM</span>
-                </article>
-              </article>
-              <article className="alarm">
-                <h3 className="alarm-title">
-                  Device Configuration Backup failed
-                </h3>
-                <h3 className="alarm-description">
-                  NETS-DMZ-C367.nets-international
-                </h3>
-
-                <article className="time-and-date">
-                  <span className="date">28-Jan-2023</span>
-                  <span className="date">09:43:21 AM</span>
-                </article>
-              </article>
+                      <article className="time-and-date">
+                        <span className="date">{alarm.creation_date}</span>
+                        <span className="date">{alarm.modification_date}</span>
+                      </article>
+                    </article>
+                  );
+                })
+              ) : (
+                <p>No Alarms Yet</p>
+              )}
             </article>
           </article>
         </Container>

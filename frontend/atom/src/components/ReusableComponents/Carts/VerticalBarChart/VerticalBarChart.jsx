@@ -13,7 +13,7 @@ import axios, { baseUrl } from "../../../../utils/axios/index";
 import { VerticalBarChartStyle } from "./VerticalBarChart.style";
 
 function VerticalBarChart(props) {
-  const { endPoint } = props;
+  const { endPoint, setVendorValue = () => {}, vendorVal = () => {} } = props;
   const [vendorData, setVendorData] = useState([]);
 
   useEffect(() => {
@@ -47,9 +47,9 @@ function VerticalBarChart(props) {
           }}
           onClick={(data) => {
             console.log(data.activeLabel);
-            props.setVendorValue(data.activeLabel);
+            setVendorValue(data.activeLabel);
 
-            props.vendorVal(data.activeLabel);
+            vendorVal(data.activeLabel);
           }}
         >
           <CartesianGrid strokeDasharray="3 3" />
