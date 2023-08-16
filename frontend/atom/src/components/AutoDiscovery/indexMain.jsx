@@ -288,6 +288,7 @@ const indexMain = () => {
     };
     serviceCalls();
   }, [scanSubnet]);
+
   useEffect(() => {
     const serviceCalls = async () => {
       setLoading(true);

@@ -670,13 +670,13 @@ export const DccmIcon = () => {
         d="M15.0013 20.2076C17.3945 20.2076 19.3346 18.1756 19.3346 15.669C19.3346 13.1624 17.3945 11.1304 15.0013 11.1304C12.6081 11.1304 10.668 13.1624 10.668 15.669C10.668 18.1756 12.6081 20.2076 15.0013 20.2076Z"
         strokeWidth="3"
         strokeLinecap="round"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
       <path
         d="M15 29.2849V29.3M2 11.1303V11.1455M28 11.1303V11.1455M9.22222 27.9233C7.25105 26.9163 5.55515 25.4033 4.29238 23.5252C3.02962 21.6472 2.24102 19.465 2 17.1819M20.7778 27.9233C22.7489 26.9163 24.4448 25.4033 25.7076 23.5252C26.9704 21.6472 27.759 19.465 28 17.1819M6.62222 5.07884C8.94502 3.08783 11.8541 2 14.8556 2C17.8571 2 20.7661 3.08783 23.0889 5.07884"
         strokeWidth="3"
         strokeLinecap="round"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -910,7 +910,7 @@ export const DashboardIcon = () => {
         height="8.68437"
         rx="1"
         strokeWidth="1.5"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
       <rect
         x="1.0752"
@@ -919,7 +919,7 @@ export const DashboardIcon = () => {
         height="6.20312"
         rx="1"
         strokeWidth="1.5"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
       <rect
         x="13.4814"
@@ -928,7 +928,7 @@ export const DashboardIcon = () => {
         height="6.20312"
         rx="1"
         strokeWidth="1.5"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
       <rect
         x="13.4814"
@@ -937,7 +937,7 @@ export const DashboardIcon = () => {
         height="8.68437"
         rx="1"
         strokeWidth="1.5"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -1211,7 +1211,7 @@ export const MoonIcon = () => {
         d="M1.03009 11.42C1.39009 16.57 5.76009 20.76 10.9901 20.99C14.6801 21.15 17.9801 19.43 19.9601 16.72C20.7801 15.61 20.3401 14.87 18.9701 15.12C18.3001 15.24 17.6101 15.29 16.8901 15.26C12.0001 15.06 8.00009 10.97 7.98009 6.14001C7.97009 4.84001 8.24009 3.61001 8.73009 2.49001C9.27009 1.25001 8.62009 0.660007 7.37009 1.19001C3.41009 2.86001 0.70009 6.85001 1.03009 11.42Z"
         stroke-width="1.5"
         stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
     </svg>
   );
@@ -1224,13 +1224,13 @@ export const SunIcon = () => {
         d="M5.5 12C5.5 15.5899 8.41015 18.5 12 18.5C15.5899 18.5 18.5 15.5899 18.5 12C18.5 8.41015 15.5899 5.5 12 5.5C8.41015 5.5 5.5 8.41015 5.5 12Z"
         stroke-width="1.5"
         stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
       <path
         d="M4.86 19.14L4.99 19.01M19.01 19.01L19.14 19.14L19.01 19.01ZM4.86 4.86L4.99 4.99L4.86 4.86ZM21.92 12L22 12L21.92 12ZM2 12L2.08 12L2 12ZM12 2.08L12 2L12 2.08ZM12 22L12 21.92L12 22ZM19.01 4.99L19.14 4.86L19.01 4.99Z"
         stroke-width="2"
         stroke-linecap="round"
-        stroke-linejoin="round"
+        strokeLinejoin="round"
       />
     </svg>
   );

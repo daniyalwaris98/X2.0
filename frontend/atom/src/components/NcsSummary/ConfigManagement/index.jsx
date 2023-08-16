@@ -147,7 +147,7 @@ const index_Main = () => {
 
   useEffect(() => {
     serviceCalls();
-  }, [rowCount]);
+  }, []);
 
   const serviceCalls = async () => {
     setLoading(true);
@@ -156,6 +156,7 @@ const index_Main = () => {
     });
     excelData = res.data;
     setDataSource(excelData && excelData);
+    setDataSourceRestore(excelData);
     setRowCount(excelData && excelData.length);
 
     setLoading(false);
@@ -330,26 +331,27 @@ const index_Main = () => {
       title: "Date",
       dataIndex: "date",
       key: "date",
-      render: (text, record) => (
-        <p
-          style={{
-            color: "#66B127",
-            textDecoration: "underline",
-            textAlign: "left",
-            paddingTop: "10px",
-            paddingLeft: "10px",
-          }}
-        >
-          {text}
-        </p>
-      ),
-
+      render: (text, record) => {
+        return (
+          <p
+            style={{
+              color: "#66B127",
+              textDecoration: "underline",
+              textAlign: "left",
+              paddingTop: "10px",
+              paddingLeft: "10px",
+            }}
+          >
+            {text}
+          </p>
+        );
+      },
       ...getColumnSearchProps(
         "date",
         "Date",
         setRowCount,
         setDataSourceRestore,
-        excelDataRestore,
+        excelData,
         columnFilters
       ),
       ellipsis: true,
@@ -404,45 +406,49 @@ const index_Main = () => {
       dataIndex: "action",
       key: "action",
       align: "center",
-      render: (text, record) => (
-        <button
-          onClick={async () => {
-            setRestoreLoading(true);
-
-            try {
+      render: (text, record) => {
+        return (
+          <button
+            onClick={async () => {
               setRestoreLoading(true);
-              const res = await axios.post(baseUrl + "/downloadConfiguration", {
-                ip_address: ipAddress,
-                date: record.date,
-              });
 
-              if (res?.response?.status == 500) {
-                openSweetAlert(res?.response?.data, "error");
-                setRestoreLoading(false);
-              } else {
-                var blob = new Blob([res.data[1]], {
-                  type: "text/plain;charset=utf-8",
-                });
-                saveAs(blob, `${res.data[0]}.cfg`);
+              try {
+                setRestoreLoading(true);
+                const res = await axios.post(
+                  baseUrl + "/downloadConfiguration",
+                  {
+                    ncm_history_id: record.ncm_history_id,
+                  }
+                );
+
+                if (res?.response?.status == 500) {
+                  openSweetAlert(res?.response?.data, "error");
+                  setRestoreLoading(false);
+                } else {
+                  var blob = new Blob([res.data.value], {
+                    type: "text/plain;charset=utf-8",
+                  });
+                  saveAs(blob, `${res.data.name}.cfg`);
+                  setRestoreLoading(false);
+                }
+              } catch (err) {
+                console.log(err.response);
                 setRestoreLoading(false);
               }
-            } catch (err) {
-              console.log(err.response);
-              setRestoreLoading(false);
-            }
-          }}
-          style={{
-            backgroundColor: "#66B127",
-            color: "white",
-            border: "none",
-            padding: "6px 10px",
-            borderRadius: "4px",
-            cursor: "pointer",
-          }}
-        >
-          Export
-        </button>
-      ),
+            }}
+            style={{
+              backgroundColor: "#66B127",
+              color: "white",
+              border: "none",
+              padding: "6px 10px",
+              borderRadius: "4px",
+              cursor: "pointer",
+            }}
+          >
+            Export
+          </button>
+        );
+      },
 
       ellipsis: true,
     },
