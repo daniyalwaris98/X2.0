@@ -14,174 +14,68 @@ from app.utilities.db_utils import *
 from app.models.atom_models import *
 from app.models.ncm_models import *
 
+from app.ncm.ncm_utils import *
 from app.ncm.ncm_pullers.ncm_puller import NCMPuller
 from app.conf_diff_main.conf_diff import ConfDiff
 
 
 @app.route("/addNcmDevice", methods=["POST"])
 @token_required
-def AddNcmDevice(user_data):
-    if True:
-        try:
-            ncmObj = request.get_json()
-            # if NCM_TABLE.query.with_entities(NCM_TABLE.ip_address).filter_by(ip_address=ncmObj['ip_address']).first() is None:
-            # ncm = NCM_TABLE()
-            # ncm.ip_address = ncmObj['ip_address']
-            # ncm.device_name = ncmObj['device_name']
-            # ncm.device_type = ncmObj['device_type']
-            # ncm.password_group = ncmObj['password_group']
-            # ncm.vendor = ncmObj['vendor']
-            # ncm.function = ncmObj['function']
-            # ncm.status = ncmObj['status']
-            # ncm.source = "Static"
-            # ncm_id = None
-            # queryString = f"select NCM_ID from ncm_table where NCM_ID='{ncmObj['ncm_id']}';"
-            # result = db.session.execute(queryString)
-            # for row in result:
-            #     ncm_id = row[0]
-            # if ncm_id!=None:
-            if "ncm_id" in ncmObj:
-                # if NCM_TABLE.query.with_entities(NCM_TABLE.ip_address).filter_by(ip_address=ncmObj['ip_address']).first() is not None:
-                # ncm.ncm_id = NCM_TABLE.query.with_entities(NCM_TABLE.ncm_id).filter_by(ip_address=ncmObj['ip_address']).first()[0]
-                modification_date = datetime.now()
-                queryString1 = f"update ncm_table set `IP_ADDRESS`='{ncmObj['ip_address']}',`DEVICE_NAME`='{ncmObj['device_name']}',`DEVICE_TYPE`='{ncmObj['device_type']}',`PASSWORD_GROUP`='{ncmObj['password_group']}',`VENDOR`='{ncmObj['vendor']}',`FUNCTION`='{ncmObj['function']}',`STATUS`='{ncmObj['status']}',`SOURCE`='Static',`MODIFICATION_DATE`='{modification_date}' where ncm_id={ncmObj['ncm_id']};"
-                db.session.execute(queryString1)
-                db.session.commit()
-                print(f"Updated {ncmObj['ncm_id']} in NCM", file=sys.stderr)
-                return "Updated Successfully", 200
-            else:
-                creation_date = datetime.now()
-                modification_date = datetime.now()
-                ipList = []
-                deviceList = []
-                query = f"select IP_ADDRESS,DEVICE_NAME from ncm_table;"
-                res = db.session.execute(query)
-                for r in res:
-                    ip_address = r[0]
-                    device_name = r[1]
-                    ipList.append(ip_address)
-                    deviceList.append(device_name)
-                if ncmObj["ip_address"] in ipList:
-                    return "IP Address Already Exists", 500
-                if ncmObj["device_name"] in deviceList:
-                    return "Device Name Already Exists", 500
-                queryString2 = f"INSERT INTO ncm_table (`IP_ADDRESS`,`DEVICE_NAME`,`DEVICE_TYPE`,`PASSWORD_GROUP`,`VENDOR`,`FUNCTION`,`STATUS`,`SOURCE`,`CREATION_DATE`,`MODIFICATION_DATE`) VALUES ('{ncmObj['ip_address']}','{ncmObj['device_name']}','{ncmObj['device_type']}','{ncmObj['password_group']}','{ncmObj['vendor']}','{ncmObj['function']}','{ncmObj['status']}','Static','{creation_date}','{modification_date}');"
-                db.session.execute(queryString2)
-                db.session.commit()
-                print(f"Inserted {ncmObj['ip_address']} in NCM", file=sys.stderr)
-                return "Inserted Successfully", 200
-            # else:
-            #     print(f"Device Already Exists in NCM",file=sys.stderr)
-            #     return "Device Already Exists in NCM",500
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+def addNCMDevice(user_data):
+    try:
+        ncmObj = request.get_json()
+        msg, status = AddNCMDevice(ncmObj, 0, False)
+        return msg, status
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Server Error While Adding NCM Device", 500
 
 
 @app.route("/addNcmDevices", methods=["POST"])
 @token_required
-def AddNcmDevices(user_data):
-    if True:
-        try:
-            response = False
-            response1 = False
-            response2 = False
-            response3 = False
-            responses = []
-            ipList = []
-            deviceList = []
-            ncmObjs = request.get_json()
-            passwordGroups = []
-            queryString1 = f"select IP_ADDRESS from ncm_table;"
-            result1 = db.session.execute(queryString1)
-            for row1 in result1:
-                ipList.append(row1[0])
-            queryString2 = f"select DEVICE_NAME from ncm_table;"
-            result2 = db.session.execute(queryString2)
-            for row2 in result2:
-                deviceList.append(row2[0])
-            for ncmObj in ncmObjs:
-                queryString = f"select PASSWORD_GROUP from password_group_table;"
-                result = db.session.execute(queryString)
-                for row in result:
-                    passwordGroups.append(row[0])
+def sddNCMDevices(user_data):
+    try:
+        successList = []
+        errorList = []
+        ncmObjs = request.get_json()
 
-                if ncmObj["password_group"] not in passwordGroups:
-                    return "Password Group not Found in Password Group Table", 500
-                if ncmObj["ip_address"] in ipList:
-                    return "Duplicate IP Address Found", 500
-                if ncmObj["device_name"] in deviceList:
-                    return "Duplicate Device Name Found", 500
-                if (
-                    NCM_TABLE.query.with_entities(NCM_TABLE.ip_address)
-                    .filter_by(ip_address=ncmObj["ip_address"])
-                    .first()
-                    is None
-                ):
-                    ncm = NCM_TABLE()
-                    ncm.ip_address = ncmObj["ip_address"]
-                    ncm.device_name = ncmObj["device_name"]
-                    ncm.device_type = ncmObj["device_type"]
-                    ncm.password_group = ncmObj["password_group"]
-                    ncm.vendor = ncmObj["vendor"]
-                    ncm.function = ncmObj["function"]
-                    ncm.source = "Static"
-                    ncm.status = ncmObj["status"]
-                    if (
-                        NCM_TABLE.query.with_entities(NCM_TABLE.ip_address)
-                        .filter_by(ip_address=ncmObj["ip_address"])
-                        .first()
-                        is not None
-                    ):
-                        ncm.ncm_id = (
-                            NCM_TABLE.query.with_entities(NCM_TABLE.atom_id)
-                            .filter_by(ip_address=ncmObj["ip_address"])
-                            .first()[0]
-                        )
-                        ncm.modification_date = datetime.now()
-                        UpdateData(ncm)
-                        print(f"Updated {ncmObj['ip_address']} in NCM", file=sys.stderr)
-                        response = "updated"
-                        responses.append(response)
+        row = 0
+        for ncmObj in ncmObjs:
+            row += 1
+            msg, status = AddNCMDevice(ncmObj, row, True)
 
-                    else:
-                        ncm.creation_date = datetime.now()
-                        ncm.modification_date = datetime.now()
-                        InsertData(ncm)
-
-                        print(
-                            f"Inserted {ncmObj['ip_address']} in NCM", file=sys.stderr
-                        )
-                        response1 = "inserted"
-                        responses.append(response1)
-
-                else:
-                    print(f"Device Already Exists in NCM", file=sys.stderr)
-                    response2 = "exists"
-                    responses.append(response2)
-
-            responses = set(responses)
-            responses = list(responses)
-            if len(responses) == 1:
-                if responses[0] == "updated":
-                    return "Updated Successfully", 200
-                elif responses[0] == "inserted":
-                    return "Inserted Successfully", 200
-                elif responses[0] == "exists":
-                    return "Device Already Exists in NCM", 500
+            if status == 500:
+                errorList.append(msg)
             else:
-                return "Updated/Inserted Successfully", 200
-        except Exception as e:
-            print(str(e), file=sys.stderr)
-            traceback.print_exc()
-            return str(e), 500
-    else:
-        print("Service not Available", file=sys.stderr)
-        return jsonify({"Response": "Service not Available"}), 503
+                successList.append(msg)
+
+        responseDict = {
+            "success": len(successList),
+            "error": len(errorList),
+            "error_list": errorList,
+            "success_list": successList,
+        }
+
+        return jsonify(responseDict), 200
+
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Server Error While Adding/Updating NCM Devices", 500
+
+
+@app.route("/editNcmDevice", methods=["POST"])
+@token_required
+def editNCMDevice(user_data):
+    try:
+        ncmObj = request.get_json()
+        msg, status = EditNCMDevice(ncmObj)
+        return msg, status
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return "Server Error While Adding NCM Device", 500
 
 
 @app.route("/getAllNcmDevices", methods=["GET"])
@@ -295,14 +189,14 @@ def AddNcmFromAtom(user_data):
             else:
                 errorList.append(f"{atom.ip_address} : IP Address Not Found In Atom")
 
-        # responseDict = {
-        #     "success": len(successList),
-        #     "error": len(errorList),
-        #     "error_list": errorList,
-        #     "success_list": successList,
-        # }
+        responseDict = {
+            "success": len(successList),
+            "error": len(errorList),
+            "error_list": errorList,
+            "success_list": successList,
+        }
 
-        # return jsonify(responseDict), 200
+        return jsonify(responseDict), 200
 
         msg = f"** NCM Import Summary **\nSuccessful : {len(successList)}\nFailed : {len(errorList)}"
 
@@ -333,7 +227,7 @@ def DeleteNcmDevice(user_data):
                 errorList.append(f"{ip} : No Device Found")
 
             ncm, atom = result
-            
+
             if DeleteDBData(ncm):
                 responseList.append(f"{ip} : Device Deleted Successfully")
             else:
@@ -407,11 +301,9 @@ def GetAllConfigurationDatesInString(user_data):
         if ncmObj["ncm_device_id"] is None:
             return "NCM Device ID Is Empty", 500
 
-        results = (
-            NCM_History_Table.query
-            .filter(NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"])
-            .all()
-        )
+        results = NCM_History_Table.query.filter(
+            NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"]
+        ).all()
 
         objList = []
         for history in results:
@@ -587,14 +479,10 @@ def ConfigurationComparison(user_data):
             NCM_History_Table.configuration_date == ncmObj["date1"],
         ).first()
 
-        history2 = (
-            NCM_History_Table.query()
-            .filter(
-                NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
-                NCM_History_Table.configuration_date == ncmObj["date2"],
-            )
-            .first()
-        )
+        history2 = NCM_History_Table.query.filter(
+            NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
+            NCM_History_Table.configuration_date == ncmObj["date2"],
+        ).first()
 
         if history1 is None or history2 is None:
             return "One of the Configurations Not Found", 500
@@ -717,7 +605,7 @@ def DownloadConfiguration(user_data):
         history = NCM_History_Table.query.filter(
             NCM_History_Table.ncm_history_id == ncmObj["ncm_history_id"]
         ).first()
-        
+
         if history is None:
             return "Configuration Does Not Exits", 500
 
@@ -725,23 +613,20 @@ def DownloadConfiguration(user_data):
             cwd = os.getcwd()
             path = cwd + f"/app/configuration_backups/{history.file_name}"
             pathExists = os.path.exists(path)
-            
+
             if pathExists:
                 f = open(path, "r")
                 output = f.read()
                 if output == "":
                     return "Configuration Does Not Exist", 500
                 else:
-                   return jsonify({
-                       'name': history.file_name,
-                       'value' : output
-                   }) , 200
+                    return jsonify({"name": history.file_name, "value": output}), 200
 
             else:
                 return "File Does Not Exist", 500
         else:
             return "File Does Not Exist", 500
-        
+
     except Exception as e:
         print(str(e), file=sys.stderr)
         traceback.print_exc()
@@ -752,23 +637,21 @@ def checkFile(id):
     queryString = f"select file_name from ncm_history_table h1 where h1.ncm_device_id= {id} and h1.configuration_date = (SELECT MAX(h2.configuration_date) FROM ncm_history_table h2 WHERE h2.ncm_device_id = h1.ncm_device_id);"
     result = db.session.execute(queryString)
     file_name = ""
-    
-    for row in result:
-        file_name+=row[0]
-    
-    if file_name!="":
 
+    for row in result:
+        file_name += row[0]
+
+    if file_name != "":
         cwd = os.getcwd()
-        path = cwd+f"/app/configuration_backups/{file_name}"
+        path = cwd + f"/app/configuration_backups/{file_name}"
         pathExists = os.path.exists(path)
-        
+
         output = ""
         if pathExists:
-            
-            f = open(path,"r")
+            f = open(path, "r")
             output = f.read()
             if output == "":
-                return None    
+                return None
 
             return file_name, output
 
@@ -776,7 +659,6 @@ def checkFile(id):
             return None
     else:
         return None
-
 
 
 def bulkDownloadThread(ncmObj, responseList, errorList):
@@ -787,55 +669,56 @@ def bulkDownloadThread(ncmObj, responseList, errorList):
         errorList.append(ncmPuller.response)
     else:
         ncmPuller.backup_config()
-        
+
         if ncmPuller.status == 200:
             responseList.append(ncmPuller.response)
         else:
             errorList.append(ncmPuller.response)
 
 
-@app.route('/downloadBulkConfiguration',methods = ['POST'])
+@app.route("/downloadBulkConfiguration", methods=["POST"])
 @token_required
 def DownloadBulkConfiguration(user_data):
     if True:
         try:
             ips = request.get_json()
-            print(ips,file=sys.stderr)
+            print(ips, file=sys.stderr)
             finalResult = []
-            
+
             pullerList = []
             for ip in ips:
-                
                 file_data = checkFile(ip)
-                
+
                 if file_data is None:
                     pullerList.append(ip)
                 else:
                     file_name, output = file_data
-                    finalResult.append({
-                        'name' : file_name,
-                        'value' : output
-                    })
-             
-            threads = []   
-            for ip in pullerList:    
-                thread = threading.Thread(target=bulkDownloadThread, args=(ip, finalResult, ))
+                    finalResult.append({"name": file_name, "value": output})
+
+            threads = []
+            for ip in pullerList:
+                thread = threading.Thread(
+                    target=bulkDownloadThread,
+                    args=(
+                        ip,
+                        finalResult,
+                    ),
+                )
                 thread.start()
                 threads.append(thread)
-            
+
             for thread in threads:
                 thread.join()
 
-            
-            return jsonify(finalResult),200
-            
+            return jsonify(finalResult), 200
+
         except Exception as e:
-            print(str(e),file=sys.stderr)
+            print(str(e), file=sys.stderr)
             traceback.print_exc()
-            return str(e),500
+            return str(e), 500
     else:
         print("Authentication Failed", file=sys.stderr)
-        return jsonify({'message': 'Authentication Failed'}), 401  
+        return jsonify({"message": "Authentication Failed"}), 401
 
 
 @app.route("/deleteConfigurations", methods=["POST"])

@@ -38,6 +38,79 @@ def EditAtom(device, row):
         print(error, file=sys.stderr)
         traceback.print_exc()
         return error, 500
+    
+def ValidateSite(device):
+    # Site Check
+    site_exist = None
+    default_site = Site_Table.query.filter(Site_Table.site_id == 1).first()
+    
+    if 'site_name' not in device:
+        pass
+    elif device['site_name'] is None:
+        pass
+    else:
+        device['site_name'] = device['site_name'].strip()
+        
+        if device['site_name'] == '':
+            pass
+        else:
+            site_exist = Site_Table.query.filter_by(
+                site_name=device['site_name']).first()
+            if site_exist is None:
+                return f"{device['ip_address']} : Site Does Not Exists", 500
+            else:
+                return site_exist, 200
+            
+    return default_site, 200
+
+def ValidateRack(device, site):
+    # Rack Check
+    default_rack = Rack_Table.query.filter(Rack_Table.rack_id == 1).first()
+    
+    if 'rack_name' not in device:
+        pass
+    elif device['rack_name'] is None:
+        pass
+    else:
+        
+        device['rack_name'] = device['rack_name'].strip()
+        if device['rack_name'] == '':
+            pass
+        else:
+            rack = Rack_Table.query.filter_by(
+                    rack_name=device['rack_name']).first()
+            if rack is None:
+                return f"{device['ip_address']} : Rack Does Not Exists", 500
+                
+            elif rack.site_id != site.site_id:
+                return f"{device['ip_address']} : Rack And Site Does Not Match", 500
+            
+            else:
+                return rack, 200
+            
+    return default_rack, 200
+
+
+def ValidatePasswordGroup(device):
+    if 'password_group' not in device:
+        pass
+    elif device['password_group'] is None:
+        pass
+    else:
+        device['password_group'] = device['password_group'].strip()
+        
+        if device['password_group'] == "":
+            pass
+        else:
+            password = Password_Group_Table.query.filter_by(password_group=device['password_group']).first()
+            if password is None:
+                return f"{device['ip_address']} : Password Group Does Not Exist", 500
+            else:
+                return password, 200
+    
+    password = Password_Group_Table.query.filter(Password_Group_Table.password_group == 'NA').first()
+    return password, 200
+
 
 def ValidateAtom(device, row, update):
     try:
@@ -104,54 +177,21 @@ def ValidateAtom(device, row, update):
         if device['device_type'] not in device_type_list:
             return f"Row {row} : Device Type Is Not Supported - {device['device_type']}", 500
 
-        # Site Check
-        site_exist = None
-        if 'site_name' not in device:
-            return f"{device['ip_address']} : Site Name Can Not be Empty", 500
-        if device['site_name'] is None:
-            error = f"{device['ip_address']} : Site Name Can Not be Empty"
-            return error, 500
+        site_exist, site_status = ValidateSite(device)
+        if site_status == 500:
+            return site_exist, 500
 
-        device['site_name'] = device['site_name'].strip()
-        if device['site_name'] == '':
-            return f"{device['ip_address']} : Site Name Can Not be Empty", 500
-
-        else:
-            site_exist = Site_Table.query.filter_by(
-                site_name=device['site_name']).first()
-            if site_exist is None:
-                return f"{device['ip_address']} : Site Name Does Not Exists", 500
-
-        # Rack Check
-        if 'rack_name' not in device:
-            return f"{device['ip_address']} : Rack Name Can Not be Empty", 500
-        if device['rack_name'] is None:
-            error = f"{device['ip_address']} : Rack Name Can Not be Empty"
-            return error, 500
-
-        device['rack_name'] = device['rack_name'].strip()
-        if device['rack_name'] == '':
-            return f"{device['ip_address']} : Rack Name Can Not be Empty", 500
-        else:
-            if Rack_Table.query.filter_by(
-                    rack_name=device['rack_name'], site_id=site_exist.site_id).first() is None:
-                return f"{device['ip_address']} : Rack Name And Site Name Does Not Match", 500
-
-        if 'password_group' not in device:
-            return f"{device['ip_address']} : Password Group Can Not be Empty", 500
-
-        if device['password_group'] is None:
-            return f"{device['ip_address']} : Password Group Can Not be Empty", 500
+        rack_exist, rack_status = ValidateRack(device, site_exist)
+        if rack_status == 500:
+            return rack_exist, 500
         
-        device['password_group'] = device['password_group'].strip()
-        
-        if device['password_group'] == "":
-            return f"{device['ip_address']} : Password Group Can Not be Empty", 500
-        
-        if Password_Group_Table.query.filter_by(password_group=device['password_group']).first() is None:
-            return f"{device['ip_address']} : Password Group Does Not Exist", 500
+        password_exist, passowrd_status = ValidatePasswordGroup(device)
+        if passowrd_status == 500:
+            return password_exist, passowrd_status
 
-        return "Complete", 200
+        return {"rack" : rack_exist,
+                "password_group" : password_exist
+                }, 200
 
     except Exception:
         error = f"Error - Row {row} : Exception"
@@ -164,10 +204,13 @@ def AddCompleteAtom(device, row, update):
 
     try:
 
-        msg, status = ValidateAtom(device, row, update)
+        response, status = ValidateAtom(device, row, update)
 
         if status == 500:
-            return msg, status
+            return response, status
+        
+        rack = response['rack']
+        password = response['password_group']
 
         atom = Atom_Table.query.filter_by(
             ip_address=device['ip_address'].strip()).first()
@@ -182,10 +225,6 @@ def AddCompleteAtom(device, row, update):
             atom = Atom_Table()
             atom.ip_address = device['ip_address'].strip()
 
-        rack = Rack_Table.query.filter_by(
-            rack_name=device['rack_name'].strip()).first()
-        
-        password = Password_Group_Table.query.filter_by(password_group=device['password_group'].strip()).first()
         
         atom.rack_id = rack.rack_id
         atom.device_name = device['device_name'].strip()
@@ -319,7 +358,7 @@ def AddTansitionAtom(device, row, update):
             if Atom_Transition_Table.query.filter_by(ip_address=device['ip_address']).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 500
 
-        msg, status = ValidateAtom(device, row, update)
+        # msg, status = ValidateAtom(device, row, update)
 
         transObj = Atom_Transition_Table.query.filter_by(
             ip_address=device["ip_address"]
@@ -459,6 +498,9 @@ def addPasswordGroup(passObj, row):
 
         if passObj['password_group'] == "":
             return f"Row {row} : Password Group Can Not be Empty", 500
+        
+        if passObj['password_group'] == "NA":
+            return f"{passObj['password_group']} : Password Group Name Is Not Allowed", 500
 
         # row 0 means single row is being added statically and password Group can not be updated through Insertion
         # else multiple row are being added by using file import and row will be updated if password Group already
