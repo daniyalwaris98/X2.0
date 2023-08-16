@@ -81,23 +81,26 @@ bucket = "monitoring"
 # client = InfluxDBClient(url="http://influxdb:8086", token=token, org=org)
 client = InfluxDBClient(url="http://updated_influx_db:8086", token=token, org=org)
 
-import threading
-from app.db_migrations.migrations import *
+from app.db_migrations.migrations_utils import *
 
 try:
-    run_migration()
+    
+    while True:
+        print("Connecting To MySQL...", file=sys.stderr)
+        try:
+            db.session.execute('SELECT 1')
+            break
+        except Exception:
+            print("** ERROR : MySQL Connection Refused **", file=sys.stderr)
+            time.sleep(5)
+    
+    create_database()
+    default_setup()
 except Exception:
     traceback.print_exc()
 
-try:
-    thread = threading.Thread(target=run_setup, args=())
-    thread.start()
 
-except Exception:
-    traceback.print_exc()
-
-# db.drop_all()
-
+from app.db_migrations import migration_routes
 
 from app.license import license_generator
 

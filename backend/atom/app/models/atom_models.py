@@ -29,8 +29,8 @@ class Site_Table(db.Model):
     status = db.Column(db.String(50), nullable=False)
 
     region_name = db.Column(db.String(50), nullable=True)
-    latitude = db.Column(db.String(70), nullable=True)
-    longitude = db.Column(db.String(70), nullable=True)
+    latitude = db.Column(db.String(70), default="", nullable=True)
+    longitude = db.Column(db.String(70), default="", nullable=True)
     city = db.Column(db.String(50), nullable=True)
     total_count = db.Column(db.Integer, nullable=True)
 
@@ -82,14 +82,15 @@ class Atom_Table(db.Model):
     atom_id = db.Column(db.Integer, primary_key=True, autoincrement=True)
     rack_id = db.Column(
         db.Integer,
-        ForeignKey("rack_table.rack_id", ondelete="SET NULL", onupdate="CASCADE"),
+        ForeignKey("rack_table.rack_id", ondelete="SET DEFAULT", onupdate="CASCADE"),
         nullable=True,
+        default=1,
     )
     password_group_id = db.Column(
         db.Integer,
         ForeignKey(
             "password_group_table.password_group_id",
-            ondelete="SET NULL",
+            ondelete="SET DEFAULT",
             onupdate="CASCADE",
         ),
         nullable=True,
