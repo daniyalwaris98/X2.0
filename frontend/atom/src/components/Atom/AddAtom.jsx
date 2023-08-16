@@ -961,11 +961,12 @@ const AddAtom = (props) => {
                       setSiteNameR(e.target.value);
                     }}
                   >
+                    <option value="">Select Site Name</option>
                     {siteArrayR.map((item, index) => {
                       return (
-                        <>
-                          <option>{item}</option>
-                        </>
+                        <option key={index} value={item}>
+                          {item}
+                        </option>
                       );
                     })}
                   </Styledselect>
