@@ -331,28 +331,28 @@ def GetDeviceDetailsByIpAddress(user_data):
             objDict["software_type"] = uam.software_type
             objDict["software_version"] = uam.software_version
             objDict["patch_version"] = uam.patch_version
-            objDict["creation_date"] = FormatDate(uam.creation_date)
-            objDict["modification_date"] = FormatDate(uam.modification_date)
+            objDict["creation_date"] = uam.creation_date
+            objDict["modification_date"] = uam.modification_date
             objDict["status"] = uam.status
             objDict["ru"] = atom.device_ru
             objDict["department"] = atom.department
             objDict["section"] = atom.section
             objDict["function"] = atom.function
             objDict["manufacturer"] = uam.manufacturer
-            objDict["hw_eos_date"] = FormatDate((uam.hw_eos_date))
-            objDict["hw_eol_date"] = FormatDate((uam.hw_eol_date))
-            objDict["sw_eos_date"] = FormatDate((uam.sw_eos_date))
-            objDict["sw_eol_date"] = FormatDate((uam.sw_eol_date))
+            objDict["hw_eos_date"] = (uam.hw_eos_date)
+            objDict["hw_eol_date"] = (uam.hw_eol_date)
+            objDict["sw_eos_date"] = (uam.sw_eos_date)
+            objDict["sw_eol_date"] = (uam.sw_eol_date)
             objDict["virtual"] = atom.virtual
             objDict["authentication"] = uam.authentication
             objDict["serial_number"] = uam.serial_number
             objDict["pn_code"] = uam.pn_code
-            objDict["manufacturer_date"] = FormatDate((uam.manufacturer_date))
+            objDict["manufacturer_date"] = (uam.manufacturer_date)
             objDict["hardware_version"] = uam.hardware_version
             objDict["source"] = uam.source
             objDict["stack"] = uam.stack
             objDict["contract_number"] = uam.contract_number
-            objDict["contract_expiry"] = FormatDate((uam.contract_expiry))
+            objDict["contract_expiry"] = (uam.contract_expiry)
             return objDict, 200
         except Exception as e:
             traceback.print_exc()

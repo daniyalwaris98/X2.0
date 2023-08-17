@@ -510,18 +510,21 @@ def addPasswordGroup(passObj, row, update):
             password_group=passObj['password_group']).first()
         print(password_group, file=sys.stderr)
         
-        exit = True
-        if not update:
-            if password_group is not None:
+        exit = False
+        if password_group is not None:
+            if not update:
                 return f"{passObj['password_group']} : Password Group Already Exists", 500
             else:
-                exit = False
+                exit = True
+                
         
         if not exit:
             password_group = Password_Group_Table()
             password_group.password_group = passObj['password_group']
 
-
+        # if not (passObj.get('password') and passObj.get('password', '').strip()):
+        #     pass
+        
         if 'password' not in passObj.keys():
             return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
 

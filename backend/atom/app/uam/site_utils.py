@@ -165,6 +165,7 @@ def GetAllSites():
         siteObjList = []
         siteObjs = Site_Table.query.all()
         for siteObj in siteObjs:
+
             siteDataDict = {
                 "site_id": siteObj.site_id,
                 "site_name": siteObj.site_name,
@@ -191,14 +192,19 @@ def DeleteSite(site_name):
 
         if site is None:
             return f"{site_name} : Site Name Not Found", 500
-
+        
+        if site.site_id == 1:
+            return f"{site_name} : Default Site Can Not Be Deleted", 500
+        
         racks = Rack_Table.query.filter_by(site_id=site.site_id).all()
         for rack in racks:
             atoms = Atom_Table.query.filter_by(rack_id=rack.rack_id).all()
-            if len(atoms) > 0:
-                return f"{site_name} : Site Is In Use. Site Can Not Be Deleted", 500
-            else:
-                DeleteDBData(rack)
+            
+            for atom in atoms:
+                atom.rack_id = 1
+                UpdateDBData(atom)
+            
+            DeleteDBData(rack)
 
         if DeleteDBData(site) == 200:
             return f"{site_name} : Site & Its Racks Deleted Successfully", 200

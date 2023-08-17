@@ -40,6 +40,7 @@ def deleteSite(user_data):
         errorList = []
         
         for site_name in site_names:
+            
             msg, status = DeleteSite(site_name)
             
             if status == 200:

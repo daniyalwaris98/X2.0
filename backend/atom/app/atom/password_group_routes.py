@@ -69,7 +69,7 @@ def AddPasswordGroups(user_data):
 def EditUser(user_data):
     try:
         passObj = request.get_json()
-        response, status = addPasswordGroup(passObj, 1)
+        response, status = editPasswordGroup(passObj)
 
         print(response, file=sys.stderr)
 
@@ -142,7 +142,7 @@ def GetUsers(user_data):
 
         for userObj in userObjs:
             userDataDict = {
-                "password_group_id" : userObj.pasword_group_id,
+                "password_group_id" : userObj.password_group_id,
                 "password_group": userObj.password_group,
                 "username": userObj.username,
                 "password": userObj.password,
