@@ -5,7 +5,7 @@ from app.uam.site_utils import *
 def addSite(user_data):
     try:
         siteObj = request.get_json()
-        msg, status = AddSite(siteObj, False)
+        msg, status = AddSite(siteObj)
 
         print(msg, file=sys.stderr)
 
@@ -20,7 +20,7 @@ def addSite(user_data):
 def editSite(user_data):
     try:
         siteObj = request.get_json()
-        msg, status = AddSite(siteObj, True)
+        msg, status = EditSite(siteObj)
 
         print(msg, file=sys.stderr)
 
