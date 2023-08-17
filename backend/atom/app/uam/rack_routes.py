@@ -6,7 +6,7 @@ from app.uam.rack_utils import *
 def addRack(user_data):
     try:
         rackObj = request.get_json()
-        msg, status = AddRack(rackObj, False)
+        msg, status = AddRack(rackObj)
 
         print(msg, file=sys.stderr)
 
@@ -21,7 +21,7 @@ def addRack(user_data):
 def editRack(user_data):
     try:
         rackObj = request.get_json()
-        msg, status = AddRack(rackObj, True)
+        msg, status = EditRack(rackObj)
 
         print(msg, file=sys.stderr)
 

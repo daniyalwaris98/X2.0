@@ -485,7 +485,7 @@ def GetTransitionAtoms():
     return objList
 
 
-def addPasswordGroup(passObj, row):
+def addPasswordGroup(passObj, row, update):
     try:
 
         if 'password_group' not in passObj.keys():
@@ -509,15 +509,18 @@ def addPasswordGroup(passObj, row):
         password_group = Password_Group_Table.query.filter_by(
             password_group=passObj['password_group']).first()
         print(password_group, file=sys.stderr)
-        if row == 0:
+        
+        exit = True
+        if not update:
             if password_group is not None:
                 return f"{passObj['password_group']} : Password Group Already Exists", 500
-
-        update = True
-        if password_group is None:
-            update = False
+            else:
+                exit = False
+        
+        if not exit:
             password_group = Password_Group_Table()
             password_group.password_group = passObj['password_group']
+
 
         if 'password' not in passObj.keys():
             return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
