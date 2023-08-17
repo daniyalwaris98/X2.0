@@ -75,5 +75,5 @@ ncm_command_list = {
     "cisco_ios_xr": ["show running-config", "show ip interface brief", "show version"],
     "cisco_nxos": ["show running-config", "show ip interface brief", "show version"],
     "cisco_wlc": ["show running-config", "show ip interface brief", "show version"],
-    "fortinet": ["show full-configuration", "show ip interface brief", "show version"],
+    "fortinet": ["show full-configuration"],
 }
