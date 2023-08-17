@@ -27,7 +27,7 @@ const EditSubnet = (props) => {
     setEditLoading(true);
     try {
       await axios
-        .post(baseUrl + "/addNcmDevice", device)
+        .post(baseUrl + "/editNcmDevice", device)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
@@ -82,7 +82,7 @@ const EditSubnet = (props) => {
     device.module.includes("ncm")
   );
 
-  let [id, setid] = useState(device ? getString(device.ncm_id) : "");
+  let [id, setid] = useState(device ? getString(device.ncm_device_id) : "");
   let [vendor, setVendor] = useState(device ? getString(device.vendor) : "");
 
   let [myFunction, setFunction] = useState(
@@ -205,6 +205,7 @@ const EditSubnet = (props) => {
                 <StyledInput
                   value={ipAddress}
                   onChange={(e) => setIpAddreess(e.target.value)}
+                  readOnly
                 />
               </InputWrapper>
 
@@ -244,7 +245,7 @@ const EditSubnet = (props) => {
                     className="rectangle"
                     required
                     placeholder="select"
-                    value={vendor}
+                    value={vendor.toLowerCase()}
                     onChange={(e) => {
                       setVendor(e.target.value);
                     }}
@@ -273,7 +274,10 @@ const EditSubnet = (props) => {
                     <option value="">Select Function</option>
                     {ncmFunctions.map((ncmFunction, index) => {
                       return (
-                        <option value={ncmFunction.name} key={index}>
+                        <option
+                          value={ncmFunction.name.toLowerCase()}
+                          key={index}
+                        >
                           {ncmFunction.name}
                         </option>
                       );

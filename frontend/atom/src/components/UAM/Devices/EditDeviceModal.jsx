@@ -167,7 +167,6 @@ const EditDevicesModel = (props) => {
       serial_number,
       pn_code,
       subrack_id_number,
-
       source,
       stack,
       contract_number,

@@ -416,6 +416,8 @@ const indexMain = () => {
     try {
       const res = await axios.get(baseUrl + "/getAllNcmDevices");
       excelData = res.data;
+
+      console.log("excelData", excelData);
       setDataSource(excelData);
       setRowCount(excelData.length);
       setmainTableloadingData(false);
