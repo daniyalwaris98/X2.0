@@ -57,6 +57,7 @@ const index = () => {
         username: userData.user_name,
       })
       .then((res) => {
+        console.log("res", res);
         setLicenseData(res.data);
       })
       .catch((err) => {
