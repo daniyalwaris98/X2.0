@@ -224,6 +224,7 @@ def AddCompleteAtom(device, row, update):
         else:
             atom = Atom_Table()
             atom.ip_address = device['ip_address'].strip()
+            atom.onboard_status = "False"
 
         
         atom.rack_id = rack.rack_id
@@ -291,8 +292,6 @@ def AddCompleteAtom(device, row, update):
                 atom.virtual = 'N/A'
         else:
             atom.virtual = 'N/A'
-
-        atom.onboard_status = "False"
         
         if "vendor" in device.keys():
             if device['vendor'] is not None:
