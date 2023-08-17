@@ -142,17 +142,19 @@ def EditUamDevice(deviceObj):
         
         device, atom = result
         
+        
+        
         if 'rack_name' not in deviceObj.keys():
-            return "Rack Can Not Be Empty", 500
-        
-        if deviceObj["rack_name"] is None:
-            return "Rack Can Not Be Empty", 500    
-        
-        rack = Rack_Table.query.filter(Rack_Table.rack_name == deviceObj["rack_name"]).first()
-        if rack is None:
-            return "Invalid Rack Name", 500
-        
-        atom.rack_id = rack.rack_id
+            atom.rack_id = 1
+        elif deviceObj["rack_name"] is None:
+            atom.rack_id = 1
+        else:
+            rack = Rack_Table.query.filter(Rack_Table.rack_name == deviceObj["rack_name"]).first()
+            if rack is None:
+                return "Invalid Rack Name", 500  
+            else:
+                atom.rack_id = rack.rack_id
+            
         atom.function = deviceObj["function"]
         atom.ru = deviceObj["ru"]
         atom.department = deviceObj["department"]
@@ -171,6 +173,28 @@ def EditUamDevice(deviceObj):
         device.source = deviceObj["source"]
         device.stack = deviceObj["stack"]
         device.contract_number = deviceObj["contract_number"]
+        
+        
+        if 'status' not in deviceObj.keys():
+            return "Status Is Missing", 500
+        
+        if deviceObj['status'] is None:
+            return "Status Is Missing", 500
+        
+        deviceObj['status'] = str(deviceObj['status']).strip()
+        
+        if deviceObj['status'] == 'Production':
+            pass
+        elif deviceObj['status'] == 'Dismantled':
+            pass
+        elif deviceObj['status'] == 'Maintenance':
+            pass
+        elif deviceObj['status'] == 'Undefined':
+            pass
+        else:
+            return "Status Is Invalid", 500
+        
+        UpdateUAMStatus(atom.ip_address, deviceObj['status'])
 
         UpdateDBData(device)
         
@@ -178,3 +202,90 @@ def EditUamDevice(deviceObj):
     except Exception:
         traceback.print_exc()
         return "Exeception Occured", 500
+
+
+
+def UpdateUAMStatus(ip, status):
+    try:
+        result = (
+            db.session.query(UAM_Device_Table, Atom_Table)
+            .join(Atom_Table, UAM_Device_Table.atom_id == Atom_Table.atom_id)
+            .filter(Atom_Table.ip_address == ip)
+            .first()
+        )
+
+        if result is None:
+            return f"{ip} : No Device Found", 500
+
+        uam, atom = result
+        
+        if status != "Production":
+            atom.onboard_status = "False"
+
+        if UpdateDBData(atom) == 200:
+            print(
+                f"\n{ip} : Device ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr
+            )
+
+            # change status to dismantle in device table
+            uam.status = status
+            if UpdateDBData(uam) == 200:
+                print(
+                    f"{ip} : {atom.device_name} : Device Status Updated Successfully",
+                    file=sys.stderr,
+                )
+                # change all board status
+                boardObjs = (
+                    db.session.query(Board_Table)
+                    .filter(Board_Table.uam_id == uam.uam_id)
+                    .all()
+                )
+
+                for boardObj in boardObjs:
+                    boardObj.status = status
+                    UpdateDBData(boardObj)
+                    print(
+                        f"{ip} : {boardObj.board_name} : Module Status Updated Succedssfully",
+                        file=sys.stderr,
+                    )
+
+                # change all sub-board status
+                subboardObjs = (
+                    db.session.query(Subboard_Table)
+                    .filter(Subboard_Table.uam_id == uam.uam_id)
+                    .all()
+                )
+
+                for subboardObj in subboardObjs:
+                    subboardObj.status = status
+                    UpdateDBData(subboardObj)
+                    print(
+                        f"{ip} : {subboardObj.subboard_name} : Stack Switche Updated Successfully",
+                        file=sys.stderr,
+                    )
+
+                # change all SFP status
+                sfpObjs = (
+                    db.session.query(Sfps_Table)
+                    .filter(Sfps_Table.uam_id == uam.uam_id)
+                    .all()
+                )
+
+                for sfpObj in sfpObjs:
+                    sfpObj.status = status
+                    UpdateDBData(sfpObj)
+                    print(
+                        f"{ip} : {sfpObj.sfp_id} : SFP Status Updated Successfully",
+                        file=sys.stderr,
+                    )
+
+                return f"{ip} : Device Status Updated Successfully To {status}", 200
+
+            else:
+                return f"{ip} : Error While Updating Device Status In UAM", 200
+                
+        else:
+            return f"{ip} : Error While Updating Device Status In Atom", 500
+    except Exception:
+        traceback.print_exc()
+        return f"{ip} : Error Occured While Status Update"
