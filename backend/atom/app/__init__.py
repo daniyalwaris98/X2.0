@@ -131,6 +131,9 @@ from app.monitoring_device.routes import alerts_routes
 from app.monitoring_device.routes import monitoring_credentials_routes
 from app.monitoring_device.routes import monitoring_scheduler
 
+from app.db_monitoring.routes import db_routes
+from app.db_monitoring.routes import db_password_group_routes
+
 from app.ncm import ncm_routes
 from app.ncm import ncm_dashboard_routes
 
