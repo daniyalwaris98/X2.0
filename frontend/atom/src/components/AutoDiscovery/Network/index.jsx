@@ -329,6 +329,41 @@ const Atom = () => {
         </>
       ),
     },
+    {
+      title: "Scan Status",
+      dataIndex: "scan_status",
+      key: "scan_status",
+      width: "8%",
+      render: (text, record) => {
+        return (
+          <p style={{ textAlign: "center", paddingTop: "16px" }}>{text}</p>
+        );
+      },
+
+      filters: [
+        {
+          text: "Active",
+          value: "Active",
+        },
+        {
+          text: "In Active",
+          value: "InActive",
+        },
+      ],
+      onFilter: (value, record) => {
+        return record.scan_status.indexOf(value) === 0;
+      },
+
+      // ...getColumnSearchProps(
+      //   "scan_status",
+      //   "Scan Status",
+      //   setRowCount,
+      //   setDataSource,
+      //   excelData,
+      //   columnFilters
+      // ),
+      ellipsis: true,
+    },
 
     {
       title: "Network Name",
@@ -392,24 +427,7 @@ const Atom = () => {
       ),
       ellipsis: true,
     },
-    {
-      title: "Scan Status",
-      dataIndex: "scan_status",
-      key: "scan_status",
-      render: (text, record) => (
-        <p style={{ textAlign: "center", paddingTop: "16px" }}>{text}</p>
-      ),
 
-      ...getColumnSearchProps(
-        "scan_status",
-        "Scan Status",
-        setRowCount,
-        setDataSource,
-        excelData,
-        columnFilters
-      ),
-      ellipsis: true,
-    },
     {
       title: "Excluded Ip Range",
       dataIndex: "excluded_ip_range",
