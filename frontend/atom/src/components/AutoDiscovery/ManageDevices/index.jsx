@@ -273,8 +273,6 @@ const index = () => {
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.data, "error");
-            console.log(response?.data);
-            // openSweetAlert("Something Went Wrong!", "error");
             setLoading(false);
           } else {
             openSweetAlert("WMI Added Successfully", "success");
@@ -286,17 +284,12 @@ const index = () => {
               axios
                 .get(baseUrl + "/getWMICredentials")
                 .then((response) => {
-                  console.log("getWMICredentials", response);
-                  // setcred(response.data);
-                  // setCred_group(response.data[0]);
                   excelData = response.data;
                   setDataSource(excelData);
                   setRowCount(excelData.length);
                 })
                 .catch((error) => {
                   console.log(error);
-                  // openSweetAlert("Something Went Wrong!", "danger");
-                  // setLoading(false);
                 })
             );
             setLoading(false);
@@ -709,8 +702,6 @@ const index = () => {
                 .get(baseUrl + "/getManageDevices")
                 .then((response) => {
                   setCreLoading(false);
-
-                  console.log(response.data);
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);

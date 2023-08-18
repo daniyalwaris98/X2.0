@@ -763,7 +763,7 @@ const Atom = () => {
       title: "Status",
       dataIndex: "status",
       key: "status",
-      width: "6%",
+      width: "3%",
       render: (text, record) => {
         return (
           <span className="status-icon" title={record.message}>
@@ -772,28 +772,29 @@ const Atom = () => {
         );
       },
 
-      ...getColumnSearchProps(
-        "status",
-        "Search by 200 / 500",
-        setRowCount,
-        setDataSource,
-        excelData,
-        columnFilters
-      ),
+      filters: [
+        {
+          text: "Completed",
+          value: 200,
+        },
+        {
+          text: "Not Completed",
+          value: 500,
+        },
+      ],
+      onFilter: (value, record) => {
+        return record.status == value;
+      },
 
-      // filters: [
-      //   {
-      //     text: "true",
-      //     value: "200",
-      //   },
-      //   {
-      //     text: "false",
-      //     value: "500",
-      //   },
-      // ],
-      // filteredValue: filteredInfo.status || null,
-      // onFilter: (value, record) =>
-      //   setFilteredInfo(record.status.includes(value)),
+      // ...getColumnSearchProps(
+      //   "status",
+      //   "Search by 200 / 500",
+      //   setRowCount,
+      //   setDataSource,
+      //   excelData,
+      //   columnFilters
+      // ),
+
       ellipsis: true,
     },
     {

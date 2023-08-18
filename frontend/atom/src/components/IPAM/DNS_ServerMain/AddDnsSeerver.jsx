@@ -87,7 +87,6 @@ const AddDNSModel = (props) => {
               axios
                 .get(baseUrl + "/getAllDnsServers")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -147,8 +146,6 @@ const AddDNSModel = (props) => {
       await axios
         .post(baseUrl + "/testDns ", testing)
         .then((response) => {
-          console.log(response);
-
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
             setTestLoading(false);

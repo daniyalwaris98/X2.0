@@ -190,6 +190,8 @@ const Atom = () => {
     try {
       const res = await axios.get(baseUrl + "/getPasswordGroups");
       excelData = res.data;
+
+      console.log("excelData", excelData);
       setDataSource(excelData);
       setRowCount(excelData.length);
       setLoading(false);
@@ -298,7 +300,40 @@ const Atom = () => {
       ),
     },
     {
-      title: "IP Address",
+      title: "Password Group Type",
+      dataIndex: "password_group_type",
+      key: "password_group_type",
+      align: "center",
+      render: (text, record) => (
+        <p style={{ textAlign: "center", paddingTop: "10px" }}>{text}</p>
+      ),
+
+      filters: [
+        {
+          text: "Telnet",
+          value: "Telnet",
+        },
+        {
+          text: "SSH",
+          value: "SSH",
+        },
+      ],
+
+      onFilter: (value, record) =>
+        record.password_group_type.indexOf(value) === 0,
+
+      // ...getColumnSearchProps(
+      //   "password_group_type",
+      //   "password group type",
+      //   setRowCount,
+      //   setDataSource,
+      //   excelData,
+      //   columnFilters
+      // ),
+      ellipsis: true,
+    },
+    {
+      title: "Password Group",
       dataIndex: "password_group",
       key: "password_group",
       align: "center",

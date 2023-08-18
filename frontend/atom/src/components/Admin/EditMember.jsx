@@ -93,7 +93,6 @@ const EditMember = (props) => {
               axios
                 .get(baseUrl + "/getAllAdmin")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);

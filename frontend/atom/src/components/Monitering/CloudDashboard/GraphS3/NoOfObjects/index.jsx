@@ -32,7 +32,6 @@ const index = (props) => {
         //   timeS = res.data[i].timestamp;
         // }
         // console.log(" list data 111111111111111111111", listData);
-        console.log(res.data);
         // console.log("timeS", timeS);
 
         // const options = res.data.map((item) => ({
@@ -66,8 +65,6 @@ const index = (props) => {
           result.push(obj);
         });
 
-        console.log(result);
-
         // const startIndex = 0; // Start index of the subset
         // const count = 48; // Number of objects to extract
 
@@ -77,8 +74,6 @@ const index = (props) => {
         // result.slice(startIndex, startIndex + count).forEach((item) => {
         //   resultList.push(item);
         // });
-
-        // console.log(resultList);
 
         setFunctionData(result);
 

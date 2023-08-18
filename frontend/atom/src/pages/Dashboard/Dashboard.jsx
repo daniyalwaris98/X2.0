@@ -227,7 +227,6 @@ const MenusWrapper = () => {
   const getRouting = async () => {
     try {
       const res = await axios.get(baseUrl + "/dashboardCards");
-      console.log(res);
       setMenus(res.data);
     } catch (err) {
       console.log(err.response);

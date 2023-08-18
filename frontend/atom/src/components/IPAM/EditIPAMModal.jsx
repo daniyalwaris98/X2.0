@@ -106,7 +106,6 @@ const EditIPAMModal = (props) => {
               axios
                 .get(baseUrl + "/getAllIpam")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);

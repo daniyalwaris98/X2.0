@@ -133,7 +133,6 @@ const index = () => {
                 axios
                   .get(baseUrl + "/getAtoms")
                   .then((response) => {
-                    console.log(response.data);
                     excelData = response.data;
                     setDataSource(response.data);
                     setRowCount(response.data.length);
@@ -205,8 +204,6 @@ const index = () => {
     await axios
       .post(baseUrl + "/addAtomDevices", seed)
       .then((response) => {
-        console.log("hahahehehoho");
-        console.log(response?.response?.status);
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
 
@@ -219,7 +216,6 @@ const index = () => {
             axios
               .get(baseUrl + "/getAtoms")
               .then((response) => {
-                console.log(response.data);
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
                 setDataSource(response?.data);
@@ -959,7 +955,6 @@ const index = () => {
             //   axios
             //     .get(baseUrl + "/getAtoms")
             //     .then((response) => {
-            //       console.log(response.data);
             //       excelData = response.data;
             //       setDataSource(response.data);
             //       setRowCount(response.data.length);
@@ -1013,7 +1008,6 @@ const index = () => {
             //   axios
             //     .get(baseUrl + "/getAtoms")
             //     .then((response) => {
-            //       console.log(response.data);
             //       excelData = response.data;
             //       setDataSource(response.data);
             //       setRowCount(response.data.length);
@@ -1076,7 +1070,6 @@ const index = () => {
             //   axios
             //     .get(baseUrl + "/getAtoms")
             //     .then((response) => {
-            //       console.log(response.data);
             //       excelData = response.data;
             //       setDataSource(response.data);
             //       setRowCount(response.data.length);

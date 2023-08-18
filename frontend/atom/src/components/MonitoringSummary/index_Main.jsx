@@ -375,7 +375,6 @@ const index_Main = () => {
       });
       if (res.status == 500) {
         openSweetAlert(res?.response?.data, "error");
-        console.log(res?.data?.Response);
       } else {
         setDescData(res?.data);
       }

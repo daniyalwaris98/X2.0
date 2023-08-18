@@ -34,7 +34,6 @@ const EditAtom = (props) => {
               axios
                 .get(baseUrl + "/getAllIpamDevices")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);

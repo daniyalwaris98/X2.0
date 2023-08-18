@@ -69,6 +69,8 @@ const AddAtom = (props) => {
   );
   let [excludedIpRange, setExcludedIpRange] = useState([]);
 
+  console.log(excludedIpRange);
+
   const handleSubmit = (e) => {
     const range = `${excludedIpRange[0]}-${excludedIpRange[1]}`;
 
@@ -214,7 +216,25 @@ const AddAtom = (props) => {
               </div>
             </InputWrapper>
             <InputWrapper>
-              Excluded Ip Range:
+              <article
+                style={{
+                  display: "flex",
+                  alignItems: "center",
+                  justifyContent: "space-between",
+                }}
+              >
+                <p>Excluded Ip Range:</p>{" "}
+                <p
+                  style={{
+                    fontSize: "11px",
+                    color: "#7f7e7e",
+                  }}
+                >
+                  {" "}
+                  Min: {excludedIpRange.length > 0 ? excludedIpRange[0] : 0} -
+                  Max: {excludedIpRange.length > 0 ? excludedIpRange[1] : 0}
+                </p>
+              </article>
               <Slider
                 range={{
                   draggableTrack: true,

@@ -90,7 +90,7 @@ const AddLicensceModel = (props) => {
   //               axios
   //                 .get(baseUrl + "/getAtoms")
   //                 .then((response) => {
-  //                   console.log(response.data);
+  //
   //                   props.setDataSource(response.data);
   //                   props.excelData = response.data;
   //                   props.setRowCount(response.data.length);

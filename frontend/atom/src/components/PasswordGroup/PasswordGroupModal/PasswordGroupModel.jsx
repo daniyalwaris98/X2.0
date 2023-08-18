@@ -11,6 +11,7 @@ function PasswordGroupModel(props) {
   const [option, setOption] = useState("SSH");
   const [loading, setLoading] = useState(false);
   const [isEdit, setEdit] = useState(false);
+  const [passwordGroupId, setPasswordGroupId] = useState("");
   const [passwordGroupInput, setPasswordGroupInput] = useState({
     passwordGroup: "",
     username: "",
@@ -28,6 +29,7 @@ function PasswordGroupModel(props) {
       });
       setOption(editRecord.password_group_type);
       setEdit(true);
+      setPasswordGroupId(editRecord.password_group_id);
     }
   }, [editRecord]);
 
@@ -69,6 +71,7 @@ function PasswordGroupModel(props) {
         password: password,
         username: username,
         secret_password: secretPassword,
+        password_group_id: passwordGroupId && passwordGroupId,
       })
       .then((res) => {
         if (res.status == 200) {

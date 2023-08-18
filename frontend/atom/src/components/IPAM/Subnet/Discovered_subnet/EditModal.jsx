@@ -79,7 +79,6 @@ const EditModal = (props) => {
               axios
                 .get(baseUrl + "/getAllDiscoveredSubnets")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
@@ -229,7 +228,6 @@ const EditModal = (props) => {
   //         );
   //         console.log("getRacksBySiteDropdown", res);
   //         setRackArray(res.data);
-  //         console.log(res.data[0]);
   //         // setRack_name(res.data[0]);
   //         // setRack_name(rack_name);
   //         setRack_name(rack_name);
