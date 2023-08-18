@@ -15,10 +15,10 @@ from app.atom.atom_utils import *
 
 @app.route("/addPasswordGroup", methods=["POST"])
 @token_required
-def AddPasswordGroup(user_date):
+def addPasswordGroup(user_date):
     try:
         passObj = request.get_json()
-        response, status = AddPasswordGroup(passObj, 0, False)
+        response, status = AddPasswordGroup(passObj, False)
 
         print(response, file=sys.stderr)
 
@@ -32,7 +32,7 @@ def AddPasswordGroup(user_date):
 
 @app.route("/addPasswordGroups", methods=["POST"])
 @token_required
-def AddPasswordGroups(user_data):
+def addPasswordGroups(user_data):
     try:
         errorList = []
         responseList = []
@@ -42,7 +42,7 @@ def AddPasswordGroups(user_data):
 
         for passObj in passObjs:
             row = row + 1
-            response, status = AddPasswordGroup(passObj, row, True)
+            response, status = AddPasswordGroup(passObj, True)
 
             if status == 200:
                 responseList.append(response)
