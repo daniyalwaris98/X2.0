@@ -484,7 +484,7 @@ def GetTransitionAtoms():
     return objList
 
 
-def addPasswordGroup(passObj, row, update):
+def AddPasswordGroup(passObj, row, update):
     try:
 
         if 'password_group' not in passObj.keys():
@@ -594,3 +594,118 @@ def addPasswordGroup(passObj, row, update):
     except Exception:
         traceback.print_exc()
         return f"Row {row} : Server Error", 500
+
+
+
+def EditPasswordGroup(passObj):
+    try:
+        
+        if 'password_group_id' not in passObj.keys():
+            return f"Password Group ID Is Missing", 500
+
+        if passObj['password_group_id'] is None:
+            return f"Password Group ID Can Not Be Empty", 500
+        
+        password_exist = Password_Group_Table.query.filter_by(
+            password_group_id=passObj['password_group_id']).first()
+        
+        if password_exist is None:
+            return f"Password Group Does Not Found", 500
+        
+        if password_exist.password_group_id == 1:
+            return f"Passowrd Group (NA) Is Not Editable", 500
+
+        if 'password_group' not in passObj.keys():
+            return f" Password Group Can Not be Empty", 500
+
+        if passObj['password_group'] is None:
+            return f"Password Group Can Not be Empty", 500
+
+        passObj['password_group'] = passObj['password_group'].strip()
+
+        if passObj['password_group'] == "":
+            return f"Password Group Can Not be Empty", 500
+        
+        if passObj['password_group'] == "NA":
+            return f"{passObj['password_group']} : Password Group Name Is Not Allowed", 500
+
+
+        password_group = Password_Group_Table.query.filter_by(
+            password_group=passObj['password_group']).first()
+        
+        if password_group is not None:
+            if password_exist.password_group_id != password_group.password_group_id:
+                return f"{passObj['password_group']} : Password Group Name Is Already Assigned", 500
+        
+        
+        password_exist.password_group = passObj['password_group']
+
+        # if not (passObj.get('password') and passObj.get('password', '').strip()):
+        #     pass
+        
+        if 'password' not in passObj.keys():
+            return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
+
+        if passObj['password'] is None:
+            return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
+
+        passObj['password'] = passObj['password'].strip()
+        if passObj['password'] == '':
+            return f"{passObj['password_group']} : Password Field Can Not be Empty", 500
+
+        password_exist.password = passObj['password']
+
+        ssh = False
+        if 'password_group_type' in passObj.keys():
+            if passObj['password_group_type'] is not None:
+                
+                if str(passObj['password_group_type']).lower() == 'telnet':
+                    password_exist.password_group_type = 'Telnet'
+
+                    if 'secret_password' not in passObj.keys():
+                        return f"{passObj['password_group']} : Secret Password Field Can Not Be Empty For Telnet", 500
+
+                    if passObj['secret_password'] is None:
+                        return f"{passObj['password_group']} : Secret Password Field Can Not Be Empty For Telnet", 500
+
+                    passObj['secret_password'] = passObj['secret_password'].strip()
+
+                    if passObj['secret_password'].strip() == "":
+                        return f"{passObj['password_group']} : Secret Password Field Can Not Be Empty For Telnet", 500
+
+                    password_exist.secret_password = passObj['secret_password']
+                else:
+                    ssh = True
+
+            else:
+                ssh = True
+
+        else:
+            ssh = True
+            
+        # for ssh
+        if ssh:
+            password_exist.password_group_type = 'SSH'
+            if 'username' not in passObj.keys():
+                return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
+
+            if passObj['username'] is None:
+                return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
+
+            passObj['username'] = passObj['username'].strip()
+
+            if passObj['username'] == "":
+                return f"{passObj['password_group']} : Username Field Can Not Be Empty For SSH", 500
+
+            password_exist.username = passObj['username']
+
+        status = UpdateDBData(password_exist)
+        if status == 200:
+            return f"{passObj['password_group']} : Password Group Updated Successfully", 200
+    
+
+        return f"{passObj['password_group']} : Server Error", 500
+
+    except Exception:
+        traceback.print_exc()
+        return f"Server Error", 500

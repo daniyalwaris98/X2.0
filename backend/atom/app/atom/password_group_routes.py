@@ -18,7 +18,7 @@ from app.atom.atom_utils import *
 def AddPasswordGroup(user_date):
     try:
         passObj = request.get_json()
-        response, status = addPasswordGroup(passObj, 0, False)
+        response, status = AddPasswordGroup(passObj, 0, False)
 
         print(response, file=sys.stderr)
 
@@ -42,7 +42,7 @@ def AddPasswordGroups(user_data):
 
         for passObj in passObjs:
             row = row + 1
-            response, status = addPasswordGroup(passObj, row, True)
+            response, status = AddPasswordGroup(passObj, row, True)
 
             if status == 200:
                 responseList.append(response)
@@ -69,7 +69,7 @@ def AddPasswordGroups(user_data):
 def EditUser(user_data):
     try:
         passObj = request.get_json()
-        response, status = editPasswordGroup(passObj)
+        response, status = EditPasswordGroup(passObj)
 
         print(response, file=sys.stderr)
 
