@@ -72,7 +72,6 @@ const EditUser = (props) => {
     };
 
     props.setIsEditModalVisible(false);
-    console.log("devices", device);
     postDevice(device);
   };
 
