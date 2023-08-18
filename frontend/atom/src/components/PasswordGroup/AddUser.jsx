@@ -28,7 +28,6 @@ const AddAtom = (props) => {
         .post(baseUrl + "/addUser", device)
 
         .then((response) => {
-          console.log(response?.response?.status);
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
           } else {
@@ -38,7 +37,6 @@ const AddAtom = (props) => {
               axios
                 .get(baseUrl + "/getUsers")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.checkPasswordGroup(response.data);
                   props.setRowCount(response.data.length);

@@ -45,8 +45,6 @@ const index = (props) => {
           result.push(obj);
         });
 
-        console.log(result);
-
         // const startIndex = 0; // Start index of the subset
         // const count = 48; // Number of objects to extract
 
@@ -56,8 +54,6 @@ const index = (props) => {
         // result.slice(startIndex, startIndex + count).forEach((item) => {
         //   resultList.push(item);
         // });
-
-        // console.log(resultList);
 
         setFunctionData(result);
 

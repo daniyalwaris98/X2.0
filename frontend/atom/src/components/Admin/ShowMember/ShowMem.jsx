@@ -105,8 +105,6 @@ const index = () => {
     await axios
       .post(baseUrl + "/addSite", seed)
       .then((response) => {
-        console.log("hahahehehoho");
-        console.log(response.status);
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data?.response, "error");
           setLoading(false);

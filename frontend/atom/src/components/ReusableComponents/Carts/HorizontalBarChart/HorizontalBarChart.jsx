@@ -24,8 +24,6 @@ function HorizontalBarChart(props) {
       });
   };
 
-  console.log("vendors", vendors);
-
   const labels = vendors && Object.keys(vendors);
   const modifiedLabels =
     vendors &&

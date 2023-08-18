@@ -376,8 +376,6 @@ const index = () => {
                     size: record.size,
                   },
                 ]);
-                console.log(res);
-
                 navigate("/ipam/subnet/main");
               }}
             >
@@ -406,14 +404,6 @@ const index = () => {
                   size: record.size,
                 },
               ]);
-              console.log(res);
-              // console.log(
-              //   "corresponding email is :",
-              //   record.subnet_address,
-              //   record.subnet_name,
-              //   record.subnet_mask,
-              //   record.size
-              // );
 
               navigate("/ipam/subnet/main");
             }}
@@ -492,7 +482,6 @@ const index = () => {
   const deleteRow = async () => {
     if (selectedRowKeys.length > 0) {
       try {
-        //console.log(device);
         await axios
           .post(baseUrl + "/deleteDiscoveredSubnets ", selectedRowKeys)
           .then((response) => {
@@ -502,18 +491,14 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllDiscoveredSubnets")
                 .then((response) => {
-                  console.log(response.data);
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
-                  // excelData = response.data;
                   setLoading(false);
                 })
                 .catch((error) => {
                   console.log(error);
                   setLoading(false);
-
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);

@@ -493,7 +493,6 @@ const Atom = () => {
               axios
                 .get(baseUrl + "/getV3Credentials")
                 .then((response) => {
-                  console.log(response.data);
                   v3excelData = response.data;
                   setv3DataSource(v3excelData);
                   setv3RowCount(v3excelData.length);
@@ -534,7 +533,6 @@ const Atom = () => {
               axios
                 .get(baseUrl + "/getWMICredentials")
                 .then((response) => {
-                  console.log(response.data);
                   excelData = response.data;
                   setDataSource(excelData);
                   setRowCount(excelData.length);
@@ -576,7 +574,6 @@ const Atom = () => {
               axios
                 .get(baseUrl + "/getV1V2Credentials")
                 .then((response) => {
-                  console.log(response.data);
                   v1v2excelData = response.data;
                   setv1v2DataSource(v1v2excelData);
                   setv1v2RowCount(v1v2excelData.length);

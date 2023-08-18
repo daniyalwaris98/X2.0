@@ -129,7 +129,6 @@ const indexMain = () => {
       .get(`${baseUrl}/ncmAlarmSummery`)
       .then((res) => {
         setAlarms(res.data);
-        console.log(res);
       })
       .catch((err) => console.log(err));
   };

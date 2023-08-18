@@ -692,20 +692,15 @@ const index = () => {
         baseUrl + "/addSubnetFromDevice",
         deviceSelectedRowKeys
       );
-      console.log(res);
       setMainModalVisible(false);
       navigate("/ipam/subnet/discovered-subnet");
     } catch (err) {
-      // setLoading(false);
-
       console.log(err);
     }
   };
   const deleteRow = async () => {
-    // if (selectedRowKeys.length > 0) {
     if (selectedRowKeys.length > 0) {
       try {
-        //console.log(device);
         await axios
           .post(baseUrl + "/deleteSubnet ", selectedRowKeys)
           .then((response) => {
@@ -716,28 +711,16 @@ const index = () => {
                 .get(baseUrl + "/getAllSubnets")
                 .then((response) => {
                   var data = response.data;
-                  // var i;
-                  // for (i = 0; i < data.length; i++) {
-                  //   // data[i].name
-                  //   if (data[i].status === "scanning") {
-                  //     setStatusLoading(true);
-                  //   } else {
-                  //     setStatusLoading(false);
-                  //   }
-                  // }
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
 
                   setSelectedRowKeys([]);
-                  // excelData = response.data;
                   setLoading(false);
                 })
                 .catch((error) => {
                   console.log(error);
                   setLoading(false);
-
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);

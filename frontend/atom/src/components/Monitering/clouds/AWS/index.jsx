@@ -147,7 +147,6 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllEC2")
                 .then((response) => {
-                  console.log(response.data);
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
@@ -199,7 +198,6 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllS3")
                 .then((response) => {
-                  console.log(response.data);
                   s3excelData = response.data;
                   sets3DataSource(s3excelData);
                   sets3RowCount(s3excelData.length);
@@ -252,7 +250,6 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAWSCredentials")
                 .then((response) => {
-                  console.log(response.data);
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
@@ -324,8 +321,6 @@ const index = () => {
     await axios
       .post(baseUrl + "/addAtomDevices", seed)
       .then((response) => {
-        console.log("hahahehehoho");
-        console.log(response?.response?.status);
         if (response?.response?.status == 500) {
           openSweetAlert(response?.response?.data, "error");
 
@@ -338,10 +333,6 @@ const index = () => {
             axios
               .get(baseUrl + "/getAWSCredentials")
               .then((response) => {
-                // console.log("response===>", response);
-                // setExcelData(response.data);
-
-                console.log(response.data);
                 excelData = response?.data;
                 setRowCount(response?.data?.length);
                 setDataSource(response?.data);
@@ -773,7 +764,6 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllEC2")
                 .then((response) => {
-                  console.log(response.data);
                   excelData = response.data;
                   setDataSource(response.data);
                   setRowCount(response.data.length);
@@ -825,7 +815,6 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllS3")
                 .then((response) => {
-                  console.log(response.data);
                   // s3excelData = response.data;
                   // sets3DataSource(response.data);
                   // sets3RowCount(response.data.length);
@@ -882,7 +871,6 @@ const index = () => {
               axios
                 .get(baseUrl + "/getAllELB")
                 .then((response) => {
-                  console.log(response.data);
                   // s3excelData = response.data;
                   // sets3DataSource(response.data);
                   // sets3RowCount(response.data.length);

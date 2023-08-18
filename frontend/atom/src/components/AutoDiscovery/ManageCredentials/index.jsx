@@ -463,7 +463,6 @@ const index = () => {
                 axios
                   .get(baseUrl + "/getSNMPV1V2Credentials")
                   .then((response) => {
-                    console.log(response.data);
                     excelData = response.data;
                     setDataSource(response.data);
                     setSelectedRowKeys([]);
@@ -511,7 +510,6 @@ const index = () => {
                 axios
                   .get(baseUrl + "/getSNMPV3CredentialsForDiscovery")
                   .then((response) => {
-                    console.log(response.data);
                     v3excelData = response.data;
                     setv3DataSource(response.data);
 

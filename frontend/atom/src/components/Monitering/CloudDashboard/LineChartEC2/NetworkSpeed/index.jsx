@@ -35,7 +35,6 @@ const index = (props) => {
         //   timeS = res.data[i].timestamp;
         // }
         // console.log(" list data 111111111111111111111", listData);
-        console.log(res.data);
         // console.log("timeS", timeS);
 
         // const options = res.data.map((item) => ({
@@ -72,7 +71,7 @@ const index = (props) => {
           result.push(obj);
         });
 
-        // console.log(result);
+        // ult);
 
         setFunctionData(result);
 
@@ -102,7 +101,6 @@ const index = (props) => {
       //   timeS = res.data[i].timestamp;
       // }
       // console.log(" list data 111111111111111111111", listData);
-      console.log(res.data);
       // console.log("timeS", timeS);
 
       // const options = res.data.map((item) => ({
@@ -139,8 +137,6 @@ const index = (props) => {
         result.push(obj);
       });
 
-      // console.log(result);
-
       setFunctionData(result);
 
       // setFunctionData(res.data);
@@ -167,7 +163,6 @@ const index = (props) => {
   //         //   timeS = res.data[i].timestamp;
   //         // }
   //         // console.log(" list data 111111111111111111111", listData);
-  //         console.log(res.data);
   //         // console.log("timeS", timeS);
 
   //         // const options = res.data.map((item) => ({
@@ -203,8 +198,6 @@ const index = (props) => {
   //           // Add the dictionary object to the result array
   //           result.push(obj);
   //         });
-
-  //         // console.log(result);
 
   //         setFunctionData(result);
 
@@ -268,7 +261,7 @@ const index = (props) => {
 
   return (
     <SpinLoading spinning={mainTableLoading}>
-        <div style={{ float: "right" }}>
+      <div style={{ float: "right" }}>
         <button
           onClick={serviceCalls}
           style={{

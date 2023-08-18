@@ -86,7 +86,6 @@ const EditMember = (props) => {
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
-            console.log(response?.response?.data);
           } else {
             openSweetAlert(
               `Asset ${device ? "Updated" : "Added"} Successfully`,
@@ -97,7 +96,6 @@ const EditMember = (props) => {
               axios
                 .get(baseUrl + "/getDataInIpDetails")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);

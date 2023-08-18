@@ -119,7 +119,7 @@ const index = () => {
   //     .post(baseUrl + "/addAtomDevices", seed)
   //     .then((response) => {
   //       console.log("hahahehehoho");
-  //       console.log(response.status);
+  //
   //       if (response?.response?.status == 500) {
   //         openSweetAlert(response?.response?.data?.response, "error");
   //         setLoading(false);
@@ -133,12 +133,12 @@ const index = () => {
   //               // console.log("response===>", response);
   //               // setExcelData(response.data);
 
-  //               console.log(response.data);
+  //
   //               excelData = response?.data;
   //               setRowCount(response?.data?.length);
   //               setDataSource(response?.data);
 
-  //               console.log(response.data);
+  //
 
   //               excelData = response.data;
   //               setDataSource(excelData);

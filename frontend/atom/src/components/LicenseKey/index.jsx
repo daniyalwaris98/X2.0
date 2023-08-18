@@ -1,30 +1,30 @@
 import React, { useState, useEffect } from "react";
 import { Row, Col, Input, message } from "antd";
 import styled from "styled-components";
-import axios,{baseUrl} from "../../utils/axios"
+import axios, { baseUrl } from "../../utils/axios";
 import { SpinLoading } from "../AllStyling/All.styled";
 
 const index = () => {
   const [licensePeriod, setLicensePeriod] = useState("");
   const [companyName, setCompanyName] = useState("");
-  const [licsKey,setLiscKey]=useState("");
-  const [licsKeyLoading,setLiscKeyLoading]=useState(false);
+  const [licsKey, setLiscKey] = useState("");
+  const [licsKeyLoading, setLiscKeyLoading] = useState(false);
 
   const handleLicense = async (e) => {
     e.preventDefault();
-    setLiscKeyLoading(true)
-    const data = { "date":licensePeriod, "company_name":companyName };
+    setLiscKeyLoading(true);
+    const data = { date: licensePeriod, company_name: companyName };
     console.log(data);
-    try{
-
-      const res =await axios.post(baseUrl+"/encryptCredentialsLicenseKey",data);
-  console.log(res.data);
+    try {
+      const res = await axios.post(
+        baseUrl + "/encryptCredentialsLicenseKey",
+        data
+      );
       setLiscKey(res.data);
       setLiscKeyLoading(false);
-    }catch(e){
+    } catch (e) {
       console.log(e);
       setLiscKeyLoading(false);
-
     }
   };
 
@@ -43,7 +43,7 @@ const index = () => {
               License Period: &nbsp;<span style={{ color: "red" }}>*</span>
               &nbsp;&nbsp;
               <StyledInput
-              type="number"
+                type="number"
                 value={licensePeriod}
                 // pattern="^([0-9]{1,3}\.){3}[0-9]{1,3}$"
                 onChange={(e) => setLicensePeriod(e.target.value)}
@@ -79,38 +79,44 @@ const index = () => {
           </form>
         </Col>
         <Col xs={{ span: 10 }} md={{ span: 10 }} lg={{ span: 10 }}>
-          {
-            licsKey!==""?
+          {licsKey !== "" ? (
             <>
-            <SpinLoading spinning={licsKeyLoading} >
+              <SpinLoading spinning={licsKeyLoading}>
+                <p
+                  style={{
+                    fontSize: "25px",
+                    width: "450px",
 
-          <p style={{ fontSize: "25px",width:"450px",
-        
-        wordBreak: "break-word",
-whiteSpace: "pre-wrap"
-        }}>{licsKey}</p>
-          <button
-            style={{
-              backgroundColor: "#66B",
-              color: "white",
-              // width: "100%",
-              height: "35px",
-              border: "none",
-              width: "120px",
-              cursor: "Pointer",
-              borderRadius: "12px",
-              fontWeight: 600,
-            }}
-            onClick={() => {
-              navigator.clipboard.writeText("Copy this text to clipboard");
-              message.success("Text Copied");
-            }}
-          >
-            Copy
-          </button>
-            </SpinLoading>
-            </>:null
-          }
+                    wordBreak: "break-word",
+                    whiteSpace: "pre-wrap",
+                  }}
+                >
+                  {licsKey}
+                </p>
+                <button
+                  style={{
+                    backgroundColor: "#66B",
+                    color: "white",
+                    // width: "100%",
+                    height: "35px",
+                    border: "none",
+                    width: "120px",
+                    cursor: "Pointer",
+                    borderRadius: "12px",
+                    fontWeight: 600,
+                  }}
+                  onClick={() => {
+                    navigator.clipboard.writeText(
+                      "Copy this text to clipboard"
+                    );
+                    message.success("Text Copied");
+                  }}
+                >
+                  Copy
+                </button>
+              </SpinLoading>
+            </>
+          ) : null}
         </Col>
       </Row>
     </div>

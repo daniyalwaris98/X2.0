@@ -36,7 +36,6 @@ const EditSubnet = (props) => {
               axios
                 .get(baseUrl + "/getAllMonitoringDevices")
                 .then((response) => {
-                  console.log(response.data);
                   props.setDataSource(response.data);
                   props.excelData = response.data;
                   props.setRowCount(response.data.length);
