@@ -110,7 +110,6 @@ function PasswordGroupModel(props) {
           name="passwordGroup"
           value={passwordGroup}
           onChange={handleInput}
-          readOnly={isEdit}
         />
         <CustomInput
           title="Password Group Type"
