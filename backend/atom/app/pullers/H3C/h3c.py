@@ -51,7 +51,7 @@ class H3CPuller(object):
             print(f"Failed to login {host['ip_address']}",  file=sys.stderr)
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
             date = datetime.now()
-            addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
             self.failed = True
             
         if is_login==True:    

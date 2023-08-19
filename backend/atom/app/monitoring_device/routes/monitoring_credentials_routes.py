@@ -49,7 +49,7 @@ def AddMonitoringCredentials(user_data):
         else:
             if InsertDBData(credential) == 200:
                 print(
-                    f"Inserted {credential.credentials_id} Credentials Successfully",
+                    f"Inserted {credential.monitoring_credentials_id} Credentials Successfully",
                     file=sys.stderr,
                 )
                 return "Credentials Successfully Added", 200
