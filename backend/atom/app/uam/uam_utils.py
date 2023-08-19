@@ -165,7 +165,6 @@ def EditUamDevice(deviceObj):
         if deviceObj['function'] == "":
             return "Function Can Not Be Empty", 500
         
-
         atom.function = deviceObj["function"]
         atom.ru = deviceObj["ru"]
         atom.department = deviceObj["department"]

@@ -1,4 +1,5 @@
 from app.monitoring_device.monitoring_utils import *
+from app.models.atom_models import *
 
 
 @app.route("/addMonitoringDevice", methods=["POST"])
@@ -1427,23 +1428,6 @@ def GetNewDCStatus(user_data):
     except Exception as e:
         traceback.print_exc()
         return "Something Went Wrong!", 500
-
-
-@app.route("/deleteMonitoringCreds", methods=["POST"])
-@token_required
-def deleteV3Credentials(user_data):
-    if True:
-        try:
-            MonitoringObj = request.get_json()
-            print(MonitoringObj, file=sys.stderr)
-            for mid in MonitoringObj:
-                queryString = f"DELETE FROM monitoring_credentials_table WHERE CREDENTIALS_ID={mid};"
-                db.session.execute(queryString)
-                db.session.commit()
-            return "Response deleted", 200
-        except Exception as e:
-            traceback.print_exc()
-            return "Something Went Wrong!", 500
 
 
 @app.route("/deleteMonitoringdata", methods=["POST"])

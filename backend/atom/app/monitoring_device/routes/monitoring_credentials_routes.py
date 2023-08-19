@@ -89,7 +89,9 @@ def V2Credentials():
             MonitoringDataDict["description"] = MonitoringObj.description
             MonitoringDataDict["community"] = MonitoringObj.snmp_read_community
             MonitoringDataDict["port"] = MonitoringObj.snmp_port
-            MonitoringDataDict["cred_id"] = MonitoringObj.monitoring_credentials_id
+            MonitoringDataDict[
+                "credentials_id"
+            ] = MonitoringObj.monitoring_credentials_id
 
             MonitoringObjList.append(MonitoringDataDict)
 
@@ -146,10 +148,49 @@ def V3Credentials():
             MonitoringDataDict["authentication_password"] = MonitoringObj[5]
             MonitoringDataDict["encryption_protocol"] = MonitoringObj[6]
             MonitoringDataDict["encryption_password"] = MonitoringObj[7]
-            MonitoringDataDict["cred_id"] = MonitoringObj[8]
+            MonitoringDataDict["credentials_id"] = MonitoringObj[8]
             MonitoringObjList.append(MonitoringDataDict)
 
         return jsonify(MonitoringObjList), 200
+
+    except Exception as e:
+        traceback.print_exc()
+        return "Something Went Wrong!", 500
+
+
+@app.route("/deleteMonitoringCreds", methods=["POST"])
+@token_required
+def deleteV3Credentials(user_data):
+    try:
+        
+        responseList = []
+        errorList = []
+        
+        MonitoringObj = request.get_json()
+        print(MonitoringObj, file=sys.stderr)
+        
+        for id in MonitoringObj:
+            
+            cred = Monitoring_Credentails_Table.query.filter(Monitoring_Credentails_Table.monitoring_credentials_id == id).first()
+            
+            if cred is None:
+                errorList.append(f"ID {id} : Credentials Not Found")
+            else:
+                profile = cred.profile_name
+                
+                if DeleteDBData(cred) == 200:
+                   responseList.append(f"{profile} : Deleted Successfully")
+                else:
+                    errorList.append(f"{profile} : Error While Deleting Credentials")
+                    
+        responseDict = {
+            "success": len(responseList),
+            "error": len(errorList),
+            "error_list": errorList,
+            "success_list": responseList,
+        }
+
+        return jsonify(responseDict), 200
 
     except Exception as e:
         traceback.print_exc()
