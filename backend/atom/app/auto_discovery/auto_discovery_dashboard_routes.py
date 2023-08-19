@@ -102,9 +102,9 @@ def GetSnmpStatusGraph(user_data):
 
         for row in result:
             if row[0] == "Enabled":
-                enable += 1
+                enable += row[1]
             else:
-                disable += 1
+                disable += row[1]
 
         objList = [
             {"name": "SNMP Enabled", "value": enable},
