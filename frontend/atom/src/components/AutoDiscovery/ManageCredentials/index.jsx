@@ -185,7 +185,7 @@ const index = () => {
       setLoading(true);
 
       try {
-        const res = await axios.get(baseUrl + "/getSNMPV1V2Credentials");
+        const res = await axios.get(baseUrl + "/getV1V2Credentials");
         excelData = res.data;
         setDataSource(excelData);
 
@@ -234,13 +234,13 @@ const index = () => {
 
       try {
         await axios
-          .post(baseUrl + "/addSNMPCredentials ", v1v2Data)
+          .post(baseUrl + "/addMonitoringCredentials ", v1v2Data)
           .then((response) => {
             if (response?.response?.status == 500) {
               openSweetAlert(response?.response?.data, "error");
               setLoading(false);
             } else {
-              openSweetAlert("v1v2Data Added Successfully", "success");
+              openSweetAlert(response.data, "success");
               setProfileName("");
               setDescription("");
               setCommunity("");
@@ -287,7 +287,7 @@ const index = () => {
     setv3IsModalOpen(false);
     try {
       await axios
-        .post(baseUrl + "/addSNMPCredentials ", v3Data)
+        .post(baseUrl + "/addMonitoringCredentials ", v3Data)
         .then((response) => {
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
@@ -304,7 +304,7 @@ const index = () => {
             const promises = [];
             promises.push(
               axios
-                .get(baseUrl + "/getSNMPV3CredentialsForDiscovery")
+                .get(baseUrl + "/getV3Credentials")
                 .then((response) => {
                   v3excelData = response.data;
                   setv3DataSource(v3excelData);
@@ -451,7 +451,7 @@ const index = () => {
     if (selectedRowKeys.length > 0) {
       try {
         await axios
-          .post(baseUrl + "/deleteSNMPCredentials", selectedRowKeys)
+          .post(baseUrl + "/deleteMonitoringCreds", selectedRowKeys)
           .then((response) => {
             if (response?.response?.status == 500) {
               openSweetAlert(response?.response?.data, "error");
@@ -548,9 +548,7 @@ const index = () => {
       setV3Loading(true);
 
       try {
-        const res = await axios.get(
-          baseUrl + "/getSNMPV3CredentialsForDiscovery"
-        );
+        const res = await axios.get(baseUrl + "/getV3Credentials");
         v3excelData = res.data;
         setv3DataSource(v3excelData);
 
@@ -899,11 +897,9 @@ const index = () => {
 
                 <TableStyling
                   rowSelection={rowSelection}
-                  // scroll={{ x: 2200 }}
-                  rowKey="credentials_id"
+                  rowKey="cred_id"
                   columns={columns}
                   dataSource={dataSource}
-                  // pagination={false}
                   style={{ width: "100%", padding: "2%" }}
                 />
               </div>

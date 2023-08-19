@@ -54,7 +54,7 @@ const Atom = () => {
     useState("MD5");
   const [authorizationPasswordv3, setaAuthorizationPasswordv3] = useState("");
   const [encryptionProtocolv3, setEncryptionProtocolv3] = useState("DES");
-
+  const [selectedRowKeysv1v2, setSelectedRowKeysv1v2] = useState([]);
   const [encryptionPasswordv3, setEncryptionPasswordv3] = useState("");
 
   const [usernamewmi, setUsernamewmi] = useState("");
@@ -136,6 +136,7 @@ const Atom = () => {
                 .get(baseUrl + "/getV1V2Credentials")
                 .then((response) => {
                   v1v2excelData = response.data;
+
                   setv1v2DataSource(v1v2excelData);
                   setv1v2RowCount(v1v2excelData.length);
                 })
@@ -205,6 +206,7 @@ const Atom = () => {
       console.log(err);
     }
   };
+
   const handleSubmitWmc = async (e) => {
     e.preventDefault();
     const wmiData = {
@@ -270,6 +272,7 @@ const Atom = () => {
       try {
         const res = await axios.get(baseUrl + "/getV1V2Credentials");
         v1v2excelData = res.data;
+
         setv1v2DataSource(v1v2excelData);
         setv1v2RowCount(v1v2excelData.length);
         setLoading(false);
@@ -403,6 +406,7 @@ const Atom = () => {
       ellipsis: true,
     },
   ];
+
   const v1v2columns = [
     {
       title: "Profile Name",
@@ -562,30 +566,47 @@ const Atom = () => {
     }
   };
 
+  const onSelectChangev1v2 = (selectedRowKeysv1v2) => {
+    setSelectedRowKeysv1v2(selectedRowKeysv1v2);
+  };
+
+  const rowSelectionv1v2 = {
+    selectedRowKeysv1v2,
+    onChange: onSelectChangev1v2,
+    selection: Table.SELECTION_ALL,
+  };
+
   const deleteRowv1v2 = async () => {
     if (selectedRowKeysv1v2.length > 0) {
       try {
         await axios
           .post(baseUrl + "/deleteMonitoringCreds ", selectedRowKeysv1v2)
           .then((res) => {
-            openSweetAlert(`Device Deleted Successfully`, "success");
-            const promises = [];
-            promises.push(
-              axios
-                .get(baseUrl + "/getV1V2Credentials")
-                .then((response) => {
-                  v1v2excelData = response.data;
-                  setv1v2DataSource(v1v2excelData);
-                  setv1v2RowCount(v1v2excelData.length);
-                  setSelectedRowKeysv1v2([]);
-                  setLoading(false);
-                })
-                .catch((error) => {
-                  console.log(error);
-                  setLoading(false);
-                })
-            );
-            return Promise.all(promises);
+            console.log("res", res);
+
+            if (res.response.status == 500) {
+              openSweetAlert(res.response.data, "error");
+            } else {
+              openSweetAlert(`Device Deleted Successfully`, "success");
+              const promises = [];
+              promises.push(
+                axios
+                  .get(baseUrl + "/getV1V2Credentials")
+                  .then((response) => {
+                    rowSelectionv1v2("");
+                    v1v2excelData = response.data;
+                    setv1v2DataSource(v1v2excelData);
+                    setv1v2RowCount(v1v2excelData.length);
+                    setSelectedRowKeysv1v2([]);
+                    setLoading(false);
+                  })
+                  .catch((error) => {
+                    console.log(error);
+                    setLoading(false);
+                  })
+              );
+              return Promise.all(promises);
+            }
           })
           .catch((error) => {
             setLoading(false);
@@ -620,18 +641,6 @@ const Atom = () => {
   const rowSelectionwmi = {
     selectedRowKeysWmi,
     onChange: onSelectChangewmi,
-    selection: Table.SELECTION_ALL,
-  };
-
-  const [selectedRowKeysv1v2, setSelectedRowKeysv1v2] = useState([]);
-
-  const onSelectChangev1v2 = (selectedRowKeysv1v2) => {
-    setSelectedRowKeysv1v2(selectedRowKeysv1v2);
-  };
-
-  const rowSelectionv1v2 = {
-    selectedRowKeysv1v2,
-    onChange: onSelectChangev1v2,
     selection: Table.SELECTION_ALL,
   };
 
@@ -671,7 +680,6 @@ const Atom = () => {
                   borderTopLeftRadius: "6px",
                   paddingLeft: "13px",
                   textAlign: "left",
-
                   paddingTop: "8px",
                   fontWeight: "bold",
                 }}
