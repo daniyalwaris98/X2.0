@@ -155,6 +155,17 @@ def EditUamDevice(deviceObj):
             else:
                 atom.rack_id = rack.rack_id
             
+        if "function" not in deviceObj.keys():
+            return "Function Can Not Be Empty", 500
+        
+        if deviceObj['function'] is None:
+            return "Function Can Not Be Empty", 500
+        
+        deviceObj['function'] = str(deviceObj['function']).strip()
+        if deviceObj['function'] == "":
+            return "Function Can Not Be Empty", 500
+        
+
         atom.function = deviceObj["function"]
         atom.ru = deviceObj["ru"]
         atom.department = deviceObj["department"]
@@ -164,15 +175,32 @@ def EditUamDevice(deviceObj):
         
         UpdateDBData(atom)
         
-        device.software_version = deviceObj["software_version"]
-        device.manufacturer = deviceObj["manufacturer"]
-        device.authentication = deviceObj["authentication"]
-        device.serial_number = deviceObj["serial_number"]
-        device.pn_code = deviceObj["pn_code"]
-        device.subrack_id_number = deviceObj["subrack_id_number"]
-        device.source = deviceObj["source"]
-        device.stack = deviceObj["stack"]
-        device.contract_number = deviceObj["contract_number"]
+        if "software_version" in deviceObj.keys():
+            device.software_version = deviceObj["software_version"]
+        
+        if "manufacturer" in deviceObj.keys():
+            device.manufacturer = deviceObj["manufacturer"]
+        
+        if "authentication" in deviceObj.keys():
+            device.authentication = deviceObj["authentication"]
+        
+        if "serial_number" in deviceObj.keys():
+            device.serial_number = deviceObj["serial_number"]
+        
+        if "pn_code" in deviceObj.keys():
+            device.pn_code = deviceObj["pn_code"]
+        
+        if "subrack_id_number" in deviceObj.keys():
+            device.subrack_id_number = deviceObj["subrack_id_number"]
+        
+        if "source" in deviceObj.keys():
+            device.source = deviceObj["source"]
+        
+        if "stack" in deviceObj.keys():
+            device.stack = deviceObj["stack"]
+        
+        if "contract_number" in deviceObj.keys():
+            device.contract_number = deviceObj["contract_number"]
         
         
         if 'status' not in deviceObj.keys():

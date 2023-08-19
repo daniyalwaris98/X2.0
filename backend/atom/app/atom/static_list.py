@@ -76,4 +76,5 @@ ncm_command_list = {
     "cisco_nxos": ["show running-config", "show ip interface brief", "show version"],
     "cisco_wlc": ["show running-config", "show ip interface brief", "show version"],
     "fortinet": ["show full-configuration"],
+    "f5_ltm" : ["show running-config", "yes"]
 }

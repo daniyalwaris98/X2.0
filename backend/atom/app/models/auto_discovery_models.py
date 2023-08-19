@@ -24,6 +24,7 @@ class Auto_Discovery_Table(db.Model):
     vendor = db.Column(db.String(500), nullable=True)
     snmp_status = db.Column(db.String(50), nullable=True)
     snmp_version = db.Column(db.String(50), nullable=True)
+    ssh_status = db.Column(db.String(50), nullable=True)
 
     creation_date = db.Column(db.DateTime, default=datetime.now())
     modification_date = db.Column(
@@ -51,3 +52,30 @@ class Auto_Discovery_Network_Table(db.Model):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+
+# class Auto_Discovery_Credentails_Table(db.Model):
+#     __tablename__ = "auto_discovery_credentials_table"
+#     auto_credentials_id = db.Column(
+#         db.Integer, primary_key=True, autoincrement=True
+#     )
+
+#     profile_name = db.Column(db.String(250), nullable=False)
+#     category = db.Column(db.String(100), nullable=False)
+
+#     credentials = db.Column(db.String(100), nullable=True)
+#     description = db.Column(db.String(250), nullable=True)
+#     snmp_read_community = db.Column(db.String(50), nullable=True)
+#     snmp_port = db.Column(db.String(100), nullable=True)
+#     username = db.Column(db.String(100), nullable=True)
+#     password = db.Column(db.String(100), nullable=True)
+#     encryption_password = db.Column(db.String(100), nullable=True)
+#     authentication_method = db.Column(db.String(50), nullable=True)
+#     encryption_method = db.Column(db.String(50), nullable=True)
+
+#     creation_date = db.Column(db.DateTime, default=datetime.now())
+#     modification_date = db.Column(
+#         db.DateTime, default=datetime.now(), onupdate=datetime.now()
+#     )
+
+#     def as_dict(self):
+#         return {c.name: getattr(self, c.name) for c in self.__table__.columns}

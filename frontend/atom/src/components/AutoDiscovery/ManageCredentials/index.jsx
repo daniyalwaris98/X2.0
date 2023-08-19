@@ -104,7 +104,7 @@ const index = () => {
   useEffect(() => {
     const serviceCalls = async () => {
       try {
-        const res = await axios.get(baseUrl + "/getUsers");
+        const res = await axios.get(baseUrl + "/getPasswordGroups");
         excelDatapassGroup = res.data;
         setDataSourcepassGroup(excelDatapassGroup);
       } catch (err) {

@@ -374,89 +374,7 @@ def DismantleOnBoardDevice(user_data):
 
         for ip in deviceIDs:
             try:
-                result = (
-                    db.session.query(UAM_Device_Table, Atom_Table)
-                    .join(Atom_Table, UAM_Device_Table.atom_id == Atom_Table.atom_id)
-                    .filter(Atom_Table.ip_address == ip)
-                    .first()
-                )
-
-                if result is None:
-                    errorList.append(f"{ip} : No Device Found")
-                    continue
-
-                uam, atom = result
-                atom.onboard_status = "False"
-
-                if UpdateDBData(atom) == 200:
-                    print(
-                        f"Device {ip} ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr
-                    )
-
-                    # change status to dismantle in device table
-                    uam.status = "Dismantled"
-                    if UpdateDBData(uam) == 200:
-                        print(
-                            f"DEVICE {atom.device_name} SUCCESSFULLY DISMANTLED",
-                            file=sys.stderr,
-                        )
-                        # change all board status
-                        boardObjs = (
-                            db.session.query(Board_Table)
-                            .filter(Board_Table.uam_id == uam.uam_id)
-                            .all()
-                        )
-
-                        for boardObj in boardObjs:
-                            boardObj.status = "Dismantled"
-                            UpdateDBData(boardObj)
-                            print(
-                                f"MODULE {boardObj.board_name} SUCCESSFULLY DISMANTLED",
-                                file=sys.stderr,
-                            )
-
-                        # change all sub-board status
-                        subboardObjs = (
-                            db.session.query(Subboard_Table)
-                            .filter(Subboard_Table.uam_id == uam.uam_id)
-                            .all()
-                        )
-
-                        for subboardObj in subboardObjs:
-                            subboardObj.status = "Dismantled"
-                            subboardObj.modification_date = datetime.now()
-                            UpdateDBData(subboardObj)
-                            print(
-                                f"STACK SWITCH {subboardObj.subboard_name} SUCCESSFULLY DISMANTLED",
-                                file=sys.stderr,
-                            )
-
-                        # change all SFP status
-                        sfpObjs = (
-                            db.session.query(Sfps_Table)
-                            .filter(Sfps_Table.uam_id == uam.uam_id)
-                            .all()
-                        )
-
-                        for sfpObj in sfpObjs:
-                            sfpObj.status = "Dismantled"
-                            sfpObj.modification_date = datetime.now()
-                            UpdateDBData(sfpObj)
-                            print(
-                                f"DEVICE {sfpObj.sfp_id} SUCCESSFULLY DISMANTLED",
-                                file=sys.stderr,
-                            )
-
-                        responseList.append(f"{ip} : Device Dismantled Successfully")
-
-                    else:
-                        errorList.append(
-                            f"{ip} : Error While Updating Device Status In UAM"
-                        )
-                else:
-                    errorList.append(
-                        f"{ip} : Error While Updating Device Status In Atom"
-                    )
+                UpdateUAMStatus(ip, "Dismantled")
             except Exception:
                 traceback.print_exc()
                 errorList.append(f"{ip} : Error Occured While Dismentaling")
@@ -472,3 +390,19 @@ def DismantleOnBoardDevice(user_data):
     except Exception as e:
         traceback.print_exc()
         return "Error While Updating Status", 500
+
+
+
+@app.route("/addDeviceStatically", methods=['POST'])
+@token_required
+def AddDeviceStatically(user_data):
+    try:
+            deviceObj = request.get_json()
+            deviceObj['status'] = "Dismantled"
+            response, status = EditUamDevice(deviceObj)
+            
+            return response, status
+    except Exception as e:
+        traceback.print_exc()
+        return "Error While Adding Device Statically", 500
+
