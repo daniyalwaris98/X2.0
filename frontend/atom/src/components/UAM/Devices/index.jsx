@@ -73,6 +73,10 @@ const index = () => {
     }
   };
 
+  const onSelectChange = (selectedRowKeys) => {
+    setSelectedRowKeys(selectedRowKeys);
+  };
+
   const confirm = async (e) => {
     e.stopPropagation();
     setDismantleLoading(true);
@@ -90,6 +94,8 @@ const index = () => {
               "success",
               response.data.error_list
             );
+
+            onSelectChange("");
 
             const promises = [];
             promises.push(
@@ -294,10 +300,6 @@ const index = () => {
     searchedColumn,
     setSearchedColumn
   );
-
-  const onSelectChange = (selectedRowKeys) => {
-    setSelectedRowKeys(selectedRowKeys);
-  };
 
   const rowSelection = {
     selectedRowKeys,

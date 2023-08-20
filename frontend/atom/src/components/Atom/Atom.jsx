@@ -522,6 +522,8 @@ const Atom = () => {
     axios
       .get(baseUrl + "/getAtoms")
       .then((response) => {
+        console.log("response", response);
+
         excelData = response?.data;
         setRowCount(response?.data?.length);
         setDataSource(response?.data);
