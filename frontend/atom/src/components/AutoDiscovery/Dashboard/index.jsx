@@ -52,8 +52,8 @@ const index = () => {
                 marginRight: "10px",
               }}
             >
-              <h2 style={{ fontWeight: 700 }}>Count Per Function </h2>
-              <FunctionCount />
+              <h2 style={{ fontWeight: 700 }}>Credentials Summary</h2>
+              <CredGraph />
             </div>
           </Col>
           <Col xs={{ span: 24 }} md={{ span: 12 }} lg={{ span: 12 }}>
@@ -63,15 +63,17 @@ const index = () => {
                 boxShadow: "0px 5px 14px rgba(28, 29, 32, 0.03)",
                 borderRadius: "8px",
                 padding: "10px",
-                marginRight: "10px",
+                height: "100%",
+                //   marginRight:"10px",
               }}
             >
-              <h2 style={{ fontWeight: 700 }}>Credentials Summary</h2>
-              <CredGraph />
+              <h2 style={{ fontWeight: 700 }}>Top OS in Auto Discovery</h2>
+              <TopOsForDiscovery />
             </div>
           </Col>
         </Row>
-        <Row>
+
+        <Row style={{ marginTop: "10px" }}>
           <Col xs={{ span: 24 }} md={{ span: 24 }} lg={{ span: 24 }}>
             <div
               style={{
@@ -79,12 +81,11 @@ const index = () => {
                 boxShadow: "0px 5px 14px rgba(28, 29, 32, 0.03)",
                 borderRadius: "8px",
                 padding: "10px",
-                //   marginRight:"10px",
-                marginTop: "10px",
+                marginRight: "10px",
               }}
             >
-              <h2 style={{ fontWeight: 700 }}>Top OS in Auto Discovery</h2>
-              <TopOsForDiscovery />
+              <h2 style={{ fontWeight: 700 }}>Count Per Function </h2>
+              <FunctionCount />
             </div>
           </Col>
         </Row>

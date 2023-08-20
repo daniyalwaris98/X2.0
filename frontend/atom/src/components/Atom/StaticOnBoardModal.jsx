@@ -25,13 +25,12 @@ const StaticOnBoardModal = (props) => {
       await axios
         .post(baseUrl + "/addDeviceStatically ", device)
         .then((response) => {
+          console.log("response", response);
+
           if (response?.response?.status == 500) {
-            openSweetAlert(response?.response?.data?.response, "error");
+            openSweetAlert(response?.response?.data, "error");
           } else {
-            openSweetAlert(
-              `Device ${device ? "Updated" : "Added"} Successfully`,
-              "success"
-            );
+            openSweetAlert(`Device  Successfully`, "success");
             const promises = [];
             promises.push(
               axios
@@ -44,7 +43,6 @@ const StaticOnBoardModal = (props) => {
                 })
                 .catch((error) => {
                   console.log(error);
-                  //  openSweetAlert("Something Went Wrong!", "error");
                 })
             );
             return Promise.all(promises);
@@ -66,6 +64,9 @@ const StaticOnBoardModal = (props) => {
   let [device_name, setdevice_name] = useState(
     device ? getString(device.device_name) : ""
   );
+
+  const [deviceId, setDeviceId] = useState("");
+
   let [ip_address, setipaddress] = useState(
     device ? getString(device.ip_address) : ""
   );
@@ -154,6 +155,7 @@ const StaticOnBoardModal = (props) => {
       setsite_type(staticOnBoardRecord.device_type);
       setmanufacturer(staticOnBoardRecord.creation_date);
       setstatus(staticOnBoardRecord.status);
+      setDeviceId(staticOnBoardRecord.atom_id);
     }
   }, [staticOnBoardRecord]);
 
@@ -180,9 +182,6 @@ const StaticOnBoardModal = (props) => {
     type = dataStructure;
   }
 
-  /** If "Type" is null or undefined then options will be null,
-   * otherwise it will create a options iterable based on our array
-   */
   if (type) {
     options = type.map((option) => <option>{option}</option>);
   }
@@ -232,64 +231,37 @@ const StaticOnBoardModal = (props) => {
   const handleSubmit = (e) => {
     e.preventDefault();
     const device = {
+      atom_id: deviceId,
       device_name,
-
       rack_name,
-
       site_name,
-
       domain,
-
       section,
-
       department,
-
       virtual,
-
       authentication,
-
       contract_number,
-
       subrack_id_number,
-
       manufacturer_date,
-
       hw_eos_date,
-
       hw_eol_date,
       ip_address,
       sw_eos_date,
-
       sw_eol_date,
-
       rfs_date,
-
       patch_version,
-
       software_version,
-
       hardware_version,
-
       criticality,
-
       function: myfunction,
-
       serial_number,
-
       pn_code,
-
       max_power,
-
       ru,
-
       site_type,
-
       manufacturer,
-
       status,
-
       stack,
-
       contract_expiry,
     };
 
