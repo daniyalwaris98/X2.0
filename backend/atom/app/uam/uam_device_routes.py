@@ -374,7 +374,13 @@ def DismantleOnBoardDevice(user_data):
 
         for ip in deviceIDs:
             try:
-                UpdateUAMStatus(ip, "Dismantled")
+                response, status = UpdateUAMStatus(ip, "Dismantled")
+                
+                if status == 500:
+                    errorList.append(response)
+                else:
+                    responseList.append(response)
+                    
             except Exception:
                 traceback.print_exc()
                 errorList.append(f"{ip} : Error Occured While Dismentaling")
