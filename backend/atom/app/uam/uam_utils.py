@@ -315,4 +315,4 @@ def UpdateUAMStatus(ip, status):
             return f"{ip} : Error While Updating Device Status In Atom", 500
     except Exception:
         traceback.print_exc()
-        return f"{ip} : Error Occured While Status Update"
+        return f"{ip} : Error Occured While Status Update", 500
