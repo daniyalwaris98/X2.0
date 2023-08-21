@@ -25,8 +25,6 @@ const StaticOnBoardModal = (props) => {
       await axios
         .post(baseUrl + "/addDeviceStatically ", device)
         .then((response) => {
-          console.log("response", response);
-
           if (response?.response?.status == 500) {
             openSweetAlert(response?.response?.data, "error");
           } else {
@@ -72,7 +70,7 @@ const StaticOnBoardModal = (props) => {
   );
   let [rack_name, setRack_name] = useState("");
   let [site_name, setSite_name] = useState("");
-  let [domain, setdomain] = useState(device ? getString(device.domain) : "");
+  let [domain, setdomain] = useState(device ? getString(device.domain) : "N/A");
   let [section, setSection] = useState(device ? getString(device.section) : "");
 
   let [department, setDepartment] = useState(
@@ -81,65 +79,68 @@ const StaticOnBoardModal = (props) => {
   let [virtual, setVirtual] = useState(device ? getString(device.virtual) : "");
 
   let [authentication, setauthentication] = useState(
-    device ? getString(device.authentication) : ""
+    device ? getString(device.authentication) : "N/A"
   );
   let [contract_number, setcontract_number] = useState(
-    device ? getString(device.contract_number) : ""
+    device ? getString(device.contract_number) : "N/A"
   );
   let [subrack_id_number, setsubrack_id_number] = useState(
-    device ? getString(device.subrack_id_number) : ""
+    device ? getString(device.subrack_id_number) : "N/A"
   );
   let [manufacturer_date, setmanufacturer_date] = useState(
-    device ? getString(device.manufacturer_date) : ""
+    device ? getString(device.manufacturer_date) : "0"
   );
   let [hw_eos_date, sethw_eos_date] = useState(
-    device ? getString(device.hw_eos_date) : ""
+    device ? getString(device.hw_eos_date) : "0"
   );
   let [hw_eol_date, sethw_eol_date] = useState(
-    device ? getString(device.hw_eol_date) : ""
+    device ? getString(device.hw_eol_date) : "0"
   );
   let [sw_eos_date, setsw_eos_date] = useState(
-    device ? getString(device.hw_eol_date) : ""
+    device ? getString(device.hw_eol_date) : "0"
   );
   let [sw_eol_date, setsw_eol_date] = useState(
-    device ? getString(device.sw_eol_date) : ""
+    device ? getString(device.sw_eol_date) : "0"
   );
   let [rfs_date, setrfs_date] = useState(
-    device ? getString(device.rfs_date) : ""
+    device ? getString(device.rfs_date) : "0"
   );
   let [patch_version, setpatch_version] = useState(
-    device ? getString(device.patch_version) : ""
+    device ? getString(device.patch_version) : "0"
   );
   let [software_version, setsoftware_version] = useState(
-    device ? getString(device.software_version) : ""
+    device ? getString(device.software_version) : "0"
   );
   let [hardware_version, sethardware_version] = useState(
-    device ? getString(device.hardware_version) : ""
+    device ? getString(device.hardware_version) : "0"
   );
 
   let [criticality, setCriticality] = useState(
-    device ? getString(device.criticality) : ""
+    device ? getString(device.criticality) : "N/A"
   );
   let [myfunction, setMyfunction] = useState(
-    device ? getString(device.function) : ""
+    device ? getString(device.function) : "N/A"
   );
   let [serial_number, setserial_number] = useState(
-    device ? getString(device.serial_number) : ""
+    device ? getString(device.serial_number) : "0"
   );
-  let [pn_code, setpn_code] = useState(device ? getString(device.pn_code) : "");
+  let [pn_code, setpn_code] = useState(
+    device ? getString(device.pn_code) : "0"
+  );
   let [max_power, setmax_power] = useState(
-    device ? getString(device.max_power) : ""
+    device ? getString(device.max_power) : "0"
   );
 
-  let [ru, setru] = useState(device ? getString(device.ru) : "");
-  let [site_type, setsite_type] = useState("");
+  let [ru, setru] = useState(device ? getString(device.ru) : "N/A");
+
+  let [site_type, setsite_type] = useState("N/A");
   let [manufacturer, setmanufacturer] = useState(
-    device ? getString(device.manufacturer) : ""
+    device ? getString(device.manufacturer) : "N/A"
   );
-  let [status, setstatus] = useState(device ? getString(device.status) : "");
-  let [stack, setstack] = useState(device ? getString(device.stack) : "");
+  let [status, setstatus] = useState(device ? getString(device.status) : "0");
+  let [stack, setstack] = useState(device ? getString(device.stack) : "N/A");
   let [contract_expiry, setcontract_expiry] = useState(
-    device ? getString(device.contract_expiry) : ""
+    device ? getString(device.contract_expiry) : "0"
   );
 
   useEffect(() => {
@@ -151,7 +152,9 @@ const StaticOnBoardModal = (props) => {
       setSection(staticOnBoardRecord.section);
       setDepartment(staticOnBoardRecord.department);
       setVirtual(staticOnBoardRecord.virtual);
-      setru(staticOnBoardRecord.device_ru);
+      setru(
+        staticOnBoardRecord.device_ru ? staticOnBoardRecord.device_ru : "N/A"
+      );
       setsite_type(staticOnBoardRecord.device_type);
       setmanufacturer(staticOnBoardRecord.creation_date);
       setstatus(staticOnBoardRecord.status);
