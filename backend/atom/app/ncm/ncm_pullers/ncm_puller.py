@@ -230,9 +230,19 @@ class NCMPuller(object):
         cwd = os.getcwd()
         if self.response is not None:
             if previous_file_name is not None:
-                path = f"{cwd}/app/configuration_backups/{previous_file_name}"
-                f = open(path, "r")
-                previousLines = f.readlines()
+                try:
+                    
+                    path = f"{cwd}/app/configuration_backups/{previous_file_name}"
+                    existingPath = os.path.exists(path)
+                    if existingPath:
+                        f = open(path, "r")
+                        previousLines = f.readlines()
+                    else:
+                        query = f"DELETE FROM ncm_history_table where file_name = {previous_file_name};"
+                        db.session.execute(query)
+                        db.session.commit()
+                except Exception:
+                    pass
 
                 previous_output = ""
                 length = len(previousLines)
