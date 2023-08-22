@@ -375,6 +375,7 @@ def DismantleOnBoardDevice(user_data):
         for ip in deviceIDs:
             try:
                 response, status = UpdateUAMStatus(ip, "Dismantled")
+                print(response,status, file=sys.stderr)
                 
                 if status == 500:
                     errorList.append(response)

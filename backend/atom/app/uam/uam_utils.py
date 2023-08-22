@@ -309,7 +309,7 @@ def UpdateUAMStatus(ip, status):
                 return f"{ip} : Device Status Updated Successfully To {status}", 200
 
             else:
-                return f"{ip} : Error While Updating Device Status In UAM", 200
+                return f"{ip} : Error While Updating Device Status In UAM", 500
                 
         else:
             return f"{ip} : Error While Updating Device Status In Atom", 500
