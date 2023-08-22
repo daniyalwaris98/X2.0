@@ -235,3 +235,27 @@ def NCMAlarmSummry(user_data):
             "Error While Fetching The Data\nFor Configuration Change Count By Timw Garph",
             500,
         )
+
+
+@app.route("/getVendorsInNCM", methods=["GET"])
+@token_required
+def NCMVendorCount(user_data):
+    try:
+        queryString = f"select vendor,count(*) from ncm_device_table inner join atom_table on ncm_device_table.atom_id = atom_table.atom_id  group by vendor;"
+        result = db.session.execute(queryString)
+        objList = []
+
+        for row in result:
+            objDict = {}
+            objDict["name"] = row[0]
+            objDict["value"] = row[1]
+
+            if row[0] is None:
+                objDict["name"] = "Other"
+
+            objList.append(objDict)
+
+        return jsonify(objList), 200
+    except Exception:
+        traceback.print_exc()
+        return "Erro While Fetching Data", 500
