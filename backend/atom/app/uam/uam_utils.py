@@ -130,6 +130,9 @@ def DeleteUamDevice(ip_address):
     
 def EditUamDevice(deviceObj):
     try:
+        
+        
+        
         result = (
             db.session.query(UAM_Device_Table, Atom_Table)
             .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id)

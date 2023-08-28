@@ -88,41 +88,58 @@ def setup_threashold():
 
 
 def setup_null_site():
-    site = Site_Table.query.filter(Site_Table.site_name == "NA").first()
+    try:
+        site = Site_Table.query.filter(Site_Table.site_name == "NA").first()
 
-    if site is None:
-        site = Site_Table()
-        site.site_name = "NA"
-        site.status = "Production"
-        InsertDBData(site)
+        if site is None:
+            site = Site_Table()
+            site.site_name = "NA"
+            site.status = "Production"
+            InsertDBData(site)
+    except Exception:
+        traceback.print_exc()
+        print("\n** Error While Running Alert Threashold Setup **\n", file=sys.stderr)
 
 
 def setup_null_rack():
-    rack = Rack_Table.query.filter(
-        Rack_Table.rack_name == "NA" and Rack_Table.site_id == 1
-    ).first()
-    
-    site = Site_Table.query.filter(Site_Table.site_name == "NA").first()
+    try:
+        rack = Rack_Table.query.filter(
+            Rack_Table.rack_name == "NA" and Rack_Table.site_id == 1
+        ).first()
+        
+        site = Site_Table.query.filter(Site_Table.site_name == "NA").first()
 
-    if rack is None:
-        rack = Rack_Table()
-        rack.rack_name = "NA"
-        rack.status = "Production"
-        rack.site_id = site.site_id
-        InsertDBData(rack)
+        if rack is None:
+            rack = Rack_Table()
+            rack.rack_name = "NA"
+            rack.status = "Production"
+            rack.site_id = site.site_id
+            InsertDBData(rack)
+    except Exception:
+        traceback.print_exc()
         
 def setup_null_password_group():
-    password = Password_Group_Table.query.filter(
-        Password_Group_Table.password_group == "NA" and Password_Group_Table.password_group_id == 1
-    ).first()
+    try:
+        password = Password_Group_Table.query.filter(
+            Password_Group_Table.password_group == "NA" and Password_Group_Table.password_group_id == 1
+        ).first()
 
-    if password is None:
-        password = Password_Group_Table()
-        password.password_group = "NA"
-        password.password_group_type = "SSH"
-        password.username = 'admin'
-        password.password = 'admin'
-        InsertDBData(password)
+        if password is None:
+            password = Password_Group_Table()
+            password.password_group = "NA"
+            password.password_group_type = "SSH"
+            password.username = 'admin'
+            password.password = 'admin'
+            InsertDBData(password)
+    except Exception:
+        traceback.print_exc()    
+        
+def sync_ncm_backups():
+    try:
+        pass
+    except Exception:
+        traceback.print_exc()
+        
 
 
 def default_setup():
@@ -136,5 +153,8 @@ def default_setup():
     setup_null_site()
     setup_null_rack()
     setup_null_password_group()
+    
+    print("** Syncing NCM Backups... **", file=sys.stderr)
+    sync_ncm_backups()
 
     print("===>>> Default Setup Complete\n", file=sys.stderr)
