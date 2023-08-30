@@ -124,6 +124,7 @@ from app.uam import module_routes
 from app.uam import sfp_routes
 from app.uam import aps_routes
 from app.uam import license_routes
+from app.uam import sntc_routes
 
 from app.monitoring_device.routes import monitoring_routes
 from app.monitoring_device.routes import monitoring_dashboard_routes

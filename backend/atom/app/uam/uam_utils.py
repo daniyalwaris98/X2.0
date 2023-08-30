@@ -10,7 +10,6 @@ from app.models.atom_models import *
 from app.middleware import token_required
 
 
-
 def FormatDate(date):
     print(f"String Date : {date}", file=sys.stderr)
 
@@ -22,9 +21,10 @@ def FormatDate(date):
 
     return result
 
+
 def FormatStringDate(date):
     print(f"String Date : {date}", file=sys.stderr)
-    
+
     try:
         if date is not None:
             if "-" in date:
@@ -36,7 +36,7 @@ def FormatStringDate(date):
     except Exception as e:
         traceback.print_exc()
         print(f"Date format exception - {e}", file=sys.stderr)
-    
+
     return None
 
 
@@ -44,7 +44,7 @@ def GetAllUamDevices():
     deviceList = []
     try:
         devices = (
-            db.session.query(UAM_Device_Table, Atom_Table,Rack_Table,Site_Table)
+            db.session.query(UAM_Device_Table, Atom_Table, Rack_Table, Site_Table)
             .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id)
             .join(Rack_Table, Rack_Table.rack_id == Atom_Table.rack_id)
             .join(Site_Table, Site_Table.site_id == Rack_Table.site_id)
@@ -54,6 +54,8 @@ def GetAllUamDevices():
         for uam, atom, rack, site in devices:
             try:
                 deviceDataDict = {}
+                deviceDataDict["atom_id"] = atom.atom_id
+                deviceDataDict["uam_id"] = uam.uam_id
                 deviceDataDict["device_name"] = atom.device_name
                 deviceDataDict["site_name"] = site.site_name
                 deviceDataDict["rack_name"] = rack.rack_name
@@ -61,10 +63,8 @@ def GetAllUamDevices():
                 deviceDataDict["device_type"] = atom.device_type
                 deviceDataDict["software_type"] = uam.software_type
                 deviceDataDict["software_version"] = uam.software_version
-                deviceDataDict["creation_date"] = FormatDate((uam.creation_date))
-                deviceDataDict["modification_date"] = FormatDate(
-                    (uam.modification_date)
-                )
+                deviceDataDict["creation_date"] = uam.creation_date
+                deviceDataDict["modification_date"] = uam.modification_date
                 deviceDataDict["status"] = uam.status
                 deviceDataDict["ru"] = atom.device_ru
                 deviceDataDict["department"] = atom.department
@@ -80,23 +80,22 @@ def GetAllUamDevices():
                 deviceDataDict["authentication"] = uam.authentication
                 deviceDataDict["serial_number"] = uam.serial_number
                 deviceDataDict["pn_code"] = uam.pn_code
-                deviceDataDict["manufacturer_date"] = FormatDate(
-                    (uam.manufacturer_date)
-                )
+                deviceDataDict["manufacturer_date"] = FormatDate(uam.manufacture_date)
+
                 deviceDataDict["source"] = uam.source
                 deviceDataDict["stack"] = uam.stack
                 deviceDataDict["contract_number"] = uam.contract_number
                 deviceDataDict["hardware_version"] = uam.hardware_version
                 deviceDataDict["contract_expiry"] = FormatDate((uam.contract_expiry))
                 deviceDataDict["uptime"] = uam.uptime
-                
+
                 deviceList.append(deviceDataDict)
             except Exception:
                 traceback.print_exc()
 
     except Exception:
         traceback.print_exc()
-    
+
     return deviceList
 
 
@@ -104,132 +103,150 @@ def DeleteUamDevice(ip_address):
     try:
         device = (
             db.session.query(UAM_Device_Table, Atom_Table)
-            .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id).filter(Atom_Table.ip_address==ip_address)
+            .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id)
+            .filter(Atom_Table.ip_address == ip_address)
             .first()
         )
-        
+
         if device is None:
             return f"{ip_address} : Device Not Found", 500
-        
+
         uam, atom = device
-        
+
         if uam.status is not None:
-            if uam.status == 'Production':
-                return f"{ip_address} : Device Is In Production Therefore Can Not Be Deleted", 500
-        
-        
+            if uam.status == "Production":
+                return (
+                    f"{ip_address} : Device Is In Production Therefore Can Not Be Deleted",
+                    500,
+                )
+
         if DeleteDBData(uam) == 200:
             return f"{ip_address} : Device Deleted Successfully", 200
         else:
             return f"{ip_address} : Error While Deleting Device", 500
-        
+
     except Exception:
         traceback.print_exc()
         return f"{ip_address} : Exceprtion Occured", 500
-    
-    
-def EditUamDevice(deviceObj):
+
+
+def EditUamDevice(deviceObj, uam_id):
     try:
-        result = (
-            db.session.query(UAM_Device_Table, Atom_Table)
-            .join(Atom_Table, Atom_Table.atom_id == UAM_Device_Table.atom_id)
-            .filter(Atom_Table.device_name == deviceObj["device_name"])
-            .first()
-        )
-        
-        if result is None:
-            return "Device Not Found", 500
-        
-        device, atom = result
-        
-        
-        
-        if 'rack_name' not in deviceObj.keys():
+        if "atom_id" not in deviceObj.keys():
+            return "Atom ID is Missing", 500
+
+        if deviceObj["atom_id"] is None:
+            return "Atom ID Can Not Be Null", 500
+
+        atom_id = deviceObj["atom_id"]
+
+        atom = Atom_Table.query.filter(Atom_Table.atom_id == atom_id).first()
+        if atom is None:
+            return "Device Not Found In Atom", 500
+
+        exits = False
+        if uam_id is not None:
+            device = UAM_Device_Table.query.filter(
+                UAM_Device_Table.uam_id == uam_id
+            ).first()
+            if device is None:
+                return "Device Not Found In UAM", 500
+
+            exits = True
+        else:
+            device = UAM_Device_Table()
+            device.atom_id = atom_id
+
+        if "rack_name" not in deviceObj.keys():
             atom.rack_id = 1
         elif deviceObj["rack_name"] is None:
             atom.rack_id = 1
         else:
-            rack = Rack_Table.query.filter(Rack_Table.rack_name == deviceObj["rack_name"]).first()
+            rack = Rack_Table.query.filter(
+                Rack_Table.rack_name == deviceObj["rack_name"]
+            ).first()
             if rack is None:
-                return "Invalid Rack Name", 500  
+                return "Invalid Rack Name", 500
             else:
                 atom.rack_id = rack.rack_id
-            
+
         if "function" not in deviceObj.keys():
             return "Function Can Not Be Empty", 500
-        
-        if deviceObj['function'] is None:
+
+        if deviceObj["function"] is None:
             return "Function Can Not Be Empty", 500
-        
-        deviceObj['function'] = str(deviceObj['function']).strip()
-        if deviceObj['function'] == "":
+
+        deviceObj["function"] = str(deviceObj["function"]).strip()
+        if deviceObj["function"] == "":
             return "Function Can Not Be Empty", 500
-        
+
         atom.function = deviceObj["function"]
         atom.ru = deviceObj["ru"]
         atom.department = deviceObj["department"]
         atom.section = deviceObj["section"]
         atom.criticality = deviceObj["criticality"]
         atom.virtual = deviceObj["virtual"]
-        
+
         UpdateDBData(atom)
-        
+
         if "software_version" in deviceObj.keys():
             device.software_version = deviceObj["software_version"]
-        
+
         if "manufacturer" in deviceObj.keys():
             device.manufacturer = deviceObj["manufacturer"]
-        
+
         if "authentication" in deviceObj.keys():
             device.authentication = deviceObj["authentication"]
-        
+
         if "serial_number" in deviceObj.keys():
             device.serial_number = deviceObj["serial_number"]
-        
+
         if "pn_code" in deviceObj.keys():
             device.pn_code = deviceObj["pn_code"]
-        
+
         if "subrack_id_number" in deviceObj.keys():
             device.subrack_id_number = deviceObj["subrack_id_number"]
-        
+
         if "source" in deviceObj.keys():
             device.source = deviceObj["source"]
-        
+
         if "stack" in deviceObj.keys():
             device.stack = deviceObj["stack"]
-        
+
         if "contract_number" in deviceObj.keys():
             device.contract_number = deviceObj["contract_number"]
-        
-        
-        if 'status' not in deviceObj.keys():
+
+        if "status" not in deviceObj.keys():
             return "Status Is Missing", 500
-        
-        if deviceObj['status'] is None:
+
+        if deviceObj["status"] is None:
             return "Status Is Missing", 500
-        
-        deviceObj['status'] = str(deviceObj['status']).strip()
-        
-        if deviceObj['status'] == 'Production':
+
+        deviceObj["status"] = str(deviceObj["status"]).strip()
+
+        if deviceObj["status"] == "Production":
             pass
-        elif deviceObj['status'] == 'Dismantled':
+        elif deviceObj["status"] == "Dismantled":
             pass
-        elif deviceObj['status'] == 'Maintenance':
+        elif deviceObj["status"] == "Maintenance":
             pass
-        elif deviceObj['status'] == 'Undefined':
+        elif deviceObj["status"] == "Undefined":
             pass
         else:
             return "Status Is Invalid", 500
-        
-        UpdateUAMStatus(atom.ip_address, deviceObj['status'])
 
-        UpdateDBData(device)
-        
+        if not exits:
+            device.status = deviceObj["status"]
+            InsertDBData(device)
+        else:
+            UpdateDBData(device)
+
+        UpdateUAMStatus(atom.ip_address, deviceObj["status"])
+
         return "Device Updated Successfully", 200
     except Exception:
         traceback.print_exc()
         return "Exeception Occured", 500
-
 
 
 def UpdateUAMStatus(ip, status):
@@ -245,14 +262,12 @@ def UpdateUAMStatus(ip, status):
             return f"{ip} : No Device Found", 500
 
         uam, atom = result
-        
+
         if status != "Production":
             atom.onboard_status = "False"
 
         if UpdateDBData(atom) == 200:
-            print(
-                f"\n{ip} : Device ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr
-            )
+            print(f"\n{ip} : Device ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr)
 
             # change status to dismantle in device table
             uam.status = status
@@ -310,7 +325,7 @@ def UpdateUAMStatus(ip, status):
 
             else:
                 return f"{ip} : Error While Updating Device Status In UAM", 500
-                
+
         else:
             return f"{ip} : Error While Updating Device Status In Atom", 500
     except Exception:
