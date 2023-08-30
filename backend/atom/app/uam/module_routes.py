@@ -1,5 +1,5 @@
-
 from app.uam.module_utils import *
+
 
 @app.route("/getBoardDetailsByIpAddress", methods=["GET"])
 @token_required
@@ -13,7 +13,6 @@ def GetBoardDetailsByIpAddress(user_data):
             return "Ip Address Is Missing From URL", 500
 
         if ip_address is not None:
-
             results = (
                 db.session.query(Board_Table, UAM_Device_Table, Atom_Table)
                 .join(UAM_Device_Table, Board_Table.uam_id == UAM_Device_Table.uam_id)
@@ -32,9 +31,12 @@ def GetBoardDetailsByIpAddress(user_data):
                     objDict["device_slot_id"] = board.device_slot_id
                     objDict["software_version"] = board.software_version
                     objDict["serial_number"] = board.serial_number
-                    objDict["creation_date"] = FormatDate(board.creation_date)
-                    objDict["modification_date"] = FormatDate(board.modification_date)
+                    objDict["creation_date"] = board.creation_date
+                    objDict["modification_date"] = board.modification_date
                     objDict["status"] = board.status
+                    objDict["manufacturer_date"] = FormatDate(
+                        board.manufacture_date
+                    )
                     objDict["eos_date"] = FormatDate(board.eos_date)
                     objDict["eol_date"] = FormatDate(board.eol_date)
                     objDict["pn_code"] = board.pn_code
@@ -86,14 +88,17 @@ def GetSubBoardDetailsByIpAddress(user_data):
                     objDict["slot_number"] = suboard.slot_number
                     objDict["subslot_number"] = suboard.subslot_number
                     objDict["software_version"] = suboard.software_version
-                    # objDict['hardware_version'] = hardware_version
+                    objDict["hardware_version"] = suboard.hardware_version
                     objDict["serial_number"] = suboard.serial_number
                     objDict["creation_date"] = FormatDate(suboard.creation_date)
                     objDict["modification_date"] = FormatDate(suboard.modification_date)
                     objDict["status"] = suboard.status
+                    objDict["manufacturer_date"] = FormatDate(
+                        suboard.manufacture_date
+                    )
                     objDict["eos_date"] = FormatDate(suboard.eos_date)
                     objDict["eol_date"] = FormatDate(suboard.eol_date)
-                    # objDict['rfs_date'] = FormatDate((rfs_date))
+                    objDict["rfs_date"] = FormatDate(suboard.rfs_date)
                     objDict["pn_code"] = suboard.pn_code
                     objList.append(objDict)
 
@@ -130,10 +135,11 @@ def GetAllBoards(user_data):
                 boardDataDict["device_name"] = atom.device_name
                 boardDataDict["device_slot_id"] = boardObj.device_slot_id
                 boardDataDict["software_version"] = boardObj.software_version
-                # boardDataDict['hardware_version'] = boardObj.hardware_version
+                boardDataDict["hardware_version"] = boardObj.hardware_version
                 boardDataDict["serial_number"] = boardObj.serial_number
-                # boardDataDict['manufacturer_date'] = FormatDate(
-                #     (boardObj.manufacturer_date))
+                boardDataDict["manufacturer_date"] = FormatDate(
+                    boardObj.manufacture_date
+                )
                 boardDataDict["creation_date"] = FormatDate(boardObj.creation_date)
                 boardDataDict["modification_date"] = FormatDate(
                     boardObj.modification_date
@@ -142,7 +148,7 @@ def GetAllBoards(user_data):
                 boardDataDict["status"] = boardObj.status
                 boardDataDict["eos_date"] = FormatDate(boardObj.eos_date)
                 boardDataDict["eol_date"] = FormatDate(boardObj.eol_date)
-                # boardDataDict['rfs_date'] = FormatDate((boardObj.rfs_date))
+                boardDataDict["rfs_date"] = FormatDate(boardObj.rfs_date)
                 boardDataDict["pn_code"] = boardObj.pn_code
 
                 boardObjList.append(boardDataDict)
@@ -182,7 +188,7 @@ def GetAllSubBoards(user_data):
                 subboardDataDict["slot_number"] = subboardObj.slot_number
                 subboardDataDict["subslot_number"] = subboardObj.subslot_number
                 subboardDataDict["software_version"] = subboardObj.software_version
-                # subboardDataDict['hardware_version'] = subboardObj.hardware_version
+                subboardDataDict["hardware_version"] = subboardObj.hardware_version
                 subboardDataDict["serial_number"] = subboardObj.serial_number
                 subboardDataDict["creation_date"] = FormatDate(
                     subboardObj.creation_date
@@ -195,8 +201,7 @@ def GetAllSubBoards(user_data):
                 subboardDataDict["status"] = subboardObj.status
                 subboardDataDict["eos_date"] = FormatDate(subboardObj.eos_date)
                 subboardDataDict["eol_date"] = FormatDate(subboardObj.eol_date)
-                # subboardDataDict['rfs_date'] = FormatDate(
-                #     (subboardObj.rfs_date))
+                subboardDataDict["rfs_date"] = FormatDate(subboardObj.rfs_date)
                 subboardDataDict["pn_code"] = subboardObj.pn_code
 
                 subboardObjList.append(subboardDataDict)
@@ -215,16 +220,16 @@ def GetAllSubBoards(user_data):
 def addBoard(user_data):
     try:
         boardObj = request.get_json()
-        
+
         msg, status = AddBoard(boardObj)
-        
+
         print(msg, file=sys.stderr)
-        
+
         return msg, status
-        
+
     except Exception:
         traceback.print_exc()
-        return "Server Error", 500    
+        return "Server Error", 500
 
 
 @app.route("/editBoard", methods=["POST"])
@@ -241,7 +246,7 @@ def EditBoard(user_data):
         )
 
         board.rfs_date = FormatStringDate(boardObj["rfs_date"])
-        
+
         if UpdateDBData(board) == 200:
             return "Board Updated Successfully", 200
         else:
@@ -249,8 +254,6 @@ def EditBoard(user_data):
     except Exception as e:
         traceback.print_exc()
         return "Server Error", 500
-
-
 
 
 @app.route("/editSubBoard", methods=["POST"])
@@ -272,9 +275,7 @@ def EditSubBoard(user_data):
             return "Sub-Board Updated Successfully", 200
         else:
             return "Error While Updating Sub-Board", 500
-    
+
     except Exception as e:
         traceback.print_exc()
         return "Server Error", 500
-
-    

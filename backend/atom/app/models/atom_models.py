@@ -56,7 +56,7 @@ class Rack_Table(db.Model):
     status = db.Column(db.String(50), nullable=False)
 
     serial_number = db.Column(db.String(50), nullable=True, default="N/A")
-    manufacturer_date = db.Column(db.Date, default=datetime(2000, 1, 1), nullable=True)
+    manufacture_date = db.Column(db.Date, default=datetime(2000, 1, 1), nullable=True)
     unit_position = db.Column(db.String(20), nullable=True, default="N/A")
     ru = db.Column(db.String(50), nullable=True, default="N/A")
     rfs_date = db.Column(db.Date, default=datetime(2000, 1, 1), nullable=True)
