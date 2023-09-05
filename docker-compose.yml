@@ -29,6 +29,25 @@ services:
       - updated_atom_db
       - updated_influx_db
 
+  atom_fast_backend:
+    container_name: Atom_Fast_Backend_Container
+    restart: always
+    build: backend/fast_api
+    # cap_add:
+    #   - NET_ADMIN
+    #   - SYS_ADMIN
+    ports:
+      - "8080:8080"
+    # environment:
+    #   - NET_TEXTFSM=/app/app/pullers/ntc-templates/ntc_templates/templates/
+    volumes:
+      - ./backend/fast_api:/app
+    depends_on:
+      - updated_atom_db
+      - updated_influx_db
+
+  
+
   updated_atom_react:
     container_name: Updated_Atom_React_Container
     restart: always
