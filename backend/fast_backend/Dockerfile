@@ -1,5 +1,5 @@
 
-FROM python:3.9.4
+FROM python:3.10.9
 
 
 COPY . /app
