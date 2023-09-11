@@ -18,11 +18,11 @@ async def add_atom(atom: AddAtomRequestSchema):
         if status != 200:
             response, status = add_transition_atom(atom, False)
 
-        return response, status
+        return JSONResponse(content=response, status_code=status)
 
     except Exception:
         traceback.print_exc()
-        return "Error Occurred While Adding Atom Device", 500
+        return JSONResponse(content="Error Occurred While Adding Atom Device", status_code=500)
 
 
 @router.post("/addAtomDevices", responses={
@@ -77,11 +77,11 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
             error_list=error_list
         )
 
-        return response, 200
+        return JSONResponse(content=response, status_code=200)
 
     except Exception:
         traceback.print_exc()
-        return "Error Occurred While Adding Atom Devices", 500
+        return JSONResponse(content="Error Occurred While Adding Atom Devices", status_code=500)
 
 
 @router.post("/editAtom", responses={
@@ -89,18 +89,14 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
     400: {"model": str},
     500: {"model": str}
 })
-async def add_atom(atom: AddAtomRequestSchema):
+async def edit_atom(atom: EditAtomRequestSchema):
     try:
-        response, status = add_complete_atom(atom, False)
-
-        if status != 200:
-            response, status = add_transition_atom(atom, False)
-
-        return response, status
-
+        atom = atom.dict()
+        response, status = edit_atom_util(atom)
+        return JSONResponse(content=response, status_code=status)
     except Exception:
         traceback.print_exc()
-        return "Error Occurred While Adding Atom Device", 500
+        return "Error Occurred While Updating Atom Device", 500
 
 
 @router.get("/getAtoms", responses={
@@ -163,13 +159,12 @@ async def get_atoms():
                 traceback.print_exc()
 
         print(atom_obj_list, file=sys.stderr)
-        # return atom_obj_list, 200
 
-        if len(atom_obj_list) > 0:
-            return atom_obj_list, 200
-        else:
-            return None, 200
+        if len(atom_obj_list) <= 0:
+            atom_obj_list = None
+
+        return JSONResponse(content=atom_obj_list, status_code=200)
 
     except Exception:
         traceback.print_exc()
-        return "Exception Occurred", 500
+        return JSONResponse(content="Error Occurred While Fetching Atom Devices", status_code=500)

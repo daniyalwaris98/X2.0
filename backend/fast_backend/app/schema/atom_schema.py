@@ -19,12 +19,23 @@ class AddAtomRequestSchema(BaseModel):
     password_group: str | None = None
 
     vendor: str | None = None
-    device_ru: str | None = None
+    device_ru: int | None = None
     department: str | None = None
     section: str | None = None
     criticality: str | None = None
     domain: str | None = None
     virtual: str | None = None
+
+
+class EditAtomRequestSchema(AddAtomRequestSchema):
+    def __getitem__(self, key):
+        return getattr(self, key, None)
+
+    def __setitem__(self, key, value):
+        return setattr(self, key, value)
+
+    atom_id: int | None = None
+    atom_transition_id: int | None = None
 
 
 class AddAtomsResponseSchema(BaseModel):
@@ -38,7 +49,6 @@ class AddAtomsResponseSchema(BaseModel):
     error: int
     success_list: list[str]
     error_list: list[str]
-
 
 
 class GetAtomResponseSchema(BaseModel):
@@ -62,7 +72,7 @@ class GetAtomResponseSchema(BaseModel):
     password_group: str | None = None
 
     vendor: str | None = None
-    device_ru: str | None = None
+    device_ru: int | None = None
     department: str | None = None
     section: str | None = None
     criticality: str | None = None
