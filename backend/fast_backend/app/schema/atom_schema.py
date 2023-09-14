@@ -1,5 +1,4 @@
-from enum import Enum
-from pydantic import BaseModel, Field
+from app.schema.base_schema import *
 
 
 class AddAtomRequestSchema(BaseModel):
@@ -38,19 +37,6 @@ class EditAtomRequestSchema(AddAtomRequestSchema):
     atom_transition_id: int | None = None
 
 
-class AddAtomsResponseSchema(BaseModel):
-    def __getitem__(self, key):
-        return getattr(self, key, None)
-
-    def __setitem__(self, key, value):
-        return setattr(self, key, value)
-
-    success: int
-    error: int
-    success_list: list[str]
-    error_list: list[str]
-
-
 class GetAtomResponseSchema(BaseModel):
     def __getitem__(self, key):
         return getattr(self, key, None)
@@ -82,6 +68,17 @@ class GetAtomResponseSchema(BaseModel):
 
     creation_date: str
     modification_date: str
+
+
+class DeleteAtomRequestSchema(BaseModel):
+    def __getitem__(self, key):
+        return getattr(self, key, None)
+
+    def __setitem__(self, key, value):
+        return setattr(self, key, value)
+
+    atom_id: int | None = None
+    atom_transition_id: int | None = None
 
 
 class PasswordGroupTypeEnum(str, Enum):
@@ -119,3 +116,13 @@ class GetPasswordGroupResponseSchema(BaseModel):
 
     creation_date: str
     modification_date: str
+
+
+class DeletePasswordGroupRequestSchema(BaseModel):
+    def __getitem__(self, key):
+        return getattr(self, key, None)
+
+    def __setitem__(self, key, value):
+        return setattr(self, key, value)
+
+    password_group_id: int

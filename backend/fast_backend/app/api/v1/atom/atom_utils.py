@@ -619,7 +619,7 @@ def validate_password_group_credentials(pass_obj, password_exist):
     return password_exist, 200
 
 
-def add_password_group(pass_obj, update):
+def add_password_group_util(pass_obj, update):
     try:
         name_response, status = validate_password_group_name(pass_obj)
 
@@ -672,7 +672,7 @@ def add_password_group(pass_obj, update):
         return f"Server Error", 500
 
 
-def edit_password_group(pass_obj):
+def edit_password_group_util(pass_obj):
     try:
 
         password_exist = configs.db.query(PasswordGroupTable).filter(
