@@ -106,3 +106,37 @@ def delete_password_groups(pass_list: list[DeletePasswordGroupRequestSchema]):
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Deleting Password Groups", status_code=500)
+
+
+@router.get("/getPasswordGroups", responses={
+    200: {"model": list[GetPasswordGroupResponseSchema]},
+    500: {"model": str}
+})
+async def get_password_groups():
+    try:
+        response = list()
+        results = configs.db.query(PasswordGroupTable).all()
+        for result in results:
+            response.append(result.as_dict())
+
+        return JSONResponse(content=response, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred While Fetching Password Groups", status_code=500)
+
+
+@router.get("/getPasswordGroupDropdown", responses={
+    200: {"model": list[str]},
+    500: {"model": str}
+})
+async def get_password_group_dropdown():
+    try:
+        response = list()
+        results = configs.db.query(PasswordGroupTable).all()
+        for result in results:
+            response.append(result.password_group)
+
+        return JSONResponse(content=response, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred While Fetching Password Groups", status_code=500)

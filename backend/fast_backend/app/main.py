@@ -1,12 +1,9 @@
 # app/main.py
 import time
-import traceback
 
 from fastapi import FastAPI
-# import pdb;pdb.set_trace()
-
-from app.core.config import configs
 from app.models.atom_models import *
+from app.models.site_rack_models import *
 from app.utils.db_utils import *
 
 from app.api.v1.routes import routers as v1_routers
@@ -19,11 +16,12 @@ app.include_router(v1_routers, prefix=configs.API_V1_STR)
 # Initialize tables
 Base.metadata.create_all(bind=configs.engine)
 
+
 def create_default_units():
-    site = configs.db.query(SiteTable).filter(SiteTable.site_name == "NA").first()
+    site = configs.db.query(SiteTable).filter(SiteTable.site_name == "default_site").first()
     if site is None:
         site = SiteTable()
-        site.site_name = "NA"
+        site.site_name = "default_site"
         site.status = "Production"
         if InsertDBData(site) == 200:
             print("   Default Site Added", file=sys.stderr)
@@ -31,10 +29,10 @@ def create_default_units():
     else:
         print("   Default Site Found", file=sys.stderr)
 
-    rack = configs.db.query(RackTable).filter(RackTable.rack_name == "NA").first()
+    rack = configs.db.query(RackTable).filter(RackTable.rack_name == "default_rack").first()
     if rack is None:
         rack = RackTable()
-        rack.rack_name = "NA"
+        rack.rack_name = "default_rack"
         rack.site_id = site.site_id
         rack.status = "Production"
         if InsertDBData(rack) == 200:
@@ -42,10 +40,11 @@ def create_default_units():
     else:
         print("   Default Rack Found", file=sys.stderr)
 
-    password = configs.db.query(PasswordGroupTable).filter(PasswordGroupTable.password_group == "NA").first()
+    password = configs.db.query(PasswordGroupTable).filter(
+        PasswordGroupTable.password_group == "default_password").first()
     if password is None:
         password = PasswordGroupTable()
-        password.password_group = "NA"
+        password.password_group = "default_password"
         password.password_group_type = "SSH"
         password.username = "NA"
         password.password = "NA"

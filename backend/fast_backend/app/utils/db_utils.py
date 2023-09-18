@@ -1,5 +1,5 @@
-import  sys
-import  traceback
+import sys
+import traceback
 
 from app.core.config import configs
 
@@ -30,6 +30,7 @@ def UpdateDBData(obj):
         print(
             f"Something else went wrong during Database Update: {e}", file=sys.stderr)
         return 500
+
 
 def DeleteDBData(obj):
     try:

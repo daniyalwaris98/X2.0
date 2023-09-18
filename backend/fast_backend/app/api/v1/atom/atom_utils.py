@@ -3,7 +3,7 @@ from app.api.v1.atom.atom_import import *
 
 def validate_site(device):
     # Site Check
-    default_site = configs.db.query(SiteTable).filter(SiteTable.site_name == "NA").first()
+    default_site = configs.db.query(SiteTable).filter(SiteTable.site_name == "default_site").first()
 
     if device["site_name"] is None:
         pass
@@ -26,7 +26,7 @@ def validate_site(device):
 
 def validate_rack(device, site):
     # Rack Check
-    default_rack = configs.db.query(RackTable).filter(RackTable.rack_name == "NA").first()
+    default_rack = configs.db.query(RackTable).filter(RackTable.rack_name == "default_rack").first()
 
     if device["rack_name"] is None:
         pass
@@ -67,7 +67,7 @@ def validate_password_group(device):
                 return password, 200
 
     password = configs.db.query(PasswordGroupTable).filter(
-        PasswordGroupTable.password_group == "NA"
+        PasswordGroupTable.password_group == "default_password"
     ).first()
 
     return password, 200
@@ -408,9 +408,9 @@ def edit_atom_util(device):
 
         elif trans_atom is not None:
             if configs.db.query(AtomTransitionTable).filter(
-                    AtomTransitionTable.ip_address == device["ip_address"], AtomTransitionTable.atom_transition_id !=
-                                                                            device[
-                                                                                "atom_transition_id"]).first() is not None:
+                    AtomTransitionTable.ip_address == device["ip_address"],
+                    AtomTransitionTable.atom_transition_id != device["atom_transition_id"]
+            ).first() is not None:
                 return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
 
             if configs.db.query(AtomTable).filter(
@@ -574,8 +574,8 @@ def validate_password_group_name(pass_obj):
     if pass_obj["password_group"] == "":
         return f"Password Group Can Not be Empty", 400
 
-    if pass_obj["password_group"] == "NA":
-        return f"{pass_obj['password_group']} : Password Group Name (NA) Is Not Allowed", 400
+    if pass_obj["password_group"] == "default_password":
+        return f"{pass_obj['password_group']} : Password Group Name (default_password) Is Not Allowed", 400
 
     return pass_obj["password_group"], 200
 
@@ -681,8 +681,8 @@ def edit_password_group_util(pass_obj):
         if password_exist is None:
             return f"Password Group Does Not Found", 400
 
-        if password_exist.password_group == "NA":
-            return f"Password Group (NA) Is Not Editable", 400
+        if password_exist.password_group == "default_password":
+            return f"Password Group (default_password) Is Not Editable", 400
 
         name_response, status = validate_password_group_name(pass_obj)
 

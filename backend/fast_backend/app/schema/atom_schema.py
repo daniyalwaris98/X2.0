@@ -1,12 +1,7 @@
 from app.schema.base_schema import *
 
 
-class AddAtomRequestSchema(BaseModel):
-    def __getitem__(self, key):
-        return getattr(self, key, None)
-
-    def __setitem__(self, key, value):
-        return setattr(self, key, value)
+class AddAtomRequestSchema(BaseSchema):
 
     ip_address: str
 
@@ -27,22 +22,12 @@ class AddAtomRequestSchema(BaseModel):
 
 
 class EditAtomRequestSchema(AddAtomRequestSchema):
-    def __getitem__(self, key):
-        return getattr(self, key, None)
-
-    def __setitem__(self, key, value):
-        return setattr(self, key, value)
 
     atom_id: int | None = None
     atom_transition_id: int | None = None
 
 
-class GetAtomResponseSchema(BaseModel):
-    def __getitem__(self, key):
-        return getattr(self, key, None)
-
-    def __setitem__(self, key, value):
-        return setattr(self, key, value)
+class GetAtomResponseSchema(BaseSchema):
 
     atom_id: int = Field(None, title="Atom ID", description="ID for Atom Record")
     atom_transition_id: int = Field(None, title="Transition Atom ID", description="ID for Transition Atom Record")
@@ -70,12 +55,7 @@ class GetAtomResponseSchema(BaseModel):
     modification_date: str
 
 
-class DeleteAtomRequestSchema(BaseModel):
-    def __getitem__(self, key):
-        return getattr(self, key, None)
-
-    def __setitem__(self, key, value):
-        return setattr(self, key, value)
+class DeleteAtomRequestSchema(BaseSchema):
 
     atom_id: int | None = None
     atom_transition_id: int | None = None
@@ -86,12 +66,7 @@ class PasswordGroupTypeEnum(str, Enum):
     telnet = "Telnet"
 
 
-class AddPasswordGroupRequestSchema(BaseModel):
-    def __getitem__(self, key):
-        return getattr(self, key, None)
-
-    def __setitem__(self, key, value):
-        return setattr(self, key, value)
+class AddPasswordGroupRequestSchema(BaseSchema):
 
     password_group: str
     username: str
@@ -100,12 +75,7 @@ class AddPasswordGroupRequestSchema(BaseModel):
     password_group_type: PasswordGroupTypeEnum
 
 
-class GetPasswordGroupResponseSchema(BaseModel):
-    def __getitem__(self, key):
-        return getattr(self, key, None)
-
-    def __setitem__(self, key, value):
-        return setattr(self, key, value)
+class GetPasswordGroupResponseSchema(BaseSchema):
 
     password_group_id: int
     password_group: str
@@ -118,11 +88,5 @@ class GetPasswordGroupResponseSchema(BaseModel):
     modification_date: str
 
 
-class DeletePasswordGroupRequestSchema(BaseModel):
-    def __getitem__(self, key):
-        return getattr(self, key, None)
-
-    def __setitem__(self, key, value):
-        return setattr(self, key, value)
-
+class DeletePasswordGroupRequestSchema(BaseSchema):
     password_group_id: int
