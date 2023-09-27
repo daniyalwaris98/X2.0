@@ -1,8 +1,8 @@
-from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy import ForeignKey, Column, Boolean, Integer, String, DateTime, Date
 from datetime import datetime
 
-Base = declarative_base()
+from sqlalchemy import ForeignKey, Column, Integer, String, DateTime, Date
+
+from app.core.config import Base
 
 
 #
@@ -16,7 +16,7 @@ Base = declarative_base()
 #
 
 
-class UAMDeviceTable(Base):
+class UamDeviceTable(Base):
     __tablename__ = "uam_device_table"
     uam_id = Column(Integer, primary_key=True, autoincrement=True)
     atom_id = Column(

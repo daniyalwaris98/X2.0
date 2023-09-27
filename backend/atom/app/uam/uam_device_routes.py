@@ -1,4 +1,4 @@
-from app.uam.uam_utils import *
+from app.api.v1.uam.uam_utils import *
 
 
 @app.route("/totalDevicesInDeviceDashboard", methods=["GET"])
@@ -18,7 +18,7 @@ def TotalDevicesInDeviceDashboard(user_data):
 @token_required
 def getAllUamDevices(user_data):
     try:
-        return jsonify(GetAllUamDevices()), 200
+        return jsonify(get_all_uam_devices_util()), 200
     except Exception:
         traceback.print_exc()
         return "Server Error", 500
@@ -33,7 +33,7 @@ def deleteUamDevice(user_data):
         ip_addresses = request.get_json()
 
         for ip_address in ip_addresses:
-            msg, status = DeleteUamDevice(ip_address)
+            msg, status = delete_uam_device_util(ip_address)
             if status == 200:
                 success_list.append(msg)
             else:
@@ -145,7 +145,7 @@ def editUamDevice(user_data):
         if deviceObj['uam_id'] is None:
             return "UAM ID Can Not Be Null", 500
         
-        return EditUamDevice(deviceObj, deviceObj['uam_id'])
+        return edit_uam_device_util(deviceObj, deviceObj['uam_id'])
     except Exception as e:
         traceback.print_exc()
         return "Server Error While Updating Device", 500
@@ -381,7 +381,7 @@ def DismantleOnBoardDevice(user_data):
 
         for ip in deviceIDs:
             try:
-                response, status = UpdateUAMStatus(ip, "Dismantled")
+                response, status = update_uam_status_utils(ip, "Dismantled")
                 print(response,status, file=sys.stderr)
                 
                 if status == 500:
@@ -414,7 +414,7 @@ def AddDeviceStatically(user_data):
             deviceObj = request.get_json()
             
             deviceObj['status'] = "Dismantled"
-            response, status = EditUamDevice(deviceObj, None)
+            response, status = edit_uam_device_util(deviceObj, None)
             
             if status == 200:
                 return "Device Onboarded Statically", 200

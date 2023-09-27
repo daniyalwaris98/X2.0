@@ -1,4 +1,5 @@
 from sqlalchemy import create_engine
+from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
 
 import os
@@ -6,6 +7,7 @@ from typing import List
 
 from dotenv import load_dotenv
 # from pydantic import BaseSettings
+
 
 load_dotenv()
 
@@ -74,6 +76,7 @@ class TestConfigs(Configs):
 
 
 configs = Configs()
+Base = declarative_base()
 
 if ENV == "prod":
     pass

@@ -2,13 +2,13 @@ from fastapi import APIRouter
 
 from app.api.v1.atom.atom_routes import router as atom_router
 from app.api.v1.atom.password_group_routes import router as password_group_router
-# from app.api.v1.uam.uam_base_routes import router as uam_router
 from app.api.v1.uam.site_routes import router as site_router
 from app.api.v1.uam.rack_routes import router as rack_router
-
+from app.api.v1.uam.device_routes import router as device_router
+from app.api.v1.uam.module_routes import router as module_router
 
 routers = APIRouter()
-router_list = [atom_router, password_group_router, site_router, rack_router]
+router_list = [atom_router, password_group_router, site_router, rack_router, device_router, module_router]
 
 for router in router_list:
     router.tags = routers.tags.append("v1")

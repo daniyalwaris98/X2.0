@@ -15,3 +15,12 @@ class SummeryResponseSchema(BaseSchema):
     error: int
     success_list: list[str]
     error_list: list[str]
+
+
+class NameValueResponseSchema(BaseSchema):
+    name: str
+    value: int
+
+
+class IpAddressRequestSchema(BaseSchema):
+    ip_address: str

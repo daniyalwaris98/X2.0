@@ -8,8 +8,8 @@ import threading
 import time
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
-from app.uam.uam_db_utils import UamInventoryData
-from app.utilities.failed_utilts import addFailedDevice
+from app.uam.uam_db_utils import uam_inventory_data
+from app.utils.failed_utils import addFailedDevice
 
 
 import traceback
@@ -218,7 +218,7 @@ class ACIPuller(object):
                     #     sys.stdout = original_stdout
 
                     # print(self.inv_data,file=sys.stderr)
-                    self.failed = UamInventoryData(self.inv_data)
+                    self.failed = uam_inventory_data(self.inv_data)
                 
                 except Exception as e:
                   traceback.print_exc()

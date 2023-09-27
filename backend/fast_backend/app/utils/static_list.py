@@ -1,3 +1,26 @@
+from app.pullers.NXOS.nxos_inv import NXOSPuller
+from app.pullers.IOSXR.ios_xr_inv import XRPuller
+from app.pullers.IOSXE.ios_xe_inv import XEPuller
+from app.pullers.IOS.ios_inv import IOSPuller
+from app.pullers.ACI.aci_inv import ACIPuller
+from app.pullers.WLC.cisco_wlc_inv import WLCPuller
+from app.pullers.Prime.prime_inv import PrimePuller
+from app.pullers.UCS.ucs_cimc_inv import UCSPuller
+from app.pullers.A10.a10_inv import A10Puller
+from app.pullers.Infoblox.infoblox_inv import InfoboxPuller
+from app.pullers.Arista.arista_inv import AristaPuller
+from app.pullers.Arbor.arbor_inv import ArborPuller
+from app.pullers.Wirefilter.wirefilter_inv import WirefilterPuller
+from app.pullers.Fortinet.fortinet_inv import FortinetPuller
+from app.pullers.Juniper.juniper_inv import JuniperPuller
+from app.pullers.ASA.cisco_asa_inv import ASAPuller
+from app.pullers.PaloAlto.palo_alto_inv import PaloAltoPuller
+from app.pullers.Pulse_Secure.pulse_secure_inv import PulseSecurePuller
+from app.pullers.Symantec.symantec_inv import SymantecPuller
+from app.pullers.Fireeye.fireeye_inv import FireEyePuller
+from app.pullers.Firepower.firepower_inv import FirePowerPuller
+from app.pullers.H3C.h3c import H3CPuller
+
 device_type_list = [
     "a10",
     "arbor",
@@ -33,7 +56,6 @@ device_type_list = [
     "other",
 ]
 
-
 device_type_ssh_dictionary = {
     "a10": "a10",
     "arista": "arista_eos",
@@ -55,7 +77,6 @@ device_type_ssh_dictionary = {
     "paloalto": "paloalto_panos",
 }
 
-
 device_type_telnet_dictionary = {
     "arista": "arista_eos_telnet",
     "cisco_ios": "cisco_ios_telnet",
@@ -66,7 +87,6 @@ device_type_telnet_dictionary = {
     "paloalto": "paloalto_panos_telnet",
 }
 
-
 ncm_command_list = {
     "cisco_asa": ["show running-config", "show ip interface brief", "show version"],
     "cisco_ftd": ["show running-config", "show ip interface brief", "show version"],
@@ -76,5 +96,35 @@ ncm_command_list = {
     "cisco_nxos": ["show running-config", "show ip interface brief", "show version"],
     "cisco_wlc": ["show running-config", "show ip interface brief", "show version"],
     "fortinet": ["show full-configuration"],
-    "f5_ltm" : ["show running-config", "yes"]
+    "f5_ltm": ["show running-config", "yes"]
+}
+
+onboard_dict = {
+    "a10": A10Puller(),
+    "arbor": ArborPuller(),
+    "arista": AristaPuller(),
+    "cisco_aci": ACIPuller(),
+    "cisco_apic": ACIPuller(),
+    "cisco_asa": ASAPuller(),
+    "cisco_ios": IOSPuller(),
+    "cisco_ios_xe": XEPuller(),
+    "cisco_ios_xr": XRPuller(),
+    "cisco_nxos": NXOSPuller(),
+    "cisco_usc": UCSPuller(),
+    "cisco_wlc": WLCPuller(),
+    "cisco_wlc_ssh": WLCPuller(),
+    "fireeye": FireEyePuller(),
+    "firepower": FirePowerPuller(),
+    "fortinet": FortinetPuller(),
+    "greatbay": PrimePuller(),
+    "hp_comware": H3CPuller(),
+    "h3c": H3CPuller(),
+    "infobox": InfoboxPuller(),
+    "juniper": JuniperPuller(),
+    "juniper_screenos": JuniperPuller(),
+    "paloalto": PaloAltoPuller(),
+    "prime": PrimePuller(),
+    "pulse_secure": PulseSecurePuller(),
+    "symantec": SymantecPuller(),
+    "wire_filter": WirefilterPuller()
 }

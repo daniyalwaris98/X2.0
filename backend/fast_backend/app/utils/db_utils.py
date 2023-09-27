@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-from app.core.config import configs
+from app.core.config import *
 
 
 def InsertDBData(obj):

@@ -458,7 +458,7 @@ def edit_complete_atom(device, atom):
         return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
     if configs.db.query(AtomTable).filter(
-            AtomTable.device_name == device["device_name"] and AtomTable.atom_id != device[
+            AtomTable.device_name == device["device_name"], AtomTable.atom_id != device[
                 "atom_id"]).first() is not None:
         return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
 

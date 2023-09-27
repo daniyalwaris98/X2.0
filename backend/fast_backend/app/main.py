@@ -2,8 +2,11 @@
 import time
 
 from fastapi import FastAPI
-from app.models.atom_models import *
+
 from app.models.site_rack_models import *
+from app.models.atom_models import *
+from app.models.uam_models import *
+
 from app.utils.db_utils import *
 
 from app.api.v1.routes import routers as v1_routers
@@ -64,3 +67,7 @@ while True:
         traceback.print_exc()
         print("Trying again in 10 seconds...", file=sys.stderr)
         time.sleep(10)
+
+
+
+# Successfully installed future-0.18.3 netmiko-4.2.0 ntc-templates-3.5.0 paramiko-3.3.1 pynacl-1.5.0 pyserial-3.5 scp-0.14.5 textfsm-1.1.3
