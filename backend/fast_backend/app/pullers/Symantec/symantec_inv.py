@@ -1,9 +1,9 @@
 
 from datetime import datetime
-import re, sys, time, json
+import re, sys, json
 import threading
 from app.pullers.Symantec.parsing import Parse
-from app.uam.uam_db_utils import uam_inventory_data
+from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 #from parsing import Parse
 
 class SymantecPuller(object):

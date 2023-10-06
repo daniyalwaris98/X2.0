@@ -1,14 +1,10 @@
-from ipaddress import ip_address
-import secrets
 import traceback
-from unicodedata import name
-from netmiko import Netmiko, ConnectHandler
+from netmiko import Netmiko
 from datetime import datetime
-import re, sys, time, json
+import re, sys, time
 import threading
 # from app import app
-from app.uam.uam_db_utils import uam_inventory_data
-from app.utils.failed_utils import addFailedDevice
+from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 
 
 class IOSPuller(object):

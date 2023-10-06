@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from app.api.v1.uam.rack_utils import *
+from app.api.v1.uam.utils.rack_utils import *
 from app.schema.site_rack_schema import *
 from app.models.site_rack_models import *
 

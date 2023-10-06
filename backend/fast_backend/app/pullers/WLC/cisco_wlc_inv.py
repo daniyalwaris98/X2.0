@@ -1,14 +1,8 @@
-import json
-import os
-import random
 import traceback
 from netmiko import Netmiko
-from datetime import datetime
 import re, sys, time
 import threading
-import pandas as pd
-from pandas import read_excel
-from app.uam.uam_db_utils import uam_inventory_data
+from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 
 # from app import db
 from app.models.uam_models import *

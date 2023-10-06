@@ -1,20 +1,18 @@
-import os
 import requests
-import json, sys, json, re
+import sys, json, re
 from datetime import datetime
-import urllib3
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
-import time
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
-from app.uam.uam_db_utils import uam_inventory_data
+from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 from app.utils.failed_utils import addFailedDevice
 
 
 
 import traceback
-import pprint
+
 
 class ACIPuller(object):
     

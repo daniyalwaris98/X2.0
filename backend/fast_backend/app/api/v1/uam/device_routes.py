@@ -1,14 +1,9 @@
-import traceback
-
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from app.schema.uam_device_schema import *
 
-from app.models.uam_models import *
-from app.models.atom_models import *
-
-from app.api.v1.uam.uam_utils import *
+from app.api.v1.uam.utils.uam_utils import *
 from app.utils.static_list import *
 from app.core.config import *
 

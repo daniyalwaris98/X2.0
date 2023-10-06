@@ -1,12 +1,10 @@
-import os
 import traceback
 import requests
-import json, sys, json, re, time
+import sys, json, re, time
 from datetime import datetime
-import urllib3
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
-from app.uam.uam_db_utils import uam_inventory_data
+from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)

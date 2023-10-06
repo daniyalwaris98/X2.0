@@ -1,10 +1,10 @@
 import traceback
 from netmiko import Netmiko
 from datetime import datetime
-import re, sys, time, json
+import re, sys, time
 import threading
 from dateutil.parser import parse
-from app.uam.uam_db_utils import uam_inventory_data
+from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 
 class H3CPuller(object):
     

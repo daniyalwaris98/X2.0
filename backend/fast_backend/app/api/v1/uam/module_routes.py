@@ -2,7 +2,7 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from app.schema.uam_module_schema import *
-from app.api.v1.uam.module_utils import *
+from app.api.v1.uam.utils.module_utils import *
 
 router = APIRouter(
     prefix="/uam/module",

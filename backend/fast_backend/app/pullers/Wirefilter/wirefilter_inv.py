@@ -1,9 +1,9 @@
 
 from datetime import datetime
-import re, sys, time, json
+import sys, json
 import threading
 import traceback
-from app.uam.uam_db_utils import uam_inventory_data
+from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 
 
 from app.pullers.Wirefilter.parsing import Parse

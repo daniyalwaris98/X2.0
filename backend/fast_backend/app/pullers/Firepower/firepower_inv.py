@@ -1,10 +1,9 @@
 import requests
-import json, sys, json, re, time
+import sys, json
 from datetime import datetime
-import urllib3
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
-from app.uam.uam_db_utils import uam_inventory_data
+from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 
 from app.utils.failed_utils import addFailedDevice
 
