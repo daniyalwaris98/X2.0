@@ -206,7 +206,10 @@ async def device_status():
 async def top_functions():
     try:
         obj_list = []
-        query_string = f"select `FUNCTION`,count(`FUNCTION`) from uam_device_table join atom_table on uam_device_table.atom_id = atom_table.atom_id where `FUNCTION`is not NULL and `FUNCTION`!='' group by `FUNCTION`;"
+        query_string = "select `FUNCTION`,count(`FUNCTION`) from uam_device_table\
+         join atom_table on uam_device_table.atom_id = atom_table.atom_id \
+         where `FUNCTION`!='' group by `FUNCTION`;"
+
         result = configs.db.execute(query_string)
 
         for row in result:
