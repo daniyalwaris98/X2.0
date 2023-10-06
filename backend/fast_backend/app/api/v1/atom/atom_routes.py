@@ -48,8 +48,6 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                     AtomTransitionTable.ip_address == atomObj["ip_address"]
                 ).first()
 
-                status = 500
-                msg = ""
                 if atom is not None:
                     msg, status = add_complete_atom(atomObj, True)
                 elif transit_atom is not None:

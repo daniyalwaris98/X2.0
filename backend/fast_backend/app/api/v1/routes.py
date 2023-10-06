@@ -8,9 +8,11 @@ from app.api.v1.uam.rack_routes import router as rack_router
 from app.api.v1.uam.device_routes import router as device_router
 from app.api.v1.uam.module_routes import router as module_router
 from app.api.v1.uam.sfp_routes import router as sfp_router
+from app.api.v1.uam.aps_routes import router as aps_router
 
 routers = APIRouter()
-router_list = [atom_router, password_group_router, site_router, rack_router, device_router, module_router, sfp_router]
+router_list = [atom_router, password_group_router, site_router, rack_router, device_router,
+               module_router, sfp_router, aps_router, ]
 
 for router in router_list:
     router.tags = routers.tags.append("v1")
