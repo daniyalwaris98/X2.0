@@ -2,7 +2,6 @@ from app.schema.base_schema import *
 
 
 class AddAtomRequestSchema(BaseSchema):
-
     ip_address: str
 
     device_name: str | None = None
@@ -22,15 +21,15 @@ class AddAtomRequestSchema(BaseSchema):
 
 
 class EditAtomRequestSchema(AddAtomRequestSchema):
-
     atom_id: int | None = None
     atom_transition_id: int | None = None
 
 
 class GetAtomResponseSchema(BaseSchema):
-
     atom_id: int = Field(None, title="Atom ID", description="ID for Atom Record")
-    atom_transition_id: int = Field(None, title="Transition Atom ID", description="ID for Transition Atom Record")
+    atom_transition_id: int = Field(None, title="Transition Atom ID", description="ID for "
+                                                                                  "Transition "
+                                                                                  "Atom Record")
     ip_address: str
     status: int
     message: str
@@ -56,7 +55,6 @@ class GetAtomResponseSchema(BaseSchema):
 
 
 class DeleteAtomRequestSchema(BaseSchema):
-
     atom_id: int | None = None
     atom_transition_id: int | None = None
 
@@ -67,7 +65,6 @@ class PasswordGroupTypeEnum(str, Enum):
 
 
 class AddPasswordGroupRequestSchema(BaseSchema):
-
     password_group: str
     username: str
     password: str
@@ -76,7 +73,6 @@ class AddPasswordGroupRequestSchema(BaseSchema):
 
 
 class GetPasswordGroupResponseSchema(BaseSchema):
-
     password_group_id: int
     password_group: str
     username: str
