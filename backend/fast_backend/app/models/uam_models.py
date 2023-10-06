@@ -211,7 +211,7 @@ class SntcTable(Base):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 
-class APS_TABLE(Base):
+class ApsTable(Base):
     __tablename__ = "aps_table"
     ap_id = Column(Integer, primary_key=True, autoincrement=True)
     uam_id = Column(
