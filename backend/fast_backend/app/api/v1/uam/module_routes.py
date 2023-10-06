@@ -12,21 +12,23 @@ router = APIRouter(
 
 @router.get("/getBoardDetailsByIpAddress/{ip_address}", responses={
     200: {"model": list[GetBoardResponseSchema]},
+    400: {"model": str},
     500: {"model": str}
 })
 async def get_board_details_by_ip_address(ip_address: str):
     try:
-        results = (
-            configs.db.query(BoardTable, UamDeviceTable, AtomTable)
-            .join(UamDeviceTable, BoardTable.uam_id == UamDeviceTable.uam_id)
-            .join(AtomTable, UamDeviceTable.atom_id == AtomTable.atom_id)
-            .filter(AtomTable.ip_address == ip_address)
-            .all()
-        )
+        atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
+        if atom is None:
+            return JSONResponse(content="no device found in atom with the given ip address", status_code=400)
+
+        uam = configs.db.query(UamDeviceTable).filter(UamDeviceTable.atom_id == atom.atom_id).first()
+        if uam is None:
+            return JSONResponse(content="no device found in uam with the given ip address", status_code=400)
+
+        results = configs.db.query(BoardTable).filter(BoardTable.uam_id == uam.uam_id).all()
 
         obj_list = []
-
-        for board, uam, atom in results:
+        for board in results:
             try:
                 obj_dict = {"board_name": board.board_name,
                             "device_name": atom.device_name,
@@ -55,23 +57,23 @@ async def get_board_details_by_ip_address(ip_address: str):
 
 @router.get("/getSubBoardDetailsByIpAddress/{ip_address}", responses={
     200: {"model": list[GetSubboardResponseSchema]},
+    400: {"model": str},
     500: {"model": str}
 })
 async def get_subboard_details_by_ip_address(ip_address: str):
     try:
-        results = (
-            configs.db.query(SubboardTable, UamDeviceTable, AtomTable)
-            .join(
-                UamDeviceTable,
-                SubboardTable.uam_id == UamDeviceTable.uam_id,
-            )
-            .join(AtomTable, UamDeviceTable.atom_id == AtomTable.atom_id)
-            .filter(AtomTable.ip_address == ip_address)
-            .all()
-        )
+        atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
+        if atom is None:
+            return JSONResponse(content="no device found in atom with the given ip address", status_code=400)
 
-        objList = []
-        for subboard, uam, atom in results:
+        uam = configs.db.query(UamDeviceTable).filter(UamDeviceTable.atom_id == atom.atom_id).first()
+        if uam is None:
+            return JSONResponse(content="no device found in uam with the given ip address", status_code=400)
+
+        results = configs.db.query(SubboardTable).filter(SubboardTable.uam_id == uam.uam_id).all()
+
+        obj_list = []
+        for subboard in results:
             try:
                 objDict = {"subboard_name": subboard.subboard_name,
                            "device_name": atom.device_name,
@@ -90,12 +92,12 @@ async def get_subboard_details_by_ip_address(ip_address: str):
                            "eol_date": str(subboard.eol_date),
                            "rfs_date": str(subboard.rfs_date),
                            "pn_code": subboard.pn_code}
-                objList.append(objDict)
+                obj_list.append(objDict)
 
             except Exception:
                 traceback.print_exc()
 
-        return JSONResponse(content=objList, status_code=200)
+        return JSONResponse(content=obj_list, status_code=200)
 
     except Exception:
         traceback.print_exc()
