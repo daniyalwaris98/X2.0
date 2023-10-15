@@ -127,132 +127,121 @@ async def get_all_ncm_devices():
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching NCM Devices", status_code=500)
 
-#
-# @app.route("/getAtomInNcm", methods=["GET"])
-# @token_required
-# def GetAtomInNcm(user_data):
-#     try:
-#         atom_ids = []
-#         ncm_devices = NCM_Device_Table.query.all()
-#         for ncm in ncm_devices:
-#             atom_ids.append(ncm.atom_id)
-#
-#         results = Atom_Table.query.all()
-#
-#         atomObjList = []
-#         for atom in results:
-#             if atom.atom_id in atom_ids:
-#                 continue
-#
-#             password_group = None
-#             if atom.password_group_id is not None:
-#                 password = Password_Group_Table.query.filter(
-#                     Password_Group_Table.password_group_id == atom.password_group_id
-#                 ).first()
-#
-#                 if password is not None:
-#                     password_group = password.password_group
-#
-#             objDict = {}
-#             objDict["ip_address"] = atom.ip_address
-#             objDict["device_name"] = atom.device_name
-#             objDict["device_type"] = atom.device_type
-#             objDict["password_group"] = password_group
-#             objDict["vendor"] = atom.vendor
-#             objDict["function"] = atom.function
-#             atomObjList.append(objDict)
-#
-#         return jsonify(atomObjList), 200
-#     except Exception as e:
-#         print(str(e), file=sys.stderr)
-#         traceback.print_exc()
-#         return "Server Error While Fetching Atom In NCM", 500
-#
-#
-# @app.route("/addNcmFromAtom", methods=["POST"])
-# @token_required
-# def AddNcmFromAtom(user_data):
-#     try:
-#         ips = request.get_json()
-#
-#         successList = []
-#         errorList = []
-#         for ip in ips:
-#             atom = Atom_Table.query.filter(Atom_Table.ip_address == ip).first()
-#             if atom is not None:
-#                 ncm = NCM_Device_Table()
-#                 ncm.atom_id = atom.atom_id
-#                 ncm.status = "Active"
-#
-#                 if InsertDBData(ncm) == 200:
-#                     successList.append(f"{atom.ip_address} : Device Added Successfully")
-#                 else:
-#                     errorList.append(
-#                         f"{atom.ip_address} : Exception Occurred While Insertion"
-#                     )
-#
-#             else:
-#                 errorList.append(f"{atom.ip_address} : IP Address Not Found In Atom")
-#
-#         responseDict = {
-#             "success": len(successList),
-#             "error": len(errorList),
-#             "error_list": errorList,
-#             "success_list": successList,
-#         }
-#
-#         return jsonify(responseDict), 200
-#
-#         msg = f"** NCM Import Summary **\nSuccessful : {len(successList)}\nFailed : {len(errorList)}"
-#
-#         return msg, 200
-#
-#     except Exception as e:
-#         traceback.print_exc()
-#         print(str(e), file=sys.stderr)
-#         return str(e), 500
-#
-#
-# @app.route("/deleteNcmDevice", methods=["POST"])
-# @token_required
-# def DeleteNcmDevice(user_data):
-#     try:
-#         ipObjs = request.get_json()
-#         errorList = []
-#         responseList = []
-#         for ip in ipObjs:
-#             result = (
-#                 db.session.query(NCM_Device_Table, Atom_Table)
-#                 .join(Atom_Table, Atom_Table.atom_id == NCM_Device_Table.atom_id)
-#                 .filter(Atom_Table.ip_address == ip)
-#                 .first()
-#             )
-#
-#             if result is None:
-#                 errorList.append(f"{ip} : No Device Found")
-#
-#             ncm, atom = result
-#
-#             if DeleteDBData(ncm):
-#                 responseList.append(f"{ip} : Device Deleted Successfully")
-#             else:
-#                 errorList.append(f"{ip} : Error While Deleting Device")
-#
-#         responseDict = {
-#             "success": len(responseList),
-#             "error": len(errorList),
-#             "error_list": errorList,
-#             "success_list": responseList,
-#         }
-#
-#         return jsonify(responseDict), 200
-#
-#     except Exception as e:
-#         print(str(e), file=sys.stderr)
-#         traceback.print_exc()
-#         return str(e), 500
-#
-#
+
+@router.get("/getAtomInNcm", responses={
+    200: {"model": list[GetAtomInNcmResponseSchema]},
+    500: {"model": str}
+
+})
+async def get_atom_in_ncm():
+    try:
+        atom_ids = []
+        ncm_devices = NcmDeviceTable.query.all()
+        for ncm in ncm_devices:
+            atom_ids.append(ncm.atom_id)
+
+        results = AtomTable.query.all()
+
+        atom_list = []
+        for atom in results:
+            if atom.atom_id in atom_ids:
+                continue
+
+            password_group = None
+            if atom.password_group_id is not None:
+                password = PasswordGroupTable.query.filter(
+                    PasswordGroupTable.password_group_id == atom.password_group_id
+                ).first()
+
+                if password is not None:
+                    password_group = password.password_group
+
+            obj_dict = {"atom_id": atom.atom_id, "ip_address": atom.ip_address,
+                        "device_name": atom.device_name, "device_type": atom.device_type,
+                        "password_group": password_group, "vendor": atom.vendor,
+                        "function": atom.function}
+            atom_list.append(obj_dict)
+
+        return JSONResponse(content=atom_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Atom In NCM", status_code=500)
+
+
+@router.post("/addNcmFromAtom", responses={
+    200: {"model": SummeryResponseSchema},
+    500: {"model": str}
+})
+async def add_ncm_from_atom(atom_ids: list[int]):
+    try:
+
+        success_list = []
+        error_list = []
+
+        for atom_id in atom_ids:
+            atom = AtomTable.query.filter(AtomTable.atom_id == atom_id).first()
+
+            if atom is not None:
+                ncm = NcmDeviceTable()
+                ncm.atom_id = atom.atom_id
+                ncm.status = "Active"
+
+                if InsertDBData(ncm) == 200:
+                    success_list.append(f"{atom.ip_address} : Device Added Successfully")
+                else:
+                    error_list.append(
+                        f"{atom.ip_address} : Exception Occurred While Insertion"
+                    )
+
+            else:
+                error_list.append(f"{atom_id} : Atom Not Found")
+
+        response_dict = {
+            "success": len(success_list),
+            "error": len(error_list),
+            "error_list": error_list,
+            "success_list": success_list,
+        }
+
+        return JSONResponse(content=response_dict, status_code=200)
+
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Importing Atom In NCM", status_code=500)
+
+
+@router.post("/deleteNcmDevice", responses={
+
+})
+async def delete_ncm_device(ncm_ids: list[int]):
+    try:
+        error_list = []
+        response_list = []
+        for ncm_id in ncm_ids:
+            ncm = configs.db.query(NcmDeviceTable).filter(
+                NcmDeviceTable.ncm_device_id == ncm_id).first()
+
+            if ncm is None:
+                error_list.append(f"{ncm_id} : No NCM Device Found")
+            elif DeleteDBData(ncm):
+                response_list.append(f"{ncm_id} : Device Deleted Successfully")
+            else:
+                error_list.append(f"{ncm_id} : Error While Deleting Device")
+
+        response_dict = {
+            "success": len(response_list),
+            "error": len(error_list),
+            "error_list": error_list,
+            "success_list": response_list,
+        }
+
+        return JSONResponse(content=response_dict, status_code=200)
+
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Deleting NCM Devices", status_code=500)
+
+
 # @app.route("/getAllConfigurations", methods=["POST"])
 # @token_required
 # def GetAllConfigurationDates(user_data):
