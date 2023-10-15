@@ -1,3 +1,5 @@
+import sys
+
 from app.api.v1.atom.atom_import import *
 
 
@@ -36,7 +38,8 @@ def validate_rack(device, site):
         if device["rack_name"] == "":
             pass
         else:
-            rack = configs.db.query(RackTable).filter(RackTable.rack_name == device["rack_name"]).first()
+            rack = configs.db.query(RackTable).filter(
+                RackTable.rack_name == device["rack_name"]).first()
             if rack is None:
                 return f"{device['ip_address']} : Rack Does Not Exists", 400
 
@@ -80,7 +83,8 @@ def validate_atom(device, update):
 
         if not update:
             if (
-                    configs.db.query(AtomTable).filter(AtomTable.ip_address == device["ip_address"]).first()
+                    configs.db.query(AtomTable).filter(
+                        AtomTable.ip_address == device["ip_address"]).first()
                     is not None
             ):
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 400
@@ -100,7 +104,8 @@ def validate_atom(device, update):
         if device["device_name"] == "":
             return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
-        atom = configs.db.query(AtomTable).filter(AtomTable.device_name == device["device_name"]).first()
+        atom = configs.db.query(AtomTable).filter(
+            AtomTable.device_name == device["device_name"]).first()
         if atom is not None:
             if atom.ip_address != device["ip_address"].strip():
                 return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
@@ -154,7 +159,8 @@ def add_complete_atom(device, update):
         rack = response["rack"]
         password = response["password_group"]
 
-        atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == device["ip_address"].strip()).first()
+        atom = configs.db.query(AtomTable).filter(
+            AtomTable.ip_address == device["ip_address"].strip()).first()
 
         exist = False
         if atom is not None:
@@ -267,7 +273,8 @@ def add_transition_atom(device, update):
 
         if not update:
             if (
-                    configs.db.query(AtomTable).filter(AtomTable.ip_address == device["ip_address"]).first()
+                    configs.db.query(AtomTable).filter(
+                        AtomTable.ip_address == device["ip_address"]).first()
                     is not None
             ):
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 400
@@ -387,7 +394,8 @@ def edit_atom_util(device):
 
         if "atom_id" in device:
             if device["atom_id"] is not None:
-                atom = configs.db.query(AtomTable).filter(AtomTable.atom_id == device["atom_id"]).first()
+                atom = configs.db.query(AtomTable).filter(
+                    AtomTable.atom_id == device["atom_id"]).first()
 
         if "atom_transition_id" in device:
             if device["atom_transition_id"] is not None:
@@ -493,6 +501,7 @@ def edit_complete_atom(device, atom):
         return password_exist, password_status
 
     atom.rack_id = rack_exist.rack_id
+    atom.ip_address = device["ip_address"]
     atom.device_name = device["device_name"].strip()
     atom.device_type = device["device_type"].strip()
     atom.password_group_id = password_exist.password_group_id
@@ -595,7 +604,7 @@ def validate_password_group_credentials(pass_obj, password_exist):
 
     password_exist.password = pass_obj["password"]
 
-    if str(pass_obj["password_group_type"]).lower() == "telnet":
+    if pass_obj["password_group_type"] == PasswordGroupTypeEnum.telnet:
         password_exist.password_group_type = "Telnet"
 
         if pass_obj["secret_password"] is None:

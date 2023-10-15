@@ -43,7 +43,8 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                     error_list.append(f"Row {row} : IP Address Can Not Be Empty")
                     continue
 
-                atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == atomObj["ip_address"]).first()
+                atom = configs.db.query(AtomTable).filter(
+                    AtomTable.ip_address == atomObj["ip_address"]).first()
                 transit_atom = configs.db.query(AtomTransitionTable).filter(
                     AtomTransitionTable.ip_address == atomObj["ip_address"]
                 ).first()
@@ -184,38 +185,46 @@ def delete_atom(atom_list: list[DeleteAtomRequestSchema]):
             if "atom_id" in atom_obj:
                 if atom_obj['atom_id'] is not None:
                     if atom_obj['atom_id'] != 0:
-                        atom = configs.db.query(AtomTable).filter(AtomTable.atom_id == atom_obj['atom_id']).first()
+                        found = True
+
+                        atom = configs.db.query(AtomTable).filter(
+                            AtomTable.atom_id == atom_obj['atom_id']).first()
                         if atom is None:
                             error_list.append(f'{atom_obj["atom_id"]} : Atom Not Found')
                         else:
-                            found = True
                             if DeleteDBData(atom) == 200:
-                                success_list.append(f"{atom.ip_address} : Atom Deleted Successfully")
+                                success_list.append(
+                                    f"{atom.ip_address} : Atom Deleted Successfully")
                             else:
                                 error_list.append(f"{atom.ip_address} : Error While Deleting Atom")
             elif "atom_transition_id" in atom_obj:
                 if atom_obj['atom_transition_id'] is not None:
                     if atom_obj['atom_transition_id'] != 0:
+                        found = True
+
                         atom = configs.db.query(AtomTransitionTable).filter(
-                            AtomTransitionTable.atom_transition_id == atom_obj['atom_transition_id']).first()
+                            AtomTransitionTable.atom_transition_id == atom_obj[
+                                'atom_transition_id']).first()
                         if atom is None:
                             error_list.append(f'{atom_obj["atom_id"]} : Transition Atom Not Found')
                         else:
                             found = True
                             if DeleteDBData(atom) == 200:
-                                success_list.append(f"{atom.ip_address} : Transition Atom Deleted Successfully")
+                                success_list.append(
+                                    f"{atom.ip_address} : Transition Atom Deleted Successfully")
                             else:
-                                error_list.append(f"{atom.ip_address} : Error While Deleting Transition Atom")
+                                error_list.append(
+                                    f"{atom.ip_address} : Error While Deleting Transition Atom")
 
             if found is False:
                 error_list.append(f"Atom / Transition Atom Not Found")
 
-        response = SummeryResponseSchema(
-            success=len(success_list),
-            error=len(error_list),
-            success_list=success_list,
-            error_list=error_list
-        )
+        response = {
+            "success": len(success_list),
+            "error": len(error_list),
+            "success_list": success_list,
+            "error_list": error_list
+        }
 
         return JSONResponse(content=response, status_code=200)
     except Exception:

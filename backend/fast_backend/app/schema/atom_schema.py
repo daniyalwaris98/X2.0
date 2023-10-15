@@ -72,6 +72,10 @@ class AddPasswordGroupRequestSchema(BaseSchema):
     password_group_type: PasswordGroupTypeEnum
 
 
+class EditPasswordGroupRequestSchema(AddPasswordGroupRequestSchema):
+    password_group_id: int
+
+
 class GetPasswordGroupResponseSchema(BaseSchema):
     password_group_id: int
     password_group: str

@@ -59,7 +59,7 @@ def add_password_groups(pass_list: list[AddPasswordGroupRequestSchema]):
     400: {"model": str},
     500: {"model": str}
 })
-def edit_password_group(pass_obj: AddPasswordGroupRequestSchema):
+def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
     try:
         pass_obj = pass_obj.dict()
 
@@ -91,21 +91,24 @@ def delete_password_groups(pass_list: list[DeletePasswordGroupRequestSchema]):
                 continue
 
             if DeleteDBData(password) == 200:
-                success_list.append(f"{password.password_group} : Password Group Deleted Successfully")
+                success_list.append(
+                    f"{password.password_group} : Password Group Deleted Successfully")
             else:
-                error_list.append(f"{password.password_group} : Error While Deleting Password Group")
+                error_list.append(
+                    f"{password.password_group} : Error While Deleting Password Group")
 
-        response = SummeryResponseSchema(
-            success=len(success_list),
-            error=len(error_list),
-            success_list=success_list,
-            error_list=error_list
-        )
+        response = {
+            "success": len(success_list),
+            "error": len(error_list),
+            "success_list": success_list,
+            "error_list": error_list
+        }
 
         return JSONResponse(content=response, status_code=200)
     except Exception:
         traceback.print_exc()
-        return JSONResponse(content="Error Occurred While Deleting Password Groups", status_code=500)
+        return JSONResponse(content="Error Occurred While Deleting Password Groups",
+                            status_code=500)
 
 
 @router.get("/getPasswordGroups", responses={
@@ -122,7 +125,8 @@ async def get_password_groups():
         return JSONResponse(content=response, status_code=200)
     except Exception:
         traceback.print_exc()
-        return JSONResponse(content="Error Occurred While Fetching Password Groups", status_code=500)
+        return JSONResponse(content="Error Occurred While Fetching Password Groups",
+                            status_code=500)
 
 
 @router.get("/getPasswordGroupDropdown", responses={
@@ -139,4 +143,5 @@ async def get_password_group_dropdown():
         return JSONResponse(content=response, status_code=200)
     except Exception:
         traceback.print_exc()
-        return JSONResponse(content="Error Occurred While Fetching Password Groups", status_code=500)
+        return JSONResponse(content="Error Occurred While Fetching Password Groups",
+                            status_code=500)
