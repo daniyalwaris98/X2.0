@@ -10,9 +10,11 @@ from app.api.v1.uam.module_routes import router as module_router
 from app.api.v1.uam.sfp_routes import router as sfp_router
 from app.api.v1.uam.aps_routes import router as aps_router
 
+from app.api.v1.auto_discovery.auto_discovery_routes import router as auto_discovery_router
+
 routers = APIRouter()
 router_list = [atom_router, password_group_router, site_router, rack_router, device_router,
-               module_router, sfp_router, aps_router, ]
+               module_router, sfp_router, aps_router, auto_discovery_router]
 
 for router in router_list:
     router.tags = routers.tags.append("v1")
