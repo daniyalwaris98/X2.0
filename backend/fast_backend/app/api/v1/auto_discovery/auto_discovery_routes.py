@@ -1,13 +1,16 @@
+import ipaddress
 import traceback
 import sys
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from sqlalchemy.sql.functions import count
 
 from app.models.auto_discovery_models import *
 from app.schema.auto_discovery_schema import *
 
 from app.api.v1.auto_discovery.auto_discovery_utils import *
+from app.api.v1.auto_discovery import auto_discover
 
 # import re
 # import sys
@@ -98,9 +101,10 @@ async def add_networks(network_objs: list[AddDiscoveryNetworkRequestSchema]):
 
 
 @router.get("/getAllNetworks", responses={
-
+    200: {"model": GetDiscoveryNetworkResponseSchema},
+    500: {"model": str}
 })
-def get_all_networks():
+async def get_all_networks():
     try:
         network_objs = configs.db.query(AutoDiscoveryNetworkTable).all()
 
@@ -127,7 +131,7 @@ def get_all_networks():
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
-def delete_networks(network_objs: list[int]):
+async def delete_networks(network_objs: list[int]):
     try:
         success_ist = []
         error_ist = []
@@ -171,183 +175,190 @@ def delete_networks(network_objs: list[int]):
         traceback.print_exc()
         return JSONResponse(content="Server Error While Deleting Discovery Networks",
                             status_code=500)
-#
-#
-# @app.route("/getSubnetsDropdown", methods=["GET"])
-# @token_required
-# def GetSubnetsDropdown(user_data):
-#     if True:
-#         try:
-#             objList = ["All"]
-#             query_string = f"select distinct subnet from auto_discovery_network_table;"
-#             result = configs.db.execute(query_string)
-#             for row in result:
-#                 objList.append(row[0])
-#
-#             return jsonify(objList), 200
-#
-#         except Exception as e:
-#             print(str(e), file=sys.stderr)
-#             # traceback.print_
-#             return str(e), 500
-#
-#
-# def ValidateIPRange(range):
-#     pattern = r"^(\d{1,3}\.){3}\d{1,3}\-\d{1,3}$"
-#     if re.match(pattern, range):
-#         index1 = range.rfind("-")
-#         start = range[:index1]
-#
-#         index2 = start.rfind(".")
-#         end = start[: index2 + 1]
-#
-#         end += range[index1 + 1 :]
-#
-#         if int(ipaddress.IPv4Address(start)) > int(ipaddress.IPv4Address(end)):
-#             return None
-#         else:
-#             return {"start_ip": start, "end_ip": end}
-#
-#     else:
-#         print("Invalid Ip Range Formate", file=sys.stderr)
-#         return None
-#
-#
-# @app.route("/autoDiscover", methods=["POST"])
-# def Discovers():
-#     try:
-#         discoveryObj = request.get_json()
-#         print(discoveryObj, file=sys.stderr)
-#
-#         if discoveryObj["subnet"] == "All":
-#             return "Select a subnet to scan", 500
-#
-#         query_string = f"select * from auto_discovery_network_table where subnet = '{discoveryObj['subnet']}';"
-#         network = configs.db.execute(query_string).fetchone()
-#
-#         results = None
-#         if network is not None:
-#             results = auto_discover.GetSubnetInventoryData(
-#                 network["subnet"], network["excluded_ip_range"]
-#             )
-#         else:
-#             if discoveryObj["subnet"].strip() == "All":
-#                 return "Select a subnet to start scanning", 500
-#
-#             return "Subnet doesn't exit", 500
-#
-#         if results is None:
-#             return "Error While Scanning Subnet", 500
-#
-#         # if 'range' in discoveryObj:
-#         #     range = ValidateIPRange(discoveryObj['range'])
-#         #     if range is None:
-#         #         return "Invalid Ip Range Formate", 500
-#
-#         #     results = auto_discover.GetRangeInventoryData(
-#         #         range['start_ip'], range['end_ip'])
-#
-#         ipAddressList = []
-#         query_string = f"select IP_ADDRESS from auto_discovery_table;"
-#         rows = configs.db.execute(query_string)
-#         from datetime import datetime
-#
-#         date = datetime.now()
-#         for row in rows:
-#             ipAddressList.append(row[0])
-#
-#         for host in results:
-#             if host[0] not in ipAddressList:
-#                 query_string = f"INSERT INTO auto_discovery_table (IP_ADDRESS,SUBNET,OS_TYPE,MAKE_MODEL,`FUNCTION`,VENDOR,SNMP_STATUS,SNMP_VERSION,CREATION_DATE,MODIFICATION_DATE) VALUES ('{host[0]}', '{network['subnet']}','{host[1]}', '{host[2]}', '{host[3]}', '{host[4]}', '{host[5]}', '{host[6]}','{date}','{date}');"
-#                 configs.db.execute(query_string)
-#                 configs.db.commit()
-#                 print(
-#                     f"Successfully Inserted to Database for {host[0]}", file=sys.stderr
-#                 )
-#             else:
-#                 query_string = f"UPDATE auto_discovery_table SET IP_ADDRESS='{host[0]}',SUBNET='{network['subnet']}',OS_TYPE='{host[1]}',MAKE_MODEL='{host[2]}',`FUNCTION`='{host[3]}',VENDOR='{host[4]}',SNMP_STATUS='{host[5]}',SNMP_VERSION='{host[6]}',MODIFICATION_DATE='{date}' where IP_ADDRESS='{host[0]}';"
-#                 configs.db.execute(query_string)
-#                 configs.db.commit()
-#                 print(
-#                     f"Successfully Updated to Database for {host[0]}", file=sys.stderr
-#                 )
-#
-#         query_string = f"select subnet from auto_discovery_network_table;"
-#         result = configs.db.execute(query_string)
-#         for row in result:
-#             subnet = row[0]
-#             queryString1 = f"select count(*) from auto_discovery_table where SUBNET='{network['subnet']}';"
-#             result1 = configs.db.execute(queryString1)
-#             for row1 in result1:
-#                 count = row1[0]
-#                 queryString3 = f"update auto_discovery_network_table set NO_OF_DEVICES={count} where SUBNET='{network['subnet']}';"
-#                 configs.db.execute(queryString3)
-#                 configs.db.commit()
-#         return jsonify(results), 200
-#     except Exception as e:
-#         print(e, file=sys.stderr)
-#         return "Error", 500
-#
-#
-# @app.route("/getDiscoveryFunctionCount", methods=["POST"])
-# def GetDiscoveryFunctionCount():
-#     try:
-#         subnet = request.get_json()
-#         subnet = subnet["subnet"]
-#         count = {}
-#         if subnet == "All":
-#             query_string = f"select count(*) from auto_discovery_table;"
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["devices"] = row
-#
-#             query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='firewall';"
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["firewall"] = row
-#
-#             query_string = (
-#                 f"select count(*) from auto_discovery_table where `FUNCTION`='router';"
-#             )
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["router"] = row
-#
-#             query_string = (
-#                 f"select count(*) from auto_discovery_table where `FUNCTION`='switch';"
-#             )
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["switch"] = row
-#
-#             query_string = f"select count(*) from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall';"
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["other"] = row
-#
-#         else:
-#             query_string = (
-#                 f"select count(*) from auto_discovery_table where subnet = '{subnet}';"
-#             )
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["devices"] = row
-#
-#             query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='firewall' and subnet = '{subnet}';"
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["firewall"] = row
-#
-#             query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='router' and subnet = '{subnet}';"
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["router"] = row
-#
-#             query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='switch' and subnet = '{subnet}';"
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["switch"] = row
-#
-#             query_string = f"select count(*) from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall' and subnet = '{subnet}';"
-#             row = configs.db.execute(query_string).fetchone()[0]
-#             count["other"] = row
-#
-#         return jsonify(count), 200
-#     except Exception as e:
-#         traceback.print_exc()
-#         print(e, file=sys.stderr)
-#         return "Error", 500
+
+
+@router.get("/getSubnetsDropdown", responses={
+    200: {"model": list[str]},
+    500: {"model": str}
+})
+async def get_subnets_dropdown():
+    try:
+        obj_list = ["All"]
+
+        query_string = f"select distinct subnet from auto_discovery_network_table;"
+        result = configs.db.execute(query_string)
+
+        for row in result:
+            obj_list.append(row[0])
+
+        return JSONResponse(content=obj_list, status_code=200)
+
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Subnet Dropdown", status_code=500)
+
+
+def validate_ip_range(range):
+    pattern = r"^(\d{1,3}\.){3}\d{1,3}\-\d{1,3}$"
+    if re.match(pattern, range):
+        index1 = range.rfind("-")
+        start = range[:index1]
+
+        index2 = start.rfind(".")
+        end = start[: index2 + 1]
+
+        end += range[index1 + 1:]
+
+        if int(ipaddress.IPv4Address(start)) > int(ipaddress.IPv4Address(end)):
+            return None
+        else:
+            return {"start_ip": start, "end_ip": end}
+
+    else:
+        print("Invalid Ip Range Formate", file=sys.stderr)
+        return None
+
+
+@router.post("/autoDiscover", responses={
+    200: {"model": str},
+    400: {"model": str},
+    500: {"model": str}
+})
+async def auto_discover_endpoint(subnet: str):
+    try:
+
+        if str(subnet).lower() == "all":
+            return JSONResponse("Select a subnet to scan", 400)
+
+        network = configs.db.query(AutoDiscoveryNetworkTable).filter(
+            AutoDiscoveryNetworkTable.subnet == subnet).first()
+
+        if network is not None:
+            results = auto_discover.get_range_inventory_data(
+                network.subnet, network.excluded_ip_range
+            )
+        else:
+            return JSONResponse("Subnet doesn't exit", 400)
+
+        if results is None:
+            return JSONResponse("Error While Scanning Subnet", 500)
+
+        for host in results:
+            discovery_obj = configs.db.query(AutoDiscoveryTable).filter(
+                AutoDiscoveryTable.ip_address == host[0]).first()
+
+            if discovery_obj is None:
+                discovery_obj = AutoDiscoveryTable()
+                discovery_obj.ip_address = host[0]
+                discovery_obj.subnet = network.subnet
+                discovery_obj.os_type = host[1]
+                discovery_obj.make_model = host[2]
+                discovery_obj.function = host[3]
+                discovery_obj.vendor = host[4]
+                discovery_obj.snmp_status = host[5]
+                discovery_obj.snmp_version = host[6]
+                discovery_obj.ssh_status = False
+
+                InsertDBData(discovery_obj)
+                print(
+                    f"Successfully Inserted to Database for {host[0]}", file=sys.stderr
+                )
+            else:
+                discovery_obj.ip_address = host[0]
+                discovery_obj.subnet = network.subnet
+                discovery_obj.os_type = host[1]
+                discovery_obj.make_model = host[2]
+                discovery_obj.function = host[3]
+                discovery_obj.vendor = host[4]
+                discovery_obj.snmp_status = host[5]
+                discovery_obj.snmp_version = host[6]
+                discovery_obj.ssh_status = False
+
+                UpdateDBData(discovery_obj)
+                print(
+                    f"Successfully Updated to Database for {host[0]}", file=sys.stderr
+                )
+            #
+            # obj_dict = {"ip_address": host[0], "subnet": network.subnet, "os_type": host[1],
+            #             "make_model": host[2], "function": host[3], "vendor": host[4],
+            #             "snmp_status": host[5], "snmp_version": host[6], "ssh_status": False}
+            # response_list.append(obj_dict)
+
+        result = configs.db.query(AutoDiscoveryNetworkTable).all()
+        for network in result:
+            query_string = f"select count(*) from auto_discovery_table where SUBNET='{network.subnet}';"
+            number_of_devices = configs.db.execute(query_string).fetchone()
+            network.number_of_device = number_of_devices[0]
+            UpdateDBData(network)
+
+        return JSONResponse(content="Subnet Scanned Successfully", status_code=200)
+
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error", status_code=500)
+
+
+@router.post("/getDiscoveryFunctionCount", responses={
+    200: {"model": DiscoveryFunctionCountResponseSchema},
+    500: {"model": str}
+})
+def get_discovery_function_count(subnet: str):
+    try:
+        function_count = {}
+        if str(subnet).lower() == "All":
+            query_string = f"select count(*) from auto_discovery_table;"
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["devices"] = row
+
+            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='firewall';"
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["firewall"] = row
+
+            query_string = (
+                f"select count(*) from auto_discovery_table where `FUNCTION`='router';"
+            )
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["router"] = row
+
+            query_string = (
+                f"select count(*) from auto_discovery_table where `FUNCTION`='switch';"
+            )
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["switch"] = row
+
+            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall';"
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["other"] = row
+
+        else:
+            query_string = (
+                f"select count(*) from auto_discovery_table where subnet = '{subnet}';"
+            )
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["devices"] = row
+
+            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='firewall' and subnet = '{subnet}';"
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["firewall"] = row
+
+            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='router' and subnet = '{subnet}';"
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["router"] = row
+
+            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='switch' and subnet = '{subnet}';"
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["switch"] = row
+
+            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall' and subnet = '{subnet}';"
+            row = configs.db.execute(query_string).fetchone()[0]
+            function_count["other"] = row
+
+        return JSONResponse(content=function_count, status_code=200)
+
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error", status_code=500)
 #
 #
 # @app.route("/getDiscoveryData", methods=["POST"])

@@ -22,3 +22,11 @@ class GetDiscoveryNetworkResponseSchema(EditDiscoveryNetworkRequestSchema):
     no_of_devices: int | None = None
     creation_date: datetime
     modification_date: datetime
+
+
+class DiscoveryFunctionCountResponseSchema(BaseSchema):
+    devices: int
+    firewall: int
+    router: int
+    switch: int
+    other: int
