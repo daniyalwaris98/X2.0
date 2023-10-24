@@ -174,40 +174,31 @@ def edit_network_util(network_obj):
     except Exception:
         traceback.print_exc()
         return "Server Error While Updating Discovery Network", 500
-#
-#
-# def GetDiscoveryData(subnetObj, function):
-#     objList = []
-#     try:
-#
-#         if "subnet" not in subnetObj:
-#             return "Subnet Not Found", 500
-#
-#         if subnetObj["subnet"] is None:
-#             return "Subnet Not Found", 500
-#
-#         subnet = subnetObj['subnet']
-#
-#         results = None
-#         if subnet != "All":
-#             if function is None:
-#                 results = Auto_Discovery_Table.query.filter(Auto_Discovery_Table.subnet == subnet).all()
-#             else:
-#                 results = Auto_Discovery_Table.query.filter(Auto_Discovery_Table.subnet == subnet and Auto_Discovery_Table.function == function).all()
-#         else:
-#             if function is None:
-#                 results = Auto_Discovery_Table.query.all()
-#             else:
-#                 results = Auto_Discovery_Table.query.filter(Auto_Discovery_Table.function == function).all()
-#
-#         if results is None:
-#             return objList, 200
-#
-#         for data in results:
-#             objDict = data.as_dict()
-#             objList.append(objDict)
-#
-#     except Exception:
-#         traceback.print_exc()
-#
-#     return objList, 200
+
+
+def get_discovery_data_util(subnet, function):
+    obj_list = []
+    try:
+        if str(subnet).lower() != "all":
+            if function is None:
+                results = configs.db.query(AutoDiscoveryTable).filter(
+                    AutoDiscoveryTable.subnet == subnet).all()
+            else:
+                results = configs.db.query(AutoDiscoveryTable).filter(
+                    AutoDiscoveryTable.subnet == subnet and AutoDiscoveryTable.function == function
+                ).all()
+        else:
+            if function is None:
+                results = configs.db.query(AutoDiscoveryTable).all()
+            else:
+                results = configs.db.query(AutoDiscoveryTable).filter(
+                    AutoDiscoveryTable.function == function).all()
+
+        for data in results:
+            obj_list.append(data.as_dict())
+
+        return obj_list, 200
+
+    except Exception:
+        traceback.print_exc()
+        return "Server Error While Fetching Discovery Data", 500

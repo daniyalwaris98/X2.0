@@ -1,36 +1,11 @@
 import ipaddress
-import traceback
-import sys
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-from sqlalchemy.sql.functions import count
-
-from app.models.auto_discovery_models import *
 from app.schema.auto_discovery_schema import *
 
 from app.api.v1.auto_discovery.auto_discovery_utils import *
 from app.api.v1.auto_discovery import auto_discover
-
-# import re
-# import sys
-
-
-# import ipaddress
-#
-# from flask import jsonify, request
-#
-# from app import app, db
-# from app.middleware import token_required
-#
-# from app.models.auto_discovery_models import *
-# from app.utilities.db_utils import *
-#
-# from app.auto_discovery.auto_discovery_utils import *
-# from app.auto_discovery import auto_discover
-#
-#
-
 
 router = APIRouter(
     prefix="/auto_discovery",
@@ -140,11 +115,13 @@ async def delete_networks(network_objs: list[int]):
         for networkObj in network_objs:
             row = row + 1
             try:
-                query_string = f"select subnet from auto_discovery_network_table where network_id='{networkObj}';"
+                query_string = (f"select subnet from auto_discovery_network_table where "
+                                f"network_id='{networkObj}';")
                 subnet = configs.db.execute(query_string).fetchone()
 
                 if subnet is not None:
-                    query_string = f"delete from auto_discovery_network_table where network_id='{networkObj}';"
+                    query_string = (f"delete from auto_discovery_network_table where "
+                                    f"network_id='{networkObj}';")
                     configs.db.execute(query_string)
                     configs.db.commit()
 
@@ -199,16 +176,16 @@ async def get_subnets_dropdown():
         return JSONResponse(content="Server Error While Fetching Subnet Dropdown", status_code=500)
 
 
-def validate_ip_range(range):
+def validate_ip_range(ip_range):
     pattern = r"^(\d{1,3}\.){3}\d{1,3}\-\d{1,3}$"
-    if re.match(pattern, range):
-        index1 = range.rfind("-")
-        start = range[:index1]
+    if re.match(pattern, ip_range):
+        index1 = ip_range.rfind("-")
+        start = ip_range[:index1]
 
         index2 = start.rfind(".")
         end = start[: index2 + 1]
 
-        end += range[index1 + 1:]
+        end += ip_range[index1 + 1:]
 
         if int(ipaddress.IPv4Address(start)) > int(ipaddress.IPv4Address(end)):
             return None
@@ -287,7 +264,8 @@ async def auto_discover_endpoint(subnet: str):
 
         result = configs.db.query(AutoDiscoveryNetworkTable).all()
         for network in result:
-            query_string = f"select count(*) from auto_discovery_table where SUBNET='{network.subnet}';"
+            query_string = (f"select count(*) from auto_discovery_table where "
+                            f"SUBNET='{network.subnet}';")
             number_of_devices = configs.db.execute(query_string).fetchone()
             network.number_of_device = number_of_devices[0]
             UpdateDBData(network)
@@ -327,7 +305,9 @@ def get_discovery_function_count(subnet: str):
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["switch"] = row
 
-            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall';"
+            query_string = (f"select count(*) from auto_discovery_table where "
+                            f"`FUNCTION`!='router' and `FUNCTION`!='switch' and "
+                            f"`FUNCTION`!='firewall';")
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["other"] = row
 
@@ -338,19 +318,24 @@ def get_discovery_function_count(subnet: str):
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["devices"] = row
 
-            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='firewall' and subnet = '{subnet}';"
+            query_string = (f"select count(*) from auto_discovery_table where "
+                            f"`FUNCTION`='firewall' and subnet = '{subnet}';")
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["firewall"] = row
 
-            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='router' and subnet = '{subnet}';"
+            query_string = (f"select count(*) from auto_discovery_table where "
+                            f"`FUNCTION`='router' and subnet = '{subnet}';")
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["router"] = row
 
-            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`='switch' and subnet = '{subnet}';"
+            query_string = (f"select count(*) from auto_discovery_table where "
+                            f"`FUNCTION`='switch' and subnet = '{subnet}';")
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["switch"] = row
 
-            query_string = f"select count(*) from auto_discovery_table where `FUNCTION`!='router' and `FUNCTION`!='switch' and `FUNCTION`!='firewall' and subnet = '{subnet}';"
+            query_string = (f"select count(*) from auto_discovery_table where "
+                            f"`FUNCTION`!='router' and `FUNCTION`!='switch' "
+                            f"and `FUNCTION`!='firewall' and subnet = '{subnet}';")
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["other"] = row
 
@@ -359,23 +344,63 @@ def get_discovery_function_count(subnet: str):
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
-#
-#
-# @app.route("/getDiscoveryData", methods=["POST"])
-# # @token_required
-# def getDiscoveryData():
-#     try:
-#         subnetObj = request.get_json()
-#         response, status = GetDiscoveryData(subnetObj, None)
-#
-#         if status == 200:
-#             return jsonify(response), 200
-#         else:
-#             return response, 500
-#
-#     except Exception:
-#         traceback.print_exc()
-#         return "Server Error While Fetching Discovery Data", 500
+
+
+@router.post("/getDiscoveryData", responses={
+    200: {"model": list[GetDiscoveryDataResponseSchema]},
+    500: {"model": str}
+})
+async def get_discovery_data(subnet: str):
+    try:
+        response, status = get_discovery_data_util(subnet, None)
+        return JSONResponse(content=response, status_code=status)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Discovery Data", status_code=500)
+
+
+@router.post("/getDiscoveryDataFunction", responses={
+    200: {"model": list[GetDiscoveryDataResponseSchema]},
+    500: {"model": str}
+})
+async def get_function_discovery_data(data_obj: GetFunctionDiscoveryDataRequestSchema):
+    try:
+        data_obj['function'] = data_obj['function'].lower()
+        if data_obj['function'] == "firewall" or data_obj['function'] == "router" or data_obj[
+            'function'] == "switch":
+            response, status = get_discovery_data_util(data_obj, data_obj['function'])
+        else:
+            try:
+                if data_obj['subnet'].lower() != "all":
+                    results = configs.db.query(AutoDiscoveryTable).filter(
+                        AutoDiscoveryTable.subnet == data_obj['subnet']
+                        and AutoDiscoveryTable.function != "firewall"
+                        and AutoDiscoveryTable.function != "router"
+                        and AutoDiscoveryTable.function != "switch"
+                    ).all()
+                else:
+                    results = AutoDiscoveryTable.query.filter(
+                        AutoDiscoveryTable.function != "firewall"
+                        and AutoDiscoveryTable.function != "router"
+                        and AutoDiscoveryTable.function != "switch"
+                    ).all()
+
+                response = []
+                status = 200
+                for data in results:
+                    response.append(data.as_dict())
+
+            except Exception:
+                traceback.print_exc()
+                response = "Server Error While Fetching Discovery Data"
+                status = 500
+
+        return JSONResponse(content=response, status_code=status)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Discovery Data", status_code=500)
+
+
 #
 #
 # @app.route("/getDiscoveryDataFirewalls", methods=["POST"])
@@ -446,17 +471,17 @@ def get_discovery_function_count(subnet: str):
 #
 #         results = None
 #         if subnet != "All":
-#             results = Auto_Discovery_Table.query.filter(
-#                 Auto_Discovery_Table.subnet == subnet
-#                 and Auto_Discovery_Table.function != "firewall"
-#                 and Auto_Discovery_Table.function != "router"
-#                 and Auto_Discovery_Table.function != "switch"
+#             results = AutoDiscoveryTable.query.filter(
+#                 AutoDiscoveryTable.subnet == subnet
+#                 and AutoDiscoveryTable.function != "firewall"
+#                 and AutoDiscoveryTable.function != "router"
+#                 and AutoDiscoveryTable.function != "switch"
 #             ).all()
 #         else:
-#             results = Auto_Discovery_Table.query.filter(
-#                 Auto_Discovery_Table.function != "firewall"
-#                 and Auto_Discovery_Table.function != "router"
-#                 and Auto_Discovery_Table.function != "switch"
+#             results = AutoDiscoveryTable.query.filter(
+#                 AutoDiscoveryTable.function != "firewall"
+#                 and AutoDiscoveryTable.function != "router"
+#                 and AutoDiscoveryTable.function != "switch"
 #             ).all()
 #
 #         for data in results:
@@ -469,57 +494,55 @@ def get_discovery_function_count(subnet: str):
 #         traceback.print_exc()
 #         return "Server Error While Fetching Discovery Data", 500
 #
-#
-# @app.route("/autoDiscoveryFunctionCount", methods=["GET"])
-# # @token_required
-# def AutoDiscoveryFunctionCount():
-#     if True:
-#         try:
-#             query_string = f"select `FUNCTION`,count(`FUNCTION`) from auto_discovery_table group by `FUNCTION`;"
-#             result = configs.db.execute(query_string)
-#             objDict = {}
-#             count = 0
-#             for row in result:
-#                 if row[0] == "switch":
-#                     objDict["Switches"] = row[1]
-#                 elif row[0] == "firewall":
-#                     objDict["Firewalls"] = row[1]
-#                 elif row[0] == "router":
-#                     objDict["Routers"] = row[1]
-#                 else:
-#                     count += row[1]
-#             objDict["Others"] = count
-#
-#             print(objDict, file=sys.stderr)
-#             return objDict, 200
-#         except Exception as e:
-#             print(e, file=sys.stderr)
-#             return "Error", 500
-#
-#
-# @app.route("/getManageDevices", methods=["GET"])
-# @token_required
-# def GetManageDevices(user_data):
-#     try:
-#         results = Auto_Discovery_Table.query.all()
-#         objList = []
-#
-#         for row in results:
-#             objDict = {}
-#             objDict["ip_address"] = row.ip_address
-#             objDict["os_type"] = row.os_type
-#             objDict["function"] = row.function
-#             objDict["vendor"] = row.vendor
-#             objDict["snmp_status"] = row.snmp_status
-#             objDict["ssh_status"] = row.ssh_status
-#
-#             objList.append(objDict)
-#
-#         return jsonify(objList), 200
-#
-#     except Exception:
-#         traceback.print_exc()
-#         return "Error While Fetching Data", 500
+
+@router.get("/autoDiscoveryFunctionCount", responses={
+    200: {"model": AutoDiscoveryFunctionCountResponseSchema},
+    500: {"model": str}
+})
+async def auto_discovery_function_count():
+    try:
+        query_string = (f"SELECT `function`, COUNT(`function`) FROM auto_discovery_table "
+                        f"GROUP BY `function`;")
+        result = configs.db.execute(query_string)
+        obj_dict = {
+            "switches": 0,
+            "firewalls": 0,
+            "routers": 0,
+            "others": 0
+        }
+        for row in result:
+            if row[0] == "switch":
+                obj_dict["switches"] = row[1]
+            elif row[0] == "firewall":
+                obj_dict["firewalls"] = row[1]
+            elif row[0] == "router":
+                obj_dict["routers"] = row[1]
+            else:
+                obj_dict["others"] += row[1]
+
+        return JSONResponse(content=obj_dict, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Data", status_code=500)
+
+
+@router.get("/getManageDevices", responses={
+    200: {"model": list[GetDiscoveryDataResponseSchema]},
+    500: {"model": str}
+})
+async def get_manage_devices():
+    try:
+        results = configs.db.query(AutoDiscoveryTable).all()
+        obj_list = []
+
+        for row in results:
+            obj_list.append(row.as_dict())
+
+        return JSONResponse(content=obj_list, status_code=200)
+
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Error While Fetching Data", status_code=500)
 #
 #
 # def CheckSSHConnection(ip_address, username, password):
@@ -706,10 +729,10 @@ def get_discovery_function_count(subnet: str):
 # #             response = True
 #
 # #         if response:
-# #             return "SNMP Credentails Deleted Successfully", 200
+# #             return "SNMP Credentials Deleted Successfully", 200
 #
 # #         else:
-# #             return "Erro While Deleting SNMP Credentials", 500
+# #             return "Error While Deleting SNMP Credentials", 500
 #
 # #     except Exception as e:
 # #         print(f"in exception block Successfully", file=sys.stderr)
@@ -723,8 +746,8 @@ def get_discovery_function_count(subnet: str):
 # #     try:
 # #         SNMPList = []
 #
-# #         results = Auto_Discovery_Credentails_Table.query.filter(
-# #             Auto_Discovery_Credentails_Table.category == "v1/v2"
+# #         results = Auto_Discovery_Credentials_Table.query.filter(
+# #             Auto_Discovery_Credentials_Table.category == "v1/v2"
 # #         ).all()
 #
 # #         for row in results:
@@ -750,8 +773,8 @@ def get_discovery_function_count(subnet: str):
 # #     try:
 # #         SNMPList = []
 #
-# #         results = Auto_Discovery_Credentails_Table.query.filter(
-# #             Auto_Discovery_Credentails_Table.category == "v3"
+# #         results = Auto_Discovery_Credentials_Table.query.filter(
+# #             Auto_Discovery_Credentials_Table.category == "v3"
 # #         ).all()
 #
 # #         for row in results:

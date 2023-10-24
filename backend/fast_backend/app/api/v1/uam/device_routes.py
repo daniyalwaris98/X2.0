@@ -152,7 +152,7 @@ async def edit_uam_device(device_obj: EditUamDeviceRequestSchema):
 
 
 @router.post("/deviceStatus", responses={
-    200: {"model": list[NameValueResponseSchema]},
+    200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 })
 async def device_status():

@@ -17,9 +17,14 @@ class SummeryResponseSchema(BaseSchema):
     error_list: list[str]
 
 
-class NameValueResponseSchema(BaseSchema):
+class NameValueListOfDictResponseSchema(BaseSchema):
     name: str
     value: int
+
+
+class NameValueDictResponseSchema(BaseSchema):
+    name: list[str | int | None]
+    value: list[str | int | None]
 
 
 class IpAddressRequestSchema(BaseSchema):
