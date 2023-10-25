@@ -10,6 +10,7 @@ services:
       MYSQL_ROOT_PASSWORD: As123456?
       MYSQL_DATABASE: AtomDB
     volumes:
+      - mysql_db:/var/lib/mysql
       - ./db/atom.sql:/docker-entrypoint-initdb.d/atom.sql
 
   # updated_atom_flask:
@@ -77,5 +78,6 @@ services:
       DOCKER_INFLUXDB_INIT_BUCKET: monitoring
       DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "nItzto4Hc22kXuLsawB76lhKPM-wbK1DAQc7uBiFpYUCntoHDE6TC-uGeezzx7S89fyClKv2YXLfDi15Ujhn5A=="
 volumes:
+  mysql_db:
   node-modules:
   influxdb-storage:
