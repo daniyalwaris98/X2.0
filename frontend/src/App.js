@@ -1,7 +1,9 @@
 import * as React from "react";
+import { useState } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { RouterProvider } from "react-router-dom";
 import { lightTheme, darkTheme } from "./themes";
+import { Button } from "@mui/material";
 import "./index.css";
 import router from "./routes";
 
@@ -16,7 +18,28 @@ const App = () => {
 
   return (
     <ThemeProvider theme={theme}>
-      <RouterProvider router={router} />
+      <div
+        className="relative"
+        style={{
+          backgroundColor: theme.background,
+          height: "100vh",
+          width: "100%",
+        }}
+      >
+        <Button
+          onClick={toggleTheme}
+          variant="contained"
+          sx={{
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.color.primary,
+            position: "absolute",
+            right: "0",
+          }}
+        >
+          change Theme
+        </Button>
+        <RouterProvider router={router} />
+      </div>
     </ThemeProvider>
   );
 };
