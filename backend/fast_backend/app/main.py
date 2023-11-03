@@ -6,6 +6,8 @@ from fastapi import FastAPI
 from app.models.site_rack_models import *
 from app.models.atom_models import *
 from app.models.uam_models import *
+from app.models.auto_discovery_models import *
+from app.models.monitoring_models import *
 
 from app.utils.db_utils import *
 
@@ -14,7 +16,7 @@ from app.api.v1.routes import routers as v1_routers
 app = FastAPI(title="MonetX_2.0", openapi_url=f"{configs.API}/openapi.json",
               version="0.0.1")
 
-app.include_router(v1_routers, prefix=configs.API_V1_STR)
+app.include_router(v1_routers, prefix=configs.API_V1_STR, tags=['v1'])
 
 # Initialize tables
 Base.metadata.create_all(bind=configs.engine)

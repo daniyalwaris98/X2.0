@@ -1,3 +1,4 @@
+from influxdb_client import InfluxDBClient
 from sqlalchemy import create_engine
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker
@@ -66,6 +67,12 @@ class Configs:
     PAGE = 1
     PAGE_SIZE = 20
     ORDERING = "-id"
+
+    IN_TOKEN: str = "nItzto4Hc22kXuLsawB76lhKPM-wbK1DAQc7uBiFpYUCntoHDE6TC-uGeezzx7S89fyClKv2YXLfDi15Ujhn5A=="
+    IN_ORG: str = "monetx"
+    IN_BUCKET: str = "monitoring"
+    IN_URL: str = "http://localhost:8086"
+    client: str = InfluxDBClient(url=IN_URL, token=IN_TOKEN)
 
     class Config:
         case_sensitive = True
