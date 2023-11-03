@@ -2,18 +2,17 @@ import React from "react";
 import ReactDOM from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import "./index.css";
+// import App from "./oldCode/App";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
-import CustomThemeProvider from "./context/ThemeContext";
+// import CustomThemeProvider from "./context/ThemeContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
-    <BrowserRouter>
-      <CustomThemeProvider>
-        <App />
-      </CustomThemeProvider>
-    </BrowserRouter>
+    {/* <CustomThemeProvider> */}
+    <App />
+    {/* </CustomThemeProvider> */}
   </React.StrictMode>
 );
 

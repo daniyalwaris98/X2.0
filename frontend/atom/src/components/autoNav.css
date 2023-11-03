@@ -1,0 +1,61 @@
+.autoDNav_main_div {
+  /* background-color: red; */
+  justify-content: center;
+  margin: 0 auto;
+  width: 60%;
+}
+
+.ant-menu-item-selected {
+  /* background-color: #b039cc !important; */
+  color: #66b127 !important;
+}
+.ant-menu-item:hover {
+  color: #66b127 !important;
+  border-color: #66b127 !important;
+}
+.auto-discovery-cards-div {
+  border: 1px solid #9292923d;
+  margin-top: 30px !important;
+  padding: 35px 0 35px 0;
+  width: 98%;
+  margin: 0 auto;
+  border-radius: 10px;
+}
+.auto-discovery-cards {
+  border-radius: 10px;
+  text-align: center;
+  border: 1px solid #9292923d;
+  width: 100% !important;
+  margin: 0 !important;
+}
+.ant-card-head {
+  border-bottom: unset !important;
+}
+.ant-card-head-title {
+  border-bottom: unset !important;
+  padding-bottom: unset !important;
+}
+.ant-card-body {
+  padding-top: unset;
+}
+.ant-table-filter-column {
+  border: 1px solid #2d2f35;
+  padding: 3px 10px;
+  border-radius: 5px;
+  color: #2d2f35 !important;
+}
+.AutoDiscoverDashboardTable_div {
+  margin-top: 25px !important;
+  padding: 20px;
+  border: 1px solid #9292923d;
+  border-radius: 10px;
+  width: 98%;
+  margin: 0 auto;
+}
+.add-to-atom {
+  border-color: #86a8bb;
+  color: #86a8bb;
+  background: transparent;
+  border-radius: 8px;
+  margin-bottom: 10px;
+}
