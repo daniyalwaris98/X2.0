@@ -9,11 +9,14 @@ const Index = () => {
   const columns = [
     { id: "name", label: "Name" },
     { id: "status", label: "Status" },
+    { id: "status", label: "Status" },
+
     // Add more columns as needed
   ];
 
   const data = [
     { name: "Device 1", status: "Failed" },
+    { name: "Device 2", status: "Failed" },
     { name: "Device 2", status: "Failed" },
     // Add more data rows as needed
   ];
@@ -22,10 +25,10 @@ const Index = () => {
     <div>
       <div
         className="text-[red]"
-        // style={{
-        //   backgroundColor: theme.palette.primary.main,
-        //   color: theme.palette.text.primary,
-        // }}
+        style={{
+          backgroundColor: theme.palette.primary.main,
+          color: theme.palette.text.primary,
+        }}
       >
         Failed Devices
       </div>
