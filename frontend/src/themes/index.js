@@ -18,6 +18,9 @@ export const lightTheme = createTheme({
       danger: "#E34444", //danger color red
       disable: "#5A5A5A", // gray
     },
+    textColor: {
+      tableText: "#262626",
+    },
   },
 
   typography: {
@@ -53,6 +56,9 @@ export const darkTheme = createTheme({
       warning: "",
       danger: "#E34444", //danger color red
       disable: "#5A5A5A", // gray
+    },
+    textColor: {
+      tableText: "#ACACAC",
     },
   },
 
