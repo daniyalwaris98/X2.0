@@ -24,6 +24,7 @@ const DefaultTable = ({ data, columns, sx, ...rest }) => {
                   sx={{
                     backgroundColor: theme.palette.background.default,
                     color: theme.palette.textColor.tableText,
+                    borderBottom: "unset",
                   }}
                 >
                   {column.label}
@@ -36,7 +37,16 @@ const DefaultTable = ({ data, columns, sx, ...rest }) => {
           {data.map((row, rowIndex) => (
             <TableRow key={rowIndex}>
               {columns.map((column) => (
-                <TableCell key={column.id}>{row[column.id]}</TableCell>
+                <TableCell
+                  sx={{
+                    color: theme.palette.textColor.tableText,
+                    backgroundColor: theme.palette.background.default,
+                    borderBottom: "unset",
+                  }}
+                  key={column.id}
+                >
+                  {row[column.id]}
+                </TableCell>
               ))}
             </TableRow>
           ))}
