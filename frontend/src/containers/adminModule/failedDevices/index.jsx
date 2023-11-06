@@ -6,24 +6,67 @@ import DefaultTable from "../../../components/tables";
 const Index = () => {
   const theme = useTheme();
 
-  const columns = [
-    { id: "name", label: "Name" },
-    { id: "status", label: "Status" },
-    { id: "status", label: "Status" },
-
-    // Add more columns as needed
+  const data = [
+    {
+      id: 1,
+      status: "Online",
+      ipAddress: "192.168.1.1",
+      deviceName: "Device 1",
+      deviceType: "Router",
+      onboardStatus: "Onboarded",
+      board: "Board A",
+    },
+    {
+      id: 2,
+      status: "Offline",
+      ipAddress: "192.168.1.2",
+      deviceName: "Device 2",
+      deviceType: "Switch",
+      onboardStatus: "Not Onboarded",
+      board: "Board B",
+    },
+    {
+      id: 3,
+      status: "Offline",
+      ipAddress: "192.168.1.3",
+      deviceName: "Device 3",
+      deviceType: "Switch",
+      onboardStatus: "Not Onboarded",
+      board: "Board B",
+    },
+    {
+      id: 3,
+      status: "Offline",
+      ipAddress: "192.168.1.3",
+      deviceName: "Device 3",
+      deviceType: "Switch",
+      onboardStatus: "Not Onboarded",
+      board: "Board B",
+    },
+    {
+      id: 3,
+      status: "Offline",
+      ipAddress: "192.168.1.3",
+      deviceName: "Device 3",
+      deviceType: "Switch",
+      onboardStatus: "Not Onboarded",
+      board: "Board B",
+    },
+    // Add more data here
   ];
 
-  const data = [
-    { name: "Device 1", status: "Failed" },
-    { name: "Device 2", status: "Failed" },
-    { name: "Device 2", status: "Failed" },
-    // Add more data rows as needed
+  const columns = [
+    { id: "status", label: "Status" },
+    { id: "ipAddress", label: "IP Address" },
+    { id: "deviceName", label: "Device Name" },
+    { id: "deviceType", label: "Device Type" },
+    { id: "onboardStatus", label: "Onboard Status" },
+    { id: "board", label: "Board" },
   ];
 
   return (
     <div>
-      <div
+      {/* <div
         className="text-[red]"
         style={{
           backgroundColor: theme.palette.primary.main,
@@ -31,7 +74,7 @@ const Index = () => {
         }}
       >
         Failed Devices
-      </div>
+      </div> */}
 
       <DefaultButton
         sx={{}}
@@ -42,7 +85,17 @@ const Index = () => {
         Default Button
       </DefaultButton>
 
-      <DefaultTable data={data} columns={columns} />
+      <DefaultTable
+        sx={{
+          marginTop: "50px !important",
+          backgroundColor: theme.palette.color.main,
+          padding: "50px 20px",
+          width: "90%",
+          margin: "0 auto",
+        }}
+        data={data}
+        columns={columns}
+      />
     </div>
   );
 };

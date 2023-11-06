@@ -1,3 +1,4 @@
+import React from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import FailedDevices from "../containers/adminModule/failedDevices";
 import AutoDiscovery from "../containers/autoDiscoveryModule";

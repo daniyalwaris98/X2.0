@@ -7,7 +7,7 @@ export const lightTheme = createTheme({
     },
 
     color: {
-      default: "#D9D9D9", // profile picture background
+      default: "#FAFAFA", // profile picture background
       main: "#FFFFFF", // table background white
       primary: "#3D9E47", // montex green
       secondary: "#ACACAC", // search icons gray
@@ -46,8 +46,8 @@ export const darkTheme = createTheme({
     },
 
     color: {
-      default: "#D9D9D9", // profile picture background
-      main: "#09120C", // table background dark gray
+      default: "#131B15", // profile picture background
+      main: "#000000", // table background dark gray
       primary: "#3D9E47", // montex green
       secondary: "#ACACAC", // search icons gray
       tertiary: "#C8EF9E", // left menu item background light green

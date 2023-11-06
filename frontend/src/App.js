@@ -19,36 +19,36 @@ const App = () => {
   };
 
   return (
-    <Provider store={store}>
-      <ThemeProvider theme={theme}>
-        <RouterProvider router={router} />
-      </ThemeProvider>
-    </Provider>
+    <>
+      <div
+        className="relative"
+        style={{
+          backgroundColor: theme.palette.background.default,
+          height: "100vh",
+          width: "100%",
+        }}
+      >
+        <Button
+          onClick={toggleTheme}
+          variant="contained"
+          sx={{
+            backgroundColor: theme.palette.primary.main,
+            color: theme.palette.color.primary,
+            position: "absolute",
+            right: "0",
+          }}
+        >
+          change Theme
+        </Button>
+
+        <Provider store={store}>
+          <ThemeProvider theme={theme}>
+            <RouterProvider router={router} />
+          </ThemeProvider>
+        </Provider>
+      </div>
+    </>
   );
 };
 
 export default App;
-
-{
-  /* <div
-  className="relative"
-  style={{
-    backgroundColor: theme.background,
-    height: "100vh",
-    width: "100%",
-  }}
->
-  <Button
-    onClick={toggleTheme}
-    variant="contained"
-    sx={{
-      backgroundColor: theme.palette.primary.main,
-      color: theme.palette.color.primary,
-      position: "absolute",
-      right: "0",
-    }}
-  >
-    change Theme
-  </Button>
-</div>; */
-}
