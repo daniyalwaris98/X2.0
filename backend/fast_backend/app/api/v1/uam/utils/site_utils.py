@@ -3,6 +3,8 @@ import traceback
 from app.models.atom_models import *
 from app.models.site_rack_models import *
 from app.utils.db_utils import *
+from app.schema.response_schema import CustomResponse
+custom_response = CustomResponse(data= "",message="",status="")
 
 
 def FormatDate(date):
@@ -19,10 +21,18 @@ def check_site_name(site_obj):
     site_obj["site_name"] = site_obj["site_name"].strip()
 
     if site_obj["site_name"] == "":
+        custom_response.data = []
+        custom_response.message = f"Site Name Can Not Be Empty"
+        custom_response.status   = 400
+        # return custom_response.as_tuple(),400
+        
         return "Site Name Can Not Be Empty", 400
 
     if site_obj["site_name"].lower() == "default_site":
-        return "Site Name (default_site) Is Not Allowed", 400
+        custom_response.data = []
+        custom_response.message = f"Site Name (default_site) Is Not Allowed"
+        custom_response.status = 400
+        # return "Site Name (default_site) Is Not Allowed", 400
 
     site_exist = configs.db.query(SiteTable).filter(SiteTable.site_name == site_obj["site_name"]).first()
 
@@ -33,28 +43,37 @@ def check_site_status(site_obj):
     site_obj["status"] = str(site_obj["status"]).strip().title()
 
     if site_obj["status"] == "":
-        return "Status Must Be Defined (Production / Not Production)", 400
+        custom_response.data = []
+        custom_response.message = f"Status Must Be Defined (Production / Not Production)"
+        custom_response.status = 400
+        return custom_response.as_tuple()
+        # return "Status Must Be Defined (Production / Not Production)", 400
 
     if site_obj["status"] != "Production" and site_obj["status"] != "Not Production":
-        return "Status Must Be Defined (Production / Not Production)", 400
+        custom_response.data = []
+        custom_response.message = f"Status Must Be Defined (Production / Not Production)"
+        custom_response.status = 400
+        return custom_response.as_tuple()
+        # return "Status Must Be Defined (Production / Not Production)", 400
 
     return site_obj["status"], 200
 
 
 def check_site_optional_data(site_obj, site_exist):
-    if "region" in site_obj.keys():
+    print("site obj is::::::::::::::::::::",site_obj,file=sys.stderr)
+    if "region_name" in site_obj:
         if site_obj["region"] is not None:
             site_exist.region_name = site_obj["region"]
 
-    if "city" in site_obj.keys():
+    if "city" in site_obj:
         if site_obj["city"] is not None:
             site_exist.city = site_obj["city"]
 
-    if "longitude" in site_obj.keys():
+    if "longitude" in site_obj:
         if site_obj["longitude"] is not None:
             site_exist.longitude = site_obj["longitude"]
 
-    if "latitude" in site_obj.keys():
+    if "latitude" in site_obj:
         if site_obj["latitude"] is not None:
             site_exist.latitude = site_obj["latitude"]
 
@@ -69,7 +88,10 @@ def add_site_util(site_obj):
             return site_exist, status
 
         if site_exist is not None:
-            return "Site Name Is Already Assigned", 400
+            custom_response.data = []
+            custom_response.message = f"Site Name Is Already Assigned"
+            custom_response.status = 400
+            return custom_response.as_tuple(),400
 
         site_exist = SiteTable()
         site_exist.site_name = site_obj["site_name"]
@@ -85,10 +107,18 @@ def add_site_util(site_obj):
         status = InsertDBData(site_exist)
         if status == 200:
             msg = "Site Inserted Successfully"
+            custom_response.data = []
+            custom_response.message = msg
+            custom_response.status = 200
+            return custom_response.as_tuple()
         else:
             msg = "Error While Inserting Site"
+            custom_response.data = []
+            custom_response.message = msg
+            custom_response.status = 500
+            return custom_response.as_tuple()
 
-        return msg, status
+        # return msg, status
 
     except Exception:
         traceback.print_exc()
@@ -155,8 +185,8 @@ def GetAllSites():
             }
 
             siteObjList.append(siteDataDict)
-
-        return siteObjList, 200
+        #
+        # return siteObjList, 200
     except Exception:
         traceback.print_exc()
         return "Server Error", 500

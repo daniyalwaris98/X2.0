@@ -1,9 +1,12 @@
 from app.api.v1.atom.atom_utils import *
+from app.schema.response_schema import CustomResponse
 
 router = APIRouter(
     prefix="/atom",
     tags=["atom"],
 )
+
+
 
 
 @router.post("/addAtomDevice", responses={
@@ -17,8 +20,17 @@ async def add_atom(atom: AddAtomRequestSchema):
 
         if status != 200:
             response, status = add_transition_atom(atom, False)
+            print("reponse in if statement is:::::::::",response,file=sys.stderr)
+        # custom_response = CustomResponse(data="",message="",status="")
+        # custom_response.data = []
+        # custom_response.message = response
+        # custom_response.status = 400
+        # return custom_response.as_tuple()
+        # return JSONResponse(custom_response.as_response())
+        print("reponse after if is::::::::::::::::::",response,file=sys.stderr)
+        return response
 
-        return JSONResponse(content=response, status_code=status)
+        # return JSONResponse(content=response, status_code=status)
 
     except Exception:
         traceback.print_exc()
@@ -149,8 +161,8 @@ async def get_atoms():
                 else:
                     atom_data_dict["onboard_status"] = False
 
-                atom_data_dict["message"] = "Complete"
-                atom_data_dict["status"] = 200
+                # atom_data_dict["message"] = "Complete"
+                # atom_data_dict["status"] = 200
 
                 atom_obj_list.append(atom_data_dict)
 
@@ -162,11 +174,18 @@ async def get_atoms():
         if len(atom_obj_list) <= 0:
             atom_obj_list = None
 
-        return JSONResponse(content=atom_obj_list, status_code=200)
-
+        # return JSONResponse(content=atom_obj_list, status_code=200)
+        # custom_response = CustomResponse(data="",message="",status="")
+        # custom_response.data = []
+        # custom_response.message = atom_obj_list
+        # custom_response.status = 200
+        # return custom_response.as_tuple(),200
+        # return JSONResponse(content={"data": atom_obj_list, "message": "All Data Retrieved Successfully","sttaus":200}),200
+        return JSONResponse ({"data":atom_obj_list,"messge":"All Data Retreived successfully","Status":200},status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Atom Devices", status_code=500)
+        # return JSONResponse ({"data":atom_obj_list,"Status":500,"message":"Error Occurred While Fetching Atom Devices"})
 
 
 @router.post("/deleteAtom", responses={
