@@ -1,6 +1,7 @@
 import React from "react";
 import { Navigate, createBrowserRouter } from "react-router-dom";
 import FailedDevices from "../containers/adminModule/failedDevices";
+import Atom from "../containers/atomModule";
 import AutoDiscovery from "../containers/autoDiscoveryModule";
 import ManageDevices from "../containers/autoDiscoveryModule/manageDevices";
 const router = createBrowserRouter([
@@ -18,6 +19,10 @@ const router = createBrowserRouter([
         element: <ManageDevices />,
       },
     ],
+  },
+  {
+    path: "/Atom",
+    element: <Atom />,
   },
 ]);
 

@@ -26,16 +26,17 @@ const App = () => {
           backgroundColor: theme.palette.background.default,
           height: "100vh",
           width: "100%",
+          // paddingTop: "100px",
         }}
       >
         <Button
           onClick={toggleTheme}
           variant="contained"
           sx={{
-            backgroundColor: theme.palette.primary.main,
-            color: theme.palette.color.primary,
-            position: "absolute",
-            right: "0",
+            backgroundColor: theme.palette.color.primary,
+            color: theme.palette.color.main,
+            // position: "absolute",
+            // right: "0",
           }}
         >
           change Theme

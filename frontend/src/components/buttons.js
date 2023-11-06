@@ -9,8 +9,6 @@ const DefaultButton = ({ sx, handleClick, children, ...rest }) => {
     <>
       <Button
         sx={{
-          backgroundColor: theme.palette.color.primary,
-          color: theme.palette.color.main,
           ...sx,
         }}
         {...rest}

@@ -17,6 +17,7 @@ export const lightTheme = createTheme({
       warning: "",
       danger: "#E34444", //danger color red
       disable: "#5A5A5A", // gray
+      checkboxBorder: "#DBDBDB",
     },
     textColor: {
       tableText: "#262626",
@@ -56,6 +57,7 @@ export const darkTheme = createTheme({
       warning: "",
       danger: "#E34444", //danger color red
       disable: "#5A5A5A", // gray
+      checkboxBorder: "#DBDBDB",
     },
     textColor: {
       tableText: "#ACACAC",
