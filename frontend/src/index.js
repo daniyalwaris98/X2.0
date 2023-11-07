@@ -6,12 +6,16 @@ import "./index.css";
 import App from "./App";
 import reportWebVitals from "./reportWebVitals";
 // import CustomThemeProvider from "./context/ThemeContext";
+import AppContextProvider from "./context/appContext";
 
 const root = ReactDOM.createRoot(document.getElementById("root"));
 root.render(
   <React.StrictMode>
     {/* <CustomThemeProvider> */}
-    <App />
+    <AppContextProvider>
+      <App />
+    </AppContextProvider>
+
     {/* </CustomThemeProvider> */}
   </React.StrictMode>
 );

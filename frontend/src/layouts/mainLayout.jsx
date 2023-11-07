@@ -1,28 +1,36 @@
-import React, { useState } from "react";
+import React, { useState, useContext } from "react";
+import { Link } from "react-router-dom";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
 import MuiDrawer from "@mui/material/Drawer";
-import MuiAppBar from "@mui/material/AppBar";
-import Toolbar from "@mui/material/Toolbar";
 import List from "@mui/material/List";
-import CssBaseline from "@mui/material/CssBaseline";
-import Typography from "@mui/material/Typography";
 import Divider from "@mui/material/Divider";
-import IconButton from "@mui/material/IconButton";
-import MenuIcon from "@mui/icons-material/Menu";
-import ChevronLeftIcon from "@mui/icons-material/ChevronLeft";
-import ChevronRightIcon from "@mui/icons-material/ChevronRight";
 import ListItem from "@mui/material/ListItem";
 import ListItemButton from "@mui/material/ListItemButton";
 import ListItemIcon from "@mui/material/ListItemIcon";
 import ListItemText from "@mui/material/ListItemText";
-import InboxIcon from "@mui/icons-material/MoveToInbox";
-import MailIcon from "@mui/icons-material/Mail";
 import { Outlet } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
-import Atom from "../containers/atomModule/atom";
-import "./mainLayout.css";
-import DashboardInactiveIcon from "../resources/svgs/dashboardInactiveIcon.svg";
+import { AppContext } from "../context/appContext";
+import dashboardInactiveIcon from "../resources/svgs/dashboardInactiveIcon.svg";
+import dashboardActiveIcon from "../resources/svgs/dashboardActiveIcon.svg";
+import monitoringInactiveIcon from "../resources/svgs/monitoringInactiveIcon.svg";
+import monitoringActiveIcon from "../resources/svgs/monitoringActiveIcon.svg";
+import atomInactiveIcon from "../resources/svgs/atomInactiveIcon.svg";
+import atomActiveIcon from "../resources/svgs/atomActiveIcon.svg";
+import ipamInactiveIcon from "../resources/svgs/ipamInactiveIcon.svg";
+import ipamActiveIcon from "../resources/svgs/ipamActiveIcon.svg";
+import networkMappingInactiveIcon from "../resources/svgs/networkMappingInactiveIcon.svg";
+import networkMappingActiveIcon from "../resources/svgs/networkMappingActiveIcon.svg";
+import autoDiscoveryInactiveIcon from "../resources/svgs/autoDiscoveryInactiveIcon.svg";
+import autoDiscoveryActiveIcon from "../resources/svgs/autoDiscoveryActiveIcon.svg";
+import uamInactiveIcon from "../resources/svgs/uamInactiveIcon.svg";
+import uamActiveIcon from "../resources/svgs/uamActiveIcon.svg";
+import ncmInactiveIcon from "../resources/svgs/ncmInactiveIcon.svg";
+import ncmActiveIcon from "../resources/svgs/ncmActiveIcon.svg";
+import logo from "../resources/svgs/logo.svg";
+import dayModeIcon from "../resources/svgs/dayModeIcon.svg";
+import nightModeIcon from "../resources/svgs/nightModeIcon.svg";
 
 const drawerWidth = 240;
 
@@ -52,26 +60,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   padding: theme.spacing(0, 1),
-  // necessary for content to be below app bar
   ...theme.mixins.toolbar,
-}));
-
-const AppBar = styled(MuiAppBar, {
-  shouldForwardProp: (prop) => prop !== "open",
-})(({ theme, open }) => ({
-  zIndex: theme.zIndex.drawer + 1,
-  transition: theme.transitions.create(["width", "margin"], {
-    easing: theme.transitions.easing.sharp,
-    duration: theme.transitions.duration.leavingScreen,
-  }),
-  ...(open && {
-    marginLeft: drawerWidth,
-    width: `calc(100% - ${drawerWidth}px)`,
-    transition: theme.transitions.create(["width", "margin"], {
-      easing: theme.transitions.easing.sharp,
-      duration: theme.transitions.duration.enteringScreen,
-    }),
-  }),
 }));
 
 const Drawer = styled(MuiDrawer, {
@@ -81,170 +70,168 @@ const Drawer = styled(MuiDrawer, {
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
+  backgroundColor: theme.palette.color.main, // Set open state background color here
   ...(open && {
     ...openedMixin(theme),
-    "& .MuiDrawer-paper": openedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...openedMixin(theme),
+      backgroundColor: theme.palette.color.main, // Set open state background color here
+    },
   }),
   ...(!open && {
     ...closedMixin(theme),
-    "& .MuiDrawer-paper": closedMixin(theme),
+    "& .MuiDrawer-paper": {
+      ...closedMixin(theme),
+      backgroundColor: theme.palette.color.main, // Set open state background color here
+    },
   }),
 }));
 
-export default function MiniDrawer() {
+export default function Index() {
   const theme = useTheme();
+  const { isDarkMode, setDarkMode } = useContext(AppContext);
   const [open, setOpen] = useState(false);
   const [selectedModule, setSelectedModule] = useState("Admin");
 
+  const toggleTheme = () => {
+    setDarkMode(!isDarkMode);
+  };
+
   const drawerMenuItems = [
-    { name: "Admin", icon: <img src={DashboardInactiveIcon} alt="Admin" /> },
-    { name: "Atom", icon: <InboxIcon /> },
-    { name: "Auto Discovery", icon: <InboxIcon /> },
-    { name: "IPAM", icon: <InboxIcon /> },
-    { name: "Monitoring", icon: <InboxIcon /> },
-    { name: "NCM", icon: <InboxIcon /> },
-    { name: "UAM", icon: <InboxIcon /> },
+    {
+      name: "Admin",
+      inActiveIcon: <img src={dashboardInactiveIcon} alt="Admin" />,
+      activeIcon: <img src={dashboardActiveIcon} alt="Admin" />,
+      path: "admin_module",
+    },
+    {
+      name: "Atom",
+      inActiveIcon: <img src={atomInactiveIcon} alt="Atom" />,
+      activeIcon: <img src={atomActiveIcon} alt="Atom" />,
+      path: "atom_module",
+    },
+    {
+      name: "Auto Discovery",
+      inActiveIcon: <img src={autoDiscoveryInactiveIcon} alt="Atom" />,
+      activeIcon: <img src={autoDiscoveryActiveIcon} alt="Atom" />,
+      path: "auto_discovery_module",
+    },
+    {
+      name: "IPAM",
+      inActiveIcon: <img src={ipamInactiveIcon} alt="Atom" />,
+      activeIcon: <img src={ipamActiveIcon} alt="Atom" />,
+      path: "ipam_module",
+    },
+    {
+      name: "Monitoring",
+      inActiveIcon: <img src={monitoringInactiveIcon} alt="Atom" />,
+      activeIcon: <img src={monitoringActiveIcon} alt="Atom" />,
+      path: "monitoring_module",
+    },
+    {
+      name: "NCM",
+      inActiveIcon: <img src={ncmInactiveIcon} alt="Atom" />,
+      activeIcon: <img src={ncmActiveIcon} alt="Atom" />,
+      path: "ncm_module",
+    },
+    {
+      name: "UAM",
+      inActiveIcon: <img src={uamInactiveIcon} alt="Atom" />,
+      activeIcon: <img src={uamActiveIcon} alt="Atom" />,
+      path: "uam_module",
+    },
   ];
-
-  const handleDrawerOpen = () => {
-    setOpen(true);
-  };
-
-  const handleDrawerClose = () => {
-    setOpen(false);
-  };
 
   return (
     <Box sx={{ display: "flex" }}>
-      <CssBaseline />
-      {/* <AppBar position="fixed" open={open} style={{ boxShadow: "none", }}>
-        <Toolbar style={{ backgroundColor: "white" }}>
-          <IconButton
-            color="inherit"
-            aria-label="open drawer"
-            onClick={handleDrawerOpen}
-            edge="start"
-            sx={{
-              marginRight: 5,
-              ...(open && { display: "none" }),
-            }}
-          >
-            <MenuIcon />
-          </IconButton>
-
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            style={{ color: "green" }}
-          >
-            M
-          </Typography>
-        </Toolbar>
-      </AppBar> */}
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
-          {/* <IconButton onClick={handleDrawerClose}>
-            {theme.direction === "rtl" ? (
-              <ChevronRightIcon />
-            ) : (
-              <ChevronLeftIcon />
-            )}
-          </IconButton> */}
-          <Typography
-            variant="h6"
-            noWrap
-            component="div"
-            style={{ color: "green" }}
-          >
-            M
-          </Typography>
+          <img src={logo} alt="Montex" />
         </DrawerHeader>
-        <Divider style={{ padding: 0, margin: 0 }} />
+        <Divider />
+
         <List style={{ padding: 0 }}>
           {drawerMenuItems.map((item, index) => (
             <Tooltip key={item.name} title={item.name} placement="right">
-              <ListItem
-                key={item.name}
-                disablePadding
-                className={`${
-                  selectedModule === item.name ? "active" : "nonActive"
-                }`}
-                sx={{ display: "block", borderLeft: "4px solid transparent" }}
-                onClick={() => setSelectedModule(item.name)}
-              >
-                <ListItemButton
-                  sx={{
-                    minHeight: 48,
-                    justifyContent: open ? "initial" : "center",
-                    px: 2.5,
-                  }}
+              <Link to={item.path}>
+                <ListItem
+                  key={item.name}
+                  disablePadding
+                  onClick={() => setSelectedModule(item.name)}
                 >
-                  <ListItemIcon
+                  <ListItemButton
                     sx={{
-                      minWidth: 0,
-                      mr: open ? 3 : "auto",
-                      justifyContent: "center",
-                      marginLeft: "-4px",
+                      justifyContent: open ? "initial" : "center",
+                      padding: 0,
                     }}
                   >
-                    {item.icon}
-                  </ListItemIcon>
-                  <ListItemText
-                    primary={item.name}
-                    sx={{ opacity: open ? 1 : 0 }}
-                  />
-                </ListItemButton>
-                {/* <Divider /> */}
-              </ListItem>
+                    <ListItemIcon
+                      sx={{
+                        minWidth: 0,
+                        justifyContent: "center",
+                      }}
+                    >
+                      {selectedModule === item.name
+                        ? item.activeIcon
+                        : item.inActiveIcon}
+                    </ListItemIcon>
+                    <ListItemText
+                      primary={item.name}
+                      sx={{ opacity: open ? 1 : 0 }}
+                    />
+                  </ListItemButton>
+                </ListItem>
+              </Link>
             </Tooltip>
           ))}
         </List>
       </Drawer>
+
       <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
         <DrawerHeader
-          style={{
-            // backgroundColor: "grey",
+          sx={{
             display: "flex",
             justifyContent: "space-between",
             padding: "0 20px",
           }}
         >
-          <div class="text-[red]">{selectedModule}</div>
+          <div style={{ color: theme.palette.textColor.default }}>
+            {selectedModule}
+          </div>
           <div style={{ display: "flex" }}>
-            <div
-              style={{
-                // border: "1px solid black",
-                borderRadius: "100px",
-                width: "40px",
-                height: "40px",
-                backgroundColor: "silver",
-              }}
-            ></div>
+            <div style={{ cursor: "pointer" }}>
+              {isDarkMode ? (
+                <img
+                  src={dayModeIcon}
+                  alt="theme"
+                  onClick={toggleTheme}
+                  height={35}
+                />
+              ) : (
+                <img
+                  src={nightModeIcon}
+                  alt="theme"
+                  onClick={toggleTheme}
+                  height={35}
+                />
+              )}
+            </div>
             &nbsp; &nbsp;
-            <div
-              style={{
-                // border: "1px solid black",
-                borderRadius: "100px",
-                width: "40px",
-                height: "40px",
-                backgroundColor: "grey",
-              }}
-            ></div>
+            <ProfileContainer></ProfileContainer>
             &nbsp; &nbsp;
             <div>
               <div
                 style={{
-                  color: "grey",
-                  fontSize: "14px",
+                  color: theme.palette.textColor.default,
+                  fontSize: theme.typography.textSize.medium,
                 }}
               >
                 Nadeem Khan
               </div>
               <div
                 style={{
-                  color: "silver",
-                  fontSize: "12px",
+                  color: theme.palette.textColor.secondary,
+                  fontSize: theme.typography.textSize.small,
                 }}
               >
                 Product Designer
@@ -259,3 +246,11 @@ export default function MiniDrawer() {
     </Box>
   );
 }
+
+// Define your styled component using the `styled` function
+const ProfileContainer = styled("div")(({ theme }) => ({
+  borderRadius: "100px",
+  width: "35px",
+  height: "35px",
+  backgroundColor: theme.palette.color.default,
+}));

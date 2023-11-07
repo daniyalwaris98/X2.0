@@ -7,7 +7,7 @@ export const lightTheme = createTheme({
     },
 
     color: {
-      default: "#FAFAFA", // profile picture background
+      default: "#ACACAC", // profile picture background
       main: "#FFFFFF", // table background white
       primary: "#3D9E47", // montex green
       secondary: "#ACACAC", // search icons gray
@@ -19,8 +19,15 @@ export const lightTheme = createTheme({
       disable: "#5A5A5A", // gray
       checkboxBorder: "#DBDBDB",
     },
+
     textColor: {
+      default: "#000000", // black
+      main: "#FFFFFF", // white
+      primary: "#D9D9D9", // montex green
+      secondary: "#D9D9D9", // silver
+      tertiary: "#5C5C5C", // grey
       tableText: "#262626",
+      danger: "#E34444", //danger color red
     },
   },
 
@@ -47,7 +54,7 @@ export const darkTheme = createTheme({
     },
 
     color: {
-      default: "#131B15", // profile picture background
+      default: "#595959", // profile picture background
       main: "#000000", // table background dark gray
       primary: "#3D9E47", // montex green
       secondary: "#ACACAC", // search icons gray
@@ -59,7 +66,15 @@ export const darkTheme = createTheme({
       disable: "#5A5A5A", // gray
       checkboxBorder: "#DBDBDB",
     },
+
     textColor: {
+      default: "#FFFFFF", // white
+      main: "#FFFFFF", // white
+      primary: "#D9D9D9", // montex green
+      secondary: "#595959", // silver
+      tertiary: "#5C5C5C", // grey
+      tableText: "#262626",
+      danger: "#E34444", //danger color red
       tableText: "#ACACAC",
     },
   },
