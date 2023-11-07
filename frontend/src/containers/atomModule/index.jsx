@@ -1,11 +1,14 @@
 import React from "react";
-import NavTabs from "../../components/NavTabs";
-const Index = () => {
+import { Outlet } from "react-router-dom";
+import BasicCard from "../../components/cards";
+
+function index(props) {
   return (
     <>
-      <NavTabs items={["Atom", "Password Group"]} />
+      <BasicCard>Atom Module</BasicCard>
+      <Outlet />
     </>
   );
-};
+}
 
-export default Index;
+export default index;

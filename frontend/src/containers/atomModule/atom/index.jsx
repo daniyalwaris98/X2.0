@@ -1,16 +1,20 @@
-import React from "react";
-import Button from "@mui/material/Button";
-import Checkbox from "@mui/material/Checkbox";
+import React, { useState } from "react";
+
 import { useTheme } from "@mui/material/styles";
 import DefaultButton from "../../../components/buttons";
 import DefaultTable from "../../../components/tables";
-import { ReusableCard } from "../../../components/cards";
+// import { ReusableCard } from "../../../components/cards";
+import ReusableCard from "../../../components/cards";
 import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 import AccountMenu from "../../../components/NavTabs";
 import Actions from "../../../components/actions";
+import TableRow from "../../../components/tables";
 const Index = () => {
   const theme = useTheme();
+  // ======================================
+
+  // ==========================================
 
   const data = [
     {
@@ -19,7 +23,7 @@ const Index = () => {
       status: "Online",
       ipAddress: "192.168.1.1",
       deviceName: "Device 1",
-      deviceType: "Router",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board A",
     },
@@ -29,7 +33,7 @@ const Index = () => {
       status: "Online",
       ipAddress: "192.168.1.1",
       deviceName: "Device 1",
-      deviceType: "Router",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board A",
     },
@@ -39,7 +43,7 @@ const Index = () => {
       status: "Offline",
       ipAddress: "192.168.1.2",
       deviceName: "Device 2",
-      deviceType: "Switch",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board B",
     },
@@ -49,7 +53,7 @@ const Index = () => {
       status: "Offline",
       ipAddress: "192.168.1.3",
       deviceName: "Device 3",
-      deviceType: "Switch",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board B",
     },
@@ -59,7 +63,7 @@ const Index = () => {
       status: "Offline",
       ipAddress: "192.168.1.3",
       deviceName: "Device 3",
-      deviceType: "Switch",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board B",
     },
@@ -69,7 +73,7 @@ const Index = () => {
       status: "Offline",
       ipAddress: "192.168.1.3",
       deviceName: "Device 3",
-      deviceType: "Switch",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board B",
     },
@@ -79,7 +83,7 @@ const Index = () => {
       status: "Online",
       ipAddress: "192.168.1.1",
       deviceName: "Device 1",
-      deviceType: "Router",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board A",
     },
@@ -89,7 +93,7 @@ const Index = () => {
       status: "Online",
       ipAddress: "192.168.1.1",
       deviceName: "Device 1",
-      deviceType: "Router",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board A",
     },
@@ -99,7 +103,7 @@ const Index = () => {
       status: "Offline",
       ipAddress: "192.168.1.2",
       deviceName: "Device 2",
-      deviceType: "Switch",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board B",
     },
@@ -109,7 +113,7 @@ const Index = () => {
       status: "Offline",
       ipAddress: "192.168.1.3",
       deviceName: "Device 3",
-      deviceType: "Switch",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board B",
     },
@@ -119,7 +123,7 @@ const Index = () => {
       status: "Offline",
       ipAddress: "192.168.1.3",
       deviceName: "Device 3",
-      deviceType: "Switch",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board B",
     },
@@ -129,7 +133,7 @@ const Index = () => {
       status: "Offline",
       ipAddress: "192.168.1.3",
       deviceName: "Device 3",
-      deviceType: "Switch",
+      deviceType: "cisco_ios",
       onboardStatus: "true",
       board: "Board B",
     },
@@ -137,14 +141,71 @@ const Index = () => {
   ];
 
   const columns = [
-    { id: "checkbox", label: "checkbox" },
-    { id: "status", label: "Status" },
-    { id: "ipAddress", label: "IP Address" },
-    { id: "deviceName", label: "Device Name" },
-    { id: "deviceType", label: "Device Type" },
-    { id: "onboardStatus", label: "Onboard Status" },
-    { id: "board", label: "Board" },
+    { id: "2", title: "Status" },
+    { id: "3", title: "IP Address" },
+    { id: "4", title: "Device Name" },
+    { id: "5", title: "Device Type" },
+    { id: "6", title: "Onboard Status" },
+    { id: "7", title: "Board" },
+    { id: "8", title: "Actions" },
   ];
+
+  const [clients, setClients] = useState([
+    {
+      id: 1,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1s",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 2,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 3,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1e",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 4,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 5,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 5,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+  ]);
 
   return (
     <>
@@ -234,14 +295,83 @@ const Index = () => {
             </DefaultButton>
           </Typography>
         </Typography>
-        <DefaultTable
+        {/* <DefaultTable
           sx={{
             backgroundColor: theme.palette.color.main,
             margin: "0 auto",
           }}
           data={data}
           columns={columns}
-        />
+        /> */}
+        {/* <div className="app-page">
+          <Grid container>
+            <Grid item xs={12}>
+              <TextField
+                label="Search..."
+                variant="outlined"
+                value={search}
+                onChange={(e) => setSearch(e.target.value)}
+                fullWidth
+              />
+            </Grid>
+            <Grid item xs={9}>
+              <TableContainer>
+                <Table>
+                  <TableHead>
+                    <TableRow>
+                      <TableCell>
+                        <Checkbox />
+                      </TableCell>
+                      <TableCell>Id</TableCell>
+                      <TableCell>Name</TableCell>
+                      <TableCell>Age</TableCell>
+                      <TableCell>Percentage</TableCell>
+                      <TableCell>Actions</TableCell>
+                    </TableRow>
+                  </TableHead>
+                  <TableBody>
+                    {clients
+                      .filter((client) => client.name.includes(search))
+                      .map((client) => (
+                        <TableRow
+                          key={client.id}
+                          client={client}
+                          onDelete={handleDelete}
+                          onEdit={handleEdit}
+                          onUpdate={handleUpdate}
+                        />
+                      ))}
+                  </TableBody>
+                </Table>
+              </TableContainer>
+            </Grid>
+            <Grid item xs={3}>
+              <Card variant="outlined">
+                <CardContent>
+                  <h2>Create User</h2>
+                  <TextField
+                    label="Name"
+                    variant="outlined"
+                    value={newClient.name}
+                    onChange={(e) =>
+                      setNewClient({ ...newClient, name: e.target.value })
+                    }
+                    fullWidth
+                  />
+                  <Button
+                    variant="contained"
+                    color="primary"
+                    onClick={handleCreate}
+                    fullWidth
+                  >
+                    Save
+                  </Button>
+                </CardContent>
+              </Card>
+            </Grid>
+          </Grid>
+        </div> */}
+        <TableRow clients={clients} setClients={setClients} columns={columns} />
       </ReusableCard>
     </>
   );
