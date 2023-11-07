@@ -28,7 +28,7 @@ const App = () => {
           width: "100%",
         }}
       >
-        <Button
+        {/* <Button
           onClick={toggleTheme}
           variant="contained"
           sx={{
@@ -39,7 +39,7 @@ const App = () => {
           }}
         >
           change Theme
-        </Button>
+        </Button> */}
 
         <Provider store={store}>
           <ThemeProvider theme={theme}>
