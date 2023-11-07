@@ -1,11 +1,11 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import BasicCard from "../../components/cards";
+import Card from "../../components/cards";
 
 function index(props) {
   return (
     <>
-      <BasicCard>Atom Module</BasicCard>
+      <Card sx={{ marginBottom: "10px" }}>Atom Module</Card>
       <Outlet />
     </>
   );

@@ -212,8 +212,8 @@ const Index = () => {
       <ReusableCard
         sx={{
           backgroundColor: theme.palette.color.main,
-          width: "100%",
-          height: "100vh",
+          // width: "100%",
+          // height: "100vh",
 
           // marginTop: "40px !important",
           margin: "0 auto",
