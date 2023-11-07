@@ -155,11 +155,11 @@ const Index = () => {
       device_name: "Edge_Ro-1s",
       device_type: "cisco_ios",
       onboard_status: "true",
-      board: "true",
+      board: "false",
     },
     {
       id: 2,
-      status: "online",
+      status: "offline",
       ip_address: "192.168.1.1",
       device_name: "Edge_Ro-1",
       device_type: "cisco_ios",
@@ -173,11 +173,11 @@ const Index = () => {
       device_name: "Edge_Ro-1e",
       device_type: "cisco_ios",
       onboard_status: "true",
-      board: "true",
+      board: "false",
     },
     {
       id: 4,
-      status: "online",
+      status: "offline",
       ip_address: "192.168.1.1",
       device_name: "Edge_Ro-1",
       device_type: "cisco_ios",
@@ -195,7 +195,7 @@ const Index = () => {
     },
     {
       id: 5,
-      status: "online",
+      status: "offline",
       ip_address: "192.168.1.1",
       device_name: "Edge_Ro-1",
       device_type: "cisco_ios",
@@ -204,18 +204,24 @@ const Index = () => {
     },
   ]);
 
+  const onEdit = (client) => {
+    console.log(client, "client");
+  };
+
+  const onDelete = (item) => {
+    console.log(item, "delete");
+    setClients(
+      clients.filter((data) => {
+        return data !== item;
+      })
+    );
+  };
   return (
     <>
       <ReusableCard
         sx={{
           backgroundColor: theme.palette.color.main,
-          // width: "100%",
-          // height: "100vh",
-
-          // marginTop: "40px !important",
           margin: "0 auto",
-          //   padding: "30px 5px 30px 5px",
-          // position: "relative",
         }}
       >
         <Typography
@@ -292,84 +298,15 @@ const Index = () => {
             </DefaultButton>
           </Typography>
         </Typography>
-        {/* <DefaultTable
-          sx={{
-            backgroundColor: theme.palette.color.main,
-            margin: "0 auto",
-          }}
-          data={data}
-          columns={columns}
-        /> */}
-        {/* <div className="app-page">
-          <Grid container>
-            <Grid item xs={12}>
-              <TextField
-                label="Search..."
-                variant="outlined"
-                value={search}
-                onChange={(e) => setSearch(e.target.value)}
-                fullWidth
-              />
-            </Grid>
-            <Grid item xs={9}>
-              <TableContainer>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>
-                        <Checkbox />
-                      </TableCell>
-                      <TableCell>Id</TableCell>
-                      <TableCell>Name</TableCell>
-                      <TableCell>Age</TableCell>
-                      <TableCell>Percentage</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {clients
-                      .filter((client) => client.name.includes(search))
-                      .map((client) => (
-                        <TableRow
-                          key={client.id}
-                          client={client}
-                          onDelete={handleDelete}
-                          onEdit={handleEdit}
-                          onUpdate={handleUpdate}
-                        />
-                      ))}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-            </Grid>
-            <Grid item xs={3}>
-              <Card variant="outlined">
-                <CardContent>
-                  <h2>Create User</h2>
-                  <TextField
-                    label="Name"
-                    variant="outlined"
-                    value={newClient.name}
-                    onChange={(e) =>
-                      setNewClient({ ...newClient, name: e.target.value })
-                    }
-                    fullWidth
-                  />
-                  <Button
-                    variant="contained"
-                    color="primary"
-                    onClick={handleCreate}
-                    fullWidth
-                  >
-                    Save
-                  </Button>
-                </CardContent>
-              </Card>
-            </Grid>
-          </Grid>
-        </div> */}
+
         <Typography component="div"></Typography>
-        <TableRow clients={clients} setClients={setClients} columns={columns} />
+        <TableRow
+          onDelete={onDelete}
+          onEdit={onEdit}
+          clients={clients}
+          setClients={setClients}
+          columns={columns}
+        />
       </ReusableCard>
     </>
   );
