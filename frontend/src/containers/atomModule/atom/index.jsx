@@ -12,9 +12,6 @@ import Actions from "../../../components/actions";
 import TableRow from "../../../components/tables";
 const Index = () => {
   const theme = useTheme();
-  // ======================================
-
-  // ==========================================
 
   const data = [
     {
@@ -371,6 +368,7 @@ const Index = () => {
             </Grid>
           </Grid>
         </div> */}
+        <Typography component="div"></Typography>
         <TableRow clients={clients} setClients={setClients} columns={columns} />
       </ReusableCard>
     </>
