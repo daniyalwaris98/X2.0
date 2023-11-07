@@ -21,6 +21,8 @@ import MailIcon from "@mui/icons-material/Mail";
 import { Outlet } from "react-router-dom";
 import Tooltip from "@mui/material/Tooltip";
 import Atom from "../containers/atomModule/atom";
+import "./mainLayout.css";
+import DashboardInactiveIcon from "../resources/svgs/dashboardInactiveIcon.svg";
 
 const drawerWidth = 240;
 
@@ -95,7 +97,7 @@ export default function MiniDrawer() {
   const [selectedModule, setSelectedModule] = useState("Admin");
 
   const drawerMenuItems = [
-    { name: "Admin", icon: <InboxIcon /> },
+    { name: "Admin", icon: <img src={DashboardInactiveIcon} alt="Admin" /> },
     { name: "Atom", icon: <InboxIcon /> },
     { name: "Auto Discovery", icon: <InboxIcon /> },
     { name: "IPAM", icon: <InboxIcon /> },
@@ -158,14 +160,17 @@ export default function MiniDrawer() {
             M
           </Typography>
         </DrawerHeader>
-        <Divider />
-        <List>
+        <Divider style={{ padding: 0, margin: 0 }} />
+        <List style={{ padding: 0 }}>
           {drawerMenuItems.map((item, index) => (
             <Tooltip key={item.name} title={item.name} placement="right">
               <ListItem
                 key={item.name}
                 disablePadding
-                sx={{ display: "block" }}
+                className={`${
+                  selectedModule === item.name ? "active" : "nonActive"
+                }`}
+                sx={{ display: "block", borderLeft: "4px solid transparent" }}
                 onClick={() => setSelectedModule(item.name)}
               >
                 <ListItemButton
@@ -180,6 +185,7 @@ export default function MiniDrawer() {
                       minWidth: 0,
                       mr: open ? 3 : "auto",
                       justifyContent: "center",
+                      marginLeft: "-4px",
                     }}
                   >
                     {item.icon}
