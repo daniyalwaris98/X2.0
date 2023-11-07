@@ -108,7 +108,7 @@ export default function Index() {
       name: "Atom",
       inActiveIcon: <img src={atomInactiveIcon} alt="Atom" />,
       activeIcon: <img src={atomActiveIcon} alt="Atom" />,
-      path: "atom_module",
+      path: "/atom_module/atom",
     },
     {
       name: "Auto Discovery",

@@ -20,7 +20,7 @@ const App = () => {
         className="relative"
         style={{
           backgroundColor: theme.palette.background.default,
-          height: "100vh",
+          height: "auto",
           width: "100%",
         }}
       >

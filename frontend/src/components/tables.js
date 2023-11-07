@@ -410,13 +410,27 @@ function TableRows({
                   }}
                 >
                   <IconButton onClick={() => onEdit(client)}>
-                    <EditIcon sx={{ fontSize: "18px" }} />
+                    <EditIcon
+                      sx={{
+                        fontSize: "18px",
+                        color: theme.palette.textColor.tableText,
+                      }}
+                    />
                   </IconButton>
                   <IconButton>
-                    <Icon fontSize="18px" icon="tdesign:dart-board" />
+                    <Icon
+                      color={theme.palette.textColor.tableText}
+                      fontSize="18px"
+                      icon="tdesign:dart-board"
+                    />
                   </IconButton>
                   <IconButton onClick={() => onDelete(client)}>
-                    <DeleteIcon sx={{ fontSize: "18px" }} />
+                    <DeleteIcon
+                      sx={{
+                        fontSize: "18px",
+                        color: theme.palette.textColor.tableText,
+                      }}
+                    />
                   </IconButton>
                 </TableCell>
               </TableRow>
