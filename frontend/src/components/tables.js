@@ -168,6 +168,8 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import SearchIcon from "@mui/icons-material/Search";
 import Popover from "@mui/material/Popover";
+import { Typography } from "@mui/material";
+import { Icon } from "@iconify/react";
 
 function TableRows({
   clients,
@@ -193,31 +195,7 @@ function TableRows({
   };
 
   const applyColumnFilter = () => {
-    // Apply your column filter logic here
-    // Update the filterColumnValue state based on the selected filter
     handleFilterClose();
-  };
-
-  const [editing, setEditing] = useState(false);
-  const [newClient, setNewClient] = useState({
-    name: "",
-    age: "",
-    percentage: "",
-  });
-  const [activeClient, setActiveClient] = useState(null);
-
-  const handleEdit = () => {
-    setEditing(true);
-  };
-
-  const handleUpdate = () => {
-    setEditing(false);
-    onUpdate(clients);
-  };
-  const handleDelete = (client) => {
-    const updatedClients = clients.filter((c) => c !== client);
-    setClients(updatedClients);
-    // Delete the client data
   };
 
   return (
@@ -270,14 +248,18 @@ function TableRows({
                     }}
                   >
                     {title.title}
-                    <IconButton onClick={handleFilterOpen("ip_address")}>
-                      <SearchIcon
-                        sx={{
-                          color: theme.palette.textColor.tableText,
-                          fontSize: "18px",
-                        }}
-                      />
-                    </IconButton>
+                    {title.title === "Board" || title.title === "Actions" ? (
+                      ""
+                    ) : (
+                      <IconButton onClick={handleFilterOpen("ip_address")}>
+                        <SearchIcon
+                          sx={{
+                            color: theme.palette.textColor.tableText,
+                            fontSize: "18px",
+                          }}
+                        />
+                      </IconButton>
+                    )}
                   </div>
                 </TableCell>
               ))}
@@ -324,7 +306,19 @@ function TableRows({
                     padding: "0px",
                   }}
                 >
-                  {client.status}
+                  {client.status === "online" ? (
+                    <Icon
+                      fontSize={"22px"}
+                      color={theme.palette.color.primary}
+                      icon="ep:success-filled"
+                    />
+                  ) : (
+                    <Icon
+                      fontSize={"23px"}
+                      color={theme.palette.color.info}
+                      icon="material-symbols:info"
+                    />
+                  )}
                 </TableCell>
                 <TableCell
                   sx={{
@@ -332,7 +326,7 @@ function TableRows({
                     borderRight: "1px solid #ddd",
                     paddingLeft: "10px !important",
 
-                    color: theme.palette.textColor.tableText,
+                    color: theme.palette.color.primary,
                     borderBottom: "none !important",
 
                     padding: "0px",
@@ -392,7 +386,21 @@ function TableRows({
                     padding: "0px",
                   }}
                 >
-                  {client.board}
+                  <Typography
+                    sx={{
+                      textAlign: "center",
+                      width: "80px",
+                      // padding: "5px 15px",
+
+                      margin: "0 auto",
+                      borderRadius: "10px",
+                      background:
+                        client.board === "true" ? "#F1F6EE" : "#FFECE9",
+                      color: client.board === "true" ? "#3D9E47" : "#E34444",
+                    }}
+                  >
+                    {client.board}
+                  </Typography>
                 </TableCell>
                 <TableCell
                   sx={{
@@ -403,6 +411,9 @@ function TableRows({
                 >
                   <IconButton onClick={() => onEdit(client)}>
                     <EditIcon sx={{ fontSize: "18px" }} />
+                  </IconButton>
+                  <IconButton>
+                    <Icon fontSize="18px" icon="tdesign:dart-board" />
                   </IconButton>
                   <IconButton onClick={() => onDelete(client)}>
                     <DeleteIcon sx={{ fontSize: "18px" }} />
