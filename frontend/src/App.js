@@ -29,7 +29,7 @@ const App = () => {
           // paddingTop: "100px",
         }}
       >
-        <Button
+        {/* <Button
           onClick={toggleTheme}
           variant="contained"
           sx={{
@@ -40,7 +40,7 @@ const App = () => {
           }}
         >
           change Theme
-        </Button>
+        </Button> */}
 
         <Provider store={store}>
           <ThemeProvider theme={theme}>

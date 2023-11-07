@@ -198,13 +198,53 @@ export default function MiniDrawer() {
       <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
         <DrawerHeader
           style={{
-            backgroundColor: "grey",
+            // backgroundColor: "grey",
             display: "flex",
             justifyContent: "space-between",
+            padding: "0 20px",
           }}
         >
-          <div>{selectedModule}</div>
-          <div></div>
+          <div class="text-[red]">{selectedModule}</div>
+          <div style={{ display: "flex" }}>
+            <div
+              style={{
+                // border: "1px solid black",
+                borderRadius: "100px",
+                width: "40px",
+                height: "40px",
+                backgroundColor: "silver",
+              }}
+            ></div>
+            &nbsp; &nbsp;
+            <div
+              style={{
+                // border: "1px solid black",
+                borderRadius: "100px",
+                width: "40px",
+                height: "40px",
+                backgroundColor: "grey",
+              }}
+            ></div>
+            &nbsp; &nbsp;
+            <div>
+              <div
+                style={{
+                  color: "grey",
+                  fontSize: "14px",
+                }}
+              >
+                Nadeem Khan
+              </div>
+              <div
+                style={{
+                  color: "silver",
+                  fontSize: "12px",
+                }}
+              >
+                Product Designer
+              </div>
+            </div>
+          </div>
         </DrawerHeader>
         <div style={{ padding: "10px 20px" }}>
           <Outlet />
