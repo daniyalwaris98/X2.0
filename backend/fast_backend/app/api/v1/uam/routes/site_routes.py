@@ -6,8 +6,8 @@ from app.schema.site_rack_schema import *
 from app.models.site_rack_models import *
 
 router = APIRouter(
-    prefix="/uam/site",
-    tags=["uam", "site"],
+    prefix="/site",
+    tags=["site"],
 )
 
 
@@ -76,19 +76,15 @@ async def delete_site(site_ids: list[int]):
 async def get_all_site():
     try:
 
-        response = []
+        response = list()
 
         results = configs.db.query(SiteTable).all()
         for result in results:
-            # response = result.as_dict()
             response.append(result.as_dict())
-        print("response:::::::::::::::::::::::::::::",response,file=sys.stderr)
-        # custom_response.data = response
-        # custom_response.message = f"All Data Retreived Successfully"
-        # custom_response.status = 200
-        return JSONResponse(content={"data": response, "message": "All Data Retrieved Successfully","sttaus":200}),200
 
-        # return JSONResponse(content=response, status_code=200)
+        print(response)
+
+        return JSONResponse(content=response, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
@@ -107,7 +103,7 @@ async def get_site_dropdown():
             site_name = site.site_name
             response.append(site_name)
 
-        return JSONResponse(content={"data": response, "message": "All Data Retrieved Successfully","sttaus":200}),200
+        return JSONResponse(content=response, status_code=200)
 
     except Exception:
         traceback.print_exc()

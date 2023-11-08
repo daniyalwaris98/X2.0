@@ -10,8 +10,8 @@ from app.models.uam_models import *
 from app.schema.uam_license_schema import *
 
 router = APIRouter(
-    prefix="/uam/license",
-    tags=["uam", "license"],
+    prefix="/uam-license",
+    tags=["uam-license"],
 )
 
 

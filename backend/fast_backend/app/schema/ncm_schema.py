@@ -1,4 +1,10 @@
+from datetime import datetime
+
 from app.schema.atom_schema import AddAtomRequestSchema, GetAtomResponseSchema, BaseSchema
+
+
+class NcmDeviceId(BaseSchema):
+    ncm_device_id: int
 
 
 class AddNcmRequestSchema(AddAtomRequestSchema):
@@ -26,3 +32,26 @@ class GetAtomInNcmResponseSchema(BaseSchema):
     password_group: str
     vendor: str | None = None
     function: str
+
+
+class NcmAlarmSchema(BaseSchema):
+    ip_address: str
+    device_name: str
+    alarm_category: str
+    alarm_title: str
+    alarm_description: str
+    alarm_status: str
+    creation_date: datetime
+    modification_date: datetime
+    resolve_remarks: str | None
+    mail_status: str
+
+
+class NcmConfigHistorySchema(BaseSchema):
+    ncm_history_id: int
+    date: datetime
+    file_name: str
+
+
+class SendCommandRequestSchema(NcmDeviceId):
+    cmd: str

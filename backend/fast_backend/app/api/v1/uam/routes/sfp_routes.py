@@ -11,8 +11,8 @@ from app.models.atom_models import *
 from app.models.uam_models import *
 
 router = APIRouter(
-    prefix="/uam/sfp",
-    tags=["uam", "sfp"],
+    prefix="/uam-sfp",
+    tags=["uam-sfp"],
 )
 
 

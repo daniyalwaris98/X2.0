@@ -1,8 +1,8 @@
-from app.api.v1.atom.atom_utils import *
+from app.api.v1.atom.utils.atom_utils import *
 
 router = APIRouter(
-    prefix="/atom",
-    tags=["atom"],
+    prefix="/password-group",
+    tags=["password-group"],
 )
 
 

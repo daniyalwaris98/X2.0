@@ -7,6 +7,8 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
+from starlette.templating import Jinja2Templates
+
 # from pydantic import BaseSettings
 
 
@@ -73,6 +75,8 @@ class Configs:
     IN_BUCKET: str = "monitoring"
     IN_URL: str = "http://localhost:8086"
     client: str = InfluxDBClient(url=IN_URL, token=IN_TOKEN)
+
+    templates = Jinja2Templates(directory="templates")
 
     class Config:
         case_sensitive = True

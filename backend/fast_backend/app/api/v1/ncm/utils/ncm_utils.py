@@ -1,5 +1,5 @@
 from app.models.ncm_models import *
-from app.api.v1.atom.atom_utils import *
+from app.api.v1.atom.utils.atom_utils import *
 
 
 def add_ncm_device_util(ncm_obj, update):

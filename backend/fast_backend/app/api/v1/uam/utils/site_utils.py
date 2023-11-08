@@ -1,10 +1,6 @@
-import traceback
-
 from app.models.atom_models import *
 from app.models.site_rack_models import *
 from app.utils.db_utils import *
-from app.schema.response_schema import CustomResponse
-custom_response = CustomResponse(data= "",message="",status="")
 
 
 def FormatDate(date):
@@ -21,20 +17,13 @@ def check_site_name(site_obj):
     site_obj["site_name"] = site_obj["site_name"].strip()
 
     if site_obj["site_name"] == "":
-        custom_response.data = []
-        custom_response.message = f"Site Name Can Not Be Empty"
-        custom_response.status   = 400
-        # return custom_response.as_tuple(),400
-        
         return "Site Name Can Not Be Empty", 400
 
     if site_obj["site_name"].lower() == "default_site":
-        custom_response.data = []
-        custom_response.message = f"Site Name (default_site) Is Not Allowed"
-        custom_response.status = 400
-        # return "Site Name (default_site) Is Not Allowed", 400
+        return "Site Name (default_site) Is Not Allowed", 400
 
-    site_exist = configs.db.query(SiteTable).filter(SiteTable.site_name == site_obj["site_name"]).first()
+    site_exist = configs.db.query(SiteTable).filter(
+        SiteTable.site_name == site_obj["site_name"]).first()
 
     return site_exist, 200
 
@@ -43,37 +32,28 @@ def check_site_status(site_obj):
     site_obj["status"] = str(site_obj["status"]).strip().title()
 
     if site_obj["status"] == "":
-        custom_response.data = []
-        custom_response.message = f"Status Must Be Defined (Production / Not Production)"
-        custom_response.status = 400
-        return custom_response.as_tuple()
-        # return "Status Must Be Defined (Production / Not Production)", 400
+        return "Status Must Be Defined (Production / Not Production)", 400
 
     if site_obj["status"] != "Production" and site_obj["status"] != "Not Production":
-        custom_response.data = []
-        custom_response.message = f"Status Must Be Defined (Production / Not Production)"
-        custom_response.status = 400
-        return custom_response.as_tuple()
-        # return "Status Must Be Defined (Production / Not Production)", 400
+        return "Status Must Be Defined (Production / Not Production)", 400
 
     return site_obj["status"], 200
 
 
 def check_site_optional_data(site_obj, site_exist):
-    print("site obj is::::::::::::::::::::",site_obj,file=sys.stderr)
-    if "region_name" in site_obj:
+    if "region" in site_obj.keys():
         if site_obj["region"] is not None:
             site_exist.region_name = site_obj["region"]
 
-    if "city" in site_obj:
+    if "city" in site_obj.keys():
         if site_obj["city"] is not None:
             site_exist.city = site_obj["city"]
 
-    if "longitude" in site_obj:
+    if "longitude" in site_obj.keys():
         if site_obj["longitude"] is not None:
             site_exist.longitude = site_obj["longitude"]
 
-    if "latitude" in site_obj:
+    if "latitude" in site_obj.keys():
         if site_obj["latitude"] is not None:
             site_exist.latitude = site_obj["latitude"]
 
@@ -88,10 +68,7 @@ def add_site_util(site_obj):
             return site_exist, status
 
         if site_exist is not None:
-            custom_response.data = []
-            custom_response.message = f"Site Name Is Already Assigned"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
+            return "Site Name Is Already Assigned", 400
 
         site_exist = SiteTable()
         site_exist.site_name = site_obj["site_name"]
@@ -107,18 +84,10 @@ def add_site_util(site_obj):
         status = InsertDBData(site_exist)
         if status == 200:
             msg = "Site Inserted Successfully"
-            custom_response.data = []
-            custom_response.message = msg
-            custom_response.status = 200
-            return custom_response.as_tuple()
         else:
             msg = "Error While Inserting Site"
-            custom_response.data = []
-            custom_response.message = msg
-            custom_response.status = 500
-            return custom_response.as_tuple()
 
-        # return msg, status
+        return msg, status
 
     except Exception:
         traceback.print_exc()
@@ -127,8 +96,10 @@ def add_site_util(site_obj):
 
 def edit_site_util(site_obj):
     try:
-        site_exist = configs.db.query(SiteTable).filter(SiteTable.site_id == site_obj["site_id"]).first()
-        default_rack = configs.db.query(RackTable).filter(RackTable.rack_name == "default_rack").first()
+        site_exist = configs.db.query(SiteTable).filter(
+            SiteTable.site_id == site_obj["site_id"]).first()
+        default_rack = configs.db.query(RackTable).filter(
+            RackTable.rack_name == "default_rack").first()
 
         if site_exist is None:
             return "Site Does Not Exist", 400
@@ -185,8 +156,8 @@ def GetAllSites():
             }
 
             siteObjList.append(siteDataDict)
-        #
-        # return siteObjList, 200
+
+        return siteObjList, 200
     except Exception:
         traceback.print_exc()
         return "Server Error", 500
@@ -195,7 +166,8 @@ def GetAllSites():
 def delete_site_util(site_id):
     try:
         site = configs.db.query(SiteTable).filter(SiteTable.site_id == site_id).first()
-        default_rack = configs.db.query(RackTable).filter(RackTable.rack_name == 'default_rack').first()
+        default_rack = configs.db.query(RackTable).filter(
+            RackTable.rack_name == 'default_rack').first()
 
         if site is None:
             return f"{site_id} : Site Not Found", 400
