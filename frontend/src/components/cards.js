@@ -4,8 +4,8 @@ import CardContent from "@mui/material/CardContent";
 
 const ReusableCard = ({ sx, children }) => {
   return (
-    <Card sx={{ ...sx, padding: 0, position: "relative" }}>
-      <CardContent style={{ padding: "10px" }}>{children}</CardContent>
+    <Card sx={{ ...sx, position: "relative" }}>
+      <CardContent style={{ padding: "0px" }}>{children}</CardContent>
     </Card>
   );
 };

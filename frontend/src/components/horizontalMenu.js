@@ -2,72 +2,35 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { Icon } from "@iconify/react";
 
-const menuItems = [
-  { id: "home", name: "Home", path: "/" },
-  {
-    id: "services",
-    name: "Services",
-    children: [
-      {
-        id: "web-development",
-        name: "Web Development",
-        path: "/web-development",
-      },
-      {
-        id: "mobile-app-development",
-        name: "Mobile App Development",
-        path: "/mobile-app-development",
-      },
-      {
-        id: "design",
-        name: "Design",
-        children: [
-          { id: "ui-ux-design", name: "UI/UX Design", path: "/ui-ux-design" },
-          {
-            id: "graphic-design",
-            name: "Graphic Design",
-            children: [
-              {
-                id: "ui-ux-design",
-                name: "UI/UX Design",
-                path: "/ui-ux-design",
-              },
-              {
-                id: "graphic-design",
-                name: "Graphic Design",
-                path: "/graphic-design",
-              },
-            ],
-          },
-        ],
-      },
-    ],
-  },
-  { id: "about-us", name: "About Us", path: "/about" },
-];
-
-const HorizontalMenu = () => {
+const HorizontalMenu = ({ menuItems }) => {
   const [openSubmenus, setOpenSubmenus] = useState({});
-
+  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
   const handleMenuClick = (event, id) => {
     setOpenSubmenus((prevOpenSubmenus) => ({
       ...prevOpenSubmenus,
       [id]: !prevOpenSubmenus[id],
     }));
+    setSelectedMenuItem(id);
   };
 
-  const renderMenuItems = (items, parentId = null) => {
+  const renderMenuItems = (
+    items,
+    parentId = null,
+    position = { top: 120, left: 0 }
+  ) => {
     return items.map((item) => {
       const id = parentId ? `${parentId}-${item.id}` : item.id;
-
+      const isClicked = id === selectedMenuItem;
       if (item.children) {
         return (
-          <div key={id} style={{ position: "relative" }}>
+          <div key={id} style={{ position: "relative", height: "50px" }}>
             <MenuItem
               key={id}
               id={id}
               onClick={(event) => handleMenuClick(event, id)}
+              className={isClicked ? "clickedMenuItem" : "menu_item"}
             >
               {item.name}
             </MenuItem>
@@ -77,11 +40,14 @@ const HorizontalMenu = () => {
               onClose={() => handleMenuClick(null, id)}
               anchorReference="anchorPosition"
               anchorPosition={{
-                top: 120,
-                left: document.getElementById(id)?.offsetWidth + 75 || 170,
+                top: position.top,
+                left:
+                  position.left +
+                    document.getElementById(id)?.offsetWidth +
+                    75 || 0,
               }} // Position the nested menu to the right side of the parent menu item
             >
-              {renderMenuItems(item.children, id)}
+              {renderMenuItems(item.children, id, { top: 200, left: 100 })}
             </Menu>
           </div>
         );
@@ -94,6 +60,8 @@ const HorizontalMenu = () => {
             to={item.path}
             onClick={() => handleMenuClick(null, parentId)}
           >
+            <Icon icon="carbon:password" />
+
             {item.name}
           </MenuItem>
         );
