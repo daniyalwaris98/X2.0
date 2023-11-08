@@ -11,7 +11,7 @@ router = APIRouter(
 )
 
 
-@router.post("/addRack", responses={
+@router.post("/add-rack", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -25,7 +25,7 @@ async def add_rack(rack: AddRackRequestSchema):
         return JSONResponse(content="Error Occurred While Adding Rack", status_code=500)
 
 
-@router.post("/editRack", responses={
+@router.post("/edit-rack", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -39,7 +39,7 @@ async def edit_rack(rack: EditRackRequestSchema):
         return JSONResponse(content="Error Occurred While Updating Rack", status_code=500)
 
 
-@router.post("/deleteRack", responses={
+@router.post("/delete-rack", responses={
     200: {"model": SummeryResponseSchema},
     400: {"model": str},
     500: {"model": str}
@@ -53,7 +53,7 @@ async def delete_rack(rack_ids: list[int]):
         return JSONResponse(content="Error Occurred While Deleting Rack", status_code=500)
 
 
-@router.get("/getRacksBySiteDropdown", responses={
+@router.get("/get-racks-by-site-dropdown", responses={
     200: {"model": list[str]},
     500: {"model": str}
 })
@@ -78,7 +78,7 @@ async def get_rack_by_site(site_obj: GetRackBySiteRequestSchema):
         return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
 
-@router.get("/getRackByRackName", responses={
+@router.get("/get-rack-by-rack-name", responses={
     200: {"model": list[GetRackResponseSchema]},
     500: {"model": str}
 })
