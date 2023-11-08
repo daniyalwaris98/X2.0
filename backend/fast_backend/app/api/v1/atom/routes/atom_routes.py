@@ -6,7 +6,7 @@ router = APIRouter(
 )
 
 
-@router.post("/addAtomDevice", responses={
+@router.post("/add-atom-device", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -25,7 +25,7 @@ async def add_atom(atom: AddAtomRequestSchema):
         return JSONResponse(content="Error Occurred While Adding Atom Device", status_code=500)
 
 
-@router.post("/addAtomDevices", responses={
+@router.post("/add-atom-devices", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -83,7 +83,7 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
         return JSONResponse(content="Error Occurred While Adding Atom Devices", status_code=500)
 
 
-@router.post("/editAtom", responses={
+@router.post("/edit-atom", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -98,7 +98,7 @@ async def edit_atom(atom: EditAtomRequestSchema):
         return "Error Occurred While Updating Atom Device", 500
 
 
-@router.get("/getAtoms", responses={
+@router.get("/get-atoms", responses={
     200: {"model": list[GetAtomResponseSchema] | None},
     500: {"model": str}
 })
@@ -169,7 +169,7 @@ async def get_atoms():
         return JSONResponse(content="Error Occurred While Fetching Atom Devices", status_code=500)
 
 
-@router.post("/deleteAtom", responses={
+@router.post("/delete-atom", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
