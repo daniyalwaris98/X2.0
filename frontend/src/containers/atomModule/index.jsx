@@ -2,7 +2,7 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
 import ModuleMenu from "../../components/moduleMenu";
-
+const array = ["item-1", "item-2", "item-3"];
 function index(props) {
   return (
     <>
@@ -18,6 +18,7 @@ function index(props) {
             height: "40px",
           }}
           items={["Atom", "Password Group"]}
+          array={array}
         />
       </Card>
       <Outlet />
