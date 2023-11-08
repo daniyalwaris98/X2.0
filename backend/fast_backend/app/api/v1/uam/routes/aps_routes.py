@@ -8,8 +8,8 @@ from app.core.config import configs
 from app.models.uam_models import *
 
 router = APIRouter(
-    prefix="/uam/aps",
-    tags=["uam", "aps"],
+    prefix="/uam-aps",
+    tags=["uam-aps"],
 )
 
 

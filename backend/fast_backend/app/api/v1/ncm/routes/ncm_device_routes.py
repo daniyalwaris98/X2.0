@@ -1,15 +1,72 @@
-import threading
+from pathlib import Path
 
+from fastapi import Request
+from fastapi.responses import HTMLResponse
+
+from app.api.v1.ncm.conf_diff_main.conf_diff import ConfDiff
+from app.api.v1.ncm.ncm_pullers.ncm_puller import NCMPuller
 from app.api.v1.ncm.utils.ncm_utils import *
 from app.schema.ncm_schema import *
 
-# from app.ncm.ncm_pullers.ncm_puller import NCMPuller
-# from app.conf_diff_main.conf_diff import ConfDiff
-
 router = APIRouter(
-    prefix="/atom",
-    tags=["atom"],
+    prefix="/ncm-device",
+    tags=["ncm-device"],
 )
+
+
+@router.get("/ncm-backup-summery-dashboard", responses={
+    200: {"model": list[NcmAlarmSchema]},
+    500: {"model": str}
+})
+async def ncm_backup_summery_dashboard():
+    try:
+        results = NcmDeviceTable.query.all()
+
+        not_backup = 0
+        fail = 0
+        success = 0
+
+        for ncm in results:
+            if ncm.backup_status is None:
+                not_backup += 1
+            elif ncm.backup_status is False:
+                fail += 1
+            elif ncm.backup_status is True:
+                success += 1
+
+        objList = [
+            {"name": "Backup Successful", "value": success},
+            {"name": "Backup Failure", "value": fail},
+            {"name": "Not Backup", "value": not_backup},
+        ]
+
+        return JSONResponse(content=objList, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Data", status_code=500)
+
+
+@router.get("/get-vendors-in-ncm", responses={})
+async def ncm_vendor_count():
+    try:
+        queryString = (f"select atom_table.vendor, count(*) from ncm_device_table inner join "
+                       f"atom_table on ncm_device_table.atom_id = atom_table.atom_id  "
+                       f"group by vendor;")
+        result = configs.db.execute(queryString)
+        obj_list = []
+
+        for row in result:
+            obj_dict = {"name": row[0], "value": row[1]}
+
+            if row[0] is None:
+                obj_dict["name"] = "Other"
+
+            obj_list.append(obj_dict)
+
+        return JSONResponse(content=obj_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse("Server Error While Fetching Data", status_code=500)
 
 
 @router.post("/addNcmDevice", responses={
@@ -92,7 +149,7 @@ async def edit_ncm_device(ncm_obj: AddNcmRequestSchema):
         return JSONResponse(content="Server Error While Adding NCM Device", status_code=500)
 
 
-@router.get("/getAllNcmDevices", responses={
+@router.get("/get-all-ncm-devices", responses={
     200: {"model": list[GetAllNcmResponseSchema]},
     500: {"model": str}
 
@@ -128,7 +185,7 @@ async def get_all_ncm_devices():
         return JSONResponse(content="Server Error While Fetching NCM Devices", status_code=500)
 
 
-@router.get("/getAtomInNcm", responses={
+@router.get("/get-atom-in-ncm", responses={
     200: {"model": list[GetAtomInNcmResponseSchema]},
     500: {"model": str}
 
@@ -168,7 +225,7 @@ async def get_atom_in_ncm():
         return JSONResponse(content="Server Error While Fetching Atom In NCM", status_code=500)
 
 
-@router.post("/addNcmFromAtom", responses={
+@router.post("/add-ncm-from-atom", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -210,7 +267,7 @@ async def add_ncm_from_atom(atom_ids: list[int]):
         return JSONResponse(content="Server Error While Importing Atom In NCM", status_code=500)
 
 
-@router.post("/deleteNcmDevice", responses={
+@router.post("/delete-ncm-device", responses={
 
 })
 async def delete_ncm_device(ncm_ids: list[int]):
@@ -242,47 +299,40 @@ async def delete_ncm_device(ncm_ids: list[int]):
         return JSONResponse(content="Server Error While Deleting NCM Devices", status_code=500)
 
 
-# @app.route("/getAllConfigurations", methods=["POST"])
-# @token_required
-# def GetAllConfigurationDates(user_data):
-#     try:
-#         ncmObj = request.get_json()
-#
-#         if "ncm_device_id" not in ncmObj.keys():
-#             return "NCM Device ID Is Missing", 500
-#
-#         if ncmObj["ncm_device_id"] is None:
-#             return "NCM Device ID Is Empty", 500
-#
-#         results = NCM_History_Table.query.filter(
-#             NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"]
-#         ).all()
-#
-#         objList = []
-#         for history in results:
-#             objDict = {}
-#             objDict["ncm_history_id"] = history.ncm_history_id
-#             objDict["date"] = (history.configuration_date).strftime("%Y-%m-%d %H:%M:%S")
-#             objDict["file_name"] = history.file_name
-#
-#             objList.append(objDict)
-#
-#         return jsonify(objList), 200
-#     except Exception as e:
-#         print(str(e), file=sys.stderr)
-#         traceback.print_exc()
-#         return "Server Error While Fetching Backup History", 500
-#
-#
-# def CheckPath(file_path):
-#     from pathlib import Path
-#
-#     # create a Path object with the path to the file
-#     path = Path(file_path)
-#
-#     return path.is_file()
-#
-#
+@router.post("/get-all-configurations/{ncm_device_id}", responses={
+    200: {"model": list[NcmConfigHistorySchema]},
+    500: {"model": str}
+})
+async def get_all_configuration(ncm_device_id: int):
+    try:
+
+        results = NCM_History_Table.query.filter(
+            NCM_History_Table.ncm_device_id == ncm_device_id
+        ).all()
+
+        obj_list = []
+        for history in results:
+            obj_dict = {"ncm_history_id": history.ncm_history_id,
+                        "date": history.configuration_date,
+                        "file_name": history.file_name}
+
+            obj_list.append(obj_dict)
+
+        return JSONResponse(content=obj_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Backup History", status_code=500)
+
+
+def check_path(file_path):
+    from pathlib import Path
+
+    # create a Path object with the path to the file
+    path = Path(file_path)
+
+    return path.is_file()
+
+
 # @app.route("/getAllConfigurationDatesInString", methods=["POST"])
 # @token_required
 # def GetAllConfigurationDatesInString(user_data):
@@ -311,94 +361,89 @@ async def delete_ncm_device(ncm_ids: list[int]):
 #         return "Server Error While Fetching Configuration Dates", 500
 #
 #
-# @app.route("/getConfigurationFromDate", methods=["POST"])
-# @token_required
-# def GetConfigurationFromDate(user_data):
-#     try:
-#         ncmObj = request.get_json()
-#
-#         if "ncm_device_id" not in ncmObj.keys():
-#             return "NCM Device ID Is Missing", 500
-#
-#         if ncmObj["ncm_device_id"] is None:
-#             return "NCM Device ID Is Empty", 500
-#
-#         history = NCM_History_Table.query.filter(
-#             NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
-#             NCM_History_Table.configuration_date == ncmObj["date"],
-#         ).first()
-#
-#         if history is None:
-#             return "Backup File Not Found", 500
-#
-#         cwd = os.getcwd()
-#         file_path = cwd + "/app/configuration_backups/" + history.file_name
-#         pathFlag = CheckPath(file_path)
-#
-#         if pathFlag:
-#             f = open(file_path, "r")
-#             configuration = f.read()
-#             return configuration, 200
-#         else:
-#             DeleteDBData(history)
-#             return "Configuration Does Not Exist", 500
-#
-#     except Exception as e:
-#         traceback.print_exc()
-#         return "Server Error While Fetching Backup", 500
-#
-#
-# @app.route("/sendCommand", methods=["POST"])
-# @token_required
-# def SendCommand(user_data):
-#     try:
-#         ncmObj = request.get_json()
-#
-#         ncmPuller = NCMPuller()
-#         ncmPuller.setup_puller(ncmObj)
-#
-#         if ncmPuller.status == 500:
-#             return ncmPuller.response, 500
-#
-#         if "cmd" not in ncmObj.keys():
-#             return "Command Is Missing", 500
-#
-#         if ncmObj["cmd"] is None:
-#             return "Command Is Empty", 500
-#
-#         ncmObj["cmd"] = str(ncmObj["cmd"]).strip()
-#         if ncmObj["cmd"] == "":
-#             return "Command Is Empty", 500
-#
-#         ncmPuller.send_remote_command(ncmObj["cmd"])
-#
-#         return ncmPuller.response, ncmPuller.status
-#
-#     except Exception as e:
-#         print(str(e), file=sys.stderr)
-#         traceback.print_exc()
-#         return "Server Error While Sending Remote Command", 500
-#
-#
-# @app.route("/backupConfigurations", methods=["POST"])
-# def BackupConfigurations():
-#     try:
-#         ncmObj = request.get_json()
-#
-#         ncmPuller = NCMPuller()
-#         ncmPuller.setup_puller(ncmObj)
-#
-#         if ncmPuller.status == 500:
-#             return ncmPuller.response, 500
-#
-#         ncmPuller.backup_config()
-#
-#         return ncmPuller.response, ncmPuller.status
-#
-#     except Exception as e:
-#         print(str(e), file=sys.stderr)
-#         traceback.print_exc()
-#         return "Server Error In Configuration Backup", 500
+@router.post("/get-device-configuration/{ncm_history_id}", responses={
+    200: {"model": str},
+    400: {"model": str},
+    500: {"model": str}
+})
+async def get_device_configuration(ncm_history_id):
+    try:
+
+        history = NCM_History_Table.query.filter(
+            NCM_History_Table.ncm_history_id == ncm_history_id
+        ).first()
+
+        if history is None:
+            return JSONResponse(content="Backup Not Found", status_code=400)
+
+        cwd = os.getcwd()
+        file_path = cwd + "/app/configuration_backups/" + history.file_name
+        pathFlag = check_path(file_path)
+
+        if pathFlag:
+            f = open(file_path, "r")
+            configuration = f.read()
+            return JSONResponse(content=configuration, status_code=200)
+        else:
+            DeleteDBData(history)
+            return JSONResponse(content="Configuration File Does Not Exist", status_code=400)
+
+    except Exception:
+        traceback.print_exc()
+        return "Server Error While Fetching Backup", 500
+
+
+@router.post("/send-command", responses={
+    200: {"model": str},
+    400: {"model": str},
+    500: {"model": str}
+})
+async def send_command(ncm_obj: SendCommandRequestSchema):
+    try:
+
+        ncmPuller = NCMPuller()
+        ncmPuller.setup_puller(ncm_obj)
+
+        if ncmPuller.status != 200:
+            return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
+
+        ncm_obj["cmd"] = str(ncm_obj["cmd"]).strip()
+        if ncm_obj["cmd"] == "":
+            return JSONResponse(content="Command Is Empty", status_code=400)
+
+        ncmPuller.send_remote_command(ncm_obj["cmd"])
+
+        return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
+
+    except Exception as e:
+        print(str(e), file=sys.stderr)
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Sending Remote Command", status_code=500)
+
+
+@router.post("/get-configuration-backup", responses={
+    200: {"model": str},
+    400: {"model": str},
+    500: {"model": str}
+})
+async def get_configuration_backup(ncm_obj: NcmDeviceId):
+    try:
+
+        ncmPuller = NCMPuller()
+        ncmPuller.setup_puller(ncm_obj)
+
+        if ncmPuller.status != 200:
+            return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
+
+        ncmPuller.backup_config()
+
+        return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
+
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error In Configuration Backup", status_code=500)
+
+
 #
 #
 # @app.route("/restoreConfiguration", methods=["POST"])
@@ -456,59 +501,54 @@ async def delete_ncm_device(ncm_ids: list[int]):
 #         return jsonify({"message": "Authentication Failed"}), 401
 #
 #
-# @app.route("/configurationComparison", methods=["POST"])
-# @token_required
-# def ConfigurationComparison(user_data):
-#     try:
-#         ncmObj = request.get_json()
-#
-#         if "ncm_device_id" not in ncmObj.keys():
-#             return "NCM Device ID Is Missing", 500
-#
-#         if ncmObj["ncm_device_id"] is None:
-#             return "NCM Device ID Is Empty", 500
-#
-#         history1 = NCM_History_Table.query.filter(
-#             NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
-#             NCM_History_Table.configuration_date == ncmObj["date1"],
-#         ).first()
-#
-#         history2 = NCM_History_Table.query.filter(
-#             NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"],
-#             NCM_History_Table.configuration_date == ncmObj["date2"],
-#         ).first()
-#
-#         if history1 is None or history2 is None:
-#             return "One of the Configurations Not Found", 500
-#
-#         if history1.ncm_history_id == history2.ncm_history_id:
-#             return "One of the Configurations Not Found", 500
-#
-#         cwd = os.getcwd()
-#         existingPath = f"{cwd}/app/templates/html_diff_output.html"
-#         existingPath1 = os.path.exists(existingPath)
-#         if existingPath1:
-#             print("Existing File Removed", file=sys.stderr)
-#             os.remove(existingPath)
-#         else:
-#             pass
-#
-#         cwd = os.getcwd()
-#         path = f"{cwd}/app/configuration_backups/"
-#         path1 = f"/app/app/templates/html_diff_output.html"
-#         html_diff = ConfDiff(
-#             f"{path}{history1.file_name}", f"{path}{history2.file_name2}", path1
-#         )
-#         difference = html_diff.diff()
-#
-#         if difference == None:
-#             return "No Difference Found In Configurations", 500
-#
-#         return render_template("html_diff_output.html"), 200
-#     except Exception as e:
-#         print(str(e), file=sys.stderr)
-#         traceback.print_exc()
-#         return str(e), 500
+@router.post("/configuration-comparison", response_class=HTMLResponse, responses={
+    400: {"model": str},
+    500: {"model": str}
+})
+async def configuration_comparison(ncm_obj: NcmDeviceId, request: Request):
+    try:
+
+        history1 = configs.db.query(NCM_History_Table).filter(
+            NCM_History_Table.ncm_history_id == ncm_obj["ncm_history_id_1"],
+        ).first()
+
+        history2 = configs.db.query(NCM_History_Table).filter(
+            NCM_History_Table.ncm_history_id == ncm_obj["ncm_history_id_2"],
+        ).first()
+
+        if history1 is None or history2 is None:
+            return "One of the Configurations Not Found", 400
+
+        if history1.ncm_history_id == history2.ncm_history_id:
+            return "Can not compare same configurations", 400
+
+        cwd = os.getcwd()
+        existingPath = f"{cwd}/app/templates/html_diff_output.html"
+        existingPath1 = os.path.exists(existingPath)
+        if existingPath1:
+            print("Existing File Removed", file=sys.stderr)
+            os.remove(existingPath)
+        else:
+            pass
+
+        cwd = os.getcwd()
+
+        path = f"{cwd}/app/configuration_backups/"
+        file_1 = Path(f"{path}{history1.file_name}")
+        file_2 = Path(f"{path}{history2.file_name2}")
+        html_file = Path(f"{cwd}/app/templates/html_diff_output.html")
+
+        html_diff = ConfDiff(file_1, file_2, html_file)
+        difference = html_diff.diff()
+
+        if difference is None:
+            return JSONResponse(content="No Difference Found In Configurations", status_code=500)
+
+        return configs.templates.TemplateResponse("html_diff_output.html", context=request,
+                                                  status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Config Comparison", status_code=500)
 #
 #
 # # @app.route('/recentConfigrations',methods = ["GET"])

@@ -33,7 +33,7 @@ class AtomTable(Base):
     rack_id = Column(
         Integer,
         ForeignKey("rack_table.rack_id", ondelete="SET DEFAULT", onupdate="CASCADE"),
-        nullable=True,
+        nullable=False,
         default=1,
     )
     password_group_id = Column(
@@ -43,7 +43,7 @@ class AtomTable(Base):
             ondelete="SET DEFAULT",
             onupdate="CASCADE",
         ),
-        nullable=True,
+        nullable=False,
     )
 
     device_name = Column(String(50), nullable=False)

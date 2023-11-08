@@ -6,8 +6,8 @@ from app.schema.site_rack_schema import *
 from app.models.site_rack_models import *
 
 router = APIRouter(
-    prefix="/uam/rack",
-    tags=["uam", "rack"],
+    prefix="/rack",
+    tags=["rack"],
 )
 
 

@@ -1,12 +1,12 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
-from app.schema.uam_module_schema import *
 from app.api.v1.uam.utils.module_utils import *
+from app.schema.uam_module_schema import *
 
 router = APIRouter(
-    prefix="/uam/module",
-    tags=["uam", "module"],
+    prefix="/uam-module",
+    tags=["uam-module"],
 )
 
 
@@ -19,11 +19,14 @@ async def get_board_details_by_ip_address(ip_address: str):
     try:
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
         if atom is None:
-            return JSONResponse(content="no device found in atom with the given ip address", status_code=400)
+            return JSONResponse(content="no device found in atom with the given ip address",
+                                status_code=400)
 
-        uam = configs.db.query(UamDeviceTable).filter(UamDeviceTable.atom_id == atom.atom_id).first()
+        uam = configs.db.query(UamDeviceTable).filter(
+            UamDeviceTable.atom_id == atom.atom_id).first()
         if uam is None:
-            return JSONResponse(content="no device found in uam with the given ip address", status_code=400)
+            return JSONResponse(content="no device found in uam with the given ip address",
+                                status_code=400)
 
         results = configs.db.query(BoardTable).filter(BoardTable.uam_id == uam.uam_id).all()
 
@@ -64,11 +67,14 @@ async def get_subboard_details_by_ip_address(ip_address: str):
     try:
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
         if atom is None:
-            return JSONResponse(content="no device found in atom with the given ip address", status_code=400)
+            return JSONResponse(content="no device found in atom with the given ip address",
+                                status_code=400)
 
-        uam = configs.db.query(UamDeviceTable).filter(UamDeviceTable.atom_id == atom.atom_id).first()
+        uam = configs.db.query(UamDeviceTable).filter(
+            UamDeviceTable.atom_id == atom.atom_id).first()
         if uam is None:
-            return JSONResponse(content="no device found in uam with the given ip address", status_code=400)
+            return JSONResponse(content="no device found in uam with the given ip address",
+                                status_code=400)
 
         results = configs.db.query(SubboardTable).filter(SubboardTable.uam_id == uam.uam_id).all()
 

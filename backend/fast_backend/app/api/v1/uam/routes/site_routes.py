@@ -2,12 +2,12 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from app.api.v1.uam.utils.site_utils import *
-from app.schema.site_rack_schema import *
 from app.models.site_rack_models import *
+from app.schema.site_rack_schema import *
 
 router = APIRouter(
-    prefix="/uam/site",
-    tags=["uam", "site"],
+    prefix="/site",
+    tags=["site"],
 )
 
 
@@ -121,7 +121,8 @@ async def phy_leaflet():
         response = list()
 
         for site in result:
-            obj_dict = {"site_name": site["site_name"], "longitude": site["longitude"], "latitude": site["latitude"],
+            obj_dict = {"site_name": site["site_name"], "longitude": site["longitude"],
+                        "latitude": site["latitude"],
                         "city": site["city"]}
             response.append(obj_dict)
 
