@@ -14,10 +14,11 @@ export const lightTheme = createTheme({
       tertiary: "#E4F1E5", // left menu item background light green
       success: "#66B127", // success color parrot green
       info: "#F1B92A", //yellow
-      warning: "",
       danger: "#E34444", //danger color red
       disable: "#5A5A5A", // gray
       checkboxBorder: "#DBDBDB",
+      modalTitle: "#EBEBEB", // light blue
+      inputBorderColor: "#F5F5F5",
     },
 
     textColor: {
@@ -33,12 +34,14 @@ export const lightTheme = createTheme({
 
   typography: {
     fontFamily: "Arial, sans-serif",
+
     textSize: {
       small: "12px",
       medium: "14px",
       large: "16px",
       extraLarge: "",
     },
+
     fontWeight: {
       thin: 100,
       normal: 400,
@@ -61,10 +64,10 @@ export const darkTheme = createTheme({
       tertiary: "#C8EF9E", // left menu item background light green
       success: "#66B127", // success color parrot green
       info: "#F1B92A", //yellow
-      warning: "",
       danger: "#E34444", //danger color red
       disable: "#5A5A5A", // gray
       checkboxBorder: "#DBDBDB",
+      modalTitle: "#EBEBEB", // light blue
     },
 
     textColor: {

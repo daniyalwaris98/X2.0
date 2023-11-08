@@ -10,8 +10,20 @@ import { Icon } from "@iconify/react";
 import AccountMenu from "../../../components/moduleMenu";
 import Actions from "../../../components/actions";
 import TableRow from "../../../components/tables";
+import Modal from "./modal";
+
 const Index = () => {
   const theme = useTheme();
+
+  const [open, setOpen] = React.useState(false);
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const columns = [
     { id: "2", title: "Status" },
@@ -147,7 +159,8 @@ const Index = () => {
     );
   };
   return (
-    <>
+    <div>
+      <Modal handleClose={handleClose} open={open} setOpen={setOpen} />
       <ReusableCard
         sx={{
           backgroundColor: theme.palette.color.main,
@@ -178,14 +191,10 @@ const Index = () => {
                 display: "flex",
                 alignItems: "center",
                 gap: "10px",
-                // width: "150px",
                 padding: "7px 25px",
-
                 border: `1px solid ${theme.palette.color.checkboxBorder}`,
               }}
-              handleClick={() => {
-                console.log("clicked");
-              }}
+              handleClick={handleClickOpen}
             >
               <Icon
                 color={theme.palette.textColor.tableText}
@@ -238,7 +247,7 @@ const Index = () => {
           columns={columns}
         />
       </ReusableCard>
-    </>
+    </div>
   );
 };
 
