@@ -1,7 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
-import ModuleMenu from "../../components/navTabs";
+import ModuleMenu from "../../components/moduleMenu";
 
 function index(props) {
   return (

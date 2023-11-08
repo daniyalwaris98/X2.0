@@ -7,7 +7,7 @@ import DefaultTable from "../../../components/tables";
 import ReusableCard from "../../../components/cards";
 import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
-import AccountMenu from "../../../components/navTabs";
+import AccountMenu from "../../../components/moduleMenu";
 import Actions from "../../../components/actions";
 import TableRow from "../../../components/tables";
 const Index = () => {
