@@ -7,135 +7,11 @@ import DefaultTable from "../../../components/tables";
 import ReusableCard from "../../../components/cards";
 import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
-import AccountMenu from "../../../components/navTabs";
+import AccountMenu from "../../../components/moduleMenu";
 import Actions from "../../../components/actions";
 import TableRow from "../../../components/tables";
 const Index = () => {
   const theme = useTheme();
-
-  const data = [
-    {
-      id: 1,
-      checkBox: "checkbox",
-      status: "Online",
-      ipAddress: "192.168.1.1",
-      deviceName: "Device 1",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board A",
-    },
-    {
-      id: 1,
-      checkBox: "checkbox",
-      status: "Online",
-      ipAddress: "192.168.1.1",
-      deviceName: "Device 1",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board A",
-    },
-    {
-      id: 2,
-      checkBox: "checkbox",
-      status: "Offline",
-      ipAddress: "192.168.1.2",
-      deviceName: "Device 2",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board B",
-    },
-    {
-      id: 3,
-      checkBox: "checkbox",
-      status: "Offline",
-      ipAddress: "192.168.1.3",
-      deviceName: "Device 3",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board B",
-    },
-    {
-      id: 3,
-      checkBox: "checkbox",
-      status: "Offline",
-      ipAddress: "192.168.1.3",
-      deviceName: "Device 3",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board B",
-    },
-    {
-      id: 3,
-      checkBox: "checkbox",
-      status: "Offline",
-      ipAddress: "192.168.1.3",
-      deviceName: "Device 3",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board B",
-    },
-    {
-      id: 1,
-      checkBox: "checkbox",
-      status: "Online",
-      ipAddress: "192.168.1.1",
-      deviceName: "Device 1",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board A",
-    },
-    {
-      id: 1,
-      checkBox: "checkbox",
-      status: "Online",
-      ipAddress: "192.168.1.1",
-      deviceName: "Device 1",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board A",
-    },
-    {
-      id: 2,
-      checkBox: "checkbox",
-      status: "Offline",
-      ipAddress: "192.168.1.2",
-      deviceName: "Device 2",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board B",
-    },
-    {
-      id: 3,
-      checkBox: "checkbox",
-      status: "Offline",
-      ipAddress: "192.168.1.3",
-      deviceName: "Device 3",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board B",
-    },
-    {
-      id: 3,
-      checkBox: "checkbox",
-      status: "Offline",
-      ipAddress: "192.168.1.3",
-      deviceName: "Device 3",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board B",
-    },
-    {
-      id: 3,
-      checkBox: "checkbox",
-      status: "Offline",
-      ipAddress: "192.168.1.3",
-      deviceName: "Device 3",
-      deviceType: "cisco_ios",
-      onboardStatus: "true",
-      board: "Board B",
-    },
-    // Add more data here
-  ];
 
   const columns = [
     { id: "2", title: "Status" },
@@ -194,7 +70,61 @@ const Index = () => {
       board: "true",
     },
     {
-      id: 5,
+      id: 6,
+      status: "offline",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 7,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1s",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "false",
+    },
+    {
+      id: 8,
+      status: "offline",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 9,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1e",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "false",
+    },
+    {
+      id: 10,
+      status: "offline",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 11,
+      status: "online",
+      ip_address: "192.168.1.1",
+      device_name: "Edge_Ro-1",
+      device_type: "cisco_ios",
+      onboard_status: "true",
+      board: "true",
+    },
+    {
+      id: 12,
       status: "offline",
       ip_address: "192.168.1.1",
       device_name: "Edge_Ro-1",
@@ -222,6 +152,7 @@ const Index = () => {
         sx={{
           backgroundColor: theme.palette.color.main,
           margin: "0 auto",
+          padding: "10px",
         }}
       >
         <Typography
@@ -299,7 +230,6 @@ const Index = () => {
           </Typography>
         </Typography>
 
-        <Typography component="div"></Typography>
         <TableRow
           onDelete={onDelete}
           onEdit={onEdit}

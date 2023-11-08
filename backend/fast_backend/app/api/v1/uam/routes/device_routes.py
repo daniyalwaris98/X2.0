@@ -8,8 +8,8 @@ from app.utils.static_list import *
 from app.core.config import *
 
 router = APIRouter(
-    prefix="/uam/device",
-    tags=["uam", "device"],
+    prefix="/uam-device",
+    tags=["uam-device"],
 )
 
 

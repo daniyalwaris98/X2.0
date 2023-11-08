@@ -15,3 +15,15 @@ code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
+
+/* CSS for hover state */
+.menu-item:hover {
+  color: #3d9e47;
+  border-bottom: 2px solid #3d9e47 !important; /* Add your desired hover border style */
+}
+
+/* CSS for active (clicked) state */
+.menu-item.active {
+  color: #3d9e47;
+  border-bottom: 2px solid #3d9e47; /* Add your desired active border style */
+}

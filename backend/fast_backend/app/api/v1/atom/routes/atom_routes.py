@@ -1,5 +1,4 @@
-from app.api.v1.atom.atom_utils import *
-from app.schema.response_schema import CustomResponse
+from app.api.v1.atom.utils.atom_utils import *
 
 router = APIRouter(
     prefix="/atom",
@@ -7,9 +6,7 @@ router = APIRouter(
 )
 
 
-
-
-@router.post("/addAtomDevice", responses={
+@router.post("/add-atom-device", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -20,24 +17,15 @@ async def add_atom(atom: AddAtomRequestSchema):
 
         if status != 200:
             response, status = add_transition_atom(atom, False)
-            print("reponse in if statement is:::::::::",response,file=sys.stderr)
-        # custom_response = CustomResponse(data="",message="",status="")
-        # custom_response.data = []
-        # custom_response.message = response
-        # custom_response.status = 400
-        # return custom_response.as_tuple()
-        # return JSONResponse(custom_response.as_response())
-        print("reponse after if is::::::::::::::::::",response,file=sys.stderr)
-        return response
 
-        # return JSONResponse(content=response, status_code=status)
+        return JSONResponse(content=response, status_code=status)
 
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Atom Device", status_code=500)
 
 
-@router.post("/addAtomDevices", responses={
+@router.post("/add-atom-devices", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -95,7 +83,7 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
         return JSONResponse(content="Error Occurred While Adding Atom Devices", status_code=500)
 
 
-@router.post("/editAtom", responses={
+@router.post("/edit-atom", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -110,7 +98,7 @@ async def edit_atom(atom: EditAtomRequestSchema):
         return "Error Occurred While Updating Atom Device", 500
 
 
-@router.get("/getAtoms", responses={
+@router.get("/get-atoms", responses={
     200: {"model": list[GetAtomResponseSchema] | None},
     500: {"model": str}
 })
@@ -161,8 +149,8 @@ async def get_atoms():
                 else:
                     atom_data_dict["onboard_status"] = False
 
-                # atom_data_dict["message"] = "Complete"
-                # atom_data_dict["status"] = 200
+                atom_data_dict["message"] = "Complete"
+                atom_data_dict["status"] = 200
 
                 atom_obj_list.append(atom_data_dict)
 
@@ -174,21 +162,14 @@ async def get_atoms():
         if len(atom_obj_list) <= 0:
             atom_obj_list = None
 
-        # return JSONResponse(content=atom_obj_list, status_code=200)
-        # custom_response = CustomResponse(data="",message="",status="")
-        # custom_response.data = []
-        # custom_response.message = atom_obj_list
-        # custom_response.status = 200
-        # return custom_response.as_tuple(),200
-        # return JSONResponse(content={"data": atom_obj_list, "message": "All Data Retrieved Successfully","sttaus":200}),200
-        return JSONResponse ({"data":atom_obj_list,"messge":"All Data Retreived successfully","Status":200},status_code=200)
+        return JSONResponse(content=atom_obj_list, status_code=200)
+
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Atom Devices", status_code=500)
-        # return JSONResponse ({"data":atom_obj_list,"Status":500,"message":"Error Occurred While Fetching Atom Devices"})
 
 
-@router.post("/deleteAtom", responses={
+@router.post("/delete-atom", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })

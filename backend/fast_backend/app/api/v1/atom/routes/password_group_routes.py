@@ -1,12 +1,12 @@
-from app.api.v1.atom.atom_utils import *
+from app.api.v1.atom.utils.atom_utils import *
 
 router = APIRouter(
-    prefix="/atom",
-    tags=["atom"],
+    prefix="/password-group",
+    tags=["password-group"],
 )
 
 
-@router.post("/addPasswordGroup", responses={
+@router.post("/add-password-group", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -23,7 +23,7 @@ def add_password_group(pass_obj: AddPasswordGroupRequestSchema):
         return JSONResponse(content="Error Occurred While Adding Password Group", status_code=500)
 
 
-@router.post("/addPasswordGroups", responses={
+@router.post("/add-password-groups", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -54,7 +54,7 @@ def add_password_groups(pass_list: list[AddPasswordGroupRequestSchema]):
         return JSONResponse(content="Error Occurred While Adding Password Groups", status_code=500)
 
 
-@router.post("/editPasswordGroup", responses={
+@router.post("/edit-password-group", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -71,7 +71,7 @@ def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
         return JSONResponse(content="Error Occurred While Updating Password Group", status_code=500)
 
 
-@router.post("/deletePasswordGroup", responses={
+@router.post("/delete-password-group", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -111,7 +111,7 @@ def delete_password_groups(pass_list: list[DeletePasswordGroupRequestSchema]):
                             status_code=500)
 
 
-@router.get("/getPasswordGroups", responses={
+@router.get("/get-password-groups", responses={
     200: {"model": list[GetPasswordGroupResponseSchema]},
     500: {"model": str}
 })
@@ -129,7 +129,7 @@ async def get_password_groups():
                             status_code=500)
 
 
-@router.get("/getPasswordGroupDropdown", responses={
+@router.get("/get-password-group-dropdown", responses={
     200: {"model": list[str]},
     500: {"model": str}
 })

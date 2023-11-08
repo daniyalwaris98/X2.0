@@ -1,12 +1,4 @@
-import sys
-
-from app.api.v1.atom.atom_import import *
-from app.schema.response_schema import CustomResponse
-
-
-
-
-custom_response = CustomResponse(data="",message="",status="")
+from app.api.v1.atom.utils.atom_import import *
 
 
 def validate_site(device):
@@ -25,12 +17,7 @@ def validate_site(device):
                 SiteTable.site_name == device["site_name"]
             ).first()
             if site_exist is None:
-                # return f"{device['ip_address']} : Site Does Not Exists", 400
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : Site Does Not Exists"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                # return ({"messgae":f"{device['ip_address']} : Site Does Not Exists","status":400}),400
+                return f"{device['ip_address']} : Site Does Not Exists", 400
             else:
                 return site_exist, 200
 
@@ -52,16 +39,10 @@ def validate_rack(device, site):
             rack = configs.db.query(RackTable).filter(
                 RackTable.rack_name == device["rack_name"]).first()
             if rack is None:
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : Rack Does Not Exists"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                # return f"{device['ip_address']} : Rack Does Not Exists", 400
-                # return ({"message":f"{device['ip_address']} : Rack Does Not Exists","status":400})
+                return f"{device['ip_address']} : Rack Does Not Exists", 400
 
             elif rack.site_id != site.site_id:
                 return f"{device['ip_address']} : Rack And Site Does Not Match", 400
-                return {"message":f"{device['ip_address']} : Rack And Site Does Not Match","status":400}
 
             else:
                 return rack, 200
@@ -82,12 +63,7 @@ def validate_password_group(device):
                 PasswordGroupTable.password_group == device["password_group"]
             ).first()
             if password is None:
-                # return f"{device['ip_address']} : Password Group Does Not Exist", 400
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : Password Group Does Not Exist"
-                custom_response.status = 400
-                custom_response.as_tuple(),400
-                # return ({"message":f"{device['ip_address']} : Password Group Does Not Exist","status":400})
+                return f"{device['ip_address']} : Password Group Does Not Exist", 400
             else:
                 return password, 200
 
@@ -102,7 +78,6 @@ def validate_atom(device, update):
     try:
         if device["ip_address"].strip() == "":
             return f"Ip Address Can Not be Empty", 400
-            # return {"message":f"Ip Address Can Not b be Empty","status":400},400
 
         if not update:
             if (
@@ -110,13 +85,7 @@ def validate_atom(device, update):
                         AtomTable.ip_address == device["ip_address"]).first()
                     is not None
             ):
-                # return f"{device['ip_address']} : IP Address Is Already Assigned", 400
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : IP Address Is Already Assigned"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                # return ({"message":f"{device['ip_address']} : IP Address Is Already Assigned","status":400}),400
-                # return {"message":f"{device['ip_address']} : IP Address Is Already Assigned","status":400},400
+                return f"{device['ip_address']} : IP Address Is Already Assigned", 400
 
             if (
                     configs.db.query(AtomTransitionTable).filter(
@@ -124,80 +93,38 @@ def validate_atom(device, update):
                     ).first()
                     is not None
             ):
-                # return f"{device['ip_address']} : IP Address Is Already Assigned", 400
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : IP Address Is Already Assigned"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                # return ({"message":f"{device['ip_address']} : IP Address Is Already Assigned","status":400}),400
-
+                return f"{device['ip_address']} : IP Address Is Already Assigned", 400
 
         if device["device_name"] is None:
-            custom_response.data = []
-            custom_response.message = f"{device['ip_address']} : Device Name Can Not be Empty"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return f"{device['ip_address']} : Device Name Can Not be Empty", 400
-            # return ({"message":f"{device['ip_address']} : Device Name Can Not be Empty","status":400}),400
-        
+            return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
         device["device_name"] = device["device_name"].strip()
         if device["device_name"] == "":
-            custom_response.data = []
-            custom_response.message = f"{device['ip_address']} : Device Name Can Not be Empty"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return f"{device['ip_address']} : Device Name Can Not be Empty", 400
-            # return {"message":f"{device['ip_address']} : Device Name Can Not be Empty","status":400},400
+            return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
         atom = configs.db.query(AtomTable).filter(
             AtomTable.device_name == device["device_name"]).first()
         if atom is not None:
             if atom.ip_address != device["ip_address"].strip():
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : Device Name Already Assigned To An Other Device"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                # return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
-                # return ({"message":f"{device['ip_address']} : Device Name Already Assigned To An Other Device","status":400}),400
+                return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
 
         if device["function"] is None:
-            # return f"{device['ip_address']} : Function Can Not be Empty", 400
-            custom_response.data = []
-            custom_response.message = f"{device['ip_address']} : Function Can Not be Empty"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return {"message":f"{device['ip_address']} : Function Can Not be Empty","status":400},400
+            return f"{device['ip_address']} : Function Can Not be Empty", 400
 
         elif device["function"].strip() == "":
-            custom_response.data = []
-            custom_response.message = f"{device['ip_address']} : Function Can Not be Empty"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return f"{device['ip_address']} : Function Can Not be Empty", 400
-            # return {"message":f"{device['ip_address']} : Function Can Not be Empty","status":400},400
+            return f"{device['ip_address']} : Function Can Not be Empty", 400
 
         if device["device_type"] is None:
-            custom_response.data = []
-            custom_response.message = f"{device['ip_address']} : Device Type Can Not be Empty"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return f"{device['ip_address']} : Device Type Can Not be Empty", 400
-            # return {"message":f"{device['ip_address']} : Device Type Can Not be Empty","status":400},400
+            return f"{device['ip_address']} : Device Type Can Not be Empty", 400
 
         device["device_type"] = device["device_type"].strip()
         device["device_type"] = device["device_type"].lower()
 
         if device["device_type"] == "":
-            custom_response.data = []
-            custom_response.message = f"{device['ip_address']} : Device Type Can Not be Empty"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return {"message":f"{device['ip_address']} : Device Type Can Not be Empty","status":400},400
             return f"{device['ip_address']} : Device Type Can Not be Empty", 400
 
-        # if device["device_type"] not in device_type_list:
-        #     return f"{device['ip_address']} : Device Type Is Not Supported - {device['device_type']}", 400
+        if device["device_type"] not in device_type_list:
+            return f"{device['ip_address']} : Device Type Is Not Supported - {device['device_type']}", 400
 
         site_exist, site_status = validate_site(device)
         if site_status != 200:
@@ -211,7 +138,7 @@ def validate_atom(device, update):
         if password_status != 200:
             return password_exist, password_status
 
-        return {"rack": rack_exist, "password_group": password_exist,"status":200}, 200
+        return {"rack": rack_exist, "password_group": password_exist}, 200
 
     except Exception:
         error = f"Error : Exception Occurred"
@@ -301,34 +228,17 @@ def add_complete_atom(device, update):
             status = UpdateDBData(atom)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Updated Successfully"
-                custom_response.data = []
-                custom_response.message = msg
-                custom_response.status = status
-                # return custom_response.as_tuple(),status
-                # print(msg, file=sys.stderr)
+                print(msg, file=sys.stderr)
             else:
                 msg = f"{device['ip_address']} : Error While Updating Atom"
-                custom_response.data = []
-                custom_response.message = msg
-                custom_response.status = status
-                # return custom_response.as_tuple(),status
         else:
             status = InsertDBData(atom)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Inserted Successfully"
-                custom_response.data = []
-                custom_response.message = msg
-                custom_response.status = status
-                print("custom reponse is::::::::::::",custom_response.as_tuple,file=sys.stderr)
-                # return custom_response.as_tuple(),status
-                # print(msg, file=sys.stderr)
+                print(msg, file=sys.stderr)
             else:
                 msg = f"{device['ip_address']} : Error While Inserting Atom"
                 print(msg, file=sys.stderr)
-                # custom_response.data = []
-                # custom_response.message = msg
-                # custom_response.status = status
-                # return custom_response.as_tuple(),status
 
         if status == 200:
             try:
@@ -341,21 +251,14 @@ def add_complete_atom(device, update):
 
             except Exception:
                 traceback.print_exc()
-        custom_response.data = []
-        custom_response.message = msg
-        custom_response.status = status
-        return custom_response.as_tuple(),status
-        # return ({"message":msg,"status":status}),status
+
+        return msg, status
 
     except Exception:
         error = f"Error : Exception Occurred"
         print(error, file=sys.stderr)
         traceback.print_exc()
-        custom_response.data = []
-        custom_response.message = error
-        custom_response.status = 500
-        return custom_response.as_tuple(),500
-        # return error, 500
+        return error, 500
 
 
 def add_transition_atom(device, update):
@@ -364,12 +267,7 @@ def add_transition_atom(device, update):
         device["ip_address"] = device["ip_address"].strip()
 
         if device["ip_address"] == "":
-            custom_response.data = []
-            custom_response.message = f"IP Address Can Not Be Empty"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return f"IP Address Can Not Be Empty", 400
-            # return {"message"}
+            return f"IP Address Can Not Be Empty", 400
 
         if not update:
             if (
@@ -377,11 +275,7 @@ def add_transition_atom(device, update):
                         AtomTable.ip_address == device["ip_address"]).first()
                     is not None
             ):
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : IP Address Is Already Assigned"
-                custom_response.status = 400
-                return custom_response.as_tuple()
-                # return ({"message":f"{device['ip_address']} : IP Address Is Already Assigned","data":[],"status":400}),400
+                return f"{device['ip_address']} : IP Address Is Already Assigned", 400
 
             if (
                     configs.db.query(AtomTransitionTable).filter(
@@ -389,11 +283,7 @@ def add_transition_atom(device, update):
                     ).first()
                     is not None
             ):
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : IP Address Is Already Assigned"
-                custom_response.status = 400
-                return custom_response.as_tuple()
-                # return ({"message":f"{device['ip_address']} : IP Address Is Already Assigned","data":[],"status":400}),400
+                return f"{device['ip_address']} : IP Address Is Already Assigned", 400
 
         # msg, status = ValidateAtom(device, row, update)
 
@@ -415,37 +305,21 @@ def add_transition_atom(device, update):
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Updated Successfully"
                 print(msg, file=sys.stderr)
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : Atom Updated Successfully"
-                custom_response.status = 200
-                return custom_response.as_tuple(),200
-                # return msg, 200
+                return msg, 200
             else:
                 msg = f"{device['ip_address']} : Error While Updating Atom"
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : Error While Updating Atom"
-                custom_response.status = 500
-                return custom_response.as_tuple(),500
-                # print(msg, file=sys.stderr)
-                # return msg, 500
+                print(msg, file=sys.stderr)
+                return msg, 500
         else:
             status = InsertDBData(trans_obj)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Inserted Successfully"
-                custom_response.data = []
-                custom_response.message = msg
-                custom_response.status = 200
-                return custom_response.as_tuple(),200
-                # print(msg, file=sys.stderr)
-                # return msg, 200
+                print(msg, file=sys.stderr)
+                return msg, 200
             else:
                 msg = f"{device['ip_address']} : Error While Inserting Atom"
-                custom_response.data = []
-                custom_response.message = msg
-                custom_response.status = 500
-                return custom_response.as_tuple(),500
-                # print(msg, file=sys.stderr)
-                # return msg, 500
+                print(msg, file=sys.stderr)
+                return msg, 500
 
     except Exception:
         error = f"Error : Exception Occurred"
@@ -514,11 +388,7 @@ def edit_atom_util(device):
         trans_atom = None
 
         if "atom_id" not in device and "atom_transition_id" not in device:
-            custom_response.data = []
-            custom_response.message = "Atom ID Or Atom Transition ID is Missing"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return "Atom ID Or Atom Transition ID is Missing", 400
+            return "Atom ID Or Atom Transition ID is Missing", 400
 
         if "atom_id" in device:
             if device["atom_id"] is not None:
@@ -532,11 +402,7 @@ def edit_atom_util(device):
 
         device["ip_address"] = device["ip_address"].strip()
         if device["ip_address"] == "":
-            custom_response.data = []
-            custom_response.message = f"Ip Address Can Not be Empty"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return f"Ip Address Can Not be Empty", 400
+            return f"Ip Address Can Not be Empty", 400
 
         if atom is not None:
             atom, status = edit_complete_atom(device, atom)
@@ -551,20 +417,11 @@ def edit_atom_util(device):
                     AtomTransitionTable.ip_address == device["ip_address"],
                     AtomTransitionTable.atom_transition_id != device["atom_transition_id"]
             ).first() is not None:
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                # return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
+                return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
 
             if configs.db.query(AtomTable).filter(
                     AtomTable.ip_address == device["ip_address"]).first() is not None:
-                custom_response.data = []
-                custom_response.message = f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                
-                # return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
+                return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
 
             trans_atom.ip_address = device['ip_address']
             trans_atom = fill_transition_data(device, trans_atom)
@@ -576,16 +433,8 @@ def edit_atom_util(device):
 
         if status == 200:
             msg = f"{device['ip_address']} : Atom Updated Successfully"
-            custom_response.data = []
-            custom_response.message = msg
-            custom_response.status = 200
-            return custom_response.as_tuple(),200
         else:
             msg = f"{device['ip_address']} : Error While Updating Atom"
-            custom_response.data = []
-            custom_response.message = msg
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
 
         return msg, status
 
@@ -600,80 +449,41 @@ def edit_complete_atom(device, atom):
     if configs.db.query(AtomTable).filter(
             AtomTable.ip_address == device["ip_address"], AtomTable.atom_id != device[
                 "atom_id"]).first() is not None:
-        custom_response.data = []
-        custom_response.message = f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
+        return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
 
     if configs.db.query(AtomTransitionTable).filter(
             AtomTransitionTable.ip_address == device["ip_address"]).first() is not None:
-        custom_response.data = []
-        custom_response.message = f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
+        return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
 
     # Device Name Check
     if device["device_name"] is None:
-        custom_response.data = []
-        custom_response.message = f"{device['ip_address']} : Device Name Can Not be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : Device Name Can Not be Empty", 400
+        return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
     device["device_name"] = device["device_name"].strip()
     if device["device_name"] == "":
-        custom_response.data = []
-        custom_response.message = f"{device['ip_address']} : Device Name Can Not be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : Device Name Can Not be Empty", 400
+        return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
     if configs.db.query(AtomTable).filter(
             AtomTable.device_name == device["device_name"], AtomTable.atom_id != device[
                 "atom_id"]).first() is not None:
-        custom_response.data = []
-        custom_response.message = f"{device['ip_address']} : Device Name Already Assigned To An Other Device"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
+        return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
 
     if device["function"] is None:
-        custom_response.data = []
-        custom_response.message = f"{device['ip_address']} : Function Can Not be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : Function Can Not be Empty", 400
+        return f"{device['ip_address']} : Function Can Not be Empty", 400
 
     elif device["function"].strip() == "":
-        custom_response.data = []
-        custom_response.message = f"{device['ip_address']} : Function Can Not be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : Function Can Not be Empty", 400
+        return f"{device['ip_address']} : Function Can Not be Empty", 400
 
     if device["device_type"] is None:
-        custom_response.data = []
-        custom_response.message =f"{device['ip_address']} : Device Type Can Not be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : Device Type Can Not be Empty", 400
+        return f"{device['ip_address']} : Device Type Can Not be Empty", 400
 
     device["device_type"] = device["device_type"].strip()
     device["device_type"] = device["device_type"].lower()
 
     if device["device_type"] == "":
-        custom_response.data = []
-        custom_response.message =f"{device['ip_address']} : Device Type Can Not be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : Device Type Can Not be Empty", 400
+        return f"{device['ip_address']} : Device Type Can Not be Empty", 400
 
     if device["device_type"] not in device_type_list:
-        custom_response.data = []
-        custom_response.message =f"{device['ip_address']} : Device Type Is Not Supported - {device['device_type']}"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
         return f"{device['ip_address']} : Device Type Is Not Supported - {device['device_type']}", 400
 
     site_exist, site_status = validate_site(device)
@@ -769,13 +579,7 @@ def validate_password_group_name(pass_obj):
     pass_obj["password_group"] = pass_obj["password_group"].strip()
 
     if pass_obj["password_group"] == "":
-        custom_response.data = []
-        custom_response.message =f"Password Group Can Not be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{device['ip_address']} : Device Type Is Not Supported - {device['device_type']}", 400
-
-        # return f"Password Group Can Not be Empty", 400
+        return f"Password Group Can Not be Empty", 400
 
     if pass_obj["password_group"] == "default_password":
         return f"{pass_obj['password_group']} : Password Group Name (default_password) Is Not Allowed", 400
@@ -786,23 +590,15 @@ def validate_password_group_name(pass_obj):
 def validate_password_group_credentials(pass_obj, password_exist):
     pass_obj["username"] = pass_obj["username"].strip()
     if pass_obj["username"] == "":
-        custom_response.data = []
-        custom_response.message =f"{pass_obj['password_group']} : Username Field Can Not Be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return (
-        #     f"{pass_obj['password_group']} : Username Field Can Not Be Empty",
-        #     400,
-        # )
+        return (
+            f"{pass_obj['password_group']} : Username Field Can Not Be Empty",
+            400,
+        )
     password_exist.username = pass_obj["username"]
 
     pass_obj["password"] = pass_obj["password"].strip()
     if pass_obj["password"] == "":
-        custom_response.data = []
-        custom_response.message =f"{pass_obj['password_group']} : Password Field Can Not be Empty"
-        custom_response.status = 400
-        return custom_response.as_tuple(),400
-        # return f"{pass_obj['password_group']} : Password Field Can Not be Empty", 400
+        return f"{pass_obj['password_group']} : Password Field Can Not be Empty", 400
 
     password_exist.password = pass_obj["password"]
 
@@ -810,26 +606,18 @@ def validate_password_group_credentials(pass_obj, password_exist):
         password_exist.password_group_type = "Telnet"
 
         if pass_obj["secret_password"] is None:
-            custom_response.data = []
-            custom_response.message =f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return (
-            #     f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
-            #     400,
-            # )
+            return (
+                f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
+                400,
+            )
 
         pass_obj["secret_password"] = pass_obj["secret_password"].strip()
 
         if pass_obj["secret_password"].strip() == "":
-            custom_response.data = []
-            custom_response.message =f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return (
-            #     f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
-            #     400,
-            # )
+            return (
+                f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
+                400,
+            )
 
         password_exist.secret_password = pass_obj["secret_password"]
     else:
@@ -852,14 +640,10 @@ def add_password_group_util(pass_obj, update):
         exist = False
         if password_group is not None:
             if not update:
-                custom_response.data = []
-                custom_response.message =f"{pass_obj['password_group']} : Password Group Already Exists"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                #     return (
-                #     f"{pass_obj['password_group']} : Password Group Already Exists",
-                #     400,
-                # )
+                return (
+                    f"{pass_obj['password_group']} : Password Group Already Exists",
+                    400,
+                )
             else:
                 exist = True
 
@@ -876,25 +660,17 @@ def add_password_group_util(pass_obj, update):
         if update:
             status = UpdateDBData(password_group)
             if status == 200:
-                custom_response.data = []
-                custom_response.message = f"{pass_obj['password_group']} : Password Group Updated Successfully"
-                custom_response.status = 200
-                return custom_response.as_tuple(),200
-                # return (
-                #     f"{pass_obj['password_group']} : Password Group Updated Successfully",
-                #     200,
-                # )
+                return (
+                    f"{pass_obj['password_group']} : Password Group Updated Successfully",
+                    200,
+                )
         else:
             status = InsertDBData(password_group)
             if status == 200:
-                custom_response.data = []
-                custom_response.message =  f"{pass_obj['password_group']} : Password Group Inserted Successfully"
-                custom_response.status = 200
-                return custom_response.as_tuple(),200
-                # return (
-                #     f"{pass_obj['password_group']} : Password Group Inserted Successfully",
-                #     200,
-                # )
+                return (
+                    f"{pass_obj['password_group']} : Password Group Inserted Successfully",
+                    200,
+                )
 
         return f"{pass_obj['password_group']} : Server Error", 500
 
@@ -910,18 +686,10 @@ def edit_password_group_util(pass_obj):
             PasswordGroupTable.password_group_id == pass_obj["password_group_id"]).first()
 
         if password_exist is None:
-            custom_response.data = []
-            custom_response.message =  f"Password Group Does Not Found"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return f"Password Group Does Not Found", 400
+            return f"Password Group Does Not Found", 400
 
         if password_exist.password_group == "default_password":
-            custom_response.data = []
-            custom_response.message =  f"Password Group (default_password) Is Not Editable"
-            custom_response.status = 400
-            return custom_response.as_tuple(),400
-            # return f"Password Group (default_password) Is Not Editable", 400
+            return f"Password Group (default_password) Is Not Editable", 400
 
         name_response, status = validate_password_group_name(pass_obj)
 
@@ -933,14 +701,10 @@ def edit_password_group_util(pass_obj):
 
         if password_group is not None:
             if password_exist.password_group_id != password_group.password_group_id:
-                custom_response.data = []
-                custom_response.message =  f"{pass_obj['password_group']} : Password Group Name Is Already Assigned"
-                custom_response.status = 400
-                return custom_response.as_tuple(),400
-                # return (
-                #     f"{pass_obj['password_group']} : Password Group Name Is Already Assigned",
-                #     400,
-                # )
+                return (
+                    f"{pass_obj['password_group']} : Password Group Name Is Already Assigned",
+                    400,
+                )
 
         password_exist.password_group = name_response
 
@@ -952,21 +716,12 @@ def edit_password_group_util(pass_obj):
 
         status = UpdateDBData(password_exist)
         if status == 200:
-            custom_response.data = []
-            custom_response.message = f"{pass_obj['password_group']} : Password Group Updated Successfully"
-            custom_response.status = 200
-            return custom_response.as_tuple(),200
-            # return (
-            #     f"{pass_obj['password_group']} : Password Group Updated Successfully",
-            #     200,
-            # )
+            return (
+                f"{pass_obj['password_group']} : Password Group Updated Successfully",
+                200,
+            )
 
-        custom_response.data = []
-        custom_response.message = f"{pass_obj['password_group']} : Server Error"
-        custom_response.status = 500
-        return custom_response.as_tuple(),500
-
-        # return f"{pass_obj['password_group']} : Server Error", 500
+        return f"{pass_obj['password_group']} : Server Error", 500
 
     except Exception:
         traceback.print_exc()

@@ -7,6 +7,8 @@ import os
 from typing import List
 
 from dotenv import load_dotenv
+from starlette.templating import Jinja2Templates
+
 # from pydantic import BaseSettings
 
 
@@ -56,8 +58,8 @@ class Configs:
 
     # DATABASE_URI_FORMAT: str = "{db_engine}://{user}:{password}@{host}:{port}/{database}"
 
-    DATABASE_URL = "mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB"
-    # DATABASE_URL = "mysql+pymysql://root:As123456?@localhost:3306/AtomDB"
+    # DATABASE_URL = "mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB"
+    DATABASE_URL = "mysql+pymysql://root:As123456?@localhost:3306/AtomDB"
 
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
@@ -73,6 +75,8 @@ class Configs:
     IN_BUCKET: str = "monitoring"
     IN_URL: str = "http://localhost:8086"
     client: str = InfluxDBClient(url=IN_URL, token=IN_TOKEN)
+
+    templates = Jinja2Templates(directory="templates")
 
     class Config:
         case_sensitive = True
