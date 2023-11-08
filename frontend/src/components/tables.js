@@ -170,6 +170,7 @@ import SearchIcon from "@mui/icons-material/Search";
 import Popover from "@mui/material/Popover";
 import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
+import Pagination from "./pagination";
 
 function TableRows({
   clients,
@@ -184,6 +185,8 @@ function TableRows({
   const [filterAnchorEl, setFilterAnchorEl] = useState(null);
   const [filterColumnName, setFilterColumnName] = useState("");
   const [filterColumnValue, setFilterColumnValue] = useState("");
+  const [page, setPage] = useState(1); // Current page
+  const pageSize = 10; // Number of rows per page
 
   const handleFilterOpen = (column) => (event) => {
     setFilterAnchorEl(event.currentTarget);
@@ -198,9 +201,13 @@ function TableRows({
     handleFilterClose();
   };
 
+  const startIndex = (page - 1) * pageSize;
+  const endIndex = startIndex + pageSize;
+  const filteredClients = clients.slice(startIndex, endIndex);
+
   return (
     <Grid item xs={9}>
-      <TableContainer>
+      <TableContainer sx={{ overflowX: "auto" }}>
         <Table>
           <TableHead>
             <TableRow
@@ -266,7 +273,7 @@ function TableRows({
             </TableRow>
           </TableHead>
           <TableBody>
-            {clients.map((client, index) => (
+            {filteredClients.map((client, index) => (
               <TableRow
                 key={client.id}
                 sx={{
@@ -410,27 +417,13 @@ function TableRows({
                   }}
                 >
                   <IconButton onClick={() => onEdit(client)}>
-                    <EditIcon
-                      sx={{
-                        fontSize: "18px",
-                        color: theme.palette.textColor.tableText,
-                      }}
-                    />
+                    <EditIcon sx={{ fontSize: "18px" }} />
                   </IconButton>
                   <IconButton>
-                    <Icon
-                      color={theme.palette.textColor.tableText}
-                      fontSize="18px"
-                      icon="tdesign:dart-board"
-                    />
+                    <Icon fontSize="18px" icon="tdesign:dart-board" />
                   </IconButton>
                   <IconButton onClick={() => onDelete(client)}>
-                    <DeleteIcon
-                      sx={{
-                        fontSize: "18px",
-                        color: theme.palette.textColor.tableText,
-                      }}
-                    />
+                    <DeleteIcon sx={{ fontSize: "18px" }} />
                   </IconButton>
                 </TableCell>
               </TableRow>
@@ -438,6 +431,13 @@ function TableRows({
           </TableBody>
         </Table>
       </TableContainer>
+
+      <Pagination
+        page={page}
+        totalPageCount={Math.ceil(clients.length / pageSize)}
+        onPageChange={(newPage) => setPage(newPage)}
+      />
+
       <Popover
         open={Boolean(filterAnchorEl)}
         anchorEl={filterAnchorEl}

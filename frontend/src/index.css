@@ -18,10 +18,12 @@ code {
 
 /* CSS for hover state */
 .menu-item:hover {
-  border-bottom: 2px solid #007bff !important; /* Add your desired hover border style */
+  color: #3d9e47;
+  border-bottom: 2px solid #3d9e47 !important; /* Add your desired hover border style */
 }
 
 /* CSS for active (clicked) state */
 .menu-item.active {
-  border-bottom: 2px solid #007bff; /* Add your desired active border style */
+  color: #3d9e47;
+  border-bottom: 2px solid #3d9e47; /* Add your desired active border style */
 }

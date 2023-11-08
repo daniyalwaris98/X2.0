@@ -6,7 +6,7 @@ import ModuleMenu from "../../components/moduleMenu";
 function index(props) {
   return (
     <>
-      <Card sx={{ marginBottom: "10px" }}>
+      <Card sx={{ marginBottom: "10px", height: "40px" }}>
         <ModuleMenu
           style={{
             display: "flex",
@@ -15,6 +15,7 @@ function index(props) {
             listStyle: "none",
             textDecoration: "none !important",
             margin: "0px",
+            height: "40px",
           }}
           items={["Atom", "Password Group"]}
         />
