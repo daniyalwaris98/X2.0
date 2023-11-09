@@ -131,7 +131,7 @@ def validate_atom(device, update):
 
         device["vendor"] = str(device["vendor"]).strip().capitalize()
         if device["vendor"] not in vendor_list:
-            return f"{device['ip_address']} : Unknown Vendor", 400
+            return f"{device['ip_address']} : Unknown Vendor - {device['vendor']}", 400
 
         site_exist, site_status = validate_site(device)
         if site_status != 200:
