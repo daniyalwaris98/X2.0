@@ -19,6 +19,7 @@ const Index = () => {
     setOpen(false);
   };
 
+  console.log(open, "check open");
   const columns = [
     { id: "2", title: "Status" },
     { id: "3", title: "IP Address" },

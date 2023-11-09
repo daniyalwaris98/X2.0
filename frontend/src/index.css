@@ -16,14 +16,18 @@ code {
     monospace;
 }
 
-/* CSS for hover state */
-.menu-item:hover {
-  color: #3d9e47;
-  border-bottom: 2px solid #3d9e47 !important; /* Add your desired hover border style */
+.clickedMenuItem {
+  /* background-color: #3d9e47 !important; */
+  color: #3d9e47 !important;
+  height: 50px !important;
+  border-bottom: 3px solid #3d9e47 !important;
 }
-
-/* CSS for active (clicked) state */
-.menu-item.active {
-  color: #3d9e47;
-  border-bottom: 2px solid #3d9e47; /* Add your desired active border style */
+.menu_item:hover {
+  color: #3d9e47 !important;
+  border-bottom: 3px solid #3d9e47 !important;
+  background-color: transparent !important;
+}
+.menu_item {
+  height: 50px !important;
+  border-bottom: 3px solid white !important;
 }
