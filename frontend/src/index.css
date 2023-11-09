@@ -17,9 +17,10 @@ code {
 }
 
 .clickedMenuItem {
-  background-color: #3d9e47 !important;
-  color: white !important;
+  /* background-color: #3d9e47 !important; */
+  color: #3d9e47 !important;
   height: 50px !important;
+  border-bottom: 3px solid #3d9e47 !important;
 }
 .menu_item:hover {
   color: #3d9e47 !important;
@@ -28,5 +29,5 @@ code {
 }
 .menu_item {
   height: 50px !important;
-  border: 3px solid white !important;
+  border-bottom: 3px solid white !important;
 }

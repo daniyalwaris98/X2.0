@@ -18,7 +18,7 @@ const HorizontalMenu = ({ menuItems }) => {
   const renderMenuItems = (
     items,
     parentId = null,
-    position = { top: 120, left: 0 }
+    position = { top: 125, left: 0 }
   ) => {
     return items.map((item) => {
       const id = parentId ? `${parentId}-${item.id}` : item.id;
@@ -44,10 +44,10 @@ const HorizontalMenu = ({ menuItems }) => {
                 left:
                   position.left +
                     document.getElementById(id)?.offsetWidth +
-                    75 || 0,
+                    10 || 0,
               }} // Position the nested menu to the right side of the parent menu item
             >
-              {renderMenuItems(item.children, id, { top: 200, left: 100 })}
+              {renderMenuItems(item.children, id, { top: 215, left: 160 })}
             </Menu>
           </div>
         );
@@ -60,8 +60,6 @@ const HorizontalMenu = ({ menuItems }) => {
             to={item.path}
             onClick={() => handleMenuClick(null, parentId)}
           >
-            <Icon icon="carbon:password" />
-
             {item.name}
           </MenuItem>
         );
