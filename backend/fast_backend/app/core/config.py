@@ -58,8 +58,8 @@ class Configs:
 
     # DATABASE_URI_FORMAT: str = "{db_engine}://{user}:{password}@{host}:{port}/{database}"
 
-    # DATABASE_URL = "mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB"
-    DATABASE_URL = "mysql+pymysql://root:As123456?@localhost:3306/AtomDB"
+    DATABASE_URL = "mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB"
+    # DATABASE_URL = "mysql+pymysql://root:As123456?@localhost:3306/AtomDB"
 
     engine = create_engine(DATABASE_URL)
     SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)

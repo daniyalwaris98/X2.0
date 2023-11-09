@@ -126,6 +126,13 @@ def validate_atom(device, update):
         if device["device_type"] not in device_type_list:
             return f"{device['ip_address']} : Device Type Is Not Supported - {device['device_type']}", 400
 
+        if device["vendor"] is None:
+            return f"{device['ip_address']} : Vendor Can Not be Empty", 400
+
+        device["vendor"] = str(device["vendor"]).strip().capitalize()
+        if device["vendor"] not in vendor_list:
+            return f"{device['ip_address']} : Unknown Vendor - {device['vendor']}", 400
+
         site_exist, site_status = validate_site(device)
         if site_status != 200:
             return site_exist, site_status
@@ -178,7 +185,7 @@ def add_complete_atom(device, update):
             atom.password_group_id = password.password_group_id
 
         atom.function = device["function"].strip()
-
+        atom.vendor = str(device["vendor"]).capitalize()
         atom.device_ru = device["device_ru"]
 
         if device["department"] is None:
@@ -215,12 +222,6 @@ def add_complete_atom(device, update):
             atom.virtual = device["virtual"].strip()
         else:
             atom.virtual = "N/A"
-
-        if "vendor" in device.keys():
-            if device["vendor"] is not None:
-                device["vendor"] = str(device["vendor"]).strip()
-                if device["vendor"] != "" and device["vendor"] != "Unknown":
-                    atom.vendor = device["vendor"]
 
         msg = ""
         status = 500
