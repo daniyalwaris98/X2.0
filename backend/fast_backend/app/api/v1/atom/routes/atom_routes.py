@@ -133,6 +133,7 @@ async def get_atoms():
                     "rack_name": rackObj.rack_name,
                     "device_name": atomObj.device_name,
                     "ip_address": atomObj.ip_address,
+                    "vendor": atomObj.vendor,
                     "device_ru": atomObj.device_ru,
                     "department": atomObj.department,
                     "section": atomObj.section,
