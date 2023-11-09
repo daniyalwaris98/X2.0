@@ -1,11 +1,13 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 
-const Input = ({ sx, children, ...rest }) => {
+const DefaultInput = ({ field, type = "text", sx, children, ...rest }) => {
   const theme = useTheme();
 
   return (
     <input
+      {...field}
+      type={type}
       style={{
         borderStyle: "solid",
         borderColor: theme.palette.color.inputBorderColor,
@@ -20,4 +22,4 @@ const Input = ({ sx, children, ...rest }) => {
   );
 };
 
-export default Input;
+export default DefaultInput;

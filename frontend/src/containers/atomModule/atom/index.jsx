@@ -1,20 +1,14 @@
 import React, { useState } from "react";
-
 import { useTheme } from "@mui/material/styles";
 import DefaultButton from "../../../components/buttons";
-import DefaultTable from "../../../components/tables";
-// import { ReusableCard } from "../../../components/cards";
 import ReusableCard from "../../../components/cards";
 import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
-import AccountMenu from "../../../components/moduleMenu";
-import Actions from "../../../components/actions";
 import TableRow from "../../../components/tables";
 import Modal from "./modal";
 
 const Index = () => {
   const theme = useTheme();
-
   const [open, setOpen] = React.useState(false);
 
   const handleClickOpen = () => {
@@ -158,9 +152,10 @@ const Index = () => {
       })
     );
   };
+
   return (
     <div>
-      <Modal handleClose={handleClose} open={open} setOpen={setOpen} />
+      <Modal handleClose={handleClose} open={open} />
       <ReusableCard
         sx={{
           backgroundColor: theme.palette.color.main,

@@ -1,11 +1,12 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 
-const DefaultSelect = ({ sx, children, ...rest }) => {
+const DefaultSelect = ({ field, sx, children, ...rest }) => {
   const theme = useTheme();
 
   return (
     <select
+      {...field}
       style={{
         borderStyle: "solid",
         borderColor: theme.palette.color.inputBorderColor,

@@ -2,7 +2,7 @@ import { ChildCare } from "@mui/icons-material";
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 
-const Index = ({ required, sx, children, ...rest }) => {
+const DefaultLabel = ({ required, sx, children, ...rest }) => {
   const theme = useTheme();
 
   return (
@@ -18,4 +18,4 @@ const Index = ({ required, sx, children, ...rest }) => {
   );
 };
 
-export default Index;
+export default DefaultLabel;

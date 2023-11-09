@@ -13,34 +13,19 @@ const StyledPaper = styled(Paper)`
   }
 `;
 
-const Index = ({
-  title,
-  submitText,
-  open,
-  setOpen,
-  handleClose,
-  sx,
-  children,
-  ...rest
-}) => {
+const Index = ({ title, open, sx, children, ...rest }) => {
   const theme = useTheme();
 
   return (
-    <Dialog
-      open={open}
-      onClose={handleClose}
-      sx={{ ...sx }}
-      PaperComponent={StyledPaper}
-      {...rest}
-    >
+    <Dialog open={open} sx={{ ...sx }} PaperComponent={StyledPaper} {...rest}>
       <DialogTitle sx={{ backgroundColor: theme.palette.color.modalTitle }}>
         {title}
       </DialogTitle>
       <DialogContent>{children}</DialogContent>
-      <DialogActions>
+      {/* <DialogActions>
         <Button onClick={handleClose}>Cancel</Button>
         <Button onClick={handleClose}>{submitText}</Button>
-      </DialogActions>
+      </DialogActions> */}
     </Dialog>
   );
 };
