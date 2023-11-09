@@ -33,6 +33,18 @@ vendor_list = [
     "Paloalto",
 ]
 
+function_list = [
+    "Router",
+    "Switch",
+    "Wireless",
+    "Firewall",
+    "Load Balancer",
+    "Controller",
+    "VM",
+    "EXSI",
+    "Other"
+]
+
 device_type_list = [
     "a10",
     "arbor",
