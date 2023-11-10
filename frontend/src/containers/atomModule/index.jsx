@@ -12,7 +12,7 @@ const menuItems = [
       {
         id: "web-development",
         name: "Web Development",
-        path: "/web-development",
+        path: "atom",
       },
       {
         id: "mobile-app-development",
@@ -27,24 +27,26 @@ const menuItems = [
           {
             id: "graphic-design",
             name: "Graphic Design",
-            children: [
-              {
-                id: "ui-ux-design",
-                name: "UI/UX Design",
-                path: "/ui-ux-design",
-              },
-              {
-                id: "graphic-design",
-                name: "Graphic Design",
-                path: "/graphic-design",
-              },
-            ],
+            path: "atom",
+
+            // children: [
+            //   {
+            //     id: "ui-ux-design",
+            //     name: "UI/UX Design",
+            //     path: "/ui-ux-design",
+            //   },
+            //   {
+            //     id: "graphic-design",
+            //     name: "Graphic Design",
+            //     path: "atom",
+            //   },
+            // ],
           },
         ],
       },
     ],
   },
-  { id: "about-us", name: "About Us", path: "/about" },
+  { id: "about-us", name: "About Us", path: "atom" },
 ];
 
 function Index(props) {

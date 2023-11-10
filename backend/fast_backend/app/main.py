@@ -1,6 +1,7 @@
 import time
 
 from fastapi import FastAPI
+from starlette.middleware.cors import CORSMiddleware
 
 from app.api.v1.routes import routers as v1_routers
 from app.models.atom_models import *
@@ -10,6 +11,20 @@ from app.utils.db_utils import *
 app = FastAPI(title="MonetX_2.0", openapi_url=f"{configs.API}/openapi.json",
               version="0.0.1")
 app.include_router(v1_routers, prefix=configs.API_V1_STR, tags=['v1'])
+
+origins = [
+    "*"
+    # "http://localhost",
+    # "http://localhost:3000",  # Add the origins of your React app
+]
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=origins,
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # Initialize tables
 Base.metadata.create_all(bind=configs.engine)

@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import Highlighter from "react-highlight-words";
 import { useTheme } from "@mui/material/styles";
 import DefaultButton from "../../../components/buttons";
@@ -12,6 +12,7 @@ import { SearchOutlined } from "@ant-design/icons";
 import DefaultModal from "../../../components/modals";
 
 import Modal from "./modal";
+import { useFetchTableDataQuery } from "../../../store/features/atomModule/atom/apis";
 
 const data = [
   {
@@ -148,6 +149,8 @@ const Index = () => {
     clearFilters();
     setSearchText("");
   };
+  // const [open, setOpen] = useState(false);
+  // const { data, error, isLoading } = useFetchTableDataQuery();
 
   const handleClickOpen = () => {
     setOpen(true);

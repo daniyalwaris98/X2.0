@@ -1,4 +1,4 @@
-import { API_ENDPOINT_URL } from "../../utills/constants";
+import { API_ENDPOINT_URL } from "../../utils/constants";
 import { createApi, fetchBaseQuery } from "@reduxjs/toolkit/query/react";
 
 export const monetxApi = createApi({
