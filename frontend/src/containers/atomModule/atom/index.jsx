@@ -7,11 +7,26 @@ import { Icon } from "@iconify/react";
 import DefaultTable from "../../../components/tables";
 import Modal from "./modal";
 import { useFetchTableDataQuery } from "../../../store/features/atomModule/atom/apis";
+import { useDispatch, useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
 
 const Index = () => {
   const theme = useTheme();
   const [open, setOpen] = useState(false);
-  const { data, error, isLoading } = useFetchTableDataQuery();
+  const { error, isLoading } = useFetchTableDataQuery();
+  const data = useSelector(selectTableData);
+
+  if (error) {
+    console.error("Error loading data:", error);
+  }
+
+  if (isLoading) {
+    console.log("before", data);
+  }
+
+  if (!isLoading) {
+    console.log("after", data);
+  }
 
   const handleClickOpen = () => {
     setOpen(true);
@@ -158,7 +173,7 @@ const Index = () => {
 
   return (
     <div>
-      <Modal handleClose={handleClose} open={open} />
+      {open ? <Modal handleClose={handleClose} open={open} /> : null}
       <DefaultCard
         sx={{
           backgroundColor: theme.palette.color.main,

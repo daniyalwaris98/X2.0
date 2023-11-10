@@ -2,7 +2,6 @@ import { extendedApi } from "./apis";
 import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 
 const initialState = {
-  is_table_Loading: false,
   table_data: [],
 };
 
@@ -50,17 +49,15 @@ const atomSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.fetchTableData.matchFulfilled,
         (state, action) => {
-          state.is_table_Loading = false;
           state.table_data = action.payload;
         }
+      )
+      .addMatcher(
+        extendedApi.endpoints.addTableSingleData.matchFulfilled,
+        (state, action) => {
+          // state.table_data = action.payload;
+        }
       );
-    // .addMatcher(
-    //   extendedApi.endpoints.addTableData.matchFulfilled,
-    //   (state, action) => {
-    //     state.isTableLoading = false;
-    //     state.tableData = action.payload;
-    //   }
-    // )
     // .addMatcher(
     //   extendedApi.endpoints.updateTableData.matchFulfilled,
     //   (state, action) => {
