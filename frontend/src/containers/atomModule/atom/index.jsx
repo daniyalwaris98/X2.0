@@ -6,10 +6,12 @@ import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 import DefaultTable from "../../../components/tables";
 import Modal from "./modal";
+import { useFetchTableDataQuery } from "../../../store/features/atomModule/atom/apis";
 
 const Index = () => {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  const [open, setOpen] = useState(false);
+  const { data, error, isLoading } = useFetchTableDataQuery();
 
   const handleClickOpen = () => {
     setOpen(true);
