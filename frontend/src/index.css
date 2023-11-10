@@ -31,3 +31,6 @@ code {
   height: 50px !important;
   border-bottom: 3px solid white !important;
 }
+.rowClassName {
+  background-color: red !important;
+}

@@ -5,7 +5,7 @@ import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import Typography from "@mui/material/Typography";
 
 export default function Pagination({ page, totalPageCount, onPageChange }) {
-  console.log(totalPageCount, "total page count");
+  // console.log(totalPageCount, "total page count");
   const handlePrevClick = () => {
     onPageChange(page - 1);
   };
