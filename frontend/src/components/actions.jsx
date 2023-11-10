@@ -18,7 +18,7 @@ export default function Actions() {
       }}
     >
       <Typography sx={{ textAlign: "center" }}>Actions</Typography>
-      {rows.map((row, rowIndex) => (
+      {rows?.map((row, rowIndex) => (
         <div
           key={rowIndex}
           style={{
