@@ -17,7 +17,13 @@ export default function DefaultDialog({ title, open, sx, children, ...rest }) {
   const theme = useTheme();
 
   return (
-    <Dialog open={open} sx={{ ...sx }} PaperComponent={StyledPaper} {...rest}>
+    <Dialog
+      open={open}
+      maxWidth="md"
+      sx={{ ...sx }}
+      PaperComponent={StyledPaper}
+      {...rest}
+    >
       <DialogTitle sx={{ backgroundColor: theme.palette.color.modalTitle }}>
         {title}
       </DialogTitle>

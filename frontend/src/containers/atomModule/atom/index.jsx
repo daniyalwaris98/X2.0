@@ -13,6 +13,8 @@ import DefaultModal from "../../../components/modals";
 
 import Modal from "./modal";
 import { useFetchTableDataQuery } from "../../../store/features/atomModule/atom/apis";
+import { useDispatch, useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
 
 const dataa = [
   {
@@ -127,7 +129,7 @@ const dataa = [
 
 const Index = () => {
   const theme = useTheme();
-  const [open, setOpen] = React.useState(false);
+  // const [open, setOpen] = React.useState(false);
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -135,6 +137,32 @@ const Index = () => {
   const [dataSource, setDataSource] = useState(dataa);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [recordToEdit, setRecordToEdit] = useState();
+
+  // const [open, setOpen] = useState(false);
+  const { data, error, isLoading } = useFetchTableDataQuery();
+  const [open, setOpen] = useState(false);
+  // const { error, isLoading } = useFetchTableDataQuery();
+  // const data = useSelector(selectTableData);/
+
+  if (error) {
+    console.error("Error loading data:", error);
+  }
+
+  if (isLoading) {
+    console.log("before", data);
+  }
+
+  if (!isLoading) {
+    console.log("after", data);
+  }
+
+  const handleClickOpen = () => {
+    setOpen(true);
+  };
+
+  const handleClose = () => {
+    setOpen(false);
+  };
 
   const customStyle = {
     backgroundColor: theme.palette.background.default,
@@ -148,16 +176,6 @@ const Index = () => {
   const handleReset = (clearFilters) => {
     clearFilters();
     setSearchText("");
-  };
-  // const [open, setOpen] = useState(false);
-  const { data, error, isLoading } = useFetchTableDataQuery();
-
-  const handleClickOpen = () => {
-    setOpen(true);
-  };
-
-  const handleClose = () => {
-    setOpen(false);
   };
 
   const onSelectChange = (newSelectedRowKeys) => {
@@ -356,6 +374,7 @@ const Index = () => {
         <h1>hello</h1>
       </DefaultModal>
       <Modal handleClose={handleClose} open={open} />
+      {open ? <Modal handleClose={handleClose} open={open} /> : null}
       <DefaultCard
         sx={{
           backgroundColor: theme.palette.color.main,

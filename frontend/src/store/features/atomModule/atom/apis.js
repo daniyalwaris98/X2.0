@@ -27,13 +27,13 @@ export const extendedApi = monetxApi.injectEndpoints({
     //   },
     // }),
 
-    // addTableData: builder.mutation({
-    //   query: (data) => ({
-    //     url: "addTableData", // Replace 'addTableData' with your API endpoint for adding data
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    // }),
+    addTableSingleData: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/atom/atom/add-atom-device",
+        method: "POST",
+        body: data,
+      }),
+    }),
 
     // updateTableData: builder.mutation({
     //   query: (data) => ({
@@ -54,6 +54,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 
 export const {
   useFetchTableDataQuery,
+  useAddTableSingleDataMutation,
   // useGetVideosByMediaTypeAndGenreIdQuery,
   // useGetVideosByMediaTypeAndCustomGenreQuery,
   // useAddTableDataQuery,
