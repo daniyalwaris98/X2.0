@@ -42,10 +42,26 @@ const schema = yup.object().shape({
 
 const Index = ({ handleClose, open }) => {
   const theme = useTheme();
+  // useForm hook
+  const { handleSubmit, control, setValue } = useForm({
+    resolver: yupResolver(schema),
+  });
+
+  // useStates
+  const [selectedSite, setSelectedSite] = useState("");
 
   // fetching dropdowns data from backend using apis
-  const { error: sitesError, isLoading: isSitesLoading } = useFetchSitesQuery();
-  const { error: racksError, isLoading: isRacksLoading } = useFetchRacksQuery();
+  const {
+    data: sitesData,
+    error: sitesError,
+    isLoading: isSitesLoading,
+  } = useFetchSitesQuery();
+  const { error: racksError, isLoading: isRacksLoading } = useFetchRacksQuery(
+    {
+      site_name: selectedSite,
+    },
+    { skip: selectedSite === "" }
+  );
   const { error: vendorsError, isLoading: isVendorsLoading } =
     useFetchVendorsQuery();
   const { error: functionsError, isLoading: isFunctionsLoading } =
@@ -60,11 +76,6 @@ const Index = ({ handleClose, open }) => {
   const [addTableSingleData, { isLoading, isError }] =
     useAddTableSingleDataMutation();
 
-  // useForm hook
-  const { handleSubmit, control } = useForm({
-    resolver: yupResolver(schema),
-  });
-
   // getting dropdowns data from the store
   const sites = useSelector(selectSites);
   const racks = useSelector(selectRacks);
@@ -74,9 +85,22 @@ const Index = ({ handleClose, open }) => {
   const deviceTypes = useSelector(selectDeviceTypes);
   const passwordGroups = useSelector(selectPasswordGroups);
 
+  useEffect(() => {
+    if (sitesData && sitesData.length > 0) {
+      setValue("site_name", sitesData[0]);
+      setSelectedSite(sitesData[0]); // Assuming sitesData is an array
+    }
+  }, [sitesData]);
+
   const onSubmit = (data) => {
     console.log(data);
     addTableSingleData(data);
+  };
+
+  const handleOnSitesChange = (e) => {
+    const selectedValue = e.target.value;
+    setSelectedSite(selectedValue);
+    console.log("mySelect", e.target.value);
   };
 
   return (
@@ -90,6 +114,7 @@ const Index = ({ handleClose, open }) => {
               dataKey="site_name"
               options={sites}
               required
+              onChange={handleOnSitesChange}
             />
             <SelectFormUnit
               control={control}

@@ -48,6 +48,7 @@ export function SelectFormUnit({
   dataKey,
   options,
   required = false,
+  ...rest
 }) {
   const title = getTitle(dataKey);
   return (
@@ -65,6 +66,7 @@ export function SelectFormUnit({
                 field={field}
                 sx={{ width: "195px", outline: "none" }}
                 id="dataKey"
+                {...rest}
               >
                 <DefaultOption value="">Select a {title}</DefaultOption>
                 {options.map((value) => (
