@@ -1,7 +1,13 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 
-const DefaultInput = ({ field, type = "text", sx, children, ...rest }) => {
+export default function DefaultInput({
+  field,
+  type = "text",
+  sx,
+  children,
+  ...rest
+}) {
   const theme = useTheme();
 
   return (
@@ -20,6 +26,4 @@ const DefaultInput = ({ field, type = "text", sx, children, ...rest }) => {
       {children}
     </input>
   );
-};
-
-export default DefaultInput;
+}

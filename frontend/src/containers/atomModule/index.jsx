@@ -2,9 +2,6 @@ import React from "react";
 import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu";
-import NavigationDesktop from "../../components/modularNavigation";
-import navLinksData from "./data.json";
-import { Icon } from "@iconify/react";
 
 const menuItems = [
   { id: "Atom", name: "Atom", path: "/" },
@@ -50,7 +47,7 @@ const menuItems = [
   { id: "about-us", name: "About Us", path: "/about" },
 ];
 
-function index(props) {
+function Index(props) {
   return (
     <>
       <Card
@@ -60,15 +57,11 @@ function index(props) {
           boxShadow: "unset !important",
         }}
       >
-        {/* <ModuleMenu items={["Atom", "Password Group"]} /> */}
         <HorizontalMenu menuItems={menuItems} />
-        {/* <NavigationDesktop navLinksData={navLinksData} /> */}
       </Card>
-      {/* <NavigationDesktop navLinksData={navLinksData} /> */}
-
       <Outlet />
     </>
   );
 }
 
-export default index;
+export default Index;

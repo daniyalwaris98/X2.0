@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultButton from "../../../components/buttons";
-import ReusableCard from "../../../components/cards";
+import DefaultCard from "../../../components/cards";
 import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
-import TableRow from "../../../components/tables";
+import DefaultTable from "../../../components/tables";
 import Modal from "./modal";
 
 const Index = () => {
@@ -157,7 +157,7 @@ const Index = () => {
   return (
     <div>
       <Modal handleClose={handleClose} open={open} />
-      <ReusableCard
+      <DefaultCard
         sx={{
           backgroundColor: theme.palette.color.main,
           margin: "0 auto",
@@ -235,14 +235,14 @@ const Index = () => {
           </Typography>
         </Typography>
 
-        <TableRow
+        <DefaultTable
           onDelete={onDelete}
           onEdit={onEdit}
           clients={clients}
           setClients={setClients}
           columns={columns}
         />
-      </ReusableCard>
+      </DefaultCard>
     </div>
   );
 };

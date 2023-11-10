@@ -2,9 +2,8 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
-import { Icon } from "@iconify/react";
 
-const HorizontalMenu = ({ menuItems }) => {
+export default function HorizontalMenu({ menuItems }) {
   const [openSubmenus, setOpenSubmenus] = useState({});
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
   const handleMenuClick = (event, id) => {
@@ -68,6 +67,4 @@ const HorizontalMenu = ({ menuItems }) => {
   };
 
   return <div style={{ display: "flex" }}>{renderMenuItems(menuItems)}</div>;
-};
-
-export default HorizontalMenu;
+}

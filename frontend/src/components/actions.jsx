@@ -4,7 +4,7 @@ import DeleteIcon from "@mui/icons-material/Delete";
 import EditIcon from "@mui/icons-material/Edit";
 import { Typography } from "@mui/material";
 
-const Actions = () => {
+export default function Actions() {
   // Create an array with 13 elements to represent the 13 rows
   const rows = new Array(13).fill(null);
 
@@ -46,6 +46,4 @@ const Actions = () => {
       ))}
     </Typography>
   );
-};
-
-export default Actions;
+}

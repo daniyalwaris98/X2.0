@@ -1,7 +1,7 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 
-const DefaultSelect = ({ field, sx, children, ...rest }) => {
+export default function DefaultSelect({ field, sx, children, ...rest }) {
   const theme = useTheme();
 
   return (
@@ -19,6 +19,4 @@ const DefaultSelect = ({ field, sx, children, ...rest }) => {
       {children}
     </select>
   );
-};
-
-export default DefaultSelect;
+}

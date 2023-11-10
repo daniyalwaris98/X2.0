@@ -6,12 +6,12 @@ import DefaultInput from "./inputs";
 import DefaultSelect from "./selects";
 import { Controller } from "react-hook-form";
 
-const DefaultFormUnit = ({
+export default function DefaultFormUnit({
   control,
   dataKey,
   type = "text",
   required = false,
-}) => {
+}) {
   const title = getTitle(dataKey);
   return (
     <Controller
@@ -40,11 +40,9 @@ const DefaultFormUnit = ({
       }}
     />
   );
-};
+}
 
-export default DefaultFormUnit;
-
-export const SelectFormUnit = ({ control, dataKey, required = false }) => {
+export function SelectFormUnit({ control, dataKey, required = false }) {
   const title = getTitle(dataKey);
   return (
     <Controller
@@ -72,7 +70,7 @@ export const SelectFormUnit = ({ control, dataKey, required = false }) => {
       }}
     />
   );
-};
+}
 
 const getTitle = (dataKey) => {
   return dataKey

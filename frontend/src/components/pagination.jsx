@@ -4,7 +4,7 @@ import KeyboardArrowLeft from "@mui/icons-material/KeyboardArrowLeft";
 import KeyboardArrowRight from "@mui/icons-material/KeyboardArrowRight";
 import Typography from "@mui/material/Typography";
 
-const Pagination = ({ page, totalPageCount, onPageChange }) => {
+export default function Pagination({ page, totalPageCount, onPageChange }) {
   console.log(totalPageCount, "total page count");
   const handlePrevClick = () => {
     onPageChange(page - 1);
@@ -33,6 +33,4 @@ const Pagination = ({ page, totalPageCount, onPageChange }) => {
       </IconButton>
     </div>
   );
-};
-
-export default Pagination;
+}

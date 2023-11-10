@@ -13,7 +13,7 @@ const StyledPaper = styled(Paper)`
   }
 `;
 
-const Index = ({ title, open, sx, children, ...rest }) => {
+export default function DefaultDialog({ title, open, sx, children, ...rest }) {
   const theme = useTheme();
 
   return (
@@ -28,6 +28,4 @@ const Index = ({ title, open, sx, children, ...rest }) => {
       </DialogActions> */}
     </Dialog>
   );
-};
-
-export default Index;
+}
