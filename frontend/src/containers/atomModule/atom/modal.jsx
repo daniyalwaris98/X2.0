@@ -85,30 +85,56 @@ const Index = ({ handleClose, open }) => {
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit control={control} dataKey="ip_address" required />
-            <SelectFormUnit control={control} dataKey="site_name" required />
-            <DefaultFormUnit control={control} dataKey="rack_name" required />
+            <SelectFormUnit
+              control={control}
+              dataKey="site_name"
+              options={sites}
+              required
+            />
+            <SelectFormUnit
+              control={control}
+              dataKey="rack_name"
+              options={racks}
+              required
+            />
             <DefaultFormUnit control={control} dataKey="device_name" required />
-            <DefaultFormUnit
+            {/* <SelectFormUnit
               control={control}
               dataKey="device_ru"
+              options={deviceRus}
               required
-              type="number"
-            />
+            /> */}
           </Grid>
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit control={control} dataKey="department" />
             <DefaultFormUnit control={control} dataKey="domain" />
             <DefaultFormUnit control={control} dataKey="section" />
-            <DefaultFormUnit control={control} dataKey="function" required />
+            <SelectFormUnit
+              control={control}
+              dataKey="function"
+              options={functions}
+              required
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit control={control} dataKey="virtual" />
-            <DefaultFormUnit control={control} dataKey="device_type" required />
-            <DefaultFormUnit control={control} dataKey="vendor" required />
+            <SelectFormUnit
+              control={control}
+              dataKey="device_type"
+              options={deviceTypes}
+              required
+            />
+            <SelectFormUnit
+              control={control}
+              dataKey="vendor"
+              options={vendors}
+              required
+            />
             <DefaultFormUnit control={control} dataKey="criticality" required />
-            <DefaultFormUnit
+            <SelectFormUnit
               control={control}
               dataKey="password_group"
+              options={passwordGroups}
               required
             />
           </Grid>

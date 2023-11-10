@@ -4,6 +4,7 @@ import DefaultLabel from "./labels";
 import { InputWrapper } from "./wrappers";
 import DefaultInput from "./inputs";
 import DefaultSelect from "./selects";
+import DefaultOption from "./options";
 import { Controller } from "react-hook-form";
 
 export default function DefaultFormUnit({
@@ -42,7 +43,12 @@ export default function DefaultFormUnit({
   );
 }
 
-export function SelectFormUnit({ control, dataKey, required = false }) {
+export function SelectFormUnit({
+  control,
+  dataKey,
+  options,
+  required = false,
+}) {
   const title = getTitle(dataKey);
   return (
     <Controller
@@ -55,11 +61,15 @@ export function SelectFormUnit({ control, dataKey, required = false }) {
               {title}:
             </DefaultLabel>
             <InputWrapper>
-              <DefaultSelect field={field} sx={{ width: "195px" }} id="dataKey">
-                <option value="">Select a {title}</option>
-                <option value="Manager">Manager</option>
-                <option value="Developer">Developer</option>
-                <option value="Executive">Executive</option>
+              <DefaultSelect
+                field={field}
+                sx={{ width: "195px", outline: "none" }}
+                id="dataKey"
+              >
+                <DefaultOption value="">Select a {title}</DefaultOption>
+                {options.map((value) => (
+                  <DefaultOption value={value}>{value}</DefaultOption>
+                ))}
               </DefaultSelect>
             </InputWrapper>
             <div style={{ color: "red", fontSize: "12px" }}>
