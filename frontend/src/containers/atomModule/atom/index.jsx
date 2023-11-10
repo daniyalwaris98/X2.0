@@ -14,7 +14,7 @@ import DefaultModal from "../../../components/modals";
 import Modal from "./modal";
 import { useFetchTableDataQuery } from "../../../store/features/atomModule/atom/apis";
 
-const data = [
+const dataa = [
   {
     key: "1",
     status: "online",
@@ -132,7 +132,7 @@ const Index = () => {
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
   const searchInput = useRef(null);
-  const [dataSource, setDataSource] = useState(data);
+  const [dataSource, setDataSource] = useState(dataa);
   const [editModalVisible, setEditModalVisible] = useState(false);
   const [recordToEdit, setRecordToEdit] = useState();
 
@@ -150,7 +150,7 @@ const Index = () => {
     setSearchText("");
   };
   // const [open, setOpen] = useState(false);
-  // const { data, error, isLoading } = useFetchTableDataQuery();
+  const { data, error, isLoading } = useFetchTableDataQuery();
 
   const handleClickOpen = () => {
     setOpen(true);
