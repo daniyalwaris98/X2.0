@@ -421,7 +421,7 @@ export default function DefaultTable({
                   }}
                 />
               </TableCell>
-              {columnsConfig.map((column) => (
+              {columnsConfig?.map((column) => (
                 <TableCell
                   key={column.id}
                   sx={{
@@ -467,7 +467,7 @@ export default function DefaultTable({
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedClients.map((client, index) => (
+            {paginatedClients?.map((client, index) => (
               <TableRow
                 key={client.id}
                 sx={{
@@ -496,7 +496,7 @@ export default function DefaultTable({
                     }}
                   />
                 </TableCell>
-                {columnsConfig.map((column) => (
+                {columnsConfig?.map((column) => (
                   <TableCell
                     key={column.id}
                     sx={{

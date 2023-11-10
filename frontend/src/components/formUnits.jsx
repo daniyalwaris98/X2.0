@@ -69,7 +69,7 @@ export function SelectFormUnit({
                 {...rest}
               >
                 <DefaultOption value="">Select a {title}</DefaultOption>
-                {options.map((value) => (
+                {options?.map((value) => (
                   <DefaultOption value={value}>{value}</DefaultOption>
                 ))}
               </DefaultSelect>
@@ -86,7 +86,7 @@ export function SelectFormUnit({
 
 const getTitle = (dataKey) => {
   return dataKey
-    .split("_")
-    .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    .join(" ");
+    ?.split("_")
+    ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+    ?.join(" ");
 };

@@ -151,7 +151,7 @@ export default function Index() {
         <Divider />
 
         <List style={{ padding: 0 }}>
-          {drawerMenuItems.map((item, index) => (
+          {drawerMenuItems?.map((item, index) => (
             <Tooltip key={item.name} title={item.name} placement="right">
               <Link to={item.path}>
                 <ListItem

@@ -123,12 +123,12 @@ const Index = ({ handleClose, open }) => {
               required
             />
             <DefaultFormUnit control={control} dataKey="device_name" required />
-            {/* <SelectFormUnit
+            <SelectFormUnit
               control={control}
               dataKey="device_ru"
               options={deviceRus}
               required
-            /> */}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit control={control} dataKey="department" />
