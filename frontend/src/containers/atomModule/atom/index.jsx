@@ -212,7 +212,7 @@ const Index = () => {
           style={{
             marginBottom: 8,
             display: "block",
-            borderColor: "#3D9E47",
+            borderColor: "gray",
           }}
         />
         <Space>
@@ -238,7 +238,7 @@ const Index = () => {
           >
             Reset
           </Button>
-          <Button
+          {/* <Button
             type="link"
             size="small"
             onClick={() => {
@@ -250,7 +250,7 @@ const Index = () => {
             }}
           >
             Filter
-          </Button>
+          </Button> */}
           <Button
             type="link"
             size="small"
@@ -338,11 +338,9 @@ const Index = () => {
         <div
           style={{
             display: "flex",
-            justifyContent: "center",
             gap: "10px",
           }}
         >
-          {console.log(record, "record")}
           <Icon
             onClick={() => handleDelete(record)}
             icon="material-symbols:delete-outline"
@@ -362,15 +360,16 @@ const Index = () => {
   };
 
   const handleEdit = (record) => {
-    // Set the record to be edited in state or pass it to the modal
     setRecordToEdit(record);
-    // Open the edit modal
     setEditModalVisible(true);
   };
 
   return (
     <div>
-      <DefaultModal style={{ width: "500px" }} open={editModalVisible}>
+      <DefaultModal
+        style={{ width: "500px", backgroundColor: "red", margin: "0 auto" }}
+        open={editModalVisible}
+      >
         <h1>hello</h1>
       </DefaultModal>
       <Modal handleClose={handleClose} open={open} />

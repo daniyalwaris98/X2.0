@@ -36,7 +36,7 @@ export default function HorizontalMenu({ menuItems }) {
             <Menu
               anchorEl={document.getElementById(id)}
               open={openSubmenus[id]}
-              onClose={() => handleMenuClick(null, id)}
+              onClose={(event) => handleMenuClick(event, id)}
               anchorReference="anchorPosition"
               anchorPosition={{
                 top: position.top,
@@ -57,7 +57,14 @@ export default function HorizontalMenu({ menuItems }) {
             key={id}
             component={Link}
             to={item.path}
-            onClick={() => handleMenuClick(null, parentId)}
+            onClick={(event) =>
+              handleMenuClick(
+                event,
+                // parentId
+                id
+              )
+            }
+            className={isClicked ? "clickedMenuItem" : "menu_item"}
           >
             {item.name}
           </MenuItem>
