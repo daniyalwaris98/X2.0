@@ -601,6 +601,7 @@ def edit_complete_atom(device, atom):
 
 def get_transition_atoms():
     obj_list = []
+    count = 0
     try:
         results = configs.db.query(AtomTransitionTable).all()
 
@@ -613,11 +614,12 @@ def get_transition_atoms():
             if status != 200:
                 obj_dict["creation_date"] = str(obj_dict["creation_date"])
                 obj_dict["modification_date"] = str(obj_dict["modification_date"])
-
                 obj_dict["message"] = msg
                 obj_dict["status"] = status
+                obj_dict['atom_table_id'] = count
                 obj_list.append(obj_dict)
-
+            
+            count +=1
     except Exception:
         traceback.print_exc()
 

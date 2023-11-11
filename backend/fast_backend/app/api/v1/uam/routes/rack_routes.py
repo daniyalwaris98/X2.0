@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
+from fastapi import FastAPI, Query
 from app.api.v1.uam.utils.rack_utils import *
 from app.schema.site_rack_schema import *
 from app.models.site_rack_models import *
@@ -57,16 +57,18 @@ async def delete_rack(rack_ids: list[int]):
     200: {"model": list[str]},
     500: {"model": str}
 })
-async def get_rack_by_site(site_obj: GetRackBySiteRequestSchema):
+async def get_rack_by_site(Site_name: str = Query(...,description="Name of the site")):
     try:
         obj_list = []
-
+        site_obj = Site_name
+        print("site obj is::::::::::::::::",site_obj,file=sys.stderr)
         result = (
             configs.db.query(RackTable, SiteTable)
             .join(SiteTable, RackTable.site_id == SiteTable.site_id)
-            .filter(SiteTable.site_name == site_obj['site_name'])
+            .filter(SiteTable.site_name == Site_name)
             .all()
         )
+        print("result is:::::::::::::::::::::::::",result,file=sys.stderr)
 
         for rack, site in result:
             rack_name = rack.rack_name
