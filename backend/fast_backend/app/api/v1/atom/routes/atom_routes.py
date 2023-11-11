@@ -14,9 +14,12 @@ router = APIRouter(
 async def add_atom(atom: AddAtomRequestSchema):
     try:
         response, status = add_complete_atom(atom, False)
+        print("atom is:::::::::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
 
         if status != 200:
             response, status = add_transition_atom(atom, False)
+            print("if reponse not 200::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+        print("response in add atom is::::::::::::::::::::::::::::::::::::::",add_atom,file=sys.stderr)
 
         return JSONResponse(content=response, status_code=status)
 
@@ -51,13 +54,17 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
 
                 if atom is not None:
                     msg, status = add_complete_atom(atomObj, True)
+                    print("msg for he add complete atom is::::::::::::::::::::",file=sys.stderr)
                 elif transit_atom is not None:
                     msg, status = add_transition_atom(atomObj, True)
+                    print("msg in adddd trnision atom:::::::::::::::::",msg,file=sys.stderr)
                 else:
                     msg, status = add_complete_atom(atomObj, False)
+                    print("msg in else add complete atom is:::::::::::::::::",msg,file=sys.stderr)
 
                     if status != 200:
                         msg, status = add_transition_atom(atomObj, False)
+                        print("add tranistion atom if status is not 200:::::::::::::::::::",msg,file=sys.stderr)
 
             except Exception:
                 traceback.print_exc()
@@ -75,8 +82,9 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
             success_list=success_list,
             error_list=error_list
         )
+        print("repsonse are::::::::::::::::::::::::::::",response,file=sys.stderr)
 
-        return JSONResponse(content=response, status_code=200)
+        return (response),200
 
     except Exception:
         traceback.print_exc()
@@ -92,6 +100,8 @@ async def edit_atom(atom: EditAtomRequestSchema):
     try:
         atom = atom.dict()
         response, status = edit_atom_util(atom)
+        print("response in edit atom is::::::::::::::::::::::::::::",response,file=sys.stderr)
+
         return JSONResponse(content=response, status_code=status)
     except Exception:
         traceback.print_exc()
@@ -179,8 +189,10 @@ def delete_atom(atom_list: list[DeleteAtomRequestSchema]):
 
         success_list = []
         error_list = []
+        print("atomlist is::::::::::::::::::::::::::::::::::::::",file=sys.stderr)
         for atom_obj in atom_list:
             atom_obj = atom_obj.dict()
+            print("obj dict is:::::::::::::::::::::::::::::",atom_obj,file=sys.stderr)
 
             found = False
             if "atom_id" in atom_obj:
@@ -221,13 +233,14 @@ def delete_atom(atom_list: list[DeleteAtomRequestSchema]):
                 error_list.append(f"Atom / Transition Atom Not Found")
 
         response = {
+            "deleted_atom_id":atom_list,
             "success": len(success_list),
             "error": len(error_list),
             "success_list": success_list,
             "error_list": error_list
         }
 
-        return JSONResponse(content=response, status_code=200)
+        return (response),200
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Deleting Atom", status_code=500)

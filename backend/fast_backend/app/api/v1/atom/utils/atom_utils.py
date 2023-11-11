@@ -222,24 +222,38 @@ def add_complete_atom(device, update):
             atom.virtual = device["virtual"].strip()
         else:
             atom.virtual = "N/A"
-
+        atom_data = {}
         msg = ""
         status = 500
         if exist:
             status = UpdateDBData(atom)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Updated Successfully"
-                print(msg, file=sys.stderr)
+                devices_data = dict(device)
+                devices_data['atom_id'] = atom.atom_id
+                print("devices data for atom is:::::::::::::::::::::::::::::::",devices_data,file=sys.stderr)
+                atom_data = {
+                    "data":devices_data,
+                    "message":msg
+                }
+                # print(msg, file=sys.stderr)
             else:
                 msg = f"{device['ip_address']} : Error While Updating Atom"
         else:
             status = InsertDBData(atom)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Inserted Successfully"
-                print(msg, file=sys.stderr)
+                devices_data = dict(device)
+                devices_data['atom_id'] = atom.atom_id
+                print("devices data for atom is:::::::::::::::::::::::::::::::",devices_data,file=sys.stderr)
+                atom_data = {
+                    "data":devices_data,
+                    "message":msg
+                }
+                # print(msg, file=sys.stderr)
             else:
                 msg = f"{device['ip_address']} : Error While Inserting Atom"
-                print(msg, file=sys.stderr)
+                # print(msg, file=sys.stderr)
 
         if status == 200:
             try:
@@ -253,7 +267,7 @@ def add_complete_atom(device, update):
             except Exception:
                 traceback.print_exc()
 
-        return msg, status
+        return (atom_data).status
 
     except Exception:
         error = f"Error : Exception Occurred"
@@ -305,8 +319,16 @@ def add_transition_atom(device, update):
             status = UpdateDBData(trans_obj)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Updated Successfully"
-                print(msg, file=sys.stderr)
-                return msg, 200
+                devices = device
+                devices_data =dict(devices)
+                devices_data['atom_transition_id'] = trans_obj.atom_transition_id
+
+                transition_data = {
+                    "data":devices_data,
+                    "message":msg
+                }
+                # print(msg, file=sys.stderr)
+                return (transition_data), 200
             else:
                 msg = f"{device['ip_address']} : Error While Updating Atom"
                 print(msg, file=sys.stderr)
@@ -315,16 +337,32 @@ def add_transition_atom(device, update):
             status = InsertDBData(trans_obj)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Inserted Successfully"
-                print(msg, file=sys.stderr)
-                return msg, 200
+
+                
+                # print('data in atom tranistion while inserting is:::::::::::::::::',data,file=sys.stderr)
+                devices = device
+                devices_data =dict(devices)
+                devices_data['atom_transition_id'] = trans_obj.atom_transition_id
+
+                print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
+                data = {"transition id":trans_obj.atom_transition_id}
+                transition_data = {
+                    "data":devices_data,
+                    "message":msg
+                }
+                
+                # print("atom transition id is:::::::::::::::::::::::::::",transition_id,file=sys.stderr)
+                # print("data is:::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
+                # print(msg, file=sys.stderr)
+                return (transition_data), 200
             else:
                 msg = f"{device['ip_address']} : Error While Inserting Atom"
-                print(msg, file=sys.stderr)
+                # print(msg, file=sys.stderr)
                 return msg, 500
 
     except Exception:
         error = f"Error : Exception Occurred"
-        print(error, file=sys.stderr)
+        # print(error, file=sys.stderr)
         traceback.print_exc()
         return error, 500
 
@@ -387,6 +425,7 @@ def edit_atom_util(device):
 
         atom = None
         trans_atom = None
+        transition_data = {}
 
         if "atom_id" not in device and "atom_transition_id" not in device:
             return "Atom ID Or Atom Transition ID is Missing", 400
@@ -434,14 +473,23 @@ def edit_atom_util(device):
 
         if status == 200:
             msg = f"{device['ip_address']} : Atom Updated Successfully"
+            devices_data =dict(device)
+            devices_data['atom_transition_id'] = trans_atom.atom_transition_id
+
+            print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
+            data = {"transition id":trans_atom.atom_transition_id}
+            transition_data = {
+                    "data":devices_data,
+                    "message":msg
+            }
         else:
             msg = f"{device['ip_address']} : Error While Updating Atom"
 
-        return msg, status
+        return transition_data, status
 
     except Exception:
         error = f"Error : Exception Occurred"
-        print(error, file=sys.stderr)
+        # print(error, file=sys.stderr)
         traceback.print_exc()
         return error, 500
 
@@ -557,7 +605,7 @@ def get_transition_atoms():
         results = configs.db.query(AtomTransitionTable).all()
 
         for result in results:
-            print(result.as_dict(), file=sys.stderr)
+            # print(result.as_dict(), file=sys.stderr)
             obj_dict = result.as_dict()
 
             msg, status = add_complete_atom(obj_dict, True)
@@ -668,8 +716,15 @@ def add_password_group_util(pass_obj, update):
         else:
             status = InsertDBData(password_group)
             if status == 200:
+                pass_data = dict(pass_obj)
+                pass_data['password_group_id'] = pass_data.password_group_id
+                msg=   f"{pass_obj['password_group']} : Password Group Inserted Successfully"
+                password_group_data = {
+                    "data":pass_data,
+                    "message":msg
+                }
                 return (
-                    f"{pass_obj['password_group']} : Password Group Inserted Successfully",
+                    password_group_data,
                     200,
                 )
 

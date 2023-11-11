@@ -115,6 +115,7 @@ def check_rack_status(rack_obj):
 
 
 def check_rack_optional_data(rack_obj, rack_exist):
+    rack_obj = dict(rack_obj)
     if "ru" in rack_obj.keys():
         if rack_obj["ru"] is not None:
             try:
@@ -147,12 +148,20 @@ def check_rack_optional_data(rack_obj, rack_exist):
     if "floor" in rack_obj.keys():
         if rack_obj["floor"] is not None:
             rack_exist.floor = rack_obj["floor"]
+    if "manufacture_date" in rack_obj.keys():
+        if rack_obj['manufacture_date'] is not None:
+            rack_exist.manufacture_date = rack_obj['manufacture_date'].isoformat()
+    if "rfs_date" in rack_obj.keys():
+        if rack_obj['rfs_date'] is not None:
+            rack_exist.rfs_date = rack_obj['rfs_date'].isoformat()
 
     return rack_exist
 
 
 def add_rack_util(rack_obj):
     try:
+        print("rack onj in add rack utils is:::::::::::::::::::::::::::",rack_obj,file=sys.stderr)
+        rack_group_data = {}
         rack_exist, status = check_rack_name(rack_obj)
         if status != 200:
             return rack_exist, status
@@ -188,10 +197,16 @@ def add_rack_util(rack_obj):
         status = InsertDBData(rack_exist)
         if status == 200:
             msg = "Rack Inserted Successfully"
+            rack_data = dict(rack_obj)
+            rack_data['password_group_id'] = rack_exist.rack_id
+            rack_group_data = {
+                    "data":rack_data,
+                    "message":msg
+            }
         else:
             msg = "Error While Inserting Rack"
 
-        return msg, status
+        return rack_group_data, status
 
     except Exception:
         traceback.print_exc()

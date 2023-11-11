@@ -41,6 +41,8 @@ def check_site_status(site_obj):
 
 
 def check_site_optional_data(site_obj, site_exist):
+    site_obj = dict(site_obj)
+    print("site obj is:::::::::::::::::::::::::",site_obj,file=sys.stderr)
     if "region" in site_obj.keys():
         if site_obj["region"] is not None:
             site_exist.region_name = site_obj["region"]
@@ -62,6 +64,7 @@ def check_site_optional_data(site_obj, site_exist):
 
 def add_site_util(site_obj):
     try:
+        site_group_data = {}
         site_exist, status = check_site_name(site_obj)
 
         if status == 400:
@@ -84,10 +87,16 @@ def add_site_util(site_obj):
         status = InsertDBData(site_exist)
         if status == 200:
             msg = "Site Inserted Successfully"
+            site_data = dict(site_obj)
+            site_data['site_id'] = site_exist.site_id
+            site_group_data = {
+                    "data":site_data,
+                    "message":msg
+            }
         else:
             msg = "Error While Inserting Site"
 
-        return msg, status
+        return site_group_data,status
 
     except Exception:
         traceback.print_exc()

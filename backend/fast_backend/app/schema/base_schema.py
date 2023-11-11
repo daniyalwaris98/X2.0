@@ -13,8 +13,8 @@ class BaseSchema(BaseModel):
 class SummeryResponseSchema(BaseSchema):
     success: int
     error: int
-    success_list: list[str]
-    error_list: list[str]
+    success_list: list[dict]
+    error_list: list[dict]
 
 
 class NameValueListOfDictResponseSchema(BaseSchema):
