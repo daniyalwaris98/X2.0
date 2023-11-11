@@ -15,7 +15,7 @@ export default function ModuleMenu({ array, items, ...style }) {
   };
   return (
     <ul {...style}>
-      {items.map((item, index) => (
+      {items?.map((item, index) => (
         <li>
           {console.log(index, "item index")}
           <Link
@@ -53,7 +53,7 @@ export default function ModuleMenu({ array, items, ...style }) {
               horizontal: "left",
             }}
           >
-            {array.map((item, index) => (
+            {array?.map((item, index) => (
               <Link
                 className="menu-item"
                 style={{ textDecoration: "none", height: "40px" }}

@@ -1,22 +1,19 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 
-export default function DefaultSelect({ field, sx, children, ...rest }) {
+export default function DefaultOption({ value, sx, children, ...rest }) {
   const theme = useTheme();
 
   return (
-    <select
-      {...field}
+    <option
       style={{
         color: theme.palette.textColor.input,
-        border: `2px solid ${theme.palette.color.inputBorderColor}`,
-        borderRadius: "5px",
-        padding: "5px 15px",
         ...sx,
       }}
       {...rest}
+      value={value}
     >
       {children}
-    </select>
+    </option>
   );
 }

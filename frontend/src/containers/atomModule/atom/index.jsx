@@ -366,13 +366,11 @@ const Index = () => {
 
   return (
     <div>
-      <DefaultModal
+      {/* <DefaultModal
         style={{ width: "500px", backgroundColor: "red", margin: "0 auto" }}
         open={editModalVisible}
-      >
-        <h1>hello</h1>
-      </DefaultModal>
-      <Modal handleClose={handleClose} open={open} />
+      > */}
+
       {open ? <Modal handleClose={handleClose} open={open} /> : null}
       <DefaultCard
         sx={{

@@ -29,6 +29,7 @@ export const lightTheme = createTheme({
       tertiary: "#5C5C5C", // grey
       tableText: "#262626",
       danger: "#E34444", //danger color red
+      input: "#7F7F7F",
     },
   },
 
@@ -68,6 +69,7 @@ export const darkTheme = createTheme({
       disable: "#5A5A5A", // gray
       checkboxBorder: "#DBDBDB",
       modalTitle: "#EBEBEB", // light blue
+      inputBorderColor: "#F5F5F5",
     },
 
     textColor: {
@@ -79,6 +81,7 @@ export const darkTheme = createTheme({
       tableText: "#262626",
       danger: "#E34444", //danger color red
       tableText: "#ACACAC",
+      input: "#7F7F7F",
     },
   },
 

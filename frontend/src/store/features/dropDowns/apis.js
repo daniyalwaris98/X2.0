@@ -8,9 +8,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 
     fetchRacks: builder.query({
       query: (data) => ({
-        url: "/api/v1/uam/rack/get-racks-by-site-dropdown",
-        method: "GET",
-        body: data,
+        url: `/api/v1/uam/rack/get-racks-by-site-dropdown?site_name=${data.site_name}`,
       }),
     }),
 
