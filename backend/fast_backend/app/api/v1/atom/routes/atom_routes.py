@@ -119,9 +119,12 @@ async def get_atoms():
         count = 0
         try:
             transition_list = get_transition_atoms()
+            count = len(transition_list)
             for trans_atom in transition_list:
                 atom_obj_list.append(trans_atom)
-                count = len(trans_atom)
+                # count = len(trans_atom)
+
+            print("count for atom is::::::::::::::::::::::::::::::",count,file=sys.stderr)
         except Exception:
             traceback.print_exc()
 
@@ -138,7 +141,6 @@ async def get_atoms():
         
         for atomObj, rackObj, siteObj, passObj in result:
             try:
-                count = count+1
                 atom_data_dict = {
                     "atom_id": atomObj.atom_id,
                     "site_name": siteObj.site_name,
@@ -167,6 +169,8 @@ async def get_atoms():
                 atom_data_dict["status"] = 200
 
                 atom_obj_list.append(atom_data_dict)
+
+                count +=1
 
             except Exception:
                 traceback.print_exc()
