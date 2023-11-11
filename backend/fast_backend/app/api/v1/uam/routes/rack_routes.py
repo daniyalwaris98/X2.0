@@ -4,7 +4,6 @@ from fastapi import FastAPI, Query
 from app.api.v1.uam.utils.rack_utils import *
 from app.schema.site_rack_schema import *
 from app.models.site_rack_models import *
-
 router = APIRouter(
     prefix="/rack",
     tags=["rack"],
@@ -19,7 +18,9 @@ router = APIRouter(
 async def add_rack(rack: AddRackRequestSchema):
     try:
         response, status = add_rack_util(rack)
-        return JSONResponse(content=response, status_code=status)
+        # response = json.dumps(response, default=str)
+        # print("repsonse with the jsoon dumpt is:::::::::::::::::::::",response,file=sys.stderr)
+        return (response),status
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Rack", status_code=500)
