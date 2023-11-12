@@ -204,7 +204,7 @@ def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
             print("obj is::::::::::::::::::::::::::::::::::::", file=sys.stderr)
            
 
-            if "atom_id" in atom_obj and atom_obj['atom_id'] is not None:
+            if "atom_id" in atom_obj and atom_obj['atom_id'] is not None and atom_obj['atom_id'] != 0:
                 atoms = configs.db.query(AtomTable).filter_by(atom_id=atom_obj['atom_id']).all()
                 if atoms:
                     print("if atom is::::::::::::::::::::::::::::::::::::::::", atoms, file=sys.stderr)
@@ -218,11 +218,12 @@ def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                         deleted_atom['atom_id'] = deleted_atom_id
                         success_list.append(f"{atom_ip_address} : Atom Deleted Successfully")
                 else:
-                    print("Atom Not Found::::::::::::::::", file=sys.stderr)
-                    # error_list.append("Atom Not Found")
+                    not_found_atom_id = atom_obj['atom_id']
+                    print(f"Atom Not Found for atom_id: {not_found_atom_id}", file=sys.stderr)
+                    error_list.append(f"Atom Not Found for atom_id: {not_found_atom_id}")
 
             print("start of atom tranistion::::::::::::::", file=sys.stderr)
-            if "atom_transition_id" in atom_obj and atom_obj['atom_transition_id'] is not None:
+            if "atom_transition_id" in atom_obj and atom_obj['atom_transition_id'] is not None and atom_obj['atom_transition_id'] != 0:
                 print("atom tranistion found in :::::::::::::::::", file=sys.stderr)
                 atom_transition = configs.db.query(AtomTransitionTable).filter_by(atom_transition_id=atom_obj["atom_transition_id"]).all()
                 if atom_transition:
@@ -237,8 +238,10 @@ def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                         deleted_atom['atom_tranistion_id'] = atom_tranistion_id
                         success_list.append(f"{transition_atom_ip} : Atom Tranistion Deleted Successfully")
                 else:
-                    print("Atom Tranision not found::::::::::::::::::::::::::::", file=sys.stderr)
-                    # error_list.append("Tranistion Atom Not Found")
+                    not_found_atom_transition_id = atom_obj['atom_transition_id']
+                    print("Not found atom tranistion id is::::::::::::",file=sys.stderr)
+                    print(f"Atom Transition Not Found for id: {not_found_atom_transition_id}", file=sys.stderr)
+                    error_list.append(f"Atom Transition Not Found for id: {not_found_atom_transition_id}")
         deleted_atoms_lst.append(deleted_atom)
 
         if not atom_found and not transition_atom_found:
