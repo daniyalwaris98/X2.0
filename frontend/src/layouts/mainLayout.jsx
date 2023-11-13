@@ -143,7 +143,7 @@ export default function Index() {
   ];
 
   return (
-    <Box sx={{ display: "flex" }}>
+    <Box sx={{ display: "flex", zIndex: "9", position: "relative" }}>
       <Drawer variant="permanent" open={open}>
         <DrawerHeader>
           <img src={logo} alt="Montex" />

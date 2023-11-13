@@ -8,7 +8,10 @@ import DefaultButton from "../../../components/buttons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme, styled } from "@mui/material/styles";
-import { useAddTableSingleDataMutation } from "../../../store/features/atomModule/atom/apis";
+import {
+  useUpdateTableSingleDataMutation,
+  useAddTableSingleDataMutation,
+} from "../../../store/features/atomModule/atom/apis";
 import {
   useFetchSitesQuery,
   useFetchRacksQuery,
@@ -27,6 +30,12 @@ import {
   selectDeviceTypes,
   selectPasswordGroups,
 } from "../../../store/features/dropDowns/selectors";
+import {
+  handleSuccessAlert,
+  handleInfoAlert,
+  handleCallbackAlert,
+  handleErrorAlert,
+} from "../../../components/sweetAlertWrapper";
 
 const schema = yup.object().shape({
   ip_address: yup.string().required("Ip address is required"),
@@ -34,23 +43,30 @@ const schema = yup.object().shape({
   rack_name: yup.string().required("Rack name is required"),
   device_name: yup.string().required("Device name is required"),
   device_ru: yup.string().required("Device ru is required"),
-  function: yup.string().required("function is required"),
-  device_type: yup.string().required("device type is required"),
+  function: yup.string().required("Function is required"),
+  device_type: yup.string().required("Device type is required"),
   vendor: yup.string().required("Vendor is required"),
   criticality: yup.string().required("Criticality is required"),
-  password_group: yup.string().required("password group is required"),
+  password_group: yup.string().required("Password group is required"),
 });
 
-const Index = ({ handleClose, open, recordToEdit, updateTableSingleData }) => {
+const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
   // useForm hook
-  const { handleSubmit, control, setValue, watch } = useForm({
+  const { handleSubmit, control, setValue, watch, reset } = useForm({
     resolver: yupResolver(schema),
   });
 
   useEffect(() => {
     formSetter(recordToEdit);
   }, []);
+
+  // useEffect(() => {
+  //   resetField("rack_name");
+  // }, [watch("site_name")]);
+
+  console.log("rack_name", watch("rack_name"));
+  console.log("site_name", watch("site_name"));
 
   const formSetter = (data) => {
     if (data) {
@@ -66,8 +82,9 @@ const Index = ({ handleClose, open, recordToEdit, updateTableSingleData }) => {
     {
       site_name: watch("site_name", ""),
     },
-    { skip: watch("site_name") === "" }
+    { skip: watch("site_name") === undefined }
   );
+
   const { error: vendorsError, isLoading: isVendorsLoading } =
     useFetchVendorsQuery();
   const { error: functionsError, isLoading: isFunctionsLoading } =
@@ -82,10 +99,41 @@ const Index = ({ handleClose, open, recordToEdit, updateTableSingleData }) => {
   const [
     addTableSingleData,
     {
+      data: addedTableSingleData,
+      isSuccess: isAddTableSingleDataSuccess,
       isLoading: isAddTableSingleDataLoading,
       isError: isAddTableSingleDataError,
+      error: addTableSingleDataError,
     },
   ] = useAddTableSingleDataMutation();
+
+  const [
+    updateTableSingleData,
+    {
+      data: updatedTableSingleData,
+      isSuccess: isUpdateTableSingleDataSuccess,
+      isLoading: isUpdateTableSingleDataLoading,
+      isError: isUpdateTableSingleDataError,
+      error: updateTableSingleDataError,
+    },
+  ] = useUpdateTableSingleDataMutation();
+
+  // effects
+  useEffect(() => {
+    if (isAddTableSingleDataError) {
+      handleErrorAlert(addTableSingleDataError.data);
+    } else if (isAddTableSingleDataSuccess) {
+      handleSuccessAlert(addedTableSingleData.message);
+    }
+  }, [isAddTableSingleDataSuccess, isAddTableSingleDataError]);
+
+  useEffect(() => {
+    if (isUpdateTableSingleDataError) {
+      handleErrorAlert(updateTableSingleDataError.data);
+    } else if (isUpdateTableSingleDataSuccess) {
+      handleSuccessAlert(updatedTableSingleData.message);
+    }
+  }, [isUpdateTableSingleDataSuccess, isUpdateTableSingleDataError]);
 
   // getting dropdowns data from the store
   const sites = useSelector(selectSites);
@@ -94,6 +142,11 @@ const Index = ({ handleClose, open, recordToEdit, updateTableSingleData }) => {
   const functions = useSelector(selectFunctions);
   const deviceTypes = useSelector(selectDeviceTypes);
   const passwordGroups = useSelector(selectPasswordGroups);
+
+  // function to reset a specific field
+  const resetField = (fieldName) => {
+    reset({ [fieldName]: "" });
+  };
 
   const onSubmit = (data) => {
     console.log(data);
@@ -113,7 +166,7 @@ const Index = ({ handleClose, open, recordToEdit, updateTableSingleData }) => {
     } else {
       addTableSingleData(data);
     }
-    handleClose();
+    // handleClose();
   };
 
   const generateNumbersArray = (upToValue) => {
@@ -121,7 +174,11 @@ const Index = ({ handleClose, open, recordToEdit, updateTableSingleData }) => {
   };
 
   return (
-    <FormModal title={`${recordToEdit ? "Edit" : "Add"} Atom`} open={open}>
+    <FormModal
+      sx={{ zIndex: "999" }}
+      title={`${recordToEdit ? "Edit" : "Add"} Atom`}
+      open={open}
+    >
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "20px" }}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>

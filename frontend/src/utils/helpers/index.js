@@ -56,6 +56,13 @@ export const columnGenerator = (dataKeys, getColumnSearchProps, getTitle) => {
   });
 };
 
+export const jsonToExcel = (jsonData, fileName) => {
+  let wb = XLSX.utils.book_new();
+  let binarySeedData = XLSX.utils.json_to_sheet(jsonData);
+  XLSX.utils.book_append_sheet(wb, binarySeedData, fileName);
+  XLSX.writeFile(wb, `${fileName}.xlsx`);
+};
+
 // const menuItems = [
 //   { id: "Atom", name: "Atom", path: "/" },
 //   {

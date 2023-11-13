@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultButton from "../../../components/buttons";
 import DefaultCard from "../../../components/cards";
@@ -11,7 +11,6 @@ import {
   useFetchTableDataQuery,
   useAddTableMultipleDataMutation,
   useDeleteTableMultipleDataMutation,
-  useUpdateTableSingleDataMutation,
 } from "../../../store/features/atomModule/atom/apis";
 import { useDispatch, useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
@@ -23,11 +22,13 @@ import {
   handleErrorAlert,
 } from "../../../components/sweetAlertWrapper";
 import {
+  jsonToExcel,
   convertToJson,
   handleFileChange,
   columnGenerator,
 } from "../../../utils/helpers";
 import useColumnSearchProps from "../../../hooks/useColumnSearchProps";
+import { Spin } from "antd";
 
 const Index = () => {
   // theme
@@ -54,54 +55,93 @@ const Index = () => {
   const [
     addTableMultipleData,
     {
+      data: addedTableMultipleData,
+      isSuccess: isAddTableMultipleDataSuccess,
       isLoading: isAddTableMultipleDataLoading,
       isError: isAddTableMultipleDataError,
+      error: addTableMultipleDataError,
     },
   ] = useAddTableMultipleDataMutation();
 
   const [
     deleteTableMultipleData,
     {
+      data: deletedTableMultipleData,
+      isSuccess: isDeleteTableSingleDataSuccess,
       isLoading: isDeleteTableMultipleDataLoading,
       isError: isDeleteTableMultipleDataError,
+      error: deleteTableSingleDataError,
     },
   ] = useDeleteTableMultipleDataMutation();
 
-  const [
-    updateTableSingleData,
-    {
-      data: updatedTableSingleData,
-      isSuccess: isUpdateTableSingleDataSuccess,
-      isLoading: isUpdateTableSingleDataLoading,
-      isError: isUpdateTableSingleDataError,
-      error: updateTableSingleDataError,
-    },
-  ] = useUpdateTableSingleDataMutation();
-
   // effects
   useEffect(() => {
-    if (isUpdateTableSingleDataError) {
-      handleErrorAlert(updateTableSingleDataError.data);
-    } else if (isUpdateTableSingleDataSuccess) {
-      handleSuccessAlert(updatedTableSingleData.message);
+    if (isAddTableMultipleDataError) {
+      if (addTableMultipleDataError.status === 500) {
+        handleErrorAlert(addTableMultipleDataError.data);
+      } else if (addTableMultipleDataError.status === 422) {
+        handleErrorAlert(
+          addTableMultipleDataError.data.detail
+            .map((item) => item.msg)
+            .join("<br>")
+        );
+      }
+    } else if (isAddTableMultipleDataSuccess) {
+      if (addedTableMultipleData[0]?.error === 0) {
+        handleSuccessAlert(
+          addedTableMultipleData[0]?.success_list
+            .map((item) => item.message)
+            .join("<br>")
+        );
+      } else if (addedTableMultipleData[0]?.success === 0) {
+        handleErrorAlert(
+          addedTableMultipleData[0]?.error_list
+            .map((item) => item.message)
+            .join("<br>")
+        );
+      } else {
+        handleInfoAlert(
+          `${addedTableMultipleData[0]?.success_list
+            .map((item) => item.message)
+            .join("<br>")}\n${addedTableMultipleData[0]?.error_list
+            .map((item) => item.message)
+            .join("<br>")}`
+        );
+      }
     }
-  }, [isUpdateTableSingleDataSuccess, isUpdateTableSingleDataError]);
+  }, [isAddTableMultipleDataSuccess, isAddTableMultipleDataError]);
+
+  useEffect(() => {
+    if (isDeleteTableMultipleDataError) {
+      if (deleteTableSingleDataError.status === 500) {
+        handleErrorAlert(deleteTableSingleDataError.data);
+      } else if (deleteTableSingleDataError.status === 422) {
+        handleErrorAlert(
+          deleteTableSingleDataError.data.detail
+            .map((item) => item.msg)
+            .join("\n")
+        );
+      }
+    } else if (isDeleteTableSingleDataSuccess) {
+      if (deletedTableMultipleData[0]?.error === 0) {
+        handleSuccessAlert(
+          deletedTableMultipleData[0]?.success_list.join("<br>")
+        );
+      } else if (deletedTableMultipleData[0]?.success === 0) {
+        handleErrorAlert(deletedTableMultipleData[0]?.error_list.join("<br>"));
+      } else {
+        handleInfoAlert(
+          `${deletedTableMultipleData[0]?.success_list.join(
+            "<br>"
+          )}<br>Errors:${deletedTableMultipleData[0]?.error_list.join("<br>")}`
+        );
+      }
+    }
+  }, [isDeleteTableSingleDataSuccess, isDeleteTableMultipleDataError]);
 
   // handlers
   const handlePostSeed = (data) => {
     addTableMultipleData(data);
-  };
-
-  const handleDelete = () => {
-    if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "warning",
-        "Are you sure you want delete these records?",
-        deleteData
-      );
-    } else {
-      handleInfoAlert("No record has been selected");
-    }
   };
 
   const deleteData = () => {
@@ -127,6 +167,18 @@ const Index = () => {
     }
   };
 
+  const handleDelete = () => {
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(
+        "warning",
+        "Are you sure you want delete these records?",
+        deleteData
+      );
+    } else {
+      handleInfoAlert("No record has been selected");
+    }
+  };
+
   const handleEdit = (record) => {
     setRecordToEdit(record);
     setOpen(true);
@@ -149,6 +201,10 @@ const Index = () => {
 
   const handleChange = (pagination, filters, sorter, extra) => {
     console.log("Various parameters", pagination, filters, sorter, extra);
+  };
+
+  const handleExport = () => {
+    jsonToExcel(dataSource, "atom");
   };
 
   // row selection
@@ -190,7 +246,6 @@ const Index = () => {
       key: "status",
       width: "80px",
 
-      // ...getColumnSearchProps("status"),
       render: (text, record) => {
         const icon = record.atom_id ? (
           <Icon
@@ -226,7 +281,6 @@ const Index = () => {
           justifyContent: "center",
         }}
       >
-        {/* <Icon icon="tdesign:dart-board" /> */}
         <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
       </div>
     ),
@@ -267,105 +321,112 @@ const Index = () => {
   //             false
   //           </div>
   //         );
-
   //       return <span>{icon}</span>;
   //     },
   //   },
 
   return (
-    <div>
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
-      />
-      {open ? (
-        <Modal
-          handleClose={handleClose}
-          open={open}
-          recordToEdit={recordToEdit}
-          updateTableSingleData={updateTableSingleData}
+    <Spin
+      spinning={
+        isLoading ||
+        isAddTableMultipleDataLoading ||
+        isDeleteTableMultipleDataLoading
+      }
+    >
+      <div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
         />
-      ) : null}
+        {open ? (
+          <Modal
+            handleClose={handleClose}
+            open={open}
+            recordToEdit={recordToEdit}
+          />
+        ) : null}
 
-      <DefaultCard
-        sx={{
-          backgroundColor: theme.palette.color.main,
-          width: `${width - 105}px`,
-        }}
-      >
-        <div
-          style={{
-            padding: "10px",
+        <DefaultCard
+          sx={{
+            backgroundColor: theme.palette.color.main,
+            width: `${width - 105}px`,
           }}
         >
-          <Typography
-            sx={{
-              display: "flex",
-              justifyContent: "space-between",
-              alignItems: "center",
+          <div
+            style={{
+              padding: "10px",
             }}
           >
-            <Typography sx={{ color: theme.palette.textColor.tableText }}>
-              ATOM
-            </Typography>
-
             <Typography
               sx={{
                 display: "flex",
+                justifyContent: "space-between",
                 alignItems: "center",
-                gap: "10px",
               }}
             >
-              <DefaultButton
-                handleClick={handleDelete}
-                sx={{ backgroundColor: theme.palette.color.danger }}
-              >
-                <Icon fontSize="16px" icon="ic:baseline-plus" />
-                Delete
-              </DefaultButton>
+              <Typography sx={{ color: theme.palette.textColor.tableText }}>
+                ATOM
+              </Typography>
 
-              <DefaultButton
-                sx={{ backgroundColor: theme.palette.color.primary }}
+              <Typography
+                sx={{
+                  display: "flex",
+                  alignItems: "center",
+                  gap: "10px",
+                }}
               >
-                <Icon fontSize="16px" icon="ic:baseline-plus" />
-                Export
-              </DefaultButton>
+                <DefaultButton
+                  handleClick={handleDelete}
+                  sx={{ backgroundColor: theme.palette.color.danger }}
+                >
+                  <Icon fontSize="16px" icon="ic:baseline-plus" />
+                  Delete
+                </DefaultButton>
 
-              <DefaultButton
-                handleClick={handleClickOpen}
-                sx={{ backgroundColor: theme.palette.color.primary }}
-              >
-                <Icon fontSize="16px" icon="ic:baseline-plus" />
-                Add
-              </DefaultButton>
+                <DefaultButton
+                  handleClick={handleExport}
+                  sx={{ backgroundColor: theme.palette.color.primary }}
+                >
+                  <Icon fontSize="16px" icon="ic:baseline-plus" />
+                  Export
+                </DefaultButton>
 
-              <DefaultButton
-                handleClick={handleInputClick}
-                sx={{ backgroundColor: theme.palette.color.primary }}
-              >
-                <Icon fontSize="16px" icon="pajamas:import" /> Import
-              </DefaultButton>
+                <DefaultButton
+                  handleClick={handleClickOpen}
+                  sx={{ backgroundColor: theme.palette.color.primary }}
+                >
+                  <Icon fontSize="16px" icon="ic:baseline-plus" />
+                  Add
+                </DefaultButton>
+
+                <DefaultButton
+                  handleClick={handleInputClick}
+                  sx={{ backgroundColor: theme.palette.color.primary }}
+                >
+                  <Icon fontSize="16px" icon="pajamas:import" /> Import
+                </DefaultButton>
+              </Typography>
             </Typography>
-          </Typography>
-        </div>
-        <TableStyle
-          size="small"
-          scroll={{ x: 4000 }}
-          onChange={handleChange}
-          rowSelection={rowSelection}
-          columns={columns}
-          dataSource={dataSource}
-          rowKey="atom_table_id"
-          style={{ whiteSpace: "pre" }}
-          pagination={{
-            defaultPageSize: 50,
-            pageSizeOptions: [50, 100, 500, 1000],
-          }}
-        />
-      </DefaultCard>
-    </div>
+          </div>
+          <TableStyle
+            size="small"
+            scroll={{ x: 3000 }}
+            onChange={handleChange}
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={dataSource}
+            rowKey="atom_table_id"
+            style={{ whiteSpace: "pre" }}
+            pagination={{
+              defaultPageSize: 9,
+              pageSizeOptions: [9, 50, 100, 500, 1000],
+            }}
+          />
+        </DefaultCard>
+      </div>
+    </Spin>
   );
 };
 
