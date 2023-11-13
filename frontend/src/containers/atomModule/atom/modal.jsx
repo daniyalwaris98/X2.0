@@ -14,7 +14,6 @@ import {
   useFetchRacksQuery,
   useFetchVendorsQuery,
   useFetchFunctionsQuery,
-  //useFetchDeviceRusQuery,
   useFetchDeviceTypesQuery,
   useFetchPasswordGroupsQuery,
 } from "../../../store/features/dropDowns/apis";
@@ -37,30 +36,37 @@ const schema = yup.object().shape({
   device_ru: yup.string().required("Device ru is required"),
   function: yup.string().required("function is required"),
   device_type: yup.string().required("device type is required"),
+  vendor: yup.string().required("Vendor is required"),
+  criticality: yup.string().required("Criticality is required"),
   password_group: yup.string().required("password group is required"),
 });
 
-const Index = ({ handleClose, open }) => {
+const Index = ({ handleClose, open, recordToEdit, updateTableSingleData }) => {
   const theme = useTheme();
   // useForm hook
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit, control, setValue, watch } = useForm({
     resolver: yupResolver(schema),
   });
 
-  // useStates
-  const [selectedSite, setSelectedSite] = useState("");
+  useEffect(() => {
+    formSetter(recordToEdit);
+  }, []);
+
+  const formSetter = (data) => {
+    if (data) {
+      Object.keys(data).forEach((key) => {
+        setValue(key, data[key]);
+      });
+    }
+  };
 
   // fetching dropdowns data from backend using apis
-  const {
-    data: sitesData,
-    error: sitesError,
-    isLoading: isSitesLoading,
-  } = useFetchSitesQuery();
+  const { error: sitesError, isLoading: isSitesLoading } = useFetchSitesQuery();
   const { error: racksError, isLoading: isRacksLoading } = useFetchRacksQuery(
     {
-      site_name: selectedSite,
+      site_name: watch("site_name", ""),
     },
-    { skip: selectedSite === "" }
+    { skip: watch("site_name") === "" }
   );
   const { error: vendorsError, isLoading: isVendorsLoading } =
     useFetchVendorsQuery();
@@ -73,38 +79,49 @@ const Index = ({ handleClose, open }) => {
     useFetchPasswordGroupsQuery();
 
   // post api for the form
-  const [addTableSingleData, { isLoading, isError }] =
-    useAddTableSingleDataMutation();
+  const [
+    addTableSingleData,
+    {
+      isLoading: isAddTableSingleDataLoading,
+      isError: isAddTableSingleDataError,
+    },
+  ] = useAddTableSingleDataMutation();
 
   // getting dropdowns data from the store
   const sites = useSelector(selectSites);
   const racks = useSelector(selectRacks);
   const vendors = useSelector(selectVendors);
   const functions = useSelector(selectFunctions);
-  const deviceRus = useSelector(selectDeviceRus);
   const deviceTypes = useSelector(selectDeviceTypes);
   const passwordGroups = useSelector(selectPasswordGroups);
 
-  useEffect(() => {
-    if (sitesData && sitesData.length > 0) {
-      setValue("site_name", sitesData[0]);
-      setSelectedSite(sitesData[0]); // Assuming sitesData is an array
-    }
-  }, [sitesData]);
-
   const onSubmit = (data) => {
     console.log(data);
-    addTableSingleData(data);
+    if (recordToEdit) {
+      if (recordToEdit.atom_id) {
+        data.atom_id = recordToEdit.atom_id;
+      } else if (recordToEdit.atom_transition_id) {
+        data.atom_transition_id = recordToEdit.atom_transition_id;
+      }
+    }
+
+    if (
+      recordToEdit &&
+      (recordToEdit.atom_id || recordToEdit.atom_transition_id)
+    ) {
+      updateTableSingleData(data);
+    } else {
+      addTableSingleData(data);
+    }
+    handleClose();
   };
 
-  const handleOnSitesChange = (e) => {
-    const selectedValue = e.target.value;
-    setSelectedSite(selectedValue);
-    console.log("mySelect", e.target.value);
+  const generateNumbersArray = (upToValue) => {
+    return Array.from({ length: upToValue + 1 }, (_, index) => index);
   };
 
   return (
-    <FormModal title="Add Atom" open={open}>
+    <FormModal title={`${recordToEdit ? "Edit" : "Add"} Atom`} open={open}>
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "20px" }}>
         <Grid container spacing={2}>
           <Grid item xs={12} sm={4}>
@@ -114,7 +131,6 @@ const Index = ({ handleClose, open }) => {
               dataKey="site_name"
               options={sites}
               required
-              onChange={handleOnSitesChange}
             />
             <SelectFormUnit
               control={control}
@@ -126,7 +142,7 @@ const Index = ({ handleClose, open }) => {
             <SelectFormUnit
               control={control}
               dataKey="device_ru"
-              options={deviceRus}
+              options={generateNumbersArray(30)}
               required
             />
           </Grid>
@@ -166,42 +182,17 @@ const Index = ({ handleClose, open }) => {
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <DefaultButton
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "7px 25px",
-                  border: `1px solid ${theme.palette.color.checkboxBorder}`,
-                  backgroundColor: theme.palette.color.main,
-                  color: theme.palette.textColor.default,
-                  "&:hover": {
-                    backgroundColor: theme.palette.color.main,
-                  },
-                }}
                 handleClick={handleClose}
+                sx={{ backgroundColor: theme.palette.color.danger }}
               >
-                <span sx={{ fontSize: "16px", textTransform: "capitalize" }}>
-                  Cancel
-                </span>
+                Cancel
               </DefaultButton>
               &nbsp; &nbsp;
               <DefaultButton
                 type="submit"
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                  padding: "7px 25px",
-                  backgroundColor: theme.palette.color.primary,
-                  color: theme.palette.textColor.main,
-                  "&:hover": {
-                    backgroundColor: theme.palette.color.primary,
-                  },
-                }}
+                sx={{ backgroundColor: theme.palette.color.primary }}
               >
-                <span sx={{ fontSize: "16px", textTransform: "capitalize" }}>
-                  Submit
-                </span>
+                Submit
               </DefaultButton>
             </div>
           </Grid>

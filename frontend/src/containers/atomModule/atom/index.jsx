@@ -1,382 +1,216 @@
 import React, { useState, useRef, useEffect } from "react";
-import Highlighter from "react-highlight-words";
 import { useTheme } from "@mui/material/styles";
 import DefaultButton from "../../../components/buttons";
 import DefaultCard from "../../../components/cards";
 import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
-import DefaultTable from "../../../components/tables";
 import { TableStyle } from "../../../styles/main.styled";
-import { Button, Input, Space, Table } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
-import DefaultModal from "../../../components/modals";
-
+import { getTitle } from "../../../utils/helpers";
 import Modal from "./modal";
-import { useFetchTableDataQuery } from "../../../store/features/atomModule/atom/apis";
+import {
+  useFetchTableDataQuery,
+  useAddTableMultipleDataMutation,
+  useDeleteTableMultipleDataMutation,
+  useUpdateTableSingleDataMutation,
+} from "../../../store/features/atomModule/atom/apis";
 import { useDispatch, useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
-
-const dataa = [
-  {
-    key: "1",
-    status: "online",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1s",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "false",
-  },
-  {
-    key: "2",
-    status: "offline",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "true",
-  },
-  {
-    key: "3",
-    status: "online",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1e",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "false",
-  },
-  {
-    key: "4",
-    status: "offline",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "true",
-  },
-  {
-    key: "5",
-    status: "online",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "true",
-  },
-  {
-    key: "6",
-    status: "offline",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "true",
-  },
-  {
-    key: "7",
-    status: "online",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1s",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "false",
-  },
-  {
-    key: "8",
-    status: "offline",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "true",
-  },
-  {
-    key: "9",
-    status: "online",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1e",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "false",
-  },
-  {
-    key: "10",
-    status: "offline",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "true",
-  },
-  {
-    key: "11",
-    status: "online",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "true",
-  },
-  {
-    key: "12",
-    status: "offline",
-    ip_address: "192.168.1.1",
-    device_name: "Edge_Ro-1",
-    device_type: "cisco_ios",
-    onboard_status: "true",
-    board: "true",
-  },
-];
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
+import {
+  handleAddSuccessAlert,
+  handleUpdateSuccessAlert,
+  handleErrorAlert,
+} from "../../../components/sweetAlertWrapper";
+import {
+  convertToJson,
+  handleFileChange,
+  columnGenerator,
+} from "../../../utils/helpers";
+import useColumnSearchProps from "../../../hooks/useColumnSearchProps";
 
 const Index = () => {
+  // theme
   const theme = useTheme();
-  // const [open, setOpen] = React.useState(false);
+
+  // hooks
+  const { height, width } = useWindowDimensions();
+  const getColumnSearchProps = useColumnSearchProps();
+
+  // refs
+  const fileInputRef = useRef(null);
+
+  // states
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [searchText, setSearchText] = useState("");
-  const [searchedColumn, setSearchedColumn] = useState("");
-  const searchInput = useRef(null);
-  const [dataSource, setDataSource] = useState(dataa);
-  const [editModalVisible, setEditModalVisible] = useState(false);
-  const [recordToEdit, setRecordToEdit] = useState();
-
-  // const [open, setOpen] = useState(false);
-  const { data, error, isLoading } = useFetchTableDataQuery();
+  const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
-  // const { error, isLoading } = useFetchTableDataQuery();
-  // const data = useSelector(selectTableData);/
 
-  if (error) {
-    console.error("Error loading data:", error);
-  }
+  // selectors
+  const dataSource = useSelector(selectTableData);
 
-  if (isLoading) {
-    console.log("before", data);
-  }
+  // apis
+  const { data, error, isLoading } = useFetchTableDataQuery();
 
-  if (!isLoading) {
-    console.log("after", data);
-  }
+  const [
+    addTableMultipleData,
+    {
+      isLoading: isAddTableMultipleDataLoading,
+      isError: isAddTableMultipleDataError,
+    },
+  ] = useAddTableMultipleDataMutation();
+
+  const [
+    deleteTableMultipleData,
+    {
+      isLoading: isDeleteTableMultipleDataLoading,
+      isError: isDeleteTableMultipleDataError,
+    },
+  ] = useDeleteTableMultipleDataMutation();
+
+  const [
+    updateTableSingleData,
+    {
+      data: updatedTableSingleData,
+      isSuccess: isUpdateTableSingleDataSuccess,
+      isLoading: isUpdateTableSingleDataLoading,
+      isError: isUpdateTableSingleDataError,
+      error: updateTableSingleDataError,
+    },
+  ] = useUpdateTableSingleDataMutation();
+
+  // effects
+  useEffect(() => {
+    if (isUpdateTableSingleDataError) {
+      handleErrorAlert(updateTableSingleDataError.data);
+    } else if (isUpdateTableSingleDataSuccess) {
+      handleUpdateSuccessAlert(updatedTableSingleData.message);
+    }
+  }, [isUpdateTableSingleDataSuccess, isUpdateTableSingleDataError]);
+
+  // handlers
+  const handlePostSeed = (data) => {
+    addTableMultipleData(data);
+  };
+
+  const handleDelete = () => {
+    const deleteData = selectedRowKeys.map((rowKey) => {
+      const dataObject = dataSource.find((row) => row.atom_table_id === rowKey);
+
+      if (dataObject) {
+        const { atom_id, atom_transition_id } = dataObject;
+
+        return {
+          atom_id: atom_id || null,
+          atom_transition_id: atom_transition_id || null,
+        };
+      }
+
+      return null;
+    });
+
+    const filteredDeleteData = deleteData.filter((data) => data !== null);
+
+    if (filteredDeleteData.length > 0) {
+      deleteTableMultipleData(filteredDeleteData);
+    }
+  };
+
+  const handleEdit = (record) => {
+    setRecordToEdit(record);
+    setOpen(true);
+  };
+
+  const handleInputClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
   const handleClickOpen = () => {
     setOpen(true);
   };
 
   const handleClose = () => {
+    setRecordToEdit(null);
     setOpen(false);
   };
 
-  const customStyle = {
-    backgroundColor: theme.palette.background.default,
+  const handleChange = (pagination, filters, sorter, extra) => {
+    console.log("Various parameters", pagination, filters, sorter, extra);
   };
 
-  const handleSearch = (selectedKeys, confirm, dataIndex) => {
-    confirm();
-    setSearchText(selectedKeys[0]);
-    setSearchedColumn(dataIndex);
-  };
-  const handleReset = (clearFilters) => {
-    clearFilters();
-    setSearchText("");
+  // row selection
+  const onSelectChange = (selectedRowKeys) => {
+    setSelectedRowKeys(selectedRowKeys);
   };
 
-  const onSelectChange = (newSelectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
 
-  const getColumnSearchProps = (dataIndex) => ({
-    filterDropdown: ({
-      setSelectedKeys,
-      selectedKeys,
-      confirm,
-      clearFilters,
-      close,
-    }) => (
+  // columns
+  const columns = columnGenerator(
+    [
+      "ip_address",
+      "site_name",
+      "rack_name",
+      "device_name",
+      "device_ru",
+      "department",
+      "domain",
+      "section",
+      "function",
+      "virtual",
+      "device_type",
+      "vendor",
+      "criticality",
+      "password_group",
+    ],
+    getColumnSearchProps,
+    getTitle
+  );
+
+  columns.push({
+    title: "Actions",
+    dataIndex: "actions",
+    key: "actions",
+    fixed: "right",
+    width: 100,
+    render: (text, record) => (
       <div
         style={{
-          padding: 8,
+          display: "flex",
+          gap: "10px",
         }}
-        onKeyDown={(e) => e.stopPropagation()}
       >
-        <Input
-          ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
-          onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
-          style={{
-            marginBottom: 8,
-            display: "block",
-            borderColor: "gray",
-          }}
-        />
-        <Space>
-          <Button
-            type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
-            icon={<SearchOutlined />}
-            size="small"
-            style={{
-              width: 30,
-              backgroundColor: "#3D9E47",
-            }}
-          >
-            Search
-          </Button>
-          <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
-            size="small"
-            style={{
-              width: 90,
-              borderColor: "#3D9E47",
-            }}
-          >
-            Reset
-          </Button>
-          {/* <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              confirm({
-                closeDropdown: false,
-              });
-              setSearchText(selectedKeys[0]);
-              setSearchedColumn(dataIndex);
-            }}
-          >
-            Filter
-          </Button> */}
-          <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button>
-        </Space>
+        <Icon icon="tdesign:dart-board" />
+        <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
       </div>
     ),
-    filterIcon: (filtered) => (
-      <SearchOutlined
-        style={{
-          color: filtered ? "#1677ff" : undefined,
-        }}
-      />
-    ),
-    onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
-    onFilterDropdownOpenChange: (visible) => {
-      if (visible) {
-        setTimeout(() => searchInput.current?.select(), 100);
-      }
-    },
-    render: (text) =>
-      searchedColumn === dataIndex ? (
-        <Highlighter
-          highlightStyle={{
-            backgroundColor: "#ffc069",
-            padding: 0,
-          }}
-          searchWords={[searchText]}
-          autoEscape
-          textToHighlight={text ? text.toString() : ""}
-        />
-      ) : (
-        text
-      ),
   });
-
-  const columns = [
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      ...getColumnSearchProps("status"),
-    },
-    {
-      title: "IP Address",
-      dataIndex: "ip_address",
-      key: "ip_address",
-      ...getColumnSearchProps("ip_address"),
-    },
-    {
-      title: "Device Name",
-      dataIndex: "device_name",
-      key: "device_name",
-      ...getColumnSearchProps("device_name"),
-    },
-    {
-      title: "Device Type",
-      dataIndex: "device_type",
-      key: "device_type",
-      ...getColumnSearchProps("device_type"),
-    },
-    {
-      title: "Onboard Status",
-      dataIndex: "onboard_status",
-      key: "onboard_status",
-    },
-    {
-      title: "Board",
-      dataIndex: "board",
-      key: "board",
-    },
-    {
-      title: "Actions",
-      dataIndex: "actions",
-      key: "actions",
-      fixed: "right",
-      width: 100,
-      render: (text, record) => (
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-          }}
-        >
-          <Icon
-            onClick={() => handleDelete(record)}
-            icon="material-symbols:delete-outline"
-          />
-          <Icon icon="tdesign:dart-board" />
-          <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
-        </div>
-      ),
-    },
-  ];
-
-  const handleDelete = (record) => {
-    const updatedDataSource = dataSource.filter(
-      (item) => item.key !== record.key
-    );
-    setDataSource(updatedDataSource);
-  };
-
-  const handleEdit = (record) => {
-    setRecordToEdit(record);
-    setEditModalVisible(true);
-  };
 
   return (
     <div>
-      {/* <DefaultModal
-        style={{ width: "500px", backgroundColor: "red", margin: "0 auto" }}
-        open={editModalVisible}
-      > */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
+      />
+      {open ? (
+        <Modal
+          handleClose={handleClose}
+          open={open}
+          recordToEdit={recordToEdit}
+          updateTableSingleData={updateTableSingleData}
+        />
+      ) : null}
 
-      {open ? <Modal handleClose={handleClose} open={open} /> : null}
       <DefaultCard
         sx={{
           backgroundColor: theme.palette.color.main,
-          margin: "0 auto",
           padding: "10px",
+          width: `${width - 120}px`,
         }}
       >
         <Typography
@@ -389,6 +223,7 @@ const Index = () => {
           <Typography sx={{ color: theme.palette.textColor.tableText }}>
             ATOM
           </Typography>
+
           <Typography
             sx={{
               display: "flex",
@@ -398,72 +233,49 @@ const Index = () => {
             }}
           >
             <DefaultButton
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                padding: "7px 25px",
-                border: `1px solid ${theme.palette.color.checkboxBorder}`,
-              }}
-              handleClick={handleClickOpen}
+              handleClick={handleDelete}
+              sx={{ backgroundColor: theme.palette.color.danger }}
             >
-              <Icon
-                color={theme.palette.textColor.tableText}
-                fontSize="16px"
-                icon="ic:baseline-plus"
-              />
-              <Typography
-                sx={{
-                  fontSize: "16px",
-                  textTransform: "capitalize",
-                  color: theme.palette.textColor.tableText,
-                }}
-              >
-                Export
-              </Typography>
+              <Icon fontSize="16px" icon="ic:baseline-plus" />
+              Delete
             </DefaultButton>
-            <DefaultButton
-              sx={{
-                display: "flex",
-                alignItems: "center",
-                gap: "10px",
-                // width: "150px",
-                padding: "7px 25px",
 
-                backgroundColor: theme.palette.color.primary,
-                color: theme.palette.color.main,
-                "&:hover": {
-                  backgroundColor: theme.palette.color.primary,
-                },
-              }}
-              handleClick={() => {
-                console.log("clicked");
-              }}
+            <DefaultButton
+              sx={{ backgroundColor: theme.palette.color.primary }}
             >
-              <Icon fontSize="16px" icon="pajamas:import" />
-              <Typography
-                sx={{ fontSize: "16px", textTransform: "capitalize" }}
-              >
-                Import
-              </Typography>
+              <Icon fontSize="16px" icon="ic:baseline-plus" />
+              Export
+            </DefaultButton>
+
+            <DefaultButton
+              handleClick={handleClickOpen}
+              sx={{ backgroundColor: theme.palette.color.primary }}
+            >
+              <Icon fontSize="16px" icon="ic:baseline-plus" />
+              Add
+            </DefaultButton>
+
+            <DefaultButton
+              handleClick={handleInputClick}
+              sx={{ backgroundColor: theme.palette.color.primary }}
+            >
+              <Icon fontSize="16px" icon="pajamas:import" /> Import
             </DefaultButton>
           </Typography>
         </Typography>
 
         <TableStyle
-          // rowStyle={(data, index) => (index % 2 !== 0 ? customStyle : "")}
-          // rowClassName={(data, index) =>
-          //   index % 2 !== 0 ? "rowClassName" : ""
-          // }
+          size="small"
+          scroll={{ x: 4000, y: height - 350 }}
+          onChange={handleChange}
           rowSelection={rowSelection}
-          dataSource={dataSource}
           columns={columns}
+          dataSource={dataSource}
+          rowKey="atom_table_id"
+          style={{ whiteSpace: "pre" }}
           pagination={{
-            showSizeChanger: true,
-            pageSizeOptions: ["5", "10", `${dataSource.length}`],
-          }}
-          scroll={{
-            x: 1300,
+            defaultPageSize: 50,
+            pageSizeOptions: [50, 100, 500, 1000],
           }}
         />
       </DefaultCard>

@@ -4,49 +4,8 @@ import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu";
 
 const menuItems = [
-  { id: "Atom", name: "Atom", path: "/" },
-  {
-    id: "password",
-    name: "Password Group",
-    children: [
-      {
-        id: "web-development",
-        name: "Web Development",
-        path: "atom",
-      },
-      {
-        id: "mobile-app-development",
-        name: "Mobile App Development",
-        path: "/mobile-app-development",
-      },
-      {
-        id: "design",
-        name: "Design",
-        children: [
-          { id: "ui-ux-design", name: "UI/UX Design", path: "/ui-ux-design" },
-          {
-            id: "graphic-design",
-            name: "Graphic Design",
-            path: "atom",
-
-            // children: [
-            //   {
-            //     id: "ui-ux-design",
-            //     name: "UI/UX Design",
-            //     path: "/ui-ux-design",
-            //   },
-            //   {
-            //     id: "graphic-design",
-            //     name: "Graphic Design",
-            //     path: "atom",
-            //   },
-            // ],
-          },
-        ],
-      },
-    ],
-  },
-  { id: "about-us", name: "About Us", path: "atom" },
+  { id: "atom", name: "Atom", path: "atom" },
+  { id: "password_group", name: "Password Group", path: "password_group" },
 ];
 
 function Index(props) {
