@@ -17,8 +17,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
-  handleAddSuccessAlert,
-  handleUpdateSuccessAlert,
+  handleSuccessAlert,
+  handleInfoAlert,
+  handleCallbackAlert,
   handleErrorAlert,
 } from "../../../components/sweetAlertWrapper";
 import {
@@ -82,7 +83,7 @@ const Index = () => {
     if (isUpdateTableSingleDataError) {
       handleErrorAlert(updateTableSingleDataError.data);
     } else if (isUpdateTableSingleDataSuccess) {
-      handleUpdateSuccessAlert(updatedTableSingleData.message);
+      handleSuccessAlert(updatedTableSingleData.message);
     }
   }, [isUpdateTableSingleDataSuccess, isUpdateTableSingleDataError]);
 
@@ -92,6 +93,18 @@ const Index = () => {
   };
 
   const handleDelete = () => {
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(
+        "warning",
+        "Are you sure you want delete these records?",
+        deleteData
+      );
+    } else {
+      handleInfoAlert("No record has been selected");
+    }
+  };
+
+  const deleteData = () => {
     const deleteData = selectedRowKeys.map((rowKey) => {
       const dataObject = dataSource.find((row) => row.atom_table_id === rowKey);
 
@@ -143,18 +156,13 @@ const Index = () => {
     setSelectedRowKeys(selectedRowKeys);
   };
 
-  const onSelectChange = (newSelectedRowKeys) => {
-    console.log("selectedRowKeys changed: ", newSelectedRowKeys);
-    setSelectedRowKeys(newSelectedRowKeys);
-  };
-
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
 
   // columns
-  const columns = columnGenerator(
+  let columns = columnGenerator(
     [
       "ip_address",
       "site_name",
@@ -175,6 +183,35 @@ const Index = () => {
     getTitle
   );
 
+  columns = [
+    {
+      title: "Status",
+      dataIndex: "status",
+      key: "status",
+      width: "80px",
+
+      // ...getColumnSearchProps("status"),
+      render: (text, record) => {
+        const icon = record.atom_id ? (
+          <Icon
+            fontSize={"22px"}
+            color={theme.palette.color.primary}
+            icon="ep:success-filled"
+          />
+        ) : (
+          <Icon
+            fontSize={"23px"}
+            color={theme.palette.color.info}
+            icon="material-symbols:info"
+          />
+        );
+
+        return <div style={{ textAlign: "center" }}>{icon}</div>;
+      },
+    },
+    ...columns,
+  ];
+
   columns.push({
     title: "Actions",
     dataIndex: "actions",
@@ -186,138 +223,54 @@ const Index = () => {
         style={{
           display: "flex",
           gap: "10px",
+          justifyContent: "center",
         }}
       >
-        <Icon icon="tdesign:dart-board" />
+        {/* <Icon icon="tdesign:dart-board" /> */}
         <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
       </div>
     ),
   });
 
-  const columns = [
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      ...getColumnSearchProps("status"),
-      render: (text, record) => {
-        const icon =
-          record.status === "online" ? (
-            <Icon
-              fontSize={"22px"}
-              color={theme.palette.color.primary}
-              icon="ep:success-filled"
-            />
-          ) : (
-            <Icon
-              fontSize={"23px"}
-              color={theme.palette.color.info}
-              icon="material-symbols:info"
-            />
-          );
+  //   {
+  //     title: "Board",
+  //     dataIndex: "board",
+  //     key: "board",
+  //     render: (text, record) => {
+  //       const icon =
+  //         record.board === "true" ? (
+  //           <div
+  //             style={{
+  //               color: "#3D9E47",
+  //               background: "#F1F6EE",
+  //               width: "80%",
+  //               margin: "0 auto",
+  //               padding: "3px 2px",
+  //               borderRadius: "15px",
+  //               textAlign: "center",
+  //             }}
+  //           >
+  //             true
+  //           </div>
+  //         ) : (
+  //           <div
+  //             style={{
+  //               color: "#E34444",
+  //               background: "#FFECE9",
+  //               width: "80%",
+  //               margin: "0 auto",
+  //               padding: "3px 2px",
+  //               borderRadius: "15px",
+  //               textAlign: "center",
+  //             }}
+  //           >
+  //             false
+  //           </div>
+  //         );
 
-        return <span>{icon}</span>;
-      },
-    },
-    {
-      title: "IP Address",
-      dataIndex: "ip_address",
-      key: "ip_address",
-      ...getColumnSearchProps("ip_address"),
-    },
-    {
-      title: "Device Name",
-      dataIndex: "device_name",
-      key: "device_name",
-      ...getColumnSearchProps("device_name"),
-    },
-    {
-      title: "Device Type",
-      dataIndex: "device_type",
-      key: "device_type",
-      ...getColumnSearchProps("device_type"),
-    },
-    {
-      title: "Onboard Status",
-      dataIndex: "onboard_status",
-      key: "onboard_status",
-      ...getColumnSearchProps("onboard_status"),
-    },
-    {
-      title: "Board",
-      dataIndex: "board",
-      key: "board",
-      render: (text, record) => {
-        const icon =
-          record.board === "true" ? (
-            <div
-              style={{
-                color: "#3D9E47",
-                background: "#F1F6EE",
-                width: "80%",
-                margin: "0 auto",
-                padding: "3px 2px",
-                borderRadius: "15px",
-                textAlign: "center",
-              }}
-            >
-              true
-            </div>
-          ) : (
-            <div
-              style={{
-                color: "#E34444",
-                background: "#FFECE9",
-                width: "80%",
-                margin: "0 auto",
-                padding: "3px 2px",
-                borderRadius: "15px",
-                textAlign: "center",
-              }}
-            >
-              false
-            </div>
-          );
-
-        return <span>{icon}</span>;
-      },
-    },
-    {
-      title: "Actions",
-      dataIndex: "actions",
-      key: "actions",
-      fixed: "right",
-      width: 100,
-      render: (text, record) => (
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-          }}
-        >
-          <Icon
-            onClick={() => handleDelete(record)}
-            icon="material-symbols:delete-outline"
-          />
-          <Icon icon="tdesign:dart-board" />
-
-          <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
-        </div>
-      ),
-    },
-  ];
-
-  const handleDelete = (record) => {
-    const updatedDataSource = dataSource.filter(
-      (item) => item.key !== record.key
-    );
-    setDataSource(updatedDataSource);
-  };
-
-  const handleEdit = (record) => {
-    setRecordToEdit(record);
-    setEditModalVisible(true);
-  };
+  //       return <span>{icon}</span>;
+  //     },
+  //   },
 
   return (
     <div>
@@ -339,64 +292,67 @@ const Index = () => {
       <DefaultCard
         sx={{
           backgroundColor: theme.palette.color.main,
-          padding: "10px",
-          width: `${width - 120}px`,
+          width: `${width - 105}px`,
         }}
       >
-        <Typography
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            alignItems: "center",
+        <div
+          style={{
+            padding: "10px",
           }}
         >
-          <Typography sx={{ color: theme.palette.textColor.tableText }}>
-            ATOM
-          </Typography>
-
           <Typography
             sx={{
               display: "flex",
+              justifyContent: "space-between",
               alignItems: "center",
-              gap: "10px",
-              marginBottom: "17px",
             }}
           >
-            <DefaultButton
-              handleClick={handleDelete}
-              sx={{ backgroundColor: theme.palette.color.danger }}
-            >
-              <Icon fontSize="16px" icon="ic:baseline-plus" />
-              Delete
-            </DefaultButton>
+            <Typography sx={{ color: theme.palette.textColor.tableText }}>
+              ATOM
+            </Typography>
 
-            <DefaultButton
-              sx={{ backgroundColor: theme.palette.color.primary }}
+            <Typography
+              sx={{
+                display: "flex",
+                alignItems: "center",
+                gap: "10px",
+              }}
             >
-              <Icon fontSize="16px" icon="ic:baseline-plus" />
-              Export
-            </DefaultButton>
+              <DefaultButton
+                handleClick={handleDelete}
+                sx={{ backgroundColor: theme.palette.color.danger }}
+              >
+                <Icon fontSize="16px" icon="ic:baseline-plus" />
+                Delete
+              </DefaultButton>
 
-            <DefaultButton
-              handleClick={handleClickOpen}
-              sx={{ backgroundColor: theme.palette.color.primary }}
-            >
-              <Icon fontSize="16px" icon="ic:baseline-plus" />
-              Add
-            </DefaultButton>
+              <DefaultButton
+                sx={{ backgroundColor: theme.palette.color.primary }}
+              >
+                <Icon fontSize="16px" icon="ic:baseline-plus" />
+                Export
+              </DefaultButton>
 
-            <DefaultButton
-              handleClick={handleInputClick}
-              sx={{ backgroundColor: theme.palette.color.primary }}
-            >
-              <Icon fontSize="16px" icon="pajamas:import" /> Import
-            </DefaultButton>
+              <DefaultButton
+                handleClick={handleClickOpen}
+                sx={{ backgroundColor: theme.palette.color.primary }}
+              >
+                <Icon fontSize="16px" icon="ic:baseline-plus" />
+                Add
+              </DefaultButton>
+
+              <DefaultButton
+                handleClick={handleInputClick}
+                sx={{ backgroundColor: theme.palette.color.primary }}
+              >
+                <Icon fontSize="16px" icon="pajamas:import" /> Import
+              </DefaultButton>
+            </Typography>
           </Typography>
-        </Typography>
-
+        </div>
         <TableStyle
           size="small"
-          scroll={{ x: 4000, y: height - 350 }}
+          scroll={{ x: 4000 }}
           onChange={handleChange}
           rowSelection={rowSelection}
           columns={columns}
