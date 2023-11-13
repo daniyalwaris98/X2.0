@@ -7,8 +7,9 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     fetchRacks: builder.query({
-      query: (data) => ({
-        url: `/api/v1/uam/rack/get-racks-by-site-dropdown?site_name=${data.site_name}`,
+      query: (params) => ({
+        url: `/api/v1/uam/rack/get-racks-by-site-dropdown`,
+        params: { Site_name: params.site_name },
       }),
     }),
 
@@ -19,10 +20,6 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchFunctions: builder.query({
       query: () => "/api/v1/atom/static-list/get-function-list",
     }),
-
-    //   fetchDeviceRus: builder.query({
-    //     query: () => "/api/v1/atom/static-list/get-vendor-list",
-    //   }),
 
     fetchDeviceTypes: builder.query({
       query: () => "/api/v1/atom/static-list/get-device-type-list",
@@ -39,7 +36,6 @@ export const {
   useFetchRacksQuery,
   useFetchVendorsQuery,
   useFetchFunctionsQuery,
-  //useFetchDeviceRusQuery,
   useFetchDeviceTypesQuery,
   useFetchPasswordGroupsQuery,
 } = extendedApi;

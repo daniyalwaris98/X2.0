@@ -6,7 +6,6 @@ const initialState = {
   racks: [],
   vendors: [],
   functions: [],
-  device_rus: [],
   device_types: [],
   password_groups: [],
 };
@@ -41,12 +40,6 @@ const dropDownsSlice = createSlice({
           state.functions = action.payload;
         }
       )
-      //   .addMatcher(
-      //     extendedApi.endpoints.fetchDeviceRus.matchFulfilled,
-      //     (state, action) => {
-      //         state.device_rus = action.payload;
-      //     }
-      //   )
       .addMatcher(
         extendedApi.endpoints.fetchDeviceTypes.matchFulfilled,
         (state, action) => {
@@ -62,5 +55,4 @@ const dropDownsSlice = createSlice({
   },
 });
 
-// export const {} = atomSlice.actions;
 export default dropDownsSlice.reducer;

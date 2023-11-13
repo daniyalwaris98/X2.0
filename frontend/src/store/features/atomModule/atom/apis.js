@@ -2,31 +2,28 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
+    //table apis
     fetchTableData: builder.query({
       query: () => "/api/v1/atom/atom/get-atoms",
     }),
 
-    // getVideosByMediaTypeAndGenreId: builder.query({
-    //   query: ({ mediaType, genreId, page }) => ({
-    //     url: `/discover/${mediaType}`,
-    //     params: { api_key: TMDB_V3_API_KEY, with_genres: genreId, page },
-    //   }),
-    // }),
+    addTableMultipleData: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/atom/atom/add-atom-devices",
+        method: "POST",
+        body: data,
+      }),
+    }),
 
-    // getVideosByMediaTypeAndCustomGenre: builder.query({
-    //   query: ({ mediaType, apiString, page }) => ({
-    //     url: `/${mediaType}/${apiString}`,
-    //     params: { api_key: TMDB_V3_API_KEY, page },
-    //   }),
-    //   transformResponse: (response, _, { mediaType, apiString }) => {
-    //     return {
-    //       ...response,
-    //       mediaType,
-    //       itemKey: apiString,
-    //     };
-    //   },
-    // }),
+    deleteTableMultipleData: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/atom/atom/delete-atom",
+        method: "POST",
+        body: data,
+      }),
+    }),
 
+    // form apis
     addTableSingleData: builder.mutation({
       query: (data) => ({
         url: "/api/v1/atom/atom/add-atom-device",
@@ -35,29 +32,21 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
-    // updateTableData: builder.mutation({
-    //   query: (data) => ({
-    //     url: `updateTableData/${data.id}`, // Replace 'updateTableData' with your API endpoint for updating data
-    //     method: "PUT",
-    //     body: data,
-    //   }),
-    // }),
-
-    // deleteTableData: builder.mutation({
-    //   query: (id) => ({
-    //     url: `deleteTableData/${id}`, // Replace 'deleteTableData' with your API endpoint for deleting data
-    //     method: "DELETE",
-    //   }),
-    // }),
+    updateTableSingleData: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/atom/atom/edit-atom",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
 export const {
   useFetchTableDataQuery,
+  useAddTableMultipleDataMutation,
+  useDeleteTableMultipleDataMutation,
+  // form apis
   useAddTableSingleDataMutation,
-  // useGetVideosByMediaTypeAndGenreIdQuery,
-  // useGetVideosByMediaTypeAndCustomGenreQuery,
-  // useAddTableDataQuery,
-  // useUpdateTableDataQuery,
-  // useDeleteTableDataQuery,
+  useUpdateTableSingleDataMutation,
 } = extendedApi;

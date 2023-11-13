@@ -6,6 +6,7 @@ import DefaultInput from "./inputs";
 import DefaultSelect from "./selects";
 import DefaultOption from "./options";
 import { Controller } from "react-hook-form";
+import { getTitle } from "../utils/helpers";
 
 export default function DefaultFormUnit({
   control,
@@ -83,10 +84,3 @@ export function SelectFormUnit({
     />
   );
 }
-
-const getTitle = (dataKey) => {
-  return dataKey
-    ?.split("_")
-    ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    ?.join(" ");
-};

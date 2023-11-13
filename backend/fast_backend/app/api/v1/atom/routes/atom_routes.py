@@ -116,11 +116,15 @@ async def get_atoms():
     try:
 
         atom_obj_list = []
-
+        count = 0
         try:
             transition_list = get_transition_atoms()
+            count = len(transition_list)
             for trans_atom in transition_list:
                 atom_obj_list.append(trans_atom)
+                # count = len(trans_atom)
+
+            print("count for atom is::::::::::::::::::::::::::::::",count,file=sys.stderr)
         except Exception:
             traceback.print_exc()
 
@@ -134,7 +138,7 @@ async def get_atoms():
             .join(SiteTable, RackTable.site_id == SiteTable.site_id)
             .all()
         )
-
+        
         for atomObj, rackObj, siteObj, passObj in result:
             try:
                 atom_data_dict = {
@@ -153,6 +157,7 @@ async def get_atoms():
                     "password_group": passObj.password_group,
                     "creation_date": str(atomObj.creation_date),
                     "modification_date": str(atomObj.modification_date),
+                    "atom_table_id":count
                 }
 
                 if atomObj.onboard_status is not None:
@@ -164,6 +169,8 @@ async def get_atoms():
                 atom_data_dict["status"] = 200
 
                 atom_obj_list.append(atom_data_dict)
+
+                count +=1
 
             except Exception:
                 traceback.print_exc()
@@ -184,63 +191,73 @@ async def get_atoms():
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
-def delete_atom(atom_list: list[DeleteAtomRequestSchema]):
+def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
     try:
-
         success_list = []
         error_list = []
-        print("atomlist is::::::::::::::::::::::::::::::::::::::",file=sys.stderr)
+        deleted_atoms_lst = []
+        atom_found = False 
+        transition_atom_found = False
         for atom_obj in atom_list:
+            deleted_atom ={}
             atom_obj = atom_obj.dict()
-            print("obj dict is:::::::::::::::::::::::::::::",atom_obj,file=sys.stderr)
+            print("obj is::::::::::::::::::::::::::::::::::::", file=sys.stderr)
+           
 
-            found = False
-            if "atom_id" in atom_obj:
-                if atom_obj['atom_id'] is not None:
-                    if atom_obj['atom_id'] != 0:
-                        found = True
+            if "atom_id" in atom_obj and atom_obj['atom_id'] is not None and atom_obj['atom_id'] != 0:
+                atoms = configs.db.query(AtomTable).filter_by(atom_id=atom_obj['atom_id']).all()
+                if atoms:
+                    print("if atom is::::::::::::::::::::::::::::::::::::::::", atoms, file=sys.stderr)
+                    for atom in atoms:
+                        atom_found = True
+                        deleted_atom_id = atom.atom_id
+                        atom_ip_address = atom.ip_address
+                        print("atom id is::::::::::::::::::::::::::::::", deleted_atom_id, file=sys.stderr)
+                        DeleteDBData(atom)
+                        print("atom delted successfully:::::::::::::::::::::::::::", file=sys.stderr)
+                        deleted_atom['atom_id'] = deleted_atom_id
+                        success_list.append(f"{atom_ip_address} : Atom Deleted Successfully")
+                        deleted_atoms_lst.append(deleted_atom)
+                else:
+                    not_found_atom_id = atom_obj['atom_id']
+                    print(f"Atom Not Found for atom_id: {not_found_atom_id}", file=sys.stderr)
+                    error_list.append(f"Atom Not Found for atom_id: {not_found_atom_id}")
 
-                        atom = configs.db.query(AtomTable).filter(
-                            AtomTable.atom_id == atom_obj['atom_id']).first()
-                        if atom is None:
-                            error_list.append(f'{atom_obj["atom_id"]} : Atom Not Found')
-                        else:
-                            if DeleteDBData(atom) == 200:
-                                success_list.append(
-                                    f"{atom.ip_address} : Atom Deleted Successfully")
-                            else:
-                                error_list.append(f"{atom.ip_address} : Error While Deleting Atom")
-            elif "atom_transition_id" in atom_obj:
-                if atom_obj['atom_transition_id'] is not None:
-                    if atom_obj['atom_transition_id'] != 0:
-                        found = True
+            print("start of atom tranistion::::::::::::::", file=sys.stderr)
+            if "atom_transition_id" in atom_obj and atom_obj['atom_transition_id'] is not None and atom_obj['atom_transition_id'] != 0:
+                print("atom tranistion found in :::::::::::::::::", file=sys.stderr)
+                atom_transition = configs.db.query(AtomTransitionTable).filter_by(atom_transition_id=atom_obj["atom_transition_id"]).all()
+                if atom_transition:
+                    print("atom tranistion atom is::::::::::::::::::::::::::::::::", file=sys.stderr)
+                    for atoms in atom_transition:
+                        transition_atom_found = True
+                        atom_tranistion_id = atoms.atom_transition_id
+                        transition_atom_ip = atoms.ip_address
+                        print("atom tranistion id:::::::::::::::::::::",atom_tranistion_id,file=sys.stderr)
+                        DeleteDBData(atoms)
+                        print("atom tranistion delted successsfully:::::::::::::::::::::::", file=sys.stderr)
+                        deleted_atom['atom_tranistion_id'] = atom_tranistion_id
+                        success_list.append(f"{transition_atom_ip} : Atom Tranistion Deleted Successfully")
+                        deleted_atoms_lst.append(deleted_atom)
+                else:
+                    not_found_atom_transition_id = atom_obj['atom_transition_id']
+                    print("Not found atom tranistion id is::::::::::::",file=sys.stderr)
+                    print(f"Atom Transition Not Found for id: {not_found_atom_transition_id}", file=sys.stderr)
+                    error_list.append(f"Atom Transition Not Found for id: {not_found_atom_transition_id}")
+        
 
-                        atom = configs.db.query(AtomTransitionTable).filter(
-                            AtomTransitionTable.atom_transition_id == atom_obj[
-                                'atom_transition_id']).first()
-                        if atom is None:
-                            error_list.append(f'{atom_obj["atom_id"]} : Transition Atom Not Found')
-                        else:
-                            found = True
-                            if DeleteDBData(atom) == 200:
-                                success_list.append(
-                                    f"{atom.ip_address} : Transition Atom Deleted Successfully")
-                            else:
-                                error_list.append(
-                                    f"{atom.ip_address} : Error While Deleting Transition Atom")
-
-            if found is False:
-                error_list.append(f"Atom / Transition Atom Not Found")
+        if not atom_found and not transition_atom_found:
+                error_list.append("Atom / Transition Atom Not Found")
 
         response = {
-            "deleted_atom_id":atom_list,
+            "data": deleted_atoms_lst,
             "success": len(success_list),
             "error": len(error_list),
             "success_list": success_list,
             "error_list": error_list
         }
 
-        return (response),200
+        return response, 200
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Deleting Atom", status_code=500)
