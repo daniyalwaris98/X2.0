@@ -182,6 +182,7 @@ const Index = () => {
     console.log("selectedRowKeys changed: ", newSelectedRowKeys);
     setSelectedRowKeys(newSelectedRowKeys);
   };
+
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
@@ -299,6 +300,24 @@ const Index = () => {
       dataIndex: "status",
       key: "status",
       ...getColumnSearchProps("status"),
+      render: (text, record) => {
+        const icon =
+          record.status === "online" ? (
+            <Icon
+              fontSize={"22px"}
+              color={theme.palette.color.primary}
+              icon="ep:success-filled"
+            />
+          ) : (
+            <Icon
+              fontSize={"23px"}
+              color={theme.palette.color.info}
+              icon="material-symbols:info"
+            />
+          );
+
+        return <span>{icon}</span>;
+      },
     },
     {
       title: "IP Address",
@@ -322,11 +341,46 @@ const Index = () => {
       title: "Onboard Status",
       dataIndex: "onboard_status",
       key: "onboard_status",
+      ...getColumnSearchProps("onboard_status"),
     },
     {
       title: "Board",
       dataIndex: "board",
       key: "board",
+      render: (text, record) => {
+        const icon =
+          record.board === "true" ? (
+            <div
+              style={{
+                color: "#3D9E47",
+                background: "#F1F6EE",
+                width: "80%",
+                margin: "0 auto",
+                padding: "3px 2px",
+                borderRadius: "15px",
+                textAlign: "center",
+              }}
+            >
+              true
+            </div>
+          ) : (
+            <div
+              style={{
+                color: "#E34444",
+                background: "#FFECE9",
+                width: "80%",
+                margin: "0 auto",
+                padding: "3px 2px",
+                borderRadius: "15px",
+                textAlign: "center",
+              }}
+            >
+              false
+            </div>
+          );
+
+        return <span>{icon}</span>;
+      },
     },
     {
       title: "Actions",
@@ -346,6 +400,7 @@ const Index = () => {
             icon="material-symbols:delete-outline"
           />
           <Icon icon="tdesign:dart-board" />
+
           <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
         </div>
       ),

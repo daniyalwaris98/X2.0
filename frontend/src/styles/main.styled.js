@@ -10,22 +10,23 @@ export const TableStyle = styled(Table)`
   }
 
   .ant-table-tbody > tr > td {
-    padding: 3px;
-    padding-right: 10px;
-    padding-left: 10px;
+    padding: 12px;
+    padding-right: 15px;
+    padding-left: 15px;
     font-size: 16px;
     // text-align: center;
-    border-right: 1px solid #acacac;
+    border-right: 1px solid #f6f6f6;
   }
   .ant-table-tbody > tr > td:first-child {
     text-align: start;
   }
   .ant-table-thead > tr > th {
-    padding: 3px;
+    padding: 12px;
     font-size: 16px;
-    padding-left: 10px;
-    padding-right: 10px;
-    border-right: 1px solid #acacac;
+    padding-left: 15px;
+    padding-right: 15px;
+    border-right: 1px solid #f6f6f6;
+    font-weight: 700;
     // text-align: center;
   }
   .ant-table-thead > tr > th:first-child {

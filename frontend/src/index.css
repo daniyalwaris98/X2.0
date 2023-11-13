@@ -34,3 +34,13 @@ code {
 .rowClassName {
   background-color: red !important;
 }
+
+.ant-checkbox-checked:not(.ant-checkbox-disabled) .ant-checkbox-inner {
+  background-color: #3d9e47 !important;
+  border-color: #3d9e47 !important;
+}
+:where(.css-dev-only-do-not-override-1adbn6x).ant-checkbox-wrapper:not(
+    .ant-checkbox-wrapper-disabled
+  ):hover {
+  border-color: #3d9e47 !important;
+}
