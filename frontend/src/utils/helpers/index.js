@@ -63,6 +63,18 @@ export const jsonToExcel = (jsonData, fileName) => {
   XLSX.writeFile(wb, `${fileName}.xlsx`);
 };
 
+export const formSetter = (data, setValue) => {
+  if (data) {
+    Object.keys(data).forEach((key) => {
+      setValue(key, data[key]);
+    });
+  }
+};
+
+export const generateNumbersArray = (upToValue) => {
+  return Array.from({ length: upToValue + 1 }, (_, index) => index);
+};
+
 // const menuItems = [
 //   { id: "Atom", name: "Atom", path: "/" },
 //   {

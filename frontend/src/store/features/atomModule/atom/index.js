@@ -47,21 +47,21 @@ const atomSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.deleteTableMultipleData.matchFulfilled,
         (state, action) => {
-          const deletedIds = action.payload[0]?.data || [];
-          if (deletedIds.length > 0) {
-            state.table_data = state.table_data.filter((item) => {
-              const atomId = item.atom_id;
-              const transitionId = item.atom_transition_id;
-              const shouldKeepItem = deletedIds.some((id) => {
-                if (atomId) {
-                  return id.atom_id === atomId;
-                } else {
-                  return id.atom_tranistion_id === transitionId;
-                }
-              });
-              return !shouldKeepItem;
-            });
-          }
+          // const deletedIds = action.payload[0]?.data || [];
+          // if (deletedIds.length > 0) {
+          //   state.table_data = state.table_data.filter((item) => {
+          //     const atomId = item.atom_id;
+          //     const transitionId = item.atom_transition_id;
+          //     const shouldKeepItem = deletedIds.some((id) => {
+          //       if (atomId) {
+          //         return id.atom_id === atomId;
+          //       } else {
+          //         return id.atom_tranistion_id === transitionId;
+          //       }
+          //     });
+          //     return !shouldKeepItem;
+          //   });
+          // }
         }
       )
 

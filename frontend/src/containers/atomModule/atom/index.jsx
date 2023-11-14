@@ -29,6 +29,8 @@ import {
 } from "../../../utils/helpers";
 import useColumnSearchProps from "../../../hooks/useColumnSearchProps";
 import { Spin } from "antd";
+import useErrorHandling from "../../../hooks/useErrorHandling";
+import { dataKeysArray } from "./constants";
 
 const Index = () => {
   // theme
@@ -43,22 +45,7 @@ const Index = () => {
 
   // states
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [columnDataKeys, setColumnDataKeys] = useState([
-    "ip_address",
-    "site_name",
-    "rack_name",
-    "device_name",
-    "device_ru",
-    "department",
-    "domain",
-    "section",
-    "function",
-    "virtual",
-    "device_type",
-    "vendor",
-    "criticality",
-    "password_group",
-  ]);
+  const [dataKeys, setDataKeys] = useState(dataKeysArray);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
 
@@ -90,70 +77,22 @@ const Index = () => {
     },
   ] = useDeleteTableMultipleDataMutation();
 
-  // effects
-  useEffect(() => {
-    if (isAddTableMultipleDataError) {
-      if (addTableMultipleDataError.status === 500) {
-        handleErrorAlert(addTableMultipleDataError.data);
-      } else if (addTableMultipleDataError.status === 422) {
-        handleErrorAlert(
-          addTableMultipleDataError.data.detail
-            .map((item) => item.msg)
-            .join("<br>")
-        );
-      }
-    } else if (isAddTableMultipleDataSuccess) {
-      if (addedTableMultipleData[0]?.error === 0) {
-        handleSuccessAlert(
-          addedTableMultipleData[0]?.success_list
-            .map((item) => item.message)
-            .join("<br>")
-        );
-      } else if (addedTableMultipleData[0]?.success === 0) {
-        handleErrorAlert(
-          addedTableMultipleData[0]?.error_list
-            .map((item) => item.message)
-            .join("<br>")
-        );
-      } else {
-        handleInfoAlert(
-          `${addedTableMultipleData[0]?.success_list
-            .map((item) => item.message)
-            .join("<br>")}\n${addedTableMultipleData[0]?.error_list
-            .map((item) => item.message)
-            .join("<br>")}`
-        );
-      }
-    }
-  }, [isAddTableMultipleDataSuccess, isAddTableMultipleDataError]);
+  // error handling custom hooks
+  useErrorHandling({
+    data: addedTableMultipleData,
+    isSuccess: isAddTableMultipleDataSuccess,
+    isError: isAddTableMultipleDataError,
+    error: addTableMultipleDataError,
+    type: "bulkAdd",
+  });
 
-  useEffect(() => {
-    if (isDeleteTableMultipleDataError) {
-      if (deleteTableSingleDataError.status === 500) {
-        handleErrorAlert(deleteTableSingleDataError.data);
-      } else if (deleteTableSingleDataError.status === 422) {
-        handleErrorAlert(
-          deleteTableSingleDataError.data.detail
-            .map((item) => item.msg)
-            .join("\n")
-        );
-      }
-    } else if (isDeleteTableSingleDataSuccess) {
-      if (deletedTableMultipleData[0]?.error === 0) {
-        handleSuccessAlert(
-          deletedTableMultipleData[0]?.success_list.join("<br>")
-        );
-      } else if (deletedTableMultipleData[0]?.success === 0) {
-        handleErrorAlert(deletedTableMultipleData[0]?.error_list.join("<br>"));
-      } else {
-        handleInfoAlert(
-          `${deletedTableMultipleData[0]?.success_list.join(
-            "<br>"
-          )}<br>Errors:${deletedTableMultipleData[0]?.error_list.join("<br>")}`
-        );
-      }
-    }
-  }, [isDeleteTableSingleDataSuccess, isDeleteTableMultipleDataError]);
+  useErrorHandling({
+    data: deletedTableMultipleData,
+    isSuccess: isDeleteTableSingleDataSuccess,
+    isError: isDeleteTableMultipleDataError,
+    error: deleteTableSingleDataError,
+    type: "bulkDelete",
+  });
 
   // handlers
   const handlePostSeed = (data) => {
@@ -233,7 +172,7 @@ const Index = () => {
   };
 
   // columns
-  let columns = columnGenerator(columnDataKeys, getColumnSearchProps, getTitle);
+  let columns = columnGenerator(dataKeys, getColumnSearchProps, getTitle);
 
   columns = [
     {

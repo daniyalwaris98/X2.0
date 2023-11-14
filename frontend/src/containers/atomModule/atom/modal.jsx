@@ -7,7 +7,7 @@ import { SelectFormUnit } from "../../../components/formUnits";
 import DefaultButton from "../../../components/buttons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme, styled } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import {
   useUpdateTableSingleDataMutation,
   useAddTableSingleDataMutation,
@@ -20,22 +20,17 @@ import {
   useFetchDeviceTypesQuery,
   useFetchPasswordGroupsQuery,
 } from "../../../store/features/dropDowns/apis";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   selectSites,
   selectRacks,
   selectVendors,
   selectFunctions,
-  selectDeviceRus,
   selectDeviceTypes,
   selectPasswordGroups,
 } from "../../../store/features/dropDowns/selectors";
-import {
-  handleSuccessAlert,
-  handleInfoAlert,
-  handleCallbackAlert,
-  handleErrorAlert,
-} from "../../../components/sweetAlertWrapper";
+import useErrorHandling from "../../../hooks/useErrorHandling";
+import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
   ip_address: yup.string().required("Ip address is required"),
@@ -52,29 +47,32 @@ const schema = yup.object().shape({
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
+
+  // states
+  const [initialRender, setInitialRender] = useState(true);
+
   // useForm hook
-  const { handleSubmit, control, setValue, watch, reset } = useForm({
+  const { handleSubmit, control, setValue, watch, trigger } = useForm({
     resolver: yupResolver(schema),
   });
 
+  // effects
   useEffect(() => {
-    formSetter(recordToEdit);
+    formSetter(recordToEdit, setValue);
   }, []);
 
-  // useEffect(() => {
-  //   resetField("rack_name");
-  // }, [watch("site_name")]);
-
-  console.log("rack_name", watch("rack_name"));
-  console.log("site_name", watch("site_name"));
-
-  const formSetter = (data) => {
-    if (data) {
-      Object.keys(data).forEach((key) => {
-        setValue(key, data[key]);
-      });
+  useEffect(() => {
+    // skip the first render
+    if (initialRender) {
+      setInitialRender(false);
+      return;
     }
-  };
+
+    (async () => {
+      setValue("rack_name", "");
+      await trigger("rack_name");
+    })();
+  }, [watch("site_name")]);
 
   // fetching dropdowns data from backend using apis
   const { error: sitesError, isLoading: isSitesLoading } = useFetchSitesQuery();
@@ -89,7 +87,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     useFetchVendorsQuery();
   const { error: functionsError, isLoading: isFunctionsLoading } =
     useFetchFunctionsQuery();
-  // const { error:deviceRuError, isLoading: isDeviceRusLoading } = useFetchDeviceRusQuery();
   const { error: deviceTypesError, isLoading: isDeviceTypesLoading } =
     useFetchDeviceTypesQuery();
   const { error: passwordGroupsError, isLoading: isPasswordGroupsLoading } =
@@ -118,22 +115,22 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateTableSingleDataMutation();
 
-  // effects
-  useEffect(() => {
-    if (isAddTableSingleDataError) {
-      handleErrorAlert(addTableSingleDataError.data);
-    } else if (isAddTableSingleDataSuccess) {
-      handleSuccessAlert(addedTableSingleData.message);
-    }
-  }, [isAddTableSingleDataSuccess, isAddTableSingleDataError]);
+  // error handling custom hooks
+  useErrorHandling({
+    data: updatedTableSingleData,
+    isSuccess: isUpdateTableSingleDataSuccess,
+    isError: isUpdateTableSingleDataError,
+    error: updateTableSingleDataError,
+    type: "single",
+  });
 
-  useEffect(() => {
-    if (isUpdateTableSingleDataError) {
-      handleErrorAlert(updateTableSingleDataError.data);
-    } else if (isUpdateTableSingleDataSuccess) {
-      handleSuccessAlert(updatedTableSingleData.message);
-    }
-  }, [isUpdateTableSingleDataSuccess, isUpdateTableSingleDataError]);
+  useErrorHandling({
+    data: addedTableSingleData,
+    isSuccess: isAddTableSingleDataSuccess,
+    isError: isAddTableSingleDataError,
+    error: addTableSingleDataError,
+    type: "single",
+  });
 
   // getting dropdowns data from the store
   const sites = useSelector(selectSites);
@@ -143,11 +140,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   const deviceTypes = useSelector(selectDeviceTypes);
   const passwordGroups = useSelector(selectPasswordGroups);
 
-  // function to reset a specific field
-  const resetField = (fieldName) => {
-    reset({ [fieldName]: "" });
-  };
-
+  // on form submit
   const onSubmit = (data) => {
     console.log(data);
     if (recordToEdit) {
@@ -166,11 +159,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     } else {
       addTableSingleData(data);
     }
-    // handleClose();
-  };
-
-  const generateNumbersArray = (upToValue) => {
-    return Array.from({ length: upToValue + 1 }, (_, index) => index);
   };
 
   return (
@@ -195,46 +183,46 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               options={racks}
               required
             />
-            <DefaultFormUnit control={control} dataKey="device_name" required />
+            <DefaultFormUnit control={control} dataKey="section" />
+            <DefaultFormUnit control={control} dataKey="department" />
+          </Grid>
+          <Grid item xs={12} sm={4}>
             <SelectFormUnit
               control={control}
               dataKey="device_ru"
               options={generateNumbersArray(30)}
               required
             />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="department" />
-            <DefaultFormUnit control={control} dataKey="domain" />
-            <DefaultFormUnit control={control} dataKey="section" />
             <SelectFormUnit
               control={control}
               dataKey="function"
               options={functions}
               required
             />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="virtual" />
             <SelectFormUnit
               control={control}
               dataKey="device_type"
               options={deviceTypes}
               required
             />
+            <DefaultFormUnit control={control} dataKey="device_name" required />
+          </Grid>
+          <Grid item xs={12} sm={4}>
             <SelectFormUnit
               control={control}
               dataKey="vendor"
               options={vendors}
               required
             />
-            <DefaultFormUnit control={control} dataKey="criticality" required />
             <SelectFormUnit
               control={control}
               dataKey="password_group"
               options={passwordGroups}
               required
             />
+            <DefaultFormUnit control={control} dataKey="criticality" required />
+            <DefaultFormUnit control={control} dataKey="virtual" />
+            <DefaultFormUnit control={control} dataKey="domain" />
           </Grid>
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "center" }}>
