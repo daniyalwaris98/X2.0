@@ -40,7 +40,12 @@ export const handleCustomAlert = (icon, title, text) => {
   });
 };
 
-export const handleCallbackAlert = (type, message, callback, title = null) => {
+export const handleCallbackAlert = (
+  message,
+  callback,
+  type = "warning",
+  title = null
+) => {
   if (type === "success") {
     sweetAlertWrapper.callback(type, title ?? "Success!", message, callback);
   } else if (type === "error") {

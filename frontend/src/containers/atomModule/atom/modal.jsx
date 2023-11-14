@@ -242,7 +242,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 handleClick={handleClose}
                 sx={{ backgroundColor: theme.palette.color.danger }}
               >
-                Cancel
+                Close
               </DefaultButton>
               &nbsp; &nbsp;
               <DefaultButton

@@ -9,7 +9,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchRacks: builder.query({
       query: (params) => ({
         url: `/api/v1/uam/rack/get-racks-by-site-dropdown`,
-        params: { Site_name: params.site_name },
+        params: { site_name: params.site_name },
       }),
     }),
 

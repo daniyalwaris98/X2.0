@@ -66,7 +66,7 @@ export function SelectFormUnit({
               <DefaultSelect
                 field={field}
                 sx={{ width: "195px", outline: "none" }}
-                id="dataKey"
+                id={dataKey}
                 {...rest}
               >
                 <DefaultOption value="">Select a {title}</DefaultOption>

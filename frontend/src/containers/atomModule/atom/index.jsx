@@ -43,6 +43,22 @@ const Index = () => {
 
   // states
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [columnDataKeys, setColumnDataKeys] = useState([
+    "ip_address",
+    "site_name",
+    "rack_name",
+    "device_name",
+    "device_ru",
+    "department",
+    "domain",
+    "section",
+    "function",
+    "virtual",
+    "device_type",
+    "vendor",
+    "criticality",
+    "password_group",
+  ]);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
 
@@ -170,7 +186,6 @@ const Index = () => {
   const handleDelete = () => {
     if (selectedRowKeys.length > 0) {
       handleCallbackAlert(
-        "warning",
         "Are you sure you want delete these records?",
         deleteData
       );
@@ -218,26 +233,7 @@ const Index = () => {
   };
 
   // columns
-  let columns = columnGenerator(
-    [
-      "ip_address",
-      "site_name",
-      "rack_name",
-      "device_name",
-      "device_ru",
-      "department",
-      "domain",
-      "section",
-      "function",
-      "virtual",
-      "device_type",
-      "vendor",
-      "criticality",
-      "password_group",
-    ],
-    getColumnSearchProps,
-    getTitle
-  );
+  let columns = columnGenerator(columnDataKeys, getColumnSearchProps, getTitle);
 
   columns = [
     {
