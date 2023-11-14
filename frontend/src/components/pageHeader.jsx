@@ -1,6 +1,6 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
-import DefaultButton from "./buttons";
+import DefaultButton, { DropDownButton } from "./buttons";
 import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 
@@ -38,6 +38,55 @@ export default function PageHeader({
             gap: "10px",
           }}
         >
+          <DropDownButton
+            handleClick={handleExport}
+            sx={{
+              backgroundColor: theme.palette.color.main,
+              color: theme.palette.textColor.default,
+            }}
+            options={[
+              {
+                name: "All Devices",
+                icon: (
+                  <Icon
+                    color={theme.palette.color.disable}
+                    icon="icon-park-outline:data-all"
+                  />
+                ),
+              },
+              {
+                name: "Template",
+                icon: (
+                  <Icon
+                    color={theme.palette.color.disable}
+                    icon="material-symbols-light:copy-all"
+                  />
+                ),
+              },
+              {
+                name: "Completed",
+                icon: (
+                  <Icon
+                    color={theme.palette.color.primary}
+                    icon="ep:success-filled"
+                  />
+                ),
+              },
+              {
+                name: "Incomplete",
+                icon: (
+                  <Icon
+                    color={theme.palette.color.info}
+                    icon="material-symbols:info"
+                  />
+                ),
+              },
+            ]}
+          >
+            <Icon fontSize="16px" icon="fe:export" />
+            Export
+          </DropDownButton>
+
           <DefaultButton
             handleClick={handleDelete}
             sx={{ backgroundColor: theme.palette.color.danger }}
