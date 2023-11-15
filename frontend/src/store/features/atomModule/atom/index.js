@@ -20,11 +20,7 @@ const atomSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.addTableMultipleData.matchFulfilled,
         (state, action) => {
-          let responseData = action.payload[0]?.success_list.map(
-            (item) => item.data
-          );
-
-          responseData.forEach((responseItem) => {
+          action.payload.data.forEach((responseItem) => {
             const indexToUpdate = state.table_data.findIndex((tableItem) => {
               let atomId = responseItem.atom_id;
               let atomTransitionId = responseItem.atom_transition_id;
@@ -47,7 +43,7 @@ const atomSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.deleteTableMultipleData.matchFulfilled,
         (state, action) => {
-          const deletedIds = action.payload[0]?.data || [];
+          const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
             state.table_data = state.table_data.filter((item) => {
               const atomId = item.atom_id;
@@ -56,7 +52,7 @@ const atomSlice = createSlice({
                 if (atomId) {
                   return id.atom_id === atomId;
                 } else {
-                  return id.atom_tranistion_id === transitionId;
+                  return id.atom_transition_id === transitionId;
                 }
               });
               return !shouldKeepItem;
@@ -69,6 +65,7 @@ const atomSlice = createSlice({
         extendedApi.endpoints.addTableSingleData.matchFulfilled,
         (state, action) => {
           action.payload.data.atom_table_id = Date.now();
+          console.log(action.payload.data);
           state.table_data.push(action.payload.data);
         }
       )
@@ -77,16 +74,18 @@ const atomSlice = createSlice({
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.table_data = state.table_data.map((item) => {
-            const { atom_id, atom_transition_id } = item;
-
-            if (
-              atom_id === objectToReplace.atom_id ||
-              atom_transition_id === objectToReplace.atom_transition_id
+            const atomId = item.atom_id;
+            const transitionId = item.atom_transition_id;
+            if (atomId && atomId === objectToReplace.atom_id) {
+              return { ...item, ...objectToReplace };
+            } else if (
+              transitionId &&
+              transitionId === objectToReplace.atom_transition_id
             ) {
               return { ...item, ...objectToReplace };
+            } else {
+              return item;
             }
-
-            return item;
           });
         }
       );

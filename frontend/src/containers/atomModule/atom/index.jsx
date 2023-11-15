@@ -55,7 +55,13 @@ const Index = () => {
   const dataSource = useSelector(selectTableData);
 
   // apis
-  const { data, error, isLoading } = useFetchTableDataQuery();
+  const {
+    data: fetchedTableData,
+    isSuccess: isFetchTableDataSuccess,
+    isLoading: isFetchTableDataLoading,
+    isError: isFetchTableDataError,
+    error: fetchTableDataError,
+  } = useFetchTableDataQuery();
 
   const [
     addTableMultipleData,
@@ -81,11 +87,19 @@ const Index = () => {
 
   // error handling custom hooks
   useErrorHandling({
+    data: fetchedTableData,
+    isSuccess: isFetchTableDataSuccess,
+    isError: isFetchTableDataError,
+    error: fetchTableDataError,
+    type: "fetch",
+  });
+
+  useErrorHandling({
     data: addedTableMultipleData,
     isSuccess: isAddTableMultipleDataSuccess,
     isError: isAddTableMultipleDataError,
     error: addTableMultipleDataError,
-    type: "bulkAdd",
+    type: "bulk",
   });
 
   useErrorHandling({
@@ -93,7 +107,7 @@ const Index = () => {
     isSuccess: isDeleteTableSingleDataSuccess,
     isError: isDeleteTableMultipleDataError,
     error: deleteTableSingleDataError,
-    type: "bulkDelete",
+    type: "bulk",
   });
 
   // handlers
@@ -146,8 +160,11 @@ const Index = () => {
     }
   };
 
-  const handleClickOpen = () => {
-    setOpen(true);
+  const handleAddAtom = (optionType) => {
+    if (optionType === "Add Manually") {
+      setOpen(true);
+    } else if (optionType === "From Discovery") {
+    }
   };
 
   const handleClose = () => {
@@ -159,13 +176,22 @@ const Index = () => {
     console.log("Various parameters", pagination, filters, sorter, extra);
   };
 
-  const handleExport = () => {
-    jsonToExcel(dataSource, "atom");
-    handleSuccessAlert("File exported successfully.");
-  };
-
-  const handleExportTemplate = () => {
-    jsonToExcel([generateObject(dataKeys)], "atom_template");
+  const handleExport = (optionType) => {
+    if (optionType === "All Devices") {
+      jsonToExcel(dataSource, "all_atoms");
+    } else if (optionType === "Template") {
+      jsonToExcel([generateObject(dataKeys)], "atom_template");
+    } else if (optionType === "Completed") {
+      jsonToExcel(
+        dataSource.filter((item) => item.hasOwnProperty("atom_id")),
+        "complete_atoms"
+      );
+    } else if (optionType === "Incomplete") {
+      jsonToExcel(
+        dataSource.filter((item) => item.hasOwnProperty("atom_transition_id")),
+        "incomplete_atoms"
+      );
+    }
     handleSuccessAlert("File exported successfully.");
   };
 
@@ -232,7 +258,7 @@ const Index = () => {
   return (
     <Spin
       spinning={
-        isLoading ||
+        isFetchTableDataLoading ||
         isAddTableMultipleDataLoading ||
         isDeleteTableMultipleDataLoading
       }
@@ -260,10 +286,9 @@ const Index = () => {
         >
           <PageHeader
             pageName="Atom"
-            handleDelete={handleDelete}
-            handleExportTemplate={handleExportTemplate}
+            handleAddAtom={handleAddAtom}
             handleExport={handleExport}
-            handleClickOpen={handleClickOpen}
+            handleDelete={handleDelete}
             handleInputClick={handleInputClick}
           />
 

@@ -4,12 +4,12 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
     fetchTableData: builder.query({
-      query: () => "/api/v1/atom/atom/get-atoms",
+      query: () => "/api/v1/atom/atom/get_atoms",
     }),
 
     addTableMultipleData: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/atom/add-atom-devices",
+        url: "/api/v1/atom/atom/add_atom_devices",
         method: "POST",
         body: data,
       }),
@@ -17,7 +17,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 
     deleteTableMultipleData: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/atom/delete-atom",
+        url: "/api/v1/atom/atom/delete_atom",
         method: "POST",
         body: data,
       }),
@@ -26,7 +26,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     // form apis
     addTableSingleData: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/atom/add-atom-device",
+        url: "/api/v1/atom/atom/add_atom_device",
         method: "POST",
         body: data,
       }),
@@ -34,7 +34,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 
     updateTableSingleData: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/atom/edit-atom",
+        url: "/api/v1/atom/atom/edit_atom",
         method: "POST",
         body: data,
       }),
