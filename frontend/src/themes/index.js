@@ -19,6 +19,7 @@ export const lightTheme = createTheme({
       checkboxBorder: "#DBDBDB",
       modalTitle: "#EBEBEB", // light blue
       inputBorderColor: "#F5F5F5",
+      textBlackColor:"#262626", //text color black
     },
 
     textColor: {
