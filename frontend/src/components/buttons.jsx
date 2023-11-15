@@ -126,10 +126,11 @@ export function DropDownButton({
           <StyledOption
             key={option.type}
             onClick={() => handleOptionClick(option.type)}
-            sx={{}}
+            sx={{ display: "flex" }}
           >
-            {option.icon} &nbsp;&nbsp;
-            {option.type}
+            {option.icon}
+            &nbsp;&nbsp;
+            <div style={{ marginTop: "-2px" }}>{option.type}</div>
           </StyledOption>
         ))}
       </DropdownOptions>

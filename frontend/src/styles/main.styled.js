@@ -1,7 +1,7 @@
-import { Layout, Menu, Table, Input, Card } from "antd";
+import { Table } from "antd";
 import styled from "styled-components";
 
-export const TableStyle = styled(Table)`
+export const StyledTable = styled(Table)`
   .ant-table {
     overflow-x: auto !important;
   }
@@ -11,7 +11,6 @@ export const TableStyle = styled(Table)`
     padding-right: 15px;
     padding-left: 15px;
     font-size: 16px;
-    // text-align: center;
     border-right: 1px solid #f6f6f6;
   }
   .ant-table-tbody > tr > td:first-child {
@@ -25,7 +24,6 @@ export const TableStyle = styled(Table)`
     border-right: 1px solid #f6f6f6;
     font-weight: 700;
     z-index: 0;
-    /* text-align: center; */
   }
   .ant-table-thead > tr > th:first-child {
     text-align: start;

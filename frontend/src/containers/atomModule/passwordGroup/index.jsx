@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import { Icon } from "@iconify/react";
-import { TableStyle } from "../../../styles/main.styled";
+import { StyledTable } from "../../../styles/main.styled";
 import { getTitle } from "../../../utils/helpers";
 import Modal from "./modal";
 import {
@@ -10,7 +10,7 @@ import {
   useAddTableMultipleDataMutation,
   useDeleteTableMultipleDataMutation,
 } from "../../../store/features/atomModule/passwordGroup/apis";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
@@ -138,11 +138,8 @@ const Index = () => {
     }
   };
 
-  const handleAddAtom = (optionType) => {
-    if (optionType === "Add Manually") {
-      setOpen(true);
-    } else if (optionType === "From Discovery") {
-    }
+  const handleAdd = (optionType) => {
+    setOpen(true);
   };
 
   const handleClose = () => {
@@ -195,6 +192,49 @@ const Index = () => {
     ),
   });
 
+  // page header buttons
+  const buttons = [
+    {
+      type: "Export",
+      icon: <Icon fontSize="16px" icon="fe:export" />,
+      handleClick: handleExport,
+      options: [
+        {
+          type: "All Devices",
+          icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
+        },
+        {
+          type: "Template",
+          icon: (
+            <Icon fontSize="16px" icon="streamline:chat-bubble-square-write" />
+          ),
+        },
+      ],
+      sx: {
+        backgroundColor: theme.palette.color.main,
+        color: theme.palette.textColor.default,
+      },
+    },
+    {
+      type: "Delete",
+      icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
+      handleClick: handleDelete,
+      sx: { backgroundColor: theme.palette.color.danger },
+    },
+    {
+      type: "Add",
+      icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
+      handleClick: handleAdd,
+      sx: { backgroundColor: theme.palette.color.primary },
+    },
+    {
+      type: "Import",
+      icon: <Icon fontSize="16px" icon="pajamas:import" />,
+      handleClick: handleInputClick,
+      sx: { backgroundColor: theme.palette.color.primary },
+    },
+  ];
+
   return (
     <Spin
       spinning={
@@ -224,17 +264,9 @@ const Index = () => {
             width: `${width - 105}px`,
           }}
         >
-          <PageHeader
-            pageName="Password Group"
-            handleAddAtom={handleAddAtom}
-            handleExport={handleExport}
-            handleDelete={handleDelete}
-            handleInputClick={handleInputClick}
-          />
-
-          <TableStyle
+          <PageHeader pageName="Password Group" buttons={buttons} />
+          <StyledTable
             size="small"
-            // scroll={{ x: 500 }}
             onChange={handleChange}
             rowSelection={rowSelection}
             columns={columns}

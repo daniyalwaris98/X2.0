@@ -2,7 +2,7 @@ import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import { Icon } from "@iconify/react";
-import { TableStyle } from "../../../styles/main.styled";
+import { StyledTable } from "../../../styles/main.styled";
 import { getTitle } from "../../../utils/helpers";
 import Modal from "./modal";
 import {
@@ -157,7 +157,7 @@ const Index = () => {
     }
   };
 
-  const handleAddAtom = (optionType) => {
+  const handleAdd = (optionType) => {
     if (optionType === "Add Manually") {
       setOpen(true);
     } else if (optionType === "From Discovery") {
@@ -252,6 +252,84 @@ const Index = () => {
     ),
   });
 
+  // page header buttons
+  const buttons = [
+    {
+      type: "Export",
+      icon: <Icon fontSize="16px" icon="fe:export" />,
+      handleClick: handleExport,
+      options: [
+        {
+          type: "All Devices",
+          icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
+        },
+        {
+          type: "Template",
+          icon: (
+            <Icon fontSize="16px" icon="streamline:chat-bubble-square-write" />
+          ),
+        },
+        {
+          type: "Completed",
+          icon: (
+            <Icon
+              fontSize="16px"
+              icon="ep:success-filled"
+              color={theme.palette.color.primary}
+            />
+          ),
+        },
+        {
+          type: "Incomplete",
+          icon: (
+            <Icon
+              fontSize="16px"
+              icon="material-symbols:info"
+              color={theme.palette.color.info}
+            />
+          ),
+        },
+      ],
+      sx: {
+        backgroundColor: theme.palette.color.main,
+        color: theme.palette.textColor.default,
+      },
+    },
+    {
+      type: "Delete",
+      icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
+      handleClick: handleDelete,
+      sx: { backgroundColor: theme.palette.color.danger },
+    },
+    {
+      type: "Add Atom",
+      icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
+      handleClick: handleAdd,
+      options: [
+        {
+          type: "Add Manually",
+          icon: <Icon fontSize="16px" icon="icon-park-outline:manual-gear" />,
+        },
+        {
+          type: "From Discovery",
+          icon: (
+            <Icon fontSize="16px" icon="icon-park-outline:discovery-index" />
+          ),
+        },
+      ],
+      sx: {
+        backgroundColor: theme.palette.color.primary,
+        color: theme.palette.textColor.main,
+      },
+    },
+    {
+      type: "Import",
+      icon: <Icon fontSize="16px" icon="pajamas:import" />,
+      handleClick: handleInputClick,
+      sx: { backgroundColor: theme.palette.color.primary },
+    },
+  ];
+
   return (
     <Spin
       spinning={
@@ -281,15 +359,8 @@ const Index = () => {
             width: `${width - 105}px`,
           }}
         >
-          <PageHeader
-            pageName="Atom"
-            handleAddAtom={handleAddAtom}
-            handleExport={handleExport}
-            handleDelete={handleDelete}
-            handleInputClick={handleInputClick}
-          />
-
-          <TableStyle
+          <PageHeader pageName="Atom" buttons={buttons} />
+          <StyledTable
             size="small"
             scroll={{ x: 3000 }}
             onChange={handleChange}
