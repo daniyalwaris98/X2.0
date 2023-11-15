@@ -85,17 +85,17 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                 else:
                     msg, status = add_complete_atom(atomObj, False)
                     print("msg for add complete atom is34343434343434:::::::::::::::::::::",msg,file=sys.stderr)
-                    # if msg:
-                    #     for key,value in msg.items():
-                    #             print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
-                    #             print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
+                    if isinstance(msg, dict):
+                        for key,value in msg.items():
+                                print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
+                                print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
 
-                    #             if key =='data':
-                    #                 data_lst.append(value)
-                    #             if key == 'message':
-                    #                 if value not in success_list:
-                    #                     print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
-                    #                     success_list.append(value)
+                                if key =='data':
+                                    data_lst.append(value)
+                                if key == 'message':
+                                    if value not in success_list:
+                                        print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
+                                        success_list.append(value)
 
                     if status != 200:
                         msg, status = add_transition_atom(atomObj, False)

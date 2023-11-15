@@ -342,12 +342,12 @@ def add_transition_atom(device, update):
                             value = getattr(trans_obj, column_name, None)
                             attributes_dict[column_name] = value
                             
-                print("attribute dict isssssssssssssssssssssssssssssssssssssssssss",attributes_dict,file=sys.stderr)
+                # print("attribute dict isssssssssssssssssssssssssssssssssssssssssss",attributes_dict,file=sys.stderr)
                 transition_data = {
                         "data":attributes_dict,
                         "message":str(msg)
                 }
-                print("transition data is::::::::::::::::::::::::::::::::::::::",transition_data,file=sys.stderr)
+                # print("transition data is::::::::::::::::::::::::::::::::::::::",transition_data,file=sys.stderr)
                     # print(msg, file=sys.stderr)
                 return (transition_data), 200
             else:
