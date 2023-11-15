@@ -267,7 +267,7 @@ def add_complete_atom(device, update):
             except Exception:
                 traceback.print_exc()
 
-        return (atom_data).status
+        return (atom_data),status
 
     except Exception:
         error = f"Error : Exception Occurred"
@@ -762,7 +762,7 @@ def add_password_group_util(pass_obj, update):
             status = InsertDBData(password_group)
             if status == 200:
                 pass_data = dict(pass_obj)
-                pass_data['password_group_id'] = pass_data.password_group_id
+                pass_data['password_group_id'] = password_group.password_group_id
                 msg=   f"{pass_obj['password_group']} : Password Group Inserted Successfully"
                 password_group_data = {
                     "data":pass_data,
