@@ -26,11 +26,13 @@ import {
   convertToJson,
   handleFileChange,
   columnGenerator,
+  generateObject,
 } from "../../../utils/helpers";
 import useColumnSearchProps from "../../../hooks/useColumnSearchProps";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { dataKeysArray } from "./constants";
+import PageHeader from "../../../components/pageHeader";
 
 const Index = () => {
   // theme
@@ -129,7 +131,7 @@ const Index = () => {
         deleteData
       );
     } else {
-      handleInfoAlert("No record has been selected");
+      handleInfoAlert("No record has been selected to delete!");
     }
   };
 
@@ -159,6 +161,12 @@ const Index = () => {
 
   const handleExport = () => {
     jsonToExcel(dataSource, "atom");
+    handleSuccessAlert("File exported successfully.");
+  };
+
+  const handleExportTemplate = () => {
+    jsonToExcel([generateObject(dataKeys)], "atom_template");
+    handleSuccessAlert("File exported successfully.");
   };
 
   // row selection
@@ -221,45 +229,6 @@ const Index = () => {
     ),
   });
 
-  //   {
-  //     title: "Board",
-  //     dataIndex: "board",
-  //     key: "board",
-  //     render: (text, record) => {
-  //       const icon =
-  //         record.board === "true" ? (
-  //           <div
-  //             style={{
-  //               color: "#3D9E47",
-  //               background: "#F1F6EE",
-  //               width: "80%",
-  //               margin: "0 auto",
-  //               padding: "3px 2px",
-  //               borderRadius: "15px",
-  //               textAlign: "center",
-  //             }}
-  //           >
-  //             true
-  //           </div>
-  //         ) : (
-  //           <div
-  //             style={{
-  //               color: "#E34444",
-  //               background: "#FFECE9",
-  //               width: "80%",
-  //               margin: "0 auto",
-  //               padding: "3px 2px",
-  //               borderRadius: "15px",
-  //               textAlign: "center",
-  //             }}
-  //           >
-  //             false
-  //           </div>
-  //         );
-  //       return <span>{icon}</span>;
-  //     },
-  //   },
-
   return (
     <Spin
       spinning={
@@ -289,62 +258,15 @@ const Index = () => {
             width: `${width - 105}px`,
           }}
         >
-          <div
-            style={{
-              padding: "10px",
-            }}
-          >
-            <Typography
-              sx={{
-                display: "flex",
-                justifyContent: "space-between",
-                alignItems: "center",
-              }}
-            >
-              <Typography sx={{ color: theme.palette.textColor.tableText }}>
-                ATOM
-              </Typography>
+          <PageHeader
+            pageName="Atom"
+            handleDelete={handleDelete}
+            handleExportTemplate={handleExportTemplate}
+            handleExport={handleExport}
+            handleClickOpen={handleClickOpen}
+            handleInputClick={handleInputClick}
+          />
 
-              <Typography
-                sx={{
-                  display: "flex",
-                  alignItems: "center",
-                  gap: "10px",
-                }}
-              >
-                <DefaultButton
-                  handleClick={handleDelete}
-                  sx={{ backgroundColor: theme.palette.color.danger }}
-                >
-                  <Icon fontSize="16px" icon="ic:baseline-plus" />
-                  Delete
-                </DefaultButton>
-
-                <DefaultButton
-                  handleClick={handleExport}
-                  sx={{ backgroundColor: theme.palette.color.primary }}
-                >
-                  <Icon fontSize="16px" icon="ic:baseline-plus" />
-                  Export
-                </DefaultButton>
-
-                <DefaultButton
-                  handleClick={handleClickOpen}
-                  sx={{ backgroundColor: theme.palette.color.primary }}
-                >
-                  <Icon fontSize="16px" icon="ic:baseline-plus" />
-                  Add
-                </DefaultButton>
-
-                <DefaultButton
-                  handleClick={handleInputClick}
-                  sx={{ backgroundColor: theme.palette.color.primary }}
-                >
-                  <Icon fontSize="16px" icon="pajamas:import" /> Import
-                </DefaultButton>
-              </Typography>
-            </Typography>
-          </div>
           <TableStyle
             size="small"
             scroll={{ x: 3000 }}

@@ -230,13 +230,15 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 handleClick={handleClose}
                 sx={{ backgroundColor: theme.palette.color.danger }}
               >
-                Close
+                <></>
+                Cancel
               </DefaultButton>
               &nbsp; &nbsp;
               <DefaultButton
                 type="submit"
                 sx={{ backgroundColor: theme.palette.color.primary }}
               >
+                <></>
                 Submit
               </DefaultButton>
             </div>

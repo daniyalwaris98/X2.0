@@ -1,9 +1,6 @@
 import { Layout, Menu, Table, Input, Card } from "antd";
 import styled from "styled-components";
 
-// .ant-table-tbody > tr {
-//   background-color: ${({ theme }) => theme.palette.background.default};
-// }
 export const TableStyle = styled(Table)`
   .ant-table {
     overflow-x: auto !important;
@@ -27,7 +24,8 @@ export const TableStyle = styled(Table)`
     padding-right: 15px;
     border-right: 1px solid #f6f6f6;
     font-weight: 700;
-    // text-align: center;
+    z-index: 0;
+    /* text-align: center; */
   }
   .ant-table-thead > tr > th:first-child {
     text-align: start;

@@ -75,6 +75,10 @@ export const generateNumbersArray = (upToValue) => {
   return Array.from({ length: upToValue + 1 }, (_, index) => index);
 };
 
+export const generateObject = (dataKeys) => {
+  return Object.fromEntries(dataKeys.map((key) => [key, ""]));
+};
+
 // const menuItems = [
 //   { id: "Atom", name: "Atom", path: "/" },
 //   {
@@ -107,3 +111,42 @@ export const generateNumbersArray = (upToValue) => {
 //   },
 //   { id: "about-us", name: "About Us", path: "atom" },
 // ];
+
+//   {
+//     title: "Board",
+//     dataIndex: "board",
+//     key: "board",
+//     render: (text, record) => {
+//       const icon =
+//         record.board === "true" ? (
+//           <div
+//             style={{
+//               color: "#3D9E47",
+//               background: "#F1F6EE",
+//               width: "80%",
+//               margin: "0 auto",
+//               padding: "3px 2px",
+//               borderRadius: "15px",
+//               textAlign: "center",
+//             }}
+//           >
+//             true
+//           </div>
+//         ) : (
+//           <div
+//             style={{
+//               color: "#E34444",
+//               background: "#FFECE9",
+//               width: "80%",
+//               margin: "0 auto",
+//               padding: "3px 2px",
+//               borderRadius: "15px",
+//               textAlign: "center",
+//             }}
+//           >
+//             false
+//           </div>
+//         );
+//       return <span>{icon}</span>;
+//     },
+//   },
