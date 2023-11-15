@@ -7,9 +7,8 @@ import { Icon } from "@iconify/react";
 export default function PageHeader({
   pageName,
   handleDelete,
-  handleExportTemplate,
   handleExport,
-  handleClickOpen,
+  handleAddAtom,
   handleInputClick,
 }) {
   const theme = useTheme();
@@ -46,36 +45,42 @@ export default function PageHeader({
             }}
             options={[
               {
-                name: "All Devices",
+                type: "All Devices",
                 icon: (
                   <Icon
-                    color={theme.palette.color.disable}
+                    style={{ marginBottom: "-1px" }}
+                    color={theme.palette.textColor.tertiary}
                     icon="icon-park-outline:data-all"
                   />
                 ),
               },
               {
-                name: "Template",
+                type: "Template",
                 icon: (
                   <Icon
-                    color={theme.palette.color.disable}
-                    icon="material-symbols-light:copy-all"
+                    style={{ marginBottom: "-1px" }}
+                    color={theme.palette.textColor.tertiary}
+                    icon="subway:write"
                   />
                 ),
               },
               {
-                name: "Completed",
+                type: "Completed",
                 icon: (
                   <Icon
+                    fontSize={16}
+                    style={{ marginBottom: "-3px" }}
                     color={theme.palette.color.primary}
                     icon="ep:success-filled"
                   />
                 ),
               },
               {
-                name: "Incomplete",
+                type: "Incomplete",
                 icon: (
                   <Icon
+                    fontSize={18}
+                    style={{ marginBottom: "-3px" }}
                     color={theme.palette.color.info}
                     icon="material-symbols:info"
                   />
@@ -95,30 +100,38 @@ export default function PageHeader({
             Delete
           </DefaultButton>
 
-          <DefaultButton
-            handleClick={handleExportTemplate}
-            sx={{ backgroundColor: theme.palette.color.primary }}
-          >
-            <Icon fontSize="16px" icon="fe:export" />
-            Export Template
-          </DefaultButton>
-
-          <DefaultButton
-            handleClick={handleExport}
-            sx={{ backgroundColor: theme.palette.color.primary }}
-          >
-            <Icon fontSize="16px" icon="fe:export" />
-            Export
-          </DefaultButton>
-
-          <DefaultButton
-            handleClick={handleClickOpen}
-            sx={{ backgroundColor: theme.palette.color.primary }}
+          <DropDownButton
+            handleClick={handleAddAtom}
+            sx={{
+              backgroundColor: theme.palette.color.primary,
+              color: theme.palette.textColor.main,
+            }}
+            options={[
+              {
+                type: "Add Manually",
+                icon: (
+                  <Icon
+                    style={{ marginBottom: "-2px" }}
+                    color={theme.palette.textColor.tertiary}
+                    icon="icon-park-outline:data-all"
+                  />
+                ),
+              },
+              {
+                type: "From Discovery",
+                icon: (
+                  <Icon
+                    style={{ marginBottom: "-2px" }}
+                    color={theme.palette.textColor.tertiary}
+                    icon="subway:write"
+                  />
+                ),
+              },
+            ]}
           >
             <Icon fontSize="16px" icon="gridicons:add-outline" />
             Add Atom
-          </DefaultButton>
-
+          </DropDownButton>
           <DefaultButton
             handleClick={handleInputClick}
             sx={{ backgroundColor: theme.palette.color.primary }}

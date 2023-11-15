@@ -59,9 +59,9 @@ export function DropDownButton({
     position: "absolute",
     zIndex: "99999",
     top: "100%",
-    left: 0,
-    width: "100%",
-    backgroundColor: theme.palette.background.paper,
+    right: 0,
+    width: "110%",
+    backgroundColor: theme.palette.color.main,
     border: "1px solid #DEDEDE",
     borderRadius: "0 0 4px 4px",
     zIndex: 1,
@@ -69,8 +69,9 @@ export function DropDownButton({
   }));
 
   const StyledOption = styled("div")(({ theme, sx }) => ({
+    color: theme.palette.textColor.default,
     padding: "6px 12px",
-    fontSize: "13px",
+    fontSize: "14px",
     cursor: "pointer",
     "&:hover": {
       backgroundColor: theme.palette.color.tertiary,
@@ -83,15 +84,15 @@ export function DropDownButton({
     setIsOpen(!isOpen);
   };
 
-  const handleOptionClick = (option) => {
+  const handleOptionClick = (optionType) => {
     setIsOpen(false);
+    handleClick(optionType);
   };
 
   return (
     <div
       style={{ position: "relative", display: "inline-block" }}
       onClick={handleButtonClick}
-      // onClick={handleClick}
       {...rest}
     >
       <div style={{ display: "flex" }}>
@@ -123,12 +124,12 @@ export function DropDownButton({
       <DropdownOptions>
         {options.map((option) => (
           <StyledOption
-            key={option.name}
-            onClick={() => handleOptionClick(option.name)}
+            key={option.type}
+            onClick={() => handleOptionClick(option.type)}
             sx={{}}
           >
-            {option.icon} &nbsp;
-            {option.name}
+            {option.icon} &nbsp;&nbsp;
+            {option.type}
           </StyledOption>
         ))}
       </DropdownOptions>

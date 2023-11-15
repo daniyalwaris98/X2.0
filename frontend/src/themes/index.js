@@ -77,7 +77,7 @@ export const darkTheme = createTheme({
       main: "#FFFFFF", // white
       primary: "#D9D9D9", // montex green
       secondary: "#595959", // silver
-      tertiary: "#5C5C5C", // grey
+      tertiary: "#FFFFFF", // grey
       tableText: "#262626",
       danger: "#E34444", //danger color red
       tableText: "#ACACAC",
