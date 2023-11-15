@@ -18,22 +18,9 @@ async def add_atom(atom: AddAtomRequestSchema):
     try:
         print("add atom is being executed::::::::::::::::::::::::::::",file=sys.stderr)
         response, status = add_complete_atom(atom, False)
-        # print("atom is:::::::::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
-        # print("atom is::::::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
-        # print("validation error is being executed::::::::::::::::::::::::::::::",file=sys.stderr)
-        # validation_errors = Validator.validate_data(AddAtomRequestSchema, atom)
-        # print("validation_error in aadd atom device is:::::::::::::::::",validation_errors,file=sys.stderr)
-        # if validation_errors:
-        #     # print("validation error occured :::::::::::::::::::::::::::::::::::::",file=sys.stderr)
-        #     return validation_errors,422
-        # else:
-        #     print("No validation error occured in add atom::::::::::::::::::::::::::::",file=sys.stderr)
-
         if status != 200:
             response, status = add_transition_atom(atom, False)
             print("if reponse not 200::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
-        # print("response in add atom is::::::::::::::::::::::::::::::::::::::",add_atom,file=sys.stderr)
-
         return JSONResponse(content=response, status_code=status)
 
     except Exception:
@@ -98,30 +85,31 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                 else:
                     msg, status = add_complete_atom(atomObj, False)
                     print("msg for add complete atom is34343434343434:::::::::::::::::::::",msg,file=sys.stderr)
-                    for key,value in msg.items():
-                            print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
-                            print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
+                    if isinstance(msg, dict):
+                        for key,value in msg.items():
+                                print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
+                                print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
 
-                            if key =='data':
-                                data_lst.append(value)
-                            if key == 'message':
-                                if value not in success_list:
-                                    print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
-                                    success_list.append(value)
+                                if key =='data':
+                                    data_lst.append(value)
+                                if key == 'message':
+                                    if value not in success_list:
+                                        print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
+                                        success_list.append(value)
 
                     if status != 200:
                         msg, status = add_transition_atom(atomObj, False)
-                        print("msg if status not 200 for tanistiona tom is:::::",msg,file=sys.stderr)
-                        print("status if tranistion not 200 is::::::::::::::::::",status,file=sys.stderr)
+                        # print("msg if status not 200 for tanistiona tom is:::::",msg,file=sys.stderr)
+                        # print("status if tranistion not 200 is::::::::::::::::::",status,file=sys.stderr)
                         for key,value in msg.items():
-                            print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
-                            print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
+                            # print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
+                            # print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
 
                             if key =='data':
                                 data_lst.append(value)
                             if key == 'message':
                                 if value not in success_list:
-                                    print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
+                                    # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
                                     success_list.append(value)
             
             except Exception:
@@ -129,7 +117,7 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                 status = 500
                 msg = f"{atomObj['ip_address']} : Exception Occurred"
             # print("data list with vues are:::::::::::::::::::: ",data_lst,file=sys.stderr)
-            print("success list with the data is :::::::::::::::::::::::::::::::::",success_list,file=sys.stderr)
+            # print("success list with the data is :::::::::::::::::::::::::::::::::",success_list,file=sys.stderr)
             # if status == 200:
             #     success_list.append(msg)
             # else:
@@ -141,7 +129,7 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
             #         unique_data[msg_item['atom_transition_id']] = msg_item
             # data_lst = list(unique_data.values())
             # success_list = list(set(success_list))
-            print("data list with vues are:::::::::::::::::::: ",data_lst,file=sys.stderr)
+            # print("data list with vues are:::/::::::::::::::::: ",data_lst,file=sys.stderr)
             seen_ids = set()
             filtered_dict = {}
             for item in data_lst:
@@ -166,8 +154,8 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
 
             filtered_list = list(filtered_dict.values())
             unique_success_list = list(success_list)
-            print("data filtered list is:::::::::::::::::::::::::::",filtered_list,file=sys.stderr)
-            print("unique suucess list is::::::::::::::",unique_success_list,file=sys.stderr)
+            # print("data filtered list is:::::::::::::::::::::::::::",filtered_list,file=sys.stderr)
+            # print("unique suucess list is::::::::::::::",unique_success_list,file=sys.stderr)
 
         response = SummeryResponseSchema(
             data = filtered_list,
@@ -176,7 +164,7 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
             success_list=unique_success_list,
             error_list=error_list
         )
-        return (response),200
+        return response
 
     except Exception:
         traceback.print_exc()
@@ -316,26 +304,26 @@ def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                     print(f"Atom Not Found for atom_id: {not_found_atom_id}", file=sys.stderr)
                     error_list.append(f"Atom Not Found for atom_id: {not_found_atom_id}")
 
-            print("start of atom tranistion::::::::::::::", file=sys.stderr)
+            print("start of atom transition::::::::::::::", file=sys.stderr)
             if "atom_transition_id" in atom_obj and atom_obj['atom_transition_id'] is not None and atom_obj['atom_transition_id'] != 0:
-                print("atom tranistion found in :::::::::::::::::", file=sys.stderr)
+                print("atom transition found in :::::::::::::::::", file=sys.stderr)
                 atom_transition = configs.db.query(AtomTransitionTable).filter_by(atom_transition_id=atom_obj["atom_transition_id"]).all()
                 if atom_transition:
-                    print("atom tranistion atom is::::::::::::::::::::::::::::::::", file=sys.stderr)
+                    print("atom transition atom is::::::::::::::::::::::::::::::::", file=sys.stderr)
                     for atoms in atom_transition:
                         transition_atom_found = True
                         atom_transition_id = atoms.atom_transition_id
                         transition_atom_ip = atoms.ip_address
-                        print("atom tranistion id:::::::::::::::::::::",atom_transition_id,file=sys.stderr)
+                        print("atom transition id:::::::::::::::::::::",atom_transition_id,file=sys.stderr)
                         DeleteDBData(atoms)
-                        print("atom tranistion delted successsfully:::::::::::::::::::::::", file=sys.stderr)
+                        print("atom transition delted successsfully:::::::::::::::::::::::", file=sys.stderr)
                         deleted_atom['atom_transition_id'] = atom_transition_id
-                        success_list.append(f"{transition_atom_ip} : Atom Tranistion Deleted Successfully")
+                        success_list.append(f"{transition_atom_ip} : Atom Transition Deleted Successfully")
                         deleted_atoms_lst.append(deleted_atom)
                 else:
                     not_found_atom_transition_id = atom_obj['atom_transition_id']
                     print("Not found atom tranistion id is::::::::::::",file=sys.stderr)
-                    print(f"Atom Transition Not Found for id: {not_found_atom_transition_id}", file=sys.stderr)
+                    print(f"Atom transition Not Found for id: {not_found_atom_transition_id}", file=sys.stderr)
                     error_list.append(f"Atom Transition Not Found for id: {not_found_atom_transition_id}")
         
 
