@@ -1,184 +1,255 @@
-import React from "react";
-import DefaultButton from "../../../components/buttons";
-import { Typography } from "@mui/material";
+import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
+import DefaultCard from "../../../components/cards";
 import { Icon } from "@iconify/react";
-import { Table } from 'antd';
+import { TableStyle } from "../../../styles/main.styled";
+import { getTitle } from "../../../utils/helpers";
+import Modal from "./modal";
+import {
+  useFetchTableDataQuery,
+  useAddTableMultipleDataMutation,
+  useDeleteTableMultipleDataMutation,
+} from "../../../store/features/atomModule/passwordGroup/apis";
+import { useDispatch, useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
+import useWindowDimensions from "../../../hooks/useWindowDimensions";
+import {
+  handleSuccessAlert,
+  handleInfoAlert,
+  handleCallbackAlert,
+} from "../../../components/sweetAlertWrapper";
+import {
+  jsonToExcel,
+  convertToJson,
+  handleFileChange,
+  columnGenerator,
+  generateObject,
+} from "../../../utils/helpers";
 import useColumnSearchProps from "../../../hooks/useColumnSearchProps";
+import { Spin } from "antd";
+import useErrorHandling from "../../../hooks/useErrorHandling";
+import { dataKeysArray } from "./constants";
+import PageHeader from "../../../components/pageHeader";
 
-
-
-
-function Index() {
+const Index = () => {
+  // theme
   const theme = useTheme();
 
-
+  // hooks
+  const { height, width } = useWindowDimensions();
   const getColumnSearchProps = useColumnSearchProps();
-  
-  const columnGenerator = () => {
- 
-    return [];
+
+  // refs
+  const fileInputRef = useRef(null);
+
+  // states
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [dataKeys, setDataKeys] = useState(dataKeysArray);
+  const [recordToEdit, setRecordToEdit] = useState(null);
+  const [open, setOpen] = useState(false);
+
+  // selectors
+  const dataSource = useSelector(selectTableData);
+
+  // apis
+  const {
+    data: fetchedTableData,
+    isSuccess: isFetchTableDataSuccess,
+    isLoading: isFetchTableDataLoading,
+    isError: isFetchTableDataError,
+    error: fetchTableDataError,
+  } = useFetchTableDataQuery();
+
+  const [
+    addTableMultipleData,
+    {
+      data: addedTableMultipleData,
+      isSuccess: isAddTableMultipleDataSuccess,
+      isLoading: isAddTableMultipleDataLoading,
+      isError: isAddTableMultipleDataError,
+      error: addTableMultipleDataError,
+    },
+  ] = useAddTableMultipleDataMutation();
+
+  const [
+    deleteTableMultipleData,
+    {
+      data: deletedTableMultipleData,
+      isSuccess: isDeleteTableSingleDataSuccess,
+      isLoading: isDeleteTableMultipleDataLoading,
+      isError: isDeleteTableMultipleDataError,
+      error: deleteTableSingleDataError,
+    },
+  ] = useDeleteTableMultipleDataMutation();
+
+  // error handling custom hooks
+  useErrorHandling({
+    data: fetchedTableData,
+    isSuccess: isFetchTableDataSuccess,
+    isError: isFetchTableDataError,
+    error: fetchTableDataError,
+    type: "fetch",
+  });
+
+  useErrorHandling({
+    data: addedTableMultipleData,
+    isSuccess: isAddTableMultipleDataSuccess,
+    isError: isAddTableMultipleDataError,
+    error: addTableMultipleDataError,
+    type: "bulk",
+  });
+
+  useErrorHandling({
+    data: deletedTableMultipleData,
+    isSuccess: isDeleteTableSingleDataSuccess,
+    isError: isDeleteTableMultipleDataError,
+    error: deleteTableSingleDataError,
+    type: "bulk",
+  });
+
+  // handlers
+  const handlePostSeed = (data) => {
+    addTableMultipleData(data);
   };
 
+  const deleteData = () => {
+    deleteTableMultipleData(selectedRowKeys);
+  };
 
-  const dataSource = [
-    {
-      key: '1',
-      user_name: 'Muhammad Husnain Chaudhry',
-      password: '********',
-      password_group: 'DXB_LAB',
-      password_group_type: 'SSH',
-      secret_password: '*****',
-      password: '********',
-    },
-    {
-      key: '2',
-      user_name: 'Jahangir Khan',
-      password: '********',
-      password_group: 'F5__LAB',
-      password_group_type: 'TELNET',
-      secret_password: '*****',
-      password: '********',
-    },
-    {
-      key: '3',
-      user_name: 'Hamza Duraz',
-      password: '********',
-      password_group: 'KSA',
-      password_group_type: 'SSH',
-      secret_password: '*****',
-      password: '********',
-    },
-    {
-      key: '4',
-      user_name: 'Imran',
-      password: '********',
-      password_group: 'KSA_RO_1',
-      password_group_type: 'SSH',
-      secret_password: '*****',
-      password: '********',
-    },
-    {
-      key: '5',
-      user_name: 'Sami Ullah',
-      password: '********',
-      password_group: 'KSA-SW',
-      password_group_type: 'TELNET',
-      secret_password: '*****',
-      password: '********',
-    },
-    {
-      key: '6',
-      user_name: 'Nadeem Ahmed Khan',
-      password: '********',
-      password_group: 'KSA_WLC',
-      password_group_type: 'SSH',
-      secret_password: '*****',
-      password: '********',
-    },
-    
-  ];
+  const handleDelete = () => {
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(
+        "Are you sure you want delete these records?",
+        deleteData
+      );
+    } else {
+      handleInfoAlert("No record has been selected to delete!");
+    }
+  };
 
+  const handleEdit = (record) => {
+    setRecordToEdit(record);
+    setOpen(true);
+  };
 
-  const TableStyle = Table; 
+  const handleInputClick = () => {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  };
 
+  const handleAddAtom = (optionType) => {
+    if (optionType === "Add Manually") {
+      setOpen(true);
+    } else if (optionType === "From Discovery") {
+    }
+  };
 
-  let columns = columnGenerator(getColumnSearchProps, getTitle);
+  const handleClose = () => {
+    setRecordToEdit(null);
+    setOpen(false);
+  };
 
-  columns = [
- 
- 
-    {
-      title: "User Name",
-      dataIndex: "user_name",
-      key: "user_name",
-    },
-    {
-      title: "Password",
-      dataIndex: "password",
-      key: "password",
-    },
-    {
-      title: "Password Group",
-      dataIndex: "password_group",
-      key: "password_group",
-    },
-    {
-      title: "Password Group Type",
-      dataIndex: "password_group_type",
-      key: "password_group_type",
-    },
-    {
-      title: "Secret Password",
-      dataIndex: "secret_password",
-      key: "secret_password",
-    },
-    {
-      title: "Password",
-      dataIndex: "password",
-      key: "password",
-    },
-   
-  ];
+  const handleChange = (pagination, filters, sorter, extra) => {
+    console.log("Various parameters", pagination, filters, sorter, extra);
+  };
 
-  return (
-    <div style={{ padding: "10px" }}>
-      <div style={{ display: "flex", justifyContent: "end", paddingBottom: "5px" }}>
-        <DefaultButton
-          sx={{ backgroundColor: theme.palette.color.primary }}
-        >
-          <Icon fontSize="16px" icon="ic:baseline-plus" />
-          Add Password Group
-        </DefaultButton>
-      </div>
-      <Typography
-        sx={{
+  const handleExport = (optionType) => {
+    if (optionType === "All Devices") {
+      jsonToExcel(dataSource, "all_password_groups");
+    } else if (optionType === "Template") {
+      jsonToExcel([generateObject(dataKeys)], "password_group_template");
+    }
+    handleSuccessAlert("File exported successfully.");
+  };
+
+  // row selection
+  const onSelectChange = (selectedRowKeys) => {
+    setSelectedRowKeys(selectedRowKeys);
+  };
+
+  const rowSelection = {
+    selectedRowKeys,
+    onChange: onSelectChange,
+  };
+
+  // columns
+  let columns = columnGenerator(dataKeys, getColumnSearchProps, getTitle);
+
+  columns.push({
+    title: "Actions",
+    dataIndex: "actions",
+    key: "actions",
+    fixed: "right",
+    width: 100,
+    render: (text, record) => (
+      <div
+        style={{
           display: "flex",
-          justifyContent: "space-between",
-          alignItems: "center",
+          gap: "10px",
+          justifyContent: "center",
         }}
       >
-        <Typography
+        <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
+      </div>
+    ),
+  });
+
+  return (
+    <Spin
+      spinning={
+        isFetchTableDataLoading ||
+        isAddTableMultipleDataLoading ||
+        isDeleteTableMultipleDataLoading
+      }
+    >
+      <div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
+        />
+        {open ? (
+          <Modal
+            handleClose={handleClose}
+            open={open}
+            recordToEdit={recordToEdit}
+          />
+        ) : null}
+
+        <DefaultCard
           sx={{
-            color: theme.palette.textColor.tableText,
+            backgroundColor: theme.palette.color.main,
+            width: `${width - 105}px`,
           }}
         >
-          Password Group
-        </Typography>
+          <PageHeader
+            pageName="Password Group"
+            handleAddAtom={handleAddAtom}
+            handleExport={handleExport}
+            handleDelete={handleDelete}
+            handleInputClick={handleInputClick}
+          />
 
-        <Typography
-          sx={{
-            display: "flex",
-            alignItems: "center",
-            gap: "10px",
-          }}
-        >
-          <DefaultButton
-            sx={{ color: theme.palette.color.textBlackColor, border: "0.01px solid #DBDBDB" }}
-          >
-            <Icon fontSize="16px" icon="ic:baseline-plus" />
-            Export
-          </DefaultButton>
-          <DefaultButton
-            sx={{ backgroundColor: theme.palette.color.primary }}
-          >
-            <Icon fontSize="16px" icon="pajamas:import" /> Import
-          </DefaultButton>
-        </Typography>
-      </Typography>
-
-      <TableStyle
-        size="small"
-        scroll={{ x: 1000 }}
-        columns={columns}
-        dataSource={dataSource}
-        pagination={{
-          defaultPageSize: 9,
-          pageSizeOptions: [9, 50, 100, 500, 1000],
-        }}
-      />
-    </div>
+          <TableStyle
+            size="small"
+            // scroll={{ x: 500 }}
+            onChange={handleChange}
+            rowSelection={rowSelection}
+            columns={columns}
+            dataSource={dataSource}
+            rowKey="password_group_id"
+            style={{ whiteSpace: "pre" }}
+            pagination={{
+              defaultPageSize: 9,
+              pageSizeOptions: [9, 50, 100, 500, 1000],
+            }}
+          />
+        </DefaultCard>
+      </div>
+    </Spin>
   );
-}
+};
 
 export default Index;

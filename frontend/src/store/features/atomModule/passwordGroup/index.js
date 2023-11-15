@@ -5,8 +5,8 @@ const initialState = {
   table_data: [],
 };
 
-const atomSlice = createSlice({
-  name: "atom",
+const passwordGroupSlice = createSlice({
+  name: "password_group",
   initialState,
   reducers: {},
   extraReducers(builder) {
@@ -22,14 +22,9 @@ const atomSlice = createSlice({
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
             const indexToUpdate = state.table_data.findIndex((tableItem) => {
-              let atomId = responseItem.atom_id;
-              let atomTransitionId = responseItem.atom_transition_id;
-
-              if (atomId) {
-                return tableItem.atom_id === atomId;
-              } else {
-                return tableItem.atom_transition_id === atomTransitionId;
-              }
+              return (
+                tableItem.password_group_id === responseItem.password_group_id
+              );
             });
 
             if (indexToUpdate !== -1) {
@@ -46,14 +41,8 @@ const atomSlice = createSlice({
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
             state.table_data = state.table_data.filter((item) => {
-              const atomId = item.atom_id;
-              const transitionId = item.atom_transition_id;
-              const shouldKeepItem = deletedIds.some((id) => {
-                if (atomId) {
-                  return id.atom_id === atomId;
-                } else {
-                  return id.atom_transition_id === transitionId;
-                }
+              const shouldKeepItem = deletedIds.some((deletedId) => {
+                return deletedId === item.password_group_id;
               });
               return !shouldKeepItem;
             });
@@ -64,7 +53,6 @@ const atomSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.addTableSingleData.matchFulfilled,
         (state, action) => {
-          action.payload.data.atom_table_id = Date.now();
           state.table_data.push(action.payload.data);
         }
       )
@@ -73,14 +61,7 @@ const atomSlice = createSlice({
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.table_data = state.table_data.map((item) => {
-            const atomId = item.atom_id;
-            const transitionId = item.atom_transition_id;
-            if (atomId && atomId === objectToReplace.atom_id) {
-              return { ...item, ...objectToReplace };
-            } else if (
-              transitionId &&
-              transitionId === objectToReplace.atom_transition_id
-            ) {
+            if (item.password_group_id === objectToReplace.password_group_id) {
               return { ...item, ...objectToReplace };
             } else {
               return item;
@@ -91,5 +72,5 @@ const atomSlice = createSlice({
   },
 });
 
-// export const { setNextPage, initiateItem } = atomSlice.actions;
-export default atomSlice.reducer;
+// export const { setNextPage, initiateItem } = passwordGroupSlice.actions;
+export default passwordGroupSlice.reducer;

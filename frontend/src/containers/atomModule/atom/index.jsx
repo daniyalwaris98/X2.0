@@ -1,8 +1,6 @@
 import React, { useState, useRef, useEffect, useCallback } from "react";
 import { useTheme } from "@mui/material/styles";
-import DefaultButton from "../../../components/buttons";
 import DefaultCard from "../../../components/cards";
-import { Typography } from "@mui/material";
 import { Icon } from "@iconify/react";
 import { TableStyle } from "../../../styles/main.styled";
 import { getTitle } from "../../../utils/helpers";
@@ -19,7 +17,6 @@ import {
   handleSuccessAlert,
   handleInfoAlert,
   handleCallbackAlert,
-  handleErrorAlert,
 } from "../../../components/sweetAlertWrapper";
 import {
   jsonToExcel,

@@ -15,7 +15,7 @@ export default function useErrorHandling({
   useEffect(() => {
     if (type === "fetch") {
       if (isSuccess) {
-        handleSuccessAlert("Data Fetched Successfully");
+        // handleSuccessAlert("Data Fetched Successfully");
         console.log("Data Fetched Successfully");
       } else if (isError) {
         if (error?.status === 400) {

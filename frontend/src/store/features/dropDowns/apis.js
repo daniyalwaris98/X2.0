@@ -26,7 +26,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     fetchPasswordGroups: builder.query({
-      query: () => "/api/v1/atom/static-list/get-function-list",
+      query: () => "/api/v1/atom/password-group/get-password-group-dropdown",
     }),
   }),
 });
