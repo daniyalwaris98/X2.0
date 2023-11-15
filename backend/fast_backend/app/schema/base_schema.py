@@ -16,6 +16,12 @@ class SummeryResponseSchema(BaseSchema):
     success_list: list[str]
     error_list: list[str]
 
+class DeleteResponseSchema(BaseSchema):
+    data: dict
+    success: int
+    error: int
+    success_list: list[str]
+    error_list: list[str]
 
     # successlist: List[Message]
     # errorlist: List[Message]
