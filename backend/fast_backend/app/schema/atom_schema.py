@@ -46,7 +46,7 @@ class GetAtomResponseSchema(BaseSchema):
     department: str | None = None
     section: str | None = None
     criticality: str | None = None
-    domain: str | None = None
+    domain: int | None = None
     virtual: str | None = None
     onboard_status: bool | None = None
 
@@ -59,7 +59,7 @@ class DeleteAtomRequestSchema(BaseSchema):
     atom_transition_id: int | None = None
 
 
-class PasswordGroupTypeEnum(str, Enum):
+class PasswordGroupTypeEnum(str):
     ssh = "SSH"
     telnet = "Telnet"
 
