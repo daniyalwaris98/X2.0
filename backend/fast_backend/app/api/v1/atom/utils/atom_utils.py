@@ -267,7 +267,7 @@ def add_complete_atom(device, update):
             except Exception:
                 traceback.print_exc()
 
-        return (atom_data).status
+        return (atom_data),status
 
     except Exception:
         error = f"Error : Exception Occurred"
@@ -305,7 +305,8 @@ def add_transition_atom(device, update):
         trans_obj = configs.db.query(AtomTransitionTable).filter(
             AtomTransitionTable.ip_address == device["ip_address"]
         ).first()
-
+        attributes_dict = {}
+        processed_ips = {}
         exist = True
         if trans_obj is None:
             exist = False
@@ -319,15 +320,35 @@ def add_transition_atom(device, update):
             status = UpdateDBData(trans_obj)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Updated Successfully"
-                devices = device
-                devices_data =dict(devices)
-                devices_data['atom_transition_id'] = trans_obj.atom_transition_id
+                # devices = device
+                # data = []
+                # devices_data =dict(devices)
+                # devices_data['atom_transition_id'] = trans_obj.atom_transition_id
+                # data.append(devices_data)
+                # attributes_dict = {}
 
+                # Check if trans_obj exists
+                if trans_obj:
+                    
+                    inspector = inspect(trans_obj.__class__)
+                    columns = inspector.columns
+                    
+                    # Iterate through columns and fetch values
+                    for column in columns:
+                        column_name = column.key
+                        
+                        # Exclude 'creation_date' and 'modification_date'
+                        if column_name not in ['creation_date', 'modification_date']:
+                            value = getattr(trans_obj, column_name, None)
+                            attributes_dict[column_name] = value
+                            
+                print("attribute dict isssssssssssssssssssssssssssssssssssssssssss",attributes_dict,file=sys.stderr)
                 transition_data = {
-                    "data":devices_data,
-                    "message":msg
+                        "data":attributes_dict,
+                        "message":str(msg)
                 }
-                # print(msg, file=sys.stderr)
+                print("transition data is::::::::::::::::::::::::::::::::::::::",transition_data,file=sys.stderr)
+                    # print(msg, file=sys.stderr)
                 return (transition_data), 200
             else:
                 msg = f"{device['ip_address']} : Error While Updating Atom"
@@ -344,7 +365,7 @@ def add_transition_atom(device, update):
                 devices_data =dict(devices)
                 devices_data['atom_transition_id'] = trans_obj.atom_transition_id
 
-                print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
+                # print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
                 data = {"transition id":trans_obj.atom_transition_id}
                 transition_data = {
                     "data":devices_data,
@@ -368,6 +389,8 @@ def add_transition_atom(device, update):
 
 
 def fill_transition_data(device, trans_obj):
+    # print("device in fill tranistion data is:::::::::::::::::::",device,file=sys.stderr)
+    # print("trans obj error in fill tranistion data is::::::::::::::::::::::::",trans_obj,file=sys.stderr)
     if device["device_name"] is not None:
         if device["device_name"].strip() != "":
             trans_obj.device_name = device["device_name"].strip()
@@ -436,9 +459,11 @@ def edit_atom_util(device):
                     AtomTable.atom_id == device["atom_id"]).first()
 
         if "atom_transition_id" in device:
+            print("atom tranistion id in devices is::::::::",file=sys.stderr)
             if device["atom_transition_id"] is not None:
                 trans_atom = configs.db.query(AtomTransitionTable).filter(
                     AtomTransitionTable.atom_transition_id == device["atom_transition_id"]).first()
+                print("trans atom is:::::::::::::testing:::::::::",trans_atom,file=sys.stderr)
 
         device["ip_address"] = device["ip_address"].strip()
         if device["ip_address"] == "":
@@ -465,8 +490,26 @@ def edit_atom_util(device):
 
             trans_atom.ip_address = device['ip_address']
             trans_atom = fill_transition_data(device, trans_atom)
-
+            attributes_dict = {}
             status = UpdateDBData(trans_atom)
+            try:
+                # attributes_dict = {}
+
+                # Check if trans_obj exists
+                if trans_atom:
+                    inspector = inspect(trans_atom.__class__)
+                    columns = inspector.columns
+                    
+                    # Iterate through columns and fetch values
+                    for column in columns:
+                        column_name = column.key
+                        if column_name not in ['creation_date', 'modification_date']:
+                            value = getattr(trans_atom, column_name, None)
+                            attributes_dict[column_name] = value
+                    print("attribute dict is:::::::::::::::::::::::::::::111111111111",attributes_dict,file=sys.stderr)
+            except Exception as e:
+                            traceback.print_exc()
+                            print("error occured while getting the attribute of trans atom::::::::::::",file=sys.stderr)
 
         else:
             return "Device Not Found", 400
@@ -479,7 +522,7 @@ def edit_atom_util(device):
             print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
             data = {"transition id":trans_atom.atom_transition_id}
             transition_data = {
-                    "data":devices_data,
+                    "data":attributes_dict,
                     "message":msg
             }
         else:
@@ -719,7 +762,7 @@ def add_password_group_util(pass_obj, update):
             status = InsertDBData(password_group)
             if status == 200:
                 pass_data = dict(pass_obj)
-                pass_data['password_group_id'] = pass_data.password_group_id
+                pass_data['password_group_id'] = password_group.password_group_id
                 msg=   f"{pass_obj['password_group']} : Password Group Inserted Successfully"
                 password_group_data = {
                     "data":pass_data,

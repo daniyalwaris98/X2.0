@@ -1,5 +1,4 @@
-from enum import Enum
-from pydantic import BaseModel, Field
+from pydantic import BaseModel,Field
 
 
 class BaseSchema(BaseModel):
@@ -11,10 +10,23 @@ class BaseSchema(BaseModel):
 
 
 class SummeryResponseSchema(BaseSchema):
+    data: list[dict]
     success: int
     error: int
-    success_list: list[dict]
-    error_list: list[dict]
+    success_list: list[str]
+    error_list: list[str]
+
+class DeleteResponseSchema(BaseSchema):
+    data: dict
+    success: int
+    error: int
+    success_list: list[str]
+    error_list: list[str]
+
+    # successlist: List[Message]
+    # errorlist: List[Message]
+    # successlen: int
+    # errorlen: int
 
 
 class NameValueListOfDictResponseSchema(BaseSchema):
