@@ -3,7 +3,7 @@ import { monetxApi } from "../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
-    fetchTableData: builder.query({
+    fetchPasswordGroupTableData: builder.query({
       query: () => "/api/v1/atom/password_group/get_password_groups",
     }),
 
@@ -26,7 +26,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     // form apis
     addTableSingleData: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/delete_password_group",
+        url: "/api/v1/atom/password_group/add_password_group",
         method: "POST",
         body: data,
       }),
@@ -40,10 +40,11 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {
-  useFetchTableDataQuery,
+  useFetchPasswordGroupTableDataQuery: useFetchTableDataQuery,
   useAddTableMultipleDataMutation,
   useDeleteTableMultipleDataMutation,
   // form apis

@@ -12,7 +12,7 @@ const atomSlice = createSlice({
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchTableData.matchFulfilled,
+        extendedApi.endpoints.fetchAtomTableData.matchFulfilled,
         (state, action) => {
           state.table_data = action.payload;
         }

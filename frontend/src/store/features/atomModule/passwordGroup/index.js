@@ -12,7 +12,7 @@ const passwordGroupSlice = createSlice({
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchTableData.matchFulfilled,
+        extendedApi.endpoints.fetchPasswordGroupTableData.matchFulfilled,
         (state, action) => {
           state.table_data = action.payload;
         }

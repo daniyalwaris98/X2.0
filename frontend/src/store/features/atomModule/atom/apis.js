@@ -3,7 +3,7 @@ import { monetxApi } from "../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
-    fetchTableData: builder.query({
+    fetchAtomTableData: builder.query({
       query: () => "/api/v1/atom/atom/get_atoms",
     }),
 
@@ -40,10 +40,11 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
   }),
+  overrideExisting: true,
 });
 
 export const {
-  useFetchTableDataQuery,
+  useFetchAtomTableDataQuery: useFetchTableDataQuery,
   useAddTableMultipleDataMutation,
   useDeleteTableMultipleDataMutation,
   // form apis

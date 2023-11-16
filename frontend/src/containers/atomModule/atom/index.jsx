@@ -146,6 +146,10 @@ const Index = () => {
     }
   };
 
+  const handleOnboard = () => {
+    handleInfoAlert("Onboard Clicked!");
+  };
+
   const handleEdit = (record) => {
     setRecordToEdit(record);
     setOpen(true);
@@ -294,6 +298,12 @@ const Index = () => {
         backgroundColor: theme.palette.color.main,
         color: theme.palette.textColor.default,
       },
+    },
+    {
+      type: "Onboard",
+      icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
+      handleClick: handleOnboard,
+      sx: { backgroundColor: theme.palette.color.info },
     },
     {
       type: "Delete",
