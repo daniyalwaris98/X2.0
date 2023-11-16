@@ -20,6 +20,8 @@ export default function useErrorHandling({
       } else if (isError) {
         if (error?.status === 400) {
           handleErrorAlert(error?.data);
+        } else if (error?.status === 404) {
+          handleErrorAlert(error?.data?.detail);
         } else if (error?.status === 500) {
           handleErrorAlert(error?.data);
         } else {
@@ -32,6 +34,8 @@ export default function useErrorHandling({
       } else if (isError) {
         if (error?.status === 400) {
           handleErrorAlert(error?.data);
+        } else if (error?.status === 404) {
+          handleErrorAlert(error?.data?.detail);
         } else if (error?.status === 422) {
           handleErrorAlert(
             error?.data?.detail
@@ -63,6 +67,8 @@ export default function useErrorHandling({
       } else if (isError) {
         if (error?.status === 400) {
           handleErrorAlert(error?.data);
+        } else if (error?.status === 404) {
+          handleErrorAlert(error?.data?.detail);
         } else if (error?.status === 422) {
           handleErrorAlert(
             error?.data?.detail

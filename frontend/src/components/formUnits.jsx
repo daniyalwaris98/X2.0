@@ -13,6 +13,7 @@ export default function DefaultFormUnit({
   dataKey,
   type = "text",
   required = false,
+  ...rest
 }) {
   const title = getTitle(dataKey);
   return (
@@ -32,6 +33,7 @@ export default function DefaultFormUnit({
                 id={dataKey}
                 placeholder={title}
                 type={type}
+                {...rest}
               />
             </InputWrapper>
             <div style={{ color: "red", fontSize: "12px" }}>

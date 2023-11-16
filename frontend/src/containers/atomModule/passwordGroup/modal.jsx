@@ -20,7 +20,7 @@ import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
   password_group: yup.string().required("Password Group is required"),
-  user_name: yup.string().required("User name is required"),
+  username: yup.string().required("User name is required"),
   password: yup.string().required("Password is required"),
 });
 
@@ -28,6 +28,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // states
+  const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
 
   // useForm hook
   const { handleSubmit, control, setValue, watch, trigger } = useForm({
@@ -39,9 +40,22 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     formSetter(recordToEdit, setValue);
   }, []);
 
+  useEffect(() => {
+    if (watch("password_group_type") === "SSH") {
+      setIsSecretPasswordDisable(true);
+    } else {
+      setIsSecretPasswordDisable(false);
+    }
+  }, [watch("password_group_type")]);
+
   // fetching dropdowns data from backend using apis
-  const { error: passwordGroupsError, isLoading: isPasswordGroupsLoading } =
-    useFetchPasswordGroupsQuery();
+  const {
+    data: passwordGroupData,
+    isSuccess: isPasswordGroupSuccess,
+    isLoading: isPasswordGroupsLoading,
+    isError: isPasswordGroupError,
+    error: passwordGroupsError,
+  } = useFetchPasswordGroupsQuery();
 
   // post api for the form
   const [
@@ -83,6 +97,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     type: "single",
   });
 
+  useErrorHandling({
+    data: passwordGroupData,
+    isSuccess: isPasswordGroupSuccess,
+    isError: isPasswordGroupError,
+    error: passwordGroupsError,
+    type: "fetch",
+  });
+
   // getting dropdowns data from the store
   const passwordGroups = useSelector(selectPasswordGroups);
 
@@ -105,14 +127,34 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "20px" }}>
         <Grid container>
           <Grid item xs={12}>
+            {recordToEdit ? (
+              <SelectFormUnit
+                control={control}
+                dataKey="password_group"
+                options={passwordGroups}
+                required
+              />
+            ) : (
+              <DefaultFormUnit
+                control={control}
+                dataKey="password_group"
+                required
+              />
+            )}
+            <DefaultFormUnit control={control} dataKey="username" required />
+            <DefaultFormUnit control={control} dataKey="password" required />
             <SelectFormUnit
               control={control}
-              dataKey="password_group"
-              options={passwordGroups}
+              dataKey="password_group_type"
+              options={["SSH", "TELNET"]}
+              // required
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey="secret_password"
+              disabled={isSecretPasswordDisable}
               required
             />
-            <DefaultFormUnit control={control} dataKey="user_name" required />
-            <DefaultFormUnit control={control} dataKey="password" required />
           </Grid>
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "center" }}>
