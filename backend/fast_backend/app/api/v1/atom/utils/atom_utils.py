@@ -730,20 +730,20 @@ def add_password_group_util(pass_obj, update):
         password_group = configs.db.query(PasswordGroupTable).filter(
             PasswordGroupTable.password_group == name_response
         ).first()
-
+        
+        print("password group is::::::::::::::::::::::::::::::",password_group,file=sys.stderr)
         exist = False
         if password_group is not None:
             if not update:
-                return (
-                    f"{pass_obj['password_group']} : Password Group Already Exists",
-                    400,
-                )
+                return f"{pass_obj['password_group']} : Password Group Already Exists",400
             else:
                 exist = True
 
         if not exist:
             password_group = PasswordGroupTable()
             password_group.password_group = name_response
+            pass_id = password_group.password_group_id
+            print("pass id issssssssssssssssss:::::::::::::::::::::::::::",pass_id,file=sys.stderr)
 
         password_group, status = validate_password_group_credentials(
             pass_obj, password_group
@@ -752,26 +752,49 @@ def add_password_group_util(pass_obj, update):
             return password_group, status
 
         if update:
+            
             status = UpdateDBData(password_group)
+            print("password group status is::::::::::::::::::::::::::::::::",status,file=sys.stderr)
             if status == 200:
-                return (
-                    f"{pass_obj['password_group']} : Password Group Updated Successfully",
-                    200,
-                )
+                
+                pass_data = dict(pass_obj)
+                passworg_group_update = configs.db.query(PasswordGroupTable).filter_by(password_group = pass_data['password_group']).first()
+                if passworg_group_update:
+                    password_group_id = passworg_group_update.password_group_id
+                    print("password group id is:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::update",password_group_id,file=sys.stderr)
+                    pass_data['password_group_id'] = password_group_id
+                    print(f"{pass_data['password_group_id']} is :::::::::::::::::::::::::::::::::::::::::::::::::::", file=sys.stderr)
+                    msg=   f"{pass_obj['password_group']} : Password Group Updated Successfully"
+                    password_group_data = {
+                        "data":pass_data,
+                        "message":msg
+                    }
+                    print("password group data for update is:::::::::::::::::::::::::::::::::::::",password_group_data,file=sys.stderr)
+                    return (
+                        password_group_data
+                    ),200
+                    # return (
+                    #     f"{pass_obj['password_group']} : Password Group Updated Successfully",
+                    #     200,
+                    # )
+                else:
+                    print("error in password group updates")
         else:
+            
             status = InsertDBData(password_group)
             if status == 200:
                 pass_data = dict(pass_obj)
-                pass_data['password_group_id'] = password_group.password_group_id
+                password_group_id = password_group.password_group_id
+                pass_data['password_group_id'] = password_group_id
                 msg=   f"{pass_obj['password_group']} : Password Group Inserted Successfully"
                 password_group_data = {
                     "data":pass_data,
                     "message":msg
                 }
+                print("passwprd group for insertation is:::::::::::::::::::::::::::::::::::::::",password_group_data,file=sys.stderr)
                 return (
-                    password_group_data,
-                    200,
-                )
+                    password_group_data
+                ),200
 
         return f"{pass_obj['password_group']} : Server Error", 500
 
@@ -799,13 +822,13 @@ def edit_password_group_util(pass_obj):
 
         password_group = configs.db.query(PasswordGroupTable).filter(
             PasswordGroupTable.password_group == name_response).first()
-
+        
         if password_group is not None:
             if password_exist.password_group_id != password_group.password_group_id:
                 return (
-                    f"{pass_obj['password_group']} : Password Group Name Is Already Assigned",
-                    400,
-                )
+                    f"{pass_obj['password_group']} : Password Group Name Is Already Assigned"
+                    
+                ),400
 
         password_exist.password_group = name_response
 
@@ -817,10 +840,21 @@ def edit_password_group_util(pass_obj):
 
         status = UpdateDBData(password_exist)
         if status == 200:
+            pass_data = dict(pass_obj)
+            password_group_id = password_group.password_group_id
+            pass_data['password_group_id'] = password_group_id
+            msg=   f"{pass_obj['password_group']} : Password Group Updated Successfully"
+            password_group_data = {
+                    "data":pass_data,
+                    "message":msg
+            }
             return (
-                f"{pass_obj['password_group']} : Password Group Updated Successfully",
-                200,
-            )
+                    password_group_data
+                ),200
+            # return (
+            #     f"{pass_obj['password_group']} : Password Group Updated Successfully",
+            #     200,
+            # )
 
         return f"{pass_obj['password_group']} : Server Error", 500
 

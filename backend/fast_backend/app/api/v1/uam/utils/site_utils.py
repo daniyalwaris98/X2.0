@@ -113,7 +113,7 @@ def edit_site_util(site_obj):
         if site_exist is None:
             return "Site Does Not Exist", 400
 
-        if site_exist.site == default_rack.site_id:
+        if site_exist.site_id == default_rack.site_id:
             return "Default Site Is Not Editable", 400
 
         response, status = check_site_name(site_obj)
@@ -133,14 +133,21 @@ def edit_site_util(site_obj):
 
         site_exist.status = site_status
         site_exist = check_site_optional_data(site_obj, site_exist)
-
+        site_id = site_exist.site_id
+        site_name = site_exist.site_name
         status = UpdateDBData(site_exist)
         if status == 200:
-            msg = "Site Updated Successfully"
+            site_data = dict(site_obj)
+            site_data['site_id'] = site_id
+            msg = f"{site_name} : Site Updated Successfully"
+            site_data_dict = {
+                "data": site_data,
+                "message":msg
+            }
+            return site_data_dict,200
         else:
-            msg = "Error While Updating Site"
-
-        return msg, status
+            msg = f"Error While Updating Site"
+            return msg,400
 
     except Exception:
         traceback.print_exc()
@@ -197,7 +204,12 @@ def delete_site_util(site_id):
             DeleteDBData(rack)
 
         if DeleteDBData(site) == 200:
-            return f"{site_name} : Site & Its Racks Deleted Successfully", 200
+            deleted_sites = {
+                "data":site_id,
+                "message" : f"{site_name} : Site & Its Racks Deleted Successfully"
+            }
+            
+            return deleted_sites,200
         else:
             return f"{site_name} : Error While Deleting Site", 500
 

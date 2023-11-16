@@ -21,6 +21,14 @@ from app.pullers.UCS.ucs_cimc_inv import UCSPuller
 from app.pullers.WLC.cisco_wlc_inv import WLCPuller
 from app.pullers.Wirefilter.wirefilter_inv import WirefilterPuller
 
+
+
+password_group_types_list = [
+    "SSH",
+    "TELNET"
+]
+
+
 vendor_list = [
     "Cisco",
     "Extreme",
