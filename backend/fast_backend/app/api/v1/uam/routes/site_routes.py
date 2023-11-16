@@ -4,6 +4,9 @@ from fastapi.responses import JSONResponse
 from app.api.v1.uam.utils.site_utils import *
 from app.schema.site_rack_schema import *
 from app.models.site_rack_models import *
+from app.schema.validation_schema import Response200
+from app.schema.response_schema import DeleteResponseSchema
+
 
 router = APIRouter(
     prefix="/site",
@@ -11,36 +14,38 @@ router = APIRouter(
 )
 
 
-@router.post("/add-site", responses={
-    200: {"model": str},
+@router.post("/add_site", responses={
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
 async def add_site(site: AddSiteRequestSchema):
     try:
         response, status = add_site_util(site)
+        print("reponse in add site is::::::::::::::::::::::::::::::::::::::::",add_site,file=sys.stderr)
         return JSONResponse(content=response, status_code=status)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Site", status_code=500)
 
 
-@router.post("/edit-site", responses={
-    200: {"model": str},
+@router.post("/edit_site", responses={
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
 async def edit_site(site: EditSiteRequestSchema):
     try:
         response, status = edit_site_util(site)
+        print("response is:::::::::::::::::::::::::::::::::",file=sys.stderr)
         return JSONResponse(content=response, status_code=status)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Site", status_code=500)
 
 
-@router.post("/delete-site", responses={
-    200: {"model": SummeryResponseSchema},
+@router.post("/delete_site", responses={
+    200: {"model": DeleteResponseSchema},
     400: {"model": str},
     500: {"model": str}
 })
@@ -48,28 +53,50 @@ async def delete_site(site_ids: list[int]):
     try:
         error_list = []
         success_list = []
-
+        deleted_sites = []
+       
         for site_id in site_ids:
+            print("site id is:::::::::::::::::::::::::::::::::::::::::::::::",site_id,file=sys.stderr)
             msg, status = delete_site_util(site_id)
+            
             if status != 200:
+                print("status nit 200:::::::::::::::::::::::::::::::::::::",file=sys.stderr)
                 error_list.append(msg)
             else:
-                success_list.append(msg)
+                for key,value in msg.items():
+                    print("key in msg is:::::::::::::::::::::::::::::::::::",key,file=sys.stderr)
+                    print("value in msg is ::::::::::::::::::::::::::::",value,file=sys.stderr)
+                    if key == "data":
+                        deleted_site_dict = {
+                            "site_id":value     
+                        }
+                        deleted_sites.append(deleted_site_dict)
+                    elif key == "message":
+                        success_list.append(value)
+                    else:
+                        error_list.append(value)
+
+                # success_list.append(msg)
+              
+                # print("deleted site id issssssssssssssss::::::::::::::::::::::::::::::",file=sys.stderr)
+                # deleted_sites.append(deleted_dict)
+                
 
         response = {
+            "data":deleted_sites,
             "error": len(error_list),
             "success": len(success_list),
             "error_list": error_list,
             "success_list": success_list
         }
 
-        return JSONResponse(content=response, status_code=200)
+        return response
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Site", status_code=500)
 
 
-@router.get("/get-all-sites", responses={
+@router.get("/get_all_sites", responses={
     200: {"model": list[GetSiteResponseSchema]},
     500: {"model": str}
 })
@@ -90,7 +117,7 @@ async def get_all_site():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.get("/get-sites-dropdown", responses={
+@router.get("/get_sites_dropdown", responses={
     200: {"model": list[str]},
     500: {"model": str}
 })
@@ -110,15 +137,17 @@ async def get_site_dropdown():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.get("/phyLeaflet")
+@router.get("/phy_leaf_let")
 async def phy_leaflet():
     try:
         result = configs.db.query(SiteTable).all()
+        print("result in py leaflet is ::::::::::::::::::::::::::::::::",result,file=sys.stderr)
         response = list()
 
         for site in result:
-            obj_dict = {"site_name": site["site_name"], "longitude": site["longitude"], "latitude": site["latitude"],
-                        "city": site["city"]}
+            print("site is::::::::::::::::::::::::::::::::::::::::::::::::::",site,file=sys.stderr)
+            obj_dict = {"site_name": site.site_name, "longitude": site.longitude, "latitude": site.latitude,
+                        "city": site.city}
             response.append(obj_dict)
 
         return JSONResponse(content=response, status_code=200)
@@ -174,6 +203,8 @@ async def data_center_status():
         response = dict()
         for i in obj_list:
             for j in i:
+                print("i in obj list is:::::::::::::::::::::::::::::::",i,file=sys.stderr)
+                print("j in i is:::::::::::::::::::::::::::::::::::::::::",j,file=sys.stderr)
                 response[j] = i[j]
 
         return JSONResponse(content=response, status_code=200)

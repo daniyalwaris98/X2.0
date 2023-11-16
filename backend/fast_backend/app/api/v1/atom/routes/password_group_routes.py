@@ -11,13 +11,22 @@ router = APIRouter(
     400: {"model": str},
     500: {"model": str}
 })
-def add_password_group(pass_obj: AddPasswordGroupRequestSchema):
+def add_passwords_group(pass_obj: AddPasswordGroupRequestSchema):
     try:
+        print("pass obj is::::::::::::::::::::::::::::::::::::::",pass_obj,file=sys.stderr)
         pass_obj = pass_obj.dict()
 
         response, status = add_password_group_util(pass_obj, False)
+        print("response is:::::::::::::::::::::::::::::::::::::::::::::::::",file=sys.stderr)
+        print("status is:::::::::::::::::::::::::::::::::::::::::::",status,file=sys.stderr)
+        if status == 200:
+            print("reponse if status is 200 is::::::::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+            return JSONResponse(content=response, status_code=200)
+        elif status == 400:
+            print("if status is 400 ::::::::::::::::::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+            return JSONResponse(content=response, status_code=400)
 
-        return JSONResponse(content=response, status_code=200)
+        
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Password Group", status_code=500)
@@ -29,7 +38,7 @@ def add_password_group(pass_obj: AddPasswordGroupRequestSchema):
 })
 def add_password_groups(pass_list: list[AddPasswordGroupRequestSchema]):
     try:
-
+        print("passwprd list is::::::::::::::::::::::::::::::::::::::::::::",pass_list,file=sys.stderr)
         success_list = []
         error_list = []
         data_lst = []
@@ -89,20 +98,21 @@ def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
     200: {"model": DeleteResponseSchema},
     500: {"model": str}
 })
-def delete_password_groups(pass_list: list[DeletePasswordGroupRequestSchema]):
+def delete_password_groups(pass_list: list[str]):
     try:
 
         success_list = []
         error_list = []
         deleted_password_group = []
+        print("password list is:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::",pass_list,file=sys.stderr)
         for pass_obj in pass_list:
-            pass_obj = pass_obj.dict()
+            pass_obj = pass_obj
             print("password obj is::::::::::::::::::::::::::::",pass_obj,file=sys.stderr)
-            passworg_grp_id = pass_obj['password_group_id']
+            passworg_grp_id = pass_obj
             print("password group id for deletion::::::::::::::::::::::::::::::::::::::::::::::::",passworg_grp_id,file=sys.stderr)
             deleted_passw_group = {}
             password = configs.db.query(PasswordGroupTable).filter(
-                    PasswordGroupTable.password_group_id == passworg_grp_id).first()
+                    PasswordGroupTable.password_group_id == pass_obj).first()
             print("password is:::::::::::::::::::::::::::::::::::::",password,file=sys.stderr)
             if password:
                 deleted_password_group_id = password.password_group_id
@@ -168,5 +178,5 @@ async def get_password_group_dropdown():
         return JSONResponse(content=response, status_code=200)
     except Exception:
         traceback.print_exc()
-        return JSONResponse(content="Error Occurred While Fetching Password Groups",
+        return JSONResponse(content="Error Occurred While Fetching Password Groups Dropdown",
                             status_code=500)

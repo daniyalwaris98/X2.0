@@ -735,10 +735,7 @@ def add_password_group_util(pass_obj, update):
         exist = False
         if password_group is not None:
             if not update:
-                return (
-                    f"{pass_obj['password_group']} : Password Group Already Exists",
-                    400,
-                )
+                return f"{pass_obj['password_group']} : Password Group Already Exists",400
             else:
                 exist = True
 
@@ -767,7 +764,7 @@ def add_password_group_util(pass_obj, update):
                     print("password group id is:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::update",password_group_id,file=sys.stderr)
                     pass_data['password_group_id'] = password_group_id
                     print(f"{pass_data['password_group_id']} is :::::::::::::::::::::::::::::::::::::::::::::::::::", file=sys.stderr)
-                    msg=   f"{pass_obj['password_group']} : Password Group Inserted Successfully"
+                    msg=   f"{pass_obj['password_group']} : Password Group Updated Successfully"
                     password_group_data = {
                         "data":pass_data,
                         "message":msg
@@ -829,9 +826,9 @@ def edit_password_group_util(pass_obj):
         if password_group is not None:
             if password_exist.password_group_id != password_group.password_group_id:
                 return (
-                    f"{pass_obj['password_group']} : Password Group Name Is Already Assigned",
-                    400,
-                )
+                    f"{pass_obj['password_group']} : Password Group Name Is Already Assigned"
+                    
+                ),400
 
         password_exist.password_group = name_response
 
