@@ -1,0 +1,1 @@
+export const selectTableData = (state) => state.sites.table_data;
