@@ -12,9 +12,9 @@ import {
   useUpdateTableSingleDataMutation,
   useAddTableSingleDataMutation,
 } from "../../../store/features/atomModule/passwordGroup/apis";
-import { useFetchPasswordGroupsQuery } from "../../../store/features/dropDowns/apis";
+import { useFetchPasswordGroupNamesQuery } from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
-import { selectPasswordGroups } from "../../../store/features/dropDowns/selectors";
+import { selectPasswordGroupNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 
@@ -55,7 +55,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isLoading: isPasswordGroupsLoading,
     isError: isPasswordGroupError,
     error: passwordGroupsError,
-  } = useFetchPasswordGroupsQuery();
+  } = useFetchPasswordGroupNamesQuery();
 
   // post api for the form
   const [
@@ -106,7 +106,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   });
 
   // getting dropdowns data from the store
-  const passwordGroups = useSelector(selectPasswordGroups);
+  const passwordGroups = useSelector(selectPasswordGroupNames);
 
   // on form submit
   const onSubmit = (data) => {
