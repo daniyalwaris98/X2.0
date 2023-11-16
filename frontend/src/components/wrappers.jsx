@@ -10,7 +10,14 @@ export default function DefaultWrapper({ sx, children, ...rest }) {
 
 export function InputWrapper({ sx, children, ...rest }) {
   return (
-    <div style={{ marginTop: "5px", ...sx }} {...rest}>
+    <div
+      style={{
+        marginTop: "5px",
+        width: "100%",
+        ...sx,
+      }}
+      {...rest}
+    >
       {children}
     </div>
   );

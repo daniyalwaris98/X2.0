@@ -7,8 +7,8 @@ import dropDownsReducer from "./features/dropDowns";
 export const store = configureStore({
   reducer: {
     atom: atomReducer,
-    passwordGroup: passwordGroupReducer,
-    dropDowns: dropDownsReducer,
+    password_group: passwordGroupReducer,
+    drop_downs: dropDownsReducer,
     [monetxApi.reducerPath]: monetxApi.reducer,
   },
 

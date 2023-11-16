@@ -2,7 +2,7 @@ import { extendedApi } from "./apis";
 import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 
 const initialState = {
-  table_data: [],
+  all_data: [],
 };
 
 const atomSlice = createSlice({
@@ -12,16 +12,16 @@ const atomSlice = createSlice({
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchAtomTableData.matchFulfilled,
+        extendedApi.endpoints.fetchAtoms.matchFulfilled,
         (state, action) => {
-          state.table_data = action.payload;
+          state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addTableMultipleData.matchFulfilled,
+        extendedApi.endpoints.addAtoms.matchFulfilled,
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
-            const indexToUpdate = state.table_data.findIndex((tableItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
               let atomId = responseItem.atom_id;
               let atomTransitionId = responseItem.atom_transition_id;
 
@@ -33,19 +33,19 @@ const atomSlice = createSlice({
             });
 
             if (indexToUpdate !== -1) {
-              state.table_data[indexToUpdate] = responseItem;
+              state.all_data[indexToUpdate] = responseItem;
             } else {
-              state.table_data.push(responseItem);
+              state.all_data.push(responseItem);
             }
           });
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteTableMultipleData.matchFulfilled,
+        extendedApi.endpoints.deleteAtoms.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
-            state.table_data = state.table_data.filter((item) => {
+            state.all_data = state.all_data.filter((item) => {
               const atomId = item.atom_id;
               const transitionId = item.atom_transition_id;
               const shouldKeepItem = deletedIds.some((id) => {
@@ -62,17 +62,17 @@ const atomSlice = createSlice({
       )
 
       .addMatcher(
-        extendedApi.endpoints.addTableSingleData.matchFulfilled,
+        extendedApi.endpoints.addAtom.matchFulfilled,
         (state, action) => {
           action.payload.data.atom_table_id = Date.now();
-          state.table_data.push(action.payload.data);
+          state.all_data.push(action.payload.data);
         }
       )
       .addMatcher(
-        extendedApi.endpoints.updateTableSingleData.matchFulfilled,
+        extendedApi.endpoints.updateAtom.matchFulfilled,
         (state, action) => {
           let objectToReplace = action.payload.data;
-          state.table_data = state.table_data.map((item) => {
+          state.all_data = state.all_data.map((item) => {
             const atomId = item.atom_id;
             const transitionId = item.atom_transition_id;
             if (atomId && atomId === objectToReplace.atom_id) {

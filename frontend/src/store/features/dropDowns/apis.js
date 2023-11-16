@@ -2,40 +2,45 @@ import { monetxApi } from "../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    fetchSites: builder.query({
-      query: () => "/api/v1/uam/site/get-sites-dropdown",
+    fetchSiteNames: builder.query({
+      query: () => "/api/v1/uam/site/get_sites_dropdown",
     }),
 
-    fetchRacks: builder.query({
+    fetchRackNames: builder.query({
       query: (params) => ({
         url: `/api/v1/uam/rack/get-racks-by-site-dropdown`,
         params: { site_name: params.site_name },
       }),
     }),
 
-    fetchVendors: builder.query({
-      query: () => "/api/v1/atom/static-list/get-vendor-list",
+    fetchVendorNames: builder.query({
+      query: () => "/api/v1/atom/static_list/get_vendor_list",
     }),
 
-    fetchFunctions: builder.query({
-      query: () => "/api/v1/atom/static-list/get-function-list",
+    fetchFunctionNames: builder.query({
+      query: () => "/api/v1/atom/static_list/get_function_list",
     }),
 
-    fetchDeviceTypes: builder.query({
-      query: () => "/api/v1/atom/static-list/get-device-type-list",
+    fetchDeviceTypeNames: builder.query({
+      query: () => "/api/v1/atom/static_list/get_device_type_list",
     }),
 
-    fetchPasswordGroups: builder.query({
+    fetchPasswordGroupNames: builder.query({
       query: () => "/api/v1/atom/password_group/get_password_group_dropdown",
+    }),
+
+    fetchPasswordGroupTypeNames: builder.query({
+      query: () => "/api/v1/atom/static_list/get_password_group_type_dropdown",
     }),
   }),
 });
 
 export const {
-  useFetchSitesQuery,
-  useFetchRacksQuery,
-  useFetchVendorsQuery,
-  useFetchFunctionsQuery,
-  useFetchDeviceTypesQuery,
-  useFetchPasswordGroupsQuery,
+  useFetchSiteNamesQuery,
+  useFetchRackNamesQuery,
+  useFetchVendorNamesQuery,
+  useFetchFunctionNamesQuery,
+  useFetchDeviceTypeNamesQuery,
+  useFetchPasswordGroupNamesQuery,
+  useFetchPasswordGroupTypeNamesQuery,
 } = extendedApi;

@@ -9,25 +9,25 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
 import {
-  useUpdateTableSingleDataMutation,
-  useAddTableSingleDataMutation,
+  useUpdateRecordMutation,
+  useAddRecordMutation,
 } from "../../../store/features/atomModule/atom/apis";
 import {
-  useFetchSitesQuery,
-  useFetchRacksQuery,
-  useFetchVendorsQuery,
-  useFetchFunctionsQuery,
-  useFetchDeviceTypesQuery,
-  useFetchPasswordGroupsQuery,
+  useFetchSiteNamesQuery,
+  useFetchRackNamesQuery,
+  useFetchVendorNamesQuery,
+  useFetchFunctionNamesQuery,
+  useFetchDeviceTypeNamesQuery,
+  useFetchPasswordGroupNamesQuery,
 } from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
 import {
-  selectSites,
-  selectRacks,
-  selectVendors,
-  selectFunctions,
-  selectDeviceTypes,
-  selectPasswordGroups,
+  selectSiteNames,
+  selectRackNames,
+  selectVendorNames,
+  selectFunctionNames,
+  selectDeviceTypeNames,
+  selectPasswordGroupNames,
 } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, generateNumbersArray } from "../../../utils/helpers";
@@ -75,70 +75,74 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   }, [watch("site_name")]);
 
   // fetching dropdowns data from backend using apis
-  const { error: sitesError, isLoading: isSitesLoading } = useFetchSitesQuery();
-  const { error: racksError, isLoading: isRacksLoading } = useFetchRacksQuery(
-    {
-      site_name: watch("site_name", ""),
-    },
-    { skip: watch("site_name") === undefined }
-  );
+  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
+    useFetchSiteNamesQuery();
+  const { error: rackNamesError, isLoading: isRackNamesLoading } =
+    useFetchRackNamesQuery(
+      {
+        site_name: watch("site_name", ""),
+      },
+      { skip: watch("site_name") === undefined }
+    );
 
-  const { error: vendorsError, isLoading: isVendorsLoading } =
-    useFetchVendorsQuery();
-  const { error: functionsError, isLoading: isFunctionsLoading } =
-    useFetchFunctionsQuery();
-  const { error: deviceTypesError, isLoading: isDeviceTypesLoading } =
-    useFetchDeviceTypesQuery();
-  const { error: passwordGroupsError, isLoading: isPasswordGroupsLoading } =
-    useFetchPasswordGroupsQuery();
+  const { error: vendorNamesError, isLoading: isVendorNamesLoading } =
+    useFetchVendorNamesQuery();
+  const { error: functionNamesError, isLoading: isFunctionNamesLoading } =
+    useFetchFunctionNamesQuery();
+  const { error: deviceTypeNamesError, isLoading: isDeviceTypeNamesLoading } =
+    useFetchDeviceTypeNamesQuery();
+  const {
+    error: passwordGroupNamesError,
+    isLoading: isPasswordGroupNamesLoading,
+  } = useFetchPasswordGroupNamesQuery();
 
   // post api for the form
   const [
-    addTableSingleData,
+    addRecord,
     {
-      data: addedTableSingleData,
-      isSuccess: isAddTableSingleDataSuccess,
-      isLoading: isAddTableSingleDataLoading,
-      isError: isAddTableSingleDataError,
-      error: addTableSingleDataError,
+      data: addRecordData,
+      isSuccess: isAddRecordSuccess,
+      isLoading: isAddRecordLoading,
+      isError: isAddRecordError,
+      error: addRecordError,
     },
-  ] = useAddTableSingleDataMutation();
+  ] = useAddRecordMutation();
 
   const [
-    updateTableSingleData,
+    updateRecord,
     {
-      data: updatedTableSingleData,
-      isSuccess: isUpdateTableSingleDataSuccess,
-      isLoading: isUpdateTableSingleDataLoading,
-      isError: isUpdateTableSingleDataError,
-      error: updateTableSingleDataError,
+      data: updateRecordData,
+      isSuccess: isUpdateRecordSuccess,
+      isLoading: isUpdateRecordLoading,
+      isError: isUpdateRecordError,
+      error: updateRecordError,
     },
-  ] = useUpdateTableSingleDataMutation();
+  ] = useUpdateRecordMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: updatedTableSingleData,
-    isSuccess: isUpdateTableSingleDataSuccess,
-    isError: isUpdateTableSingleDataError,
-    error: updateTableSingleDataError,
+    data: addRecordData,
+    isSuccess: isAddRecordSuccess,
+    isError: isAddRecordError,
+    error: addRecordError,
     type: "single",
   });
 
   useErrorHandling({
-    data: addedTableSingleData,
-    isSuccess: isAddTableSingleDataSuccess,
-    isError: isAddTableSingleDataError,
-    error: addTableSingleDataError,
+    data: updateRecordData,
+    isSuccess: isUpdateRecordSuccess,
+    isError: isUpdateRecordError,
+    error: updateRecordError,
     type: "single",
   });
 
   // getting dropdowns data from the store
-  const sites = useSelector(selectSites);
-  const racks = useSelector(selectRacks);
-  const vendors = useSelector(selectVendors);
-  const functions = useSelector(selectFunctions);
-  const deviceTypes = useSelector(selectDeviceTypes);
-  const passwordGroups = useSelector(selectPasswordGroups);
+  const siteNames = useSelector(selectSiteNames);
+  const rackNames = useSelector(selectRackNames);
+  const vendorNames = useSelector(selectVendorNames);
+  const functionNames = useSelector(selectFunctionNames);
+  const deviceTypeNames = useSelector(selectDeviceTypeNames);
+  const passwordGroupNames = useSelector(selectPasswordGroupNames);
 
   // on form submit
   const onSubmit = (data) => {
@@ -155,9 +159,9 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       recordToEdit &&
       (recordToEdit.atom_id || recordToEdit.atom_transition_id)
     ) {
-      updateTableSingleData(data);
+      updateRecord(data);
     } else {
-      addTableSingleData(data);
+      addRecord(data);
     }
   };
 
@@ -167,20 +171,20 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${recordToEdit ? "Edit" : "Add"} Atom`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "20px" }}>
-        <Grid container spacing={2}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
+        <Grid container spacing={5}>
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit control={control} dataKey="ip_address" required />
             <SelectFormUnit
               control={control}
               dataKey="site_name"
-              options={sites}
+              options={siteNames}
               required
             />
             <SelectFormUnit
               control={control}
               dataKey="rack_name"
-              options={racks}
+              options={rackNames}
               required
             />
             <DefaultFormUnit control={control} dataKey="section" />
@@ -196,13 +200,13 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <SelectFormUnit
               control={control}
               dataKey="function"
-              options={functions}
+              options={functionNames}
               required
             />
             <SelectFormUnit
               control={control}
               dataKey="device_type"
-              options={deviceTypes}
+              options={deviceTypeNames}
               required
             />
             <DefaultFormUnit control={control} dataKey="device_name" required />
@@ -211,13 +215,13 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <SelectFormUnit
               control={control}
               dataKey="vendor"
-              options={vendors}
+              options={vendorNames}
               required
             />
             <SelectFormUnit
               control={control}
               dataKey="password_group"
-              options={passwordGroups}
+              options={passwordGroupNames}
               required
             />
             <DefaultFormUnit control={control} dataKey="criticality" required />
