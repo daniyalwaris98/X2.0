@@ -14,7 +14,7 @@ def format_date(date):
     return result
 
 
-def get_all_racks():
+def get_all_rack():
     rack_obj_list = []
     results = (
         configs.db.query(RackTable, SiteTable)
@@ -167,7 +167,7 @@ def add_rack_util(rack_obj):
             return rack_exist, status
 
         if rack_exist is not None:
-            return "Rack Name Is Already Assigned", status
+            return "Rack Name Is Already Assigned", 400
 
         rack_exist = RackTable()
         rack_exist.rack_name = rack_obj["rack_name"]
@@ -196,9 +196,10 @@ def add_rack_util(rack_obj):
 
         status = InsertDBData(rack_exist)
         if status == 200:
-            msg = "Rack Inserted Successfully"
+            rack_name = rack_exist.rack_name
+            msg = f"{rack_name} : Rack Inserted Successfully"
             rack_data = dict(rack_obj)
-            rack_data['password_group_id'] = rack_exist.rack_id
+            rack_data['rack_id'] = rack_exist.rack_id
             rack_group_data = {
                     "data":rack_data,
                     "message":msg
@@ -256,11 +257,19 @@ def edit_rack_util(rack_obj):
 
         status = UpdateDBData(rack_exist)
         if status == 200:
-            msg = "Rack Updated Successfully"
+            rack_name = rack_exist.rack_name
+            msg = f"{rack_name} : Rack Updated Successfully"
+            rack_data = dict(rack_obj)
+            rack_data['rack_id'] = rack_exist.rack_id
+            rack_group_data = {
+                    "data":rack_data,
+                    "message":msg
+            }
+            
         else:
             msg = "Error While Updating Rack"
 
-        return msg, status
+        return rack_group_data, status
 
     except Exception:
         traceback.print_exc()
@@ -271,7 +280,7 @@ def delete_rack_util(rack_ids):
     try:
         success_list = []
         error_list = []
-
+        data = []
         default_rack = configs.db.query(RackTable).filter(RackTable.rack_name == "default_rack").first()
 
         for rack_id in rack_ids:
@@ -293,15 +302,20 @@ def delete_rack_util(rack_ids):
 
                 status = DeleteDBData(rack)
                 if status == 200:
-                    success_list.append(f"{rack.rack_name} : Rack Deleted Successfully")
+                    deleted_rack = {
+                        "rack_id":rack.rack_id
+                    }
+                    data.append(deleted_rack)
+                    success_list.append(f"{rack.rack_name} : Rack Deleted Successfully"),200
                 else:
-                    error_list.append(f"{rack.rack_name} : Error While Deleting Rack")
+                    error_list.append(f"{rack.rack_id} : Error While Deleting Rack"),400
 
             except Exception:
                 traceback.print_exc()
                 error_list.append(f"{rack_id} : Error While Deleting Rack")
 
         response_dict = {
+            "data":data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,

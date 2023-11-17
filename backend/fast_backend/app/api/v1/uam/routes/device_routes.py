@@ -27,6 +27,7 @@ async def onboard_devices(ip_list: list[str]):
                       join(PasswordGroupTable, PasswordGroupTable.password_group_id == AtomTable.password_group_id).
                       filter(AtomTable.ip_address == ip).first())
 
+            print("result is:::::::::::::::::::::::::::::::::::::::::::",result,file=sys.stderr)
             if result is None:
                 error_list.append(f"{ip} : Device or Password Group Not Found")
                 continue
@@ -35,7 +36,9 @@ async def onboard_devices(ip_list: list[str]):
                 atom, password_group = result
 
                 atom = atom.as_dict()
+                print("atom as dict is:::::::::::::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
                 password_group = password_group.as_dict()
+                print("password is::::::::::::::::::::::::::::::::::::::::::::::::::::::",password_group,file=sys.stderr)
 
                 atom.update(password_group)
 
@@ -58,6 +61,7 @@ async def onboard_devices(ip_list: list[str]):
                     error_list.append(f"{ip} : Support Not Available For Device Type - {atom['device_type']}")
 
         response_dict = {
+            "data": [],
             'success': len(success_list),
             'error': len(error_list),
             'success_list': success_list,

@@ -104,7 +104,7 @@ def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
     200: {"model": DeleteResponseSchema},
     500: {"model": str}
 })
-def delete_password_groups(pass_list: list[str]):
+def delete_password_groups(pass_list: list[int]):
     try:
 
         success_list = []

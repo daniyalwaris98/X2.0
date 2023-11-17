@@ -44,7 +44,7 @@ async def edit_site(site: EditSiteRequestSchema):
         return JSONResponse(content="Error Occurred While Adding Site", status_code=500)
 
 
-@router.post("/delete_site", responses={
+@router.post("/delete_sites", responses={
     200: {"model": DeleteResponseSchema},
     400: {"model": str},
     500: {"model": str}
