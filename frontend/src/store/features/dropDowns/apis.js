@@ -2,11 +2,7 @@ import { monetxApi } from "../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-<<<<<<< HEAD
-    fetchSites: builder.query({
-=======
     fetchSiteNames: builder.query({
->>>>>>> 3342d746a7f22cc25b90e82409495e78b87aeb3e
       query: () => "/api/v1/uam/site/get_sites_dropdown",
     }),
 
@@ -17,17 +13,6 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
-<<<<<<< HEAD
-    fetchVendors: builder.query({
-      query: () => "/api/v1/atom/static_list/get_vendor_list",
-    }),
-
-    fetchFunctions: builder.query({
-      query: () => "/api/v1/atom/static_list/get_function_list",
-    }),
-
-    fetchDeviceTypes: builder.query({
-=======
     fetchVendorNames: builder.query({
       query: () => "/api/v1/atom/static_list/get_vendor_list",
     }),
@@ -37,7 +22,6 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     fetchDeviceTypeNames: builder.query({
->>>>>>> 3342d746a7f22cc25b90e82409495e78b87aeb3e
       query: () => "/api/v1/atom/static_list/get_device_type_list",
     }),
 
