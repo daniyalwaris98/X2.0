@@ -3,7 +3,7 @@ import { monetxApi } from "../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     fetchSites: builder.query({
-      query: () => "/api/v1/uam/site/get-sites-dropdown",
+      query: () => "/api/v1/uam/site/get_sites_dropdown",
     }),
 
     fetchRacks: builder.query({
@@ -14,15 +14,15 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     fetchVendors: builder.query({
-      query: () => "/api/v1/atom/static-list/get-vendor-list",
+      query: () => "/api/v1/atom/static_list/get_vendor_list",
     }),
 
     fetchFunctions: builder.query({
-      query: () => "/api/v1/atom/static-list/get-function-list",
+      query: () => "/api/v1/atom/static_list/get_function_list",
     }),
 
     fetchDeviceTypes: builder.query({
-      query: () => "/api/v1/atom/static-list/get-device-type-list",
+      query: () => "/api/v1/atom/static_list/get_device_type_list",
     }),
 
     fetchPasswordGroups: builder.query({

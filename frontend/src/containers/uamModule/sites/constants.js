@@ -5,8 +5,8 @@ export const dataKeysArray = [
     "latitude",
     "lontitude",
     "city",
-    "site_id",
-    "creation_date",
-    "modification_date",    
+    // "site_id",
+    // "creation_date",
+    // "modification_date",      
   ];
   

@@ -11,24 +11,45 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateTableSingleDataMutation,
   useAddTableSingleDataMutation,
-} from "../../../store/features/atomModule/passwordGroup/apis";
-import { useFetchPasswordGroupsQuery } from "../../../store/features/dropDowns/apis";
+} from "../../../store/features/atomModule/atom/apis";
+import {
+  useFetchSitesQuery,
+  useFetchRacksQuery,
+  useFetchVendorsQuery,
+  useFetchFunctionsQuery,
+  useFetchDeviceTypesQuery,
+  useFetchPasswordGroupsQuery,
+} from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
-import { selectPasswordGroups } from "../../../store/features/dropDowns/selectors";
+import {
+  selectSites,
+  selectRacks,
+  selectVendors,
+  selectFunctions,
+  selectDeviceTypes,
+  selectPasswordGroups,
+} from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
-  password_group: yup.string().required("Password Group is required"),
-  username: yup.string().required("User name is required"),
-  password: yup.string().required("Password is required"),
+  site_name: yup.string().required("Site name is required"),
+  status: yup.string().required("Status is required"),
+  region_name: yup.string().required("Region name is required"),
+  latitude: yup.string().required("Latitude is required"),
+  lontitude: yup.string().required("Lontitude is required"),
+  city: yup.string().required("City is required"),
+  side_id: yup.string().required("Side id type is required"),
+  creation_date: yup.string().required("Creation date is required"),
+  modification_date: yup.string().required("Modification date is required"),
+//   password_group: yup.string().required("Password group is required"),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // states
-  const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
+  const [initialRender, setInitialRender] = useState(true);
 
   // useForm hook
   const { handleSubmit, control, setValue, watch, trigger } = useForm({
@@ -41,21 +62,35 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   }, []);
 
   useEffect(() => {
-    if (watch("password_group_type") === "SSH") {
-      setIsSecretPasswordDisable(true);
-    } else {
-      setIsSecretPasswordDisable(false);
+    // skip the first render
+    if (initialRender) {
+      setInitialRender(false);
+      return;
     }
-  }, [watch("password_group_type")]);
+
+    (async () => {
+      setValue("rack_name", "");
+      await trigger("rack_name");
+    })();
+  }, [watch("site_name")]);
 
   // fetching dropdowns data from backend using apis
-  const {
-    data: passwordGroupData,
-    isSuccess: isPasswordGroupSuccess,
-    isLoading: isPasswordGroupsLoading,
-    isError: isPasswordGroupError,
-    error: passwordGroupsError,
-  } = useFetchPasswordGroupsQuery();
+  const { error: sitesError, isLoading: isSitesLoading } = useFetchSitesQuery();
+  const { error: racksError, isLoading: isRacksLoading } = useFetchRacksQuery(
+    {
+      site_name: watch("site_name", ""),
+    },
+    { skip: watch("site_name") === undefined }
+  );
+
+  const { error: vendorsError, isLoading: isVendorsLoading } =
+    useFetchVendorsQuery();
+  const { error: functionsError, isLoading: isFunctionsLoading } =
+    useFetchFunctionsQuery();
+  const { error: deviceTypesError, isLoading: isDeviceTypesLoading } =
+    useFetchDeviceTypesQuery();
+  const { error: passwordGroupsError, isLoading: isPasswordGroupsLoading } =
+    useFetchPasswordGroupsQuery();
 
   // post api for the form
   const [
@@ -97,21 +132,29 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     type: "single",
   });
 
-  useErrorHandling({
-    data: passwordGroupData,
-    isSuccess: isPasswordGroupSuccess,
-    isError: isPasswordGroupError,
-    error: passwordGroupsError,
-    type: "fetch",
-  });
-
   // getting dropdowns data from the store
+  const sites = useSelector(selectSites);
+  const racks = useSelector(selectRacks);
+  const vendors = useSelector(selectVendors);
+  const functions = useSelector(selectFunctions);
+  const deviceTypes = useSelector(selectDeviceTypes);
   const passwordGroups = useSelector(selectPasswordGroups);
 
   // on form submit
   const onSubmit = (data) => {
+    console.log(data);
     if (recordToEdit) {
-      data.password_group_id = recordToEdit.password_group_id;
+      if (recordToEdit.atom_id) {
+        data.atom_id = recordToEdit.atom_id;
+      } else if (recordToEdit.atom_transition_id) {
+        data.atom_transition_id = recordToEdit.atom_transition_id;
+      }
+    }
+
+    if (
+      recordToEdit &&
+      (recordToEdit.atom_id || recordToEdit.atom_transition_id)
+    ) {
       updateTableSingleData(data);
     } else {
       addTableSingleData(data);
@@ -121,40 +164,65 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Password Group`}
+      title={`${recordToEdit ? "Edit" : "Add"} Atom`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "20px" }}>
-        <Grid container>
-          <Grid item xs={12}>
-            {recordToEdit ? (
-              <SelectFormUnit
-                control={control}
-                dataKey="password_group"
-                options={passwordGroups}
-                required
-              />
-            ) : (
-              <DefaultFormUnit
-                control={control}
-                dataKey="password_group"
-                required
-              />
-            )}
-            <DefaultFormUnit control={control} dataKey="username" required />
-            <DefaultFormUnit control={control} dataKey="password" required />
+        <Grid container spacing={2}>
+          <Grid item xs={12} sm={4}>
+            <DefaultFormUnit control={control} dataKey="ip_address" required />
             <SelectFormUnit
               control={control}
-              dataKey="password_group_type"
-              options={["SSH", "TELNET"]}
-              // required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey="secret_password"
-              disabled={isSecretPasswordDisable}
+              dataKey="site_name"
+              options={sites}
               required
             />
+            <SelectFormUnit
+              control={control}
+              dataKey="rack_name"
+              options={racks}
+              required
+            />
+            <DefaultFormUnit control={control} dataKey="section" />
+            <DefaultFormUnit control={control} dataKey="department" />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <SelectFormUnit
+              control={control}
+              dataKey="device_ru"
+              options={generateNumbersArray(30)}
+              required
+            />
+            <SelectFormUnit
+              control={control}
+              dataKey="function"
+              options={functions}
+              required
+            />
+            <SelectFormUnit
+              control={control}
+              dataKey="device_type"
+              options={deviceTypes}
+              required
+            />
+            <DefaultFormUnit control={control} dataKey="device_name" required />
+          </Grid>
+          <Grid item xs={12} sm={4}>
+            <SelectFormUnit
+              control={control}
+              dataKey="vendor"
+              options={vendors}
+              required
+            />
+            <SelectFormUnit
+              control={control}
+              dataKey="password_group"
+              options={passwordGroups}
+              required
+            />
+            <DefaultFormUnit control={control} dataKey="criticality" required />
+            <DefaultFormUnit control={control} dataKey="virtual" />
+            <DefaultFormUnit control={control} dataKey="domain" />
           </Grid>
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "center" }}>
