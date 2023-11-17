@@ -18,7 +18,8 @@ export default function DefaultInput({
         borderStyle: "solid",
         borderColor: theme.palette.color.inputBorderColor,
         borderRadius: "5px",
-        padding: "5px 15px",
+        padding: "5px 10px",
+        width: "90%",
         ...sx,
       }}
       {...rest}

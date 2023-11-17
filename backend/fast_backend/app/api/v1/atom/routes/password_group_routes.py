@@ -59,9 +59,10 @@ def add_password_groups(pass_list: list[AddPasswordGroupRequestSchema]):
                                     if value not in success_list:
                                         # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
                                         success_list.append(value)
+                    
                 # success_list.append(msg)
-            # else:
-            #     error_list.append(msg)
+            else:
+                error_list.append(msg)
 
         response = SummeryResponseSchema(
             data = data_lst,
@@ -87,8 +88,13 @@ def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
         pass_obj = pass_obj.dict()
 
         response, status = edit_password_group_util(pass_obj)
+        print("status ===============================================",status,file=sys.stderr)
+        if status == 200:
+            return JSONResponse(response,status_code=200)
+        elif status == 400:
+            return JSONResponse(response,status_code=400)
 
-        return JSONResponse(content=response, status_code=200)
+        # return JSONResponse(content=response, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Updating Password Group", status_code=500)

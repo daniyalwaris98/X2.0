@@ -1,1 +1,1 @@
-export const selectTableData = (state) => state.passwordGroup.table_data;
+export const selectTableData = (state) => state.password_group.all_data;

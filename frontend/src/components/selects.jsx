@@ -11,7 +11,8 @@ export default function DefaultSelect({ field, sx, children, ...rest }) {
         color: theme.palette.textColor.input,
         border: `2px solid ${theme.palette.color.inputBorderColor}`,
         borderRadius: "5px",
-        padding: "5px 15px",
+        padding: "5px 10px",
+        width: "100%",
         ...sx,
       }}
       {...rest}

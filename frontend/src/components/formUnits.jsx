@@ -13,6 +13,7 @@ export default function DefaultFormUnit({
   dataKey,
   type = "text",
   required = false,
+  sx,
   ...rest
 }) {
   const title = getTitle(dataKey);
@@ -33,6 +34,7 @@ export default function DefaultFormUnit({
                 id={dataKey}
                 placeholder={title}
                 type={type}
+                sx={sx}
                 {...rest}
               />
             </InputWrapper>
@@ -67,7 +69,7 @@ export function SelectFormUnit({
             <InputWrapper>
               <DefaultSelect
                 field={field}
-                sx={{ width: "195px", outline: "none" }}
+                sx={{ outline: "none" }}
                 id={dataKey}
                 {...rest}
               >

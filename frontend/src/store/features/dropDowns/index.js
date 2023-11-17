@@ -2,54 +2,61 @@ import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
-  sites: [],
-  racks: [],
-  vendors: [],
-  functions: [],
-  device_types: [],
-  password_groups: [],
+  site_names: [],
+  rack_names: [],
+  vendor_names: [],
+  function_names: [],
+  device_type_names: [],
+  password_group_names: [],
+  password_group_type_names: [],
 };
 
 const dropDownsSlice = createSlice({
-  name: "dropDowns",
+  name: "drop_downs",
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchSites.matchFulfilled,
+        extendedApi.endpoints.fetchSiteNames.matchFulfilled,
         (state, action) => {
-          state.sites = action.payload;
+          state.site_names = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.fetchRacks.matchFulfilled,
+        extendedApi.endpoints.fetchRackNames.matchFulfilled,
         (state, action) => {
-          state.racks = action.payload;
+          state.rack_names = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.fetchVendors.matchFulfilled,
+        extendedApi.endpoints.fetchVendorNames.matchFulfilled,
         (state, action) => {
-          state.vendors = action.payload;
+          state.vendor_names = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.fetchFunctions.matchFulfilled,
+        extendedApi.endpoints.fetchFunctionNames.matchFulfilled,
         (state, action) => {
-          state.functions = action.payload;
+          state.function_names = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.fetchDeviceTypes.matchFulfilled,
+        extendedApi.endpoints.fetchDeviceTypeNames.matchFulfilled,
         (state, action) => {
-          state.device_types = action.payload;
+          state.device_type_names = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.fetchPasswordGroups.matchFulfilled,
+        extendedApi.endpoints.fetchPasswordGroupNames.matchFulfilled,
         (state, action) => {
-          state.password_groups = action.payload;
+          state.password_group_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchPasswordGroupTypeNames.matchFulfilled,
+        (state, action) => {
+          state.password_group_type_names = action.payload;
         }
       );
   },

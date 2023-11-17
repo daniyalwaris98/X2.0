@@ -3,11 +3,11 @@ import { monetxApi } from "../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
-    fetchAtomTableData: builder.query({
+    fetchAtoms: builder.query({
       query: () => "/api/v1/atom/atom/get_atoms",
     }),
 
-    addTableMultipleData: builder.mutation({
+    addAtoms: builder.mutation({
       query: (data) => ({
         url: "/api/v1/atom/atom/add_atom_devices",
         method: "POST",
@@ -15,7 +15,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
-    deleteTableMultipleData: builder.mutation({
+    deleteAtoms: builder.mutation({
       query: (data) => ({
         url: "/api/v1/atom/atom/delete_atom",
         method: "POST",
@@ -24,7 +24,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     // form apis
-    addTableSingleData: builder.mutation({
+    addAtom: builder.mutation({
       query: (data) => ({
         url: "/api/v1/atom/atom/add_atom_device",
         method: "POST",
@@ -32,7 +32,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
-    updateTableSingleData: builder.mutation({
+    updateAtom: builder.mutation({
       query: (data) => ({
         url: "/api/v1/atom/atom/edit_atom",
         method: "POST",
@@ -44,10 +44,10 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useFetchAtomTableDataQuery: useFetchTableDataQuery,
-  useAddTableMultipleDataMutation,
-  useDeleteTableMultipleDataMutation,
+  useFetchAtomsQuery: useFetchRecordsQuery,
+  useAddAtomsMutation: useAddRecordsMutation,
+  useDeleteAtomsMutation: useDeleteRecordsMutation,
   // form apis
-  useAddTableSingleDataMutation,
-  useUpdateTableSingleDataMutation,
+  useAddAtomMutation: useAddRecordMutation,
+  useUpdateAtomMutation: useUpdateRecordMutation,
 } = extendedApi;

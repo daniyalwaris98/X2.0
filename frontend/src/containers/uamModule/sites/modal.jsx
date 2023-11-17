@@ -11,6 +11,7 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateTableSingleDataMutation,
   useAddTableSingleDataMutation,
+<<<<<<< HEAD
 } from "../../../store/features/atomModule/atom/apis";
 import {
   useFetchSitesQuery,
@@ -29,6 +30,12 @@ import {
   selectDeviceTypes,
   selectPasswordGroups,
 } from "../../../store/features/dropDowns/selectors";
+=======
+} from "../../../store/features/atomModule/passwordGroup/apis";
+import { useFetchPasswordGroupNamesQuery } from "../../../store/features/dropDowns/apis";
+import { useSelector } from "react-redux";
+import { selectPasswordGroupNames } from "../../../store/features/dropDowns/selectors";
+>>>>>>> 3342d746a7f22cc25b90e82409495e78b87aeb3e
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 
@@ -75,6 +82,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   }, [watch("site_name")]);
 
   // fetching dropdowns data from backend using apis
+<<<<<<< HEAD
   const { error: sitesError, isLoading: isSitesLoading } = useFetchSitesQuery();
   const { error: racksError, isLoading: isRacksLoading } = useFetchRacksQuery(
     {
@@ -91,6 +99,15 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     useFetchDeviceTypesQuery();
   const { error: passwordGroupsError, isLoading: isPasswordGroupsLoading } =
     useFetchPasswordGroupsQuery();
+=======
+  const {
+    data: passwordGroupData,
+    isSuccess: isPasswordGroupSuccess,
+    isLoading: isPasswordGroupsLoading,
+    isError: isPasswordGroupError,
+    error: passwordGroupsError,
+  } = useFetchPasswordGroupNamesQuery();
+>>>>>>> 3342d746a7f22cc25b90e82409495e78b87aeb3e
 
   // post api for the form
   const [
@@ -133,12 +150,16 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   });
 
   // getting dropdowns data from the store
+<<<<<<< HEAD
   const sites = useSelector(selectSites);
   const racks = useSelector(selectRacks);
   const vendors = useSelector(selectVendors);
   const functions = useSelector(selectFunctions);
   const deviceTypes = useSelector(selectDeviceTypes);
   const passwordGroups = useSelector(selectPasswordGroups);
+=======
+  const passwordGroups = useSelector(selectPasswordGroupNames);
+>>>>>>> 3342d746a7f22cc25b90e82409495e78b87aeb3e
 
   // on form submit
   const onSubmit = (data) => {

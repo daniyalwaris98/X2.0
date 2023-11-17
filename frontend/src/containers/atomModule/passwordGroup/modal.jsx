@@ -9,19 +9,33 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
 import {
-  useUpdateTableSingleDataMutation,
-  useAddTableSingleDataMutation,
+  useUpdateRecordMutation,
+  useAddRecordMutation,
 } from "../../../store/features/atomModule/passwordGroup/apis";
-import { useFetchPasswordGroupsQuery } from "../../../store/features/dropDowns/apis";
+import {
+  useFetchPasswordGroupNamesQuery,
+  useFetchPasswordGroupTypeNamesQuery,
+} from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
-import { selectPasswordGroups } from "../../../store/features/dropDowns/selectors";
+import {
+  selectPasswordGroupNames,
+  selectPasswordGroupTypeNames,
+} from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter, generateNumbersArray } from "../../../utils/helpers";
+import { formSetter } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
   password_group: yup.string().required("Password Group is required"),
   username: yup.string().required("User name is required"),
   password: yup.string().required("Password is required"),
+  password_group_type: yup.string().required("Password group type is required"),
+  secret_password: yup
+    .string()
+    .when("password_group_type", (passwordGroupType, schema) => {
+      if (passwordGroupType == "TELNET")
+        return schema.required("Secret password is required");
+      return schema;
+    }),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -42,79 +56,76 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   useEffect(() => {
     if (watch("password_group_type") === "SSH") {
+      setValue("secret_password", "");
       setIsSecretPasswordDisable(true);
     } else {
       setIsSecretPasswordDisable(false);
     }
+    trigger("secret_password");
   }, [watch("password_group_type")]);
 
   // fetching dropdowns data from backend using apis
   const {
-    data: passwordGroupData,
-    isSuccess: isPasswordGroupSuccess,
-    isLoading: isPasswordGroupsLoading,
-    isError: isPasswordGroupError,
-    error: passwordGroupsError,
-  } = useFetchPasswordGroupsQuery();
+    error: passwordGroupNamesError,
+    isLoading: isPasswordGroupNamesLoading,
+  } = useFetchPasswordGroupNamesQuery();
+
+  const {
+    error: passwordGroupTypeNamesError,
+    isLoading: isPasswordGroupTypeNamesLoading,
+  } = useFetchPasswordGroupTypeNamesQuery();
 
   // post api for the form
   const [
-    addTableSingleData,
+    addRecord,
     {
-      data: addedTableSingleData,
-      isSuccess: isAddTableSingleDataSuccess,
-      isLoading: isAddTableSingleDataLoading,
-      isError: isAddTableSingleDataError,
-      error: addTableSingleDataError,
+      data: addRecordData,
+      isSuccess: isAddRecordSuccess,
+      isLoading: isAddRecordLoading,
+      isError: isAddRecordError,
+      error: addRecordError,
     },
-  ] = useAddTableSingleDataMutation();
+  ] = useAddRecordMutation();
 
   const [
-    updateTableSingleData,
+    updateRecord,
     {
-      data: updatedTableSingleData,
-      isSuccess: isUpdateTableSingleDataSuccess,
-      isLoading: isUpdateTableSingleDataLoading,
-      isError: isUpdateTableSingleDataError,
-      error: updateTableSingleDataError,
+      data: updateRecordData,
+      isSuccess: isUpdateRecordSuccess,
+      isLoading: isUpdateRecordLoading,
+      isError: isUpdateRecordError,
+      error: updateRecordError,
     },
-  ] = useUpdateTableSingleDataMutation();
+  ] = useUpdateRecordMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: updatedTableSingleData,
-    isSuccess: isUpdateTableSingleDataSuccess,
-    isError: isUpdateTableSingleDataError,
-    error: updateTableSingleDataError,
+    data: addRecordData,
+    isSuccess: isAddRecordSuccess,
+    isError: isAddRecordError,
+    error: addRecordError,
     type: "single",
   });
 
   useErrorHandling({
-    data: addedTableSingleData,
-    isSuccess: isAddTableSingleDataSuccess,
-    isError: isAddTableSingleDataError,
-    error: addTableSingleDataError,
+    data: updateRecordData,
+    isSuccess: isUpdateRecordSuccess,
+    isError: isUpdateRecordError,
+    error: updateRecordError,
     type: "single",
-  });
-
-  useErrorHandling({
-    data: passwordGroupData,
-    isSuccess: isPasswordGroupSuccess,
-    isError: isPasswordGroupError,
-    error: passwordGroupsError,
-    type: "fetch",
   });
 
   // getting dropdowns data from the store
-  const passwordGroups = useSelector(selectPasswordGroups);
+  const passwordGroupNames = useSelector(selectPasswordGroupNames);
+  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
 
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
       data.password_group_id = recordToEdit.password_group_id;
-      updateTableSingleData(data);
+      updateRecord(data);
     } else {
-      addTableSingleData(data);
+      addRecord(data);
     }
   };
 
@@ -124,30 +135,22 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${recordToEdit ? "Edit" : "Add"} Password Group`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "20px" }}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container>
           <Grid item xs={12}>
-            {recordToEdit ? (
-              <SelectFormUnit
-                control={control}
-                dataKey="password_group"
-                options={passwordGroups}
-                required
-              />
-            ) : (
-              <DefaultFormUnit
-                control={control}
-                dataKey="password_group"
-                required
-              />
-            )}
+            <DefaultFormUnit
+              control={control}
+              dataKey="password_group"
+              disabled={recordToEdit !== null}
+              required
+            />
             <DefaultFormUnit control={control} dataKey="username" required />
             <DefaultFormUnit control={control} dataKey="password" required />
             <SelectFormUnit
               control={control}
               dataKey="password_group_type"
-              options={["SSH", "TELNET"]}
-              // required
+              options={passwordGroupTypeNames}
+              required
             />
             <DefaultFormUnit
               control={control}

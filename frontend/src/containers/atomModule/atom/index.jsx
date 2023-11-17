@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import { Icon } from "@iconify/react";
@@ -6,11 +6,11 @@ import { StyledTable } from "../../../styles/main.styled";
 import { getTitle } from "../../../utils/helpers";
 import Modal from "./modal";
 import {
-  useFetchTableDataQuery,
-  useAddTableMultipleDataMutation,
-  useDeleteTableMultipleDataMutation,
+  useFetchRecordsQuery,
+  useAddRecordsMutation,
+  useDeleteRecordsMutation,
 } from "../../../store/features/atomModule/atom/apis";
-import { useDispatch, useSelector } from "react-redux";
+import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
@@ -53,63 +53,63 @@ const Index = () => {
 
   // apis
   const {
-    data: fetchedTableData,
-    isSuccess: isFetchTableDataSuccess,
-    isLoading: isFetchTableDataLoading,
-    isError: isFetchTableDataError,
-    error: fetchTableDataError,
-  } = useFetchTableDataQuery();
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isLoading: isFetchRecordsLoading,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+  } = useFetchRecordsQuery();
 
   const [
-    addTableMultipleData,
+    addRecords,
     {
-      data: addedTableMultipleData,
-      isSuccess: isAddTableMultipleDataSuccess,
-      isLoading: isAddTableMultipleDataLoading,
-      isError: isAddTableMultipleDataError,
-      error: addTableMultipleDataError,
+      data: addRecordsData,
+      isSuccess: isAddRecordsSuccess,
+      isLoading: isAddRecordsLoading,
+      isError: isAddRecordsError,
+      error: addRecordsError,
     },
-  ] = useAddTableMultipleDataMutation();
+  ] = useAddRecordsMutation();
 
   const [
-    deleteTableMultipleData,
+    deleteRecords,
     {
-      data: deletedTableMultipleData,
-      isSuccess: isDeleteTableSingleDataSuccess,
-      isLoading: isDeleteTableMultipleDataLoading,
-      isError: isDeleteTableMultipleDataError,
-      error: deleteTableSingleDataError,
+      data: deleteRecordsData,
+      isSuccess: isDeleteRecordsSuccess,
+      isLoading: isDeleteRecordsLoading,
+      isError: isDeleteRecordsError,
+      error: deleteRecordsError,
     },
-  ] = useDeleteTableMultipleDataMutation();
+  ] = useDeleteRecordsMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: fetchedTableData,
-    isSuccess: isFetchTableDataSuccess,
-    isError: isFetchTableDataError,
-    error: fetchTableDataError,
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
     type: "fetch",
   });
 
   useErrorHandling({
-    data: addedTableMultipleData,
-    isSuccess: isAddTableMultipleDataSuccess,
-    isError: isAddTableMultipleDataError,
-    error: addTableMultipleDataError,
+    data: addRecordsData,
+    isSuccess: isAddRecordsSuccess,
+    isError: isAddRecordsError,
+    error: addRecordsError,
     type: "bulk",
   });
 
   useErrorHandling({
-    data: deletedTableMultipleData,
-    isSuccess: isDeleteTableSingleDataSuccess,
-    isError: isDeleteTableMultipleDataError,
-    error: deleteTableSingleDataError,
+    data: deleteRecordsData,
+    isSuccess: isDeleteRecordsSuccess,
+    isError: isDeleteRecordsError,
+    error: deleteRecordsError,
     type: "bulk",
   });
 
   // handlers
   const handlePostSeed = (data) => {
-    addTableMultipleData(data);
+    addRecords(data);
   };
 
   const deleteData = () => {
@@ -131,7 +131,7 @@ const Index = () => {
     const filteredDeleteData = deleteData.filter((data) => data !== null);
 
     if (filteredDeleteData.length > 0) {
-      deleteTableMultipleData(filteredDeleteData);
+      deleteRecords(filteredDeleteData);
     }
   };
 
@@ -343,9 +343,7 @@ const Index = () => {
   return (
     <Spin
       spinning={
-        isFetchTableDataLoading ||
-        isAddTableMultipleDataLoading ||
-        isDeleteTableMultipleDataLoading
+        isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
       }
     >
       <div>
