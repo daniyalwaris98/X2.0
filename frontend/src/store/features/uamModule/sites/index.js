@@ -2,66 +2,64 @@ import { extendedApi } from "./apis";
 import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 
 const initialState = {
-  table_data: [],
+  all_data: [],
 };
 
-const passwordGroupSlice = createSlice({
-  name: "sites",
+const siteSlice = createSlice({
+  name: "site",
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchPasswordGroupTableData.matchFulfilled,
+        extendedApi.endpoints.fetchSites.matchFulfilled,
         (state, action) => {
-          state.table_data = action.payload;
+          state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addTableMultipleData.matchFulfilled,
+        extendedApi.endpoints.addSite.matchFulfilled,
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
-            const indexToUpdate = state.table_data.findIndex((tableItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
               return (
                 tableItem.sites_id === responseItem.sites_id
               );
             });
-
             if (indexToUpdate !== -1) {
-              state.table_data[indexToUpdate] = responseItem;
+              state.all_data[indexToUpdate] = responseItem;
             } else {
-              state.table_data.push(responseItem);
+              state.all_data.push(responseItem);
             }
           });
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteTableMultipleData.matchFulfilled,
+        extendedApi.endpoints.deleteSite.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
-            state.table_data = state.table_data.filter((item) => {
+            state.all_data = state.all_data.filter((item) => {
               const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item.password_group_id;
+                return deletedId === item.site_id;
               });
               return !shouldKeepItem;
             });
           }
         }
       )
-
       .addMatcher(
-        extendedApi.endpoints.addTableSingleData.matchFulfilled,
+        extendedApi.endpoints.addSite.matchFulfilled,
         (state, action) => {
-          state.table_data.push(action.payload.data);
+          state.all_data.push(action.payload.data);
         }
       )
       .addMatcher(
-        extendedApi.endpoints.updateTableSingleData.matchFulfilled,
+        extendedApi.endpoints.updateSite.matchFulfilled,
         (state, action) => {
           let objectToReplace = action.payload.data;
-          state.table_data = state.table_data.map((item) => {
-            if (item.password_group_id === objectToReplace.password_group_id) {
+          state.all_data = state.all_data.map((item) => {
+            if (item.site_id === objectToReplace.site_id) {
               return { ...item, ...objectToReplace };
             } else {
               return item;
@@ -73,4 +71,4 @@ const passwordGroupSlice = createSlice({
 });
 
 // export const { setNextPage, initiateItem } = passwordGroupSlice.actions;
-export default sitesSlice.reducer;
+export default siteSlice.reducer;

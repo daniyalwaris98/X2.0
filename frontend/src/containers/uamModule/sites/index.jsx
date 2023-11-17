@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect, useCallback } from "react";
+import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import { Icon } from "@iconify/react";
@@ -6,12 +6,11 @@ import { StyledTable } from "../../../styles/main.styled";
 import { getTitle } from "../../../utils/helpers";
 import Modal from "./modal";
 import {
-  useFetchTableDataQuery,
-  useAddTableMultipleDataMutation,
-  useDeleteTableMultipleDataMutation,
-} from "../../../store/features/atomModule/passwordGroup/apis";
+  useFetchRecordsQuery,
+  useDeleteRecordsMutation,
+} from "../../../store/features/uamModule/sites/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
+import { selectTableData } from "../../../store/features/uamModule/sites/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
   handleSuccessAlert,
@@ -35,12 +34,13 @@ const Index = () => {
   // theme
   const theme = useTheme();
 
+
   // hooks
   const { height, width } = useWindowDimensions();
   const getColumnSearchProps = useColumnSearchProps();
 
   // refs
-  const fileInputRef = useRef(null);
+
 
   // states
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -50,70 +50,54 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
+  console.log("dataaaa", dataSource)
 
   // apis
   const {
-    data: fetchedTableData,
-    isSuccess: isFetchTableDataSuccess,
-    isLoading: isFetchTableDataLoading,
-    isError: isFetchTableDataError,
-    error: fetchTableDataError,
-  } = useFetchTableDataQuery();
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isLoading: isFetchRecordsLoading,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+  } = useFetchRecordsQuery();
+
+ 
 
   const [
-    addTableMultipleData,
+    deleteRecords,
     {
-      data: addedTableMultipleData,
-      isSuccess: isAddTableMultipleDataSuccess,
-      isLoading: isAddTableMultipleDataLoading,
-      isError: isAddTableMultipleDataError,
-      error: addTableMultipleDataError,
+      data: deleteRecordsData,
+      isSuccess: isDeleteRecordsSuccess,
+      isLoading: isDeleteRecordsLoading,
+      isError: isDeleteRecordsError,
+      error: deleteRecordsError,
     },
-  ] = useAddTableMultipleDataMutation();
-
-  const [
-    deleteTableMultipleData,
-    {
-      data: deletedTableMultipleData,
-      isSuccess: isDeleteTableSingleDataSuccess,
-      isLoading: isDeleteTableMultipleDataLoading,
-      isError: isDeleteTableMultipleDataError,
-      error: deleteTableSingleDataError,
-    },
-  ] = useDeleteTableMultipleDataMutation();
+  ] = useDeleteRecordsMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: fetchedTableData,
-    isSuccess: isFetchTableDataSuccess,
-    isError: isFetchTableDataError,
-    error: fetchTableDataError,
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
     type: "fetch",
   });
 
-  useErrorHandling({
-    data: addedTableMultipleData,
-    isSuccess: isAddTableMultipleDataSuccess,
-    isError: isAddTableMultipleDataError,
-    error: addTableMultipleDataError,
-    type: "bulk",
-  });
+  
 
   useErrorHandling({
-    data: deletedTableMultipleData,
-    isSuccess: isDeleteTableSingleDataSuccess,
-    isError: isDeleteTableMultipleDataError,
-    error: deleteTableSingleDataError,
+    data: deleteRecordsData,
+    isSuccess: isDeleteRecordsSuccess,
+    isError: isDeleteRecordsError,
+    error: deleteRecordsError,
     type: "bulk",
   });
 
   // handlers
-  const handlePostSeed = (data) => {
-    addTableMultipleData(data);
-  };
+
 
   const deleteData = () => {
-    deleteTableMultipleData(selectedRowKeys);
+    deleteRecords(selectedRowKeys);
   };
 
   const handleDelete = () => {
@@ -132,11 +116,7 @@ const Index = () => {
     setOpen(true);
   };
 
-  const handleInputClick = () => {
-    if (fileInputRef.current) {
-      fileInputRef.current.click();
-    }
-  };
+
 
   const handleAdd = (optionType) => {
     setOpen(true);
@@ -153,9 +133,9 @@ const Index = () => {
 
   const handleExport = (optionType) => {
     if (optionType === "All Devices") {
-      jsonToExcel(dataSource, "all_password_groups");
+      jsonToExcel(dataSource, "sites");
     } else if (optionType === "Template") {
-      jsonToExcel([generateObject(dataKeys)], "password_group_template");
+      jsonToExcel([generateObject(dataKeys)], "site_template");
     }
     handleSuccessAlert("File exported successfully.");
   };
@@ -227,29 +207,17 @@ const Index = () => {
       handleClick: handleAdd,
       sx: { backgroundColor: theme.palette.color.primary },
     },
-    {
-      type: "Import",
-      icon: <Icon fontSize="16px" icon="pajamas:import" />,
-      handleClick: handleInputClick,
-      sx: { backgroundColor: theme.palette.color.primary },
-    },
+    
   ];
 
   return (
     <Spin
       spinning={
-        isFetchTableDataLoading ||
-        isAddTableMultipleDataLoading ||
-        isDeleteTableMultipleDataLoading
+        isFetchRecordsLoading ||  isDeleteRecordsLoading
       }
     >
       <div>
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
-        />
+       
         {open ? (
           <Modal
             handleClose={handleClose}
@@ -271,7 +239,7 @@ const Index = () => {
             rowSelection={rowSelection}
             columns={columns}
             dataSource={dataSource}
-            rowKey="password_group_id"
+            rowKey="site_id"
             style={{ whiteSpace: "pre" }}
             pagination={{
               defaultPageSize: 9,

@@ -1,1 +1,4 @@
-export const selectTableData = (state) => state.sites.table_data;
+export const selectTableData = (state) => state.site.all_data;
+
+    
+

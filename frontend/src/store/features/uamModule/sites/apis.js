@@ -3,36 +3,26 @@ import { monetxApi } from "../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
-    fetchPasswordGroupTableData: builder.query({
+    fetchSites: builder.query({
       query: () => "/api/v1/uam/site/get_all_sites",
     }),
-
-    addTableMultipleData: builder.mutation({
+   
+    deleteSite: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/site/add_site",
+        url: "/api/v1/uam/site/delete_sites",
         method: "POST",
         body: data,
       }),
     }),
-
-    deleteTableMultipleData: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/uam/site/delete_site",
-        method: "POST",
-        body: data,
-      }),
-    }),
-
     // form apis
-    addTableSingleData: builder.mutation({
+    addSite: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/site/add_site",
         method: "POST",
         body: data,
       }),
     }),
-
-    updateTableSingleData: builder.mutation({
+    updateSite: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/site/edit_site",
         method: "POST",
@@ -40,14 +30,11 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
   }),
-  overrideExisting: true,
 });
-
 export const {
-  useFetchSlicesTableDataQuery: useFetchTableDataQuery,
-  useAddTableMultipleDataMutation,
-  useDeleteTableMultipleDataMutation,
+  useFetchSitesQuery: useFetchRecordsQuery,
+  useDeleteSiteMutation: useDeleteRecordsMutation,
   // form apis
-  useAddTableSingleDataMutation,
-  useUpdateTableSingleDataMutation,
+  useAddSiteMutation: useAddRecordMutation,
+  useUpdateSiteMutation: useUpdateRecordMutation,
 } = extendedApi;
