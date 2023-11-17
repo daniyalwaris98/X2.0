@@ -825,10 +825,8 @@ def edit_password_group_util(pass_obj):
         
         if password_group is not None:
             if password_exist.password_group_id != password_group.password_group_id:
-                return (
-                    f"{pass_obj['password_group']} : Password Group Name Is Already Assigned"
-                    
-                ),400
+                return f"{pass_obj['password_group']} : Password Group Name Is Already Assigned",400
+                
 
         password_exist.password_group = name_response
 
