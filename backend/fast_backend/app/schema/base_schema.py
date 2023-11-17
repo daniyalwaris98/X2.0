@@ -23,6 +23,13 @@ class DeleteResponseSchema(BaseSchema):
     success_list: list[str]
     error_list: list[str]
 
+class ListtDeleteResponseSchema(BaseSchema):
+    data: list[int]
+    success: int
+    error: int
+    success_list: list[str]
+    error_list: list[str]
+
     # successlist: List[Message]
     # errorlist: List[Message]
     # successlen: int

@@ -40,7 +40,7 @@ class AtomTable(Base):
         Integer,
         ForeignKey(
             "password_group_table.password_group_id",
-            ondelete="SET DEFAULT",
+            ondelete="CASCADE",
             onupdate="CASCADE",
         ),
         nullable=False,
