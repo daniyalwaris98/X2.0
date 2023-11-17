@@ -4,44 +4,55 @@ from fastapi import FastAPI, Query
 from app.api.v1.uam.utils.rack_utils import *
 from app.schema.site_rack_schema import *
 from app.models.site_rack_models import *
+from app.schema.validation_schema import Response200
+from app.schema.base_schema import DeleteResponseSchema
+
 router = APIRouter(
     prefix="/rack",
     tags=["rack"],
 )
 
 
-@router.post("/add-rack", responses={
-    200: {"model": str},
+@router.post("/add_rack", responses={
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
 async def add_rack(rack: AddRackRequestSchema):
     try:
         response, status = add_rack_util(rack)
+        if status == 200:
+            return response
+        elif status == 400:
+            return JSONResponse(content=response, status_code=400)
         # response = json.dumps(response, default=str)
         # print("repsonse with the jsoon dumpt is:::::::::::::::::::::",response,file=sys.stderr)
-        return (response),status
+        
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Rack", status_code=500)
 
 
-@router.post("/edit-rack", responses={
-    200: {"model": str},
+@router.post("/edit_rack", responses={
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
 async def edit_rack(rack: EditRackRequestSchema):
     try:
         response, status = edit_rack_util(rack)
-        return JSONResponse(content=response, status_code=status)
+        print("response is:::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+        if status == 200:
+            return response
+        elif status == 400:
+            return JSONResponse(content=response, status_code=400)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Updating Rack", status_code=500)
 
 
-@router.post("/delete-rack", responses={
-    200: {"model": SummeryResponseSchema},
+@router.post("/delete_rack", responses={
+    200: {"model": DeleteResponseSchema},
     400: {"model": str},
     500: {"model": str}
 })
@@ -54,7 +65,7 @@ async def delete_rack(rack_ids: list[int]):
         return JSONResponse(content="Error Occurred While Deleting Rack", status_code=500)
 
 
-@router.get("/get-racks-by-site-dropdown", responses={
+@router.get("/get_racks_by_site_dropdown", responses={
     200: {"model": list[str]},
     500: {"model": str}
 })
@@ -81,13 +92,13 @@ async def get_rack_by_site(site_name: str = Query(...,description="Name of the s
         return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
 
-@router.get("/get-rack-by-rack-name", responses={
+@router.get("/get_rack_by_rack_name", responses={
     200: {"model": list[GetRackResponseSchema]},
     500: {"model": str}
 })
-async def get_rack_by_rack_name(rack_obj: GetRackByRackNameRequestSchema):
+async def get_rack_by_rack_name(rack_name: str = Query(...,description="Name of the rack")):
     try:
-        response, status = get_rack_details_by_rack_name(rack_obj['rackname'])
+        response, status = get_rack_details_by_rack_name(rack_name)
         return JSONResponse(content=response, status_code=status)
 
     except Exception:
@@ -95,21 +106,25 @@ async def get_rack_by_rack_name(rack_obj: GetRackByRackNameRequestSchema):
         return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
 
-@router.get("/getAllRacks", responses={
+@router.get("/get_all_racks", responses={
     200: {"model": list[GetSiteResponseSchema]},
     500: {"model": str}
 })
 async def get_all_racks():
     try:
-        response = get_all_racks()
-        return JSONResponse(content=response, status_code=200)
+        response = get_all_rack()
+        print("reposne in get all racks is::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+        return response
 
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
-
-@router.get("/totalRacks")
+# GetTotalRacksSchema
+@router.get("/get_total_racks",responses={
+    200: {"model": list[GetTotalRacksSchema]},
+    500: {"model": str}
+})
 async def total_racks():
     try:
         query_string = f"select count(distinct RACK_NAME) from rack_table;"
@@ -127,14 +142,17 @@ async def total_racks():
             {"name": "Total RU", "value": result2 if result2 is not None else 0},
         ]
 
-        return JSONResponse(content=obj_list, status_code=200)
+        return obj_list
 
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
-
-@router.get("/rackLeaflet")
+RackLeafLetSchema
+@router.get("/get_rack_leaf_let",responses={
+    200: {"model": list[RackLeafLetSchema]},
+    500: {"model": str}
+})
 async def rack_leaflet():
     try:
         query_string = f"select LONGITUDE,LATITUDE from site_table where site_id in (select site_id from rack_table);"
@@ -154,7 +172,10 @@ async def rack_leaflet():
         return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
 
-@router.get("/allFloors")
+@router.get("/get_all_floors",responses={
+    200: {"model": list[str]},
+    500: {"model": str}
+})
 async def all_floors():
     try:
 
@@ -174,25 +195,32 @@ async def all_floors():
         return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
 
-@router.get("/allRacks")
+@router.get("/get_all_racks",responses={
+    200: {"model": list[str]},
+    500: {"model": str}
+})
 async def all_racks():
     try:
         obj_list = []
-        racks = get_all_racks()
+        racks = await  get_all_racks()
+        print("racks are::::::::::::::::::::::",racks,file=sys.stderr)
 
         for rack in racks:
             obj_list.append(rack["rack_name"])
 
         print(obj_list, file=sys.stderr)
 
-        return JSONResponse(content=obj_list, status_code=200)
+        return obj_list
 
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
-
-@router.get("/topRacks")
+TopRacksSchema
+@router.get("/get_top_racks",responses={
+    200: {"model": list[TopRacksSchema]},
+    500: {"model": str}
+})
 async def top_racks():
     try:
         query_string = f"select site_table.site_name,count(rack_name) from rack_table inner join site_table on rack_table.site_id = site_table.site_id group by site_name order by count(rack_name) DESC;"

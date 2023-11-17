@@ -21,6 +21,18 @@ class GetSiteResponseSchema(EditSiteRequestSchema):
     creation_date: str
     modification_date: str
 
+class GetTotalRacksSchema(BaseSchema):
+    name: str
+    value: int
+
+
+class RackLeafLetSchema(BaseSchema):
+    longitude: str
+    latitude: str
+
+class TopRacksSchema(BaseSchema):
+    name: str
+    value: int
 
 class AddRackRequestSchema(BaseSchema):
     rack_name: str
