@@ -17,23 +17,23 @@ const siteSlice = createSlice({
           state.all_data = action.payload;
         }
       )
-      .addMatcher(
-        extendedApi.endpoints.addSite.matchFulfilled,
-        (state, action) => {
-          action.payload.data.forEach((responseItem) => {
-            const indexToUpdate = state.all_data.findIndex((tableItem) => {
-              return (
-                tableItem.sites_id === responseItem.sites_id
-              );
-            });
-            if (indexToUpdate !== -1) {
-              state.all_data[indexToUpdate] = responseItem;
-            } else {
-              state.all_data.push(responseItem);
-            }
-          });
-        }
-      )
+      // .addMatcher(
+      //   extendedApi.endpoints.addSite.matchFulfilled,
+      //   (state, action) => {
+      //     action.payload.data.forEach((responseItem) => {
+      //       const indexToUpdate = state.all_data.findIndex((tableItem) => {
+      //         return (
+      //           tableItem.sites_id === responseItem.sites_id
+      //         );
+      //       });
+      //       if (indexToUpdate !== -1) {
+      //         state.all_data[indexToUpdate] = responseItem;
+      //       } else {
+      //         state.all_data.push(responseItem);
+      //       }
+      //     });
+      //   }
+      // )
       .addMatcher(
         extendedApi.endpoints.deleteSite.matchFulfilled,
         (state, action) => {

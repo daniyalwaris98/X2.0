@@ -121,19 +121,11 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   // const passwordGroupNames = useSelector(selectPasswordGroupNames);
   // const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
 
-  // on form submit
-  // const onSubmit = (data) => {
-  //   if (recordToEdit) {
-  //     data.password_group_id = recordToEdit.password_group_id;
-  //     updateRecord(data);
-  //   } else {
-  //     addRecord(data);
-  //   }
-  // };
+  // on form submit    
   const onSubmit = (data) => {
     if (recordToEdit) {
       data.site_id = recordToEdit.site_id;
-      updateRecord(data);
+        updateRecord(data);
     } else {
       addRecord(data);
     }
@@ -142,7 +134,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Password Group`}
+      title={`${recordToEdit ? "Edit" : "Add"} Site`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
