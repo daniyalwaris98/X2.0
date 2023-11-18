@@ -45,7 +45,7 @@ async def edit_site(site: EditSiteRequestSchema):
 
 
 @router.post("/delete_sites", responses={
-    200: {"model": DeleteResponseSchema},
+    200: {"model": ListtDeleteResponseSchema},
     400: {"model": str},
     500: {"model": str}
 })
@@ -67,10 +67,10 @@ async def delete_site(site_ids: list[int]):
                     print("key in msg is:::::::::::::::::::::::::::::::::::",key,file=sys.stderr)
                     print("value in msg is ::::::::::::::::::::::::::::",value,file=sys.stderr)
                     if key == "data":
-                        deleted_site_dict = {
-                            "site_id":value     
-                        }
-                        deleted_sites.append(deleted_site_dict)
+                        # deleted_site_dict = {
+                        #     "site_id":value     
+                        # }
+                        deleted_sites.append(value)
                     elif key == "message":
                         success_list.append(value)
                     else:

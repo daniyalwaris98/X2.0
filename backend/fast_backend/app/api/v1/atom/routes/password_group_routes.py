@@ -101,7 +101,7 @@ def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
 
 
 @router.post("/delete_password_group", responses={
-    200: {"model": DeleteResponseSchema},
+    200: {"model": ListtDeleteResponseSchema},
     500: {"model": str}
 })
 def delete_password_groups(pass_list: list[int]):
@@ -125,9 +125,9 @@ def delete_password_groups(pass_list: list[int]):
                 print("delted password id is:::::::::::::::::::::::::::::::::::::::",deleted_password_group_id,file=sys.stderr)
 
                 if DeleteDBData(password) == 200:
-                    deleted_passw_group['password_group_id'] = deleted_password_group_id
+                    deleted_password_group.append(deleted_password_group_id)
                 
-                    deleted_password_group.append(deleted_passw_group)
+                    # deleted_password_group.append(deleted_passw_group)
                     success_list.append(
                         f"{password.password_group} : Password Group Deleted Successfully")
                     
