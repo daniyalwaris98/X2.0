@@ -2,10 +2,27 @@ import React, { useState } from "react";
 import { Link } from "react-router-dom";
 import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
+import { useTheme, styled } from "@mui/material/styles";
 
 export default function HorizontalMenu({ menuItems }) {
+  const theme = useTheme();
+
   const [openSubmenus, setOpenSubmenus] = useState({});
   const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+
+  const StyledMenuItem = styled(MenuItem)(({ theme, sx }) => ({
+    height: "50px !important",
+    color: sx.color,
+    borderBottom: `3px solid ${
+      sx.isClicked ? sx.color : "transparent"
+    } !important`,
+    "&:hover": {
+      color: `${theme.palette.horizontal_menu.secondary_text} !important`,
+      borderBottom: `3px solid ${theme.palette.horizontal_menu.secondary_text} !important`,
+      backgroundColor: "transparent !important",
+    },
+  }));
+
   const handleMenuClick = (event, id) => {
     setOpenSubmenus((prevOpenSubmenus) => ({
       ...prevOpenSubmenus,
@@ -25,14 +42,18 @@ export default function HorizontalMenu({ menuItems }) {
       if (item.children) {
         return (
           <div key={id} style={{ position: "relative", height: "50px" }}>
-            <MenuItem
+            <StyledMenuItem
               key={id}
               id={id}
               onClick={(event) => handleMenuClick(event, id)}
-              className={isClicked ? "clickedMenuItem" : "menu_item"}
+              sx={{
+                color: isClicked
+                  ? theme.palette.horizontal_menu.secondary_text
+                  : theme.palette.horizontal_menu.primary_text,
+              }}
             >
               {item.name}
-            </MenuItem>
+            </StyledMenuItem>
             <Menu
               anchorEl={document.getElementById(id)}
               open={openSubmenus[id]}
@@ -52,22 +73,21 @@ export default function HorizontalMenu({ menuItems }) {
         );
       } else {
         return (
-          <MenuItem
+          <StyledMenuItem
             id={id}
             key={id}
             component={Link}
             to={item.path}
-            onClick={(event) =>
-              handleMenuClick(
-                event,
-                // parentId
-                id
-              )
-            }
-            className={isClicked ? "clickedMenuItem" : "menu_item"}
+            onClick={(event) => handleMenuClick(event, id)}
+            sx={{
+              color: isClicked
+                ? theme.palette.horizontal_menu.secondary_text
+                : theme.palette.horizontal_menu.primary_text,
+              isClicked: isClicked,
+            }}
           >
             {item.name}
-          </MenuItem>
+          </StyledMenuItem>
         );
       }
     });

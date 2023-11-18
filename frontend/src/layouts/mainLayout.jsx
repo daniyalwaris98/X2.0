@@ -60,6 +60,7 @@ const DrawerHeader = styled("div")(({ theme }) => ({
   alignItems: "center",
   justifyContent: "center",
   padding: theme.spacing(0, 1),
+  backgroundColor: theme?.palette?.main_layout?.background,
   ...theme.mixins.toolbar,
 }));
 
@@ -70,19 +71,19 @@ const Drawer = styled(MuiDrawer, {
   flexShrink: 0,
   whiteSpace: "nowrap",
   boxSizing: "border-box",
-  backgroundColor: theme.palette.color.main, // Set open state background color here
+  backgroundColor: theme?.palette?.main_layout?.background, // Set open state background color here
   ...(open && {
     ...openedMixin(theme),
     "& .MuiDrawer-paper": {
       ...openedMixin(theme),
-      backgroundColor: theme.palette.color.main, // Set open state background color here
+      backgroundColor: theme?.palette?.main_layout?.background, // Set open state background color here
     },
   }),
   ...(!open && {
     ...closedMixin(theme),
     "& .MuiDrawer-paper": {
       ...closedMixin(theme),
-      backgroundColor: theme.palette.color.main, // Set open state background color here
+      backgroundColor: theme?.palette?.main_layout?.background, // Set open state background color here
     },
   }),
 }));
@@ -187,15 +188,19 @@ export default function Index() {
         </List>
       </Drawer>
 
-      <Box component="main" sx={{ flexGrow: 1, p: 0 }}>
+      <Box
+        component="main"
+        sx={{ flexGrow: 1, p: 0, border: "0px solid red", minHeight: "100vh" }}
+      >
         <DrawerHeader
           sx={{
             display: "flex",
             justifyContent: "space-between",
             padding: "0 20px",
+            borderBottom: `0.5px solid ${theme?.palette?.main_layout?.border_bottom}`,
           }}
         >
-          <div style={{ color: theme.palette.textColor.default }}>
+          <div style={{ color: theme?.palette?.main_layout?.primary_text }}>
             {selectedModule}
           </div>
           <div style={{ display: "flex" }}>
@@ -222,7 +227,7 @@ export default function Index() {
             <div>
               <div
                 style={{
-                  color: theme.palette.textColor.default,
+                  color: theme?.palette?.main_layout?.primary_text,
                   fontSize: theme.typography.textSize.medium,
                 }}
               >
@@ -230,7 +235,7 @@ export default function Index() {
               </div>
               <div
                 style={{
-                  color: theme.palette.textColor.secondary,
+                  color: theme?.palette?.main_layout?.secondary_text,
                   fontSize: theme.typography.textSize.small,
                 }}
               >
@@ -252,5 +257,5 @@ const ProfileContainer = styled("div")(({ theme }) => ({
   borderRadius: "100px",
   width: "35px",
   height: "35px",
-  backgroundColor: theme.palette.color.default,
+  backgroundColor: theme?.palette?.main_layout?.profile_picture_background,
 }));

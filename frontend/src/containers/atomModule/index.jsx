@@ -15,7 +15,7 @@ function Index(props) {
         sx={{
           marginBottom: "10px",
           height: "50px",
-          boxShadow: "unset !important",
+          // boxShadow: "unset !important",
         }}
       >
         <HorizontalMenu menuItems={menuItems} />

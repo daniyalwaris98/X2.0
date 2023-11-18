@@ -51,6 +51,7 @@ export const columnGenerator = (dataKeys, getColumnSearchProps, getTitle) => {
       title: getTitle(dataKey),
       dataIndex: dataKey,
       key: dataKey,
+      ellipsis: true,
       ...getColumnSearchProps(dataKey),
     };
   });

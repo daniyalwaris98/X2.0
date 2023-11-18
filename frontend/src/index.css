@@ -16,21 +16,6 @@ code {
     monospace;
 }
 
-.clickedMenuItem {
-  /* background-color: #3d9e47 !important; */
-  color: #3d9e47 !important;
-  height: 50px !important;
-  border-bottom: 3px solid #3d9e47 !important;
-}
-.menu_item:hover {
-  color: #3d9e47 !important;
-  border-bottom: 3px solid #3d9e47 !important;
-  background-color: transparent !important;
-}
-.menu_item {
-  height: 50px !important;
-  border-bottom: 3px solid white !important;
-}
 .rowClassName {
   background-color: red !important;
 }

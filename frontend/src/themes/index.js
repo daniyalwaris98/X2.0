@@ -6,6 +6,35 @@ export const lightTheme = createTheme({
       default: "#F6F6F6", // default ligt gray
     },
 
+    main_layout: {
+      background: "#FFFFFF",
+      profile_picture_background: "#ACACAC", // profile picture background
+      primary_text: "#000000",
+      secondary_text: "#ACACAC",
+      border_bottom: "#D9D9D9",
+    },
+
+    default_card: {
+      background: "#FFFFFF",
+    },
+
+    horizontal_menu: {
+      primary_text: "#000000",
+      secondary_text: "#3D9E47",
+    },
+
+    default_table: {
+      odd_row: "#FAFAFA",
+      even_row: "#FFFFFF",
+      selected_row: "#F1F6EE",
+      search_icon: "#ACACAC",
+      heading_text: "#262626",
+      primary_text: "#262626",
+      secondary_text: "#3E9F48",
+      border: "#EBEBEB",
+      check_box_border: "#EBEBEB",
+    },
+
     color: {
       default: "#ACACAC", // profile picture background
       main: "#FFFFFF", // table background white
@@ -19,7 +48,7 @@ export const lightTheme = createTheme({
       checkboxBorder: "#DBDBDB",
       modalTitle: "#EBEBEB", // light blue
       inputBorderColor: "#F5F5F5",
-      textBlackColor:"#262626", //text color black
+      textBlackColor: "#262626", //text color black
     },
 
     textColor: {
@@ -56,6 +85,29 @@ export const darkTheme = createTheme({
   palette: {
     background: {
       default: "#131B15", // dark mode background color
+    },
+
+    main_layout: {
+      background: "#09120C",
+      profile_picture_background: "#ACACAC", // profile picture background
+      primary_text: "#FFFFFF",
+      secondary_text: "#ACACAC",
+      border_bottom: "#09120C",
+    },
+
+    default_card: {
+      background: "#09120C",
+    },
+
+    horizontal_menu: {
+      primary_text: "#FFFFFF",
+      secondary_text: "#3D9E47",
+    },
+
+    default_table: {
+      odd_row: "#3A403C",
+      even_row: "#09120C",
+      selected_row: "#5A5A5A",
     },
 
     color: {
