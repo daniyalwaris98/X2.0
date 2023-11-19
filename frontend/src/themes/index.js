@@ -24,15 +24,19 @@ export const lightTheme = createTheme({
     },
 
     default_table: {
-      odd_row: "#FAFAFA",
-      even_row: "#FFFFFF",
+      header_row: "#FAFAFA",
+      odd_row: "#FFFFFF",
+      even_row: "#FAFAFA",
       selected_row: "#F1F6EE",
       search_icon: "#ACACAC",
       heading_text: "#262626",
       primary_text: "#262626",
       secondary_text: "#3E9F48",
+      link_text: "#3E9F48",
       border: "#EBEBEB",
       check_box_border: "#EBEBEB",
+      delete_icon: "#262626",
+      edit_icon: "#262626",
     },
 
     color: {
@@ -105,9 +109,19 @@ export const darkTheme = createTheme({
     },
 
     default_table: {
-      odd_row: "#3A403C",
-      even_row: "#09120C",
+      header_row: "#3A403C",
+      odd_row: "#09120C",
+      even_row: "#3A403C",
       selected_row: "#5A5A5A",
+      search_icon: "#ACACAC",
+      heading_text: "#FFFFFF",
+      primary_text: "#262626",
+      secondary_text: "#3E9F48",
+      link_text: "#3E9F48",
+      border: "#EBEBEB",
+      check_box_border: "#EBEBEB",
+      delete_icon: "#262626",
+      edit_icon: "#262626",
     },
 
     color: {
