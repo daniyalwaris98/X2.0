@@ -29,6 +29,7 @@ export const lightTheme = createTheme({
       even_row: "#FAFAFA",
       selected_row: "#F1F6EE",
       search_icon: "#ACACAC",
+      search_filtered_icon: "#3E9F48",
       heading_text: "#262626",
       primary_text: "#262626",
       secondary_text: "#3E9F48",
@@ -37,6 +38,29 @@ export const lightTheme = createTheme({
       check_box_border: "#EBEBEB",
       delete_icon: "#262626",
       edit_icon: "#262626",
+    },
+
+    default_button: {
+      delete_background: "#E34444",
+      import_background: "#3D9E47",
+      onboard_background: "#F1B92A",
+      add_background: "#3D9E47",
+      sync_background: "",
+      primary_text: "#FFFFFF",
+    },
+
+    drop_down_button: {
+      add_background: "#3D9E47",
+      add_text: "#FFFFFF",
+
+      export_background: "#FFFFFF",
+      export_text: "#000000",
+
+      border: "#EAEAEA",
+      options_text: "#000000",
+      options_background: "#FFFFFF",
+      options_hover_text: "#7F7F7F",
+      options_hover_background: "#E4F1E5",
     },
 
     color: {
@@ -88,12 +112,12 @@ export const lightTheme = createTheme({
 export const darkTheme = createTheme({
   palette: {
     background: {
-      default: "#131B15", // dark mode background color
+      default: "#131B15",
     },
 
     main_layout: {
       background: "#09120C",
-      profile_picture_background: "#ACACAC", // profile picture background
+      profile_picture_background: "#ACACAC",
       primary_text: "#FFFFFF",
       secondary_text: "#ACACAC",
       border_bottom: "#09120C",
@@ -113,7 +137,8 @@ export const darkTheme = createTheme({
       odd_row: "#09120C",
       even_row: "#3A403C",
       selected_row: "#5A5A5A",
-      search_icon: "#ACACAC",
+      search_icon: "#FFFFFF",
+      search_filtered_icon: "#3E9F48",
       heading_text: "#FFFFFF",
       primary_text: "#262626",
       secondary_text: "#3E9F48",
@@ -122,6 +147,29 @@ export const darkTheme = createTheme({
       check_box_border: "#EBEBEB",
       delete_icon: "#262626",
       edit_icon: "#262626",
+    },
+
+    default_button: {
+      delete_background: "#E34444",
+      import_background: "#3D9E47",
+      onboard_background: "#F1B92A",
+      add_background: "#3D9E47",
+      sync_background: "",
+      primary_text: "#FFFFFF",
+    },
+
+    drop_down_button: {
+      add_background: "#3D9E47",
+      add_text: "#FFFFFF",
+
+      export_background: "#000000",
+      export_text: "#FFFFFF",
+
+      border: "#EAEAEA",
+      options_text: "#FFFFFF",
+      options_background: "#000000",
+      options_hover_text: "#7F7F7F",
+      options_hover_background: "#C8EF9E",
     },
 
     color: {

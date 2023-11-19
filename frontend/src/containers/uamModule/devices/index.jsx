@@ -19,8 +19,6 @@ import {
 } from "../../../components/sweetAlertWrapper";
 import {
   jsonToExcel,
-  convertToJson,
-  handleFileChange,
   columnGenerator,
   generateObject,
 } from "../../../utils/helpers";
@@ -34,13 +32,11 @@ const Index = () => {
   // theme
   const theme = useTheme();
 
-
   // hooks
   const { height, width } = useWindowDimensions();
   const getColumnSearchProps = useColumnSearchProps();
 
   // refs
-
 
   // states
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -50,7 +46,6 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
-  console.log("dataaaa", dataSource)
 
   // apis
   const {
@@ -60,8 +55,6 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
-
- 
 
   const [
     deleteRecords,
@@ -83,8 +76,6 @@ const Index = () => {
     type: "fetch",
   });
 
-  
-
   useErrorHandling({
     data: deleteRecordsData,
     isSuccess: isDeleteRecordsSuccess,
@@ -94,8 +85,6 @@ const Index = () => {
   });
 
   // handlers
-
-
   const deleteData = () => {
     deleteRecords(selectedRowKeys);
   };
@@ -115,8 +104,6 @@ const Index = () => {
     setRecordToEdit(record);
     setOpen(true);
   };
-
-
 
   const handleAdd = (optionType) => {
     setOpen(true);
@@ -190,34 +177,22 @@ const Index = () => {
           ),
         },
       ],
-      sx: {
-        backgroundColor: theme.palette.color.main,
-        color: theme.palette.textColor.default,
-      },
     },
     {
       type: "Delete",
       icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
       handleClick: handleDelete,
-      sx: { backgroundColor: theme.palette.color.danger },
     },
     {
       type: "Add",
       icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
       handleClick: handleAdd,
-      sx: { backgroundColor: theme.palette.color.primary },
     },
-    
   ];
 
   return (
-    <Spin
-      spinning={
-        isFetchRecordsLoading ||  isDeleteRecordsLoading
-      }
-    >
+    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
       <div>
-       
         {open ? (
           <Modal
             handleClose={handleClose}
@@ -235,6 +210,7 @@ const Index = () => {
           <PageHeader pageName="Devices" buttons={buttons} />
           <StyledTable
             size="small"
+            scroll={{ x: 7000 }}
             onChange={handleChange}
             rowSelection={rowSelection}
             columns={columns}

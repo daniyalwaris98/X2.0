@@ -294,25 +294,19 @@ const Index = () => {
           ),
         },
       ],
-      sx: {
-        backgroundColor: theme.palette.color.main,
-        color: theme.palette.textColor.default,
-      },
     },
     {
       type: "Onboard",
       icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
       handleClick: handleOnboard,
-      sx: { backgroundColor: theme.palette.color.info },
     },
     {
       type: "Delete",
       icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
       handleClick: handleDelete,
-      sx: { backgroundColor: theme.palette.color.danger },
     },
     {
-      type: "Add Atom",
+      type: "Add",
       icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
       handleClick: handleAdd,
       options: [
@@ -327,16 +321,11 @@ const Index = () => {
           ),
         },
       ],
-      sx: {
-        backgroundColor: theme.palette.color.primary,
-        color: theme.palette.textColor.main,
-      },
     },
     {
       type: "Import",
       icon: <Icon fontSize="16px" icon="pajamas:import" />,
       handleClick: handleInputClick,
-      sx: { backgroundColor: theme.palette.color.primary },
     },
   ];
 

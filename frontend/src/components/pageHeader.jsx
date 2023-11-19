@@ -6,8 +6,38 @@ import { Typography } from "@mui/material";
 export default function PageHeader({ pageName, buttons }) {
   const theme = useTheme();
 
-  const renderButton = (button) => {
-    const { type, icon, handleClick, options, sx } = button;
+  const renderButton = (buttonNamePostfix, button) => {
+    const { type, icon, handleClick, options } = button;
+    let sx = null;
+    if (type === "Export") {
+      sx = {
+        backgroundColor: theme?.palette?.drop_down_button?.export_background,
+        color: theme?.palette?.drop_down_button?.export_text,
+      };
+    } else if (type === "Onboard") {
+      sx = {
+        backgroundColor: theme?.palette?.default_button?.onboard_background,
+      };
+    } else if (type === "Delete") {
+      sx = {
+        backgroundColor: theme?.palette?.default_button?.delete_background,
+      };
+    } else if (type === "Add") {
+      if (options) {
+        sx = {
+          backgroundColor: theme?.palette?.drop_down_button?.add_background,
+          color: theme?.palette?.drop_down_button?.add_text,
+        };
+      } else {
+        sx = {
+          backgroundColor: theme?.palette?.drop_down_button?.add_background,
+        };
+      }
+    } else if (type === "Import") {
+      sx = {
+        backgroundColor: theme?.palette?.default_button?.import_background,
+      };
+    }
 
     if (options) {
       return (
@@ -18,14 +48,14 @@ export default function PageHeader({ pageName, buttons }) {
           options={options}
         >
           {icon}
-          {type}
+          {type === "Add" ? `${type} ${buttonNamePostfix}` : type}
         </DropDownButton>
       );
     } else {
       return (
         <DefaultButton key={type} handleClick={handleClick} sx={sx}>
           {icon}
-          {type}
+          {type === "Add" ? `${type} ${buttonNamePostfix}` : type}
         </DefaultButton>
       );
     }
@@ -51,7 +81,7 @@ export default function PageHeader({ pageName, buttons }) {
             gap: "10px",
           }}
         >
-          {buttons.map(renderButton)}
+          {buttons.map((button) => renderButton(pageName, button))}
         </Typography>
       </Typography>
     </div>

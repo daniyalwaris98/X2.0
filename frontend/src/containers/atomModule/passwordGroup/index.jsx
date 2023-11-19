@@ -210,28 +210,21 @@ const Index = () => {
           ),
         },
       ],
-      sx: {
-        backgroundColor: theme.palette.color.main,
-        color: theme.palette.textColor.default,
-      },
     },
     {
       type: "Delete",
       icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
       handleClick: handleDelete,
-      sx: { backgroundColor: theme.palette.color.danger },
     },
     {
       type: "Add",
       icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
       handleClick: handleAdd,
-      sx: { backgroundColor: theme.palette.color.primary },
     },
     {
       type: "Import",
       icon: <Icon fontSize="16px" icon="pajamas:import" />,
       handleClick: handleInputClick,
-      sx: { backgroundColor: theme.palette.color.primary },
     },
   ];
 

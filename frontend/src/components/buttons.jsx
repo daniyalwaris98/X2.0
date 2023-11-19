@@ -13,7 +13,7 @@ export default function DefaultButton({ sx, handleClick, children, ...rest }) {
         alignItems: "center",
         gap: "10px",
         padding: "5px 12px",
-        color: theme.palette.color.main,
+        color: theme?.palette?.default_button?.primary_text,
         "&:hover": {
           backgroundColor: sx?.backgroundColor,
           opacity: 0.95,
@@ -45,8 +45,7 @@ export function DropDownButton({
     display: "flex",
     alignItems: "center",
     gap: "10px",
-    border: "1px solid #DEDEDE",
-    padding: "6px 12px",
+    border: `1px solid ${theme?.palette?.drop_down_button?.border}`,
     color: sx?.color,
     cursor: "pointer",
     "&:hover": {
@@ -61,21 +60,22 @@ export function DropDownButton({
     top: "100%",
     right: 0,
     width: "110%",
-    backgroundColor: theme.palette.color.main,
-    border: "1px solid #DEDEDE",
+    backgroundColor: theme?.palette?.drop_down_button?.options_background,
+    border: `1px solid ${theme?.palette?.drop_down_button?.border}`,
     borderRadius: "0 0 4px 4px",
     zIndex: 1,
     display: isOpen ? "block" : "none",
   }));
 
   const StyledOption = styled("div")(({ theme, sx }) => ({
-    color: theme.palette.textColor.default,
+    color: theme?.palette?.drop_down_button?.options_text,
     padding: "6px 12px",
     fontSize: "14px",
     cursor: "pointer",
     "&:hover": {
-      backgroundColor: theme.palette.color.tertiary,
-      color: theme.palette.textColor.input,
+      backgroundColor:
+        theme?.palette?.drop_down_button?.options_hover_background,
+      color: theme?.palette?.drop_down_button?.options_hover_text,
     },
     ...sx,
   }));
@@ -100,7 +100,7 @@ export function DropDownButton({
           sx={{
             borderTopLeftRadius: "4px",
             borderBottomLeftRadius: "4px",
-            padding: "6px 12px 7px 12px",
+            padding: "5px 12px 6px 12px",
             borderRight: "none",
             ...sx,
           }}
@@ -114,7 +114,7 @@ export function DropDownButton({
           sx={{
             borderTopRightRadius: "4px",
             borderBottomRightRadius: "4px",
-            padding: "6px 5px 7px 5px",
+            padding: "5px 5px 6px 5px",
             ...sx,
           }}
         >

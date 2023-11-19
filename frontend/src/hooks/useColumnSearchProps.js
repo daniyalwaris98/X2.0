@@ -2,8 +2,10 @@ import React, { useState, useEffect, useRef } from "react";
 import { Button, Input, Space } from "antd";
 import { SearchOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
+import { useTheme } from "@mui/material/styles";
 
 export default function useColumnSearchProps() {
+  const theme = useTheme();
   const searchInput = useRef(null);
   const [searchText, setSearchText] = useState("");
   const [searchedColumn, setSearchedColumn] = useState("");
@@ -85,7 +87,9 @@ export default function useColumnSearchProps() {
     filterIcon: (filtered) => (
       <SearchOutlined
         style={{
-          color: filtered ? "#1677ff" : undefined,
+          color: filtered
+            ? theme?.palette?.default_table?.search_filtered_icon
+            : theme?.palette?.default_table?.search_icon,
         }}
       />
     ),
