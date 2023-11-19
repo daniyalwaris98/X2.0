@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import { Icon } from "@iconify/react";
-import { StyledTable } from "../../../styles/main.styled";
+import DefaultTable from "../../../components/tables";
 import { getTitle } from "../../../utils/helpers";
 import Modal from "./modal";
 import {
@@ -208,7 +208,8 @@ const Index = () => {
           }}
         >
           <PageHeader pageName="Sites" buttons={buttons} />
-          <StyledTable
+          <DefaultTable
+            rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
             size="small"
             onChange={handleChange}
             rowSelection={rowSelection}

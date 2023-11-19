@@ -358,8 +358,8 @@ const Index = () => {
         >
           <PageHeader pageName="Atom" buttons={buttons} />
           <DefaultTable
-            size="small"
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
+            size="small"
             scroll={{ x: 3000 }}
             onChange={handleChange}
             rowSelection={rowSelection}
