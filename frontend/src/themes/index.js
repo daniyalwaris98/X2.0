@@ -27,15 +27,19 @@ export const lightTheme = createTheme({
       header_row: "#FAFAFA",
       odd_row: "#FFFFFF",
       even_row: "#FAFAFA",
+      hovered_row: "#F1F6EE",
       selected_row: "#F1F6EE",
       search_icon: "#ACACAC",
       search_filtered_icon: "#3E9F48",
-      heading_text: "#262626",
+      header_text: "#262626",
       primary_text: "#262626",
       secondary_text: "#3E9F48",
+      hovered_text: "#F1F6EE",
+      selected_text: "#F1F6EE",
       link_text: "#3E9F48",
       border: "#EBEBEB",
       check_box_border: "#EBEBEB",
+      check_box_inner: "#FFFFFF",
       delete_icon: "#262626",
       edit_icon: "#262626",
     },
@@ -92,7 +96,7 @@ export const lightTheme = createTheme({
   },
 
   typography: {
-    fontFamily: "Arial, sans-serif",
+    font_family: "Arial, sans-serif",
 
     textSize: {
       small: "12px",
@@ -136,15 +140,19 @@ export const darkTheme = createTheme({
       header_row: "#3A403C",
       odd_row: "#09120C",
       even_row: "#3A403C",
+      hovered_row: "#5A5A5A",
       selected_row: "#5A5A5A",
       search_icon: "#FFFFFF",
       search_filtered_icon: "#3E9F48",
-      heading_text: "#FFFFFF",
+      header_text: "#FFFFFF",
       primary_text: "#262626",
       secondary_text: "#3E9F48",
+      hovered_text: "#262626",
+      selected_text: "#F1F6EE",
       link_text: "#3E9F48",
       border: "#EBEBEB",
       check_box_border: "#EBEBEB",
+      check_box_inner: "#09120C",
       delete_icon: "#262626",
       edit_icon: "#262626",
     },
@@ -201,7 +209,7 @@ export const darkTheme = createTheme({
   },
 
   typography: {
-    fontFamily: "Arial, sans-serif",
+    font_family: "Arial, sans-serif",
 
     textSize: {
       small: "12px",
