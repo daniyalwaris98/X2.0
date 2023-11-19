@@ -3,6 +3,8 @@ import { monetxApi } from "./features/apiSlice";
 import atomReducer from "./features/atomModule/atom";
 import passwordGroupReducer from "./features/atomModule/passwordGroup";
 import siteReducer from "./features/uamModule/sites"
+import rackReducer from "./features/uamModule/racks"
+import deviceReducer from "./features/uamModule/devices"
 import dropDownsReducer from "./features/dropDowns";
 
 export const store = configureStore({
@@ -10,6 +12,8 @@ export const store = configureStore({
     atom: atomReducer,
     password_group: passwordGroupReducer,
     site:siteReducer,
+    rack:rackReducer,
+    device:deviceReducer,
     drop_downs: dropDownsReducer,
     [monetxApi.reducerPath]: monetxApi.reducer,
   },

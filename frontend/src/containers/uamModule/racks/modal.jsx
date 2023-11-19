@@ -8,34 +8,31 @@ import DefaultButton from "../../../components/buttons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
+
+
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/uamModule/sites/apis";
+} from "../../../store/features/uamModule/racks/apis";
 import {
-  useFetchPasswordGroupNamesQuery,
-  useFetchPasswordGroupTypeNamesQuery,
+  useFetchSiteNamesQuery,
 } from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
 import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
+    selectSiteNames,
 } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
+  rack_name: yup.string().required("Rack name is required"),
   site_name: yup.string().required("Site name is required"),
-  status: yup.string().required("Status is required"),
-  region_name: yup.string().required("Region name is required"),
-  latitude: yup.string().required("Latitude is required"),
-  longitude: yup.string().required("Longitude is required"),
-  city: yup.string().required("City is required"),
+
   secret_password: yup
     .string()
     .when("password_group_type", (passwordGroupType, schema) => {
       if (passwordGroupType == "TELNET")
-        return schema.required("Secret password is required");
+     return schema.required("Secret password is required");
       return schema;
     }),
 });
@@ -56,26 +53,10 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     formSetter(recordToEdit, setValue);
   }, []);
 
-  useEffect(() => {
-    if (watch("password_group_type") === "SSH") {
-      setValue("secret_password", "");
-      setIsSecretPasswordDisable(true);
-    } else {
-      setIsSecretPasswordDisable(false);
-    }
-    trigger("secret_password");
-  }, [watch("password_group_type")]);
-
-  // fetching dropdowns data from backend using apis
-  const {
-    error: passwordGroupNamesError,
-    isLoading: isPasswordGroupNamesLoading,
-  } = useFetchPasswordGroupNamesQuery();
-
-  const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
+ // fetching dropdowns data from backend using apis
+const { error: siteNamesError, isLoading: isSiteNamesLoading } =
+ useFetchSiteNamesQuery();
+ 
 
   // post api for the form
   const [
@@ -118,13 +99,12 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   });
 
   // getting dropdowns data from the store
-  // const passwordGroupNames = useSelector(selectPasswordGroupNames);
-  // const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
+  const siteNames = useSelector(selectSiteNames);
 
   // on form submit    
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.site_id = recordToEdit.site_id;
+      data.rack_id = recordToEdit.rack_id;
         updateRecord(data);
     } else {
       addRecord(data);
@@ -134,31 +114,46 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Site`}
+      title={`${recordToEdit ? "Edit" : "Add"} Rack`}
       open={open}
     >
-     
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={8}>
-          <DefaultFormUnit
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Grid container spacing={3}>
+          <Grid item xs={12} sm={4}>
+            <DefaultFormUnit
               control={control}
-              dataKey="site_name"
+              dataKey="rack_name"
               disabled={recordToEdit !== null}
               required
             />
-             
-             <DefaultFormUnit control={control} dataKey="status" required />
-            <DefaultFormUnit control={control} dataKey="region_name" required />
-            <DefaultFormUnit control={control} dataKey="device_name" required />
-          </Grid>
+          
+            <SelectFormUnit
+              control={control}
+              dataKey="site_name"
+              options={siteNames}
+              required
+            />
+            <DefaultFormUnit control={control} dataKey="serial_number"  />
+            <DefaultFormUnit control={control} dataKey="manufacturer_date"  />
+            <DefaultFormUnit control={control} dataKey="pn_code"  />
+            </Grid>
           <Grid item xs={12} sm={4}>
-          <DefaultFormUnit control={control} dataKey="latitude" required />
-            <DefaultFormUnit control={control} dataKey="longitude" required />
-            <DefaultFormUnit control={control} dataKey="city" required />
+
+            <DefaultFormUnit control={control} dataKey="unit_position"  />
+            <DefaultFormUnit control={control} dataKey="status" required />
+            <DefaultFormUnit control={control} dataKey="ru"/>
+            <DefaultFormUnit control={control} dataKey="height"  />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+
+
+<DefaultFormUnit control={control} dataKey="rfs_date"  />
+<DefaultFormUnit control={control} dataKey="rack_model"  />
+<DefaultFormUnit control={control} dataKey="brand"  />
+<DefaultFormUnit control={control} dataKey="width"  />
+
+</Grid>
            
-          </Grid>
-         
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "center" }}>
               <DefaultButton

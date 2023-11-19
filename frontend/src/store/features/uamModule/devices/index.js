@@ -5,37 +5,20 @@ const initialState = {
   all_data: [],
 };
 
-const siteSlice = createSlice({
-  name: "site",
+const deviceSlice = createSlice({
+  name: "device",
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchSites.matchFulfilled,
+        extendedApi.endpoints.fetchDevices.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
-      // .addMatcher(
-      //   extendedApi.endpoints.addSite.matchFulfilled,
-      //   (state, action) => {
-      //     action.payload.data.forEach((responseItem) => {
-      //       const indexToUpdate = state.all_data.findIndex((tableItem) => {
-      //         return (
-      //           tableItem.sites_id === responseItem.sites_id
-      //         );
-      //       });
-      //       if (indexToUpdate !== -1) {
-      //         state.all_data[indexToUpdate] = responseItem;
-      //       } else {
-      //         state.all_data.push(responseItem);
-      //       }
-      //     });
-      //   }
-      // )
       .addMatcher(
-        extendedApi.endpoints.deleteSite.matchFulfilled,
+        extendedApi.endpoints.deleteDevice.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -49,13 +32,13 @@ const siteSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addSite.matchFulfilled,
+        extendedApi.endpoints.addDevice.matchFulfilled,
         (state, action) => {
           state.all_data.push(action.payload.data);
         }
       )
       .addMatcher(
-        extendedApi.endpoints.updateSite.matchFulfilled,
+        extendedApi.endpoints.updateDevice.matchFulfilled,
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {
@@ -71,4 +54,4 @@ const siteSlice = createSlice({
 });
 
 // export const { setNextPage, initiateItem } = passwordGroupSlice.actions;
-export default siteSlice.reducer;
+export default deviceSlice.reducer;
