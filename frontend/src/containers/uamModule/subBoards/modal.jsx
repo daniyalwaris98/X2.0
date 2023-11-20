@@ -13,7 +13,7 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/uamModule/devices/apis";
+} from "../../../store/features/uamModule/subBoards/apis";
 import {
   useFetchSiteNamesQuery,
 } from "../../../store/features/dropDowns/apis";
@@ -28,20 +28,13 @@ const schema = yup.object().shape({
   rack_name: yup.string().required("Rack name is required"),
   site_name: yup.string().required("Site name is required"),
 
-  secret_password: yup
-    .string()
-    .when("password_group_type", (passwordGroupType, schema) => {
-      if (passwordGroupType == "TELNET")
-     return schema.required("Secret password is required");
-      return schema;
-    }),
+  
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // states
-  const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
 
   // useForm hook
   const { handleSubmit, control, setValue, watch, trigger } = useForm({
@@ -104,7 +97,7 @@ const { error: siteNamesError, isLoading: isSiteNamesLoading } =
   // on form submit    
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.device_id = recordToEdit.device_id;
+      data.sub_board_id = recordToEdit.sub_board_id;
         updateRecord(data);
     } else {
       addRecord(data);
@@ -114,7 +107,7 @@ const { error: siteNamesError, isLoading: isSiteNamesLoading } =
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Rack`}
+      title={`${recordToEdit ? "Edit" : "Add"} Sub Board`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -122,37 +115,37 @@ const { error: siteNamesError, isLoading: isSiteNamesLoading } =
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit
               control={control}
-              dataKey="rack_name"
+              dataKey="sub_board_name"
               disabled={recordToEdit !== null}
               required
             />
           
             <SelectFormUnit
               control={control}
-              dataKey="site_name"
+              dataKey="sub_board_name"
               options={siteNames}
               required
             />
-            <DefaultFormUnit control={control} dataKey="function"  />
-            <DefaultFormUnit control={control} dataKey="ru"  />
-            <DefaultFormUnit control={control} dataKey="section"  />
+            <DefaultFormUnit control={control} dataKey="serial_number"  />
+            <DefaultFormUnit control={control} dataKey="manufacturer_date"  />
+            <DefaultFormUnit control={control} dataKey="pn_code"  />
             </Grid>
           <Grid item xs={12} sm={4}>
 
-            <DefaultFormUnit control={control} dataKey="department"  />
-            <DefaultFormUnit control={control} dataKey="criticality" required />
-            <DefaultFormUnit control={control} dataKey="virtual"/>
-            <DefaultFormUnit control={control} dataKey="software_version"  />
+            <DefaultFormUnit control={control} dataKey="unit_position"  />
+            <DefaultFormUnit control={control} dataKey="status" required />
+            <DefaultFormUnit control={control} dataKey="ru"/>
+            <DefaultFormUnit control={control} dataKey="height"  />
             </Grid>
             <Grid item xs={12} sm={4}>
 
 
-            <DefaultFormUnit control={control} dataKey="manufacturer"  />
-            <DefaultFormUnit control={control} dataKey="authentication"  />
-            <DefaultFormUnit control={control} dataKey="serial_number"  />
-            <DefaultFormUnit control={control} dataKey="pn_code"  />
+<DefaultFormUnit control={control} dataKey="rfs_date"  />
+<DefaultFormUnit control={control} dataKey="rack_model"  />
+<DefaultFormUnit control={control} dataKey="brand"  />
+<DefaultFormUnit control={control} dataKey="width"  />
 
-            </Grid>
+</Grid>
            
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "center" }}>

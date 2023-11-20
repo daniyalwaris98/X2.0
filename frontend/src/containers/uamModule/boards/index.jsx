@@ -8,9 +8,9 @@ import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../store/features/uamModule/sfps/apis";
+} from "../../../store/features/uamModule/boards/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/sfps/selector";
+import { selectTableData } from "../../../store/features/uamModule/boards/selector";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
   handleSuccessAlert,
@@ -119,10 +119,10 @@ const Index = () => {
   };
 
   const handleExport = (optionType) => {
-    if (optionType === "All Sfps") {
-      jsonToExcel(dataSource, "Sfps");
+    if (optionType === "All Boards") {
+      jsonToExcel(dataSource, "Boards");
     } else if (optionType === "Template") {
-      jsonToExcel([generateObject(dataKeys)], "sfps_template");
+      jsonToExcel([generateObject(dataKeys)], "board_template");
     }
     handleSuccessAlert("File exported successfully.");
   };
@@ -167,7 +167,7 @@ const Index = () => {
       handleClick: handleExport,
       options: [
         {
-          type: "All Sfps",
+          type: "All Boards",
           icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
         },
         {
@@ -207,7 +207,7 @@ const Index = () => {
             width: `${width - 105}px`,
           }}
         >
-          <PageHeader pageName="Sfps" buttons={buttons} />
+          <PageHeader pageName="Boards" buttons={buttons} />
           <DefaultTable
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
             size="small"
@@ -216,7 +216,7 @@ const Index = () => {
             rowSelection={rowSelection}
             columns={columns}
             dataSource={dataSource}
-            rowKey="sfps_id"
+            rowKey="board_id"
             style={{ whiteSpace: "pre" }}
             pagination={{
               defaultPageSize: 9,

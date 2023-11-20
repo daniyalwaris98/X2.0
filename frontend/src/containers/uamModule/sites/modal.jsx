@@ -140,7 +140,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
      
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
         <Grid container spacing={2}>
-          <Grid item xs={12} sm={8}>
+          <Grid item xs={12} sm={6}>
           <DefaultFormUnit
               control={control}
               dataKey="site_name"
@@ -152,7 +152,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <DefaultFormUnit control={control} dataKey="region_name" required />
             <DefaultFormUnit control={control} dataKey="device_name" required />
           </Grid>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={6}>
           <DefaultFormUnit control={control} dataKey="latitude" required />
             <DefaultFormUnit control={control} dataKey="longitude" required />
             <DefaultFormUnit control={control} dataKey="city" required />

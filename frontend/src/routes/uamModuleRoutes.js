@@ -3,6 +3,8 @@ import UamModule from "../containers/uamModule";
 import Sites from "../containers/uamModule/sites";
 import Racks from "../containers/uamModule/racks";
 import Devices from "../containers/uamModule/devices";
+import Boards from "../containers/uamModule/boards";
+import SubBoards from "../containers/uamModule/subBoards"
 import Sfps from "../containers/uamModule/sfps";
 import Licenses from "../containers/uamModule/licences";
 import Aps from "../containers/uamModule/aps";
@@ -26,11 +28,11 @@ const routes = {
     },
     {
       path: "boards",
-      element: <Devices />,
+      element: <Boards />,
     },
     {
       path: "sub_boards",
-      element: <Devices />,
+      element: <SubBoards />,
     },
     {
       path: "sfps",

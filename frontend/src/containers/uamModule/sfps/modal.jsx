@@ -13,7 +13,7 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/uamModule/devices/apis";
+} from "../../../store/features/uamModule/sfps/apis";
 import {
   useFetchSiteNamesQuery,
 } from "../../../store/features/dropDowns/apis";
@@ -104,7 +104,7 @@ const { error: siteNamesError, isLoading: isSiteNamesLoading } =
   // on form submit    
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.device_id = recordToEdit.device_id;
+      data.rack_id = recordToEdit.rack_id;
         updateRecord(data);
     } else {
       addRecord(data);
@@ -122,7 +122,7 @@ const { error: siteNamesError, isLoading: isSiteNamesLoading } =
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit
               control={control}
-              dataKey="rack_name"
+              dataKey="device_name"
               disabled={recordToEdit !== null}
               required
             />
@@ -133,26 +133,26 @@ const { error: siteNamesError, isLoading: isSiteNamesLoading } =
               options={siteNames}
               required
             />
-            <DefaultFormUnit control={control} dataKey="function"  />
-            <DefaultFormUnit control={control} dataKey="ru"  />
-            <DefaultFormUnit control={control} dataKey="section"  />
+            <DefaultFormUnit control={control} dataKey="status"  />
+            <DefaultFormUnit control={control} dataKey="serial_number"  />
+            <DefaultFormUnit control={control} dataKey="media_type"  />
             </Grid>
           <Grid item xs={12} sm={4}>
 
-            <DefaultFormUnit control={control} dataKey="department"  />
-            <DefaultFormUnit control={control} dataKey="criticality" required />
-            <DefaultFormUnit control={control} dataKey="virtual"/>
-            <DefaultFormUnit control={control} dataKey="software_version"  />
+            <DefaultFormUnit control={control} dataKey="port_name"  />
+            <DefaultFormUnit control={control} dataKey="port_type" required />
+            <DefaultFormUnit control={control} dataKey="connector"/>
+            <DefaultFormUnit control={control} dataKey="mode"  />
             </Grid>
             <Grid item xs={12} sm={4}>
 
 
-            <DefaultFormUnit control={control} dataKey="manufacturer"  />
-            <DefaultFormUnit control={control} dataKey="authentication"  />
-            <DefaultFormUnit control={control} dataKey="serial_number"  />
-            <DefaultFormUnit control={control} dataKey="pn_code"  />
+<DefaultFormUnit control={control} dataKey="speed"  />
+<DefaultFormUnit control={control} dataKey="wavelength"  />
+<DefaultFormUnit control={control} dataKey="optical_direction_type"  />
+<DefaultFormUnit control={control} dataKey="pn_code"  />
 
-            </Grid>
+</Grid>
            
           <Grid item xs={12}>
             <div style={{ display: "flex", justifyContent: "center" }}>
