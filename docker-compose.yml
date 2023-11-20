@@ -47,20 +47,20 @@ services:
       - updated_atom_db
       - updated_influx_db
 
-  # updated_atom_react:
-  #   container_name: Updated_Atom_React_Container
-  #   restart: always
-  #   build: frontend/atom
-  #   command: [ "npm", "start" ]
-  #   volumes:
-  #     - ./frontend/atom:/frontend-atom
-  #     - node-modules:/frontend-atom/node_modules
-  #   environment:
-  #     - NODE_ENV=development
-  #   ports:
-  #     - "3010:3010"
-  #   depends_on:
-  #     - updated_atom_flask
+  updated_atom_react:
+    container_name: Updated_Atom_React_Container
+    restart: always
+    build: frontend/atom
+    command: [ "npm", "start" ]
+    volumes:
+      - ./frontend/atom:/frontend-atom
+      - node-modules:/frontend-atom/node_modules
+    environment:
+      - NODE_ENV=development
+    ports:
+      - "3010:3010"
+    depends_on:
+      - updated_atom_flask
 
   updated_influx_db:
     image: influxdb:latest
