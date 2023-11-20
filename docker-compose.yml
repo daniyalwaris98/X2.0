@@ -10,7 +10,6 @@ services:
       MYSQL_ROOT_PASSWORD: As123456?
       MYSQL_DATABASE: AtomDB
     volumes:
-      - mysql_db:/var/lib/mysql
       - ./db/atom.sql:/docker-entrypoint-initdb.d/atom.sql
       - mysql_db:/var/lib/mysql
 
