@@ -55,6 +55,7 @@ class IOSPuller(object):
             except Exception as e:
                 c += 1
                 print(f"Failed to login {host['ip_address']}", file=sys.stderr)
+                traceback.print_exc()
                 login_exception = str(e)
         if is_login == False:
             self.inv_data[host['ip_address']] = {"error": "Login Failed"}

@@ -102,6 +102,7 @@ def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
 
 @router.post("/delete_password_group", responses={
     200: {"model": ListtDeleteResponseSchema},
+    400:{"model":str},
     500: {"model": str}
 })
 def delete_password_groups(pass_list: list[int]):

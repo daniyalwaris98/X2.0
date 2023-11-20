@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post("/onBoardDevice", responses={
+@router.post("/on_board_device", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -21,6 +21,7 @@ async def onboard_devices(ip_list: list[str]):
     try:
         success_list = []
         error_list = []
+        data = []
         for ip in ip_list:
 
             result = (configs.db.query(AtomTable, PasswordGroupTable).
@@ -39,7 +40,9 @@ async def onboard_devices(ip_list: list[str]):
                 print("atom as dict is:::::::::::::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
                 password_group = password_group.as_dict()
                 print("password is::::::::::::::::::::::::::::::::::::::::::::::::::::::",password_group,file=sys.stderr)
-
+                atom_password_dict = {**atom, **password_group}
+                print("atom password dict is::::::::::::::::::::::::::::::::::::::::",atom_password_dict,file=sys.stderr)
+                data.append(atom_password_dict)
                 atom.update(password_group)
 
                 if atom["device_type"] in onboard_dict:
@@ -61,7 +64,7 @@ async def onboard_devices(ip_list: list[str]):
                     error_list.append(f"{ip} : Support Not Available For Device Type - {atom['device_type']}")
 
         response_dict = {
-            "data": [],
+            "data": data,
             'success': len(success_list),
             'error': len(error_list),
             'success_list': success_list,
@@ -75,7 +78,7 @@ async def onboard_devices(ip_list: list[str]):
         return JSONResponse(content="Error Occurred While Onboarding", status_code=500)
 
 
-@router.get("/totalDevicesInDeviceDashboard", responses={
+@router.get("/total_devices_in_device_dashboard", responses={
     200: {"model": TotalDeviceDashboardResponseSchema},
     500: {"model": str}
 })
@@ -93,7 +96,7 @@ async def total_devices_in_device_dashboard():
         return JSONResponse(content="Error Occurred Fetching Data", status_code=500)
 
 
-@router.get("/getAllDevices", responses={
+@router.get("/get_all_devices", responses={
     200: {"model": GetAllUAMDeviceResponseSchema},
     500: {"model": str}
 })
@@ -107,8 +110,9 @@ async def get_all_devices():
         return JSONResponse(content="Error Occurred Fetching Uam Devices Data", status_code=500)
 
 
-@router.post("/deleteDevice", responses={
-    200: {"model": SummeryResponseSchema},
+@router.post("/delete_devices", responses={
+    200: {"model": DeleteResponseSchema},
+    400: {"model": str},
     500: {"model": str}
 })
 async def delete_uam_device(ip_list: list[str]):
@@ -116,30 +120,43 @@ async def delete_uam_device(ip_list: list[str]):
 
         success_list = []
         error_list = []
-
+        data = []
+        check = False
         for ip_address in ip_list:
             msg, status = delete_uam_device_util(ip_address)
-            if status == 200:
-                success_list.append(msg)
-            else:
+            print("status is::::::::::::::::::::::::::::::",status,file=sys.stderr)
+            print("message in delte uam is:::::::::::::::::::::::",msg,file=sys.stderr)
+            if status == 400 or status == 500:
+                check = False
                 error_list.append(msg)
+            elif status == 200:
+                if isinstance(msg, dict):
+                    for key,value in msg.items():
+                        if key == "data":
+                            data.append(value)
+                        if key == "message":
+                            success_list.append(value)
+                    check =True
+                else:
+                    error_list.append(msg)
 
+        
+        
         response = {
+            "data":data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
             "success_list": success_list,
         }
-
-        return JSONResponse(content=response, status_code=200)
-
+        return JSONResponse(content=response, status_code=status)
 
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred Deleting Uam Devices", status_code=500)
 
 
-@router.post("/editDevice", responses={
+@router.post("/edit_device", responses={
     200: {"model": str},
     500: {"model": str}
 })
@@ -155,7 +172,7 @@ async def edit_uam_device(device_obj: EditUamDeviceRequestSchema):
         return JSONResponse(content="Error Occurred Updating Uam Device", status_code=500)
 
 
-@router.post("/deviceStatus", responses={
+@router.post("/device_status", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 })
@@ -203,7 +220,7 @@ async def device_status():
         return JSONResponse(content="Error Occurred Fetching Uam Data", status_code=500)
 
 
-@router.post("/topFunctions", responses={
+@router.post("/top_functions", responses={
     200: {"model": dict},
     500: {"model": str}
 })
@@ -234,7 +251,7 @@ async def top_functions():
         return JSONResponse(content="Error Occurred Fetching Uam Data", status_code=500)
 
 
-@router.get("/getSiteDetailByIpAddress/{ip_address}", responses={
+@router.get("/get_site_detail_by_ip_address/{ip_address}", responses={
     200: {"model": GetSiteByIpResponseSchema},
     500: {"model": str}
 })
@@ -263,7 +280,7 @@ async def get_site_by_ip_address(ip_address: str):
         return JSONResponse(content="Error Occurred Fetching Site Data", status_code=500)
 
 
-@router.get("/getRackDetailByIpAddress/{ip_address}", responses={
+@router.get("/get_rack_detail_by_ip_address/{ip_address}", responses={
     200: {"model": GetRackByIpResponseSchema},
     500: {"model": str}
 })
@@ -299,7 +316,7 @@ async def get_rack_by_ip_address(ip_address: str):
         return JSONResponse(content="Error Occurred Fetching Rack Data", status_code=500)
 
 
-@router.get("/getDeviceDetailsByIpAddress/{ip_address}", responses={
+@router.get("/get_device_details_by_ip_address/{ip_address}", responses={
     200: {"model": GetAllUAMDeviceResponseSchema},
     500: {"model": str}
 })
@@ -338,7 +355,7 @@ async def get_device_details_by_ip_address(ip_address: str):
         return JSONResponse(content="Error Occurred Fetching Device Data", status_code=500)
 
 
-@router.post("/dismantleOnBoardedDevice", responses={
+@router.post("/dismantle_onboard_device", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -375,7 +392,7 @@ async def dismantle_onboard_device(device_ips: list[str]):
         return "Error While Updating Status", 500
 
 
-@router.post("/addDeviceStatically", responses={
+@router.post("/add_device_statically", responses={
     200: {"model": str},
     500: {"model": str}
 })
