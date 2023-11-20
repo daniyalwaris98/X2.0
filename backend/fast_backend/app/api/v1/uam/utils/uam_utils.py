@@ -103,19 +103,23 @@ def delete_uam_device_util(ip_address):
         )
 
         if device is None:
-            return f"{ip_address} : Device Not Found", 500
+            return (f"{ip_address} : Device Not Found"),200
 
         uam, atom = device
 
         if uam.status is not None:
             if uam.status == "Production":
                 return (
-                    f"{ip_address} : Device Is In Production Therefore Can Not Be Deleted",
-                    500,
-                )
-
+                    f"{ip_address} : Device Is In Production Therefore Can Not Be Deleted"
+                    
+                ),400
+        devices_id = uam.uam_id
         if DeleteDBData(uam) == 200:
-            return f"{ip_address} : Device Deleted Successfully", 200
+            data = {
+                "data":devices_id,
+                "message":f"{ip_address} : Device Deleted Successfully"
+            }
+            return data,200
         else:
             return f"{ip_address} : Error While Deleting Device", 500
 

@@ -4,29 +4,44 @@ import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
 import DefaultFormUnit from "../../../components/formUnits";
 import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultButton from "../../../components/buttons";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
+
+
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/uamModule/devices/apis";
-import { useFetchSiteNamesQuery } from "../../../store/features/dropDowns/apis";
+} from "../../../store/features/uamModule/sfps/apis";
+import {
+  useFetchSiteNamesQuery,
+} from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
-import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
+import {
+    selectSiteNames,
+} from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
   rack_name: yup.string().required("Rack name is required"),
   site_name: yup.string().required("Site name is required"),
+
+  secret_password: yup
+    .string()
+    .when("password_group_type", (passwordGroupType, schema) => {
+      if (passwordGroupType == "TELNET")
+     return schema.required("Secret password is required");
+      return schema;
+    }),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // states
+  const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
 
   // useForm hook
   const { handleSubmit, control, setValue, watch, trigger } = useForm({
@@ -38,9 +53,10 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     formSetter(recordToEdit, setValue);
   }, []);
 
-  // fetching dropdowns data from backend using apis
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
+ // fetching dropdowns data from backend using apis
+const { error: siteNamesError, isLoading: isSiteNamesLoading } =
+ useFetchSiteNamesQuery();
+ 
 
   // post api for the form
   const [
@@ -85,11 +101,11 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   // ///getting dropdowns data from the store
   const siteNames = useSelector(selectSiteNames);
 
-  // on form submit
+  // on form submit    
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.device_id = recordToEdit.device_id;
-      updateRecord(data);
+      data.rack_id = recordToEdit.rack_id;
+        updateRecord(data);
     } else {
       addRecord(data);
     }
@@ -106,36 +122,56 @@ const Index = ({ handleClose, open, recordToEdit }) => {
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit
               control={control}
-              dataKey="rack_name"
+              dataKey="device_name"
               disabled={recordToEdit !== null}
               required
             />
-
+          
             <SelectFormUnit
               control={control}
               dataKey="site_name"
               options={siteNames}
               required
             />
-            <DefaultFormUnit control={control} dataKey="function" />
-            <DefaultFormUnit control={control} dataKey="ru" />
-            <DefaultFormUnit control={control} dataKey="section" />
-          </Grid>
+            <DefaultFormUnit control={control} dataKey="status"  />
+            <DefaultFormUnit control={control} dataKey="serial_number"  />
+            <DefaultFormUnit control={control} dataKey="media_type"  />
+            </Grid>
           <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="department" />
-            <DefaultFormUnit control={control} dataKey="criticality" required />
-            <DefaultFormUnit control={control} dataKey="virtual" />
-            <DefaultFormUnit control={control} dataKey="software_version" />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="manufacturer" />
-            <DefaultFormUnit control={control} dataKey="authentication" />
-            <DefaultFormUnit control={control} dataKey="serial_number" />
-            <DefaultFormUnit control={control} dataKey="pn_code" />
-          </Grid>
 
+            <DefaultFormUnit control={control} dataKey="port_name"  />
+            <DefaultFormUnit control={control} dataKey="port_type" required />
+            <DefaultFormUnit control={control} dataKey="connector"/>
+            <DefaultFormUnit control={control} dataKey="mode"  />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+
+
+<DefaultFormUnit control={control} dataKey="speed"  />
+<DefaultFormUnit control={control} dataKey="wavelength"  />
+<DefaultFormUnit control={control} dataKey="optical_direction_type"  />
+<DefaultFormUnit control={control} dataKey="pn_code"  />
+
+</Grid>
+           
           <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
+            <div style={{ display: "flex", justifyContent: "center" }}>
+              <DefaultButton
+                handleClick={handleClose}
+                sx={{ backgroundColor: theme.palette.color.danger }}
+              >
+                <></>
+                Cancel
+              </DefaultButton>
+              &nbsp; &nbsp;
+              <DefaultButton
+                type="submit"
+                sx={{ backgroundColor: theme.palette.color.primary }}
+              >
+                <></>
+                Submit
+              </DefaultButton>
+            </div>
           </Grid>
         </Grid>
       </form>

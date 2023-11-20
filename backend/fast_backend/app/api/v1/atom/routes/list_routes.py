@@ -57,3 +57,12 @@ def password_group_type():
         return JSONResponse(content = password_group_types_list,status_code = 200)
     except Exception as e:
         traceback.print_exc()
+
+@router.get('/get_status_dropdown',responses={
+                    200: {"model": list[str]},
+                    500: {"model": str}})
+def status_dropdown():
+    try:
+        return JSONResponse(content =status_list,status_code = 200 )
+    except Exception as e:
+        traceback.print_exc()

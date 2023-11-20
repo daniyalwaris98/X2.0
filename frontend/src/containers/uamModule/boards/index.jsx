@@ -8,9 +8,9 @@ import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../store/features/uamModule/sites/apis";
+} from "../../../store/features/uamModule/boards/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/sites/selectors";
+import { selectTableData } from "../../../store/features/uamModule/boards/selector";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
   handleSuccessAlert,
@@ -119,10 +119,10 @@ const Index = () => {
   };
 
   const handleExport = (optionType) => {
-    if (optionType === "All Devices") {
-      jsonToExcel(dataSource, "sites");
+    if (optionType === "All Boards") {
+      jsonToExcel(dataSource, "Boards");
     } else if (optionType === "Template") {
-      jsonToExcel([generateObject(dataKeys)], "site_template");
+      jsonToExcel([generateObject(dataKeys)], "board_template");
     }
     handleSuccessAlert("File exported successfully.");
   };
@@ -159,7 +159,7 @@ const Index = () => {
     ),
   });
 
-  /// page header buttons
+  // page header buttons
   const buttons = [
     {
       type: "Export",
@@ -167,7 +167,7 @@ const Index = () => {
       handleClick: handleExport,
       options: [
         {
-          type: "All Devices",
+          type: "All Boards",
           icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
         },
         {
@@ -201,16 +201,22 @@ const Index = () => {
           />
         ) : null}
 
-        <DefaultCard sx={{ width: `${width - 105}px` }}>
-          <PageHeader pageName="Sites" buttons={buttons} />
+        <DefaultCard
+          sx={{
+            backgroundColor: theme.palette.color.main,
+            width: `${width - 105}px`,
+          }}
+        >
+          <PageHeader pageName="Boards" buttons={buttons} />
           <DefaultTable
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
             size="small"
+            scroll={{ x: 3000 }}
             onChange={handleChange}
             rowSelection={rowSelection}
             columns={columns}
             dataSource={dataSource}
-            rowKey="site_id"
+            rowKey="board_id"
             style={{ whiteSpace: "pre" }}
             pagination={{
               defaultPageSize: 9,

@@ -1,5 +1,7 @@
-FROM node:12.2.0-alpine
-RUN mkdir /frontend-atom
-WORKDIR /frontend-atom
-COPY package.json /frontend-atom/package.json
+FROM node:16.16.0
+RUN mkdir /frontend-app
+WORKDIR /frontend-app
+COPY package.json /frontend-app/package.json
+COPY . /frontend-app/
 RUN npm install
+CMD ["npm", "start"]
