@@ -4,7 +4,7 @@ from datetime import datetime
 import urllib3
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
-from app.uam.uam_db_utils import UamInventoryData
+from app.uam.uam_db_utils import uam_inventory_data
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
@@ -80,7 +80,7 @@ class InfoboxPuller(object):
 
                   
                 print(f"{self.inv_data}", file=sys.stderr)
-                self.failed = UamInventoryData(self.inv_data)
+                self.failed = uam_inventory_data(self.inv_data)
             else:
                 print(f"Connection failed {host['ip_address']}", file=sys.stderr)
 

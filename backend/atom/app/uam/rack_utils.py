@@ -1,4 +1,4 @@
-from app.uam.uam_utils import *
+from app.api.v1.uam.uam_utils import *
 
 
 def FormatDate(date):

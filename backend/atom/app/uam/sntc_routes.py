@@ -1,12 +1,8 @@
-import traceback
-import sys
-
 from flask_jsonpify import jsonify
 from flask import request
 
 from app import app, db
-from app.models.uam_models import *
-from app.uam.uam_utils import *
+from app.api.v1.uam.uam_utils import *
 from app.middleware import token_required
 
 

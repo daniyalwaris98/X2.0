@@ -1,0 +1,28 @@
+import React from "react";
+import { Outlet } from "react-router-dom";
+import Card from "../../components/cards";
+import HorizontalMenu from "../../components/horizontalMenu";
+
+const menuItems = [
+  { id: "atom", name: "Atom", path: "atom" },
+  { id: "password_group", name: "Password Group", path: "password_group" },
+];
+
+function Index(props) {
+  return (
+    <>
+      <Card
+        sx={{
+          marginBottom: "10px",
+          height: "50px",
+          // boxShadow: "unset !important",
+        }}
+      >
+        <HorizontalMenu menuItems={menuItems} />
+      </Card>
+      <Outlet />
+    </>
+  );
+}
+
+export default Index;

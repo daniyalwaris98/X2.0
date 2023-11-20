@@ -1,0 +1,2 @@
+def addFailedDevice():
+    pass

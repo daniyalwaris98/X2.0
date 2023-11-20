@@ -1,0 +1,23 @@
+from fastapi import APIRouter
+
+from app.api.v1.atom.atom_base_router import routers as atom_router
+from app.api.v1.auto_discovery.auto_discovery_dashboard_routes import \
+    router as auto_discovery_dashboard_router
+from app.api.v1.auto_discovery.auto_discovery_routes import router as auto_discovery_router
+from app.api.v1.monitoring.monitoring_base_router import routers as monitoring_routers
+from app.api.v1.ncm.ncm_base_router import routers as ncm_router
+from app.api.v1.uam.uam_base_router import routers as uam_router
+
+routers = APIRouter()
+
+router_list = [
+    atom_router,
+    auto_discovery_router,
+    auto_discovery_dashboard_router,
+    uam_router,
+    monitoring_routers,
+    ncm_router
+]
+
+for router in router_list:
+    routers.include_router(router)

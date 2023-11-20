@@ -2,7 +2,7 @@
 from datetime import datetime
 import re, sys, time, json
 import threading
-from app.uam.uam_db_utils import UamInventoryData
+from app.uam.uam_db_utils import uam_inventory_data
 from app.utilities.failed_utilts import addFailedDevice
 
 
@@ -76,7 +76,7 @@ class FireEyePuller(object):
             print(f"{self.inv_data}", file=sys.stderr)
             self.inv_data[host['ip_address']].update({'status': 'success'})
             print(self.inv_data,file=sys.stderr)
-            self.failed = UamInventoryData(self.inv_data)
+            self.failed = uam_inventory_data(self.inv_data)
         except Exception as e:
             print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
             if host['ip_address'] in self.inv_data:
