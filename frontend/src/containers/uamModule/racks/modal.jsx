@@ -98,7 +98,7 @@ const { error: siteNamesError, isLoading: isSiteNamesLoading } =
     type: "single",
   });
 
-  // getting dropdowns data from the store
+  // ///getting dropdowns data from the store
   const siteNames = useSelector(selectSiteNames);
 
   // on form submit    
