@@ -5,7 +5,7 @@ from app.schema.base_schema import *
 
 class TotalDeviceDashboardResponseSchema(BaseSchema):
     name: str
-    value: str | None
+    value: int | None
 
 
 class GetAllUAMDeviceResponseSchema(BaseSchema):

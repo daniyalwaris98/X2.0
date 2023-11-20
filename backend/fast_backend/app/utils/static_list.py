@@ -29,6 +29,11 @@ password_group_types_list = [
 ]
 
 
+status_list = [
+    "Production",
+    "Not Production"
+]
+
 vendor_list = [
     "Cisco",
     "Extreme",
