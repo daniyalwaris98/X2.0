@@ -4,7 +4,7 @@ import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
 import DefaultFormUnit from "../../../components/formUnits";
 import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultButton from "../../../components/buttons";
+import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
@@ -73,6 +73,18 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       await trigger("rack_name");
     })();
   }, [watch("site_name")]);
+
+  useEffect(() => {
+    // skip the first render
+    if (initialRender) {
+      setInitialRender(false);
+      return;
+    }
+
+    (async () => {
+      await trigger("rack_name");
+    })();
+  }, [watch("rack_name")]);
 
   // fetching dropdowns data from backend using apis
   const { error: siteNamesError, isLoading: isSiteNamesLoading } =
@@ -229,23 +241,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <DefaultFormUnit control={control} dataKey="domain" />
           </Grid>
           <Grid item xs={12}>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <DefaultButton
-                handleClick={handleClose}
-                sx={{ backgroundColor: theme.palette.color.danger }}
-              >
-                <></>
-                Cancel
-              </DefaultButton>
-              &nbsp; &nbsp;
-              <DefaultButton
-                type="submit"
-                sx={{ backgroundColor: theme.palette.color.primary }}
-              >
-                <></>
-                Submit
-              </DefaultButton>
-            </div>
+            <DefaultDialogFooter handleClose={handleClose} />
           </Grid>
         </Grid>
       </form>

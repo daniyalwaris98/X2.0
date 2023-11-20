@@ -7,7 +7,9 @@ export default function DefaultOption({ value, sx, children, ...rest }) {
   return (
     <option
       style={{
-        color: theme.palette.textColor.input,
+        color: theme?.palette?.default_option?.primary_text,
+        backgroundColor: theme?.palette?.default_option?.background,
+        borderColor: theme?.palette?.default_option?.border,
         ...sx,
       }}
       {...rest}

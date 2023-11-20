@@ -4,7 +4,7 @@ import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
 import DefaultFormUnit from "../../../components/formUnits";
 import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultButton from "../../../components/buttons";
+import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
@@ -160,23 +160,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             />
           </Grid>
           <Grid item xs={12}>
-            <div style={{ display: "flex", justifyContent: "center" }}>
-              <DefaultButton
-                handleClick={handleClose}
-                sx={{ backgroundColor: theme.palette.color.danger }}
-              >
-                <></>
-                Cancel
-              </DefaultButton>
-              &nbsp; &nbsp;
-              <DefaultButton
-                type="submit"
-                sx={{ backgroundColor: theme.palette.color.primary }}
-              >
-                <></>
-                Submit
-              </DefaultButton>
-            </div>
+            <DefaultDialogFooter handleClose={handleClose} />
           </Grid>
         </Grid>
       </form>

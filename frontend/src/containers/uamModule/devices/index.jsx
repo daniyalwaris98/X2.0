@@ -201,12 +201,7 @@ const Index = () => {
           />
         ) : null}
 
-        <DefaultCard
-          sx={{
-            backgroundColor: theme.palette.color.main,
-            width: `${width - 105}px`,
-          }}
-        >
+        <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader pageName="Devices" buttons={buttons} />
           <DefaultTable
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}

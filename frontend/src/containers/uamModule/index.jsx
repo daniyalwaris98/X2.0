@@ -25,7 +25,7 @@ function Index(props) {
           boxShadow: "unset !important",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} />
+        <HorizontalMenu menuItems={menuItems} defaultPage="sites" />
       </Card>
       <Outlet />
     </>
