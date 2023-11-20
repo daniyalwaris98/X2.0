@@ -60,7 +60,7 @@ services:
     ports:
       - "3010:3010"
     depends_on:
-      - updated_atom_flask
+      - atom_fast_backend
 
   updated_influx_db:
     image: influxdb:latest
