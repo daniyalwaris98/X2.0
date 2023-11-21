@@ -185,7 +185,7 @@ def RunningActiveDevices():
         traceback.print_exc()
 
 
-@app.route("/runactive", methods=["GET"])
+@app.route("/runa_ctive", methods=["GET"])
 # @token_required
 def runactivedevice():
     try:
@@ -244,7 +244,7 @@ host = [
 ]
 
 
-@app.route("/testPuller", methods=["GET"])
+@app.route("/test_puller", methods=["GET"])
 def TestPuller():
     puller = CommonPuller()
     puller.poll(host)
@@ -279,7 +279,7 @@ def TestPuller():
     return "OK", 200
 
 
-@app.route("/pingTest", methods=["GET"])
+@app.route("/ping_test", methods=["GET"])
 def PingShed():
     queryString = f"select ip_address from monitoring_devices_table;"
     results = db.session.execute(queryString)
@@ -306,7 +306,7 @@ def PingShed():
 #
 
 
-@app.route("/alarmactive")
+@app.route("/alarm_active")
 # @token_required
 def alarmactivedevice():
     try:

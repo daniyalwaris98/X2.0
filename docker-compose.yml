@@ -50,15 +50,15 @@ services:
   updated_atom_react:
     container_name: Updated_Atom_React_Container
     restart: always
-    build: frontend/atom
-    command: [ "npm", "start" ]
-    volumes:
-      - ./frontend/atom:/frontend-atom
-      - node-modules:/frontend-atom/node_modules
-    environment:
-      - NODE_ENV=development
+    build: ./frontend
+    #environment:
+      #- NODE_ENV=development
+    #command: [ "npm", "start" ]
     ports:
-      - "3010:3010"
+      - "3010:3000"
+    volumes:
+      - ./frontend/:/frontend-app
+      - node-modules:/frontend-app/node_modules
     depends_on:
       - atom_fast_backend
 

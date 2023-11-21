@@ -7,6 +7,7 @@ import DefaultSelect from "./selects";
 import DefaultOption from "./options";
 import { Controller } from "react-hook-form";
 import { getTitle } from "../utils/helpers";
+import { useTheme } from "@mui/material/styles";
 
 export default function DefaultFormUnit({
   control,
@@ -16,6 +17,7 @@ export default function DefaultFormUnit({
   sx,
   ...rest
 }) {
+  const theme = useTheme();
   const title = getTitle(dataKey);
   return (
     <Controller
@@ -38,7 +40,12 @@ export default function DefaultFormUnit({
                 {...rest}
               />
             </InputWrapper>
-            <div style={{ color: "red", fontSize: "12px" }}>
+            <div
+              style={{
+                color: theme?.palette?.form_unit?.error_text,
+                fontSize: "12px",
+              }}
+            >
               {fieldState.error && fieldState.error.message}
             </div>
           </DefaultWrapper>
@@ -55,6 +62,7 @@ export function SelectFormUnit({
   required = false,
   ...rest
 }) {
+  const theme = useTheme();
   const title = getTitle(dataKey);
   return (
     <Controller
@@ -73,13 +81,25 @@ export function SelectFormUnit({
                 id={dataKey}
                 {...rest}
               >
-                <DefaultOption value="">Select a {title}</DefaultOption>
+                <DefaultOption
+                  value=""
+                  sx={{
+                    color: theme.palette.default_select.place_holder,
+                  }}
+                >
+                  Select a {title}
+                </DefaultOption>
                 {options?.map((value) => (
                   <DefaultOption value={value}>{value}</DefaultOption>
                 ))}
               </DefaultSelect>
             </InputWrapper>
-            <div style={{ color: "red", fontSize: "12px" }}>
+            <div
+              style={{
+                color: theme?.palette?.form_unit?.error_text,
+                fontSize: "12px",
+              }}
+            >
               {fieldState.error && fieldState.error.message}
             </div>
           </DefaultWrapper>

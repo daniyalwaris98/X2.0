@@ -4,11 +4,11 @@ import Menu from "@mui/material/Menu";
 import MenuItem from "@mui/material/MenuItem";
 import { useTheme, styled } from "@mui/material/styles";
 
-export default function HorizontalMenu({ menuItems }) {
+export default function HorizontalMenu({ menuItems, defaultPage }) {
   const theme = useTheme();
 
   const [openSubmenus, setOpenSubmenus] = useState({});
-  const [selectedMenuItem, setSelectedMenuItem] = useState(null);
+  const [selectedMenuItem, setSelectedMenuItem] = useState(defaultPage);
 
   const StyledMenuItem = styled(MenuItem)(({ theme, sx }) => ({
     height: "50px !important",
@@ -17,8 +17,8 @@ export default function HorizontalMenu({ menuItems }) {
       sx.isClicked ? sx.color : "transparent"
     } !important`,
     "&:hover": {
-      color: `${theme.palette.horizontal_menu.secondary_text} !important`,
-      borderBottom: `3px solid ${theme.palette.horizontal_menu.secondary_text} !important`,
+      color: `${theme?.palette?.horizontal_menu?.secondary_text} !important`,
+      borderBottom: `3px solid ${theme?.palette?.horizontal_menu?.secondary_text} !important`,
       backgroundColor: "transparent !important",
     },
   }));
@@ -48,8 +48,8 @@ export default function HorizontalMenu({ menuItems }) {
               onClick={(event) => handleMenuClick(event, id)}
               sx={{
                 color: isClicked
-                  ? theme.palette.horizontal_menu.secondary_text
-                  : theme.palette.horizontal_menu.primary_text,
+                  ? theme?.palette?.horizontal_menu?.secondary_text
+                  : theme?.palette?.horizontal_menu?.primary_text,
               }}
             >
               {item.name}
@@ -81,8 +81,8 @@ export default function HorizontalMenu({ menuItems }) {
             onClick={(event) => handleMenuClick(event, id)}
             sx={{
               color: isClicked
-                ? theme.palette.horizontal_menu.secondary_text
-                : theme.palette.horizontal_menu.primary_text,
+                ? theme?.palette?.horizontal_menu?.secondary_text
+                : theme?.palette?.horizontal_menu?.primary_text,
               isClicked: isClicked,
             }}
           >

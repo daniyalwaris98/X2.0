@@ -15,10 +15,9 @@ function Index(props) {
         sx={{
           marginBottom: "10px",
           height: "50px",
-          // boxShadow: "unset !important",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} />
+        <HorizontalMenu menuItems={menuItems} defaultPage="atom" />
       </Card>
       <Outlet />
     </>

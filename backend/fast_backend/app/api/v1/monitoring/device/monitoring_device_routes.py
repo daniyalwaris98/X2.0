@@ -7,11 +7,11 @@ from app.schema.monitoring_schema import *
 
 router = APIRouter(
     prefix="/devices",
-    tags=["monitoring-devices"],
+    tags=["monitoring_devices"],
 )
 
 
-@router.get("/get-all-monitoring-vendors", responses={
+@router.get("/get_all_monitoring_vendors", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 })
@@ -37,7 +37,7 @@ async def get_all_monitoring_vendors():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/get-all-monitoring-functions", responses={
+@router.get("/get_all_monitoring_functions", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 })
@@ -59,7 +59,7 @@ async def get_all_monitoring_functions():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.post("/add-monitoring-device", responses={
+@router.post("/add_monitoring_device", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -74,7 +74,7 @@ def add_monitoring_device(monitoring_obj):
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.post("/add-monitoring-devices", responses={
+@router.post("/add_monitoring_devices", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -107,7 +107,7 @@ def add_monitoring_devices(monitoring_objs):
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/get-all-monitoring-devices", responses={
+@router.get("/get_all_monitoring_devices", responses={
     200: {"model": list[MonitoringDeviceSchema]},
     500: {"model": str}
 })
@@ -155,7 +155,7 @@ async def get_all_monitoring_devices():
                             status_code=500)
 
 
-@router.get("/get-atom-in-monitoring", responses={
+@router.get("/get_atom_in_monitoring", responses={
     200: {"model": list[AtomInMonitoringSchema]},
     500: {"model": str}
 })
@@ -185,7 +185,7 @@ async def get_atom_in_monitoring():
                             status_code=500)
 
 
-@router.post("/add-atom-in-monitoring", responses={
+@router.post("/add_atom_in_monitoring", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -285,7 +285,7 @@ async def add_atom_in_monitoring(ip_list: list[str]):
 #             return "Something Went Wrong!", 500
 #
 #
-@router.post("/get-device-filter-date", responses={})
+@router.post("/get_device_filter_date", responses={})
 async def get_device_filter_date(data_list: list[GetFunctionDataSchema]):
     try:
         final_list = []
@@ -299,7 +299,7 @@ async def get_device_filter_date(data_list: list[GetFunctionDataSchema]):
         return "Error While Fetching Data", 500
 
 
-@router.post("/get-interface-filter-date", responses={})
+@router.post("/get_interface_filter_date", responses={})
 async def get_interface_filter_date(data_list: list[GetFunctionDataSchema]):
     try:
         final_list = []

@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
+from fastapi import FastAPI, Query
 from app.api.v1.monitoring.device.utils.monitoring_utils import *
 from app.models.atom_models import *
 from app.models.monitoring_models import *
@@ -12,11 +12,11 @@ router = APIRouter(
 )
 
 
-@router.post("/get-monitoring-devices-cards/{ip}", responses={
+@router.post("/get_monitoring_devices_cards", responses={
     200: {"model": GetMonitoringDevicesCardsResponseSchema},
     500: {"model": str}
 })
-def get_monitoring_devices_cards(ip: str):
+def get_monitoring_devices_cards(ip: str = Query(..., description="IP address of the device")):
     try:
 
         global_dict = {"device": [], "interfaces": [], "alerts": []}
@@ -97,11 +97,11 @@ def get_monitoring_devices_cards(ip: str):
         return JSONResponse(content="Server Error While Fetching Monitoring Data", status_code=500)
 
 
-@router.get("/get-ip-alerts/{ip}", responses={
+@router.get("/get_ip_alerts", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
 })
-def ip_alerts(ip: str):
+def ip_alerts(ip: str = Query(..., description="IP address of the device")):
     try:
 
         monitoring_obj_list = []
@@ -139,11 +139,12 @@ def ip_alerts(ip: str):
         return JSONResponse(content="Server Error While Fetching Alerts", status_code=500)
 
 
-@router.get("/get-interface-band/{ip, interface_name}", responses={
+@router.get("/get_interface_band/{ip, interface_name}", responses={
     200: {"model": str},
     500: {"model": str}
 })
-async def int_band(ip: str, interface_name: str):
+async def int_band(ip: str = Query(..., description="IP address of the device"),
+                   interface_name: str = Query(..., description="Interface name")):
     org = "monetx"
     query_api = configs.client.query_api()
     query = f'import "strings"\
