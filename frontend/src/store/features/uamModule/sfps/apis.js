@@ -9,7 +9,7 @@ export const extendedApi = monetxApi.injectEndpoints({
    
     deleteSfps: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/rack/delete_rack",
+        url: "",
         method: "POST",
         body: data,
       }),
@@ -17,14 +17,14 @@ export const extendedApi = monetxApi.injectEndpoints({
     // form apis
     addSfps: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/rack/add_rack",
+        url: "",
         method: "POST",
         body: data,
       }),
     }),
     updateSfps: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/rack/edit_rack",
+        url: "",
         method: "POST",
         body: data,
       }),
