@@ -1,8 +1,7 @@
 import traceback
-
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
+from fastapi import FastAPI, Query
 from app.core.config import configs
 
 from app.models.atom_models import *
@@ -10,18 +9,18 @@ from app.models.uam_models import *
 from app.schema.uam_license_schema import *
 
 router = APIRouter(
-    prefix="/uam-license",
-    tags=["uam-license"],
+    prefix="/uam_license",
+    tags=["uam_license"],
 )
 
 
-#
-@router.get("/getLicenseDetailsByIpAddress/{ip_address}", responses={
+#getLicenseDetailsByIpAddress
+@router.get("/get_liscence_detail_by_ip_address", responses={
     200: {"model": list[GetLicenseResponseSchema]},
     400: {"model": str},
     500: {"model": str}
 })
-async def get_license_details_by_ip_address(ip_address: str):
+async def get_license_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
 
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
@@ -57,9 +56,9 @@ async def get_license_details_by_ip_address(ip_address: str):
 
 
 #
+#getAllLicenses
 
-
-@router.get("/getAllLicenses", responses={
+@router.get("/get_all_licenses", responses={
     200: {"model": list[GetLicenseResponseSchema]},
     500: {"model": str}
 })

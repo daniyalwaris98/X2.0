@@ -6,11 +6,11 @@ from app.schema.monitoring_schema import *
 
 router = APIRouter(
     prefix="/credentials",
-    tags=["monitoring-credentials"]
+    tags=["monitoring_credentials"]
 )
 
 
-@router.post("/add-snmp-v2-credentials", responses={
+@router.post("/add_snmp-v2_credentials", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -45,7 +45,7 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.post("/add-snmp-v3-credentials", responses={
+@router.post("/add_snmp_v3_credentials", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -86,7 +86,7 @@ async def add_snmp_v3_credentials(credential_obj: SnmpV3CredentialsRequestSchema
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/get-dev-credentials", responses={
+@router.get("/get_dev_credentials", responses={
     200: {"model": list[str]},
     500: {"model": str}
 })
@@ -105,7 +105,7 @@ async def get_dev_credentials():
         return JSONResponse(content="Error in getting credentials", status_code=500)
 
 
-@router.get("/get-snmp-v2-credentials", responses={
+@router.get("/get_snmp_v2_credentials", responses={
     200: {"model": list[SnmpV2CredentialsResponseSchema]},
     500: {"model": str}
 })
@@ -163,7 +163,7 @@ def get_snmp_v2_credentials():
 #         return jsonify({"Response": "Service not Available"}), 503
 #
 #
-@router.get("/get-snmp-v3-credentials", responses={
+@router.get("/get_snmp_v3_credentials", responses={
     200: {"model": list[SnmpV3CredentialsResponseSchema]},
     500: {"model": str}
 })
@@ -194,8 +194,8 @@ def get_snmp_v2_credentials():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.post("/delete-snmp-credentials", responses={
-    200: {"model": SummeryResponseSchema},
+@router.post("/delete_snmp_credentials", responses={
+    200: {"model": DeleteResponseSchema},
     500: {"model": str}
 })
 async def delete_snmp_credentials(id_list: list[int]):
@@ -203,22 +203,24 @@ async def delete_snmp_credentials(id_list: list[int]):
 
         response_list = []
         error_list = []
-
+        data = []
         for id in id_list:
             cred = configs.db.query(Monitoring_Credentails_Table).filter(
                 Monitoring_Credentails_Table.monitoring_credentials_id == id).first()
-
+            monitoring_credential_id = cred.monitoring_credentials_id
             if cred is None:
                 error_list.append(f"ID {id} : Credentials Not Found")
             else:
                 profile = cred.profile_name
 
                 if DeleteDBData(cred) == 200:
+                    data.append(monitoring_credential_id)
                     response_list.append(f"{profile} : Deleted Successfully")
                 else:
                     error_list.append(f"{profile} : Error While Deleting Credentials")
 
         response_dict = {
+            "data":data,
             "success": len(response_list),
             "error": len(error_list),
             "error_list": error_list,

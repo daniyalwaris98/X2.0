@@ -6,7 +6,7 @@ from app.schema.monitoring_schema import *
 
 router = APIRouter(
     prefix="/alerts",
-    tags=["monitoring-alerts"]
+    tags=["monitoring_alerts"]
 )
 
 
@@ -20,7 +20,7 @@ router = APIRouter(
 #         traceback.print_exc()
 #
 #
-@router.get("/get-monitoring-alerts/{alert_level}", responses={
+@router.get("/get_monitoring_alerts/{alert_level}", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
 })
@@ -34,7 +34,7 @@ async def low_alerts(alert_level: str):
         return JSONResponse(content="Server Error While Fetching Alerts", status_code=500)
 
 
-@router.get("/alert-status", responses={
+@router.get("/alert_status", responses={
     200: {"model": AlertStatusSchema},
     500: {"model": str}
 })
@@ -70,7 +70,7 @@ async def alert_status():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/get-ip-alerts/{ip}", responses={
+@router.get("/get_ip_alerts/{ip}", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
 })

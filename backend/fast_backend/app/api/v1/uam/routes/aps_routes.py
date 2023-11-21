@@ -8,12 +8,12 @@ from app.core.config import configs
 from app.models.uam_models import *
 
 router = APIRouter(
-    prefix="/uam-aps",
-    tags=["uam-aps"],
+    prefix="/uam_aps",
+    tags=["uam_aps"],
 )
 
 
-@router.get("/getAllAps", responses={
+@router.get("/get_all_aps", responses={
     200: {"model": list},
     500: {"model": str}
 })
