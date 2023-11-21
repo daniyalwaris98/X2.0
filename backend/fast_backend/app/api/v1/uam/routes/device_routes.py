@@ -2,6 +2,7 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from app.schema.uam_device_schema import *
+from fastapi import FastAPI, Query
 
 from app.api.v1.uam.utils.uam_utils import *
 from app.utils.static_list import *
@@ -269,11 +270,11 @@ async def top_functions():
         return JSONResponse(content="Error Occurred Fetching Uam Data", status_code=500)
 
 
-@router.get("/get_site_detail_by_ip_address/{ip_address}", responses={
+@router.get("/get_site_detail_by_ip_address", responses={
     200: {"model": GetSiteByIpResponseSchema},
     500: {"model": str}
 })
-async def get_site_by_ip_address(ip_address: str):
+async def get_site_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         result = (
             configs.db.query(AtomTable, RackTable, SiteTable)
@@ -298,11 +299,11 @@ async def get_site_by_ip_address(ip_address: str):
         return JSONResponse(content="Error Occurred Fetching Site Data", status_code=500)
 
 
-@router.get("/get_rack_detail_by_ip_address/{ip_address}", responses={
+@router.get("/get_rack_detail_by_ip_address", responses={
     200: {"model": GetRackByIpResponseSchema},
     500: {"model": str}
 })
-async def get_rack_by_ip_address(ip_address: str):
+async def get_rack_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         obj_list = []
 
@@ -334,11 +335,11 @@ async def get_rack_by_ip_address(ip_address: str):
         return JSONResponse(content="Error Occurred Fetching Rack Data", status_code=500)
 
 
-@router.get("/get_device_details_by_ip_address/{ip_address}", responses={
+@router.get("/get_device_details_by_ip_address", responses={
     200: {"model": GetAllUAMDeviceResponseSchema},
     500: {"model": str}
 })
-async def get_device_details_by_ip_address(ip_address: str):
+async def get_device_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         result = (
             configs.db.query(UamDeviceTable, AtomTable, RackTable, SiteTable)

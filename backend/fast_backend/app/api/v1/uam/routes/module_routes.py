@@ -59,7 +59,7 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
         return JSONResponse(content="Error While Fetching Board Data", status_code=500)
 
 # getSubBoardDetailsByIpAddress
-@router.get("/get_subboard_details_by_ip_address/{ip_address}", responses={
+@router.get("/get_subboard_details_by_ip_address", responses={
     200: {"model": list[GetSubboardResponseSchema]},
     400: {"model": str},
     500: {"model": str}
