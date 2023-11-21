@@ -8,11 +8,17 @@ export default function DefaultLabel({ required, sx, children, ...rest }) {
     <label
       {...rest}
       style={{
+        color: theme?.palette?.default_label?.primary_text,
         fontSize: theme.typography.textSize.small,
         ...sx,
       }}
     >
-      {children} {required ? <span style={{ color: "red" }}>*</span> : null}
+      {children}{" "}
+      {required ? (
+        <span style={{ color: theme?.palette?.default_label?.required_star }}>
+          *
+        </span>
+      ) : null}
     </label>
   );
 }

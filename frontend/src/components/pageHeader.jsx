@@ -70,7 +70,7 @@ export default function PageHeader({ pageName, buttons }) {
           alignItems: "center",
         }}
       >
-        <Typography sx={{ color: theme.palette.textColor.tableText }}>
+        <Typography sx={{ color: theme?.palette?.page_header?.primary_text }}>
           {pageName}
         </Typography>
 

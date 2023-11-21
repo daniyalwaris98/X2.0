@@ -92,7 +92,7 @@ export default function Index() {
   const theme = useTheme();
   const { isDarkMode, setDarkMode } = useContext(AppContext);
   const [open, setOpen] = useState(false);
-  const [selectedModule, setSelectedModule] = useState("Admin");
+  const [selectedModule, setSelectedModule] = useState("Atom");
 
   const toggleTheme = () => {
     setDarkMode(!isDarkMode);
@@ -109,7 +109,7 @@ export default function Index() {
       name: "Atom",
       inActiveIcon: <img src={atomInactiveIcon} alt="Atom" />,
       activeIcon: <img src={atomActiveIcon} alt="Atom" />,
-      path: "atom_module/atom",
+      path: "atom_module",
     },
     {
       name: "Auto Discovery",

@@ -1,14 +1,15 @@
 import { createTheme } from "@mui/material/styles";
+import { lightThemeColors, darkThemeColors } from "../utils/constants/colors";
 
 export const lightTheme = createTheme({
   palette: {
     background: {
-      default: "#F6F6F6", // default ligt gray
+      default: "#F6F6F6",
     },
 
     main_layout: {
       background: "#FFFFFF",
-      profile_picture_background: "#ACACAC", // profile picture background
+      profile_picture_background: "#ACACAC",
       primary_text: "#000000",
       secondary_text: "#ACACAC",
       border_bottom: "#D9D9D9",
@@ -52,6 +53,8 @@ export const lightTheme = createTheme({
       import_background: "#3D9E47",
       onboard_background: "#F1B92A",
       add_background: "#3D9E47",
+      cancel_background: "#E34444",
+      submit_background: "#3D9E47",
       sync_background: "",
       primary_text: "#FFFFFF",
     },
@@ -70,31 +73,48 @@ export const lightTheme = createTheme({
       options_hover_background: "#E4F1E5",
     },
 
-    color: {
-      default: "#ACACAC", // profile picture background
-      main: "#FFFFFF", // table background white
-      primary: "#3D9E47", // montex green
-      secondary: "#ACACAC", // search icons gray
-      tertiary: "#E4F1E5", // left menu item background light green
-      success: "#66B127", // success color parrot green
-      info: "#F1B92A", //yellow
-      danger: "#E34444", //danger color red
-      disable: "#5A5A5A", // gray
-      checkboxBorder: "#DBDBDB",
-      modalTitle: "#EBEBEB", // light blue
-      inputBorderColor: "#F5F5F5",
-      textBlackColor: "#262626", //text color black
+    page_header: {
+      primary_text: "#000000",
     },
 
-    textColor: {
-      default: "#000000", // black
-      main: "#FFFFFF", // white
-      primary: "#D9D9D9", // montex green
-      secondary: "#D9D9D9", // silver
-      tertiary: "#5C5C5C", // grey
-      tableText: "#262626",
-      danger: "#E34444", //danger color red
-      input: "#7F7F7F",
+    dialog: {
+      title_background: "#EBEBEB",
+      content_background: "#FFFFFF",
+      title_text: "#000000",
+      content_text: "#000000",
+    },
+
+    form_unit: {
+      error_text: "red",
+    },
+
+    default_input: {
+      border: "#F5F5F5",
+      primary_text: "#000000",
+      background: "#FFFFFF",
+    },
+
+    default_select: {
+      border: "#F5F5F5",
+      primary_text: "#000000",
+      background: "#FFFFFF",
+      place_holder: "#B9B9B9",
+    },
+
+    default_option: {
+      border: "#F5F5F5",
+      primary_text: "#000000",
+      background: "#FFFFFF",
+    },
+
+    default_label: {
+      primary_text: "#000000",
+      required_star: "#E34444",
+    },
+
+    icon: {
+      complete: "#66B127",
+      incomplete: "#F1B92A",
     },
   },
 
@@ -168,6 +188,8 @@ export const darkTheme = createTheme({
       import_background: "#3D9E47",
       onboard_background: "#F1B92A",
       add_background: "#3D9E47",
+      cancel_background: "#E34444",
+      submit_background: "#3D9E47",
       sync_background: "",
       primary_text: "#FFFFFF",
     },
@@ -186,31 +208,48 @@ export const darkTheme = createTheme({
       options_hover_background: "#C8EF9E",
     },
 
-    color: {
-      default: "#595959", // profile picture background
-      main: "#000000", // table background dark gray
-      primary: "#3D9E47", // montex green
-      secondary: "#ACACAC", // search icons gray
-      tertiary: "#C8EF9E", // left menu item background light green
-      success: "#66B127", // success color parrot green
-      info: "#F1B92A", //yellow
-      danger: "#E34444", //danger color red
-      disable: "#5A5A5A", // gray
-      checkboxBorder: "#DBDBDB",
-      modalTitle: "#EBEBEB", // light blue
-      inputBorderColor: "#F5F5F5",
+    page_header: {
+      primary_text: "#FFFFFF",
     },
 
-    textColor: {
-      default: "#FFFFFF", // white
-      main: "#FFFFFF", // white
-      primary: "#D9D9D9", // montex green
-      secondary: "#595959", // silver
-      tertiary: "#FFFFFF", // grey
-      tableText: "#262626",
-      danger: "#E34444", //danger color red
-      tableText: "#ACACAC",
-      input: "#7F7F7F",
+    dialog: {
+      title_background: "#09120C",
+      content_background: "#131B15",
+      title_text: "#FFFFFF",
+      content_text: "#FFFFFF",
+    },
+
+    form_unit: {
+      error_text: "#E34444",
+    },
+
+    default_input: {
+      border: "#09120C",
+      primary_text: "#ACACAC",
+      background: "#09120C",
+    },
+
+    default_select: {
+      border: "#09120C",
+      primary_text: "#ACACAC",
+      background: "#09120C",
+      place_holder: "#B9B9B9",
+    },
+
+    default_option: {
+      border: "#09120C",
+      primary_text: "#ACACAC",
+      background: "#09120C",
+    },
+
+    default_label: {
+      primary_text: "#FFFFFF",
+      required_star: "#E34444",
+    },
+
+    icon: {
+      complete: "#66B127",
+      incomplete: "#F1B92A",
     },
   },
 

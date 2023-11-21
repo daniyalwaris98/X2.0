@@ -220,13 +220,13 @@ const Index = () => {
         const icon = record.atom_id ? (
           <Icon
             fontSize={"22px"}
-            color={theme.palette.color.primary}
+            color={theme?.palette?.icon?.complete}
             icon="ep:success-filled"
           />
         ) : (
           <Icon
             fontSize={"23px"}
-            color={theme.palette.color.info}
+            color={theme?.palette?.icon?.incomplete}
             icon="material-symbols:info"
           />
         );
@@ -279,7 +279,7 @@ const Index = () => {
             <Icon
               fontSize="16px"
               icon="ep:success-filled"
-              color={theme.palette.color.primary}
+              color={theme?.palette?.icon?.complete}
             />
           ),
         },
@@ -289,7 +289,7 @@ const Index = () => {
             <Icon
               fontSize="16px"
               icon="material-symbols:info"
-              color={theme.palette.color.info}
+              color={theme?.palette?.icon?.incomplete}
             />
           ),
         },
@@ -350,12 +350,7 @@ const Index = () => {
           />
         ) : null}
 
-        <DefaultCard
-          sx={{
-            backgroundColor: theme.palette.color.main,
-            width: `${width - 105}px`,
-          }}
-        >
+        <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader pageName="Atom" buttons={buttons} />
           <DefaultTable
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}

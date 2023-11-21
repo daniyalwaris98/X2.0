@@ -8,9 +8,9 @@ import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../store/features/uamModule/racks/apis";
+} from "../../../store/features/uamModule/subBoards/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/racks/selectors";
+import { selectTableData } from "../../../store/features/uamModule/subBoards/selector";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
   handleSuccessAlert,
@@ -119,10 +119,10 @@ const Index = () => {
   };
 
   const handleExport = (optionType) => {
-    if (optionType === "All Racks") {
-      jsonToExcel(dataSource, "Racks");
+    if (optionType === "All Devices") {
+      jsonToExcel(dataSource, "sub_board");
     } else if (optionType === "Template") {
-      jsonToExcel([generateObject(dataKeys)], "rack_template");
+      jsonToExcel([generateObject(dataKeys)], "sub_board_template");
     }
     handleSuccessAlert("File exported successfully.");
   };
@@ -167,7 +167,7 @@ const Index = () => {
       handleClick: handleExport,
       options: [
         {
-          type: "All Racks",
+          type: "All Subboards",
           icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
         },
         {
@@ -201,8 +201,13 @@ const Index = () => {
           />
         ) : null}
 
-        <DefaultCard sx={{ width: `${width - 105}px` }}>
-          <PageHeader pageName="Racks" buttons={buttons} />
+        <DefaultCard
+          sx={{
+            backgroundColor: theme.palette.color.main,
+            width: `${width - 105}px`,
+          }}
+        >
+          <PageHeader pageName="Sub Boards" buttons={buttons} />
           <DefaultTable
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
             size="small"
@@ -211,7 +216,7 @@ const Index = () => {
             rowSelection={rowSelection}
             columns={columns}
             dataSource={dataSource}
-            rowKey="rack_id"
+            rowKey="sub_board_id"
             style={{ whiteSpace: "pre" }}
             pagination={{
               defaultPageSize: 9,
