@@ -8,8 +8,8 @@ from app.utils.static_list import *
 from app.core.config import *
 
 router = APIRouter(
-    prefix="/uam-device",
-    tags=["uam-device"],
+    prefix="/uam_device",
+    tags=["uam_device"],
 )
 
 
@@ -157,16 +157,33 @@ async def delete_uam_device(ip_list: list[str]):
 
 
 @router.post("/edit_device", responses={
-    200: {"model": str},
+    200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
 async def edit_uam_device(device_obj: EditUamDeviceRequestSchema):
     try:
-
+        data = []
+        success_list = []
+        error_list = []
         response = edit_uam_device_util(device_obj, device_obj['uam_id'])
+        print("repons is::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+        if isinstance(response,dict):
+            for key,value in response:
+                if key == "data":
+                    data.append(value)
+                if key == "message":
+                    success_list.append(value)
+        else:
+            error_list.append(response)
 
-        return JSONResponse(content=response, status_code=200)
-
+        respons = {
+            "data":data,
+            "success": len(success_list),
+            "error": len(error_list),
+            "error_list": error_list,
+            "success_list": success_list,
+        }
+        return JSONResponse(content=respons)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred Updating Uam Device", status_code=500)
