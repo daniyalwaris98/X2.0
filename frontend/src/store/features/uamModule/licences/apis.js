@@ -3,11 +3,11 @@ import { monetxApi } from "../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
-    fetchSfps: builder.query({
-      query: () => "/api/v1/uam/uam-sfp/getAllSfps",
+    fetchLicenses: builder.query({
+      query: () => "/api/v1/uam/uam-license/getAllLicenses",
     }),
    
-    deleteSfps: builder.mutation({
+    deleteLicense: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -15,14 +15,14 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
     // form apis
-    addSfps: builder.mutation({
+    addLicense: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
         body: data,
       }),
     }),
-    updateSfps: builder.mutation({
+    updateLicense: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -32,9 +32,9 @@ export const extendedApi = monetxApi.injectEndpoints({
   }),
 });
 export const {
-  useFetchSfpsQuery: useFetchRecordsQuery,
-  useDeleteSfpsMutation: useDeleteRecordsMutation,
+  useFetchLicensesQuery: useFetchRecordsQuery,
+  useDeleteLicenseMutation: useDeleteRecordsMutation,
   // form apis
-  useAddSfpsMutation: useAddRecordMutation,
-  useUpdateSfpsMutation: useUpdateRecordMutation,
+  useAddLicenseMutation: useAddRecordMutation,
+  useUpdateLicenseMutation: useUpdateRecordMutation,
 } = extendedApi;

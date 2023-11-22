@@ -34,15 +34,7 @@ import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
   ip_address: yup.string().required("Ip address is required"),
-  site_name: yup.string().required("Site name is required"),
-  rack_name: yup.string().required("Rack name is required"),
-  device_name: yup.string().required("Device name is required"),
-  device_ru: yup.string().required("Device ru is required"),
-  function: yup.string().required("Function is required"),
-  device_type: yup.string().required("Device type is required"),
-  vendor: yup.string().required("Vendor is required"),
-  criticality: yup.string().required("Criticality is required"),
-  password_group: yup.string().required("Password group is required"),
+ 
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -193,7 +185,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               control={control}
               dataKey="rack_name"
               options={rackNames}
-              required
+              
             />
             <DefaultFormUnit control={control} dataKey="section" />
             <DefaultFormUnit control={control} dataKey="department" />
@@ -203,36 +195,31 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               control={control}
               dataKey="device_ru"
               options={generateNumbersArray(30)}
-              required
             />
             <SelectFormUnit
               control={control}
               dataKey="function"
               options={functionNames}
-              required
             />
             <SelectFormUnit
               control={control}
               dataKey="device_type"
               options={deviceTypeNames}
-              required
             />
-            <DefaultFormUnit control={control} dataKey="device_name" required />
+            <DefaultFormUnit control={control} dataKey="device_name"/>
           </Grid>
           <Grid item xs={12} sm={4}>
             <SelectFormUnit
               control={control}
               dataKey="vendor"
               options={vendorNames}
-              required
             />
             <SelectFormUnit
               control={control}
               dataKey="password_group"
               options={passwordGroupNames}
-              required
             />
-            <DefaultFormUnit control={control} dataKey="criticality" required />
+            <DefaultFormUnit control={control} dataKey="criticality"/>
             <DefaultFormUnit control={control} dataKey="virtual" />
             <DefaultFormUnit control={control} dataKey="domain" />
           </Grid>

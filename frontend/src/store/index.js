@@ -8,6 +8,9 @@ import deviceReducer from "./features/uamModule/devices"
 import boardReducer from "./features/uamModule/boards"
 import subBoardReducer from "./features/uamModule/subBoards"
 import sfpsReducer from "./features/uamModule/sfps";
+import licenseReducer from "./features/uamModule/licences"
+import apsReducer from "./features/uamModule/aps"
+import hwLiveCycleReducer from "./features/uamModule/hwLiveCycle";
 import dropDownsReducer from "./features/dropDowns";
 
 
@@ -21,6 +24,9 @@ export const store = configureStore({
     board:boardReducer,
     sub_board:subBoardReducer,
     sfps:sfpsReducer,
+    license:licenseReducer,
+    aps:apsReducer,
+    hwlivecycle:hwLiveCycleReducer,
     drop_downs: dropDownsReducer,
     [monetxApi.reducerPath]: monetxApi.reducer,
   },

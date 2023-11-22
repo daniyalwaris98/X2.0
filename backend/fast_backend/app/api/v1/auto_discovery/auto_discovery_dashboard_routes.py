@@ -10,7 +10,7 @@ router = APIRouter(
 )
 
 
-@router.get("/getTopOsForDiscovery", responses={
+@router.get("/get_top_os_for_discovery", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 })
@@ -32,7 +32,7 @@ async def get_top_os_for_discovery():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/getTopVendorsForDiscovery", responses={
+@router.get("/get_top_vendors_for_discovery", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 })
@@ -53,7 +53,7 @@ async def get_top_vendors_for_discovery():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/getSnmpStatusGraph", responses={
+@router.get("/get_snmp_status_graph", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 })
@@ -84,7 +84,7 @@ async def get_snmp_status_graph():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/getTopFunctionsForDiscovery", responses={
+@router.get("/get_top_functions_for_discovery", responses={
     200: {"model": list[NameValueDictResponseSchema]},
     500: {"model": str}
 })
@@ -105,7 +105,7 @@ async def get_top_functions_for_discovery():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/getCredentialsGraph", responses={
+@router.get("/get_credentials_graph", responses={
     200: {"model": list[NameValueDictResponseSchema]},
     500: {"model": str}
 })

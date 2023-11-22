@@ -3,11 +3,11 @@ import { monetxApi } from "../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
-    fetchSfps: builder.query({
-      query: () => "/api/v1/uam/uam-sfp/getAllSfps",
+    fetchAps: builder.query({
+      query: () => "/api/v1/uam/uam-aps/getAllAps",
     }),
    
-    deleteSfps: builder.mutation({
+    deleteAps: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -15,14 +15,14 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
     // form apis
-    addSfps: builder.mutation({
+    addAps: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
         body: data,
       }),
     }),
-    updateSfps: builder.mutation({
+    updateAps: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -32,9 +32,9 @@ export const extendedApi = monetxApi.injectEndpoints({
   }),
 });
 export const {
-  useFetchSfpsQuery: useFetchRecordsQuery,
-  useDeleteSfpsMutation: useDeleteRecordsMutation,
+  useFetchApsQuery: useFetchRecordsQuery,
+  useDeleteApsMutation: useDeleteRecordsMutation,
   // form apis
-  useAddSfpsMutation: useAddRecordMutation,
-  useUpdateSfpsMutation: useUpdateRecordMutation,
+  useAddApsMutation: useAddRecordMutation,
+  useUpdateApsMutation: useUpdateRecordMutation,
 } = extendedApi;

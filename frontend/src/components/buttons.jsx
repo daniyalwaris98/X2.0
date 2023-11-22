@@ -63,7 +63,7 @@ export function DropDownButton({
     backgroundColor: theme?.palette?.drop_down_button?.options_background,
     border: `1px solid ${theme?.palette?.drop_down_button?.border}`,
     borderRadius: "0 0 4px 4px",
-    zIndex: 1,
+    zIndex: 2,
     display: isOpen ? "block" : "none",
   }));
 

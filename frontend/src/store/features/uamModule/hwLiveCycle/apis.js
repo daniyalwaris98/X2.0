@@ -3,11 +3,11 @@ import { monetxApi } from "../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
-    fetchSfps: builder.query({
-      query: () => "/api/v1/uam/uam-sfp/getAllSfps",
+    fetchHwlivecycle: builder.query({
+      query: () => "/api/v1/uam/uam-license/getAllLicenses",
     }),
    
-    deleteSfps: builder.mutation({
+    deleteHwlivecycle: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -15,14 +15,14 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
     // form apis
-    addSfps: builder.mutation({
+    addHwlivecycle: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
         body: data,
       }),
     }),
-    updateSfps: builder.mutation({
+    updateHwlivecycle: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -32,9 +32,9 @@ export const extendedApi = monetxApi.injectEndpoints({
   }),
 });
 export const {
-  useFetchSfpsQuery: useFetchRecordsQuery,
-  useDeleteSfpsMutation: useDeleteRecordsMutation,
+  useFetchHwlivecycleQuery: useFetchRecordsQuery,
+  useDeleteHwlivecycleMutation: useDeleteRecordsMutation,
   // form apis
-  useAddSfpsMutation: useAddRecordMutation,
-  useUpdateSfpsMutation: useUpdateRecordMutation,
+  useAddHwlivecycleMutation: useAddRecordMutation,
+  useUpdateHwlivecycleMutation: useUpdateRecordMutation,
 } = extendedApi;

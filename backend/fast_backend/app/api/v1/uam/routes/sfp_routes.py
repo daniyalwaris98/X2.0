@@ -6,17 +6,17 @@ import sys
 
 from app.core.config import configs
 from app.schema.uam_sfp_schema import *
-
+from fastapi import FastAPI, Query
 from app.models.atom_models import *
 from app.models.uam_models import *
 
 router = APIRouter(
-    prefix="/uam-sfp",
-    tags=["uam-sfp"],
+    prefix="/uam_sfp",
+    tags=["uam_sfp"],
 )
 
 
-@router.get("/sfpStatus", responses={
+@router.get("/sfp_status", responses={
     200: {"model": dict},
     500: {"model": str}
 })
@@ -46,7 +46,7 @@ async def sfp_status():
         return JSONResponse(content="Error While Fetching SFP Data", status_code=500)
 
 
-@router.get("/sfpMode", responses={
+@router.get("/sfp_mode", responses={
     200: {"model": dict},
     500: {"model": str}
 })
@@ -77,13 +77,13 @@ async def sfp_mode():
         traceback.print_exc()
         return JSONResponse(content="Error While Fetching SFP Data", status_code=500)
 
-
-@router.get("/getSfpsDetailsByIpAddress/{ip_address}", responses={
+#getSfpsDetailsByIpAddress
+@router.get("/get_sfps_details_by_ip_address", responses={
     200: {"model": list[GetSfpResponseSchema]},
     400: {"model": str},
     500: {"model": str}
 })
-async def get_sfps_details_by_ip_address(ip_address: str):
+async def get_sfps_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
 
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
@@ -113,8 +113,8 @@ async def get_sfps_details_by_ip_address(ip_address: str):
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching SFPs Data", status_code=500)
 
-
-@router.get("/getAllSfps", responses={
+# getAllSfps
+@router.get("/get_all_sfps", responses={
     200: {"model": list[GetSfpResponseSchema]},
     500: {"model": str}
 })

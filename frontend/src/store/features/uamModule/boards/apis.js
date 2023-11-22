@@ -9,7 +9,7 @@ export const extendedApi = monetxApi.injectEndpoints({
    
     deleteBoard: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/rack/delete_rack",
+        url: "",
         method: "POST",
         body: data,
       }),
@@ -17,14 +17,14 @@ export const extendedApi = monetxApi.injectEndpoints({
     // form apis
     addBoard: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/uam-module/addBoard",
+        url: "",
         method: "POST",
         body: data,
       }),
     }),
     updateBoard: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/rack/edit_rack",
+        url: "",
         method: "POST",
         body: data,
       }),

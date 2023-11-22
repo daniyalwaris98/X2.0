@@ -2,14 +2,15 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
 from app.schema.uam_device_schema import *
+from fastapi import FastAPI, Query
 
 from app.api.v1.uam.utils.uam_utils import *
 from app.utils.static_list import *
 from app.core.config import *
 
 router = APIRouter(
-    prefix="/uam-device",
-    tags=["uam-device"],
+    prefix="/uam_device",
+    tags=["uam_device"],
 )
 
 
@@ -103,6 +104,7 @@ async def total_devices_in_device_dashboard():
 async def get_all_devices():
     try:
         response = get_all_uam_devices_util()
+        print("reaponae in get all devices are:::::::::::::::::::::::::::::::::::::::",response,file = sys.stderr)
         return JSONResponse(content=response, status_code=200)
 
     except Exception:
@@ -157,16 +159,33 @@ async def delete_uam_device(ip_list: list[str]):
 
 
 @router.post("/edit_device", responses={
-    200: {"model": str},
+    200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
 async def edit_uam_device(device_obj: EditUamDeviceRequestSchema):
     try:
-
+        data = []
+        success_list = []
+        error_list = []
         response = edit_uam_device_util(device_obj, device_obj['uam_id'])
+        print("repons is::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+        if isinstance(response,dict):
+            for key,value in response:
+                if key == "data":
+                    data.append(value)
+                if key == "message":
+                    success_list.append(value)
+        else:
+            error_list.append(response)
 
-        return JSONResponse(content=response, status_code=200)
-
+        respons = {
+            "data":data,
+            "success": len(success_list),
+            "error": len(error_list),
+            "error_list": error_list,
+            "success_list": success_list,
+        }
+        return JSONResponse(content=respons)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred Updating Uam Device", status_code=500)
@@ -251,11 +270,11 @@ async def top_functions():
         return JSONResponse(content="Error Occurred Fetching Uam Data", status_code=500)
 
 
-@router.get("/get_site_detail_by_ip_address/{ip_address}", responses={
+@router.get("/get_site_detail_by_ip_address", responses={
     200: {"model": GetSiteByIpResponseSchema},
     500: {"model": str}
 })
-async def get_site_by_ip_address(ip_address: str):
+async def get_site_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         result = (
             configs.db.query(AtomTable, RackTable, SiteTable)
@@ -280,11 +299,11 @@ async def get_site_by_ip_address(ip_address: str):
         return JSONResponse(content="Error Occurred Fetching Site Data", status_code=500)
 
 
-@router.get("/get_rack_detail_by_ip_address/{ip_address}", responses={
+@router.get("/get_rack_detail_by_ip_address", responses={
     200: {"model": GetRackByIpResponseSchema},
     500: {"model": str}
 })
-async def get_rack_by_ip_address(ip_address: str):
+async def get_rack_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         obj_list = []
 
@@ -316,11 +335,11 @@ async def get_rack_by_ip_address(ip_address: str):
         return JSONResponse(content="Error Occurred Fetching Rack Data", status_code=500)
 
 
-@router.get("/get_device_details_by_ip_address/{ip_address}", responses={
+@router.get("/get_device_details_by_ip_address", responses={
     200: {"model": GetAllUAMDeviceResponseSchema},
     500: {"model": str}
 })
-async def get_device_details_by_ip_address(ip_address: str):
+async def get_device_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         result = (
             configs.db.query(UamDeviceTable, AtomTable, RackTable, SiteTable)

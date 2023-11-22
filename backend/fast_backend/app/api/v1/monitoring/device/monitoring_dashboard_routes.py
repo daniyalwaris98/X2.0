@@ -8,7 +8,7 @@ from app.schema.monitoring_schema import *
 
 router = APIRouter(
     prefix="/dashboard",
-    tags=["monitoring-dashboard"],
+    tags=["monitoring_dashboard"],
 )
 
 

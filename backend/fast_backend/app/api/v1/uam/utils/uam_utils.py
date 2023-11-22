@@ -313,7 +313,14 @@ def update_uam_status_utils(ip, status):
                         file=sys.stderr,
                     )
 
-                return f"{ip} : Device Status Updated Successfully To {status}", 200
+                columns = result._asdict().keys()  # Get column names
+                values = result._asdict().values()  # Get corresponding values
+                attributes_dict = dict(zip(columns, values))  # Combine columns and values into a dictionary
+                data = {
+                    "data":attributes_dict,
+                    "message":f"{ip} : Device Status Updated Successfully To {status}"
+                        }
+                return data,200
 
             else:
                 return f"{ip} : Error While Updating Device Status In UAM", 500

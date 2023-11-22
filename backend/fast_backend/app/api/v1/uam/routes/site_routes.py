@@ -157,7 +157,7 @@ async def phy_leaflet():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.get("/topSites")
+@router.get("/top_sites")
 async def top_sites():
     try:
         query_string = "SELECT s.SITE_NAME, COUNT(u.UAM_ID) AS DEVICE_COUNT FROM site_table s LEFT JOIN rack_table r ON s.SITE_ID = r.SITE_ID LEFT JOIN atom_table a ON r.RACK_ID = a.RACK_ID LEFT JOIN uam_device_table u ON a.ATOM_ID = u.ATOM_ID GROUP BY s.SITE_NAME;"
@@ -183,7 +183,7 @@ async def top_sites():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.get("/dataCentreStatus")
+@router.get("/data_centre_status")
 async def data_center_status():
     try:
         query_string = (
@@ -214,7 +214,7 @@ async def data_center_status():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.get("/totalSites")
+@router.get("/total_sites")
 async def total_sites():
     try:
         query_string = f"select count(distinct SITE_NAME) from site_table;"

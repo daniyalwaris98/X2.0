@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from fastapi import FastAPI, Query
 
 from app.api.v1.uam.utils.module_utils import *
 from app.schema.uam_module_schema import *
@@ -9,13 +10,13 @@ router = APIRouter(
     tags=["uam-module"],
 )
 
-
-@router.get("/getBoardDetailsByIpAddress/{ip_address}", responses={
+#getBoardDetailsByIpAddress
+@router.get("/get_board_details_by_ip_address", responses={
     200: {"model": list[GetBoardResponseSchema]},
     400: {"model": str},
     500: {"model": str}
 })
-async def get_board_details_by_ip_address(ip_address: str):
+async def get_board_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
         if atom is None:
@@ -57,13 +58,13 @@ async def get_board_details_by_ip_address(ip_address: str):
         traceback.print_exc()
         return JSONResponse(content="Error While Fetching Board Data", status_code=500)
 
-
-@router.get("/getSubBoardDetailsByIpAddress/{ip_address}", responses={
+# getSubBoardDetailsByIpAddress
+@router.get("/get_subboard_details_by_ip_address", responses={
     200: {"model": list[GetSubboardResponseSchema]},
     400: {"model": str},
     500: {"model": str}
 })
-async def get_subboard_details_by_ip_address(ip_address: str):
+async def get_subboard_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
         if atom is None:
@@ -110,7 +111,7 @@ async def get_subboard_details_by_ip_address(ip_address: str):
         return JSONResponse(content="Server Error While Fetching Sub-Board Data", status_code=500)
 
 
-@router.get("/getAllBoards", responses={
+@router.get("/get_all_boards", responses={
     200: {"model": list[GetBoardResponseSchema]},
     500: {"model": str}
 })
@@ -153,7 +154,7 @@ async def get_all_boards():
         return JSONResponse(content="Error While Getting Board Data", status_code=500)
 
 
-@router.get("/getAllSubBoards", responses={
+@router.get("/get_all_sub_boards", responses={
     200: {"model": list[GetSubboardResponseSchema]},
     500: {"model": str}
 })
@@ -201,7 +202,7 @@ def get_all_subboards():
         return JSONResponse(content="Error While Getting Sub-Board Data", status_code=500)
 
 
-@router.get("/addBoard", responses={
+@router.get("/add_board", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}

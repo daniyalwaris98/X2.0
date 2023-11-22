@@ -203,7 +203,7 @@ const Index = () => {
 
         <DefaultCard
           sx={{
-            backgroundColor: theme.palette.color.main,
+            backgroundColor: theme?.palette?.color?.main ,
             width: `${width - 105}px`,
           }}
         >

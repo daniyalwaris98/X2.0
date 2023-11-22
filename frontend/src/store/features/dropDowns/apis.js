@@ -13,6 +13,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
+
     fetchVendorNames: builder.query({
       query: () => "/api/v1/atom/static_list/get_vendor_list",
     }),
