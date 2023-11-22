@@ -1,7 +1,7 @@
 import Swal from "sweetalert2";
 
 const sweetAlertWrapper = {
-  success: (title, text) => Swal.fire({ icon: "success", title, html: text }),
+  success: (title, text) => Swal.fire({ icon: "success", title, html: text  }),
   error: (title, text) => Swal.fire({ icon: "error", title, html: text }),
   warning: (title, text) => Swal.fire({ icon: "warning", title, html: text }),
   info: (title, text) => Swal.fire({ icon: "info", title, html: text }),
