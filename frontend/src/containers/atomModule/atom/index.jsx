@@ -48,6 +48,8 @@ const Index = () => {
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
 
+  const isRowSelected = selectedRowKeys.length > 0;
+
   // selectors
   const dataSource = useSelector(selectTableData);
 
@@ -294,13 +296,16 @@ const Index = () => {
           ),
         },
       ],
+      style: {
+        backgroundColor: "red", // Set the background color to white
+      },
     },
-    {
+    isRowSelected && {
       type: "Onboard",
       icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
       handleClick: handleOnboard,
     },
-    {
+    isRowSelected && {
       type: "Delete",
       icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
       handleClick: handleDelete,
