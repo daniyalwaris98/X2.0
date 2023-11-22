@@ -37,6 +37,10 @@ export default function PageHeader({ pageName, buttons }) {
       sx = {
         backgroundColor: theme?.palette?.default_button?.import_background,
       };
+    } else if (type === "Table Configurations") {
+      sx = {
+        backgroundColor: theme?.palette?.default_button?.onboard_background,
+      };
     }
 
     if (options) {

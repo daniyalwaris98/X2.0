@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import { Icon } from "@iconify/react";
@@ -30,6 +30,7 @@ import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { dataKeysArray } from "./constants";
 import PageHeader from "../../../components/pageHeader";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
 
 const Index = () => {
   // theme
@@ -47,7 +48,10 @@ const Index = () => {
   const [dataKeys, setDataKeys] = useState(dataKeysArray);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
-
+  const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
+  const [columns, setColumns] = useState([]);
+  const [availableColumns, setAvailableColumns] = useState([]);
+  const [displayColumns, setDisplayColumns] = useState([]);
   // selectors
   const dataSource = useSelector(selectTableData);
 
@@ -106,6 +110,64 @@ const Index = () => {
     error: deleteRecordsError,
     type: "bulk",
   });
+
+  // effects
+  useEffect(() => {
+    //columns
+    let generatedColumns = columnGenerator(
+      dataKeys,
+      getColumnSearchProps,
+      getTitle
+    );
+    generatedColumns = [
+      {
+        title: "Status",
+        dataIndex: "status",
+        key: "status",
+        width: "80px",
+
+        render: (text, record) => {
+          const icon = record.atom_id ? (
+            <Icon
+              fontSize={"22px"}
+              color={theme?.palette?.icon?.complete}
+              icon="ep:success-filled"
+            />
+          ) : (
+            <Icon
+              fontSize={"23px"}
+              color={theme?.palette?.icon?.incomplete}
+              icon="material-symbols:info"
+            />
+          );
+
+          return <div style={{ textAlign: "center" }}>{icon}</div>;
+        },
+      },
+      ...generatedColumns,
+      {
+        title: "Actions",
+        dataIndex: "actions",
+        key: "actions",
+        fixed: "right",
+        width: 100,
+        render: (text, record) => (
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              justifyContent: "center",
+            }}
+          >
+            <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
+          </div>
+        ),
+      },
+    ];
+    setColumns(generatedColumns);
+    setAvailableColumns([]);
+    setDisplayColumns(generatedColumns);
+  }, []);
 
   // handlers
   const handlePostSeed = (data) => {
@@ -173,6 +235,10 @@ const Index = () => {
     setOpen(false);
   };
 
+  const handleTableConfigurationsOpen = () => {
+    setTableConfigurationsOpen(true);
+  };
+
   const handleChange = (pagination, filters, sorter, extra) => {
     console.log("Various parameters", pagination, filters, sorter, extra);
   };
@@ -206,58 +272,13 @@ const Index = () => {
     onChange: onSelectChange,
   };
 
-  // columns
-  let columns = columnGenerator(dataKeys, getColumnSearchProps, getTitle);
-
-  columns = [
-    {
-      title: "Status",
-      dataIndex: "status",
-      key: "status",
-      width: "80px",
-
-      render: (text, record) => {
-        const icon = record.atom_id ? (
-          <Icon
-            fontSize={"22px"}
-            color={theme?.palette?.icon?.complete}
-            icon="ep:success-filled"
-          />
-        ) : (
-          <Icon
-            fontSize={"23px"}
-            color={theme?.palette?.icon?.incomplete}
-            icon="material-symbols:info"
-          />
-        );
-
-        return <div style={{ textAlign: "center" }}>{icon}</div>;
-      },
-    },
-    ...columns,
-  ];
-
-  columns.push({
-    title: "Actions",
-    dataIndex: "actions",
-    key: "actions",
-    fixed: "right",
-    width: 100,
-    render: (text, record) => (
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          justifyContent: "center",
-        }}
-      >
-        <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
-      </div>
-    ),
-  });
-
   // page header buttons
   const buttons = [
+    {
+      type: "Table Configurations",
+      icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
+      handleClick: handleTableConfigurationsOpen,
+    },
     {
       type: "Export",
       icon: <Icon fontSize="16px" icon="fe:export" />,
@@ -344,9 +365,22 @@ const Index = () => {
         />
         {open ? (
           <Modal
-            handleClose={handleClose}
             open={open}
+            handleClose={handleClose}
             recordToEdit={recordToEdit}
+          />
+        ) : null}
+
+        {tableConfigurationsOpen ? (
+          <DefaultTableConfigurations
+            columns={columns}
+            availableColumns={availableColumns}
+            setAvailableColumns={setAvailableColumns}
+            displayColumns={displayColumns}
+            setDisplayColumns={setDisplayColumns}
+            setColumns={setColumns}
+            open={tableConfigurationsOpen}
+            setOpen={setTableConfigurationsOpen}
           />
         ) : null}
 
@@ -358,7 +392,7 @@ const Index = () => {
             scroll={{ x: 3000 }}
             onChange={handleChange}
             rowSelection={rowSelection}
-            columns={columns}
+            columns={displayColumns}
             dataSource={dataSource}
             rowKey="atom_table_id"
             style={{ whiteSpace: "pre" }}

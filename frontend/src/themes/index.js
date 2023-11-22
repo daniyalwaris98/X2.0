@@ -116,6 +116,13 @@ export const lightTheme = createTheme({
       complete: "#66B127",
       incomplete: "#F1B92A",
     },
+
+    default_table_Configurations: {
+      item_hover_text: "#000000",
+      item_select_text: "#000000",
+      item_hover_background: "#F1F6EE",
+      item_select_background: "#F1F6EE",
+    },
   },
 
   typography: {
@@ -250,6 +257,14 @@ export const darkTheme = createTheme({
     icon: {
       complete: "#66B127",
       incomplete: "#F1B92A",
+    },
+
+    default_table_Configurations: {
+      primary_text: "#FFFFFF",
+      item_hover_text: "#FFFFFF",
+      item_select_text: "#FFFFFF",
+      item_hover_background: "#000000",
+      item_select_background: "#000000",
     },
   },
 

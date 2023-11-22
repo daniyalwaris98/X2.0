@@ -29,3 +29,47 @@ export default function DefaultDialogFooter({ handleClose, sx, ...rest }) {
     </div>
   );
 }
+
+export function TableConfigurationDialogFooter({
+  handleClose,
+  handleReset,
+  handleSave,
+  sx,
+  ...rest
+}) {
+  const theme = useTheme();
+
+  return (
+    <div style={{ display: "flex", justifyContent: "center", ...sx }} {...rest}>
+      <DefaultButton
+        handleClick={handleClose}
+        sx={{
+          backgroundColor: theme?.palette?.default_button?.cancel_background,
+        }}
+      >
+        <></>
+        Cancel
+      </DefaultButton>
+      &nbsp; &nbsp;
+      <DefaultButton
+        handleClick={handleReset}
+        sx={{
+          backgroundColor: theme?.palette?.default_button?.submit_background,
+        }}
+      >
+        <></>
+        Reset
+      </DefaultButton>
+      &nbsp; &nbsp;
+      <DefaultButton
+        handleClick={handleSave}
+        sx={{
+          backgroundColor: theme?.palette?.default_button?.submit_background,
+        }}
+      >
+        <></>
+        Save
+      </DefaultButton>
+    </div>
+  );
+}
