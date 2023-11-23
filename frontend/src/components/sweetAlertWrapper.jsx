@@ -1,8 +1,22 @@
 import Swal from "sweetalert2";
+import { useTheme } from "@mui/material/styles";
 
 const sweetAlertWrapper = {
-  success: (title, text) => Swal.fire({ icon: "success", title, html: text  }),
-  error: (title, text) => Swal.fire({ icon: "error", title, html: text }),
+  success: (title, text) =>
+    Swal.fire({
+      icon: "success",
+      title,
+      html: text,
+      confirmButtonColor: "#4CAF50",
+      // confirmButtonText: "OK",
+    }),
+  error: (title, text) =>
+    Swal.fire({
+      icon: "error",
+      title,
+      html: text,
+      confirmButtonColor: "red",
+    }),
   warning: (title, text) => Swal.fire({ icon: "warning", title, html: text }),
   info: (title, text) => Swal.fire({ icon: "info", title, html: text }),
   custom: (options) => Swal.fire(options),

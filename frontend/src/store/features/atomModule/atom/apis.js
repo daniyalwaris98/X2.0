@@ -13,6 +13,8 @@ export const extendedApi = monetxApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      // configuration for an individual endpoint, overriding the api setting
+      // keepUnusedDataFor: 0.00001,
     }),
 
     deleteAtoms: builder.mutation({

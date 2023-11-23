@@ -1,5 +1,6 @@
 import { extendedApi } from "./apis";
 import { createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { v4 as uuidv4 } from "uuid";
 
 const initialState = {
   all_data: [],
@@ -32,9 +33,16 @@ const atomSlice = createSlice({
               }
             });
 
+            // Generate a unique identifier using uuid
+            const uniqueId = uuidv4();
+
             if (indexToUpdate !== -1) {
+              responseItem.atom_table_id = uniqueId;
+              console.log("all_data", responseItem);
               state.all_data[indexToUpdate] = responseItem;
             } else {
+              responseItem.atom_table_id = uniqueId;
+              console.log("all_data", responseItem);
               state.all_data.push(responseItem);
             }
           });
@@ -64,7 +72,10 @@ const atomSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.addAtom.matchFulfilled,
         (state, action) => {
-          action.payload.data.atom_table_id = Date.now();
+          // Generate a unique identifier using uuid
+          const uniqueId = uuidv4();
+
+          action.payload.data.atom_table_id = uniqueId;
           state.all_data.push(action.payload.data);
         }
       )

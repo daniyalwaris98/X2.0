@@ -55,7 +55,12 @@ export const lightTheme = createTheme({
       add_background: "#3D9E47",
       cancel_background: "#E34444",
       submit_background: "#3D9E47",
-      sync_background: "",
+      success_alert_background: "#3D9E47",
+      info_alert_background: "#7F7F7F",
+      error_alert_background: "#E34444",
+      warning_alert_background: "#E34444",
+      configure_table_background: "#EAEAEA",
+      configure_table_text: "#7F7F7F",
       primary_text: "#FFFFFF",
     },
 
@@ -122,6 +127,11 @@ export const lightTheme = createTheme({
       item_select_text: "#000000",
       item_hover_background: "#F1F6EE",
       item_select_background: "#F1F6EE",
+    },
+
+    sweet_alert: {
+      primary_text: "#545454",
+      background: "#FFFFFF",
     },
   },
 
@@ -197,7 +207,12 @@ export const darkTheme = createTheme({
       add_background: "#3D9E47",
       cancel_background: "#E34444",
       submit_background: "#3D9E47",
-      sync_background: "",
+      success_alert_background: "#3D9E47",
+      info_alert_background: "#7F7F7F",
+      error_alert_background: "#E34444",
+      warning_alert_background: "#E34444",
+      configure_table_background: "#7F7F7F",
+      configure_table_text: "#FFFFFF",
       primary_text: "#FFFFFF",
     },
 
@@ -265,6 +280,11 @@ export const darkTheme = createTheme({
       item_select_text: "#FFFFFF",
       item_hover_background: "#000000",
       item_select_background: "#000000",
+    },
+
+    sweet_alert: {
+      primary_text: "#FFFFFF",
+      background: "#09120C",
     },
   },
 

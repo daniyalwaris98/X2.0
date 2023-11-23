@@ -23,9 +23,9 @@ export default function DefaultButton({ sx, handleClick, children, ...rest }) {
       {...rest}
       onClick={handleClick}
     >
-      {children.length > 1 ? children[0] : null}
+      {children[0]}
       <span style={{ fontSize: "13px", textTransform: "capitalize" }}>
-        {children.length > 1 ? children[1] : children[0]}
+        {children[1]}
       </span>
     </Button>
   );

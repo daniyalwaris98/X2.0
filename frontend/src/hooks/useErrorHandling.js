@@ -1,9 +1,5 @@
 import { useEffect } from "react";
-import {
-  handleSuccessAlert,
-  handleInfoAlert,
-  handleErrorAlert,
-} from "../components/sweetAlertWrapper";
+import useSweetAlert from "./useSweetAlert";
 
 export default function useErrorHandling({
   data,
@@ -12,6 +8,9 @@ export default function useErrorHandling({
   error,
   type,
 }) {
+  const { handleSuccessAlert, handleInfoAlert, handleErrorAlert } =
+    useSweetAlert();
+
   useEffect(() => {
     if (type === "fetch") {
       if (isSuccess) {

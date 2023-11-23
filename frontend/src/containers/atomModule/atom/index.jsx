@@ -14,11 +14,6 @@ import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
-  handleSuccessAlert,
-  handleInfoAlert,
-  handleCallbackAlert,
-} from "../../../components/sweetAlertWrapper";
-import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
@@ -31,6 +26,7 @@ import useErrorHandling from "../../../hooks/useErrorHandling";
 import { dataKeysArray } from "./constants";
 import PageHeader from "../../../components/pageHeader";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import useSweetAlert from "../../../hooks/useSweetAlert";
 
 const Index = () => {
   // theme
@@ -39,7 +35,8 @@ const Index = () => {
   // hooks
   const { height, width } = useWindowDimensions();
   const getColumnSearchProps = useColumnSearchProps();
-
+  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
+    useSweetAlert();
   // refs
   const fileInputRef = useRef(null);
 
@@ -52,8 +49,6 @@ const Index = () => {
   const [columns, setColumns] = useState([]);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState([]);
-
-  const isRowSelected = selectedRowKeys.length > 0;
 
   // selectors
   const dataSource = useSelector(selectTableData);
@@ -278,9 +273,10 @@ const Index = () => {
   // page header buttons
   const buttons = [
     {
-      type: "Table Configurations",
-      icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
+      type: "Configure Table",
+      icon: <Icon fontSize="20px" icon="material-symbols:stack-outline" />,
       handleClick: handleTableConfigurationsOpen,
+      text: false,
     },
     {
       type: "Export",
@@ -322,20 +318,23 @@ const Index = () => {
         backgroundColor: "red", // Set the background color to white
       },
     },
-    isRowSelected && {
+    {
       type: "Onboard",
       icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
       handleClick: handleOnboard,
+      selection: true,
     },
-    isRowSelected && {
+    {
       type: "Delete",
       icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
       handleClick: handleDelete,
+      selection: true,
     },
     {
       type: "Add",
       icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
       handleClick: handleAdd,
+      postfix: true,
       options: [
         {
           type: "Add Manually",
@@ -391,7 +390,11 @@ const Index = () => {
         ) : null}
 
         <DefaultCard sx={{ width: `${width - 105}px` }}>
-          <PageHeader pageName="Atom" buttons={buttons} />
+          <PageHeader
+            pageName="Atom"
+            buttons={buttons}
+            selectedRowKeys={selectedRowKeys}
+          />
           <DefaultTable
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
             size="small"

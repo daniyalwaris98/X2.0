@@ -34,7 +34,6 @@ import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
   ip_address: yup.string().required("Ip address is required"),
- 
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -179,13 +178,11 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               control={control}
               dataKey="site_name"
               options={siteNames}
-              required
             />
             <SelectFormUnit
               control={control}
               dataKey="rack_name"
               options={rackNames}
-              
             />
             <DefaultFormUnit control={control} dataKey="section" />
             <DefaultFormUnit control={control} dataKey="department" />
@@ -206,7 +203,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               dataKey="device_type"
               options={deviceTypeNames}
             />
-            <DefaultFormUnit control={control} dataKey="device_name"/>
+            <DefaultFormUnit control={control} dataKey="device_name" />
           </Grid>
           <Grid item xs={12} sm={4}>
             <SelectFormUnit
@@ -219,7 +216,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               dataKey="password_group"
               options={passwordGroupNames}
             />
-            <DefaultFormUnit control={control} dataKey="criticality"/>
+            <DefaultFormUnit control={control} dataKey="criticality" />
             <DefaultFormUnit control={control} dataKey="virtual" />
             <DefaultFormUnit control={control} dataKey="domain" />
           </Grid>

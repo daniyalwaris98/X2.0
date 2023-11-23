@@ -126,7 +126,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <DefaultFormUnit
               control={control}
               dataKey="site_name"
-              disabled={recordToEdit !== null}
+              // disabled={recordToEdit !== null}
               required
             />
 

@@ -3,12 +3,12 @@ import { useTheme } from "@mui/material/styles";
 import DefaultButton, { DropDownButton } from "./buttons";
 import { Typography } from "@mui/material";
 
-export default function PageHeader({ pageName, buttons }) {
+export default function PageHeader({ pageName, buttons, selectedRowKeys }) {
   const theme = useTheme();
 
-  const renderButton = (buttonNamePostfix, button) => {
-    const { type, icon, handleClick, options } = button;
-    let sx = null;
+  const getStylesByType = (type, options) => {
+    let sx = {};
+
     if (type === "Export") {
       sx = {
         backgroundColor: theme?.palette?.drop_down_button?.export_background,
@@ -37,12 +37,34 @@ export default function PageHeader({ pageName, buttons }) {
       sx = {
         backgroundColor: theme?.palette?.default_button?.import_background,
       };
-    } else if (type === "Table Configurations") {
+    } else if (type === "Configure Table") {
       sx = {
-        backgroundColor: theme?.palette?.default_button?.onboard_background,
+        backgroundColor:
+          theme?.palette?.default_button?.configure_table_background,
+        color: theme?.palette?.default_button?.configure_table_text,
+        // border: `1px solid ${theme?.palette?.default_button?.configure_table_text}`,
+        gap: "0px",
+        padding: "6px",
+      };
+    } else {
+      sx = {
+        backgroundColor: theme?.palette?.default_button?.import_background,
       };
     }
+    return sx;
+  };
 
+  const renderButton = (buttonNamePostfix, button) => {
+    const {
+      type,
+      icon,
+      handleClick,
+      text = true,
+      selection = false,
+      postfix = false,
+      options,
+    } = button;
+    let sx = getStylesByType(type, options);
     if (options) {
       return (
         <DropDownButton
@@ -52,15 +74,30 @@ export default function PageHeader({ pageName, buttons }) {
           options={options}
         >
           {icon}
-          {type === "Add" ? `${type} ${buttonNamePostfix}` : type}
+          {text ? (postfix ? `${type} ${buttonNamePostfix}` : type) : null}
         </DropDownButton>
       );
     } else {
       return (
-        <DefaultButton key={type} handleClick={handleClick} sx={sx}>
-          {icon}
-          {type === "Add" ? `${type} ${buttonNamePostfix}` : type}
-        </DefaultButton>
+        <>
+          {selection ? (
+            selectedRowKeys && selectedRowKeys.length > 0 ? (
+              <DefaultButton key={type} handleClick={handleClick} sx={sx}>
+                {icon}
+                {text
+                  ? postfix
+                    ? `${type} ${buttonNamePostfix}`
+                    : type
+                  : null}
+              </DefaultButton>
+            ) : null
+          ) : (
+            <DefaultButton key={type} handleClick={handleClick} sx={sx}>
+              {icon}
+              {text ? (postfix ? `${type} ${buttonNamePostfix}` : type) : null}
+            </DefaultButton>
+          )}
+        </>
       );
     }
   };
