@@ -35,7 +35,7 @@ const siteSlice = createSlice({
       //   }
       // )
       .addMatcher(
-        extendedApi.endpoints.deleteSite.matchFulfilled,
+        extendedApi.endpoints.deleteSites.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {

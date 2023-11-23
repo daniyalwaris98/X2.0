@@ -54,28 +54,30 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   useEffect(() => {
     // skip the first render
-    if (initialRender) {
-      setInitialRender(false);
-      return;
-    }
+    // if (initialRender) {
+    //   setInitialRender(false);
+    //   return;
+    // }
 
-    (async () => {
-      setValue("rack_name", "");
-      await trigger("rack_name");
-    })();
+    // (async () => {
+    //   // setValue("rack_name", "");
+    //   await trigger("rack_name");
+    // })();
+
+    console.log(watch("site_name"));
   }, [watch("site_name")]);
 
-  useEffect(() => {
-    // skip the first render
-    if (initialRender) {
-      setInitialRender(false);
-      return;
-    }
+  // useEffect(() => {
+  //   // skip the first render
+  //   if (initialRender) {
+  //     setInitialRender(false);
+  //     return;
+  //   }
 
-    (async () => {
-      await trigger("rack_name");
-    })();
-  }, [watch("rack_name")]);
+  //   (async () => {
+  //     await trigger("rack_name");
+  //   })();
+  // }, [watch("rack_name")]);
 
   // fetching dropdowns data from backend using apis
   const { error: siteNamesError, isLoading: isSiteNamesLoading } =
@@ -85,7 +87,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       {
         site_name: watch("site_name", ""),
       },
-      { skip: watch("site_name") === undefined }
+      { enabled: watch("site_name") !== undefined }
     );
 
   const { error: vendorNamesError, isLoading: isVendorNamesLoading } =

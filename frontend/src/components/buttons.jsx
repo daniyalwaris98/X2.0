@@ -16,7 +16,7 @@ export default function DefaultButton({ sx, handleClick, children, ...rest }) {
         color: theme?.palette?.default_button?.primary_text,
         "&:hover": {
           backgroundColor: sx?.backgroundColor,
-          opacity: 0.95,
+          opacity: 0.8,
         },
         ...sx,
       }}

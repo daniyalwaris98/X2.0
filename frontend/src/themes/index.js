@@ -51,7 +51,7 @@ export const lightTheme = createTheme({
     default_button: {
       delete_background: "#E34444",
       import_background: "#3D9E47",
-      onboard_background: "#F1B92A",
+      onboard_background: "#478778",
       add_background: "#3D9E47",
       cancel_background: "#E34444",
       submit_background: "#3D9E47",
@@ -203,7 +203,7 @@ export const darkTheme = createTheme({
     default_button: {
       delete_background: "#E34444",
       import_background: "#3D9E47",
-      onboard_background: "#F1B92A",
+      onboard_background: "#478778",
       add_background: "#3D9E47",
       cancel_background: "#E34444",
       submit_background: "#3D9E47",

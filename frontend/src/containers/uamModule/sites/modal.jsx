@@ -126,13 +126,12 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <DefaultFormUnit
               control={control}
               dataKey="site_name"
-              // disabled={recordToEdit !== null}
+              disabled={recordToEdit !== null}
               required
             />
 
             <DefaultFormUnit control={control} dataKey="status" required />
             <DefaultFormUnit control={control} dataKey="region_name" required />
-            <DefaultFormUnit control={control} dataKey="device_name" required />
           </Grid>
           <Grid item xs={12} sm={6}>
             <DefaultFormUnit control={control} dataKey="latitude" required />
