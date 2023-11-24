@@ -36,11 +36,10 @@ const Index = () => {
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { pageHeaderButtonsSingleAddConfiguration } = useButtonsConfiguration({
+  const { pageHeaderButtonsDismantleConfiguration } = useButtonsConfiguration({
     handleTableConfigurationsOpen,
     handleExport,
-    handleDelete,
-    handleAdd,
+    handleDismantle,
   });
 
   // refs
@@ -119,6 +118,10 @@ const Index = () => {
     setOpen(true);
   }
 
+  function handleDismantle() {
+    handleInfoAlert("Dismantle Clicked!");
+  }
+
   function handleClose() {
     setRecordToEdit(null);
     setOpen(false);
@@ -178,7 +181,7 @@ const Index = () => {
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
             pageName="Devices"
-            buttons={pageHeaderButtonsSingleAddConfiguration}
+            buttons={pageHeaderButtonsDismantleConfiguration}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable

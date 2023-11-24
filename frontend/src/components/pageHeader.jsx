@@ -22,6 +22,10 @@ export default function PageHeader({ pageName, buttons, selectedRowKeys }) {
       sx = {
         backgroundColor: theme?.palette?.default_button?.delete_background,
       };
+    } else if (type === "Dismantle") {
+      sx = {
+        backgroundColor: theme?.palette?.default_button?.delete_background,
+      };
     } else if (type === "Add") {
       if (options) {
         sx = {
@@ -42,7 +46,6 @@ export default function PageHeader({ pageName, buttons, selectedRowKeys }) {
         backgroundColor:
           theme?.palette?.default_button?.configure_table_background,
         color: theme?.palette?.default_button?.configure_table_text,
-        // border: `1px solid ${theme?.palette?.default_button?.configure_table_text}`,
         gap: "0px",
         padding: "6px",
       };

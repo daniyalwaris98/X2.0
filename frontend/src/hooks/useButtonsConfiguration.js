@@ -12,6 +12,9 @@ export default function useButtonsConfiguration({
   handleDelete = () => {
     alert("handleDelete is missing");
   },
+  handleDismantle = () => {
+    alert("handleDismantle is missing");
+  },
   handleAdd = () => {
     alert("handleAdd is missing");
   },
@@ -180,9 +183,57 @@ export default function useButtonsConfiguration({
     },
   ];
 
+  const pageHeaderButtonsExportConfiguration = [
+    {
+      type: "Configure Table",
+      icon: <Icon fontSize="20px" icon="material-symbols:stack-outline" />,
+      handleClick: handleTableConfigurationsOpen,
+      text: false,
+    },
+    {
+      type: "Export",
+      icon: <Icon fontSize="16px" icon="fe:export" />,
+      handleClick: handleExport,
+      options: [
+        {
+          type: "All Data",
+          icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
+        },
+      ],
+    },
+  ];
+
+  const pageHeaderButtonsDismantleConfiguration = [
+    {
+      type: "Configure Table",
+      icon: <Icon fontSize="20px" icon="material-symbols:stack-outline" />,
+      handleClick: handleTableConfigurationsOpen,
+      text: false,
+    },
+    {
+      type: "Export",
+      icon: <Icon fontSize="16px" icon="fe:export" />,
+      handleClick: handleExport,
+      options: [
+        {
+          type: "All Data",
+          icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
+        },
+      ],
+    },
+    {
+      type: "Dismantle",
+      icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
+      handleClick: handleDismantle,
+      selection: true,
+    },
+  ];
+
   return {
     pageHeaderButtonsDefaultConfiguration,
     pageHeaderButtonsAtomConfiguration,
     pageHeaderButtonsSingleAddConfiguration,
+    pageHeaderButtonsExportConfiguration,
+    pageHeaderButtonsDismantleConfiguration,
   };
 }

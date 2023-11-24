@@ -36,11 +36,9 @@ const Index = () => {
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { pageHeaderButtonsSingleAddConfiguration } = useButtonsConfiguration({
+  const { pageHeaderButtonsExportConfiguration } = useButtonsConfiguration({
     handleTableConfigurationsOpen,
     handleExport,
-    handleDelete,
-    handleAdd,
   });
 
   // refs
@@ -178,7 +176,7 @@ const Index = () => {
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
             pageName="Sub Boards"
-            buttons={pageHeaderButtonsSingleAddConfiguration}
+            buttons={pageHeaderButtonsExportConfiguration}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable
