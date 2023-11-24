@@ -133,52 +133,47 @@ export default function DefaultTableConfigurations({
           display: "flex",
           justifyContent: "space-between",
           width: "700px",
-          // border: "1px solid red",
         }}
       >
-        <DefaultScrollbar
-          sx={{
-            height: "400px",
-            // border: "1px solid green",
-            width: "250px",
-            overflow: "scroll",
-          }}
-        >
-          <List>
-            <ListItem>
+        <div style={{ textAlign: "center" }}>
+          <p>
+            <strong style={{ color: "grey" }}>Available Columns</strong>
+          </p>
+          <DefaultScrollbar
+            sx={{
+              height: "400px",
+              width: "250px",
+              overflow: "scroll",
+            }}
+          >
+            <List>
+              {/* <ListItem>
               <strong>Available Columns</strong>
-            </ListItem>
-            {tempAvailableColumns.map((column, index) => (
-              <StyledListItem
-                key={index}
-                onClick={() => handleColumnClick(column, "available")}
-                selectedItem={
-                  isSelectedColumnFromAvailableColumns &&
-                  selectedColumn.dataIndex === column.dataIndex
-                }
-              >
-                {column.title}
-              </StyledListItem>
-            ))}
-          </List>
-        </DefaultScrollbar>
-        {/* <Divider orientation="vertical" flexItem /> */}
+            </ListItem> */}
+              {tempAvailableColumns.map((column, index) => (
+                <StyledListItem
+                  key={index}
+                  onClick={() => handleColumnClick(column, "available")}
+                  selectedItem={
+                    isSelectedColumnFromAvailableColumns &&
+                    selectedColumn.dataIndex === column.dataIndex
+                  }
+                >
+                  {column.title}
+                </StyledListItem>
+              ))}
+            </List>
+          </DefaultScrollbar>
+        </div>
         <div
           style={{
             display: "flex",
             flexDirection: "column",
             justifyContent: "center",
             height: "400px",
-            // border: "1px solid red",
           }}
         >
-          <div
-            style={
-              {
-                // border: "1px solid green",
-              }
-            }
-          >
+          <div>
             <DefaultButton
               sx={{
                 backgroundColor:
@@ -235,32 +230,33 @@ export default function DefaultTableConfigurations({
             </DefaultButton>
           </div>
         </div>
-        <DefaultScrollbar
-          sx={{
-            height: "400px",
-            // border: "1px solid green",
-            width: "250px",
-            overflow: "scroll",
-          }}
-        >
-          <List>
-            <ListItem>
-              <strong>Display Columns</strong>
-            </ListItem>
-            {tempDisplayColumns.map((column, index) => (
-              <StyledListItem
-                key={index}
-                onClick={() => handleColumnClick(column, "display")}
-                selectedItem={
-                  isSelectedColumnFromDisplayColumns &&
-                  selectedColumn.dataIndex === column.dataIndex
-                }
-              >
-                {column.title}
-              </StyledListItem>
-            ))}
-          </List>
-        </DefaultScrollbar>
+        <div style={{ textAlign: "center" }}>
+          <p>
+            <strong style={{ color: "grey" }}>Display Columns</strong>
+          </p>
+          <DefaultScrollbar
+            sx={{
+              height: "400px",
+              width: "250px",
+              overflow: "scroll",
+            }}
+          >
+            <List>
+              {tempDisplayColumns.map((column, index) => (
+                <StyledListItem
+                  key={index}
+                  onClick={() => handleColumnClick(column, "display")}
+                  selectedItem={
+                    isSelectedColumnFromDisplayColumns &&
+                    selectedColumn.dataIndex === column.dataIndex
+                  }
+                >
+                  {column.title}
+                </StyledListItem>
+              ))}
+            </List>
+          </DefaultScrollbar>
+        </div>
       </div>
       <br />
       <TableConfigurationDialogFooter
