@@ -1,9 +1,7 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
-import { Icon } from "@iconify/react";
 import DefaultTable from "../../../components/tables";
-import { getTitle } from "../../../utils/helpers";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
@@ -17,16 +15,17 @@ import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
-  columnGenerator,
   generateObject,
+  getTableScrollWidth,
 } from "../../../utils/helpers";
-import useColumnSearchProps from "../../../hooks/useColumnSearchProps";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { dataKeysArray } from "./constants";
 import PageHeader from "../../../components/pageHeader";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useSweetAlert from "../../../hooks/useSweetAlert";
+import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 
 const Index = () => {
   // theme
@@ -34,21 +33,32 @@ const Index = () => {
 
   // hooks
   const { height, width } = useWindowDimensions();
-  const getColumnSearchProps = useColumnSearchProps();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
+  const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    handleEdit,
+  });
+  const generatedColumns = useColumnsGenerator({ columnDefinitions });
+  const { pageHeaderButtonsAtomConfiguration } = useButtonsConfiguration({
+    handleTableConfigurationsOpen,
+    handleExport,
+    handleDelete,
+    handleAdd,
+    handleOnboard,
+    handleInputClick,
+  });
+
   // refs
   const fileInputRef = useRef(null);
 
   // states
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [dataKeys, setDataKeys] = useState(dataKeysArray);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
-  const [columns, setColumns] = useState([]);
+  const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
-  const [displayColumns, setDisplayColumns] = useState([]);
+  const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
   const dataSource = useSelector(selectTableData);
@@ -110,69 +120,14 @@ const Index = () => {
   });
 
   // effects
-  useEffect(() => {
-    //columns
-    let generatedColumns = columnGenerator(
-      dataKeys,
-      getColumnSearchProps,
-      getTitle
-    );
-    generatedColumns = [
-      {
-        title: "Status",
-        dataIndex: "status",
-        key: "status",
-        width: "80px",
-
-        render: (text, record) => {
-          const icon = record.atom_id ? (
-            <Icon
-              fontSize={"22px"}
-              color={theme?.palette?.icon?.complete}
-              icon="ep:success-filled"
-            />
-          ) : (
-            <Icon
-              fontSize={"23px"}
-              color={theme?.palette?.icon?.incomplete}
-              icon="material-symbols:info"
-            />
-          );
-
-          return <div style={{ textAlign: "center" }}>{icon}</div>;
-        },
-      },
-      ...generatedColumns,
-      {
-        title: "Actions",
-        dataIndex: "actions",
-        key: "actions",
-        fixed: "right",
-        width: 100,
-        render: (text, record) => (
-          <div
-            style={{
-              display: "flex",
-              gap: "10px",
-              justifyContent: "center",
-            }}
-          >
-            <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
-          </div>
-        ),
-      },
-    ];
-    setColumns(generatedColumns);
-    setAvailableColumns([]);
-    setDisplayColumns(generatedColumns);
-  }, []);
+  useEffect(() => {}, []);
 
   // handlers
-  const handlePostSeed = (data) => {
+  function handlePostSeed(data) {
     addRecords(data);
-  };
+  }
 
-  const deleteData = () => {
+  function deleteData() {
     const deleteData = selectedRowKeys.map((rowKey) => {
       const dataObject = dataSource.find((row) => row.atom_table_id === rowKey);
 
@@ -193,9 +148,9 @@ const Index = () => {
     if (filteredDeleteData.length > 0) {
       deleteRecords(filteredDeleteData);
     }
-  };
+  }
 
-  const handleDelete = () => {
+  function handleDelete() {
     if (selectedRowKeys.length > 0) {
       handleCallbackAlert(
         "Are you sure you want delete these records?",
@@ -204,44 +159,39 @@ const Index = () => {
     } else {
       handleInfoAlert("No record has been selected to delete!");
     }
-  };
+  }
 
-  const handleOnboard = () => {
+  function handleOnboard() {
     handleInfoAlert("Onboard Clicked!");
-  };
+  }
 
-  const handleEdit = (record) => {
-    setRecordToEdit(record);
-    setOpen(true);
-  };
-
-  const handleInputClick = () => {
+  function handleInputClick() {
     if (fileInputRef.current) {
       fileInputRef.current.click();
     }
-  };
+  }
 
-  const handleAdd = (optionType) => {
+  function handleAdd(optionType) {
     if (optionType === "Add Manually") {
       setOpen(true);
     } else if (optionType === "From Discovery") {
     }
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose() {
     setRecordToEdit(null);
     setOpen(false);
-  };
+  }
 
-  const handleTableConfigurationsOpen = () => {
+  function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
-  };
+  }
 
-  const handleChange = (pagination, filters, sorter, extra) => {
+  function handleChange(pagination, filters, sorter, extra) {
     console.log("Various parameters", pagination, filters, sorter, extra);
-  };
+  }
 
-  const handleExport = (optionType) => {
+  function handleExport(optionType) {
     if (optionType === "All Devices") {
       jsonToExcel(dataSource, "all_atoms");
     } else if (optionType === "Template") {
@@ -258,102 +208,22 @@ const Index = () => {
       );
     }
     handleSuccessAlert("File exported successfully.");
-  };
+  }
+
+  function handleEdit(record) {
+    setRecordToEdit(record);
+    setOpen(true);
+  }
 
   // row selection
-  const onSelectChange = (selectedRowKeys) => {
+  function onSelectChange(selectedRowKeys) {
     setSelectedRowKeys(selectedRowKeys);
-  };
+  }
 
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-
-  // page header buttons
-  const buttons = [
-    {
-      type: "Configure Table",
-      icon: <Icon fontSize="20px" icon="material-symbols:stack-outline" />,
-      handleClick: handleTableConfigurationsOpen,
-      text: false,
-    },
-    {
-      type: "Export",
-      icon: <Icon fontSize="16px" icon="fe:export" />,
-      handleClick: handleExport,
-      options: [
-        {
-          type: "All Devices",
-          icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
-        },
-        {
-          type: "Template",
-          icon: (
-            <Icon fontSize="16px" icon="streamline:chat-bubble-square-write" />
-          ),
-        },
-        {
-          type: "Completed",
-          icon: (
-            <Icon
-              fontSize="16px"
-              icon="ep:success-filled"
-              color={theme?.palette?.icon?.complete}
-            />
-          ),
-        },
-        {
-          type: "Incomplete",
-          icon: (
-            <Icon
-              fontSize="16px"
-              icon="material-symbols:info"
-              color={theme?.palette?.icon?.incomplete}
-            />
-          ),
-        },
-      ],
-      style: {
-        backgroundColor: "red", // Set the background color to white
-      },
-    },
-    {
-      type: "Onboard",
-      icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
-      handleClick: handleOnboard,
-      selection: true,
-    },
-    {
-      type: "Delete",
-      icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
-      handleClick: handleDelete,
-      selection: true,
-    },
-    {
-      type: "Add",
-      icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
-      handleClick: handleAdd,
-      postfix: true,
-      options: [
-        {
-          type: "Add Manually",
-          icon: <Icon fontSize="16px" icon="icon-park-outline:manual-gear" />,
-        },
-        {
-          type: "From Discovery",
-          icon: (
-            <Icon fontSize="16px" icon="icon-park-outline:discovery-index" />
-          ),
-        },
-      ],
-    },
-    {
-      type: "Import",
-      icon: <Icon fontSize="16px" icon="pajamas:import" />,
-      handleClick: handleInputClick,
-    },
-  ];
 
   return (
     <Spin
@@ -392,13 +262,13 @@ const Index = () => {
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
             pageName="Atom"
-            buttons={buttons}
+            buttons={pageHeaderButtonsAtomConfiguration}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
             size="small"
-            scroll={{ x: 3000 }}
+            scroll={{ x: getTableScrollWidth(displayColumns) }}
             onChange={handleChange}
             rowSelection={rowSelection}
             columns={displayColumns}

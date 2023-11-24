@@ -5,20 +5,20 @@ const initialState = {
   all_data: [],
 };
 
-const hwlivecycleSlice = createSlice({
-  name: "license",
+const hwLifeCycleSlice = createSlice({
+  name: "hw_life_cycle",
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchHwlivecycle.matchFulfilled,
+        extendedApi.endpoints.fetchHwLifeCycle.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteHwlivecycle.matchFulfilled,
+        extendedApi.endpoints.deleteHwLifeCycle.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -32,13 +32,13 @@ const hwlivecycleSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addHwlivecycle.matchFulfilled,
+        extendedApi.endpoints.addHwLifeCycle.matchFulfilled,
         (state, action) => {
           state.all_data.push(action.payload.data);
         }
       )
       .addMatcher(
-        extendedApi.endpoints.updateHwlivecycle.matchFulfilled,
+        extendedApi.endpoints.updateHwLifeCycle.matchFulfilled,
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {
@@ -54,4 +54,4 @@ const hwlivecycleSlice = createSlice({
 });
 
 // export const { setNextPage, initiateItem } = passwordGroupSlice.actions;
-export default hwlivecycleSlice.reducer;
+export default hwLifeCycleSlice.reducer;

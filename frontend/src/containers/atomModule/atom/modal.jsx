@@ -7,7 +7,6 @@ import { SelectFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
@@ -37,8 +36,6 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
   // states
   const [initialRender, setInitialRender] = useState(true);
 
@@ -67,18 +64,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     console.log(watch("site_name"));
   }, [watch("site_name")]);
 
-  // useEffect(() => {
-  //   // skip the first render
-  //   if (initialRender) {
-  //     setInitialRender(false);
-  //     return;
-  //   }
-
-  //   (async () => {
-  //     await trigger("rack_name");
-  //   })();
-  // }, [watch("rack_name")]);
-
   // fetching dropdowns data from backend using apis
   const { error: siteNamesError, isLoading: isSiteNamesLoading } =
     useFetchSiteNamesQuery();
@@ -87,7 +72,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       {
         site_name: watch("site_name", ""),
       },
-      { enabled: watch("site_name") !== undefined }
+      { skip: watch("site_name") === undefined }
     );
 
   const { error: vendorNamesError, isLoading: isVendorNamesLoading } =

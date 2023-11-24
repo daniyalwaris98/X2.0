@@ -8,3 +8,4 @@ export const selectPasswordGroupNames = (state) =>
   state.drop_downs.password_group_names;
 export const selectPasswordGroupTypeNames = (state) =>
   state.drop_downs.password_group_type_names;
+export const selectStatusNames = (state) => state.drop_downs.status_names;
