@@ -4,9 +4,9 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
     fetchSfps: builder.query({
-      query: () => "/api/v1/uam/uam-sfp/getAllSfps",
+      query: () => "/api/v1/uam/uam_sfp/get_all_sfps",
     }),
-   
+
     deleteSfps: builder.mutation({
       query: (data) => ({
         url: "",

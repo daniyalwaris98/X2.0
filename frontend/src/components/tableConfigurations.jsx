@@ -181,7 +181,9 @@ export default function DefaultTableConfigurations({
           >
             <DefaultButton
               sx={{
-                backgroundColor: theme?.palette?.default_button?.add_background,
+                backgroundColor:
+                  theme?.palette?.default_button?.right_background,
+                color: theme?.palette?.default_button?.secondary_text,
                 width: "100%",
               }}
               handleClick={handleAdd}
@@ -194,7 +196,8 @@ export default function DefaultTableConfigurations({
             <DefaultButton
               sx={{
                 backgroundColor:
-                  theme?.palette?.default_button?.delete_background,
+                  theme?.palette?.default_button?.left_background,
+                color: theme?.palette?.default_button?.secondary_text,
                 width: "100%",
               }}
               handleClick={handleRemove}
@@ -206,8 +209,8 @@ export default function DefaultTableConfigurations({
             <br />
             <DefaultButton
               sx={{
-                backgroundColor:
-                  theme?.palette?.default_button?.onboard_background,
+                backgroundColor: theme?.palette?.default_button?.up_background,
+                color: theme?.palette?.default_button?.secondary_text,
                 width: "100%",
               }}
               handleClick={handleUp}
@@ -220,7 +223,8 @@ export default function DefaultTableConfigurations({
             <DefaultButton
               sx={{
                 backgroundColor:
-                  theme?.palette?.default_button?.onboard_background,
+                  theme?.palette?.default_button?.down_background,
+                color: theme?.palette?.default_button?.secondary_text,
                 width: "100%",
               }}
               handleClick={handleDown}

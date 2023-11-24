@@ -4,9 +4,9 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
     fetchLicenses: builder.query({
-      query: () => "/api/v1/uam/uam-license/getAllLicenses",
+      query: () => "/api/v1/uam/uam_license/get_all_licenses",
     }),
-   
+
     deleteLicense: builder.mutation({
       query: (data) => ({
         url: "",
