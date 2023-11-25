@@ -28,6 +28,9 @@ const Index = () => {
   // theme
   const theme = useTheme();
 
+  // states required in hooks
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   // hooks
   const { height, width } = useWindowDimensions();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
@@ -36,17 +39,16 @@ const Index = () => {
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { pageHeaderButtonsSingleAddConfiguration } = useButtonsConfiguration({
-    handleTableConfigurationsOpen,
-    handleExport,
-    handleDelete,
-    handleAdd,
+  const { pageHeaderButtonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    default_export: { handleClick: handleExport },
+    default_delete: { handleClick: handleDelete, selectedRowKeys },
+    default_add: { handleClick: handleAdd, namePostfix: "Rack" },
   });
 
   // refs
 
   // states
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
@@ -178,7 +180,7 @@ const Index = () => {
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
             pageName="Racks"
-            buttons={pageHeaderButtonsSingleAddConfiguration}
+            buttons={pageHeaderButtonsConfigurationList}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable

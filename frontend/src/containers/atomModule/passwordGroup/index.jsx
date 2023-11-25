@@ -35,25 +35,27 @@ const Index = () => {
   // theme
   const theme = useTheme();
 
+  // states required in hooks
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   // hooks
   const { height, width } = useWindowDimensions();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { pageHeaderButtonsDefaultConfiguration } = useButtonsConfiguration({
-    handleTableConfigurationsOpen,
-    handleExport,
-    handleDelete,
-    handleAdd,
-    handleInputClick,
+  const { pageHeaderButtonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    template_export: { handleClick: handleExport },
+    default_delete: { handleClick: handleDelete, selectedRowKeys },
+    default_add: { handleClick: handleAdd, namePostfix: "Password Group" },
+    default_import: { handleClick: handleInputClick },
   });
 
   // refs
   const fileInputRef = useRef(null);
 
   // states
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
@@ -224,7 +226,7 @@ const Index = () => {
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
             pageName="Password Group"
-            buttons={pageHeaderButtonsDefaultConfiguration}
+            buttons={pageHeaderButtonsConfigurationList}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable

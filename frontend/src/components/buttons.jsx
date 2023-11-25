@@ -13,7 +13,6 @@ export default function DefaultButton({ sx, handleClick, children, ...rest }) {
         alignItems: "center",
         gap: "10px",
         padding: "5px 12px",
-        color: theme?.palette?.default_button?.primary_text,
         "&:hover": {
           backgroundColor: sx?.backgroundColor,
           opacity: 0.8,

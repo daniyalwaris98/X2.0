@@ -31,6 +31,9 @@ const Index = () => {
   // theme
   const theme = useTheme();
 
+  // states required in hooks
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   // hooks
   const { height, width } = useWindowDimensions();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
@@ -39,20 +42,19 @@ const Index = () => {
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { pageHeaderButtonsAtomConfiguration } = useButtonsConfiguration({
-    handleTableConfigurationsOpen,
-    handleExport,
-    handleDelete,
-    handleAdd,
-    handleOnboard,
-    handleInputClick,
+  const { pageHeaderButtonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    atom_export: { handleClick: handleExport },
+    default_delete: { handleClick: handleDelete, selectedRowKeys },
+    default_onboard: { handleClick: handleOnboard, selectedRowKeys },
+    atom_add: { handleClick: handleAdd, namePostfix: "Atom" },
+    default_import: { handleClick: handleInputClick },
   });
 
   // refs
   const fileInputRef = useRef(null);
 
   // states
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
@@ -262,7 +264,7 @@ const Index = () => {
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
             pageName="Atom"
-            buttons={pageHeaderButtonsAtomConfiguration}
+            buttons={pageHeaderButtonsConfigurationList}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable
