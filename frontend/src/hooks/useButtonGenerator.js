@@ -15,6 +15,7 @@ export default function useButtonGenerator() {
     namePostfix = null,
     options = [],
     selectedRowKeys = null,
+    // include more options to make it more powerful and customizable
   }) => {
     if (type === "default") {
       return (
