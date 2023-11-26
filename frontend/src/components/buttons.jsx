@@ -5,12 +5,13 @@ import { Icon } from "@iconify/react";
 
 export default function DefaultButton({ sx, handleClick, children, ...rest }) {
   const theme = useTheme();
-
+  console.log("children", children);
   return (
     <Button
       sx={{
         display: "flex",
         alignItems: "center",
+        height: "30px",
         gap: "10px",
         padding: "5px 12px",
         "&:hover": {
@@ -19,13 +20,10 @@ export default function DefaultButton({ sx, handleClick, children, ...rest }) {
         },
         ...sx,
       }}
-      {...rest}
       onClick={handleClick}
+      {...rest}
     >
-      {children[0]}
-      <span style={{ fontSize: "13px", textTransform: "capitalize" }}>
-        {children[1]}
-      </span>
+      {children}
     </Button>
   );
 }
@@ -104,10 +102,7 @@ export function DropDownButton({
             ...sx,
           }}
         >
-          {children.length > 1 ? children[0] : null}
-          <span style={{ fontSize: "13px", textTransform: "capitalize" }}>
-            {children.length > 1 ? children[1] : children[0]}
-          </span>
+          {children}
         </StyledDiv>
         <StyledDiv
           sx={{

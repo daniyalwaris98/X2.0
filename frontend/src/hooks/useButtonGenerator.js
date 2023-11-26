@@ -6,46 +6,62 @@ export default function useButtonGenerator() {
   const theme = useTheme();
   const buttonGenerator = ({
     handleClick = () => {
-      alert("No handler defined for this button.");
+      // alert("No handler defined for this button.");
     },
     sx = {},
-    type = "default",
+    category = "default",
     icon = null,
     name = null,
     namePostfix = null,
     options = [],
     selectedRowKeys = null,
+    iconPosition = "left",
+    ...rest
     // include more options to make it more powerful and customizable
   }) => {
-    if (type === "default") {
+    if (category === "default") {
+      let defaultButton = (
+        <DefaultButton handleClick={handleClick} sx={sx} {...rest}>
+          {iconPosition === "left" ? icon : null}
+          {name || namePostfix ? (
+            <span
+              style={{
+                fontSize: "13px",
+                textTransform: "capitalize",
+                gap: "5px",
+              }}
+            >
+              {name} {namePostfix}
+            </span>
+          ) : null}
+          {iconPosition === "right" ? icon : null}
+        </DefaultButton>
+      );
       return (
         <>
-          {selectedRowKeys ? (
-            selectedRowKeys?.length > 0 ? (
-              <DefaultButton handleClick={handleClick} sx={sx}>
-                {icon}
-                {name && namePostfix
-                  ? `${name} ${namePostfix}`
-                  : name || namePostfix || ""}
-              </DefaultButton>
-            ) : null
-          ) : (
-            <DefaultButton handleClick={handleClick} sx={sx}>
-              {icon}
-              {name && namePostfix
-                ? `${name} ${namePostfix}`
-                : name || namePostfix || ""}
-            </DefaultButton>
-          )}
+          {selectedRowKeys
+            ? selectedRowKeys?.length > 0
+              ? defaultButton
+              : null
+            : defaultButton}
         </>
       );
-    } else if (type === "dropDown") {
+    } else if (category === "dropDown") {
       return (
         <DropDownButton handleClick={handleClick} sx={sx} options={options}>
-          {icon}
-          {name && namePostfix
-            ? `${name} ${namePostfix}`
-            : name || namePostfix || ""}
+          {iconPosition === "left" ? icon : null}
+          {name || namePostfix ? (
+            <span
+              style={{
+                fontSize: "13px",
+                textTransform: "capitalize",
+                gap: "5px",
+              }}
+            >
+              {name} {namePostfix}
+            </span>
+          ) : null}
+          {iconPosition === "right" ? icon : null}
         </DropDownButton>
       );
     }

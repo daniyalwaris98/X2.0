@@ -23,8 +23,6 @@ export default function useButtonsConfiguration(buttonDetails) {
         backgroundColor:
           theme?.palette?.default_button?.configure_table_background,
         color: theme?.palette?.default_button?.configure_table_text,
-        gap: "0px",
-        padding: "6px",
       },
     },
     default_export: {
@@ -33,7 +31,6 @@ export default function useButtonsConfiguration(buttonDetails) {
       sx: {
         backgroundColor: theme?.palette?.drop_down_button?.export_background,
         color: theme?.palette?.drop_down_button?.export_text,
-        padding: "4px 12px",
         border: `1px solid ${theme?.palette?.drop_down_button?.border}`,
       },
     },
@@ -63,7 +60,7 @@ export default function useButtonsConfiguration(buttonDetails) {
       },
     },
     atom_export: {
-      type: "dropDown",
+      category: "dropDown",
       name: "Export",
       icon: <Icon fontSize="16px" icon="fe:export" />,
       options: [
@@ -112,7 +109,7 @@ export default function useButtonsConfiguration(buttonDetails) {
       },
     },
     atom_add: {
-      type: "dropDown",
+      category: "dropDown",
       name: "Add",
       icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
       options: [
@@ -133,7 +130,7 @@ export default function useButtonsConfiguration(buttonDetails) {
       },
     },
     template_export: {
-      type: "dropDown",
+      category: "dropDown",
       name: "Export",
       icon: <Icon fontSize="16px" icon="fe:export" />,
       options: [
@@ -161,6 +158,37 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
+
+    default_cancel: {
+      name: "Cancel",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.delete_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+
+    default_submit: {
+      name: "Submit",
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_reset: {
+      name: "Reset",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_save: {
+      name: "Save",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
   };
 
   const pageHeaderButtonsConfigurationList = Object.keys(buttonDetails).map(
@@ -173,9 +201,26 @@ export default function useButtonsConfiguration(buttonDetails) {
     }
   );
 
-  // also return it in object form
+  const pageHeaderButtonsConfigurationObject = Object.keys(
+    buttonDetails
+  ).reduce((generatedConfiguration, key) => {
+    if (configurations[key]) {
+      generatedConfiguration[key] = {
+        ...configurations[key],
+        ...buttonDetails[key],
+      };
+      return generatedConfiguration;
+    } else {
+      generatedConfiguration[key] = {
+        ...configurations.default_button,
+        ...buttonDetails[key],
+      };
+      return generatedConfiguration;
+    }
+  }, {});
 
   return {
     pageHeaderButtonsConfigurationList,
+    pageHeaderButtonsConfigurationObject,
   };
 }

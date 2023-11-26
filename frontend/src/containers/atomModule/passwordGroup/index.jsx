@@ -12,11 +12,6 @@ import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
-  handleSuccessAlert,
-  handleInfoAlert,
-  handleCallbackAlert,
-} from "../../../components/sweetAlertWrapper";
-import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
@@ -26,6 +21,7 @@ import {
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import PageHeader from "../../../components/pageHeader";
+import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
@@ -40,6 +36,8 @@ const Index = () => {
 
   // hooks
   const { height, width } = useWindowDimensions();
+  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
+    useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
     handleEdit,
   });
