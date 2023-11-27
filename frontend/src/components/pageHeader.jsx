@@ -4,58 +4,9 @@ import DefaultButton, { DropDownButton } from "./buttons";
 import { Typography } from "@mui/material";
 import useButtonGenerator from "../hooks/useButtonGenerator";
 
-export default function PageHeader({ pageName, buttons, selectedRowKeys }) {
+export default function PageHeader({ pageName, buttons }) {
   const theme = useTheme();
   const buttonGenerator = useButtonGenerator();
-
-  // const renderButton = (buttonNamePostfix, button) => {
-  //   const {
-  //     type,
-  //     icon,
-  //     handleClick,
-  //     sx,
-  //     text = true,
-  //     selection = false,
-  //     postfix = false,
-  //     options,
-  //   } = button;
-  //   // let sx = getStylesByType(type, options);
-  //   if (options) {
-  //     return (
-  //       <DropDownButton
-  //         key={type}
-  //         handleClick={handleClick}
-  //         sx={sx}
-  //         options={options}
-  //       >
-  //         {icon}
-  //         {text ? (postfix ? `${type} ${buttonNamePostfix}` : type) : null}
-  //       </DropDownButton>
-  //     );
-  //   } else {
-  //     return (
-  //       <>
-  //         {selection ? (
-  //           selectedRowKeys && selectedRowKeys.length > 0 ? (
-  //             <DefaultButton key={type} handleClick={handleClick} sx={sx}>
-  //               {icon}
-  //               {text
-  //                 ? postfix
-  //                   ? `${type} ${buttonNamePostfix}`
-  //                   : type
-  //                 : null}
-  //             </DefaultButton>
-  //           ) : null
-  //         ) : (
-  //           <DefaultButton key={type} handleClick={handleClick} sx={sx}>
-  //             {icon}
-  //             {text ? (postfix ? `${type} ${buttonNamePostfix}` : type) : null}
-  //           </DefaultButton>
-  //         )}
-  //       </>
-  //     );
-  //   }
-  // };
 
   return (
     <div style={{ padding: "10px" }}>

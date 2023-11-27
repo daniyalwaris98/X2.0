@@ -19,9 +19,9 @@ export default function DefaultDialogFooter({ handleClose, sx, ...rest }) {
       style={{ display: "flex", justifyContent: "center", gap: "10px", ...sx }}
       {...rest}
     >
-      {buttonGenerator(pageHeaderButtonsConfigurationObject?.default_cancel)}
-      {buttonGenerator(pageHeaderButtonsConfigurationObject?.default_submit)}
-      {/* {pageHeaderButtonsConfigurationList.map((item) => buttonGenerator(item))} */}
+      {/* {buttonGenerator(pageHeaderButtonsConfigurationObject?.default_cancel)}
+      {buttonGenerator(pageHeaderButtonsConfigurationObject?.default_submit)} */}
+      {pageHeaderButtonsConfigurationList.map((item) => buttonGenerator(item))}
     </div>
   );
 }

@@ -194,7 +194,12 @@ export default function useButtonsConfiguration(buttonDetails) {
   const pageHeaderButtonsConfigurationList = Object.keys(buttonDetails).map(
     (key) => {
       if (configurations[key]) {
-        return { ...configurations[key], ...buttonDetails[key] };
+        if (!buttonDetails[key]) {
+          buttonDetails[key] = { ...buttonDetails[key], sx: {} };
+        }
+        const { sx = {}, ...rest } = buttonDetails[key];
+        configurations[key].sx = { ...configurations[key].sx, ...sx };
+        return { ...configurations[key], ...rest };
       } else {
         return configurations.default_button;
       }
@@ -204,16 +209,21 @@ export default function useButtonsConfiguration(buttonDetails) {
   const pageHeaderButtonsConfigurationObject = Object.keys(
     buttonDetails
   ).reduce((generatedConfiguration, key) => {
+    if (!buttonDetails[key]) {
+      buttonDetails[key] = { ...buttonDetails[key], sx: {} };
+    }
+    const { sx = {}, ...rest } = buttonDetails[key];
+    configurations[key].sx = { ...configurations[key].sx, ...sx };
     if (configurations[key]) {
       generatedConfiguration[key] = {
         ...configurations[key],
-        ...buttonDetails[key],
+        ...rest,
       };
       return generatedConfiguration;
     } else {
       generatedConfiguration[key] = {
         ...configurations.default_button,
-        ...buttonDetails[key],
+        ...rest,
       };
       return generatedConfiguration;
     }

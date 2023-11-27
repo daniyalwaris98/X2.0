@@ -5,17 +5,20 @@ import DefaultButton, { DropDownButton } from "../components/buttons";
 export default function useButtonGenerator() {
   const theme = useTheme();
   const buttonGenerator = ({
+    // coming from page
     handleClick = () => {
-      // alert("No handler defined for this button.");
+      console.log("No handler defined for this button.");
     },
+    selectedRowKeys = null,
+    namePostfix = null,
+    // coming from button Configuration
     sx = {},
+    iconPosition = "left",
     category = "default",
     icon = null,
     name = null,
-    namePostfix = null,
     options = [],
-    selectedRowKeys = null,
-    iconPosition = "left",
+    // coming from page
     ...rest
     // include more options to make it more powerful and customizable
   }) => {
