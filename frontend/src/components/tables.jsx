@@ -9,8 +9,19 @@ const DefaultStyledAntDesignTable = styled(Table)`
     thead.ant-table-thead {
       tr {
         th.ant-table-cell {
+          .ant-checkbox-indeterminate .ant-checkbox-inner:after {
+            background-color: ${({ theme }) =>
+              theme?.palette?.default_table?.check_box_checked};
+          }
+
+          /* .ant-checkbox-indeterminate .ant-checkbox-inner:hover {
+            background-color: ${({ theme }) =>
+            theme?.palette?.default_table?.check_box_checked};
+          } */
+
           .ant-checkbox-inner {
-            ${({ theme }) => theme?.palette?.default_table?.check_box_border};
+            /* ${({ theme }) =>
+              theme?.palette?.default_table?.check_box_border}; */
             background-color: ${({ theme }) =>
               theme?.palette?.default_table?.check_box_inner};
           }

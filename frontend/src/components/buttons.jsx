@@ -47,7 +47,7 @@ export function DropDownButton({
     cursor: "pointer",
     "&:hover": {
       backgroundColor: sx?.backgroundColor,
-      opacity: 0.95,
+      opacity: 0.8,
     },
   }));
 

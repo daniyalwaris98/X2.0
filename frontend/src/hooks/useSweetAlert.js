@@ -33,6 +33,7 @@ export default function useSweetAlert() {
         html: text,
         background: theme?.palette?.sweet_alert?.background,
         color: theme?.palette?.sweet_alert?.primary_text,
+        confirmButtonText: "Ok",
         confirmButtonColor:
           theme?.palette?.default_button?.warning_alert_background,
       }),
@@ -54,11 +55,17 @@ export default function useSweetAlert() {
         html: text,
         background: theme?.palette?.sweet_alert?.background,
         color: theme?.palette?.sweet_alert?.primary_text,
+        showCancelButton: true,
+        cancelButtonText: "No",
+        cancelButtonColor: theme?.palette?.default_button?.cancel_background,
+        confirmButtonText: "Yes",
         confirmButtonColor:
           theme?.palette?.default_button?.success_alert_background,
       }).then((result) => {
         if (result.isConfirmed && callback) {
-          callback();
+          callback(true);
+        } else if (callback) {
+          callback(false);
         }
       }),
   };

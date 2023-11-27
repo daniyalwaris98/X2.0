@@ -22,6 +22,7 @@ import DefaultSelect from "../../../components/selects";
 const schema = yup.object().shape({
   site_name: yup.string().required("Site name is required"),
   status: yup.string().required("Status is required"),
+  city: yup.string().matches(/^[A-Za-z]+$/, "City must contain only alphabets"),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -111,20 +112,19 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               disabled={recordToEdit !== null}
               required
             />
+            <DefaultFormUnit control={control} dataKey="region_name" />
+            <DefaultFormUnit control={control} dataKey="city" />
+          </Grid>
+          <Grid item xs={12} sm={6}>
             <SelectFormUnit
               control={control}
               dataKey="status"
               options={statusNames}
               required
             />
-            <DefaultFormUnit control={control} dataKey="region_name" />
-          </Grid>
-          <Grid item xs={12} sm={6}>
             <DefaultFormUnit control={control} dataKey="latitude" />
             <DefaultFormUnit control={control} dataKey="longitude" />
-            <DefaultFormUnit control={control} dataKey="city" />
           </Grid>
-
           <Grid item xs={12}>
             <DefaultDialogFooter handleClose={handleClose} />
           </Grid>

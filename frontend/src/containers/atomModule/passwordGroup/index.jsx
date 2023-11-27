@@ -125,8 +125,12 @@ const Index = () => {
     addRecords(data);
   }
 
-  function deleteData() {
-    deleteRecords(selectedRowKeys);
+  function deleteData(allowed) {
+    if (allowed) {
+      deleteRecords(selectedRowKeys);
+    } else {
+      setSelectedRowKeys([]);
+    }
   }
 
   function handleDelete() {

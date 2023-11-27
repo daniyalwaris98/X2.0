@@ -129,26 +129,32 @@ const Index = () => {
     addRecords(data);
   }
 
-  function deleteData() {
-    const deleteData = selectedRowKeys.map((rowKey) => {
-      const dataObject = dataSource.find((row) => row.atom_table_id === rowKey);
+  function deleteData(allowed) {
+    if (allowed) {
+      const deleteData = selectedRowKeys.map((rowKey) => {
+        const dataObject = dataSource.find(
+          (row) => row.atom_table_id === rowKey
+        );
 
-      if (dataObject) {
-        const { atom_id, atom_transition_id } = dataObject;
+        if (dataObject) {
+          const { atom_id, atom_transition_id } = dataObject;
 
-        return {
-          atom_id: atom_id || null,
-          atom_transition_id: atom_transition_id || null,
-        };
+          return {
+            atom_id: atom_id || null,
+            atom_transition_id: atom_transition_id || null,
+          };
+        }
+
+        return null;
+      });
+
+      const filteredDeleteData = deleteData.filter((data) => data !== null);
+
+      if (filteredDeleteData.length > 0) {
+        deleteRecords(filteredDeleteData);
       }
-
-      return null;
-    });
-
-    const filteredDeleteData = deleteData.filter((data) => data !== null);
-
-    if (filteredDeleteData.length > 0) {
-      deleteRecords(filteredDeleteData);
+    } else {
+      setSelectedRowKeys([]);
     }
   }
 

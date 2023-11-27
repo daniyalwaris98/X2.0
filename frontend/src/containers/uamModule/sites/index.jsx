@@ -97,8 +97,12 @@ const Index = () => {
   });
 
   // handlers
-  function deleteData() {
-    deleteRecords(selectedRowKeys);
+  function deleteData(allowed) {
+    if (allowed) {
+      deleteRecords(selectedRowKeys);
+    } else {
+      setSelectedRowKeys([]);
+    }
   }
 
   function handleDelete() {
