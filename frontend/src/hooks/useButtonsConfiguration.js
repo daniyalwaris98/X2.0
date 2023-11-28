@@ -5,6 +5,23 @@ import { useTheme } from "@mui/material/styles";
 export default function useButtonsConfiguration(buttonDetails) {
   const theme = useTheme();
 
+  const optionConstants = {
+    atom_export: {
+      ALL_DATA: "All Data",
+      TEMPLATE: "Template",
+      COMPLETE: "Complete",
+      INCOMPLETE: "Incomplete",
+    },
+    atom_add: {
+      ADD_MANUALLY: "Add Manually",
+      FROM_DISCOVERY: "From Discovery",
+    },
+    template_export: {
+      ALL_DATA: "All Data",
+      TEMPLATE: "Template",
+    },
+  };
+
   const configurations = {
     default_button: {
       name: "Default Button",
@@ -65,17 +82,17 @@ export default function useButtonsConfiguration(buttonDetails) {
       icon: <Icon fontSize="16px" icon="fe:export" />,
       options: [
         {
-          type: "All Data",
+          type: optionConstants.atom_export.ALL_DATA,
           icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
         },
         {
-          type: "Template",
+          type: optionConstants.atom_export.TEMPLATE,
           icon: (
             <Icon fontSize="16px" icon="streamline:chat-bubble-square-write" />
           ),
         },
         {
-          type: "Completed",
+          type: optionConstants.atom_export.COMPLETE,
           icon: (
             <Icon
               fontSize="16px"
@@ -85,7 +102,7 @@ export default function useButtonsConfiguration(buttonDetails) {
           ),
         },
         {
-          type: "Incomplete",
+          type: optionConstants.atom_export.INCOMPLETE,
           icon: (
             <Icon
               fontSize="16px"
@@ -114,11 +131,11 @@ export default function useButtonsConfiguration(buttonDetails) {
       icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
       options: [
         {
-          type: "Add Manually",
+          type: optionConstants.atom_add.ADD_MANUALLY,
           icon: <Icon fontSize="16px" icon="icon-park-outline:manual-gear" />,
         },
         {
-          type: "From Discovery",
+          type: optionConstants.atom_add.FROM_DISCOVERY,
           icon: (
             <Icon fontSize="16px" icon="icon-park-outline:discovery-index" />
           ),
@@ -135,11 +152,11 @@ export default function useButtonsConfiguration(buttonDetails) {
       icon: <Icon fontSize="16px" icon="fe:export" />,
       options: [
         {
-          type: "All Data",
+          type: optionConstants.template_export.ALL_DATA,
           icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
         },
         {
-          type: "Template",
+          type: optionConstants.template_export.TEMPLATE,
           icon: (
             <Icon fontSize="16px" icon="streamline:chat-bubble-square-write" />
           ),
@@ -191,46 +208,57 @@ export default function useButtonsConfiguration(buttonDetails) {
     },
   };
 
-  const pageHeaderButtonsConfigurationList = Object.keys(buttonDetails).map(
-    (key) => {
-      if (configurations[key]) {
-        if (!buttonDetails[key]) {
-          buttonDetails[key] = { ...buttonDetails[key], sx: {} };
-        }
-        const { sx = {}, ...rest } = buttonDetails[key];
-        configurations[key].sx = { ...configurations[key].sx, ...sx };
-        return { ...configurations[key], ...rest };
-      } else {
-        return configurations.default_button;
+  const dropdownButtonOptionsConstants = Object.keys(buttonDetails).reduce(
+    (accumulator, key) => {
+      if (optionConstants[key]) {
+        accumulator[key] = optionConstants[key];
+        return accumulator;
       }
-    }
+      return accumulator;
+    },
+    {}
   );
 
-  const pageHeaderButtonsConfigurationObject = Object.keys(
-    buttonDetails
-  ).reduce((generatedConfiguration, key) => {
-    if (!buttonDetails[key]) {
-      buttonDetails[key] = { ...buttonDetails[key], sx: {} };
-    }
-    const { sx = {}, ...rest } = buttonDetails[key];
-    configurations[key].sx = { ...configurations[key].sx, ...sx };
+  const buttonsConfigurationList = Object.keys(buttonDetails).map((key) => {
     if (configurations[key]) {
-      generatedConfiguration[key] = {
-        ...configurations[key],
-        ...rest,
-      };
-      return generatedConfiguration;
+      if (!buttonDetails[key]) {
+        buttonDetails[key] = { ...buttonDetails[key], sx: {} };
+      }
+      const { sx = {}, ...rest } = buttonDetails[key];
+      configurations[key].sx = { ...configurations[key].sx, ...sx };
+      return { ...configurations[key], ...rest };
     } else {
-      generatedConfiguration[key] = {
-        ...configurations.default_button,
-        ...rest,
-      };
-      return generatedConfiguration;
+      return configurations.default_button;
     }
-  }, {});
+  });
+
+  const buttonsConfigurationObject = Object.keys(buttonDetails).reduce(
+    (generatedConfiguration, key) => {
+      if (!buttonDetails[key]) {
+        buttonDetails[key] = { ...buttonDetails[key], sx: {} };
+      }
+      const { sx = {}, ...rest } = buttonDetails[key];
+      configurations[key].sx = { ...configurations[key].sx, ...sx };
+      if (configurations[key]) {
+        generatedConfiguration[key] = {
+          ...configurations[key],
+          ...rest,
+        };
+        return generatedConfiguration;
+      } else {
+        generatedConfiguration[key] = {
+          ...configurations.default_button,
+          ...rest,
+        };
+        return generatedConfiguration;
+      }
+    },
+    {}
+  );
 
   return {
-    pageHeaderButtonsConfigurationList,
-    pageHeaderButtonsConfigurationObject,
+    dropdownButtonOptionsConstants,
+    buttonsConfigurationList,
+    buttonsConfigurationObject,
   };
 }

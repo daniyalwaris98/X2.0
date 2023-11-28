@@ -26,6 +26,17 @@ import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import {
+  PAGE_NAME,
+  FILE_NAME_EXPORT_ALL_DATA,
+  FILE_NAME_EXPORT_COMPLETE_DATA,
+  FILE_NAME_EXPORT_INCOMPLETE_DATA,
+  FILE_NAME_EXPORT_TEMPLATE,
+  TABLE_DATA_UNIQUE_ID,
+  ATOM_ID,
+  ATOM_TRANSITION_ID,
+} from "./constants";
+import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 
 const Index = () => {
   // theme
@@ -42,14 +53,15 @@ const Index = () => {
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { pageHeaderButtonsConfigurationList } = useButtonsConfiguration({
-    configure_table: { handleClick: handleTableConfigurationsOpen },
-    atom_export: { handleClick: handleExport },
-    default_delete: { handleClick: handleDelete, selectedRowKeys },
-    default_onboard: { handleClick: handleOnboard, selectedRowKeys },
-    atom_add: { handleClick: handleAdd, namePostfix: "Atom" },
-    default_import: { handleClick: handleInputClick },
-  });
+  const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
+    useButtonsConfiguration({
+      configure_table: { handleClick: handleTableConfigurationsOpen },
+      atom_export: { handleClick: handleExport },
+      default_delete: { handleClick: handleDelete, selectedRowKeys },
+      default_onboard: { handleClick: handleOnboard, selectedRowKeys },
+      atom_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
+      default_import: { handleClick: handleInputClick },
+    });
 
   // refs
   const fileInputRef = useRef(null);
@@ -102,7 +114,7 @@ const Index = () => {
     isSuccess: isFetchRecordsSuccess,
     isError: isFetchRecordsError,
     error: fetchRecordsError,
-    type: "fetch",
+    type: TYPE_FETCH,
   });
 
   useErrorHandling({
@@ -110,7 +122,7 @@ const Index = () => {
     isSuccess: isAddRecordsSuccess,
     isError: isAddRecordsError,
     error: addRecordsError,
-    type: "bulk",
+    type: TYPE_BULK,
   });
 
   useErrorHandling({
@@ -118,11 +130,11 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: "bulk",
+    type: TYPE_BULK,
   });
 
   // effects
-  useEffect(() => {}, []);
+  // useEffect(() => {}, []);
 
   // handlers
   function handlePostSeed(data) {
@@ -180,9 +192,11 @@ const Index = () => {
   }
 
   function handleAdd(optionType) {
-    if (optionType === "Add Manually") {
+    const { ADD_MANUALLY, FROM_DISCOVERY } =
+      dropdownButtonOptionsConstants.atom_add;
+    if (optionType === ADD_MANUALLY) {
       setOpen(true);
-    } else if (optionType === "From Discovery") {
+    } else if (optionType === FROM_DISCOVERY) {
     }
   }
 
@@ -200,19 +214,21 @@ const Index = () => {
   }
 
   function handleExport(optionType) {
-    if (optionType === "All Devices") {
-      jsonToExcel(dataSource, "all_atoms");
-    } else if (optionType === "Template") {
-      jsonToExcel([generateObject(dataKeys)], "atom_template");
-    } else if (optionType === "Completed") {
+    const { ALL_DATA, TEMPLATE, COMPLETE, INCOMPLETE } =
+      dropdownButtonOptionsConstants.atom_export;
+    if (optionType === ALL_DATA) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+    } else if (optionType === TEMPLATE) {
+      jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
+    } else if (optionType === COMPLETE) {
       jsonToExcel(
-        dataSource.filter((item) => item.hasOwnProperty("atom_id")),
-        "complete_atoms"
+        dataSource.filter((item) => item.hasOwnProperty(ATOM_ID)),
+        FILE_NAME_EXPORT_COMPLETE_DATA
       );
-    } else if (optionType === "Incomplete") {
+    } else if (optionType === INCOMPLETE) {
       jsonToExcel(
-        dataSource.filter((item) => item.hasOwnProperty("atom_transition_id")),
-        "incomplete_atoms"
+        dataSource.filter((item) => item.hasOwnProperty(ATOM_TRANSITION_ID)),
+        FILE_NAME_EXPORT_INCOMPLETE_DATA
       );
     }
     handleSuccessAlert("File exported successfully.");
@@ -269,8 +285,8 @@ const Index = () => {
 
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
-            pageName="Atom"
-            buttons={pageHeaderButtonsConfigurationList}
+            pageName={PAGE_NAME}
+            buttons={buttonsConfigurationList}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable
@@ -281,7 +297,7 @@ const Index = () => {
             rowSelection={rowSelection}
             columns={displayColumns}
             dataSource={dataSource}
-            rowKey="atom_table_id"
+            rowKey={TABLE_DATA_UNIQUE_ID}
             style={{ whiteSpace: "pre" }}
             pagination={{
               defaultPageSize: 9,

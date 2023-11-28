@@ -39,7 +39,7 @@ const Index = () => {
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { pageHeaderButtonsConfigurationList } = useButtonsConfiguration({
+  const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleExport },
     default_dismantle: { handleClick: handleDismantle, selectedRowKeys },
@@ -189,7 +189,7 @@ const Index = () => {
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
             pageName="Devices"
-            buttons={pageHeaderButtonsConfigurationList}
+            buttons={buttonsConfigurationList}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable

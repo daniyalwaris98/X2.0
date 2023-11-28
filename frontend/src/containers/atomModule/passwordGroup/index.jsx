@@ -42,7 +42,7 @@ const Index = () => {
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { pageHeaderButtonsConfigurationList } = useButtonsConfiguration({
+  const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     template_export: { handleClick: handleExport },
     default_delete: { handleClick: handleDelete, selectedRowKeys },
@@ -228,7 +228,7 @@ const Index = () => {
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
             pageName="Password Group"
-            buttons={pageHeaderButtonsConfigurationList}
+            buttons={buttonsConfigurationList}
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable
