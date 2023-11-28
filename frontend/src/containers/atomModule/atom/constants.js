@@ -1,5 +1,6 @@
 export const PAGE_NAME = "Atom";
 export const PAGE_NAME_SMALL = "atom";
+export const PAGE_PATH = "atom";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_atoms";
 export const FILE_NAME_EXPORT_COMPLETE_DATA = "complete_atoms";
 export const FILE_NAME_EXPORT_INCOMPLETE_DATA = "incomplete_atoms";
