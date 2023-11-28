@@ -20,7 +20,7 @@ export default function DefaultDialog({ title, open, sx, children, ...rest }) {
     <Dialog
       open={open}
       maxWidth="md"
-      sx={{ ...sx }}
+      sx={{ zIndex: "999", ...sx }}
       PaperComponent={StyledPaper}
       {...rest}
     >

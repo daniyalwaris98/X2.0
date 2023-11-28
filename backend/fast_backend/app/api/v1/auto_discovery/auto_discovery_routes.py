@@ -75,7 +75,7 @@ async def add_networks(network_objs: list[AddDiscoveryNetworkRequestSchema]):
                             status_code=500)
 
 
-@router.get("/getAllNetworks", responses={
+@router.get("/get_all_networks", responses={
     200: {"model": GetDiscoveryNetworkResponseSchema},
     500: {"model": str}
 })
@@ -102,7 +102,7 @@ async def get_all_networks():
                             status_code=500)
 
 
-@router.post("/deleteNetworks", responses={
+@router.post("/delete_networks", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
@@ -154,7 +154,7 @@ async def delete_networks(network_objs: list[int]):
                             status_code=500)
 
 
-@router.get("/getSubnetsDropdown", responses={
+@router.get("/get_subnets_dropdown", responses={
     200: {"model": list[str]},
     500: {"model": str}
 })
@@ -197,7 +197,7 @@ def validate_ip_range(ip_range):
         return None
 
 
-@router.post("/autoDiscover", responses={
+@router.post("/auto_discover", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -277,7 +277,7 @@ async def auto_discover_endpoint(subnet: str):
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.post("/getDiscoveryFunctionCount", responses={
+@router.post("/get_discovery_function_count", responses={
     200: {"model": DiscoveryFunctionCountResponseSchema},
     500: {"model": str}
 })
@@ -346,7 +346,7 @@ def get_discovery_function_count(subnet: str):
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.post("/getDiscoveryData", responses={
+@router.post("/get_discovery_data", responses={
     200: {"model": list[GetDiscoveryDataResponseSchema]},
     500: {"model": str}
 })
@@ -359,7 +359,7 @@ async def get_discovery_data(subnet: str):
         return JSONResponse(content="Server Error While Fetching Discovery Data", status_code=500)
 
 
-@router.post("/getDiscoveryDataFunction", responses={
+@router.post("/get_discovery_data_function", responses={
     200: {"model": list[GetDiscoveryDataResponseSchema]},
     500: {"model": str}
 })
@@ -495,7 +495,7 @@ async def get_function_discovery_data(data_obj: GetFunctionDiscoveryDataRequestS
 #         return "Server Error While Fetching Discovery Data", 500
 #
 
-@router.get("/autoDiscoveryFunctionCount", responses={
+@router.get("/auto_discovery_function_count", responses={
     200: {"model": AutoDiscoveryFunctionCountResponseSchema},
     500: {"model": str}
 })
@@ -526,7 +526,7 @@ async def auto_discovery_function_count():
         return JSONResponse(content="Server Error While Fetching Data", status_code=500)
 
 
-@router.get("/getManageDevices", responses={
+@router.get("/get_manage_devices", responses={
     200: {"model": list[GetDiscoveryDataResponseSchema]},
     500: {"model": str}
 })

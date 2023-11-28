@@ -1,48 +1,58 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
-import { Icon } from "@iconify/react";
 import DefaultTable from "../../../components/tables";
-import { getTitle } from "../../../utils/helpers";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
 } from "../../../store/features/uamModule/sfps/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/sfps/selector";
+import { selectTableData } from "../../../store/features/uamModule/sfps/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
-  handleSuccessAlert,
-  handleInfoAlert,
-  handleCallbackAlert,
-} from "../../../components/sweetAlertWrapper";
-import {
   jsonToExcel,
-  columnGenerator,
   generateObject,
+  getTableScrollWidth,
 } from "../../../utils/helpers";
-import useColumnSearchProps from "../../../hooks/useColumnSearchProps";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { dataKeysArray } from "./constants";
 import PageHeader from "../../../components/pageHeader";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import useSweetAlert from "../../../hooks/useSweetAlert";
+import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 
 const Index = () => {
   // theme
   const theme = useTheme();
 
+  // states required in hooks
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   // hooks
   const { height, width } = useWindowDimensions();
-  const getColumnSearchProps = useColumnSearchProps();
+  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
+    useSweetAlert();
+  const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    handleEdit,
+  });
+  const generatedColumns = useColumnsGenerator({ columnDefinitions });
+  const { pageHeaderButtonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    default_export: { handleClick: handleExport },
+  });
 
   // refs
 
   // states
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-  const [dataKeys, setDataKeys] = useState(dataKeysArray);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
+  const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
+  const [columns, setColumns] = useState(generatedColumns);
+  const [availableColumns, setAvailableColumns] = useState([]);
+  const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
   const dataSource = useSelector(selectTableData);
@@ -85,11 +95,15 @@ const Index = () => {
   });
 
   // handlers
-  const deleteData = () => {
-    deleteRecords(selectedRowKeys);
-  };
+  function deleteData(allowed) {
+    if (allowed) {
+      deleteRecords(selectedRowKeys);
+    } else {
+      setSelectedRowKeys([]);
+    }
+  }
 
-  const handleDelete = () => {
+  function handleDelete() {
     if (selectedRowKeys.length > 0) {
       handleCallbackAlert(
         "Are you sure you want delete these records?",
@@ -98,97 +112,48 @@ const Index = () => {
     } else {
       handleInfoAlert("No record has been selected to delete!");
     }
-  };
+  }
 
-  const handleEdit = (record) => {
+  function handleEdit(record) {
     setRecordToEdit(record);
     setOpen(true);
-  };
+  }
 
-  const handleAdd = (optionType) => {
+  function handleAdd(optionType) {
     setOpen(true);
-  };
+  }
 
-  const handleClose = () => {
+  function handleClose() {
     setRecordToEdit(null);
     setOpen(false);
-  };
+  }
 
-  const handleChange = (pagination, filters, sorter, extra) => {
+  function handleChange(pagination, filters, sorter, extra) {
     console.log("Various parameters", pagination, filters, sorter, extra);
-  };
+  }
 
-  const handleExport = (optionType) => {
-    if (optionType === "All Sfps") {
-      jsonToExcel(dataSource, "Sfps");
+  function handleExport(optionType) {
+    if (optionType === "All Data") {
+      jsonToExcel(dataSource, "sites");
     } else if (optionType === "Template") {
-      jsonToExcel([generateObject(dataKeys)], "sfps_template");
+      jsonToExcel([generateObject(dataKeys)], "site_template");
     }
     handleSuccessAlert("File exported successfully.");
-  };
+  }
+
+  function handleTableConfigurationsOpen() {
+    setTableConfigurationsOpen(true);
+  }
 
   // row selection
-  const onSelectChange = (selectedRowKeys) => {
+  function onSelectChange(selectedRowKeys) {
     setSelectedRowKeys(selectedRowKeys);
-  };
+  }
 
   const rowSelection = {
     selectedRowKeys,
     onChange: onSelectChange,
   };
-
-  // columns
-  let columns = columnGenerator(dataKeys, getColumnSearchProps, getTitle);
-
-  columns.push({
-    title: "Actions",
-    dataIndex: "actions",
-    key: "actions",
-    fixed: "right",
-    width: 100,
-    render: (text, record) => (
-      <div
-        style={{
-          display: "flex",
-          gap: "10px",
-          justifyContent: "center",
-        }}
-      >
-        <Icon onClick={() => handleEdit(record)} icon="bx:edit" />
-      </div>
-    ),
-  });
-
-  // page header buttons
-  const buttons = [
-    {
-      type: "Export",
-      icon: <Icon fontSize="16px" icon="fe:export" />,
-      handleClick: handleExport,
-      options: [
-        {
-          type: "All Sfps",
-          icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
-        },
-        {
-          type: "Template",
-          icon: (
-            <Icon fontSize="16px" icon="streamline:chat-bubble-square-write" />
-          ),
-        },
-      ],
-    },
-    {
-      type: "Delete",
-      icon: <Icon fontSize="16px" icon="mingcute:delete-line" />,
-      handleClick: handleDelete,
-    },
-    {
-      type: "Add",
-      icon: <Icon fontSize="16px" icon="gridicons:add-outline" />,
-      handleClick: handleAdd,
-    },
-  ];
 
   return (
     <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
@@ -201,20 +166,32 @@ const Index = () => {
           />
         ) : null}
 
-        <DefaultCard
-          sx={{
-            backgroundColor: theme?.palette?.color?.main,
-            width: `${width - 105}px`,
-          }}
-        >
-          <PageHeader pageName="Sfps" buttons={buttons} />
+        {tableConfigurationsOpen ? (
+          <DefaultTableConfigurations
+            columns={columns}
+            availableColumns={availableColumns}
+            setAvailableColumns={setAvailableColumns}
+            displayColumns={displayColumns}
+            setDisplayColumns={setDisplayColumns}
+            setColumns={setColumns}
+            open={tableConfigurationsOpen}
+            setOpen={setTableConfigurationsOpen}
+          />
+        ) : null}
+
+        <DefaultCard sx={{ width: `${width - 105}px` }}>
+          <PageHeader
+            pageName="SFPs"
+            buttons={pageHeaderButtonsConfigurationList}
+            selectedRowKeys={selectedRowKeys}
+          />
           <DefaultTable
             rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
             size="small"
-            scroll={{ x: 3000 }}
+            scroll={{ x: getTableScrollWidth(displayColumns) }}
             onChange={handleChange}
             rowSelection={rowSelection}
-            columns={columns}
+            columns={displayColumns}
             dataSource={dataSource}
             rowKey="sfps_id"
             style={{ whiteSpace: "pre" }}

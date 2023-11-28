@@ -4,11 +4,11 @@ import Sites from "../containers/uamModule/sites";
 import Racks from "../containers/uamModule/racks";
 import Devices from "../containers/uamModule/devices";
 import Boards from "../containers/uamModule/boards";
-import SubBoards from "../containers/uamModule/subBoards"
+import SubBoards from "../containers/uamModule/subBoards";
 import Sfps from "../containers/uamModule/sfps";
-import Licenses from "../containers/uamModule/licences";
+import Licenses from "../containers/uamModule/licenses";
 import Aps from "../containers/uamModule/aps";
-import Hwlifecycle from "../containers/uamModule/hwLiveCycle";
+import Hwlifecycle from "../containers/uamModule/hwLifeCycle";
 import { Navigate } from "react-router-dom";
 
 const routes = {

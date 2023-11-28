@@ -7,7 +7,6 @@ import { SelectFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
@@ -34,12 +33,9 @@ import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 
 const schema = yup.object().shape({
   ip_address: yup.string().required("Ip address is required"),
- 
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
   // states
   const [initialRender, setInitialRender] = useState(true);
 
@@ -55,28 +51,18 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   useEffect(() => {
     // skip the first render
-    if (initialRender) {
-      setInitialRender(false);
-      return;
-    }
+    // if (initialRender) {
+    //   setInitialRender(false);
+    //   return;
+    // }
 
-    (async () => {
-      setValue("rack_name", "");
-      await trigger("rack_name");
-    })();
+    // (async () => {
+    //   // setValue("rack_name", "");
+    //   await trigger("rack_name");
+    // })();
+
+    console.log(watch("site_name"));
   }, [watch("site_name")]);
-
-  useEffect(() => {
-    // skip the first render
-    if (initialRender) {
-      setInitialRender(false);
-      return;
-    }
-
-    (async () => {
-      await trigger("rack_name");
-    })();
-  }, [watch("rack_name")]);
 
   // fetching dropdowns data from backend using apis
   const { error: siteNamesError, isLoading: isSiteNamesLoading } =
@@ -170,11 +156,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   };
 
   return (
-    <FormModal
-      sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Atom`}
-      open={open}
-    >
+    <FormModal title={`${recordToEdit ? "Edit" : "Add"} Atom`} open={open}>
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
         <Grid container spacing={5}>
           <Grid item xs={12} sm={4}>
@@ -183,13 +165,11 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               control={control}
               dataKey="site_name"
               options={siteNames}
-              required
             />
             <SelectFormUnit
               control={control}
               dataKey="rack_name"
               options={rackNames}
-              
             />
             <DefaultFormUnit control={control} dataKey="section" />
             <DefaultFormUnit control={control} dataKey="department" />
@@ -210,7 +190,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               dataKey="device_type"
               options={deviceTypeNames}
             />
-            <DefaultFormUnit control={control} dataKey="device_name"/>
+            <DefaultFormUnit control={control} dataKey="device_name" />
           </Grid>
           <Grid item xs={12} sm={4}>
             <SelectFormUnit
@@ -223,7 +203,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               dataKey="password_group"
               options={passwordGroupNames}
             />
-            <DefaultFormUnit control={control} dataKey="criticality"/>
+            <DefaultFormUnit control={control} dataKey="criticality" />
             <DefaultFormUnit control={control} dataKey="virtual" />
             <DefaultFormUnit control={control} dataKey="domain" />
           </Grid>

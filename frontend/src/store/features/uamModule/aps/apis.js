@@ -4,9 +4,9 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
     fetchAps: builder.query({
-      query: () => "/api/v1/uam/uam-aps/getAllAps",
+      query: () => "/api/v1/uam/uam_aps/get_all_aps",
     }),
-   
+
     deleteAps: builder.mutation({
       query: (data) => ({
         url: "",

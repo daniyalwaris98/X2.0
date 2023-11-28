@@ -13,6 +13,7 @@ export const extendedApi = monetxApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
+      keepUnusedDataFor: 0,
     }),
 
     deleteAtoms: builder.mutation({

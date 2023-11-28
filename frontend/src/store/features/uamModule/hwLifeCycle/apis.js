@@ -3,11 +3,11 @@ import { monetxApi } from "../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
-    fetchHwlivecycle: builder.query({
+    fetchHwLifeCycle: builder.query({
       query: () => "/api/v1/uam/uam-license/getAllLicenses",
     }),
-   
-    deleteHwlivecycle: builder.mutation({
+
+    deleteHwLifeCycle: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -15,14 +15,14 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
     // form apis
-    addHwlivecycle: builder.mutation({
+    addHwLifeCycle: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
         body: data,
       }),
     }),
-    updateHwlivecycle: builder.mutation({
+    updateHwLifeCycle: builder.mutation({
       query: (data) => ({
         url: "",
         method: "POST",
@@ -32,9 +32,9 @@ export const extendedApi = monetxApi.injectEndpoints({
   }),
 });
 export const {
-  useFetchHwlivecycleQuery: useFetchRecordsQuery,
-  useDeleteHwlivecycleMutation: useDeleteRecordsMutation,
+  useFetchHwLifeCycleQuery: useFetchRecordsQuery,
+  useDeleteHwLifeCycleMutation: useDeleteRecordsMutation,
   // form apis
-  useAddHwlivecycleMutation: useAddRecordMutation,
-  useUpdateHwlivecycleMutation: useUpdateRecordMutation,
+  useAddHwLifeCycleMutation: useAddRecordMutation,
+  useUpdateHwLifeCycleMutation: useUpdateRecordMutation,
 } = extendedApi;

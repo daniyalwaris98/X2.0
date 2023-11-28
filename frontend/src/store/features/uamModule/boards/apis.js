@@ -4,9 +4,9 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     //table apis
     fetchBoards: builder.query({
-      query: () => "/api/v1/uam/uam-module/getAllBoards",
+      query: () => "/api/v1/uam/uam-module/get_all_boards",
     }),
-   
+
     deleteBoard: builder.mutation({
       query: (data) => ({
         url: "",
@@ -17,7 +17,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     // form apis
     addBoard: builder.mutation({
       query: (data) => ({
-        url: "",
+        url: "/api/v1/uam/uam-module/add_board",
         method: "POST",
         body: data,
       }),

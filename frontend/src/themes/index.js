@@ -41,6 +41,7 @@ export const lightTheme = createTheme({
       border: "#EBEBEB",
       check_box_border: "#EBEBEB",
       check_box_inner: "#FFFFFF",
+      check_box_checked: "#3E9F48",
       delete_icon: "#262626",
       edit_icon: "#262626",
       pagination_text: "#262626",
@@ -51,12 +52,22 @@ export const lightTheme = createTheme({
     default_button: {
       delete_background: "#E34444",
       import_background: "#3D9E47",
-      onboard_background: "#F1B92A",
+      onboard_background: "#478778",
       add_background: "#3D9E47",
       cancel_background: "#E34444",
       submit_background: "#3D9E47",
-      sync_background: "",
+      success_alert_background: "#3D9E47",
+      info_alert_background: "#7F7F7F",
+      error_alert_background: "#E34444",
+      warning_alert_background: "#E34444",
+      configure_table_background: "#EAEAEA",
+      configure_table_text: "#7F7F7F",
+      left_background: "#EAEAEA",
+      right_background: "#EAEAEA",
+      up_background: "#EAEAEA",
+      down_background: "#EAEAEA",
       primary_text: "#FFFFFF",
+      secondary_text: "#262626",
     },
 
     drop_down_button: {
@@ -115,6 +126,18 @@ export const lightTheme = createTheme({
     icon: {
       complete: "#66B127",
       incomplete: "#F1B92A",
+    },
+
+    default_table_Configurations: {
+      item_hover_text: "#000000",
+      item_select_text: "#000000",
+      item_hover_background: "#F1F6EE",
+      item_select_background: "#F1F6EE",
+    },
+
+    sweet_alert: {
+      primary_text: "#545454",
+      background: "#FFFFFF",
     },
   },
 
@@ -176,6 +199,7 @@ export const darkTheme = createTheme({
       border: "#EBEBEB",
       check_box_border: "#EBEBEB",
       check_box_inner: "#09120C",
+      check_box_checked: "#3E9F48",
       delete_icon: "#262626",
       edit_icon: "#262626",
       pagination_text: "#EBEBEB",
@@ -186,12 +210,22 @@ export const darkTheme = createTheme({
     default_button: {
       delete_background: "#E34444",
       import_background: "#3D9E47",
-      onboard_background: "#F1B92A",
+      onboard_background: "#478778",
       add_background: "#3D9E47",
       cancel_background: "#E34444",
       submit_background: "#3D9E47",
-      sync_background: "",
+      success_alert_background: "#3D9E47",
+      info_alert_background: "#7F7F7F",
+      error_alert_background: "#E34444",
+      warning_alert_background: "#7F7F7F",
+      configure_table_background: "#7F7F7F",
+      configure_table_text: "#FFFFFF",
+      left_background: "#09120C",
+      right_background: "#09120C",
+      up_background: "#09120C",
+      down_background: "#09120C",
       primary_text: "#FFFFFF",
+      secondary_text: "#EAEAEA",
     },
 
     drop_down_button: {
@@ -250,6 +284,19 @@ export const darkTheme = createTheme({
     icon: {
       complete: "#66B127",
       incomplete: "#F1B92A",
+    },
+
+    default_table_Configurations: {
+      primary_text: "#FFFFFF",
+      item_hover_text: "#FFFFFF",
+      item_select_text: "#FFFFFF",
+      item_hover_background: "#ACACAC",
+      item_select_background: "#09120C",
+    },
+
+    sweet_alert: {
+      primary_text: "#FFFFFF",
+      background: "#09120C",
     },
   },
 

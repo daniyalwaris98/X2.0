@@ -263,6 +263,7 @@ async def get_atoms():
         return JSONResponse(content=atom_obj_list, status_code=200)
 
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Atom Devices", status_code=500)
 

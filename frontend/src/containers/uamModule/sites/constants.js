@@ -1,12 +1,11 @@
 export const dataKeysArray = [
-    "site_name",
-    "status",
-    "region_name",
-    "latitude",
-    "lontitude",
-    "city",
-    // "site_id",
-    // "creation_date",
-    // "modification_date",      
-  ];
-  
+  "site_name",
+  "status",
+  "region_name",
+  "latitude",
+  "longitude",
+  "city",
+  // "site_id",
+  // "creation_date",
+  // "modification_date",
+];

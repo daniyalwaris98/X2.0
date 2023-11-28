@@ -80,6 +80,10 @@ export const generateObject = (dataKeys) => {
   return Object.fromEntries(dataKeys.map((key) => [key, ""]));
 };
 
+export const getTableScrollWidth = (columns) => {
+  return columns.length * 220;
+};
+
 // const menuItems = [
 //   { id: "Atom", name: "Atom", path: "/" },
 //   {

@@ -6,8 +6,8 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchSites: builder.query({
       query: () => "/api/v1/uam/site/get_all_sites",
     }),
-   
-    deleteSite: builder.mutation({
+
+    deleteSites: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/site/delete_sites",
         method: "POST",
@@ -33,7 +33,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 export const {
   useFetchSitesQuery: useFetchRecordsQuery,
-  useDeleteSiteMutation: useDeleteRecordsMutation,
+  useDeleteSitesMutation: useDeleteRecordsMutation,
   // form apis
   useAddSiteMutation: useAddRecordMutation,
   useUpdateSiteMutation: useUpdateRecordMutation,
