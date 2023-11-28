@@ -24,7 +24,7 @@ const deviceSlice = createSlice({
           if (deletedIds.length > 0) {
             state.all_data = state.all_data.filter((item) => {
               const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item.site_id;
+                return deletedId === item.device_id;
               });
               return !shouldKeepItem;
             });
@@ -42,7 +42,7 @@ const deviceSlice = createSlice({
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {
-            if (item.site_id === objectToReplace.site_id) {
+            if (item.device_id === objectToReplace.device_id) {
               return { ...item, ...objectToReplace };
             } else {
               return item;

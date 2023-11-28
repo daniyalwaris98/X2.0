@@ -12,15 +12,20 @@ import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../store/features/uamModule/racks/apis";
-import { useFetchSiteNamesQuery } from "../../../store/features/dropDowns/apis";
+import {
+  useFetchSiteNamesQuery,
+  useFetchStatusNamesQuery,
+} from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
 import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
+import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 
 const schema = yup.object().shape({
   rack_name: yup.string().required("Rack name is required"),
   site_name: yup.string().required("Site name is required"),
+  status: yup.string().required("Status is required"),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -41,6 +46,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   // fetching dropdowns data from backend using apis
   const { error: siteNamesError, isLoading: isSiteNamesLoading } =
     useFetchSiteNamesQuery();
+  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
+    useFetchStatusNamesQuery();
 
   // post api for the form
   const [
@@ -84,6 +91,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // ///getting dropdowns data from the store
   const siteNames = useSelector(selectSiteNames);
+  const statusNames = useSelector(selectStatusNames);
 
   // on form submit
   const onSubmit = (data) => {
@@ -123,7 +131,12 @@ const Index = ({ handleClose, open, recordToEdit }) => {
           </Grid>
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit control={control} dataKey="unit_position" />
-            <DefaultFormUnit control={control} dataKey="status" required />
+            <SelectFormUnit
+              control={control}
+              dataKey="status"
+              options={statusNames}
+              required
+            />
             <DefaultFormUnit control={control} dataKey="ru" />
             <DefaultFormUnit control={control} dataKey="height" />
           </Grid>

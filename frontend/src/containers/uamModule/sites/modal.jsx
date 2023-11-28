@@ -20,7 +20,14 @@ import { formSetter } from "../../../utils/helpers";
 import DefaultSelect from "../../../components/selects";
 
 const schema = yup.object().shape({
-  site_name: yup.string().required("Site name is required"),
+  site_name: yup
+    .string()
+    .trim() // Remove leading and trailing spaces
+    .required("Site name is required")
+    .matches(
+      /^[a-zA-Z0-9]+([ -_][a-zA-Z0-9]+)*$/,
+      "Invalid characters in site name"
+    ),
   status: yup.string().required("Status is required"),
   city: yup.string().matches(/^[A-Za-z]+$/, "City must contain only alphabets"),
 });
@@ -89,6 +96,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // on form submit
   const onSubmit = (data) => {
+    // console.log("site data", data);
     if (recordToEdit) {
       data.site_id = recordToEdit.site_id;
       updateRecord(data);
