@@ -137,6 +137,8 @@ const Index = () => {
       jsonToExcel(dataSource, "sites");
     } else if (optionType === "Template") {
       jsonToExcel([generateObject(dataKeys)], "site_template");
+    } else {
+      jsonToExcel(dataSource, "sites");
     }
     handleSuccessAlert("File exported successfully.");
   }
