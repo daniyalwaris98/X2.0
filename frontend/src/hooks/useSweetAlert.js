@@ -48,9 +48,27 @@ export default function useSweetAlert() {
           theme?.palette?.default_button?.info_alert_background,
       }),
     custom: (options) => Swal.fire(options),
-    callback: (icon, title, text, callback) =>
+    callback: (type, title, text, callback) => {
+      const confirmButtonColor =
+        type === "success"
+          ? theme?.palette?.default_button?.success_alert_background
+          : theme?.palette?.default_button?.error_alert_background;
       Swal.fire({
-        icon,
+        icon: type,
+        title,
+        html: text,
+        background: theme?.palette?.sweet_alert?.background,
+        color: theme?.palette?.sweet_alert?.primary_text,
+        confirmButtonText: "Ok",
+        confirmButtonColor,
+      }).then((result) => {
+        callback();
+      });
+    },
+
+    decision_callback: (type, title, text, callback) =>
+      Swal.fire({
+        icon: type,
         title,
         html: text,
         background: theme?.palette?.sweet_alert?.background,
@@ -105,7 +123,12 @@ export default function useSweetAlert() {
     } else if (type === "error") {
       sweetAlertWrapper.callback(type, title ?? "Error!", message, callback);
     } else if (type === "warning") {
-      sweetAlertWrapper.callback(type, title ?? "Warning!", message, callback);
+      sweetAlertWrapper.decision_callback(
+        type,
+        title ?? "Warning!",
+        message,
+        callback
+      );
     } else if (type === "info") {
       sweetAlertWrapper.callback(type, title ?? "Info!", message, callback);
     }

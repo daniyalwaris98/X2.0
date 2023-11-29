@@ -1,16 +1,5 @@
-export const dataKeysArray = [
-    "board_name",
-    "device_name",
-    "serial_number",
-    "pn_code", 
-    "status",
-    "device_slot_id",
-    "software_version",
-    "hardware_version",
-    "manufacturer_date",
-    "eos_date",
-    "eol_date", 
-    "creation_date", 
-    "modification_date", 
-  ];
-  
+export const PAGE_NAME = "AP";
+export const PAGE_NAME_SMALL = "ap";
+export const PAGE_PATH = "ap";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_aps";
+export const TABLE_DATA_UNIQUE_ID = "ap_id";

@@ -1,17 +1,5 @@
-export const dataKeysArray = [
-    "device_name",
-    "license_name",
-    "status",
-    "license_description",
-    "rfs_date",
-    "activation_date",
-    "expiry_date",
-    "grace_period",
-    "serial_number",
-    "capacity",
-    "usage",
-    "pn_code",
-    "creation_date",
-    "modification_date",
-  ];
-  
+export const PAGE_NAME = "License";
+export const PAGE_NAME_SMALL = "license";
+export const PAGE_PATH = "license";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_licenses";
+export const TABLE_DATA_UNIQUE_ID = "license_id";

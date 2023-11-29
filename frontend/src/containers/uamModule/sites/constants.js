@@ -1,11 +1,5 @@
-export const dataKeysArray = [
-  "site_name",
-  "status",
-  "region_name",
-  "latitude",
-  "longitude",
-  "city",
-  // "site_id",
-  // "creation_date",
-  // "modification_date",
-];
+export const PAGE_NAME = "Site";
+export const PAGE_NAME_SMALL = "site";
+export const PAGE_PATH = "site";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_sites";
+export const TABLE_DATA_UNIQUE_ID = "site_id";

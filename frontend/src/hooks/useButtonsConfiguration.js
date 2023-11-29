@@ -35,11 +35,14 @@ export default function useButtonsConfiguration(buttonDetails) {
       },
     },
     configure_table: {
-      icon: <Icon fontSize="20px" icon="material-symbols:stack-outline" />,
+      icon: <Icon fontSize="20px" icon="fluent:stack-32-regular" />,
       sx: {
-        backgroundColor:
-          theme?.palette?.default_button?.configure_table_background,
-        color: theme?.palette?.default_button?.configure_table_text,
+        // backgroundColor:
+        //   theme?.palette?.default_button?.configure_table_background,
+        // color: theme?.palette?.default_button?.configure_table_text,
+        backgroundColor: theme?.palette?.drop_down_button?.export_background,
+        color: theme?.palette?.drop_down_button?.export_text,
+        border: `1px solid ${theme?.palette?.drop_down_button?.border}`,
       },
     },
     default_export: {

@@ -66,17 +66,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     trigger("secret_password");
   }, [watch("password_group_type")]);
 
-  // fetching dropdowns data from backend using apis
-  const {
-    error: passwordGroupNamesError,
-    isLoading: isPasswordGroupNamesLoading,
-  } = useFetchPasswordGroupNamesQuery();
-
-  const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
-
   // post api for the form
   const [
     addRecord,
@@ -100,6 +89,17 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
+  // fetching dropdowns data from backend using apis
+  const { refetch: refetchPasswordGroupNames } =
+    useFetchPasswordGroupNamesQuery(undefined, {
+      skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
+    });
+
+  const {
+    error: passwordGroupTypeNamesError,
+    isLoading: isPasswordGroupTypeNamesLoading,
+  } = useFetchPasswordGroupTypeNamesQuery();
+
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -107,6 +107,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isError: isAddRecordError,
     error: addRecordError,
     type: TYPE_SINGLE,
+    callback: handleClose,
   });
 
   useErrorHandling({
@@ -115,11 +116,18 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isError: isUpdateRecordError,
     error: updateRecordError,
     type: TYPE_SINGLE,
+    callback: handleClose,
   });
 
   // getting dropdowns data from the store
-  const passwordGroupNames = useSelector(selectPasswordGroupNames);
   const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
+
+  // effects
+  useEffect(() => {
+    if (isAddRecordSuccess || isUpdateRecordSuccess) {
+      refetchPasswordGroupNames();
+    }
+  }, [isAddRecordSuccess, isUpdateRecordSuccess]);
 
   // on form submit
   const onSubmit = (data) => {

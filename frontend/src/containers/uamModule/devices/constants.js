@@ -1,32 +1,5 @@
-export const dataKeysArray = [
-    "ip_address",
-    "device_name",
-    "device_type",
-    "site_name",
-    "rack_name",
-    "software_type",
-    "software_version", 
-    "patch_version", 
-    "manufacturer", 
-    "creation_date", 
-    "modification_date", 
-    "hw_eos_date",  
-    "hw_eol_date",   
-    "sw_eos_date",
-    "sw_eol_date",
-    "rfs_date",
-    "contract_expiry",
-    "uptime",
-    "manufacture_date",
-    "authentication", 
-    "serial_number", 
-    "pn_code", 
-    "subrack_id_number", 
-    "hardware_version", 
-    "max_power",  
-    "site_type",   
-    "source", 
-    "stack",  
-    "contract_number", 
-  ];
-  
+export const PAGE_NAME = "Device";
+export const PAGE_NAME_SMALL = "device";
+export const PAGE_PATH = "device";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_devices";
+export const TABLE_DATA_UNIQUE_ID = "device_id";

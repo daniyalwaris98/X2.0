@@ -333,3 +333,7 @@ def delete_rack_util(rack_ids):
     except Exception:
         traceback.print_exc()
         return "Server Error", 500
+
+
+
+#updated rack utils

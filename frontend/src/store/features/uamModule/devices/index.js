@@ -18,7 +18,21 @@ const deviceSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteDevice.matchFulfilled,
+        extendedApi.endpoints.deleteDevices.matchFulfilled,
+        (state, action) => {
+          const deletedIds = action.payload?.data || [];
+          if (deletedIds.length > 0) {
+            state.all_data = state.all_data.filter((item) => {
+              const shouldKeepItem = deletedIds.some((deletedId) => {
+                return deletedId === item.device_id;
+              });
+              return !shouldKeepItem;
+            });
+          }
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.dismantleDevices.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {

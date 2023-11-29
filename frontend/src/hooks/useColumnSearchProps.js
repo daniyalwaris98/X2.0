@@ -1,8 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Button, Input, Space } from "antd";
-import { SearchOutlined } from "@ant-design/icons";
+import { SearchOutlined, RestOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
 import { useTheme } from "@mui/material/styles";
+import { getTitle } from "../utils/helpers";
 
 export default function useColumnSearchProps() {
   const theme = useTheme();
@@ -37,11 +38,12 @@ export default function useColumnSearchProps() {
       >
         <Input
           ref={searchInput}
-          placeholder={`Search ${dataIndex}`}
-          value={selectedKeys[0]}
-          onChange={(e) =>
-            setSelectedKeys(e.target.value ? [e.target.value] : [])
-          }
+          placeholder={`Search ${getTitle(dataIndex)}`}
+          value={searchText}
+          onChange={(e) => {
+            setSearchText(e.target.value);
+            setSelectedKeys(e.target.value ? [e.target.value] : []);
+          }}
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{
             marginBottom: 8,
@@ -52,27 +54,35 @@ export default function useColumnSearchProps() {
         <Space>
           <Button
             type="primary"
-            onClick={() => handleSearch(selectedKeys, confirm, dataIndex)}
+            onClick={() => {
+              handleSearch(selectedKeys, confirm, dataIndex);
+              close();
+            }}
             icon={<SearchOutlined />}
             size="small"
             style={{
-              width: 30,
+              width: "100px",
               backgroundColor: "#3D9E47",
             }}
           >
             Search
           </Button>
           <Button
-            onClick={() => clearFilters && handleReset(clearFilters)}
+            type="primary"
+            onClick={() => {
+              clearFilters && handleReset(clearFilters);
+              close();
+            }}
+            icon={<RestOutlined />}
             size="small"
             style={{
-              width: 90,
-              borderColor: "#3D9E47",
+              width: "100px",
+              backgroundColor: "#3D9E47",
             }}
           >
             Reset
           </Button>
-          <Button
+          {/* <Button
             type="link"
             size="small"
             onClick={() => {
@@ -80,7 +90,7 @@ export default function useColumnSearchProps() {
             }}
           >
             close
-          </Button>
+          </Button> */}
         </Space>
       </div>
     ),
@@ -94,7 +104,7 @@ export default function useColumnSearchProps() {
       />
     ),
     onFilter: (value, record) =>
-      record[dataIndex].toString().toLowerCase().includes(value.toLowerCase()),
+      record[dataIndex]?.toString().toLowerCase().includes(value.toLowerCase()),
     onFilterDropdownOpenChange: (visible) => {
       if (visible) {
         setTimeout(() => searchInput.current?.select(), 100);

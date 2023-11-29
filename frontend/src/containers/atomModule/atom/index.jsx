@@ -37,6 +37,9 @@ import {
   ATOM_TRANSITION_ID,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import SiteModal from "../../uamModule/sites/modal";
+import RackModal from "../../uamModule/racks/modal";
+import PasswordGroupModal from "../passwordGroup/modal";
 
 const Index = () => {
   // theme
@@ -57,8 +60,14 @@ const Index = () => {
     useButtonsConfiguration({
       configure_table: { handleClick: handleTableConfigurationsOpen },
       atom_export: { handleClick: handleExport },
-      default_delete: { handleClick: handleDelete, selectedRowKeys },
-      default_onboard: { handleClick: handleOnboard, selectedRowKeys },
+      default_delete: {
+        handleClick: handleDelete,
+        visible: selectedRowKeys.length > 0,
+      },
+      default_onboard: {
+        handleClick: handleOnboard,
+        visible: selectedRowKeys.length > 0,
+      },
       atom_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
       default_import: { handleClick: handleInputClick },
     });
@@ -69,6 +78,9 @@ const Index = () => {
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
+  const [siteModalOpen, setSiteModalOpen] = useState(false);
+  const [rackModalOpen, setRackModalOpen] = useState(false);
+  const [passwordGroupModalOpen, setPasswordGroupModalOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -134,7 +146,9 @@ const Index = () => {
   });
 
   // effects
-  // useEffect(() => {}, []);
+  useEffect(() => {
+    setSelectedRowKeys([]);
+  }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
 
   // handlers
   function handlePostSeed(data) {
@@ -205,6 +219,30 @@ const Index = () => {
     setOpen(false);
   }
 
+  function handleOpenSiteModal() {
+    setSiteModalOpen(true);
+  }
+
+  function handleCloseSiteModal() {
+    setSiteModalOpen(false);
+  }
+
+  function handleOpenRackModal() {
+    setRackModalOpen(true);
+  }
+
+  function handleCloseRackModal() {
+    setRackModalOpen(false);
+  }
+
+  function handleOpenPasswordGroupModal() {
+    setPasswordGroupModalOpen(true);
+  }
+
+  function handleClosePasswordGroupModal() {
+    setPasswordGroupModalOpen(false);
+  }
+
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
@@ -267,6 +305,33 @@ const Index = () => {
             open={open}
             handleClose={handleClose}
             recordToEdit={recordToEdit}
+            handleOpenSiteModal={handleOpenSiteModal}
+            handleOpenRackModal={handleOpenRackModal}
+            handleOpenPasswordGroupModal={handleOpenPasswordGroupModal}
+          />
+        ) : null}
+
+        {siteModalOpen ? (
+          <SiteModal
+            handleClose={handleCloseSiteModal}
+            open={siteModalOpen}
+            recordToEdit={null}
+          />
+        ) : null}
+
+        {rackModalOpen ? (
+          <RackModal
+            handleClose={handleCloseRackModal}
+            open={rackModalOpen}
+            recordToEdit={null}
+          />
+        ) : null}
+
+        {passwordGroupModalOpen ? (
+          <PasswordGroupModal
+            handleClose={handleClosePasswordGroupModal}
+            open={passwordGroupModalOpen}
+            recordToEdit={null}
           />
         ) : null}
 

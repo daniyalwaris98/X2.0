@@ -11,9 +11,14 @@ export default function useErrorHandling({
   isError,
   error,
   type,
+  callback = () => {},
 }) {
-  const { handleSuccessAlert, handleInfoAlert, handleErrorAlert } =
-    useSweetAlert();
+  const {
+    handleSuccessAlert,
+    handleInfoAlert,
+    handleErrorAlert,
+    handleCallbackAlert,
+  } = useSweetAlert();
 
   useEffect(() => {
     if (type === TYPE_FETCH) {
@@ -33,7 +38,8 @@ export default function useErrorHandling({
       }
     } else if (type === TYPE_SINGLE) {
       if (isSuccess) {
-        handleSuccessAlert(data?.message);
+        handleCallbackAlert(data?.message, callback, "success");
+        // handleSuccessAlert(data?.message);
       } else if (isError) {
         if (error?.status === 400) {
           handleErrorAlert(error?.data);

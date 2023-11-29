@@ -10,6 +10,9 @@ import {
   PAGE_NAME as PAGE_NAME_PASSWORD_GROUP,
   PAGE_PATH as PAGE_PATH_PASSWORD_GROUP,
 } from "./passwordGroup/constants";
+import { getPathLastSegment } from "../../utils/helpers";
+
+export const MODULE_PATH = "atom_module";
 
 const menuItems = [
   { id: PAGE_PATH_ATOM, name: PAGE_NAME_ATOM, path: PAGE_PATH_ATOM },
@@ -21,6 +24,9 @@ const menuItems = [
 ];
 
 function Index(props) {
+  let pagePath = getPathLastSegment();
+  if (pagePath === MODULE_PATH) pagePath = PAGE_PATH_ATOM;
+
   return (
     <>
       <Card
@@ -29,7 +35,7 @@ function Index(props) {
           height: "50px",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} defaultPage={PAGE_PATH_ATOM} />
+        <HorizontalMenu menuItems={menuItems} defaultPage={pagePath} />
       </Card>
       <Outlet />
     </>
