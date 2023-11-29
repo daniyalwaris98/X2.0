@@ -48,7 +48,10 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleExport },
-    default_dismantle: { handleClick: handleDismantle, selectedRowKeys },
+    default_dismantle: {
+      handleClick: handleDismantle,
+      visible: selectedRowKeys.length > 0,
+    },
   });
 
   // refs

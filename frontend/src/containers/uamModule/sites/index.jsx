@@ -48,7 +48,10 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleExport },
-    default_delete: { handleClick: handleDelete, selectedRowKeys },
+    default_delete: {
+      handleClick: handleDelete,
+      visible: selectedRowKeys.length > 0,
+    },
     default_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
   });
 

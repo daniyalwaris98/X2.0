@@ -60,8 +60,14 @@ const Index = () => {
     useButtonsConfiguration({
       configure_table: { handleClick: handleTableConfigurationsOpen },
       atom_export: { handleClick: handleExport },
-      default_delete: { handleClick: handleDelete, selectedRowKeys },
-      default_onboard: { handleClick: handleOnboard, selectedRowKeys },
+      default_delete: {
+        handleClick: handleDelete,
+        visible: selectedRowKeys.length > 0,
+      },
+      default_onboard: {
+        handleClick: handleOnboard,
+        visible: selectedRowKeys.length > 0,
+      },
       atom_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
       default_import: { handleClick: handleInputClick },
     });
