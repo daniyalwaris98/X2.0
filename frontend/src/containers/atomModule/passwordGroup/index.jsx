@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import DefaultTable from "../../../components/tables";
@@ -127,6 +127,11 @@ const Index = () => {
     error: deleteRecordsError,
     type: TYPE_BULK,
   });
+
+  // effects
+  useEffect(() => {
+    setSelectedRowKeys([]);
+  }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
 
   // handlers
   function handlePostSeed(data) {

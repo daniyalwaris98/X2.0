@@ -3,7 +3,10 @@ import { useForm } from "react-hook-form";
 import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
 import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
+import {
+  SelectFormUnit,
+  AddableSelectFormUnit,
+} from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -29,7 +32,7 @@ const schema = yup.object().shape({
   status: yup.string().required("Status is required"),
 });
 
-const Index = ({ handleClose, open, recordToEdit }) => {
+const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
   const theme = useTheme();
 
   // states
@@ -134,33 +137,33 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               disabled={recordToEdit !== null}
               required
             />
-
-            <SelectFormUnit
-              control={control}
-              dataKey="site_name"
-              options={siteNames}
-              required
-            />
             <DefaultFormUnit control={control} dataKey="serial_number" />
             <DefaultFormUnit control={control} dataKey="manufacturer_date" />
             <DefaultFormUnit control={control} dataKey="pn_code" />
+            <DefaultFormUnit control={control} dataKey="unit_position" />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="unit_position" />
+            <AddableSelectFormUnit
+              control={control}
+              dataKey="site_name"
+              options={siteNames}
+              onAddClick={handleOpenSiteModal}
+              required
+            />
+            <DefaultFormUnit control={control} dataKey="ru" />
+            <DefaultFormUnit control={control} dataKey="height" />
+            <DefaultFormUnit control={control} dataKey="width" />
+          </Grid>
+          <Grid item xs={12} sm={4}>
             <SelectFormUnit
               control={control}
               dataKey="status"
               options={statusNames}
               required
             />
-            <DefaultFormUnit control={control} dataKey="ru" />
-            <DefaultFormUnit control={control} dataKey="height" />
-          </Grid>
-          <Grid item xs={12} sm={4}>
             <DefaultFormUnit control={control} dataKey="rfs_date" />
             <DefaultFormUnit control={control} dataKey="rack_model" />
             <DefaultFormUnit control={control} dataKey="brand" />
-            <DefaultFormUnit control={control} dataKey="width" />
           </Grid>
 
           <Grid item xs={12}>

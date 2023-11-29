@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import DefaultTable from "../../../components/tables";
@@ -23,6 +23,7 @@ import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import SiteModal from "../sites/modal";
 
 const Index = () => {
   // theme
@@ -51,6 +52,7 @@ const Index = () => {
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
+  const [siteModalOpen, setSiteModalOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -96,6 +98,11 @@ const Index = () => {
     type: "bulk",
   });
 
+  // effects
+  useEffect(() => {
+    setSelectedRowKeys([]);
+  }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
+
   // handlers
   function deleteData(allowed) {
     if (allowed) {
@@ -128,6 +135,14 @@ const Index = () => {
   function handleClose() {
     setRecordToEdit(null);
     setOpen(false);
+  }
+
+  function handleOpenSiteModal() {
+    setSiteModalOpen(true);
+  }
+
+  function handleCloseSiteModal() {
+    setSiteModalOpen(false);
   }
 
   function handleChange(pagination, filters, sorter, extra) {
@@ -167,6 +182,15 @@ const Index = () => {
             handleClose={handleClose}
             open={open}
             recordToEdit={recordToEdit}
+            handleOpenSiteModal={handleOpenSiteModal}
+          />
+        ) : null}
+
+        {siteModalOpen ? (
+          <SiteModal
+            handleClose={handleCloseSiteModal}
+            open={siteModalOpen}
+            recordToEdit={null}
           />
         ) : null}
 

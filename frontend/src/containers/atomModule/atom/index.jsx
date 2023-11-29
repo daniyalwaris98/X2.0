@@ -140,7 +140,9 @@ const Index = () => {
   });
 
   // effects
-  // useEffect(() => {}, []);
+  useEffect(() => {
+    setSelectedRowKeys([]);
+  }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
 
   // handlers
   function handlePostSeed(data) {

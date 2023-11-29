@@ -25,10 +25,9 @@ import DefaultSelect from "../../../components/selects";
 const schema = yup.object().shape({
   site_name: yup
     .string()
-    .trim() // Remove leading and trailing spaces
     .required("Site name is required")
     .matches(
-      /^[a-zA-Z0-9]+([ -_][a-zA-Z0-9]+)*$/,
+      /^(?=.*[a-zA-Z])[a-zA-Z0-9]*(?:[_-][a-zA-Z0-9]+)*(?: [a-zA-Z0-9]+)*$/,
       "Invalid characters in site name"
     ),
   status: yup.string().required("Status is required"),

@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "../../../components/cards";
 import DefaultTable from "../../../components/tables";
@@ -95,6 +95,11 @@ const Index = () => {
     error: deleteRecordsError,
     type: "bulk",
   });
+
+  // effects
+  useEffect(() => {
+    setSelectedRowKeys([]);
+  }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
 
   // handlers
   function deleteData(allowed) {
