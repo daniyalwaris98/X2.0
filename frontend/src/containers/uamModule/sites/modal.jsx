@@ -12,7 +12,10 @@ import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../store/features/uamModule/sites/apis";
-import { useFetchStatusNamesQuery } from "../../../store/features/dropDowns/apis";
+import {
+  useFetchSiteNamesQuery,
+  useFetchStatusNamesQuery,
+} from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
@@ -47,10 +50,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     formSetter(recordToEdit, setValue);
   }, []);
 
-  // fetching dropdowns data from backend using apis
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
-
   // post api for the form
   const [
     addRecord,
@@ -74,6 +73,13 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
+  // fetching dropdowns data from backend using apis
+  const { refetch: refetchSiteNames } = useFetchSiteNamesQuery(undefined, {
+    skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
+  });
+  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
+    useFetchStatusNamesQuery();
+
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -93,6 +99,13 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // getting dropdowns data from the store
   const statusNames = useSelector(selectStatusNames);
+
+  // effects
+  useEffect(() => {
+    if (isAddRecordSuccess || isUpdateRecordSuccess) {
+      refetchSiteNames();
+    }
+  }, [isAddRecordSuccess, isUpdateRecordSuccess]);
 
   // on form submit
   const onSubmit = (data) => {

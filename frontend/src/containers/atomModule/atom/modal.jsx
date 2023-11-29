@@ -3,7 +3,10 @@ import { useForm } from "react-hook-form";
 import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
 import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
+import {
+  SelectFormUnit,
+  AddableSelectFormUnit,
+} from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -37,7 +40,14 @@ const schema = yup.object().shape({
   ip_address: yup.string().required("Ip address is required"),
 });
 
-const Index = ({ handleClose, open, recordToEdit }) => {
+const Index = ({
+  handleClose,
+  open,
+  recordToEdit,
+  handleOpenSiteModal,
+  handleOpenRackModal,
+  handleOpenPasswordGroupModal,
+}) => {
   // states
   const [initialRender, setInitialRender] = useState(true);
 
@@ -118,6 +128,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isError: isAddRecordError,
     error: addRecordError,
     type: TYPE_SINGLE,
+    callback: handleClose,
   });
 
   useErrorHandling({
@@ -126,6 +137,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isError: isUpdateRecordError,
     error: updateRecordError,
     type: TYPE_SINGLE,
+    callback: handleClose,
   });
 
   // getting dropdowns data from the store
@@ -166,15 +178,17 @@ const Index = ({ handleClose, open, recordToEdit }) => {
         <Grid container spacing={5}>
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit control={control} dataKey="ip_address" required />
-            <SelectFormUnit
+            <AddableSelectFormUnit
               control={control}
               dataKey="site_name"
               options={siteNames}
+              onAddClick={handleOpenSiteModal}
             />
-            <SelectFormUnit
+            <AddableSelectFormUnit
               control={control}
               dataKey="rack_name"
               options={rackNames}
+              onAddClick={handleOpenRackModal}
             />
             <DefaultFormUnit control={control} dataKey="section" />
             <DefaultFormUnit control={control} dataKey="department" />
@@ -203,10 +217,11 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               dataKey="vendor"
               options={vendorNames}
             />
-            <SelectFormUnit
+            <AddableSelectFormUnit
               control={control}
               dataKey="password_group"
               options={passwordGroupNames}
+              onAddClick={handleOpenPasswordGroupModal}
             />
             <DefaultFormUnit control={control} dataKey="criticality" />
             <DefaultFormUnit control={control} dataKey="virtual" />

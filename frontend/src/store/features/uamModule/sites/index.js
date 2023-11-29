@@ -1,5 +1,14 @@
 import { extendedApi } from "./apis";
-import { createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
+
+// Define an async thunk for the additional API call
+export const additionalApiCall = createAsyncThunk(
+  "drop_downs/fetchSiteNames",
+  async () => {
+    const response = await extendedApi.fetchSiteNames(); // Replace with your actual API call
+    return response.data;
+  }
+);
 
 const initialState = {
   all_data: [],
@@ -52,6 +61,12 @@ const siteSlice = createSlice({
         extendedApi.endpoints.addSite.matchFulfilled,
         (state, action) => {
           state.all_data.push(action.payload.data);
+          // console.log("extendedApi", extendedApi.endpoints.fetchSiteNames);
+          // Manually initiate the refetch using the query method
+          // extendedApi.endpoints.updateSite.initiate();
+          // extendedApi.query.fetchSiteNames({}, undefined, {
+          //   dispatchCondition: true,
+          // });
         }
       )
       .addMatcher(

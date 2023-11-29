@@ -13,6 +13,7 @@ import {
   useAddRecordMutation,
 } from "../../../store/features/uamModule/racks/apis";
 import {
+  useFetchRackNamesQuery,
   useFetchSiteNamesQuery,
   useFetchStatusNamesQuery,
 } from "../../../store/features/dropDowns/apis";
@@ -43,12 +44,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     formSetter(recordToEdit, setValue);
   }, []);
 
-  // fetching dropdowns data from backend using apis
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
-
   // post api for the form
   const [
     addRecord,
@@ -72,6 +67,20 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
+  // fetching dropdowns data from backend using apis
+  const { refetch: refetchRackNames } = useFetchRackNamesQuery(
+    {
+      site_name: watch("site_name", ""),
+    },
+    {
+      skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
+    }
+  );
+  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
+    useFetchSiteNamesQuery();
+  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
+    useFetchStatusNamesQuery();
+
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -92,6 +101,13 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   // ///getting dropdowns data from the store
   const siteNames = useSelector(selectSiteNames);
   const statusNames = useSelector(selectStatusNames);
+
+  // effects
+  useEffect(() => {
+    if (isAddRecordSuccess || isUpdateRecordSuccess) {
+      refetchRackNames();
+    }
+  }, [isAddRecordSuccess, isUpdateRecordSuccess]);
 
   // on form submit
   const onSubmit = (data) => {

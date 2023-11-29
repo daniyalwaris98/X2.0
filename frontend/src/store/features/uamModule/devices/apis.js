@@ -6,14 +6,23 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchDevices: builder.query({
       query: () => "/api/v1/uam/uam_device/get_all_devices",
     }),
-   
-    deleteDevice: builder.mutation({
+
+    deleteDevices: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/uam_device/delete_devices",
         method: "POST",
         body: data,
       }),
     }),
+
+    dismantleDevices: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/uam/uam_device/dismantle_onboard_device",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
     // form apis
     addDevice: builder.mutation({
       query: (data) => ({
@@ -33,7 +42,8 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 export const {
   useFetchDevicesQuery: useFetchRecordsQuery,
-  useDeleteDeviceMutation: useDeleteRecordsMutation,
+  useDeleteDevicesMutation: useDeleteRecordsMutation,
+  useDismantleDevicesMutation: useDismantleRecordsMutation,
   // form apis
   useAddDeviceMutation: useAddRecordMutation,
   useUpdateDeviceMutation: useUpdateRecordMutation,
