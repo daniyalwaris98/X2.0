@@ -1,13 +1,25 @@
 import * as XLSX from "xlsx";
 
-export const getTitle = (dataKey) => {
+export function getPathLastSegment() {
+  const path = window.location.pathname;
+  const segments = path.split("/");
+  return segments[segments.length - 1];
+}
+
+export function getPathSecondSegment() {
+  const path = window.location.pathname;
+  const segments = path.split("/");
+  return segments[1];
+}
+
+export function getTitle(dataKey) {
   return dataKey
     ?.split("_")
     ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
     ?.join(" ");
-};
+}
 
-export const convertToJson = (headers, fileData) => {
+export function convertToJson(headers, fileData) {
   let rows = [];
   fileData.forEach((row) => {
     const rowData = {};
@@ -22,10 +34,10 @@ export const convertToJson = (headers, fileData) => {
   });
   rows = rows.filter((value) => JSON.stringify(value) !== "{}");
   return rows;
-};
+}
 
 // Function to handle file selection
-export const handleFileChange = (event, convertToJson, handlePostSeed) => {
+export function handleFileChange(event, convertToJson, handlePostSeed) {
   const file = event.target.files[0];
   const reader = new FileReader();
   reader.readAsBinaryString(file);
@@ -43,9 +55,9 @@ export const handleFileChange = (event, convertToJson, handlePostSeed) => {
     let data = convertToJson(headers, fileData);
     handlePostSeed(data);
   };
-};
+}
 
-export const columnGenerator = (dataKeys, getColumnSearchProps, getTitle) => {
+export function columnGenerator(dataKeys, getColumnSearchProps, getTitle) {
   return dataKeys.map((dataKey) => {
     return {
       title: getTitle(dataKey),
@@ -55,34 +67,34 @@ export const columnGenerator = (dataKeys, getColumnSearchProps, getTitle) => {
       ...getColumnSearchProps(dataKey),
     };
   });
-};
+}
 
-export const jsonToExcel = (jsonData, fileName) => {
+export function jsonToExcel(jsonData, fileName) {
   let wb = XLSX.utils.book_new();
   let binarySeedData = XLSX.utils.json_to_sheet(jsonData);
   XLSX.utils.book_append_sheet(wb, binarySeedData, fileName);
   XLSX.writeFile(wb, `${fileName}.xlsx`);
-};
+}
 
-export const formSetter = (data, setValue) => {
+export function formSetter(data, setValue) {
   if (data) {
     Object.keys(data).forEach((key) => {
       setValue(key, data[key]);
     });
   }
-};
+}
 
-export const generateNumbersArray = (upToValue) => {
+export function generateNumbersArray(upToValue) {
   return Array.from({ length: upToValue + 1 }, (_, index) => index);
-};
+}
 
-export const generateObject = (dataKeys) => {
+export function generateObject(dataKeys) {
   return Object.fromEntries(dataKeys.map((key) => [key, ""]));
-};
+}
 
-export const getTableScrollWidth = (columns) => {
+export function getTableScrollWidth(columns) {
   return columns.length * 220;
-};
+}
 
 // const menuItems = [
 //   { id: "Atom", name: "Atom", path: "/" },

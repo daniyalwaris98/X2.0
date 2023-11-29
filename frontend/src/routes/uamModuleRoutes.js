@@ -10,49 +10,59 @@ import Licenses from "../containers/uamModule/licenses";
 import Aps from "../containers/uamModule/aps";
 import Hwlifecycle from "../containers/uamModule/hwLifeCycle";
 import { Navigate } from "react-router-dom";
+import { PAGE_PATH as PAGE_PATH_SITE } from "../containers/uamModule/sites/constants";
+import { PAGE_PATH as PAGE_PATH_RACK } from "../containers/uamModule/racks/constants";
+import { PAGE_PATH as PAGE_PATH_DEVICE } from "../containers/uamModule/devices/constants";
+import { PAGE_PATH as PAGE_PATH_BOARD } from "../containers/uamModule/boards/constants";
+import { PAGE_PATH as PAGE_PATH_SUB_BOARD } from "../containers/uamModule/subBoards/constants";
+import { PAGE_PATH as PAGE_PATH_SFP } from "../containers/uamModule/sfps/constants";
+import { PAGE_PATH as PAGE_PATH_LICENSE } from "../containers/uamModule/licenses/constants";
+import { PAGE_PATH as PAGE_PATH_AP } from "../containers/uamModule/aps/constants";
+import { PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLE } from "../containers/uamModule/hwLifeCycle/constants";
+import { MODULE_PATH } from "../containers/uamModule";
 
 const routes = {
-  path: "uam_module",
+  path: MODULE_PATH,
   element: <UamModule />,
   children: [
     {
-      path: "/uam_module", // Set the default path to "atom"
-      element: <Navigate to="site" replace />,
+      path: `/${MODULE_PATH}`,
+      element: <Navigate to={PAGE_PATH_SITE} replace />,
     },
     {
-      path: "site",
+      path: PAGE_PATH_SITE,
       element: <Sites />,
     },
     {
-      path: "rack",
+      path: PAGE_PATH_RACK,
       element: <Racks />,
     },
     {
-      path: "device",
+      path: PAGE_PATH_DEVICE,
       element: <Devices />,
     },
     {
-      path: "board",
+      path: PAGE_PATH_BOARD,
       element: <Boards />,
     },
     {
-      path: "sub_board",
+      path: PAGE_PATH_SUB_BOARD,
       element: <SubBoards />,
     },
     {
-      path: "sfp",
+      path: PAGE_PATH_SFP,
       element: <Sfps />,
     },
     {
-      path: "license",
+      path: PAGE_PATH_LICENSE,
       element: <Licenses />,
     },
     {
-      path: "ap",
+      path: PAGE_PATH_AP,
       element: <Aps />,
     },
     {
-      path: "hw_life_cycle",
+      path: PAGE_PATH_HW_LIFE_CYCLE,
       element: <Hwlifecycle />,
     },
   ],

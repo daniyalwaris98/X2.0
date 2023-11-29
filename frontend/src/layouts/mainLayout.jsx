@@ -31,6 +31,7 @@ import ncmActiveIcon from "../resources/svgs/ncmActiveIcon.svg";
 import logo from "../resources/svgs/logo.svg";
 import dayModeIcon from "../resources/svgs/dayModeIcon.svg";
 import nightModeIcon from "../resources/svgs/nightModeIcon.svg";
+import { getPathSecondSegment } from "../utils/helpers";
 
 const drawerWidth = 240;
 
@@ -89,10 +90,11 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Index() {
+  let modulePath = getPathSecondSegment();
+
   const theme = useTheme();
   const { isDarkMode, setDarkMode } = useContext(AppContext);
   const [open, setOpen] = useState(false);
-  const [selectedModule, setSelectedModule] = useState("Atom");
 
   const toggleTheme = () => {
     setDarkMode(!isDarkMode);
@@ -143,6 +145,10 @@ export default function Index() {
     },
   ];
 
+  const [selectedModule, setSelectedModule] = useState(
+    drawerMenuItems.find((item) => item.path === modulePath)
+  );
+
   return (
     <Box sx={{ display: "flex", zIndex: "9", position: "relative" }}>
       <Drawer variant="permanent" open={open}>
@@ -158,7 +164,7 @@ export default function Index() {
                 <ListItem
                   key={item.name}
                   disablePadding
-                  onClick={() => setSelectedModule(item.name)}
+                  onClick={() => setSelectedModule(item)}
                 >
                   <ListItemButton
                     sx={{
@@ -172,7 +178,7 @@ export default function Index() {
                         justifyContent: "center",
                       }}
                     >
-                      {selectedModule === item.name
+                      {selectedModule?.path === item.path
                         ? item.activeIcon
                         : item.inActiveIcon}
                     </ListItemIcon>
@@ -201,7 +207,7 @@ export default function Index() {
           }}
         >
           <div style={{ color: theme?.palette?.main_layout?.primary_text }}>
-            {selectedModule}
+            {selectedModule?.name}
           </div>
           <div style={{ display: "flex" }}>
             <div style={{ cursor: "pointer" }}>

@@ -1,5 +1,5 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu";
 import {
@@ -38,6 +38,9 @@ import {
   PAGE_NAME as PAGE_NAME_HW_LIFE_CYCLE,
   PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLE,
 } from "./hwLifeCycle/constants";
+import { getPathLastSegment } from "../../utils/helpers";
+
+export const MODULE_PATH = "uam_module";
 
 const menuItems = [
   { id: PAGE_PATH_SITE, name: PAGE_NAME_SITE, path: PAGE_PATH_SITE },
@@ -60,6 +63,9 @@ const menuItems = [
 ];
 
 function Index(props) {
+  let pagePath = getPathLastSegment();
+  if (pagePath === MODULE_PATH) pagePath = PAGE_PATH_SITE;
+
   return (
     <>
       <Card
@@ -69,7 +75,7 @@ function Index(props) {
           boxShadow: "unset !important",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} defaultPage={PAGE_PATH_SITE} />
+        <HorizontalMenu menuItems={menuItems} defaultPage={pagePath} />
       </Card>
       <Outlet />
     </>
