@@ -23,6 +23,12 @@ import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import {
+  PAGE_NAME,
+  FILE_NAME_EXPORT_ALL_DATA,
+  TABLE_DATA_UNIQUE_ID,
+} from "./constants";
+import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 
 const Index = () => {
   // theme
@@ -43,7 +49,7 @@ const Index = () => {
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleExport },
     default_delete: { handleClick: handleDelete, selectedRowKeys },
-    default_add: { handleClick: handleAdd, namePostfix: "HW Lifecycle" },
+    default_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
   });
 
   // refs
@@ -85,7 +91,7 @@ const Index = () => {
     isSuccess: isFetchRecordsSuccess,
     isError: isFetchRecordsError,
     error: fetchRecordsError,
-    type: "fetch",
+    type: TYPE_FETCH,
   });
 
   useErrorHandling({
@@ -93,7 +99,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: "bulk",
+    type: TYPE_BULK,
   });
 
   // handlers
@@ -140,7 +146,7 @@ const Index = () => {
     } else if (optionType === "Template") {
       jsonToExcel([generateObject(dataKeys)], "site_template");
     } else {
-      jsonToExcel(dataSource, "sites");
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     }
     handleSuccessAlert("File exported successfully.");
   }
@@ -185,7 +191,7 @@ const Index = () => {
 
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
-            pageName="HW Lifecycle"
+            pageName={PAGE_NAME}
             buttons={buttonsConfigurationList}
             selectedRowKeys={selectedRowKeys}
           />

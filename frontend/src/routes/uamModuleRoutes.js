@@ -17,42 +17,42 @@ const routes = {
   children: [
     {
       path: "/uam_module", // Set the default path to "atom"
-      element: <Navigate to="sites" replace />,
+      element: <Navigate to="site" replace />,
     },
     {
-      path: "sites",
+      path: "site",
       element: <Sites />,
     },
     {
-      path: "racks",
+      path: "rack",
       element: <Racks />,
     },
     {
-      path: "devices",
+      path: "device",
       element: <Devices />,
     },
     {
-      path: "boards",
+      path: "board",
       element: <Boards />,
     },
     {
-      path: "sub_boards",
+      path: "sub_board",
       element: <SubBoards />,
     },
     {
-      path: "sfps",
+      path: "sfp",
       element: <Sfps />,
     },
     {
-      path: "licenses",
+      path: "license",
       element: <Licenses />,
     },
     {
-      path: "aps",
+      path: "ap",
       element: <Aps />,
     },
     {
-      path: "hw_lifecycle",
+      path: "hw_life_cycle",
       element: <Hwlifecycle />,
     },
   ],
