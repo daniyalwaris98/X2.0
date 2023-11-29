@@ -1,6 +1,10 @@
 import { useEffect } from "react";
 import useSweetAlert from "./useSweetAlert";
 
+export const TYPE_FETCH = "fetch";
+export const TYPE_SINGLE = "single";
+export const TYPE_BULK = "bulk";
+
 export default function useErrorHandling({
   data,
   isSuccess,
@@ -12,7 +16,7 @@ export default function useErrorHandling({
     useSweetAlert();
 
   useEffect(() => {
-    if (type === "fetch") {
+    if (type === TYPE_FETCH) {
       if (isSuccess) {
         // handleSuccessAlert("Data Fetched Successfully");
         console.log("Data Fetched Successfully");
@@ -27,7 +31,7 @@ export default function useErrorHandling({
           console.log(error);
         }
       }
-    } else if (type === "single") {
+    } else if (type === TYPE_SINGLE) {
       if (isSuccess) {
         handleSuccessAlert(data?.message);
       } else if (isError) {
@@ -50,7 +54,7 @@ export default function useErrorHandling({
           console.log(error);
         }
       }
-    } else if (type === "bulk") {
+    } else if (type === TYPE_BULK) {
       if (isSuccess) {
         if (data?.error === 0) {
           handleSuccessAlert(data?.success_list?.join("<br>"));

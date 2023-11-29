@@ -21,7 +21,10 @@ async def add_atom(atom: AddAtomRequestSchema):
         if status != 200:
             response, status = add_transition_atom(atom, False)
             print("if reponse not 200::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
-        return JSONResponse(content=response, status_code=status)
+            return JSONResponse(content=response, status_code=status)
+        elif status ==400:
+            print("status is 400:::::::::::::::::::::::::::::::::",400,file=sys.stderr)
+            return JSONResponse(content = response,status_code = 400)
 
     except Exception:
         traceback.print_exc()
@@ -40,8 +43,10 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
         success_list = []
         data_lst = []
         data_filtered_lst = []
-        
+        filtered_list = []  
+        unique_success_list = []
         for atomObj in atom_objs:
+            print("step1::::::::::::::::::::::",file=sys.stderr)
             try:
                 row += 1
                 atomObj["ip_address"] = atomObj["ip_address"].strip()
@@ -57,24 +62,25 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
 
                 if atom is not None:
                     msg, status = add_complete_atom(atomObj, True)
-                    for key,value in msg.items():
-                            # print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
-                            # print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
+                    print("msg in atom is ::::::::::::::::",msg,file=sys.stderr)
+                    if isinstance(msg,dict):
+                        for key,value in msg.items():
+                                print("key for msg ares for instance::::::::::::::::::::",key,file=sys.stderr)
+                                print("values are instance:::::::::::::::::::::::::::::",value,file=sys.stderr)
 
-                            if key =='data':
-                                data_lst.append(value)
-                            if key == 'message':
-                                if value not in success_list:
-                                    # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
-                                    success_list.append(value)
+                                if key =='data':
+                                    data_lst.append(value)
+                                if key == 'message':
+                                    if value not in success_list:
+                                        success_list.append(value)
+                    else:
+                        print("atom msg ims not a dict and it is string",file=sys.stderr)
+                        error_list.append(msg)
                 elif transit_atom is not None:
                     msg, status = add_transition_atom(atomObj, True)
-                    # print("tranistion atom is not none::::::::::::::::::::",msg,file=sys.stderr)
-                    # print('status is no none for tranistiona atom is::::::::::::::::::::::::',status,file=sys.stderr)
-                    # print("data list is::::::::::::::::::::::",msg,file=sys.stderr)
+                   
                     for key,value in msg.items():
-                        # print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
-                        # print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
+                    
 
                         if key =='data':
                             data_lst.append(value)
@@ -99,40 +105,24 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
 
                     if status != 200:
                         msg, status = add_transition_atom(atomObj, False)
-                        # print("msg if status not 200 for tanistiona tom is:::::",msg,file=sys.stderr)
-                        # print("status if tranistion not 200 is::::::::::::::::::",status,file=sys.stderr)
-                        for key,value in msg.items():
-                            # print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
-                            # print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
-
-                            if key =='data':
-                                data_lst.append(value)
-                            if key == 'message':
-                                if value not in success_list:
-                                    # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
-                                    success_list.append(value)
-            
+                        if isinstance(msg,dict):
+                            for key,value in msg.items():
+                                if key =='data':
+                                    data_lst.append(value)
+                                if key == 'message':
+                                    if value not in success_list:
+                                        # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
+                                        success_list.append(value)
+                        else:
+                            error_list.append(msg)
             except Exception:
                 traceback.print_exc()
                 status = 500
                 msg = f"{atomObj['ip_address']} : Exception Occurred"
-            # print("data list with vues are:::::::::::::::::::: ",data_lst,file=sys.stderr)
-            # print("success list with the data is :::::::::::::::::::::::::::::::::",success_list,file=sys.stderr)
-            # if status == 200:
-            #     success_list.append(msg)
-            # else:
-            #     error_list.append(msg)
-            # unique_data = {}
-            # # Loop through messages to filter unique data
-            # for msg_item in data_lst:
-            #     if msg_item['atom_transition_id'] not in unique_data and msg_item['ip_address'] not in unique_data:
-            #         unique_data[msg_item['atom_transition_id']] = msg_item
-            # data_lst = list(unique_data.values())
-            # success_list = list(set(success_list))
-            # print("data list with vues are:::/::::::::::::::::: ",data_lst,file=sys.stderr)
             seen_ids = set()
             filtered_dict = {}
             for item in data_lst:
+                print("step2 is:::::::::::::::::::::::::::::::::::::::::::")
                 atom_transition_id = item.get('atom_transition_id')
                 atom_id = item.get('atom_id')
     
@@ -151,12 +141,16 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                     if atom_transition_id not in filtered_dict and atom_id not in filtered_dict:
                         filtered_dict[atom_transition_id] = item
                         filtered_dict[atom_id] = item
-
-            filtered_list = list(filtered_dict.values())
-            unique_success_list = list(success_list)
-            # print("data filtered list is:::::::::::::::::::::::::::",filtered_list,file=sys.stderr)
-            # print("unique suucess list is::::::::::::::",unique_success_list,file=sys.stderr)
-
+            filtered_list.append(filtered_dict.values())
+            unique_success_list.append(success_list)
+            # filtered_list = list(filtered_dict.values())
+            # unique_success_list = list(success_list)
+        print("step 3 is::::::::::::::::::::::::::::::::::::::::",file=sys.stderr)
+        print("filtered data list is:::::::::::::::",filtered_list,file=sys.stderr)
+        print("unique success liset is:::::::::::::::::::::::::::",unique_success_list,file=sys.stderr)
+        if not filtered_list:
+            print("step4::::::::::::::::::::::::::::::::::Filtered list is None")
+            error_list.append("Empty Import")
         response = SummeryResponseSchema(
             data = filtered_list,
             success=len(unique_success_list),
@@ -256,11 +250,12 @@ async def get_atoms():
                 traceback.print_exc()
 
         print(atom_obj_list, file=sys.stderr)
-
+        sorted_list = sorted(atom_obj_list, key=lambda x: x['creation_date'])
+        print("sorted list based on the creation date is::::::::::::::::::::::",sorted_list,file=sys.stderr)
         if len(atom_obj_list) <= 0:
             atom_obj_list = None
 
-        return JSONResponse(content=atom_obj_list, status_code=200)
+        return JSONResponse(content=sorted_list, status_code=200)
 
     except Exception:
         configs.db.rollback()

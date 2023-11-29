@@ -1,16 +1,10 @@
-export const dataKeysArray = [
-  "ip_address",
-  "site_name",
-  "rack_name",
-  "device_name",
-  "device_ru",
-  "department",
-  "domain",
-  "section",
-  "function",
-  "virtual",
-  "device_type",
-  "vendor",
-  "criticality",
-  "password_group",
-];
+export const PAGE_NAME = "Atom";
+export const PAGE_NAME_SMALL = "atom";
+export const PAGE_PATH = "atom";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_atoms";
+export const FILE_NAME_EXPORT_COMPLETE_DATA = "complete_atoms";
+export const FILE_NAME_EXPORT_INCOMPLETE_DATA = "incomplete_atoms";
+export const FILE_NAME_EXPORT_TEMPLATE = "atom_template";
+export const TABLE_DATA_UNIQUE_ID = "atom_table_id";
+export const ATOM_ID = "atom_id";
+export const ATOM_TRANSITION_ID = "atom_transition_id";

@@ -1,4 +1,5 @@
 from app.api.v1.atom.utils.atom_import import *
+import ipaddress
 
 
 def validate_site(device):
@@ -76,8 +77,14 @@ def validate_password_group(device):
 
 def validate_atom(device, update):
     try:
-        if device["ip_address"].strip() == "":
+        if device["ip_address"].strip() == "" or device['ip_address'] == 'string':
             return f"Ip Address Can Not be Empty", 400
+        if device['ip_address'] !="" or device['ip_address']!='string':
+            try:
+                validate_ip_address = ipaddress.ip_address(device['ip_address'])
+            except ValueError:
+                print("IP address is not a valid IP address")
+                return f"{device['ip_address']} : IP Address is not valid", 400
 
         if not update:
             if (
@@ -95,7 +102,7 @@ def validate_atom(device, update):
             ):
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 400
 
-        if device["device_name"] is None:
+        if device["device_name"] is None or device['device_name'] == 'string':
             return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
         device["device_name"] = device["device_name"].strip()
@@ -108,13 +115,13 @@ def validate_atom(device, update):
             if atom.ip_address != device["ip_address"].strip():
                 return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
 
-        if device["function"] is None:
+        if device["function"] is None or device['function'] == 'string':
             return f"{device['ip_address']} : Function Can Not be Empty", 400
 
         elif device["function"].strip() == "":
             return f"{device['ip_address']} : Function Can Not be Empty", 400
 
-        if device["device_type"] is None:
+        if device["device_type"] is None or device['device_type'] == 'string':
             return f"{device['ip_address']} : Device Type Can Not be Empty", 400
 
         device["device_type"] = device["device_type"].strip()
@@ -281,8 +288,16 @@ def add_transition_atom(device, update):
 
         device["ip_address"] = device["ip_address"].strip()
 
-        if device["ip_address"] == "":
+        if device["ip_address"] == "" or device['ip_address'] == 'string':
+            print("ip address is empty or a string::::::::::::::::::::::::",file=sys.stderr)
             return f"IP Address Can Not Be Empty", 400
+        
+        if device['ip_address'] !="" or device['ip_address']!='string':
+            try:
+                validate_ip_address = ipaddress.ip_address(device['ip_address'])
+            except ValueError:
+                print("IP address is not a valid IP address")
+                return f"{device['ip_address']} : IP Address is not valid", 400
 
         if not update:
             if (
@@ -389,58 +404,66 @@ def add_transition_atom(device, update):
 
 
 def fill_transition_data(device, trans_obj):
-    # print("device in fill tranistion data is:::::::::::::::::::",device,file=sys.stderr)
-    # print("trans obj error in fill tranistion data is::::::::::::::::::::::::",trans_obj,file=sys.stderr)
-    if device["device_name"] is not None:
-        if device["device_name"].strip() != "":
-            trans_obj.device_name = device["device_name"].strip()
+    try:
+        # print("device in fill tranistion data is:::::::::::::::::::",device,file=sys.stderr)
+        # print("trans obj error in fill tranistion data is::::::::::::::::::::::::",trans_obj,file=sys.stderr)
+        if device["device_name"] is not None:
+            if device["device_name"].strip() != "":
+                trans_obj.device_name = device["device_name"].strip()
 
-    if device["vendor"] is not None:
-        if device["vendor"].strip() != "":
-            trans_obj.vendor = device["vendor"].strip()
+        if device["vendor"] is not None:
+            if device["vendor"].strip() != "":
+                trans_obj.vendor = device["vendor"].strip()
 
-    if device["function"].strip() != "":
-        trans_obj.function = device["function"].strip()
+        if device["function"] is not None and device["function"].strip() != "":
+            trans_obj.function = device["function"].strip()
 
-    if device["device_type"] is not None:
-        if device["device_type"].strip() != "":
-            trans_obj.device_type = device["device_type"].strip()
+        if device["device_type"] is not None:
+            if device["device_type"].strip() != "":
+                trans_obj.device_type = device["device_type"].strip()
 
-    if device["site_name"] is not None:
-        if device["site_name"].strip() != "":
-            trans_obj.site_name = device["site_name"].strip()
+        if device["site_name"] is not None:
+            if device["site_name"].strip() != "":
+                trans_obj.site_name = device["site_name"].strip()
 
-    if device["rack_name"] is not None:
-        if device["rack_name"].strip() != "":
-            trans_obj.rack_name = device["rack_name"].strip()
+        if device["rack_name"] is not None:
+            if device["rack_name"].strip() != "":
+                trans_obj.rack_name = device["rack_name"].strip()
 
-    if device["password_group"] is not None:
-        if device["password_group"].strip() != "":
-            trans_obj.password_group = device["password_group"].strip()
+        if device["password_group"] is not None:
+            if device["password_group"].strip() != "":
+                trans_obj.password_group = device["password_group"].strip()
 
-    trans_obj.device_ru = device["device_ru"]
+        trans_obj.device_ru = device["device_ru"]
 
-    if device["department"] is not None:
-        if device["department"].strip() != "":
-            trans_obj.department = device["department"].strip()
+        if device["department"] is not None:
+            if device["department"].strip() != "":
+                trans_obj.department = device["department"].strip()
 
-    if device["section"] is not None:
-        if device["section"].strip() != "":
-            trans_obj.section = device["section"].strip()
+        if device["section"] is not None:
+            if device["section"].strip() != "":
+                trans_obj.section = device["section"].strip()
 
-    if device["criticality"] is not None:
-        if device["criticality"].strip() != "":
-            trans_obj.criticality = device["criticality"].strip()
+        if device["criticality"] is not None:
+            if device["criticality"].strip() != "":
+                trans_obj.criticality = device["criticality"].strip()
 
-    if device["domain"] is not None:
-        if device["domain"].strip() != "":
-            trans_obj.domain = device["domain"].strip()
+        if device["domain"] is not None:
+            if device["domain"].strip() != "":
+                trans_obj.domain = device["domain"].strip()
 
-    if device["virtual"] is not None:
-        if device["virtual"].strip() != "":
-            trans_obj.virtual = device["virtual"].strip()
+        if device["virtual"] is not None:
+            if device["virtual"].strip() != "":
+                trans_obj.virtual = device["virtual"].strip()
 
-    return trans_obj
+        if device['device_ru'] is None:
+            trans_obj.device_ru =0
+        else:
+            trans_obj.device_ru = device['device_ru']
+
+        return trans_obj
+    except Exception as e:
+        traceback.print_exc()
 
 
 def edit_atom_util(device):
@@ -672,7 +695,7 @@ def get_transition_atoms():
 def validate_password_group_name(pass_obj):
     pass_obj["password_group"] = pass_obj["password_group"].strip()
 
-    if pass_obj["password_group"] == "":
+    if pass_obj["password_group"] == "" or pass_obj["password_group"] =='string':
         return f"Password Group Can Not be Empty", 400
 
     if pass_obj["password_group"] == "default_password":
@@ -682,6 +705,8 @@ def validate_password_group_name(pass_obj):
 
 
 def validate_password_group_credentials(pass_obj, password_exist):
+    print("pass obj is::::::::::::::::::::::::::::::::::;",pass_obj,file=sys.stderr)
+    print("password exsist is::::::::::::::::::::::::::::::::::::",password_exist,file=sys.stderr)
     pass_obj["username"] = pass_obj["username"].strip()
     if pass_obj["username"] == "":
         return (
@@ -689,21 +714,30 @@ def validate_password_group_credentials(pass_obj, password_exist):
             400,
         )
     password_exist.username = pass_obj["username"]
+    if pass_obj['password_group_type'] is None or pass_obj['password_group_type'] == '':
+        return f"Password Group Type cannot be empty",400
+
+    if pass_obj['password_group_type'] == 'telnet' or pass_obj['password_group_type'] == 'Telnet':
+        print("passowrd gorup type is::::::::::::::::::::::::::;telnet",file=sys.stderr)
+        if pass_obj['secret_password'] is None or pass_obj['secret_password'] == '':
+            return f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",400
+            # print("password cannot be emoty for telnet:::::::::::::::::::",file=sys.stderr)
 
     pass_obj["password"] = pass_obj["password"].strip()
     if pass_obj["password"] == "":
         return f"{pass_obj['password_group']} : Password Field Can Not be Empty", 400
-
+    
     password_exist.password = pass_obj["password"]
+    
 
     if pass_obj["password_group_type"] == PasswordGroupTypeEnum.telnet:
         password_exist.password_group_type = "Telnet"
-
+        print("password group type is password exsit.password_group_type============",file=sys.stderr)
         if pass_obj["secret_password"] is None:
             return (
                 f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
-                400,
-            )
+                
+            ),400
 
         pass_obj["secret_password"] = pass_obj["secret_password"].strip()
 
@@ -731,7 +765,7 @@ def add_password_group_util(pass_obj, update):
             PasswordGroupTable.password_group == name_response
         ).first()
         
-        print("password group is::::::::::::::::::::::::::::::",password_group,file=sys.stderr)
+        # print("password group is::::::::::::::::::::::::::::::",password_group,file=sys.stderr)
         exist = False
         if password_group is not None:
             if not update:
@@ -743,33 +777,34 @@ def add_password_group_util(pass_obj, update):
             password_group = PasswordGroupTable()
             password_group.password_group = name_response
             pass_id = password_group.password_group_id
-            print("pass id issssssssssssssssss:::::::::::::::::::::::::::",pass_id,file=sys.stderr)
+            # print("pass id issssssssssssssssss:::::::::::::::::::::::::::",pass_id,file=sys.stderr)
 
         password_group, status = validate_password_group_credentials(
             pass_obj, password_group
         )
+        print("password group for validate passowrd group credential is::",password_group)
         if status != 200:
             return password_group, status
 
         if update:
             
             status = UpdateDBData(password_group)
-            print("password group status is::::::::::::::::::::::::::::::::",status,file=sys.stderr)
+            # print("password group status is::::::::::::::::::::::::::::::::",status,file=sys.stderr)
             if status == 200:
                 
                 pass_data = dict(pass_obj)
                 passworg_group_update = configs.db.query(PasswordGroupTable).filter_by(password_group = pass_data['password_group']).first()
                 if passworg_group_update:
                     password_group_id = passworg_group_update.password_group_id
-                    print("password group id is:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::update",password_group_id,file=sys.stderr)
+                    # print("password group id is:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::update",password_group_id,file=sys.stderr)
                     pass_data['password_group_id'] = password_group_id
-                    print(f"{pass_data['password_group_id']} is :::::::::::::::::::::::::::::::::::::::::::::::::::", file=sys.stderr)
+                    # print(f"{pass_data['password_group_id']} is :::::::::::::::::::::::::::::::::::::::::::::::::::", file=sys.stderr)
                     msg=   f"{pass_obj['password_group']} : Password Group Updated Successfully"
                     password_group_data = {
                         "data":pass_data,
                         "message":msg
                     }
-                    print("password group data for update is:::::::::::::::::::::::::::::::::::::",password_group_data,file=sys.stderr)
+                    # print("password group data for update is:::::::::::::::::::::::::::::::::::::",password_group_data,file=sys.stderr)
                     return (
                         password_group_data
                     ),200
@@ -791,7 +826,7 @@ def add_password_group_util(pass_obj, update):
                     "data":pass_data,
                     "message":msg
                 }
-                print("passwprd group for insertation is:::::::::::::::::::::::::::::::::::::::",password_group_data,file=sys.stderr)
+                # print("passwprd group for insertation is:::::::::::::::::::::::::::::::::::::::",password_group_data,file=sys.stderr)
                 return (
                     password_group_data
                 ),200

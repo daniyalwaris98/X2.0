@@ -91,8 +91,8 @@ def get_rack_details_by_rack_name(rack_name):
 def check_rack_name(rack_obj):
     rack_obj["rack_name"] = rack_obj["rack_name"].strip()
 
-    if rack_obj["rack_name"] == "":
-        return "Rack Name Can Not Be Empty", 400
+    if rack_obj["rack_name"] == "" or rack_obj["rack_name"] == 'string':
+        return "Rack Name Can Not Be Empty or string", 400
 
     if rack_obj["rack_name"].lower() == "default_rack":
         return "Rack Name (default_rack) Is Not Allowed", 400
@@ -150,6 +150,7 @@ def check_rack_optional_data(rack_obj, rack_exist):
             rack_exist.floor = rack_obj["floor"]
     if "manufacture_date" in rack_obj.keys():
         if rack_obj['manufacture_date'] is not None:
+            print("manufactureer date in rack obj is:::::::::::::::::;",rack_obj['manufacture_date'],file=sys.stderr)
             rack_exist.manufacture_date = rack_obj['manufacture_date']
     if "rfs_date" in rack_obj.keys():
         if rack_obj['rfs_date'] is not None:
@@ -286,14 +287,20 @@ def delete_rack_util(rack_ids):
         for rack_id in rack_ids:
             try:
                 rack = configs.db.query(RackTable).filter(RackTable.rack_id == rack_id).first()
-
+                rack_associated_id = rack.rack_id
+                rack_associated_with_atom = configs.db.query(AtomTable).filter_by(rack_id = rack_associated_id).first()
+                if rack_associated_with_atom:
+                    print("rack assocciate with the atom is:::::::::::::::::::::::",file=sys.stderr)
+                    return f"{rack.rack_name} : Is Associated with the {rack_associated_with_atom.ip_address} and cannot be deleted",400
                 if rack is None:
-                    error_list.append(f"{rack_id} : Rack Does Not Exist")
+                    error_list.append(f"{rack_id} : Rack Does Not Exist"),400
                     continue
 
                 if rack.rack_id == default_rack.rack_id:
-                    error_list.append(f"{rack_id} : Default Rack Cam Not Be Deleted")
+                    error_list.append(f"{rack_id} : Default Rack Cannot Not Be Deleted"),400
                     continue
+                
+                
 
                 devices = configs.db.query(AtomTable).filter(AtomTable.rack_id == rack.rack_id).all()
                 for device in devices:

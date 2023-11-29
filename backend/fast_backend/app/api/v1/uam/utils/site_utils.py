@@ -1,7 +1,7 @@
 from app.models.atom_models import *
 from app.models.site_rack_models import *
 from app.utils.db_utils import *
-
+from sqlalchemy import and_
 
 def FormatDate(date):
     result = datetime(2000, 1, 1)
@@ -184,29 +184,48 @@ def delete_site_util(site_id):
         site = configs.db.query(SiteTable).filter(SiteTable.site_id == site_id).first()
         default_rack = configs.db.query(RackTable).filter(
             RackTable.rack_name == 'default_rack').first()
+        print("site id is:::::::::::::::::::::::::::::::::",site_id,file=sys.stderr)
+
+        site_exsist = configs.db.query(SiteTable).filter_by(site_id = site_id).first()
+        if site_exsist:
+            print("site exsist is::::::::::::::::::::::::",site_exsist,file=sys.stderr)
+            rack_associated_with_site  = configs.db.query(RackTable).filter_by(site_id = site_id).first()
+            if rack_associated_with_site:
+                return f"{site_exsist.site_name} : Is associate with the rack and cannot be deleted",400
+                rack_id_associated_with_site_id = rack_associated_with_site.rack_id
+                print("rack associated with the site is true:::",rack_associated_with_site,file=sys.stderr)
+                device_associated_with_rack = configs.db.query(AtomTable).filter_by(rack_id = rack_id_associated_with_site_id).first()
+                print("device associated with the rack is :::::::::::::::::",device_associated_with_rack,file=sys.stderr)
+                if device_associated_with_rack:
+                    return f"{site_exsist.site_name} : Is associate with the rack and device and cannot be deleted",400
 
         if site is None:
             return f"{site_id} : Site Not Found", 400
 
         if site.site_id == default_rack.site_id:
             return f"{site_id} : Default Site Can Not Be Deleted", 400
-
+        
+        # result = configs.db.query(AtomTable).filter(AtomTable.site_id == site_id).first()
+        # if result:
+        #     return f"{site_id} : Is Associated with device cannot be deleted",400
         site_name = site.site_name
+
+
 
         racks = configs.db.query(RackTable).filter(RackTable.site_id == site_id).all()
         for rack in racks:
+            # print("rack is::::::::::::::::::::::::::::::",rack,file=sys.stderr)
             atoms = configs.db.query(AtomTable).filter(AtomTable.rack_id == rack.rack_id).all()
-
             for atom in atoms:
                 atom.rack_id = default_rack.rack_id
                 UpdateDBData(atom)
 
-            DeleteDBData(rack)
+            # DeleteDBData(rack)
 
         if DeleteDBData(site) == 200:
             deleted_sites = {
                 "data":site_id,
-                "message" : f"{site_name} : Site & Its Racks Deleted Successfully"
+                "message" : f"{site_name} : Site Is Deleted Successfully"
             }
             
             return deleted_sites,200

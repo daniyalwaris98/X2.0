@@ -23,6 +23,8 @@ import {
 } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
+import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import { PAGE_NAME } from "./constants";
 
 const schema = yup.object().shape({
   password_group: yup.string().required("Password Group is required"),
@@ -104,7 +106,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isSuccess: isAddRecordSuccess,
     isError: isAddRecordError,
     error: addRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
   });
 
   useErrorHandling({
@@ -112,7 +114,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isSuccess: isUpdateRecordSuccess,
     isError: isUpdateRecordError,
     error: updateRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
   });
 
   // getting dropdowns data from the store
@@ -132,7 +134,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Password Group`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)}>

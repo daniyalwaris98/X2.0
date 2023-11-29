@@ -30,6 +30,8 @@ import {
 } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, generateNumbersArray } from "../../../utils/helpers";
+import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import { PAGE_NAME } from "./constants";
 
 const schema = yup.object().shape({
   ip_address: yup.string().required("Ip address is required"),
@@ -115,7 +117,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isSuccess: isAddRecordSuccess,
     isError: isAddRecordError,
     error: addRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
   });
 
   useErrorHandling({
@@ -123,7 +125,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isSuccess: isUpdateRecordSuccess,
     isError: isUpdateRecordError,
     error: updateRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
   });
 
   // getting dropdowns data from the store
@@ -156,7 +158,10 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   };
 
   return (
-    <FormModal title={`${recordToEdit ? "Edit" : "Add"} Atom`} open={open}>
+    <FormModal
+      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      open={open}
+    >
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
         <Grid container spacing={5}>
           <Grid item xs={12} sm={4}>
