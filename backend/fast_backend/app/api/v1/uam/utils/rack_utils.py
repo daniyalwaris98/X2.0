@@ -297,7 +297,7 @@ def delete_rack_util(rack_ids):
                     continue
 
                 if rack.rack_id == default_rack.rack_id:
-                    error_list.append(f"{rack_id} : Default Rack Cam Not Be Deleted"),400
+                    error_list.append(f"{rack_id} : Default Rack Cannot Not Be Deleted"),400
                     continue
                 
                 
