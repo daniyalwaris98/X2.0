@@ -27,6 +27,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
       data_key: "actions",
       search: false,
       fixed: "right",
+      align: "center",
       width: 100,
       render: (text, record) => (
         <div

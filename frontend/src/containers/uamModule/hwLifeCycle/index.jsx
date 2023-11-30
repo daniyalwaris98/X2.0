@@ -199,19 +199,12 @@ const Index = () => {
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable
-            rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
-            size="small"
-            scroll={{ x: getTableScrollWidth(displayColumns) }}
             onChange={handleChange}
             rowSelection={rowSelection}
             columns={displayColumns}
             dataSource={dataSource}
-            rowKey="hw_life_cycle_id"
-            style={{ whiteSpace: "pre" }}
-            pagination={{
-              defaultPageSize: 9,
-              pageSizeOptions: [9, 50, 100, 500, 1000],
-            }}
+            rowKey={TABLE_DATA_UNIQUE_ID}
+            displayColumns={displayColumns}
           />
         </DefaultCard>
       </div>

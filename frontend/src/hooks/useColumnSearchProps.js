@@ -34,6 +34,7 @@ export default function useColumnSearchProps() {
       <div
         style={{
           padding: 8,
+          backgroundColor: theme?.palette?.default_table?.header_row,
         }}
         onKeyDown={(e) => e.stopPropagation()}
       >
@@ -49,6 +50,8 @@ export default function useColumnSearchProps() {
             marginBottom: 8,
             display: "block",
             borderColor: "gray",
+            backgroundColor: theme?.palette?.default_table?.header_row,
+            color: theme?.palette?.default_table?.header_text,
           }}
         />
         <Space>
@@ -70,7 +73,9 @@ export default function useColumnSearchProps() {
           <Button
             type="primary"
             onClick={() => {
-              clearFilters && handleReset(clearFilters, setSelectedKeys);
+              setSelectedKeys([]);
+              handleSearch([], confirm, dataIndex);
+              // clearFilters && handleReset(clearFilters, setSelectedKeys);
               close();
             }}
             icon={<RestOutlined />}
@@ -82,15 +87,6 @@ export default function useColumnSearchProps() {
           >
             Reset
           </Button>
-          {/* <Button
-            type="link"
-            size="small"
-            onClick={() => {
-              close();
-            }}
-          >
-            close
-          </Button> */}
         </Space>
       </div>
     ),
@@ -100,6 +96,9 @@ export default function useColumnSearchProps() {
           color: filtered
             ? theme?.palette?.default_table?.search_filtered_icon
             : theme?.palette?.default_table?.search_icon,
+
+          fontWeight: filtered ? "bolder" : "normal",
+          fontSize: filtered ? "18px" : "14px",
         }}
       />
     ),
