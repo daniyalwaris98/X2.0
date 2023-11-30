@@ -29,7 +29,7 @@ def get_all_rack():
             "rack_name": rack_obj.rack_name,
             "site_name": site_obj.site_name,
             "serial_number": rack_obj.serial_number,
-            "manufacturer_date": format_date(rack_obj.manufacture_date),
+            "manufacture_date": format_date(rack_obj.manufacture_date),
             "unit_position": rack_obj.unit_position,
             "creation_date": format_date(rack_obj.creation_date),
             "modification_date": format_date(rack_obj.modification_date),
@@ -64,7 +64,7 @@ def get_rack_details_by_rack_name(rack_name):
                     "rack_name": rack_obj.rack_name,
                     "site_name": site_obj.site_name,
                     "serial_number": rack_obj.serial_number,
-                    "manufacturer_date": format_date(rack_obj.manufacture_date),
+                    "manufacture_date": format_date(rack_obj.manufacture_date),
                     "unit_position": rack_obj.unit_position,
                     "creation_date": format_date(rack_obj.creation_date),
                     "modification_date": format_date(rack_obj.modification_date),
@@ -309,10 +309,10 @@ def delete_rack_util(rack_ids):
 
                 status = DeleteDBData(rack)
                 if status == 200:
-                    deleted_rack = {
-                        "rack_id":rack.rack_id
-                    }
-                    data.append(deleted_rack)
+                    # deleted_rack = {
+                        
+                    # }
+                    data.append(rack.rack_id)
                     success_list.append(f"{rack.rack_name} : Rack Deleted Successfully"),200
                 else:
                     error_list.append(f"{rack.rack_id} : Error While Deleting Rack"),400
