@@ -68,11 +68,11 @@ const DefaultStyledAntDesignTable = styled(Table)`
               theme?.palette?.default_table?.check_box_inner};
           }
 
-          font-size: 12px !important;
+          font-size: 13px !important;
           margin: 0 !important;
           padding: 0 !important;
           padding-left: 10px !important;
-          height: ${(p) => p.cellHeight || "33px"} !important;
+          height: ${(p) => p.cellHeight || "37px"} !important;
           color: ${({ theme }) => theme?.palette?.default_table?.primary_text};
           border: none;
         }

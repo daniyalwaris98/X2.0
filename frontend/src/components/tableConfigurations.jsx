@@ -127,7 +127,7 @@ export default function DefaultTableConfigurations({
   };
 
   return (
-    <DefaultDialog title="Table Configuration" open={open} sx={sx} {...rest}>
+    <DefaultDialog title="Configure Table" open={open} sx={sx} {...rest}>
       <div
         style={{
           display: "flex",
@@ -147,9 +147,6 @@ export default function DefaultTableConfigurations({
             }}
           >
             <List>
-              {/* <ListItem>
-              <strong>Available Columns</strong>
-            </ListItem> */}
               {tempAvailableColumns.map((column, index) => (
                 <StyledListItem
                   key={index}
@@ -180,6 +177,7 @@ export default function DefaultTableConfigurations({
                   theme?.palette?.default_button?.right_background,
                 color: theme?.palette?.default_button?.secondary_text,
                 width: "100%",
+                fontSize: "12px",
               }}
               handleClick={handleAdd}
               disabled={!isSelectedColumnFromAvailableColumns}
@@ -194,6 +192,7 @@ export default function DefaultTableConfigurations({
                   theme?.palette?.default_button?.left_background,
                 color: theme?.palette?.default_button?.secondary_text,
                 width: "100%",
+                fontSize: "12px",
               }}
               handleClick={handleRemove}
               disabled={!isSelectedColumnFromDisplayColumns}
@@ -207,6 +206,7 @@ export default function DefaultTableConfigurations({
                 backgroundColor: theme?.palette?.default_button?.up_background,
                 color: theme?.palette?.default_button?.secondary_text,
                 width: "100%",
+                fontSize: "12px",
               }}
               handleClick={handleUp}
               disabled={!isSelectedColumnFromDisplayColumns}
@@ -221,6 +221,7 @@ export default function DefaultTableConfigurations({
                   theme?.palette?.default_button?.down_background,
                 color: theme?.palette?.default_button?.secondary_text,
                 width: "100%",
+                fontSize: "12px",
               }}
               handleClick={handleDown}
               disabled={!isSelectedColumnFromDisplayColumns}
@@ -242,18 +243,21 @@ export default function DefaultTableConfigurations({
             }}
           >
             <List>
-              {tempDisplayColumns.map((column, index) => (
-                <StyledListItem
-                  key={index}
-                  onClick={() => handleColumnClick(column, "display")}
-                  selectedItem={
-                    isSelectedColumnFromDisplayColumns &&
-                    selectedColumn.dataIndex === column.dataIndex
-                  }
-                >
-                  {column.title}
-                </StyledListItem>
-              ))}
+              {tempDisplayColumns.map((column, index) => {
+                if (!column.hasOwnProperty("fixed"))
+                  return (
+                    <StyledListItem
+                      key={index}
+                      onClick={() => handleColumnClick(column, "display")}
+                      selectedItem={
+                        isSelectedColumnFromDisplayColumns &&
+                        selectedColumn.dataIndex === column.dataIndex
+                      }
+                    >
+                      {column.title}
+                    </StyledListItem>
+                  );
+              })}
             </List>
           </DefaultScrollbar>
         </div>
