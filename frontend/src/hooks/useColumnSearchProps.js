@@ -17,9 +17,10 @@ export default function useColumnSearchProps() {
     setSearchedColumn(dataIndex);
   };
 
-  const handleReset = (clearFilters) => {
+  const handleReset = (clearFilters, setSelectedKeys) => {
     clearFilters();
     setSearchText("");
+    setSelectedKeys([]);
   };
 
   const getColumnSearchProps = (dataIndex) => ({
@@ -39,11 +40,10 @@ export default function useColumnSearchProps() {
         <Input
           ref={searchInput}
           placeholder={`Search ${getTitle(dataIndex)}`}
-          value={searchText}
-          onChange={(e) => {
-            setSearchText(e.target.value);
-            setSelectedKeys(e.target.value ? [e.target.value] : []);
-          }}
+          value={selectedKeys[0]}
+          onChange={(e) =>
+            setSelectedKeys(e.target.value ? [e.target.value] : [])
+          }
           onPressEnter={() => handleSearch(selectedKeys, confirm, dataIndex)}
           style={{
             marginBottom: 8,
@@ -70,7 +70,7 @@ export default function useColumnSearchProps() {
           <Button
             type="primary"
             onClick={() => {
-              clearFilters && handleReset(clearFilters);
+              clearFilters && handleReset(clearFilters, setSelectedKeys);
               close();
             }}
             icon={<RestOutlined />}
