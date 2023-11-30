@@ -107,8 +107,10 @@ const Index = () => {
 
   // effects
   useEffect(() => {
-    setSelectedRowKeys([]);
-  }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
+    setSelectedRowKeys((prev) =>
+      prev.filter((item) => !deleteRecordsData?.data.includes(item))
+    );
+  }, [isDeleteRecordsSuccess]);
 
   // handlers
   function deleteData(allowed) {
