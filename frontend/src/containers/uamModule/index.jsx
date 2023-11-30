@@ -1,21 +1,71 @@
 import React from "react";
-import { Outlet } from "react-router-dom";
+import { Outlet, useParams } from "react-router-dom";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu";
+import {
+  PAGE_NAME as PAGE_NAME_SITE,
+  PAGE_PATH as PAGE_PATH_SITE,
+} from "./sites/constants";
+import {
+  PAGE_NAME as PAGE_NAME_RACK,
+  PAGE_PATH as PAGE_PATH_RACK,
+} from "./racks/constants";
+import {
+  PAGE_NAME as PAGE_NAME_DEVICE,
+  PAGE_PATH as PAGE_PATH_DEVICE,
+} from "./devices/constants";
+import {
+  PAGE_NAME as PAGE_NAME_BOARD,
+  PAGE_PATH as PAGE_PATH_BOARD,
+} from "./boards/constants";
+import {
+  PAGE_NAME as PAGE_NAME_SUB_BOARD,
+  PAGE_PATH as PAGE_PATH_SUB_BOARD,
+} from "./subBoards/constants";
+import {
+  PAGE_NAME as PAGE_NAME_SFP,
+  PAGE_PATH as PAGE_PATH_SFP,
+} from "./sfps/constants";
+import {
+  PAGE_NAME as PAGE_NAME_LICENSE,
+  PAGE_PATH as PAGE_PATH_LICENSE,
+} from "./licenses/constants";
+import {
+  PAGE_NAME as PAGE_NAME_AP,
+  PAGE_PATH as PAGE_PATH_AP,
+} from "./aps/constants";
+import {
+  PAGE_NAME as PAGE_NAME_HW_LIFE_CYCLE,
+  PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLE,
+} from "./hwLifeCycle/constants";
+import { getPathLastSegment } from "../../utils/helpers";
+
+export const MODULE_PATH = "uam_module";
 
 const menuItems = [
-  { id: "sites", name: "Sites", path: "sites" },
-  { id: "racks", name: "Racks", path: "racks" },
-  { id: "devices", name: "Devices", path: "devices" },
-  { id: "boards", name: "Boards", path: "boards" },
-  { id: "sub_boards", name: "Sub Boards", path: "sub_boards" },
-  { id: "sfps", name: "SFPs", path: "sfps" },
-  { id: "licenses", name: "Licenses", path: "licenses" },
-  { id: "aps", name: "APs", path: "aps" },
-  { id: "hw_lifecycle", name: "HW Lifecycle", path: "hw_lifecycle" },
+  { id: PAGE_PATH_SITE, name: PAGE_NAME_SITE, path: PAGE_PATH_SITE },
+  { id: PAGE_PATH_RACK, name: PAGE_NAME_RACK, path: PAGE_PATH_RACK },
+  { id: PAGE_PATH_DEVICE, name: PAGE_NAME_DEVICE, path: PAGE_PATH_DEVICE },
+  { id: PAGE_PATH_BOARD, name: PAGE_NAME_BOARD, path: PAGE_PATH_BOARD },
+  {
+    id: PAGE_PATH_SUB_BOARD,
+    name: PAGE_NAME_SUB_BOARD,
+    path: PAGE_PATH_SUB_BOARD,
+  },
+  { id: PAGE_PATH_SFP, name: PAGE_NAME_SFP, path: PAGE_PATH_SFP },
+  { id: PAGE_PATH_LICENSE, name: PAGE_NAME_LICENSE, path: PAGE_PATH_LICENSE },
+  { id: PAGE_PATH_AP, name: PAGE_NAME_AP, path: PAGE_PATH_AP },
+  {
+    id: PAGE_PATH_HW_LIFE_CYCLE,
+    name: PAGE_NAME_HW_LIFE_CYCLE,
+    path: PAGE_PATH_HW_LIFE_CYCLE,
+  },
 ];
 
 function Index(props) {
+  let pagePath = getPathLastSegment();
+  if (pagePath === MODULE_PATH) pagePath = PAGE_PATH_SITE;
+
   return (
     <>
       <Card
@@ -25,7 +75,7 @@ function Index(props) {
           boxShadow: "unset !important",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} defaultPage="sites" />
+        <HorizontalMenu menuItems={menuItems} defaultPage={pagePath} />
       </Card>
       <Outlet />
     </>

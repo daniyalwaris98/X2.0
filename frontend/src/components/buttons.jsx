@@ -5,7 +5,6 @@ import { Icon } from "@iconify/react";
 
 export default function DefaultButton({ sx, handleClick, children, ...rest }) {
   const theme = useTheme();
-  console.log("children", children);
   return (
     <Button
       sx={{

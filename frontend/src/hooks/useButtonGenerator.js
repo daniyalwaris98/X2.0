@@ -9,7 +9,7 @@ export default function useButtonGenerator() {
     handleClick = () => {
       console.log("No handler defined for this button.");
     },
-    selectedRowKeys = null,
+    visible = true,
     namePostfix = null,
     // coming from button Configuration
     sx = {},
@@ -40,15 +40,7 @@ export default function useButtonGenerator() {
           {iconPosition === "right" ? icon : null}
         </DefaultButton>
       );
-      return (
-        <>
-          {selectedRowKeys
-            ? selectedRowKeys?.length > 0
-              ? defaultButton
-              : null
-            : defaultButton}
-        </>
-      );
+      return <>{visible ? defaultButton : null}</>;
     } else if (category === "dropDown") {
       return (
         <DropDownButton handleClick={handleClick} sx={sx} options={options}>

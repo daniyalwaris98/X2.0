@@ -23,6 +23,12 @@ import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import {
+  PAGE_NAME,
+  FILE_NAME_EXPORT_ALL_DATA,
+  TABLE_DATA_UNIQUE_ID,
+} from "./constants";
+import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 
 const Index = () => {
   // theme
@@ -42,7 +48,10 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleExport },
-    default_dismantle: { handleClick: handleDismantle, selectedRowKeys },
+    default_dismantle: {
+      handleClick: handleDismantle,
+      visible: selectedRowKeys.length > 0,
+    },
   });
 
   // refs
@@ -84,7 +93,7 @@ const Index = () => {
     isSuccess: isFetchRecordsSuccess,
     isError: isFetchRecordsError,
     error: fetchRecordsError,
-    type: "fetch",
+    type: TYPE_FETCH,
   });
 
   useErrorHandling({
@@ -92,7 +101,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: "bulk",
+    type: TYPE_BULK,
   });
 
   // handlers
@@ -138,13 +147,7 @@ const Index = () => {
   }
 
   function handleExport(optionType) {
-    if (optionType === "All Data") {
-      jsonToExcel(dataSource, "sites");
-    } else if (optionType === "Template") {
-      jsonToExcel([generateObject(dataKeys)], "site_template");
-    } else {
-      jsonToExcel(dataSource, "sites");
-    }
+    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     handleSuccessAlert("File exported successfully.");
   }
 
@@ -188,7 +191,7 @@ const Index = () => {
 
         <DefaultCard sx={{ width: `${width - 105}px` }}>
           <PageHeader
-            pageName="Devices"
+            pageName={PAGE_NAME}
             buttons={buttonsConfigurationList}
             selectedRowKeys={selectedRowKeys}
           />
@@ -200,7 +203,7 @@ const Index = () => {
             rowSelection={rowSelection}
             columns={displayColumns}
             dataSource={dataSource}
-            rowKey="device_id"
+            rowKey={TABLE_DATA_UNIQUE_ID}
             style={{ whiteSpace: "pre" }}
             pagination={{
               defaultPageSize: 9,

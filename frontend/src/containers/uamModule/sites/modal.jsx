@@ -12,7 +12,10 @@ import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../store/features/uamModule/sites/apis";
-import { useFetchStatusNamesQuery } from "../../../store/features/dropDowns/apis";
+import {
+  useFetchSiteNamesQuery,
+  useFetchStatusNamesQuery,
+} from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
@@ -22,10 +25,9 @@ import DefaultSelect from "../../../components/selects";
 const schema = yup.object().shape({
   site_name: yup
     .string()
-    .trim() // Remove leading and trailing spaces
     .required("Site name is required")
     .matches(
-      /^[a-zA-Z0-9]+([ -_][a-zA-Z0-9]+)*$/,
+      /^(?=.*[a-zA-Z])[a-zA-Z0-9]*(?:[_-][a-zA-Z0-9]+)*(?: [a-zA-Z0-9]+)*$/,
       "Invalid characters in site name"
     ),
   status: yup.string().required("Status is required"),
@@ -46,10 +48,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   useEffect(() => {
     formSetter(recordToEdit, setValue);
   }, []);
-
-  // fetching dropdowns data from backend using apis
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
 
   // post api for the form
   const [
@@ -74,6 +72,13 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
+  // fetching dropdowns data from backend using apis
+  const { refetch: refetchSiteNames } = useFetchSiteNamesQuery(undefined, {
+    skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
+  });
+  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
+    useFetchStatusNamesQuery();
+
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -93,6 +98,13 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // getting dropdowns data from the store
   const statusNames = useSelector(selectStatusNames);
+
+  // effects
+  useEffect(() => {
+    if (isAddRecordSuccess || isUpdateRecordSuccess) {
+      refetchSiteNames();
+    }
+  }, [isAddRecordSuccess, isUpdateRecordSuccess]);
 
   // on form submit
   const onSubmit = (data) => {
