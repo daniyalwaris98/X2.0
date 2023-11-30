@@ -66,7 +66,7 @@ const Index = () => {
       },
       default_onboard: {
         handleClick: handleOnboard,
-        visible: selectedRowKeys.length > 0,
+        visible: shouldOnboardVisible(),
       },
       atom_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
       default_import: { handleClick: handleInputClick },
@@ -151,6 +151,15 @@ const Index = () => {
   }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
 
   // handlers
+  function shouldOnboardVisible() {
+    // selectedRowKeys.length > 0
+    // ? selectedRowKeys.length == 1
+    //   ? fetchRecordsData.find((item) => item.atom_)
+    //   : ""
+    // : false,
+    return false;
+  }
+
   function handlePostSeed(data) {
     addRecords(data);
   }
