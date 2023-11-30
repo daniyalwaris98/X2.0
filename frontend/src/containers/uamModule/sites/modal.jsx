@@ -21,15 +21,14 @@ import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
 import DefaultSelect from "../../../components/selects";
+import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants";
 
 const schema = yup.object().shape({
   site_name: yup
     .string()
     .required("Site name is required")
-    .matches(
-      /^(?=.*[a-zA-Z])[a-zA-Z0-9]*(?:[_-][a-zA-Z0-9]+)*(?: [a-zA-Z0-9]+)*$/,
-      "Invalid characters in site name"
-    ),
+    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters in site name"),
   status: yup.string().required("Status is required"),
   city: yup.string().matches(/^[A-Za-z]+$/, "City must contain only alphabets"),
 });
@@ -85,7 +84,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isSuccess: isAddRecordSuccess,
     isError: isAddRecordError,
     error: addRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
+    callback: handleClose,
   });
 
   useErrorHandling({
@@ -93,7 +93,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     isSuccess: isUpdateRecordSuccess,
     isError: isUpdateRecordError,
     error: updateRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
+    callback: handleClose,
   });
 
   // getting dropdowns data from the store
