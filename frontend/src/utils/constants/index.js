@@ -6,4 +6,4 @@ export const API_ENDPOINT_URL = "http://192.168.10.150:8080";
 // No space at the beginning of the string and No Space at the end of the string
 // Only numbers are not allowed
 export const ALPHA_NUMERIC_REGEX =
-  /^(?! )(?=.*[a-zA-Z])[a-zA-Z0-9]*(?:[ _-][a-zA-Z0-9]+)*(?: [a-zA-Z0-9]+)*$/;
+  /^(?! )(?=.*[a-zA-Z])[a-zA-Z0-9]*(?:[ _-][a-zA-Z0-9]+)*$/;
