@@ -48,6 +48,15 @@ const Index = () => {
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
+  // apis required in hooks
+  const {
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isLoading: isFetchRecordsLoading,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+  } = useFetchRecordsQuery();
+
   // hooks
   const { height, width } = useWindowDimensions();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
@@ -90,14 +99,6 @@ const Index = () => {
   const dataSource = useSelector(selectTableData);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
-
   const [
     addRecords,
     {
@@ -152,12 +153,21 @@ const Index = () => {
 
   // handlers
   function shouldOnboardVisible() {
-    // selectedRowKeys.length > 0
-    // ? selectedRowKeys.length == 1
-    //   ? fetchRecordsData.find((item) => item.atom_)
-    //   : ""
-    // : false,
-    return false;
+    if (selectedRowKeys.length > 0) {
+      if (selectedRowKeys.length == 1) {
+        let atom = fetchRecordsData.find(
+          (item) => item.atom_table_id === selectedRowKeys[0]
+        );
+        if (atom && atom.atom_id) {
+          return true;
+        } else {
+          return false;
+        }
+      }
+      return true;
+    } else {
+      return false;
+    }
   }
 
   function handlePostSeed(data) {
