@@ -7,6 +7,7 @@ import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
+  useOnBoardRecordsMutation,
 } from "../../../store/features/atomModule/atom/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
@@ -74,8 +75,8 @@ const Index = () => {
         visible: selectedRowKeys.length > 0,
       },
       default_onboard: {
-        handleClick: handleOnboard,
-        visible: shouldOnboardVisible(),
+        handleClick: handleOnBoard,
+        visible: shouldOnboardBeVisible(),
       },
       atom_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
       default_import: { handleClick: handleInputClick },
@@ -121,6 +122,17 @@ const Index = () => {
     },
   ] = useDeleteRecordsMutation();
 
+  const [
+    onBoardRecords,
+    {
+      data: OnBoardRecordsData,
+      isSuccess: isOnBoardRecordsSuccess,
+      isLoading: isOnBoardRecordsLoading,
+      isError: isOnBoardRecordsError,
+      error: OnBoardRecordsError,
+    },
+  ] = useOnBoardRecordsMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -146,28 +158,28 @@ const Index = () => {
     type: TYPE_BULK,
   });
 
+  useErrorHandling({
+    data: OnBoardRecordsData,
+    isSuccess: isOnBoardRecordsSuccess,
+    isError: isOnBoardRecordsError,
+    error: OnBoardRecordsError,
+    type: TYPE_BULK,
+  });
+
   // effects
   useEffect(() => {
     setSelectedRowKeys([]);
   }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
 
   // handlers
-  function shouldOnboardVisible() {
+  function shouldOnboardBeVisible() {
     if (selectedRowKeys.length > 0) {
-      if (selectedRowKeys.length == 1) {
-        let atom = fetchRecordsData.find(
-          (item) => item.atom_table_id === selectedRowKeys[0]
-        );
-        if (atom && atom.atom_id) {
-          return true;
-        } else {
-          return false;
-        }
-      }
-      return true;
-    } else {
-      return false;
+      return selectedRowKeys.some((key) => {
+        let atom = fetchRecordsData.find((item) => item.atom_table_id === key);
+        return atom && atom.atom_id;
+      });
     }
+    return false;
   }
 
   function handlePostSeed(data) {
@@ -206,7 +218,7 @@ const Index = () => {
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
       handleCallbackAlert(
-        "Are you sure you want delete these records?",
+        "Are you sure you want to delete these records?",
         deleteData
       );
     } else {
@@ -214,8 +226,41 @@ const Index = () => {
     }
   }
 
-  function handleOnboard() {
-    handleInfoAlert("Onboard Clicked!");
+  function onBoardData(allowed) {
+    if (allowed) {
+      const onBoardData = selectedRowKeys.map((rowKey) => {
+        const dataObject = dataSource.find(
+          (row) => row.atom_table_id === rowKey
+        );
+
+        if (dataObject.atom_id) {
+          return dataObject.atom_id;
+        }
+
+        return null;
+      });
+
+      const filteredOnBoardDataData = onBoardData.filter(
+        (data) => data !== null
+      );
+
+      if (filteredOnBoardDataData.length > 0) {
+        onBoardRecords(filteredOnBoardDataData);
+      }
+    } else {
+      setSelectedRowKeys([]);
+    }
+  }
+
+  function handleOnBoard() {
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(
+        "Only the complete atoms will be onBoarded. Are you sure you want to proceed?",
+        onBoardData
+      );
+    } else {
+      handleInfoAlert("No record has been selected to onBoard!");
+    }
   }
 
   function handleInputClick() {

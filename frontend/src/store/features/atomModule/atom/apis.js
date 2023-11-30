@@ -24,6 +24,14 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
+    onBoardAtoms: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/uam/uam_device/on_board_device",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
     // form apis
     addAtom: builder.mutation({
       query: (data) => ({
@@ -48,6 +56,7 @@ export const {
   useFetchAtomsQuery: useFetchRecordsQuery,
   useAddAtomsMutation: useAddRecordsMutation,
   useDeleteAtomsMutation: useDeleteRecordsMutation,
+  useOnBoardAtomsMutation: useOnBoardRecordsMutation,
   // form apis
   useAddAtomMutation: useAddRecordMutation,
   useUpdateAtomMutation: useUpdateRecordMutation,
