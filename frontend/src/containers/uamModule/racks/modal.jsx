@@ -145,7 +145,7 @@ const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
               required
             />
             <DefaultFormUnit control={control} dataKey="serial_number" />
-            <DefaultFormUnit control={control} dataKey="manufacturer_date" />
+            <DefaultFormUnit control={control} dataKey="manufacture_date" />
             <DefaultFormUnit control={control} dataKey="pn_code" />
             <DefaultFormUnit control={control} dataKey="unit_position" />
           </Grid>

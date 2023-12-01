@@ -232,7 +232,7 @@ const Index = () => {
         );
 
         if (dataObject.atom_id) {
-          return dataObject.atom_id;
+          return dataObject.ip_address;
         }
 
         return null;
