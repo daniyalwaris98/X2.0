@@ -29,6 +29,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import withDefaultDelete from "../../../hoc/withDefaultDelete";
 
 const Index = () => {
   // theme
@@ -213,4 +214,29 @@ const Index = () => {
   );
 };
 
+// function IndexWithHOC(props) {
+//   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+//   // Wrap the Index component with the withDefaultDelete HOC
+//   const IndexWithDelete = withDefaultDelete({
+//     Component: Index,
+//     useDeleteRecordsMutation,
+//     selectedRowKeys,
+//     setSelectedRowKeys,
+//   });
+
+//   return IndexWithDelete;
+// }
+
+// export default IndexWithHOC;
+
+// Wrap the Index component with the withDefaultDelete HOC
+// const IndexWithDelete = withDefaultDelete({
+//   Component: Index,
+//   useDeleteRecordsMutation,
+//   selectedRowKeys,
+//   setSelectedRowKeys,
+// });
+
+// export default IndexWithDelete;
 export default Index;
