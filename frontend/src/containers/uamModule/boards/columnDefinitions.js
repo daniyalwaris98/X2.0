@@ -2,9 +2,7 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions() {
   const columnDefinitions = [
     "board_name",
     "device_name",
@@ -17,31 +15,6 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     "manufacturer_date",
     "eos_date",
     "eol_date",
-    "creation_date",
-    "modification_date",
-    {
-      data_key: "actions",
-      search: false,
-      fixed: "right",
-      align: "center",
-      width: 100,
-      render: (text, record) => (
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            justifyContent: "center",
-          }}
-        >
-          <Icon
-            fontSize={"15px"}
-            onClick={() => handleEdit(record)}
-            icon="bx:edit"
-            style={{ cursor: "pointer" }}
-          />
-        </div>
-      ),
-    },
   ];
 
   const dataKeys = columnDefinitions
