@@ -53,8 +53,8 @@ async def onboard_devices(ip_list: list[str]):
                         puller = onboard_dict[atom['device_type']]
                         hosts = [atom]
                         response = puller.get_inventory_data(hosts)
-
-                        if response:
+                        print("repsones of the puller is:::::::::::::::::::::::",response,file=sys.stderr)
+                        if response == False:
                             error_list.append(f"{ip} : Error While Onboarding")
                         else:
                             success_list.append(f"{ip} : Device Onboarded Successfully")
