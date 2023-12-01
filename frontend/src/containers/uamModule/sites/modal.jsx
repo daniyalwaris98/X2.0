@@ -22,7 +22,7 @@ import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
 import DefaultSelect from "../../../components/selects";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants";
+import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
 
 const schema = yup.object().shape({
   site_name: yup

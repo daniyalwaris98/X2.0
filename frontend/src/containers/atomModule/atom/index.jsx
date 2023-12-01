@@ -1,7 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
-import DefaultCard from "../../../components/cards";
-import DefaultTable from "../../../components/tables";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
@@ -11,17 +9,14 @@ import {
 } from "../../../store/features/atomModule/atom/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
   generateObject,
-  getTableScrollWidth,
 } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import PageHeader from "../../../components/pageHeader";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -41,6 +36,7 @@ import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import SiteModal from "../../uamModule/sites/modal";
 import RackModal from "../../uamModule/racks/modal";
 import PasswordGroupModal from "../passwordGroup/modal";
+import DefaultPageTableSection from "../../../components/pageTableSection";
 
 const Index = () => {
   // theme
@@ -59,7 +55,7 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   // hooks
-  const { height, width } = useWindowDimensions();
+  // const { height, width } = useWindowDimensions();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
@@ -313,10 +309,6 @@ const Index = () => {
     setTableConfigurationsOpen(true);
   }
 
-  function handleChange(pagination, filters, sorter, extra) {
-    console.log("Various parameters", pagination, filters, sorter, extra);
-  }
-
   function handleExport(optionType) {
     const { ALL_DATA, TEMPLATE, COMPLETE, INCOMPLETE } =
       dropdownButtonOptionsConstants.atom_export;
@@ -342,16 +334,6 @@ const Index = () => {
     setRecordToEdit(record);
     setOpen(true);
   }
-
-  // row selection
-  function onSelectChange(selectedRowKeys) {
-    setSelectedRowKeys(selectedRowKeys);
-  }
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
 
   return (
     <Spin
@@ -414,21 +396,15 @@ const Index = () => {
           />
         ) : null}
 
-        <DefaultCard sx={{ width: `${width - 105}px` }}>
-          <PageHeader
-            pageName={PAGE_NAME}
-            buttons={buttonsConfigurationList}
-            selectedRowKeys={selectedRowKeys}
-          />
-          <DefaultTable
-            onChange={handleChange}
-            rowSelection={rowSelection}
-            columns={displayColumns}
-            dataSource={dataSource}
-            rowKey={TABLE_DATA_UNIQUE_ID}
-            displayColumns={displayColumns}
-          />
-        </DefaultCard>
+        <DefaultPageTableSection
+          PAGE_NAME={PAGE_NAME}
+          TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+          buttonsConfigurationList={buttonsConfigurationList}
+          selectedRowKeys={selectedRowKeys}
+          displayColumns={displayColumns}
+          dataSource={dataSource}
+          setSelectedRowKeys={setSelectedRowKeys}
+        />
       </div>
     </Spin>
   );

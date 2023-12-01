@@ -26,7 +26,7 @@ import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants";
+import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
 
 const schema = yup.object().shape({
   rack_name: yup
