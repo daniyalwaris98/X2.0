@@ -23,6 +23,7 @@ async def onboard_devices(ip_list: list[str]):
         success_list = []
         error_list = []
         data = []
+        print("ip list is ::::::::::::::::::::::::::::::::::",ip_list,file=sys.stderr)
         for ip in ip_list:
 
             result = (configs.db.query(AtomTable, PasswordGroupTable).

@@ -121,22 +121,31 @@ def delete_password_groups(pass_list: list[int]):
             password = configs.db.query(PasswordGroupTable).filter(
                     PasswordGroupTable.password_group_id == pass_obj).first()
             print("password is:::::::::::::::::::::::::::::::::::::",password,file=sys.stderr)
-            if password:
-                deleted_password_group_id = password.password_group_id
-                print("delted password id is:::::::::::::::::::::::::::::::::::::::",deleted_password_group_id,file=sys.stderr)
+        
+            print("is passsowrd is true::::::::::",file=sys.stderr)
+            password_id = password.password_group_id
+            print("password id is:::::::::::::::",password_id,file=sys.stderr)
+            password_asssociated_with_atom = configs.db.query(AtomTable).filter_by(password_group_id = password_id).first()
+            print("password group associated with the atom::::::::::::::::::::::::",password_asssociated_with_atom,file=sys.stderr)
+            if password_asssociated_with_atom:
+                error_list.append(f"{password.password_group} : Cannot be deleted it is associated with device {password_asssociated_with_atom.ip_address}")
+            else:           
+                if password:
+                    deleted_password_group_id = password.password_group_id
+                    print("delted password id is:::::::::::::::::::::::::::::::::::::::",deleted_password_group_id,file=sys.stderr)
 
-                if DeleteDBData(password) == 200:
-                    deleted_password_group.append(deleted_password_group_id)
-                
-                    # deleted_password_group.append(deleted_passw_group)
-                    success_list.append(
-                        f"{password.password_group} : Password Group Deleted Successfully")
+                    if DeleteDBData(password) == 200:
+                        deleted_password_group.append(deleted_password_group_id)
                     
+                        # deleted_password_group.append(deleted_passw_group)
+                        success_list.append(
+                            f"{password.password_group} : Password Group Deleted Successfully")
+                        
+                    else:
+                        error_list.append(
+                            f"{password.password_group} : Error While Deleting Password Group")
                 else:
-                    error_list.append(
-                        f"{password.password_group} : Error While Deleting Password Group")
-            else:
-                error_list.append(f"{passworg_grp_id} : Password Group ID Not Found")
+                    error_list.append(f"{passworg_grp_id} : Password Group ID Not Found")
 
         response = {
             "data":deleted_password_group,

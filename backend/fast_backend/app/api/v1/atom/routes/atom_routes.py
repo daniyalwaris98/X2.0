@@ -18,13 +18,29 @@ async def add_atom(atom: AddAtomRequestSchema):
     try:
         print("add atom is being executed::::::::::::::::::::::::::::",file=sys.stderr)
         response, status = add_complete_atom(atom, False)
+        print("response of add complete atom is::::::::::::::::::::::::::::",response,file=sys.stderr)
+        print("status for add complete atom is :::::::::::::::::::::",status,file=sys.stderr)
+        atom_response = response
         if status != 200:
             response, status = add_transition_atom(atom, False)
-            print("if reponse not 200::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
-            return JSONResponse(content=response, status_code=status)
+            if isinstance(response,dict):
+                print("if reponse not 200::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+                transition_message = response.get('message', '')
+                print("tranistion message is:::::::::::::::",transition_message,file=sys.stderr)
+                # Appending the transition atom message to the existing atom_response message
+                updated_message = f"{atom_response} {transition_message}"
+                print("update message is:::::::::::::::::::",updated_message,file=sys.stderr)
+                # Assigning the updated_message to the 'message' key in the existing response
+                response['message'] = updated_message
+                print("reposne message is::::::::::::::::::",response['message'],file=sys.stderr)
+                return JSONResponse(content=response, status_code=status)
+            else:
+                return JSONResponse(content=response, status_code=status)
         elif status ==400:
             print("status is 400:::::::::::::::::::::::::::::::::",400,file=sys.stderr)
             return JSONResponse(content = response,status_code = 400)
+        else:
+            return JSONResponse(content = response,status_code = status)
 
     except Exception:
         traceback.print_exc()
@@ -198,7 +214,7 @@ async def get_atoms():
                 atom_obj_list.append(trans_atom)
                 # count = len(trans_atom)
 
-            print("count for atom is::::::::::::::::::::::::::::::",count,file=sys.stderr)
+            # print("count for atom is::::::::::::::::::::::::::::::",count,file=sys.stderr)
         except Exception:
             traceback.print_exc()
 
@@ -251,7 +267,7 @@ async def get_atoms():
 
         print(atom_obj_list, file=sys.stderr)
         sorted_list = sorted(atom_obj_list, key=lambda x: x['creation_date'], reverse=True)
-        print("sorted list based on the creation date is::::::::::::::::::::::",sorted_list,file=sys.stderr)
+        # print("sorted list based on the creation date is::::::::::::::::::::::",sorted_list,file=sys.stderr)
         if len(atom_obj_list) <= 0:
             atom_obj_list = None
 

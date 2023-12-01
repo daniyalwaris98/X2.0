@@ -21,6 +21,7 @@ router = APIRouter(
 async def add_rack(rack: AddRackRequestSchema):
     try:
         response, status = add_rack_util(rack)
+        print("repsoones in add rack is:::::::::::::::::",rack,file=sys.stderr)
         if status == 200:
             return response
         elif status == 400:
@@ -114,7 +115,7 @@ async def get_rack_by_rack_name(rack_name: str = Query(...,description="Name of 
 async def get_all_racks():
     try:
         response = get_all_rack()
-        print("reposne in get all racks is::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
+        # print("reposne in get all racks is::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
         return response
 
     except Exception:
