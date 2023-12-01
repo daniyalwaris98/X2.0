@@ -9,7 +9,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     "rack_name",
     "site_name",
     "serial_number",
-    "manufacturer_date",
+    "manufacture_date",
     "unit_position",
     "status",
     "ru",
