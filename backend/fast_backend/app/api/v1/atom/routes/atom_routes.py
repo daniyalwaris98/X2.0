@@ -250,7 +250,7 @@ async def get_atoms():
                 traceback.print_exc()
 
         print(atom_obj_list, file=sys.stderr)
-        sorted_list = sorted(atom_obj_list, key=lambda x: x['creation_date'])
+        sorted_list = sorted(atom_obj_list, key=lambda x: x['creation_date'], reverse=True)
         print("sorted list based on the creation date is::::::::::::::::::::::",sorted_list,file=sys.stderr)
         if len(atom_obj_list) <= 0:
             atom_obj_list = None

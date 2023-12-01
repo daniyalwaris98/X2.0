@@ -38,12 +38,13 @@ class AddRackRequestSchema(BaseSchema):
     rack_name: str
     site_name: str
     status: str
-
+    manufacture_date: constr(regex=r"\d{4}-\d{2}-\d{2}")  # Date format: YYYY-MM-DD
+    rfs_date: constr(regex=r"\d{4}-\d{2}-\d{2}")
     serial_number: str | None = None
-    manufacture_date: datetime | None = None
+    # manufacture_date: datetime | None = None
     unit_position: str | None = None
     ru: int | None = None
-    rfs_date: datetime | None = None
+    # rfs_date: datetime | None = None
     height: int | None = None
     width: int | None = None
     depth: int | None = None

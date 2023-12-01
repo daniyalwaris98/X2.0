@@ -43,10 +43,10 @@ class RackTable(Base):
     status = Column(String(50), nullable=False)
 
     serial_number = Column(String(50), nullable=True)
-    manufacture_date = Column(DateTime, default=datetime(2000, 1, 1), nullable=True)
+    manufacture_date = Column(DateTime, default=lambda: datetime(2000, 1, 1), nullable=True)
     unit_position = Column(String(20), nullable=True)#default="N/A"
     ru = Column(Integer, nullable=True, default=0)
-    rfs_date = Column(DateTime, default=datetime(2000, 1, 1), nullable=True)
+    rfs_date = Column(DateTime, default=lambda: datetime(2000, 1, 1), nullable=True)
     height = Column(Integer, nullable=True, default=0)
     width = Column(Integer, nullable=True, default=0)
     depth = Column(Integer, nullable=True, default=0)

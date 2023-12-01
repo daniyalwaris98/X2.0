@@ -29,7 +29,7 @@ async def onboard_devices(ip_list: list[str]):
                       join(PasswordGroupTable, PasswordGroupTable.password_group_id == AtomTable.password_group_id).
                       filter(AtomTable.ip_address == ip).first())
 
-            print("result is:::::::::::::::::::::::::::::::::::::::::::",result,file=sys.stderr)
+            print("result is:::::::::::::::::::::::::::::::::::::::::::fro onboard devices is",result,file=sys.stderr)
             if result is None:
                 error_list.append(f"{ip} : Device or Password Group Not Found")
                 continue

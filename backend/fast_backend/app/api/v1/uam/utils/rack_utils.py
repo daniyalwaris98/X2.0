@@ -148,13 +148,13 @@ def check_rack_optional_data(rack_obj, rack_exist):
     if "floor" in rack_obj.keys():
         if rack_obj["floor"] is not None:
             rack_exist.floor = rack_obj["floor"]
-    if "manufacture_date" in rack_obj.keys():
-        if rack_obj['manufacture_date'] is not None:
-            print("manufactureer date in rack obj is:::::::::::::::::;",rack_obj['manufacture_date'],file=sys.stderr)
-            rack_exist.manufacture_date = rack_obj['manufacture_date']
-    if "rfs_date" in rack_obj.keys():
-        if rack_obj['rfs_date'] is not None:
-            rack_exist.rfs_date = rack_obj['rfs_date'].isoformat()
+    # if "manufacture_date" in rack_obj.keys():
+    #     if rack_obj['manufacture_date'] is not None:
+    #         print("manufactureer date in rack obj is:::::::::::::::::;",rack_obj['manufacture_date'],file=sys.stderr)
+    #         rack_exist.manufacture_date = rack_obj['manufacture_date']
+    # if "rfs_date" in rack_obj.keys():
+    #     if rack_obj['rfs_date'] is not None:
+    #         rack_exist.rfs_date = rack_obj['rfs_date']
 
     return rack_exist
 
