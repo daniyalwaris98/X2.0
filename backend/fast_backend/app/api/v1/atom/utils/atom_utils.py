@@ -109,10 +109,13 @@ def validate_atom(device, update):
         if device["device_name"] == "":
             return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
-        atom = configs.db.query(AtomTable).filter(
-            AtomTable.device_name == device["device_name"]).first()
+        atom = configs.db.query(AtomTable).filter_by(ip_address = device["ip_address"]).first()
+        print("atom is::::::::::::::::::::::::::::::",atom,file=sys.stderr)
         if atom is not None:
-            if atom.ip_address != device["ip_address"].strip():
+            atom_device_name = atom.device_name
+            print("atom_device_name is::::::::::",atom_device_name,file=sys.stderr)
+            if atom_device_name:
+            # if atom.ip_address != device["ip_address"].strip():
                 return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
 
         if device["function"] is None or device['function'] == 'string':
@@ -164,9 +167,12 @@ def validate_atom(device, update):
 def add_complete_atom(device, update):
     try:
         response, status = validate_atom(device, update)
-
+        print("response is add complete atom is:::::::::::::",response,file=sys.stderr)
+        print("status in add complete atom is:::::::::::::::",status,file=sys.stderr)
+        response_message = response
+        response_status = status
         if status != 200:
-            return response, status
+            return response,400
 
         rack = response["rack"]
         password = response["password_group"]
@@ -257,7 +263,6 @@ def add_complete_atom(device, update):
                     "data":devices_data,
                     "message":msg
                 }
-                # print(msg, file=sys.stderr)
             else:
                 msg = f"{device['ip_address']} : Error While Inserting Atom"
                 # print(msg, file=sys.stderr)
@@ -285,7 +290,8 @@ def add_complete_atom(device, update):
 
 def add_transition_atom(device, update):
     try:
-
+        # print("device in atom tranistion is::::::::::::::::::::::::::::::",device,file=sys.stderr)
+        # print("update is::::::::::::::::::::::::::::::::::::::::::::::::",update,file=sys.stderr)
         device["ip_address"] = device["ip_address"].strip()
 
         if device["ip_address"] == "" or device['ip_address'] == 'string':
@@ -371,8 +377,9 @@ def add_transition_atom(device, update):
                 return msg, 500
         else:
             status = InsertDBData(trans_obj)
+            
             if status == 200:
-                msg = f"{device['ip_address']} : Atom Inserted Successfully"
+                msg = f"{device['ip_address']} :Transition Atom Inserted Successfully"
 
                 
                 # print('data in atom tranistion while inserting is:::::::::::::::::',data,file=sys.stderr)
@@ -676,6 +683,8 @@ def get_transition_atoms():
             obj_dict = result.as_dict()
 
             msg, status = add_complete_atom(obj_dict, True)
+            print("msg for get tranistion atom is ::::::::::::::",msg,file=sys.stderr)
+            print("status for tranistion atom is ss::::",status,file=sys.stderr)
 
             if status != 200:
                 obj_dict["creation_date"] = str(obj_dict["creation_date"])

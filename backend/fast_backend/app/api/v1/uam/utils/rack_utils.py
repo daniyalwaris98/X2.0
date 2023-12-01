@@ -8,12 +8,24 @@ from app.utils.db_utils import *
 def format_date(date):
     result = datetime(2000, 1, 1)
     try:
-        result = date.strftime("%d-%m-%Y")
+        result = date.strftime("%Y-%m-%d")
     except Exception:
         traceback.print_exc()
     return result
 
-
+def FormatDate(date):
+    try:
+        # print(date, addIosTrackerfile=sys.stderr)
+        if date is not None:
+            result = date.strftime('%Y-%m-%d')
+            print("result is::::::::::::",result,file=sys.stderr)
+        else:
+            # result = datetime(2000, 1, 1)
+            result = datetime(1, 1, 2000)
+        return result
+    except Exception as e:
+        traceback.print_exc()
+    
 def get_all_rack():
     rack_obj_list = []
     results = (
@@ -24,6 +36,10 @@ def get_all_rack():
 
     for result in results:
         rack_obj, site_obj = result
+        rack_obj_manufacture_date = format_date(rack_obj.manufacture_date)
+        print("rack obj formatdate manufacturer date is::::",rack_obj_manufacture_date,file=sys.stderr)
+        rack_obj_Format_date = FormatDate(rack_obj.manufacture_date)
+        print("rack obj Format daer is :::::::",rack_obj_Format_date,file=sys.stderr)
         rack_data_dict = {
             "rack_id": rack_obj.rack_id,
             "rack_name": rack_obj.rack_name,
@@ -112,6 +128,28 @@ def check_rack_status(rack_obj):
         return "Status Must Be Defined (Production / Not Production)", 400
 
     return rack_obj["status"], 200
+# function for date on POST request
+def FormatStringDate(date):
+    try:
+        if date is not None:
+            print("date in formatStringdate is:", date, file=sys.stderr)
+            if '-' in date:
+                result = datetime.strptime(date, '%Y-%m-%d')
+                print("- result for fomat string date is::::",result,file=sys.stderr)
+            elif '/' in date:
+                result = datetime.strptime(date, '%Y-%m-%d')
+                print("/ result for format date string is:::::",result,file=sys.stderr)
+            else:
+                print("incorrect date format", file=sys.stderr)
+                result = datetime(2000, 1, 1)
+            print("formatted date is:", result, file=sys.stderr)  # Add this line to check the formatted result
+            return result
+        else:
+            return datetime(2000, 1, 1)
+    except Exception as e:
+        print("date format exception:", e, file=sys.stderr)
+        traceback.print_exc()
+        return datetime(2000, 1, 1)
 
 
 def check_rack_optional_data(rack_obj, rack_exist):
@@ -148,13 +186,22 @@ def check_rack_optional_data(rack_obj, rack_exist):
     if "floor" in rack_obj.keys():
         if rack_obj["floor"] is not None:
             rack_exist.floor = rack_obj["floor"]
-    if "manufacture_date" in rack_obj.keys():
+    if "manufacture_date" in rack_obj:
         if rack_obj['manufacture_date'] is not None:
-            print("manufactureer date in rack obj is:::::::::::::::::;",rack_obj['manufacture_date'],file=sys.stderr)
-            rack_exist.manufacture_date = rack_obj['manufacture_date']
-    if "rfs_date" in rack_obj.keys():
+            print("manufacture date in rack obj is:", rack_obj['manufacture_date'], file=sys.stderr)
+        formatted_manufacture_date = FormatStringDate(rack_obj['manufacture_date'])
+        if formatted_manufacture_date is not None:
+            rack_exist.manufacture_date = formatted_manufacture_date
+            print("rack_exist manufacture date is::::", rack_exist.manufacture_date, file=sys.stderr)
+
+    if "rfs_date" in rack_obj:
         if rack_obj['rfs_date'] is not None:
-            rack_exist.rfs_date = rack_obj['rfs_date'].isoformat()
+            formatted_rfs_date = FormatStringDate(rack_obj['rfs_date'])
+            print("formated rfs date is::::::::::::::::::::::::::",formatted_rfs_date,file=sys.stderr)
+            if formatted_rfs_date is not None:
+                rack_exist.rfs_date = formatted_rfs_date
+                print("rack_exist rfs date is::::::::", rack_exist.rfs_date, file=sys.stderr)
+
 
     return rack_exist
 

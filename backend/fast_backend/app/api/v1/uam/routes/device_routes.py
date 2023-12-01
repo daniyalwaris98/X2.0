@@ -23,13 +23,14 @@ async def onboard_devices(ip_list: list[str]):
         success_list = []
         error_list = []
         data = []
+        print("ip list is ::::::::::::::::::::::::::::::::::",ip_list,file=sys.stderr)
         for ip in ip_list:
 
             result = (configs.db.query(AtomTable, PasswordGroupTable).
                       join(PasswordGroupTable, PasswordGroupTable.password_group_id == AtomTable.password_group_id).
                       filter(AtomTable.ip_address == ip).first())
 
-            print("result is:::::::::::::::::::::::::::::::::::::::::::",result,file=sys.stderr)
+            print("result is:::::::::::::::::::::::::::::::::::::::::::fro onboard devices is",result,file=sys.stderr)
             if result is None:
                 error_list.append(f"{ip} : Device or Password Group Not Found")
                 continue
@@ -52,8 +53,8 @@ async def onboard_devices(ip_list: list[str]):
                         puller = onboard_dict[atom['device_type']]
                         hosts = [atom]
                         response = puller.get_inventory_data(hosts)
-
-                        if response:
+                        print("repsones of the puller is:::::::::::::::::::::::",response,file=sys.stderr)
+                        if response == False:
                             error_list.append(f"{ip} : Error While Onboarding")
                         else:
                             success_list.append(f"{ip} : Device Onboarded Successfully")
