@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { Button } from "@mui/material";
 import { useTheme, styled } from "@mui/material/styles";
 import { Icon } from "@iconify/react";
@@ -36,6 +36,19 @@ export function DropDownButton({
 }) {
   const theme = useTheme();
   const [isOpen, setIsOpen] = useState(false);
+  const dropdownRef = useRef(null);
+
+  useEffect(() => {
+    const handleOutsideClick = (event) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target)) {
+        setIsOpen(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => {
+      document.removeEventListener("mousedown", handleOutsideClick);
+    };
+  }, [dropdownRef]);
 
   const StyledDiv = styled("div")(({ theme, sx }) => ({
     display: "flex",
@@ -87,6 +100,7 @@ export function DropDownButton({
 
   return (
     <div
+      ref={dropdownRef}
       style={{ position: "relative", display: "inline-block" }}
       onClick={handleButtonClick}
       {...rest}

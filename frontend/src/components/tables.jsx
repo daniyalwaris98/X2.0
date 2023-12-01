@@ -3,6 +3,7 @@ import { Table } from "antd";
 import styled from "styled-components";
 import { useTheme } from "@mui/material/styles";
 import DefaultScrollbar from "./scrollbar";
+import { getTableScrollWidth } from "../utils/helpers";
 
 const DefaultStyledAntDesignTable = styled(Table)`
   .ant-table-container {
@@ -14,14 +15,9 @@ const DefaultStyledAntDesignTable = styled(Table)`
               theme?.palette?.default_table?.check_box_checked};
           }
 
-          /* .ant-checkbox-indeterminate .ant-checkbox-inner:hover {
-            background-color: ${({ theme }) =>
-            theme?.palette?.default_table?.check_box_checked};
-          } */
-
           .ant-checkbox-inner {
-            /* ${({ theme }) =>
-              theme?.palette?.default_table?.check_box_border}; */
+            border-color: ${({ theme }) =>
+              theme?.palette?.default_table?.check_box_border};
             background-color: ${({ theme }) =>
               theme?.palette?.default_table?.check_box_inner};
           }
@@ -68,11 +64,11 @@ const DefaultStyledAntDesignTable = styled(Table)`
               theme?.palette?.default_table?.check_box_inner};
           }
 
-          font-size: 12px !important;
+          font-size: 13px !important;
           margin: 0 !important;
           padding: 0 !important;
           padding-left: 10px !important;
-          height: ${(p) => p.cellHeight || "33px"} !important;
+          height: ${(p) => p.cellHeight || "37px"} !important;
           color: ${({ theme }) => theme?.palette?.default_table?.primary_text};
           border: none;
         }
@@ -90,7 +86,7 @@ const DefaultStyledAntDesignTable = styled(Table)`
     }
   }
 
-  .ant-pagination-item a {
+  /* .ant-pagination-item a {
     display: block;
     padding: 0 6px;
     color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
@@ -110,7 +106,7 @@ const DefaultStyledAntDesignTable = styled(Table)`
   .ant-pagination-item-active a {
     border-radius: 20px;
     background-color: ${({ theme }) =>
-      theme?.palette?.default_table?.pagination_background};
+    theme?.palette?.default_table?.pagination_background};
     border: none;
     color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
   }
@@ -125,19 +121,112 @@ const DefaultStyledAntDesignTable = styled(Table)`
     border-radius: 5px;
     color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
     background-color: ${({ theme }) =>
-      theme?.palette?.default_table?.pagination_background};
+    theme?.palette?.default_table?.pagination_background};
   }
 
   .ant-select-arrow {
     color: ${({ theme }) => theme?.palette?.default_table?.pagination_border};
+  } */
+
+  .ant-pagination-prev {
+    margin-right: 5px !important;
+  }
+
+  .ant-pagination-next {
+    margin-right: 5px !important;
+    margin-left: 5px !important;
+  }
+
+  .ant-pagination-next > .ant-pagination-item-link {
+    border-radius: 0px;
+    border: 1px solid
+      ${({ theme }) => theme?.palette?.default_table?.pagination_border} !important;
+    color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
+    &:hover {
+      border: 1px solid
+        ${({ theme }) => theme?.palette?.default_table?.pagination_border} !important;
+      border-radius: 0px;
+    }
+  }
+  .ant-pagination-prev > .ant-pagination-item-link {
+    border-radius: 0px;
+    border: 1px solid
+      ${({ theme }) => theme?.palette?.default_table?.pagination_border} !important;
+    color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
+    &:hover {
+      border: 1px solid
+        ${({ theme }) => theme?.palette?.default_table?.pagination_border} !important;
+      border-radius: 0px;
+    }
+  }
+  .ant-pagination-item-link {
+    color: ${({ theme }) =>
+      theme?.palette?.default_table?.pagination_text} !important;
+    border: 1px solid
+      ${({ theme }) => theme?.palette?.default_table?.pagination_border};
+  }
+
+  .ant-pagination-item-active {
+    color: ${({ theme }) =>
+      theme?.palette?.default_table?.pagination_text} !important;
+    border-color: ${({ theme }) =>
+      theme?.palette?.default_table?.pagination_border};
+    background-color: ${({ theme }) =>
+      theme?.palette?.default_table?.pagination_background};
+    &:hover {
+      color: ${({ theme }) =>
+        theme?.palette?.default_table?.pagination_text} !important;
+      border-color: ${({ theme }) =>
+        theme?.palette?.default_table?.pagination_border} !important;
+    }
+  }
+  .ant-pagination-item-active a {
+    color: ${({ theme }) =>
+      theme?.palette?.default_table?.pagination_text} !important;
+    background-color: ${({ theme }) =>
+      theme?.palette?.default_table?.pagination_background} !important;
+  }
+  .ant-pagination-item {
+    border-color: ${({ theme }) =>
+      theme?.palette?.default_table?.pagination_border};
+  }
+
+  .ant-pagination-item a {
+    font-weight: 700;
+    color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
+    &:hover {
+      border-radius: 15px;
+    }
+  }
+
+  .ant-pagination-next {
+    margin-right: 12px;
+  }
+
+  .ant-pagination-item {
+    border-radius: 0px;
+    &:hover {
+      border-radius: 0px;
+    }
   }
 `;
 
-export default function DefaultTable(props) {
+export default function DefaultTable({ displayColumns = [], ...rest }) {
   const theme = useTheme();
   return (
     <DefaultScrollbar>
-      <DefaultStyledAntDesignTable theme={theme} {...props} />
+      <DefaultStyledAntDesignTable
+        scroll={{ x: getTableScrollWidth(displayColumns) }}
+        style={{ whiteSpace: "pre" }}
+        rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
+        size="small"
+        pagination={{
+          defaultPageSize: 10,
+          pageSizeOptions: [20, 50, 100, 500, 1000],
+        }}
+        theme={theme}
+        {...rest}
+      />
     </DefaultScrollbar>
   );
 }

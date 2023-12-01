@@ -25,9 +25,14 @@ import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
+import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants";
 
 const schema = yup.object().shape({
-  rack_name: yup.string().required("Rack name is required"),
+  rack_name: yup
+    .string()
+    .required("Rack name is required")
+    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters in rack name"),
   site_name: yup.string().required("Site name is required"),
   status: yup.string().required("Status is required"),
 });
@@ -90,7 +95,8 @@ const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
     isSuccess: isAddRecordSuccess,
     isError: isAddRecordError,
     error: addRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
+    callback: handleClose,
   });
 
   useErrorHandling({
@@ -98,7 +104,8 @@ const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
     isSuccess: isUpdateRecordSuccess,
     isError: isUpdateRecordError,
     error: updateRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
+    callback: handleClose,
   });
 
   // ///getting dropdowns data from the store

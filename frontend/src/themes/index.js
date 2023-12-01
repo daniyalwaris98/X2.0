@@ -44,9 +44,10 @@ export const lightTheme = createTheme({
       check_box_checked: "#3E9F48",
       delete_icon: "#262626",
       edit_icon: "#262626",
-      pagination_text: "#262626",
-      pagination_background: "#EBEBEB",
-      pagination_border: "#262626",
+      pagination_text: "#3E9F48",
+      pagination_background: "transparent",
+      pagination_background_active: "#EBEBEB",
+      pagination_border: "#3E9F48",
     },
 
     default_button: {
@@ -202,9 +203,10 @@ export const darkTheme = createTheme({
       check_box_checked: "#3E9F48",
       delete_icon: "#262626",
       edit_icon: "#262626",
-      pagination_text: "#EBEBEB",
-      pagination_background: "#262626",
-      pagination_border: "#EBEBEB",
+      pagination_text: "#3E9F48",
+      pagination_background: "transparent",
+      pagination_background_active: "#EBEBEB",
+      pagination_border: "#3E9F48",
     },
 
     default_button: {

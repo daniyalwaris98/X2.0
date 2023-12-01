@@ -10,6 +10,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
       data_key: "status",
       search: false,
       width: "80px",
+      align: "center",
       render: (text, record) => {
         const icon = record.atom_id ? (
           <Icon
@@ -43,9 +44,50 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     "criticality",
     "password_group",
     {
+      data_key: "onboard_status",
+      title: "Board",
+      fixed: "right",
+      align: "center",
+      width: 80,
+      render: (text, record) => (
+        <div
+          style={{
+            textAlign: "center",
+          }}
+        >
+          {record.onboard_status === true ? (
+            <span
+              style={{
+                display: "inline-block",
+                borderRadius: "10px",
+                backgroundColor: "#c2dfbf",
+                color: "#3D9E47",
+                padding: "1px 15px",
+              }}
+            >
+              True
+            </span>
+          ) : record.onboard_status === false ? (
+            <div
+              style={{
+                display: "inline-block",
+                borderRadius: "10px",
+                backgroundColor: "#ffe2dd",
+                color: "#E34444",
+                padding: "1px 15px",
+              }}
+            >
+              False
+            </div>
+          ) : null}
+        </div>
+      ),
+    },
+    {
       data_key: "actions",
       search: false,
       fixed: "right",
+      align: "center",
       width: 100,
       render: (text, record) => (
         <div
@@ -74,7 +116,10 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter(
+      (item) =>
+        item !== "status" && item !== "actions" && item !== "onboard_status"
+    );
 
   return {
     columnDefinitions,

@@ -7,6 +7,7 @@ import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
+  useOnBoardRecordsMutation,
 } from "../../../store/features/atomModule/atom/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atom/selectors";
@@ -48,6 +49,15 @@ const Index = () => {
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
+  // apis required in hooks
+  const {
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isLoading: isFetchRecordsLoading,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+  } = useFetchRecordsQuery();
+
   // hooks
   const { height, width } = useWindowDimensions();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
@@ -65,8 +75,8 @@ const Index = () => {
         visible: selectedRowKeys.length > 0,
       },
       default_onboard: {
-        handleClick: handleOnboard,
-        visible: selectedRowKeys.length > 0,
+        handleClick: handleOnBoard,
+        visible: shouldOnboardBeVisible(),
       },
       atom_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
       default_import: { handleClick: handleInputClick },
@@ -90,14 +100,6 @@ const Index = () => {
   const dataSource = useSelector(selectTableData);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
-
   const [
     addRecords,
     {
@@ -119,6 +121,17 @@ const Index = () => {
       error: deleteRecordsError,
     },
   ] = useDeleteRecordsMutation();
+
+  const [
+    onBoardRecords,
+    {
+      data: OnBoardRecordsData,
+      isSuccess: isOnBoardRecordsSuccess,
+      isLoading: isOnBoardRecordsLoading,
+      isError: isOnBoardRecordsError,
+      error: OnBoardRecordsError,
+    },
+  ] = useOnBoardRecordsMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -145,12 +158,32 @@ const Index = () => {
     type: TYPE_BULK,
   });
 
+  useErrorHandling({
+    data: OnBoardRecordsData,
+    isSuccess: isOnBoardRecordsSuccess,
+    isError: isOnBoardRecordsError,
+    error: OnBoardRecordsError,
+    type: TYPE_BULK,
+  });
+
   // effects
   useEffect(() => {
-    setSelectedRowKeys([]);
-  }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
+    setSelectedRowKeys((prev) =>
+      prev.filter((item) => !deleteRecordsData?.data.includes(item))
+    );
+  }, [isDeleteRecordsSuccess]);
 
   // handlers
+  function shouldOnboardBeVisible() {
+    if (selectedRowKeys.length > 0) {
+      return selectedRowKeys.some((key) => {
+        let atom = fetchRecordsData.find((item) => item.atom_table_id === key);
+        return atom && atom.atom_id;
+      });
+    }
+    return false;
+  }
+
   function handlePostSeed(data) {
     addRecords(data);
   }
@@ -187,7 +220,7 @@ const Index = () => {
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
       handleCallbackAlert(
-        "Are you sure you want delete these records?",
+        "Are you sure you want to delete these records?",
         deleteData
       );
     } else {
@@ -195,8 +228,41 @@ const Index = () => {
     }
   }
 
-  function handleOnboard() {
-    handleInfoAlert("Onboard Clicked!");
+  function onBoardData(allowed) {
+    if (allowed) {
+      const onBoardData = selectedRowKeys.map((rowKey) => {
+        const dataObject = dataSource.find(
+          (row) => row.atom_table_id === rowKey
+        );
+
+        if (dataObject.atom_id) {
+          return dataObject.atom_id;
+        }
+
+        return null;
+      });
+
+      const filteredOnBoardDataData = onBoardData.filter(
+        (data) => data !== null
+      );
+
+      if (filteredOnBoardDataData.length > 0) {
+        onBoardRecords(filteredOnBoardDataData);
+      }
+    } else {
+      setSelectedRowKeys([]);
+    }
+  }
+
+  function handleOnBoard() {
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(
+        "Only the complete atoms will be onBoarded. Are you sure you want to proceed?",
+        onBoardData
+      );
+    } else {
+      handleInfoAlert("No record has been selected to onBoard!");
+    }
   }
 
   function handleInputClick() {
@@ -355,19 +421,12 @@ const Index = () => {
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable
-            rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
-            size="small"
-            scroll={{ x: getTableScrollWidth(displayColumns) }}
             onChange={handleChange}
             rowSelection={rowSelection}
             columns={displayColumns}
             dataSource={dataSource}
             rowKey={TABLE_DATA_UNIQUE_ID}
-            style={{ whiteSpace: "pre" }}
-            pagination={{
-              defaultPageSize: 9,
-              pageSizeOptions: [9, 50, 100, 500, 1000],
-            }}
+            displayColumns={displayColumns}
           />
         </DefaultCard>
       </div>

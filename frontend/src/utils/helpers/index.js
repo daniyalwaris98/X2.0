@@ -53,6 +53,9 @@ export function handleFileChange(event, convertToJson, handlePostSeed) {
     const headers = fileData[0];
     fileData.splice(0, 1);
     let data = convertToJson(headers, fileData);
+    data = data.filter(
+      (obj) => !Object.values(obj).every((value) => value === "")
+    );
     handlePostSeed(data);
   };
 }

@@ -107,8 +107,10 @@ const Index = () => {
 
   // effects
   useEffect(() => {
-    setSelectedRowKeys([]);
-  }, [isDeleteRecordsSuccess, isDeleteRecordsError]);
+    setSelectedRowKeys((prev) =>
+      prev.filter((item) => !deleteRecordsData?.data.includes(item))
+    );
+  }, [isDeleteRecordsSuccess]);
 
   // handlers
   function deleteData(allowed) {
@@ -198,19 +200,12 @@ const Index = () => {
             selectedRowKeys={selectedRowKeys}
           />
           <DefaultTable
-            rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
-            size="small"
-            scroll={{ x: getTableScrollWidth(displayColumns) }}
             onChange={handleChange}
             rowSelection={rowSelection}
             columns={displayColumns}
             dataSource={dataSource}
             rowKey={TABLE_DATA_UNIQUE_ID}
-            style={{ whiteSpace: "pre" }}
-            pagination={{
-              defaultPageSize: 9,
-              pageSizeOptions: [9, 50, 100, 500, 1000],
-            }}
+            displayColumns={displayColumns}
           />
         </DefaultCard>
       </div>
