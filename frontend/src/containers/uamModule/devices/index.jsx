@@ -28,7 +28,9 @@ const Index = () => {
 
   // hooks
   const { handleSuccessAlert, handleInfoAlert } = useSweetAlert();
-  const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions();
+  const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    handleEdit,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -40,6 +42,8 @@ const Index = () => {
   });
 
   // states
+  const [recordToEdit, setRecordToEdit] = useState(null);
+  const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -67,6 +71,11 @@ const Index = () => {
   });
 
   // handlers
+  function handleEdit(record) {
+    setRecordToEdit(record);
+    setOpen(true);
+  }
+
   function handleDismantle() {
     handleInfoAlert("Dismantle Clicked!");
   }
