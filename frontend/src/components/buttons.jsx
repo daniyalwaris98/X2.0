@@ -68,7 +68,7 @@ export function DropDownButton({
     zIndex: "99999",
     top: "100%",
     right: 0,
-    width: "110%",
+    width: "100%",
     backgroundColor: theme?.palette?.drop_down_button?.options_background,
     border: `1px solid ${theme?.palette?.drop_down_button?.border}`,
     borderRadius: "0 0 4px 4px",
@@ -79,7 +79,7 @@ export function DropDownButton({
   const StyledOption = styled("div")(({ theme, sx }) => ({
     color: theme?.palette?.drop_down_button?.options_text,
     padding: "6px 12px",
-    fontSize: "14px",
+    fontSize: "12px",
     cursor: "pointer",
     "&:hover": {
       backgroundColor:

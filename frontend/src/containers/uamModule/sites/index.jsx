@@ -22,7 +22,7 @@ import {
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import withDefaultDelete from "../../../hoc/withDefaultDelete";
-import DefaultPageTableSection from "../../../components/pageTableSection";
+import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
   // theme

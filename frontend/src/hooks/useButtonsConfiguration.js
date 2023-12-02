@@ -20,6 +20,10 @@ export default function useButtonsConfiguration(buttonDetails) {
       ALL_DATA: "All Data",
       TEMPLATE: "Template",
     },
+    inventory_sync: {
+      SYNC_FROM_INVENTORY: "Sync From Inventory",
+      SYNC_TO_INVENTORY: "Sync To Inventory",
+    },
   };
 
   const configurations = {
@@ -149,6 +153,27 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.drop_down_button?.add_text,
       },
     },
+    inventory_sync: {
+      category: "dropDown",
+      name: "Sync",
+      icon: (
+        <Icon fontSize="16px" icon="streamline:arrow-reload-horizontal-1" />
+      ),
+      options: [
+        {
+          type: optionConstants.inventory_sync.SYNC_FROM_INVENTORY,
+          icon: <Icon fontSize="16px" icon="icon-park:to-right" />,
+        },
+        {
+          type: optionConstants.inventory_sync.SYNC_TO_INVENTORY,
+          icon: <Icon fontSize="16px" icon="icon-park:to-left" />,
+        },
+      ],
+      sx: {
+        backgroundColor: theme?.palette?.drop_down_button?.add_background,
+        color: theme?.palette?.drop_down_button?.add_text,
+      },
+    },
     template_export: {
       category: "dropDown",
       name: "Export",
@@ -241,8 +266,8 @@ export default function useButtonsConfiguration(buttonDetails) {
         buttonDetails[key] = { ...buttonDetails[key], sx: {} };
       }
       const { sx = {}, ...rest } = buttonDetails[key];
-      configurations[key].sx = { ...configurations[key].sx, ...sx };
       if (configurations[key]) {
+        configurations[key].sx = { ...configurations[key].sx, ...sx };
         generatedConfiguration[key] = {
           ...configurations[key],
           ...rest,

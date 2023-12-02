@@ -29,7 +29,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageTableSection";
+import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
   // theme
@@ -48,12 +48,13 @@ const Index = () => {
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
-    default_export: { handleClick: handleExport },
+    template_export: { handleClick: handleExport },
     default_delete: {
       handleClick: handleDelete,
       visible: selectedRowKeys.length > 0,
     },
-    default_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
+    inventory_sync: { handleClick: handleAdd, namePostfix: PAGE_NAME },
+    default_import: { handleClick: handleAdd },
   });
 
   // refs

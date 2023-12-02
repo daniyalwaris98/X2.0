@@ -22,7 +22,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageTableSection";
+import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
   // theme
