@@ -1,19 +1,20 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "site_name",
-    "status",
-    "region_name",
-    "latitude",
-    "longitude",
-    "city",
+    indexColumnNameConstants.SITE_NAME,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.REGION_NAME,
+    indexColumnNameConstants.LATITUDE,
+    indexColumnNameConstants.LONGITUDE,
+    indexColumnNameConstants.CITY,
     {
-      data_key: "actions",
+      data_key: indexColumnNameConstants.ACTIONS,
       search: false,
       fixed: "right",
       align: "center",
@@ -45,7 +46,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
     columnDefinitions,

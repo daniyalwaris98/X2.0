@@ -74,9 +74,12 @@ export function DropDownButton({
     borderRadius: "0 0 4px 4px",
     zIndex: 3,
     display: isOpen ? "block" : "none",
+    borderRadius: "5px",
+    marginTop: "5px",
   }));
 
   const StyledOption = styled("div")(({ theme, sx }) => ({
+    borderRadius: "4px",
     color: theme?.palette?.drop_down_button?.options_text,
     padding: "6px 12px",
     fontSize: "12px",

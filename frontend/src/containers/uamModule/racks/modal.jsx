@@ -27,14 +27,20 @@ import { formSetter } from "../../../utils/helpers";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
+import { PAGE_NAME } from "./constants";
+import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
-  rack_name: yup
+  [indexColumnNameConstants.RACK_NAME]: yup
     .string()
     .required("Rack name is required")
     .matches(ALPHA_NUMERIC_REGEX, "Invalid characters in rack name"),
-  site_name: yup.string().required("Site name is required"),
-  status: yup.string().required("Status is required"),
+  [indexColumnNameConstants.SITE_NAME]: yup
+    .string()
+    .required("Site name is required"),
+  [indexColumnNameConstants.STATUS]: yup
+    .string()
+    .required("Status is required"),
 });
 
 const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
@@ -78,7 +84,7 @@ const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
   // fetching dropdowns data from backend using apis
   const { refetch: refetchRackNames } = useFetchRackNamesQuery(
     {
-      site_name: watch("site_name", ""),
+      site_name: watch(indexColumnNameConstants.SITE_NAME, ""),
     },
     {
       skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
@@ -132,7 +138,7 @@ const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Rack`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -140,37 +146,71 @@ const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit
               control={control}
-              dataKey="rack_name"
+              dataKey={indexColumnNameConstants.RACK_NAME}
               disabled={recordToEdit !== null}
               required
             />
-            <DefaultFormUnit control={control} dataKey="serial_number" />
-            <DefaultFormUnit control={control} dataKey="manufacture_date" />
-            <DefaultFormUnit control={control} dataKey="pn_code" />
-            <DefaultFormUnit control={control} dataKey="unit_position" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.SERIAL_NUMBER}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.MANUFACTURE_DATE}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.PN_CODE}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.UNIT_POSITION}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <AddableSelectFormUnit
               control={control}
-              dataKey="site_name"
+              dataKey={indexColumnNameConstants.SITE_NAME}
               options={siteNames}
               onAddClick={handleOpenSiteModal}
               required
             />
-            <DefaultFormUnit control={control} dataKey="ru" />
-            <DefaultFormUnit control={control} dataKey="height" />
-            <DefaultFormUnit control={control} dataKey="width" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.HEIGHT}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.WIDTH}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.DEPTH}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <SelectFormUnit
               control={control}
-              dataKey="status"
+              dataKey={indexColumnNameConstants.STATUS}
               options={statusNames}
               required
             />
-            <DefaultFormUnit control={control} dataKey="rfs_date" />
-            <DefaultFormUnit control={control} dataKey="rack_model" />
-            <DefaultFormUnit control={control} dataKey="brand" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.RU}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.RFS_DATE}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.RACK_MODEL}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.FLOOR}
+            />
           </Grid>
 
           <Grid item xs={12}>

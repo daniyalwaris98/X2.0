@@ -23,14 +23,20 @@ import { formSetter } from "../../../utils/helpers";
 import DefaultSelect from "../../../components/selects";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
+import { indexColumnNameConstants } from "./constants";
+import { PAGE_NAME } from "./constants";
 
 const schema = yup.object().shape({
-  site_name: yup
+  [indexColumnNameConstants.SITE_NAME]: yup
     .string()
     .required("Site name is required")
     .matches(ALPHA_NUMERIC_REGEX, "Invalid characters in site name"),
-  status: yup.string().required("Status is required"),
-  city: yup.string().matches(/^[A-Za-z]+$/, "City must contain only alphabets"),
+  [indexColumnNameConstants.STATUS]: yup
+    .string()
+    .required("Status is required"),
+  [indexColumnNameConstants.CITY]: yup
+    .string()
+    .matches(/^[A-Za-z]+$/, "City must contain only alphabets"),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -121,7 +127,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Site`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
@@ -129,22 +135,34 @@ const Index = ({ handleClose, open, recordToEdit }) => {
           <Grid item xs={12} sm={6}>
             <DefaultFormUnit
               control={control}
-              dataKey="site_name"
+              dataKey={indexColumnNameConstants.SITE_NAME}
               disabled={recordToEdit !== null}
               required
             />
-            <DefaultFormUnit control={control} dataKey="region_name" />
-            <DefaultFormUnit control={control} dataKey="city" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.REGION_NAME}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.CITY}
+            />
           </Grid>
           <Grid item xs={12} sm={6}>
             <SelectFormUnit
               control={control}
-              dataKey="status"
+              dataKey={indexColumnNameConstants.STATUS}
               options={statusNames}
               required
             />
-            <DefaultFormUnit control={control} dataKey="latitude" />
-            <DefaultFormUnit control={control} dataKey="longitude" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.LATITUDE}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.LONGITUDE}
+            />
           </Grid>
           <Grid item xs={12}>
             <DefaultDialogFooter handleClose={handleClose} />

@@ -118,7 +118,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               required
             />
             <DefaultFormUnit control={control} dataKey="serial_number" />
-            <DefaultFormUnit control={control} dataKey="manufacturer_date" />
+            <DefaultFormUnit control={control} dataKey="manufacture_date" />
             <DefaultFormUnit control={control} dataKey="pn_code" />
           </Grid>
           <Grid item xs={12} sm={4}>

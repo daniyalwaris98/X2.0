@@ -162,11 +162,11 @@ export default function useButtonsConfiguration(buttonDetails) {
       options: [
         {
           type: optionConstants.inventory_sync.SYNC_FROM_INVENTORY,
-          icon: <Icon fontSize="16px" icon="icon-park:to-right" />,
+          icon: <Icon fontSize="16px" icon="icon-park-outline:to-right" />,
         },
         {
           type: optionConstants.inventory_sync.SYNC_TO_INVENTORY,
-          icon: <Icon fontSize="16px" icon="icon-park:to-left" />,
+          icon: <Icon fontSize="16px" icon="icon-park-outline:to-left" />,
         },
       ],
       sx: {

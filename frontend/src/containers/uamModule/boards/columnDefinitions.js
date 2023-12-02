@@ -12,7 +12,7 @@ export function useIndexTableColumnDefinitions() {
     "device_slot_id",
     "software_version",
     "hardware_version",
-    "manufacturer_date",
+    "manufacture_date",
     "eos_date",
     "eol_date",
   ];

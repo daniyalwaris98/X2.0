@@ -337,7 +337,10 @@ const Index = () => {
   return (
     <Spin
       spinning={
-        isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
+        isFetchRecordsLoading ||
+        isAddRecordsLoading ||
+        isDeleteRecordsLoading ||
+        isOnBoardRecordsLoading
       }
     >
       <div>
