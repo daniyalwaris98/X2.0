@@ -1,40 +1,39 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions() {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "ip_address",
-    "device_name",
-    "device_type",
-    "site_name",
-    "rack_name",
-    "software_type",
-    "software_version",
-    "patch_version",
-    "manufacturer",
-    "creation_date",
-    "modification_date",
-    "hw_eos_date",
-    "hw_eol_date",
-    "sw_eos_date",
-    "sw_eol_date",
-    "rfs_date",
-    "contract_expiry",
-    "uptime",
-    "manufacture_date",
-    "authentication",
-    "serial_number",
-    "pn_code",
-    "subrack_id_number",
-    "hardware_version",
-    "max_power",
-    "site_type",
-    "source",
-    "stack",
-    "contract_number",
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.DEVICE_TYPE,
+    indexColumnNameConstants.SITE_NAME,
+    indexColumnNameConstants.RACK_NAME,
+    indexColumnNameConstants.SOFTWARE_TYPE,
+    indexColumnNameConstants.SOFTWARE_VERSION,
+    indexColumnNameConstants.PATCH_VERSION,
+    indexColumnNameConstants.MANUFACTURER,
+    indexColumnNameConstants.HW_EOS_DATE,
+    indexColumnNameConstants.HW_EOL_DATE,
+    indexColumnNameConstants.SW_EOS_DATE,
+    indexColumnNameConstants.SW_EOL_DATE,
+    indexColumnNameConstants.RFS_DATE,
+    indexColumnNameConstants.CONTRACT_EXPIRY,
+    indexColumnNameConstants.UP_TIME,
+    indexColumnNameConstants.MANUFACTURE_DATE,
+    indexColumnNameConstants.AUTHENTICATION,
+    indexColumnNameConstants.SERIAL_NUMBER,
+    indexColumnNameConstants.PN_CODE,
+    indexColumnNameConstants.SUB_RACK_ID_NUMBER,
+    indexColumnNameConstants.HARDWARE_VERSION,
+    indexColumnNameConstants.MAX_POWER,
+    indexColumnNameConstants.SITE_TYPE,
+    indexColumnNameConstants.SOURCE,
+    indexColumnNameConstants.STACK,
+    indexColumnNameConstants.CONTRACT_NUMBER,
   ];
 
   const dataKeys = columnDefinitions
@@ -45,7 +44,7 @@ export function useIndexTableColumnDefinitions() {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
     columnDefinitions,

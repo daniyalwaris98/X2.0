@@ -1,20 +1,22 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions() {
   const columnDefinitions = [
-    "board_name",
-    "device_name",
-    "serial_number",
-    "pn_code",
-    "status",
-    "device_slot_id",
-    "software_version",
-    "hardware_version",
-    "manufacture_date",
-    "eos_date",
-    "eol_date",
+    indexColumnNameConstants.BOARD_NAME,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.SERIAL_NUMBER,
+    indexColumnNameConstants.PN_CODE,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.DEVICE_SLOT_ID,
+    indexColumnNameConstants.SOFTWARE_VERSION,
+    indexColumnNameConstants.HARDWARE_VERSION,
+    indexColumnNameConstants.MANUFACTURE_DATE,
+    indexColumnNameConstants.EOS_DATE,
+    indexColumnNameConstants.EOL_DATE,
+    indexColumnNameConstants.ACTIONS,
   ];
 
   const dataKeys = columnDefinitions
@@ -25,7 +27,7 @@ export function useIndexTableColumnDefinitions() {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
     columnDefinitions,
