@@ -16,7 +16,6 @@ export function useIndexTableColumnDefinitions() {
     indexColumnNameConstants.MANUFACTURE_DATE,
     indexColumnNameConstants.EOS_DATE,
     indexColumnNameConstants.EOL_DATE,
-    indexColumnNameConstants.ACTIONS,
   ];
 
   const dataKeys = columnDefinitions
@@ -27,7 +26,7 @@ export function useIndexTableColumnDefinitions() {
         return item;
       }
     })
-    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
+    .filter((item) => true);
 
   return {
     columnDefinitions,

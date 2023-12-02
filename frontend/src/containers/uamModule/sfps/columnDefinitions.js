@@ -1,28 +1,27 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions() {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "sfp_id",
-    "uam_id",
-    "device_name",
-    "status",
-    "serial_number",
-    "media_type",
-    "port_name",
-    "port_type",
-    "connector",
-    "mode",
-    "speed",
-    "wavelength",
-    "optical_direction_type",
-    "pn_code",
-    "eos_date",
-    "eol_date",
-    "rfs_date",
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.SERIAL_NUMBER,
+    indexColumnNameConstants.MEDIA_TYPE,
+    indexColumnNameConstants.PORT_NAME,
+    indexColumnNameConstants.PORT_TYPE,
+    indexColumnNameConstants.CONNECTOR,
+    indexColumnNameConstants.MODE,
+    indexColumnNameConstants.SPEED,
+    indexColumnNameConstants.WAVE_LENGTH,
+    indexColumnNameConstants.OPTICAL_DIRECTION_TYPE,
+    indexColumnNameConstants.PN_CODE,
+    indexColumnNameConstants.EOS_DATE,
+    indexColumnNameConstants.EOL_DATE,
+    indexColumnNameConstants.RFS_DATE,
   ];
 
   const dataKeys = columnDefinitions
@@ -33,7 +32,7 @@ export function useIndexTableColumnDefinitions() {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => true);
 
   return {
     columnDefinitions,

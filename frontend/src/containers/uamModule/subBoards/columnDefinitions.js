@@ -1,26 +1,27 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions() {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "subboard_name",
-    "device_name",
-    "serial_number",
-    "status",
-    "pn_code",
-    "subboard_type",
-    "subrack_id",
-    "slot_number",
-    "subslot_number",
-    "device_slot_number",
-    "software_version",
-    "hardware_version",
-    "manufacture_date",
-    "eos_date",
-    "eol_date",
+    indexColumnNameConstants.SUB_BOARD_NAME,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.SERIAL_NUMBER,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.PN_CODE,
+    indexColumnNameConstants.SUB_BOARD_TYPE,
+    indexColumnNameConstants.SUB_RACK_ID,
+    indexColumnNameConstants.SLOT_NUMBER,
+    indexColumnNameConstants.SUB_SLOT_NUMBER,
+    indexColumnNameConstants.DEVICE_SLOT_ID,
+    indexColumnNameConstants.SOFTWARE_VERSION,
+    indexColumnNameConstants.HARDWARE_VERSION,
+    indexColumnNameConstants.MANUFACTURE_DATE,
+    indexColumnNameConstants.EOS_DATE,
+    indexColumnNameConstants.EOL_DATE,
   ];
 
   const dataKeys = columnDefinitions
@@ -31,7 +32,7 @@ export function useIndexTableColumnDefinitions() {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => true);
 
   return {
     columnDefinitions,

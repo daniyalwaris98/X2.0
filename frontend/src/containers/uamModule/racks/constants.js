@@ -4,6 +4,7 @@ export const PAGE_PATH = "rack";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_racks";
 export const TABLE_DATA_UNIQUE_ID = "rack_id";
 export const indexColumnNameConstants = {
+  RACK_ID: TABLE_DATA_UNIQUE_ID,
   RACK_NAME: "rack_name",
   SITE_NAME: "site_name",
   SERIAL_NUMBER: "serial_number",

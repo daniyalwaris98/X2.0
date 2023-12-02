@@ -54,7 +54,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
     columnDefinitions,

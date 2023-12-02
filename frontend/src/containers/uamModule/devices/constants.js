@@ -4,6 +4,7 @@ export const PAGE_PATH = "device";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_devices";
 export const TABLE_DATA_UNIQUE_ID = "device_id";
 export const indexColumnNameConstants = {
+  DEVICE_ID: TABLE_DATA_UNIQUE_ID,
   UAM_ID: "uam_id",
   ATOM_ID: "atom_id",
   IP_ADDRESS: "ip_address",
