@@ -327,7 +327,7 @@ async def get_rack_by_ip_address(ip_address: str = Query(..., description="IP ad
                           "modification_date": str(rack.modification_date), "status": rack.status,
                           "rfs_date": str(rack.rfs_date), "height": rack.height, "width": rack.width,
                           "depth": rack.depth, "ru": rack.ru, "pn_code": rack.pn_code,
-                          "rack_model": rack.rack_model, "brand": rack.floor}
+                          "rack_model": rack.rack_model, "floor": rack.floor}
 
         return JSONResponse(content=rack_data_dict, status_code=200)
 

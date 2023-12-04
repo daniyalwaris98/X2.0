@@ -111,6 +111,7 @@ def delete_password_groups(pass_list: list[int]):
         success_list = []
         error_list = []
         deleted_password_group = []
+        default_password = configs.db.query(PasswordGroupTable).filter(PasswordGroupTable.password_group == "default_password").first()
         print("password list is:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::",pass_list,file=sys.stderr)
         for pass_obj in pass_list:
             pass_obj = pass_obj
@@ -121,7 +122,8 @@ def delete_password_groups(pass_list: list[int]):
             password = configs.db.query(PasswordGroupTable).filter(
                     PasswordGroupTable.password_group_id == pass_obj).first()
             print("password is:::::::::::::::::::::::::::::::::::::",password,file=sys.stderr)
-        
+            if password.password_id == default_password.password_id:
+                error_list.append(f"{password.password_id} : defualt password cannot be deleted ")
             print("is passsowrd is true::::::::::",file=sys.stderr)
             password_id = password.password_group_id
             print("password id is:::::::::::::::",password_id,file=sys.stderr)

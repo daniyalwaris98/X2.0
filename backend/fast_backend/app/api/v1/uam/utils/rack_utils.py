@@ -56,7 +56,8 @@ def get_all_rack():
             "width": rack_obj.width,
             "pn_code": rack_obj.pn_code,
             "rack_model": rack_obj.rack_model,
-            "brand": rack_obj.floor,
+            "floor": rack_obj.floor,
+            "depth":rack_obj.depth
         }
         rack_obj_list.append(rack_data_dict)
 
@@ -338,7 +339,7 @@ def delete_rack_util(rack_ids):
                 rack_associated_with_atom = configs.db.query(AtomTable).filter_by(rack_id = rack_associated_id).first()
                 if rack_associated_with_atom:
                     print("rack assocciate with the atom is:::::::::::::::::::::::",file=sys.stderr)
-                    return f"{rack.rack_name} : Is Associated with the {rack_associated_with_atom.ip_address} and cannot be deleted",400
+                    error_list.append(f"{rack.rack_name} : Is Associated with the {rack_associated_with_atom.ip_address} and cannot be deleted")
                 if rack is None:
                     error_list.append(f"{rack_id} : Rack Does Not Exist"),400
                     continue
