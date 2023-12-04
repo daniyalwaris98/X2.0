@@ -15,7 +15,10 @@ router = APIRouter(
     200: {"model": list[GetBoardResponseSchema]},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary = "Use this API in UAM Devices Page to get the inforamtion of board based on the ip click",
+description = "Use this API in UAM Devices Page to get the inforamtion of board based on the ip click"
+)
 async def get_board_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
@@ -65,7 +68,10 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
     200: {"model": list[GetSubboardResponseSchema]},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary = "Use this APi in the UAM Device Page to get the information of subboard based on the ip click",
+description = "Use this APi in the UAM Device Page to get the information of subboard based on the ip click"
+)
 async def get_subboard_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
@@ -117,7 +123,10 @@ async def get_subboard_details_by_ip_address(ip_address: str = Query(..., descri
 @router.get("/get_all_boards", responses={
     200: {"model": list[GetBoardResponseSchema]},
     500: {"model": str}
-})
+},
+summary = "Use this API in the UAM Module Page to list down the information all boards in th table",
+description = "Use this API in the UAM Module Page to list down the information all boards in th table"
+)
 async def get_all_boards():
     try:
         boardObjList = []

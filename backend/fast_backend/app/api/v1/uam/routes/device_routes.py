@@ -83,7 +83,9 @@ async def onboard_devices(ip_list: list[str]):
 @router.get("/total_devices_in_device_dashboard", responses={
     200: {"model": TotalDeviceDashboardResponseSchema},
     500: {"model": str}
-})
+},
+summary = "Use this API in UAM Device page to display the count of devices in Device Status Overview",
+description = "Use this API in UAM Device page to display the count of devices in Device Status Overview")
 async def total_devices_in_device_dashboard():
     try:
         query_string = f"select count(*) from uam_device_table"
@@ -101,7 +103,9 @@ async def total_devices_in_device_dashboard():
 @router.get("/get_all_devices", responses={
     200: {"model": GetAllUAMDeviceResponseSchema},
     500: {"model": str}
-})
+},
+summary = "Use this API tin UAM Device table to list down al the devices",
+description = "Use this API tin UAM Device table to list down al the devices")
 async def get_all_devices():
     try:
         response = get_all_uam_devices_util()
@@ -195,7 +199,9 @@ async def edit_uam_device(device_obj: EditUamDeviceRequestSchema):
 @router.post("/device_status", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
-})
+},
+summary = "Use this API in UAM Devices pAge in device status overview to display the count of Production,Dismantled,Undefined devices ",
+description = "Use this API in UAM Devices pAge in device status overview to display the count of Production,Dismantled,Undefined devices ")
 async def device_status():
     try:
         obj_list = [
@@ -243,7 +249,12 @@ async def device_status():
 @router.post("/top_functions", responses={
     200: {"model": dict},
     500: {"model": str}
-})
+},
+summary = "use this api in the UAM Devices page to diaplay the  devices function count bar chart ",
+description = "use this api in the UAM Devices page to diaplay the  devices function count bar chart "
+
+)
+
 async def top_functions():
     try:
         obj_list = []
@@ -274,7 +285,10 @@ async def top_functions():
 @router.get("/get_site_detail_by_ip_address", responses={
     200: {"model": GetSiteByIpResponseSchema},
     500: {"model": str}
-})
+},
+summary = "Use this API in UAM device page when click on ip to ge the  site information of that IP address",
+description = "Use this API in UAM device page when click on ip to ge the  site information of that IP address"
+)
 async def get_site_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         result = (
@@ -303,7 +317,11 @@ async def get_site_by_ip_address(ip_address: str = Query(..., description="IP ad
 @router.get("/get_rack_detail_by_ip_address", responses={
     200: {"model": GetRackByIpResponseSchema},
     500: {"model": str}
-})
+},
+summary = "use this API In UAM device page to get the detail of the Rack based on Ip click",
+description = "use this API In UAM device page to get the detail of the Rack based on Ip click"
+)
+
 async def get_rack_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         obj_list = []
@@ -339,7 +357,9 @@ async def get_rack_by_ip_address(ip_address: str = Query(..., description="IP ad
 @router.get("/get_device_details_by_ip_address", responses={
     200: {"model": GetAllUAMDeviceResponseSchema},
     500: {"model": str}
-})
+},
+summary = "USe this API in UAM device page to get the detail of device based on the click of ip address",
+description ="USe this API in UAM device page to get the detail of device based on the click of ip address" )
 async def get_device_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         result = (
@@ -378,7 +398,9 @@ async def get_device_details_by_ip_address(ip_address: str = Query(..., descript
 @router.post("/dismantle_onboard_device", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
-})
+},
+summary = "Use this API on the UAM device page to dismantel the Device bansed on list of ip address"
+)
 async def dismantle_onboard_device(device_ips: list[str]):
     try:
 
