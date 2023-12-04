@@ -128,7 +128,9 @@ async def get_all_boards():
 
         for boardObj, uam, atom in results:
             try:
-                boardDataDict = {"board_name": boardObj.board_name,
+                boardDataDict = {
+                                "board_id":boardObj.board_id,
+                                "board_name": boardObj.board_name,
                                  "device_name": atom.device_name,
                                  "device_slot_id": boardObj.device_slot_id,
                                  "software_version": boardObj.software_version,
@@ -189,7 +191,9 @@ def get_all_subboards():
                                     "eos_date": str(subboardObj.eos_date),
                                     "eol_date": str(subboardObj.eol_date),
                                     "rfs_date": str(subboardObj.rfs_date),
-                                    "pn_code": subboardObj.pn_code}
+                                    "pn_code": subboardObj.pn_code,
+                                    "subboard_id":subboardObj.subboard_id
+                                    }
 
                 subboardObjList.append(subboardDataDict)
             except Exception:

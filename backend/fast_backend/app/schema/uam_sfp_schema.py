@@ -26,3 +26,13 @@ class GetSfpResponseSchema(BaseSchema):
     creation_date: datetime
     modification_date: datetime
 
+class SfpsStatusSchema(BaseSchema):
+    N_A: int
+    duplex_full : int
+    single_mode:int
+
+
+class SfpsModeSchema(BaseSchema):
+    base_1000_lx: int
+    not_available: int
+    transceiver_not_detected: int

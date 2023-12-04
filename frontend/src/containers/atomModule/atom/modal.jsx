@@ -35,9 +35,12 @@ import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { PAGE_NAME } from "./constants";
+import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
-  ip_address: yup.string().required("Ip address is required"),
+  [indexColumnNameConstants.IP_ADDRESS]: yup
+    .string()
+    .required("Ip address is required"),
 });
 
 const Index = ({
@@ -67,14 +70,11 @@ const Index = ({
     //   setInitialRender(false);
     //   return;
     // }
-
     // (async () => {
     //   // setValue("rack_name", "");
     //   await trigger("rack_name");
     // })();
-
-    console.log(watch("site_name"));
-  }, [watch("site_name")]);
+  }, [watch(indexColumnNameConstants.SITE_NAME)]);
 
   // fetching dropdowns data from backend using apis
   const { error: siteNamesError, isLoading: isSiteNamesLoading } =
@@ -82,9 +82,9 @@ const Index = ({
   const { error: rackNamesError, isLoading: isRackNamesLoading } =
     useFetchRackNamesQuery(
       {
-        site_name: watch("site_name", ""),
+        site_name: watch(indexColumnNameConstants.SITE_NAME, ""),
       },
-      { skip: watch("site_name") === undefined }
+      { skip: watch(indexColumnNameConstants.SITE_NAME) === undefined }
     );
 
   const { error: vendorNamesError, isLoading: isVendorNamesLoading } =
@@ -177,55 +177,77 @@ const Index = ({
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
         <Grid container spacing={5}>
           <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="ip_address" required />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.IP_ADDRESS}
+              required
+            />
             <AddableSelectFormUnit
               control={control}
-              dataKey="site_name"
+              dataKey={indexColumnNameConstants.SITE_NAME}
               options={siteNames}
               onAddClick={handleOpenSiteModal}
             />
             <AddableSelectFormUnit
               control={control}
-              dataKey="rack_name"
+              dataKey={indexColumnNameConstants.RACK_NAME}
               options={rackNames}
               onAddClick={handleOpenRackModal}
             />
-            <DefaultFormUnit control={control} dataKey="section" />
-            <DefaultFormUnit control={control} dataKey="department" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.SECTION}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.DEPARTMENT}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <SelectFormUnit
               control={control}
-              dataKey="device_ru"
+              dataKey={indexColumnNameConstants.DEVICE_RU}
               options={generateNumbersArray(30)}
             />
             <SelectFormUnit
               control={control}
-              dataKey="function"
+              dataKey={indexColumnNameConstants.FUNCTION}
               options={functionNames}
             />
             <SelectFormUnit
               control={control}
-              dataKey="device_type"
+              dataKey={indexColumnNameConstants.DEVICE_TYPE}
               options={deviceTypeNames}
             />
-            <DefaultFormUnit control={control} dataKey="device_name" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.DEVICE_NAME}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
             <SelectFormUnit
               control={control}
-              dataKey="vendor"
+              dataKey={indexColumnNameConstants.VENDOR}
               options={vendorNames}
             />
             <AddableSelectFormUnit
               control={control}
-              dataKey="password_group"
+              dataKey={indexColumnNameConstants.PASSWORD_GROUP}
               options={passwordGroupNames}
               onAddClick={handleOpenPasswordGroupModal}
             />
-            <DefaultFormUnit control={control} dataKey="criticality" />
-            <DefaultFormUnit control={control} dataKey="virtual" />
-            <DefaultFormUnit control={control} dataKey="domain" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.CRITICALITY}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.VIRTUAL}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.DOMAIN}
+            />
           </Grid>
           <Grid item xs={12}>
             <DefaultDialogFooter handleClose={handleClose} />

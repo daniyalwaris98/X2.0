@@ -25,19 +25,31 @@ import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { PAGE_NAME } from "./constants";
+import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
-  password_group: yup.string().required("Password Group is required"),
-  username: yup.string().required("User name is required"),
-  password: yup.string().required("Password is required"),
-  password_group_type: yup.string().required("Password group type is required"),
+  [indexColumnNameConstants.PASSWORD_GROUP]: yup
+    .string()
+    .required("Password Group is required"),
+  [indexColumnNameConstants.USER_NAME]: yup
+    .string()
+    .required("User name is required"),
+  [indexColumnNameConstants.PASSWORD]: yup
+    .string()
+    .required("Password is required"),
+  [indexColumnNameConstants.PASSWORD_GROUP_TYPE]: yup
+    .string()
+    .required("Password group type is required"),
   secret_password: yup
     .string()
-    .when("password_group_type", (passwordGroupType, schema) => {
-      if (passwordGroupType == "TELNET")
-        return schema.required("Secret password is required");
-      return schema;
-    }),
+    .when(
+      indexColumnNameConstants.PASSWORD_GROUP_TYPE,
+      (passwordGroupType, schema) => {
+        if (passwordGroupType == "TELNET")
+          return schema.required("Secret password is required");
+        return schema;
+      }
+    ),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -57,14 +69,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   }, []);
 
   useEffect(() => {
-    if (watch("password_group_type") === "SSH") {
-      setValue("secret_password", "");
+    if (watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE) === "SSH") {
+      setValue(indexColumnNameConstants.SECRET_PASSWORD, "");
       setIsSecretPasswordDisable(true);
     } else {
       setIsSecretPasswordDisable(false);
     }
-    trigger("secret_password");
-  }, [watch("password_group_type")]);
+    trigger(indexColumnNameConstants.SECRET_PASSWORD);
+  }, [watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE)]);
 
   // post api for the form
   const [
@@ -150,21 +162,29 @@ const Index = ({ handleClose, open, recordToEdit }) => {
           <Grid item xs={12}>
             <DefaultFormUnit
               control={control}
-              dataKey="password_group"
+              dataKey={indexColumnNameConstants.PASSWORD_GROUP}
               disabled={recordToEdit !== null}
               required
             />
-            <DefaultFormUnit control={control} dataKey="username" required />
-            <DefaultFormUnit control={control} dataKey="password" required />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.USER_NAME}
+              required
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.PASSWORD}
+              required
+            />
             <SelectFormUnit
               control={control}
-              dataKey="password_group_type"
+              dataKey={indexColumnNameConstants.PASSWORD_GROUP_TYPE}
               options={passwordGroupTypeNames}
               required
             />
             <DefaultFormUnit
               control={control}
-              dataKey="secret_password"
+              dataKey={indexColumnNameConstants.SECRET_PASSWORD}
               disabled={isSecretPasswordDisable}
               required
             />

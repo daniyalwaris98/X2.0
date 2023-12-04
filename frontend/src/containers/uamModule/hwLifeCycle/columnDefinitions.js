@@ -6,19 +6,12 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "rack_name",
-    "site_name",
-    "serial_number",
+    "hw_eol_date",
+    "hw_eos_date",
     "manufacturer_date",
-    "unit_position",
-    "status",
-    "ru",
-    "rfs_date",
-    "height",
-    "width",
     "pn_code",
-    "rack_model",
-    "brand",
+    "sw_eol_date",
+    "sw_eos_date",
     {
       data_key: "actions",
       search: false,

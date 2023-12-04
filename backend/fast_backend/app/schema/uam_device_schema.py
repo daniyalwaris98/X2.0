@@ -104,4 +104,4 @@ class GetRackByIpResponseSchema(BaseSchema):
     ru: int | None = None
     pn_code: str | None = None
     rack_model: str | None = None
-    brand: str | None = None
+    floor: str | None = None

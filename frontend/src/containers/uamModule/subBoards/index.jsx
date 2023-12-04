@@ -1,23 +1,11 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import DefaultCard from "../../../components/cards";
-import DefaultTable from "../../../components/tables";
-import Modal from "./modal";
-import {
-  useFetchRecordsQuery,
-  useDeleteRecordsMutation,
-} from "../../../store/features/uamModule/subBoards/apis";
+import { useFetchRecordsQuery } from "../../../store/features/uamModule/subBoards/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/uamModule/subBoards/selectors";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import {
-  jsonToExcel,
-  generateObject,
-  getTableScrollWidth,
-} from "../../../utils/helpers";
+import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import PageHeader from "../../../components/pageHeader";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -28,33 +16,23 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
   // theme
   const theme = useTheme();
 
-  // states required in hooks
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
   // hooks
-  const { height, width } = useWindowDimensions();
-  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
-    useSweetAlert();
-  const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
-    handleEdit,
-  });
+  const { handleSuccessAlert } = useSweetAlert();
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
-    default_export: { handleClick: handleExport },
+    default_export: { handleClick: handleDefaultExport },
   });
 
-  // refs
-
   // states
-  const [recordToEdit, setRecordToEdit] = useState(null);
-  const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -72,17 +50,6 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
-  const [
-    deleteRecords,
-    {
-      data: deleteRecordsData,
-      isSuccess: isDeleteRecordsSuccess,
-      isLoading: isDeleteRecordsLoading,
-      isError: isDeleteRecordsError,
-      error: deleteRecordsError,
-    },
-  ] = useDeleteRecordsMutation();
-
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -92,60 +59,9 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
-  useErrorHandling({
-    data: deleteRecordsData,
-    isSuccess: isDeleteRecordsSuccess,
-    isError: isDeleteRecordsError,
-    error: deleteRecordsError,
-    type: TYPE_BULK,
-  });
-
   // handlers
-  function deleteData(allowed) {
-    if (allowed) {
-      deleteRecords(selectedRowKeys);
-    } else {
-      setSelectedRowKeys([]);
-    }
-  }
-
-  function handleDelete() {
-    if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
-    } else {
-      handleInfoAlert("No record has been selected to delete!");
-    }
-  }
-
-  function handleEdit(record) {
-    setRecordToEdit(record);
-    setOpen(true);
-  }
-
-  function handleAdd(optionType) {
-    setOpen(true);
-  }
-
-  function handleClose() {
-    setRecordToEdit(null);
-    setOpen(false);
-  }
-
-  function handleChange(pagination, filters, sorter, extra) {
-    console.log("Various parameters", pagination, filters, sorter, extra);
-  }
-
-  function handleExport(optionType) {
-    if (optionType === "All Data") {
-      jsonToExcel(dataSource, "sites");
-    } else if (optionType === "Template") {
-      jsonToExcel([generateObject(dataKeys)], "site_template");
-    } else {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    }
+  function handleDefaultExport() {
+    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     handleSuccessAlert("File exported successfully.");
   }
 
@@ -153,56 +69,28 @@ const Index = () => {
     setTableConfigurationsOpen(true);
   }
 
-  // row selection
-  function onSelectChange(selectedRowKeys) {
-    setSelectedRowKeys(selectedRowKeys);
-  }
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
-
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
-      <div>
-        {open ? (
-          <Modal
-            handleClose={handleClose}
-            open={open}
-            recordToEdit={recordToEdit}
-          />
-        ) : null}
+    <Spin spinning={isFetchRecordsLoading}>
+      {tableConfigurationsOpen ? (
+        <DefaultTableConfigurations
+          columns={columns}
+          availableColumns={availableColumns}
+          setAvailableColumns={setAvailableColumns}
+          displayColumns={displayColumns}
+          setDisplayColumns={setDisplayColumns}
+          setColumns={setColumns}
+          open={tableConfigurationsOpen}
+          setOpen={setTableConfigurationsOpen}
+        />
+      ) : null}
 
-        {tableConfigurationsOpen ? (
-          <DefaultTableConfigurations
-            columns={columns}
-            availableColumns={availableColumns}
-            setAvailableColumns={setAvailableColumns}
-            displayColumns={displayColumns}
-            setDisplayColumns={setDisplayColumns}
-            setColumns={setColumns}
-            open={tableConfigurationsOpen}
-            setOpen={setTableConfigurationsOpen}
-          />
-        ) : null}
-
-        <DefaultCard sx={{ width: `${width - 105}px` }}>
-          <PageHeader
-            pageName={PAGE_NAME}
-            buttons={buttonsConfigurationList}
-            selectedRowKeys={selectedRowKeys}
-          />
-          <DefaultTable
-            onChange={handleChange}
-            rowSelection={rowSelection}
-            columns={displayColumns}
-            dataSource={dataSource}
-            rowKey={TABLE_DATA_UNIQUE_ID}
-            displayColumns={displayColumns}
-          />
-        </DefaultCard>
-      </div>
+      <DefaultPageTableSection
+        PAGE_NAME={PAGE_NAME}
+        TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+        buttonsConfigurationList={buttonsConfigurationList}
+        displayColumns={displayColumns}
+        dataSource={dataSource}
+      />
     </Spin>
   );
 };

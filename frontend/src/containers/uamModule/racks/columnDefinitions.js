@@ -1,26 +1,28 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "rack_name",
-    "site_name",
-    "serial_number",
-    "manufacturer_date",
-    "unit_position",
-    "status",
-    "ru",
-    "rfs_date",
-    "height",
-    "width",
-    "pn_code",
-    "rack_model",
-    "brand",
+    indexColumnNameConstants.RACK_NAME,
+    indexColumnNameConstants.SITE_NAME,
+    indexColumnNameConstants.SERIAL_NUMBER,
+    indexColumnNameConstants.MANUFACTURE_DATE,
+    indexColumnNameConstants.UNIT_POSITION,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.RU,
+    indexColumnNameConstants.RFS_DATE,
+    indexColumnNameConstants.HEIGHT,
+    indexColumnNameConstants.WIDTH,
+    indexColumnNameConstants.DEPTH,
+    indexColumnNameConstants.FLOOR,
+    indexColumnNameConstants.PN_CODE,
+    indexColumnNameConstants.RACK_MODEL,
     {
-      data_key: "actions",
+      data_key: indexColumnNameConstants.ACTIONS,
       search: false,
       fixed: "right",
       align: "center",
@@ -52,7 +54,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
     columnDefinitions,

@@ -36,7 +36,7 @@ import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import SiteModal from "../../uamModule/sites/modal";
 import RackModal from "../../uamModule/racks/modal";
 import PasswordGroupModal from "../passwordGroup/modal";
-import DefaultPageTableSection from "../../../components/pageTableSection";
+import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
   // theme
@@ -55,7 +55,6 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   // hooks
-  // const { height, width } = useWindowDimensions();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
@@ -152,6 +151,7 @@ const Index = () => {
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
     type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   useErrorHandling({
@@ -160,16 +160,21 @@ const Index = () => {
     isError: isOnBoardRecordsError,
     error: OnBoardRecordsError,
     type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   // effects
-  useEffect(() => {
-    setSelectedRowKeys((prev) =>
-      prev.filter((item) => !deleteRecordsData?.data.includes(item))
-    );
-  }, [isDeleteRecordsSuccess]);
+  // useEffect(() => {
+  //   setSelectedRowKeys((prev) =>
+  //     prev.filter((item) => !deleteRecordsData?.data.includes(item))
+  //   );
+  // }, [isDeleteRecordsSuccess]);
 
   // handlers
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
+  }
+
   function shouldOnboardBeVisible() {
     if (selectedRowKeys.length > 0) {
       return selectedRowKeys.some((key) => {
@@ -232,7 +237,7 @@ const Index = () => {
         );
 
         if (dataObject.atom_id) {
-          return dataObject.atom_id;
+          return dataObject.ip_address;
         }
 
         return null;
@@ -338,7 +343,10 @@ const Index = () => {
   return (
     <Spin
       spinning={
-        isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
+        isFetchRecordsLoading ||
+        isAddRecordsLoading ||
+        isDeleteRecordsLoading ||
+        isOnBoardRecordsLoading
       }
     >
       <div>

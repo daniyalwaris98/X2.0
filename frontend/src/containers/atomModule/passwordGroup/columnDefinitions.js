@@ -1,18 +1,19 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "password_group",
-    "password_group_type",
-    "username",
-    "password",
-    "secret_password",
+    indexColumnNameConstants.PASSWORD_GROUP,
+    indexColumnNameConstants.PASSWORD_GROUP_TYPE,
+    indexColumnNameConstants.USER_NAME,
+    indexColumnNameConstants.PASSWORD,
+    indexColumnNameConstants.SECRET_PASSWORD,
     {
-      data_key: "actions",
+      data_key: indexColumnNameConstants.ACTIONS,
       search: false,
       fixed: "right",
       align: "center",
@@ -44,7 +45,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return item;
       }
     })
-    .filter((item) => item !== "actions");
+    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
     columnDefinitions,

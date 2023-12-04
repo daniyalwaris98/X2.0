@@ -1,13 +1,14 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
     {
-      data_key: "status",
+      data_key: indexColumnNameConstants.STATUS,
       search: false,
       width: "80px",
       align: "center",
@@ -29,22 +30,22 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return <div style={{ textAlign: "center" }}>{icon}</div>;
       },
     },
-    "ip_address",
-    "site_name",
-    "rack_name",
-    "device_name",
-    "device_ru",
-    "department",
-    "domain",
-    "section",
-    "function",
-    "virtual",
-    "device_type",
-    "vendor",
-    "criticality",
-    "password_group",
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.SITE_NAME,
+    indexColumnNameConstants.RACK_NAME,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.DEVICE_RU,
+    indexColumnNameConstants.DEPARTMENT,
+    indexColumnNameConstants.DOMAIN,
+    indexColumnNameConstants.SECTION,
+    indexColumnNameConstants.FUNCTION,
+    indexColumnNameConstants.VIRTUAL,
+    indexColumnNameConstants.DEVICE_TYPE,
+    indexColumnNameConstants.VENDOR,
+    indexColumnNameConstants.CRITICALITY,
+    indexColumnNameConstants.PASSWORD_GROUP,
     {
-      data_key: "onboard_status",
+      data_key: indexColumnNameConstants.ONBOARD_STATUS,
       title: "Board",
       fixed: "right",
       align: "center",
@@ -84,7 +85,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
       ),
     },
     {
-      data_key: "actions",
+      data_key: indexColumnNameConstants.ACTIONS,
       search: false,
       fixed: "right",
       align: "center",
@@ -118,7 +119,9 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     })
     .filter(
       (item) =>
-        item !== "status" && item !== "actions" && item !== "onboard_status"
+        item !== indexColumnNameConstants.STATUS &&
+        item !== indexColumnNameConstants.ACTIONS &&
+        item !== indexColumnNameConstants.ONBOARD_STATUS
     );
 
   return {

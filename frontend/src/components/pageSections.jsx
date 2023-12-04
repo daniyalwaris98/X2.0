@@ -8,10 +8,10 @@ export default function DefaultPageTableSection({
   PAGE_NAME,
   TABLE_DATA_UNIQUE_ID,
   buttonsConfigurationList,
-  selectedRowKeys,
   displayColumns,
   dataSource,
-  setSelectedRowKeys,
+  selectedRowKeys = null,
+  setSelectedRowKeys = null,
 }) {
   const { height, width } = useWindowDimensions();
 
@@ -36,7 +36,7 @@ export default function DefaultPageTableSection({
       />
       <DefaultTable
         onChange={handleChange}
-        rowSelection={rowSelection}
+        rowSelection={selectedRowKeys ? rowSelection : null}
         columns={displayColumns}
         dataSource={dataSource}
         rowKey={TABLE_DATA_UNIQUE_ID}

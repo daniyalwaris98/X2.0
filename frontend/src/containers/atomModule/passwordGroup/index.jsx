@@ -33,6 +33,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
   // theme
@@ -129,16 +130,16 @@ const Index = () => {
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
     type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   // effects
-  useEffect(() => {
-    setSelectedRowKeys((prev) =>
-      prev.filter((item) => !deleteRecordsData?.data.includes(item))
-    );
-  }, [isDeleteRecordsSuccess]);
 
   // handlers
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
+  }
+
   function handlePostSeed(data) {
     addRecords(data);
   }
@@ -245,21 +246,15 @@ const Index = () => {
           />
         ) : null}
 
-        <DefaultCard sx={{ width: `${width - 105}px` }}>
-          <PageHeader
-            pageName={PAGE_NAME}
-            buttons={buttonsConfigurationList}
-            selectedRowKeys={selectedRowKeys}
-          />
-          <DefaultTable
-            onChange={handleChange}
-            rowSelection={rowSelection}
-            columns={displayColumns}
-            dataSource={dataSource}
-            rowKey={TABLE_DATA_UNIQUE_ID}
-            displayColumns={displayColumns}
-          />
-        </DefaultCard>
+        <DefaultPageTableSection
+          PAGE_NAME={PAGE_NAME}
+          TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+          buttonsConfigurationList={buttonsConfigurationList}
+          selectedRowKeys={selectedRowKeys}
+          displayColumns={displayColumns}
+          dataSource={dataSource}
+          setSelectedRowKeys={setSelectedRowKeys}
+        />
       </div>
     </Spin>
   );
