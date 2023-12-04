@@ -9,7 +9,7 @@ from app.schema.uam_sfp_schema import *
 from fastapi import FastAPI, Query
 from app.models.atom_models import *
 from app.models.uam_models import *
-
+from app.schema.validation_schema import Response200
 router = APIRouter(
     prefix="/uam_sfp",
     tags=["uam_sfp"],
@@ -17,9 +17,12 @@ router = APIRouter(
 
 
 @router.get("/sfp_status", responses={
-    200: {"model": dict},
-    500: {"model": str}
-})
+    200: {"model": SfpsStatusSchema},
+    500: {"model": str},
+},
+summary="Use this API within the UAM module specifically for SFPs operating in 'sfps' mode.",
+description="Use this API within the UAM module specifically for SFPs operating in 'sfps' mode."
+)
 async def sfp_status():
     try:
         query_string = "SELECT DISTINCT mode, COUNT(mode) " \
@@ -47,9 +50,12 @@ async def sfp_status():
 
 
 @router.get("/sfp_mode", responses={
-    200: {"model": dict},
+    200: {"model": SfpsModeSchema},
     500: {"model": str}
-})
+},
+summary="Use this API within the UAM module specifically for SFPs operating in 'sfps' port type.",
+description="Use this API within the UAM module specifically for SFPs operating in 'sfps' port type."
+)
 async def sfp_mode():
     try:
         query_string = "SELECT port_type, COUNT(port_type)\
@@ -82,7 +88,10 @@ async def sfp_mode():
     200: {"model": list[GetSfpResponseSchema]},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary = "Use this API within the UAM Module on devices to retrieve detailed SFP information upon clicking the IP address.",
+description = "Use this API within the UAM Module on devices to retrieve detailed SFP information upon clicking the IP address."
+)
 async def get_sfps_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
 
@@ -117,7 +126,10 @@ async def get_sfps_details_by_ip_address(ip_address: str = Query(..., descriptio
 @router.get("/get_all_sfps", responses={
     200: {"model": list[GetSfpResponseSchema]},
     500: {"model": str}
-})
+},
+summary = "Use this API with in UAM SFPS modelu to list down all the sfps in table",
+description = "Use this API with in UAM SFPS modelu to list down all the sfps in table"
+)
 def get_all_sfps():
     try:
         results = (
