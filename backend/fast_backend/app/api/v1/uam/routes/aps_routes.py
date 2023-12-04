@@ -1,5 +1,5 @@
 import traceback
-
+from app.schema.uam_aps_schema import GetApsSchema
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
@@ -14,9 +14,12 @@ router = APIRouter(
 
 
 @router.get("/get_all_aps", responses={
-    200: {"model": list},
+    200: {"model": list[GetApsSchema]},
     500: {"model": str}
-})
+},
+summary = "Use this API within UAM modeule in APS page to display all APS in Table",
+description = "Use this API within UAM modeule in APS page to display all APS in Table"
+)
 async def get_all_aps():
     try:
         ap_objs = configs.db.query(ApsTable).all()

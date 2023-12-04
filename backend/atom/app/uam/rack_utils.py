@@ -35,7 +35,8 @@ def GetAllRacks():
             "width": rackObj.width,
             "pn_code": rackObj.pn_code,
             "rack_model": rackObj.rack_model,
-            "brand": rackObj.floor,
+            "floor": rackObj.floor,
+            # "depth"
         }
         rackObjList.append(rackDataDict)
 
@@ -303,7 +304,7 @@ def DeleteRack(rackNames):
                 device = Atom_Table.query.filter_by(rack_id=rack.rack_id).first()
                 if device is not None:
                     errorList.append(f"{rackName} : Rack Is Assigned In Atom")
-                    continue
+                    
 
                 status = DeleteDBData(rack)
                 if status == 200:
