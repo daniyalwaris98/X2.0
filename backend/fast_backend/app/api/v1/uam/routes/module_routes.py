@@ -15,7 +15,10 @@ router = APIRouter(
     200: {"model": list[GetBoardResponseSchema]},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary = "Use this API in UAM Devices Page to get the inforamtion of board based on the ip click",
+description = "Use this API in UAM Devices Page to get the inforamtion of board based on the ip click"
+)
 async def get_board_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
@@ -46,7 +49,9 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
                             "manufacturer_date": str(board.manufacture_date),
                             "eos_date": str(board.eos_date),
                             "eol_date": str(board.eol_date),
-                            "pn_code": board.pn_code}
+                            "pn_code": board.pn_code,
+                            "board_id":board.board_id
+                            }
                 obj_list.append(obj_dict)
 
             except Exception:
@@ -63,7 +68,10 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
     200: {"model": list[GetSubboardResponseSchema]},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary = "Use this APi in the UAM Device Page to get the information of subboard based on the ip click",
+description = "Use this APi in the UAM Device Page to get the information of subboard based on the ip click"
+)
 async def get_subboard_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_address).first()
@@ -98,7 +106,8 @@ async def get_subboard_details_by_ip_address(ip_address: str = Query(..., descri
                            "eos_date": str(subboard.eos_date),
                            "eol_date": str(subboard.eol_date),
                            "rfs_date": str(subboard.rfs_date),
-                           "pn_code": subboard.pn_code}
+                           "pn_code": subboard.pn_code,
+                           "subboard_id": subboard.subboard_id}
                 obj_list.append(objDict)
 
             except Exception:
@@ -114,7 +123,10 @@ async def get_subboard_details_by_ip_address(ip_address: str = Query(..., descri
 @router.get("/get_all_boards", responses={
     200: {"model": list[GetBoardResponseSchema]},
     500: {"model": str}
-})
+},
+summary = "Use this API in the UAM Module Page to list down the information all boards in th table",
+description = "Use this API in the UAM Module Page to list down the information all boards in th table"
+)
 async def get_all_boards():
     try:
         boardObjList = []

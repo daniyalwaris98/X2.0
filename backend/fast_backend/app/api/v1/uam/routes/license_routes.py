@@ -19,7 +19,9 @@ router = APIRouter(
     200: {"model": list[GetLicenseResponseSchema]},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary = "Use this API within the UAM Module on devices to retrieve detailed Liscence information upon clicking the IP address.",
+description = "Use this API within the UAM Module on devices to retrieve detailed Liscence information upon clicking the IP address.")
 async def get_license_details_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
 
@@ -61,7 +63,10 @@ async def get_license_details_by_ip_address(ip_address: str = Query(..., descrip
 @router.get("/get_all_licenses", responses={
     200: {"model": list[GetLicenseResponseSchema]},
     500: {"model": str}
-})
+},
+summary = "Use this API in UAM Liscence modeult to list down all the liscence information in table",
+description  = "Use this API in UAM Liscence modeult to list down all the liscence information in table"
+)
 async def get_all_licenses():
     try:
         license_list = []

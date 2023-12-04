@@ -336,10 +336,18 @@ def delete_rack_util(rack_ids):
             try:
                 rack = configs.db.query(RackTable).filter(RackTable.rack_id == rack_id).first()
                 rack_associated_id = rack.rack_id
-                rack_associated_with_atom = configs.db.query(AtomTable).filter_by(rack_id = rack_associated_id).first()
+                rack_associated_with_atom = configs.db.query(AtomTable).filter_by(rack_id=rack_associated_id).first()
+                associated_rack_name = rack.rack_name
+                rack_associated_with_transition_atom = configs.db.query(AtomTransitionTable).filter_by(rack_name=associated_rack_name).first()
+                
+                if rack_associated_with_transition_atom:
+                    error_list.append(f"{rack.rack_name} is Associated with {rack_associated_with_transition_atom.ip_address} and cannot be deleted"),400
+                    continue
+                
                 if rack_associated_with_atom:
-                    print("rack assocciate with the atom is:::::::::::::::::::::::",file=sys.stderr)
-                    error_list.append(f"{rack.rack_name} : Is Associated with the {rack_associated_with_atom.ip_address} and cannot be deleted")
+                    error_list.append(f"{rack.rack_name} : Is Associated with {rack_associated_with_atom.ip_address} and cannot be deleted"),400
+                    continue
+
                 if rack is None:
                     error_list.append(f"{rack_id} : Rack Does Not Exist"),400
                     continue
@@ -347,8 +355,6 @@ def delete_rack_util(rack_ids):
                 if rack.rack_id == default_rack.rack_id:
                     error_list.append(f"{rack_id} : Default Rack Cannot Not Be Deleted"),400
                     continue
-                
-                
 
                 devices = configs.db.query(AtomTable).filter(AtomTable.rack_id == rack.rack_id).all()
                 for device in devices:
@@ -357,20 +363,17 @@ def delete_rack_util(rack_ids):
 
                 status = DeleteDBData(rack)
                 if status == 200:
-                    # deleted_rack = {
-                        
-                    # }
                     data.append(rack.rack_id)
-                    success_list.append(f"{rack.rack_name} : Rack Deleted Successfully"),200
+                    success_list.append(f"{rack.rack_name} : Rack Deleted Successfully")
                 else:
-                    error_list.append(f"{rack.rack_id} : Error While Deleting Rack"),400
+                    error_list.append(f"{rack.rack_id} : Error While Deleting Rack")
 
             except Exception:
                 traceback.print_exc()
                 error_list.append(f"{rack_id} : Error While Deleting Rack")
 
         response_dict = {
-            "data":data,
+            "data": data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
@@ -381,7 +384,6 @@ def delete_rack_util(rack_ids):
     except Exception:
         traceback.print_exc()
         return "Server Error", 500
-
 
 
 #updated rack utils
