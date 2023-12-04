@@ -19,6 +19,8 @@ import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+  DEFAULT_SITE,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import withDefaultDelete from "../../../hoc/withDefaultDelete";
@@ -146,6 +148,12 @@ const Index = () => {
     setTableConfigurationsOpen(true);
   }
 
+  function getCheckboxProps(record) {
+    return {
+      disabled: record[indexColumnNameConstants.SITE_NAME] === DEFAULT_SITE,
+    };
+  }
+
   return (
     <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
       {open ? (
@@ -177,6 +185,7 @@ const Index = () => {
         dataSource={dataSource}
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
+        getCheckboxProps={getCheckboxProps}
       />
     </Spin>
   );

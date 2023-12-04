@@ -2,7 +2,7 @@ import React from "react";
 import DefaultWrapper from "./wrappers";
 import DefaultLabel from "./labels";
 import { InputWrapper } from "./wrappers";
-import DefaultInput from "./inputs";
+import DefaultInput, { PasswordInput } from "./inputs";
 import DefaultSelect, { AddableSelect } from "./selects";
 import DefaultOption from "./options";
 import { Controller } from "react-hook-form";
@@ -30,15 +30,29 @@ export default function DefaultFormUnit({
               {title}:
             </DefaultLabel>
             <InputWrapper>
-              <DefaultInput
-                field={field}
-                name={dataKey}
-                id={dataKey}
-                placeholder={title}
-                type={type}
-                sx={sx}
-                {...rest}
-              />
+              {type === "text" ? (
+                <DefaultInput
+                  field={field}
+                  name={dataKey}
+                  id={dataKey}
+                  placeholder={title}
+                  type={type}
+                  sx={sx}
+                  {...rest}
+                />
+              ) : null}
+
+              {type === "password" ? (
+                <PasswordInput
+                  field={field}
+                  name={dataKey}
+                  id={dataKey}
+                  placeholder={title}
+                  type={type}
+                  sx={sx}
+                  {...rest}
+                />
+              ) : null}
             </InputWrapper>
             <div
               style={{

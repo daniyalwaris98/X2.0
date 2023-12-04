@@ -1,11 +1,14 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../store/features/uamModule/devices/apis";
+import {
+  useFetchRecordsQuery,
+  useDismantleRecordsMutation,
+} from "../../../store/features/uamModule/devices/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/uamModule/devices/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, { TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -27,8 +30,9 @@ const Index = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { handleSuccessAlert, handleInfoAlert } = useSweetAlert();
-  const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+  const { handleCallbackAlert, handleSuccessAlert, handleInfoAlert } =
+    useSweetAlert();
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
@@ -61,6 +65,17 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
+  const [
+    dismantleRecords,
+    {
+      data: dismantleRecordsData,
+      isSuccess: isDismantleRecordsSuccess,
+      isLoading: isDismantleRecordsLoading,
+      isError: isDismantleRecordsError,
+      error: dismantleRecordsError,
+    },
+  ] = useDismantleRecordsMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -68,6 +83,15 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
     type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: dismantleRecordsData,
+    isSuccess: isDismantleRecordsSuccess,
+    isError: isDismantleRecordsError,
+    error: dismantleRecordsError,
+    type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   // handlers
@@ -80,8 +104,23 @@ const Index = () => {
     setOpen(true);
   }
 
+  function dismantleData(allowed) {
+    if (allowed) {
+      dismantleRecords(selectedRowKeys);
+    } else {
+      setSelectedRowKeys([]);
+    }
+  }
+
   function handleDismantle() {
-    handleInfoAlert("Dismantle Clicked!");
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(
+        "Are you sure you want dismantle these records?",
+        dismantleData
+      );
+    } else {
+      handleInfoAlert("No record has been selected to dismantle!");
+    }
   }
 
   function handleDefaultExport() {

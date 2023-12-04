@@ -99,6 +99,10 @@ export function getTableScrollWidth(columns) {
   return columns.length * 220;
 }
 
+export function convertToAsterisks(inputString) {
+  return "*".repeat(inputString?.length);
+}
+
 // const menuItems = [
 //   { id: "Atom", name: "Atom", path: "/" },
 //   {

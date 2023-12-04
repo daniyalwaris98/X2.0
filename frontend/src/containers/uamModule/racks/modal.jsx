@@ -43,7 +43,13 @@ const schema = yup.object().shape({
     .required("Status is required"),
 });
 
-const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
+const Index = ({
+  handleClose,
+  open,
+  recordToEdit,
+  handleOpenSiteModal,
+  nested = false,
+}) => {
   const theme = useTheme();
 
   // states
@@ -168,13 +174,22 @@ const Index = ({ handleClose, open, recordToEdit, handleOpenSiteModal }) => {
             />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <AddableSelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SITE_NAME}
-              options={siteNames}
-              onAddClick={handleOpenSiteModal}
-              required
-            />
+            {nested ? (
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SITE_NAME}
+                options={siteNames}
+                required
+              />
+            ) : (
+              <AddableSelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SITE_NAME}
+                options={siteNames}
+                onAddClick={handleOpenSiteModal}
+                required
+              />
+            )}
             <DefaultFormUnit
               control={control}
               dataKey={indexColumnNameConstants.HEIGHT}
