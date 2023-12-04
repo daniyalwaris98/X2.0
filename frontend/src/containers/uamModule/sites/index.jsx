@@ -94,16 +94,16 @@ const Index = () => {
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
     type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   // effects
-  useEffect(() => {
-    setSelectedRowKeys((prev) =>
-      prev.filter((item) => !deleteRecordsData?.data.includes(item))
-    );
-  }, [isDeleteRecordsSuccess]);
 
   // handlers
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
+  }
+
   function deleteData(allowed) {
     if (allowed) {
       deleteRecords(selectedRowKeys);

@@ -71,6 +71,10 @@ const Index = () => {
   });
 
   // handlers
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
+  }
+
   function handleEdit(record) {
     setRecordToEdit(record);
     setOpen(true);

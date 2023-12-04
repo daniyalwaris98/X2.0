@@ -151,6 +151,7 @@ const Index = () => {
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
     type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   useErrorHandling({
@@ -159,16 +160,21 @@ const Index = () => {
     isError: isOnBoardRecordsError,
     error: OnBoardRecordsError,
     type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   // effects
-  useEffect(() => {
-    setSelectedRowKeys((prev) =>
-      prev.filter((item) => !deleteRecordsData?.data.includes(item))
-    );
-  }, [isDeleteRecordsSuccess]);
+  // useEffect(() => {
+  //   setSelectedRowKeys((prev) =>
+  //     prev.filter((item) => !deleteRecordsData?.data.includes(item))
+  //   );
+  // }, [isDeleteRecordsSuccess]);
 
   // handlers
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
+  }
+
   function shouldOnboardBeVisible() {
     if (selectedRowKeys.length > 0) {
       return selectedRowKeys.some((key) => {

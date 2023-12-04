@@ -52,7 +52,9 @@ export default function useSweetAlert() {
       const confirmButtonColor =
         type === "success"
           ? theme?.palette?.default_button?.success_alert_background
-          : theme?.palette?.default_button?.error_alert_background;
+          : type === "error"
+          ? theme?.palette?.default_button?.error_alert_background
+          : theme?.palette?.default_button?.info_alert_background;
       Swal.fire({
         icon: type,
         title,
@@ -62,7 +64,9 @@ export default function useSweetAlert() {
         confirmButtonText: "Ok",
         confirmButtonColor,
       }).then((result) => {
-        callback();
+        if (result.isConfirmed && callback) {
+          callback();
+        }
       });
     },
 
