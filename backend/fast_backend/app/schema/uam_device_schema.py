@@ -11,7 +11,7 @@ class TotalDeviceDashboardResponseSchema(BaseSchema):
 class GetAllUAMDeviceResponseSchema(BaseSchema):
     uam_id: int
 
-    atom_id: int
+    # atom_id: int
     ip_address: str
     device_name: str
     device_type: str

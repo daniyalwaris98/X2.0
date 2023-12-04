@@ -46,7 +46,9 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
                             "manufacturer_date": str(board.manufacture_date),
                             "eos_date": str(board.eos_date),
                             "eol_date": str(board.eol_date),
-                            "pn_code": board.pn_code}
+                            "pn_code": board.pn_code,
+                            "board_id":board.board_id
+                            }
                 obj_list.append(obj_dict)
 
             except Exception:
@@ -98,7 +100,8 @@ async def get_subboard_details_by_ip_address(ip_address: str = Query(..., descri
                            "eos_date": str(subboard.eos_date),
                            "eol_date": str(subboard.eol_date),
                            "rfs_date": str(subboard.rfs_date),
-                           "pn_code": subboard.pn_code}
+                           "pn_code": subboard.pn_code,
+                           "subboard_id": subboard.subboard_id}
                 obj_list.append(objDict)
 
             except Exception:

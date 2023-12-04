@@ -20,6 +20,7 @@ class AddBoardRequestSchema(BaseSchema):
 
 
 class GetBoardResponseSchema(BaseSchema):
+    board_id:int
     board_name: str
     device_name: str
     serial_number: str
@@ -39,6 +40,7 @@ class GetBoardResponseSchema(BaseSchema):
 
 
 class GetSubboardResponseSchema(BaseSchema):
+    subboard_id : int 
     subboard_name: str
     device_name: str
     serial_number: str
