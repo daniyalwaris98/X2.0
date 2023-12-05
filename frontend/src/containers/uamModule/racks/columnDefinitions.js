@@ -48,6 +48,23 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     },
   ];
 
+  const plainColumnDefinitions = [
+    indexColumnNameConstants.RACK_NAME,
+    indexColumnNameConstants.SITE_NAME,
+    indexColumnNameConstants.SERIAL_NUMBER,
+    indexColumnNameConstants.MANUFACTURE_DATE,
+    indexColumnNameConstants.UNIT_POSITION,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.RU,
+    indexColumnNameConstants.RFS_DATE,
+    indexColumnNameConstants.HEIGHT,
+    indexColumnNameConstants.WIDTH,
+    indexColumnNameConstants.DEPTH,
+    indexColumnNameConstants.FLOOR,
+    indexColumnNameConstants.PN_CODE,
+    indexColumnNameConstants.RACK_MODEL,
+  ];
+
   const dataKeys = columnDefinitions
     .map((item) => {
       if (typeof item === "object") {
@@ -59,6 +76,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
+    plainColumnDefinitions,
     columnDefinitions,
     dataKeys,
   };

@@ -3,6 +3,12 @@ import { createSlice, isAnyOf } from "@reduxjs/toolkit";
 
 const initialState = {
   all_data: [],
+  sites_by_ip_address: [],
+  racks_by_ip_address: [],
+  boards_by_ip_address: [],
+  sub_boards_by_ip_address: [],
+  sfps_by_ip_address: [],
+  licenses_by_ip_address: [],
 };
 
 const deviceSlice = createSlice({
@@ -18,50 +24,54 @@ const deviceSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteDevices.matchFulfilled,
-        (state, action) => {
-          const deletedIds = action.payload?.data || [];
-          if (deletedIds.length > 0) {
-            state.all_data = state.all_data.filter((item) => {
-              const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item.device_id;
-              });
-              return !shouldKeepItem;
-            });
-          }
-        }
-      )
-      .addMatcher(
         extendedApi.endpoints.dismantleDevices.matchFulfilled,
         (state, action) => {
-          const deletedIds = action.payload?.data || [];
-          if (deletedIds.length > 0) {
-            state.all_data = state.all_data.filter((item) => {
-              const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item.device_id;
-              });
-              return !shouldKeepItem;
+          action.payload.data.forEach((responseItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
+              let uamId = responseItem.uam_id;
+              return tableItem.uam_id === uamId;
             });
-          }
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.addDevice.matchFulfilled,
-        (state, action) => {
-          state.all_data.push(action.payload.data);
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.updateDevice.matchFulfilled,
-        (state, action) => {
-          let objectToReplace = action.payload.data;
-          state.all_data = state.all_data.map((item) => {
-            if (item.device_id === objectToReplace.device_id) {
-              return { ...item, ...objectToReplace };
-            } else {
-              return item;
+
+            if (indexToUpdate !== -1) {
+              state.all_data[indexToUpdate] = responseItem;
             }
           });
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchSitesByIPAddress.matchFulfilled,
+        (state, action) => {
+          state.sites_by_ip_address = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchRacksByIPAddress.matchFulfilled,
+        (state, action) => {
+          state.racks_by_ip_address = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchBoardsByIPAddress.matchFulfilled,
+        (state, action) => {
+          state.boards_by_ip_address = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchSubBoardsByIPAddress.matchFulfilled,
+        (state, action) => {
+          state.sub_boards_by_ip_address = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchSFPsByIPAddress.matchFulfilled,
+        (state, action) => {
+          state.sfps_by_ip_address = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchLicensesByIPAddress.matchFulfilled,
+        (state, action) => {
+          state.licenses_by_ip_address = action.payload;
         }
       );
   },

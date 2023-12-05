@@ -7,14 +7,6 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/uam/uam_device/get_all_devices",
     }),
 
-    deleteDevices: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/uam/uam_device/delete_devices",
-        method: "POST",
-        body: data,
-      }),
-    }),
-
     dismantleDevices: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/uam_device/dismantle_onboard_device",
@@ -23,28 +15,57 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
-    // form apis
-    addDevice: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/uam/uam_device/add_device_statically",
-        method: "POST",
-        body: data,
+    // modal apis
+    fetchSitesByIPAddress: builder.query({
+      query: (params) => ({
+        url: `/api/v1/uam/uam_device/get_site_detail_by_ip_address`,
+        params: { ip_address: params.ip_address },
       }),
     }),
-    updateDevice: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/uam/uam_device/edit_device",
-        method: "POST",
-        body: data,
+
+    fetchRacksByIPAddress: builder.query({
+      query: (params) => ({
+        url: `/api/v1/uam/uam_device/get_rack_detail_by_ip_address`,
+        params: { ip_address: params.ip_address },
+      }),
+    }),
+
+    fetchBoardsByIPAddress: builder.query({
+      query: (params) => ({
+        url: `/api/v1/uam/uam-module/get_board_details_by_ip_address`,
+        params: { ip_address: params.ip_address },
+      }),
+    }),
+
+    fetchSubBoardsByIPAddress: builder.query({
+      query: (params) => ({
+        url: `/api/v1/uam/uam-module/get_subboard_details_by_ip_address`,
+        params: { ip_address: params.ip_address },
+      }),
+    }),
+
+    fetchSFPsByIPAddress: builder.query({
+      query: (params) => ({
+        url: `/api/v1/uam/uam_sfp/get_sfps_details_by_ip_address`,
+        params: { ip_address: params.ip_address },
+      }),
+    }),
+
+    fetchLicensesByIPAddress: builder.query({
+      query: (params) => ({
+        url: `/api/v1/uam/uam_license/get_liscence_detail_by_ip_address`,
+        params: { ip_address: params.ip_address },
       }),
     }),
   }),
 });
 export const {
   useFetchDevicesQuery: useFetchRecordsQuery,
-  useDeleteDevicesMutation: useDeleteRecordsMutation,
   useDismantleDevicesMutation: useDismantleRecordsMutation,
-  // form apis
-  useAddDeviceMutation: useAddRecordMutation,
-  useUpdateDeviceMutation: useUpdateRecordMutation,
+  useFetchSitesByIPAddressQuery,
+  useFetchRacksByIPAddressQuery,
+  useFetchBoardsByIPAddressQuery,
+  useFetchSubBoardsByIPAddressQuery,
+  useFetchSFPsByIPAddressQuery,
+  useFetchLicensesByIPAddressQuery,
 } = extendedApi;
