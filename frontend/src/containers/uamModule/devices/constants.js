@@ -7,6 +7,7 @@ export const indexColumnNameConstants = {
   UAM_ID: TABLE_DATA_UNIQUE_ID,
   ATOM_ID: "atom_id",
   IP_ADDRESS: "ip_address",
+  STATUS: "status",
   DEVICE_NAME: "device_name",
   DEVICE_TYPE: "device_type",
   SITE_NAME: "site_name",

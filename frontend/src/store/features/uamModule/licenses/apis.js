@@ -6,35 +6,6 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchLicenses: builder.query({
       query: () => "/api/v1/uam/uam_license/get_all_licenses",
     }),
-
-    deleteLicense: builder.mutation({
-      query: (data) => ({
-        url: "",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    // form apis
-    addLicense: builder.mutation({
-      query: (data) => ({
-        url: "",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    updateLicense: builder.mutation({
-      query: (data) => ({
-        url: "",
-        method: "POST",
-        body: data,
-      }),
-    }),
   }),
 });
-export const {
-  useFetchLicensesQuery: useFetchRecordsQuery,
-  useDeleteLicenseMutation: useDeleteRecordsMutation,
-  // form apis
-  useAddLicenseMutation: useAddRecordMutation,
-  useUpdateLicenseMutation: useUpdateRecordMutation,
-} = extendedApi;
+export const { useFetchLicensesQuery: useFetchRecordsQuery } = extendedApi;

@@ -15,7 +15,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
-    // modal apis
+    // device detail modal apis
     fetchSitesByIPAddress: builder.query({
       query: (params) => ({
         url: `/api/v1/uam/uam_device/get_site_detail_by_ip_address`,

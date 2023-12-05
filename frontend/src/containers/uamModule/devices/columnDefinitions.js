@@ -22,6 +22,7 @@ export function useIndexTableColumnDefinitions({ handleIPAddressClick }) {
         </span>
       ),
     },
+    indexColumnNameConstants.STATUS,
     indexColumnNameConstants.DEVICE_NAME,
     indexColumnNameConstants.DEVICE_TYPE,
     indexColumnNameConstants.SITE_NAME,

@@ -6,35 +6,6 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchSubBoards: builder.query({
       query: () => "/api/v1/uam/uam-module/get_all_sub_boards",
     }),
-
-    deleteSubBoard: builder.mutation({
-      query: (data) => ({
-        url: "",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    // form apis
-    addSubBoard: builder.mutation({
-      query: (data) => ({
-        url: "",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    updateSubBoard: builder.mutation({
-      query: (data) => ({
-        url: "",
-        method: "POST",
-        body: data,
-      }),
-    }),
   }),
 });
-export const {
-  useFetchSubBoardsQuery: useFetchRecordsQuery,
-  useDeleteSubBoardMutation: useDeleteRecordsMutation,
-  // form apis
-  useAddSubBoardMutation: useAddRecordMutation,
-  useUpdateSubBoardMutation: useUpdateRecordMutation,
-} = extendedApi;
+export const { useFetchSubBoardsQuery: useFetchRecordsQuery } = extendedApi;

@@ -1,5 +1,5 @@
 import { extendedApi } from "./apis";
-import { createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   all_data: [],
@@ -77,5 +77,4 @@ const deviceSlice = createSlice({
   },
 });
 
-// export const { setNextPage, initiateItem } = passwordGroupSlice.actions;
 export default deviceSlice.reducer;
