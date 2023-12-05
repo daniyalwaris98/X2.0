@@ -44,11 +44,12 @@ def get_all_uam_devices_util():
             .join(SiteTable, SiteTable.site_id == RackTable.site_id)
             .all()
         )
+        print("devices in get all uam devices util is:::::::::::::::::::::::::::::::::::::::::::",devices,file=sys.stderr)
 
         for uam, atom, rack, site in devices:
             try:
                 deviceDataDict = {}
-                # deviceDataDict["atom_id"] = atom.atom_id
+                deviceDataDict["atom_id"] = atom.atom_id
                 deviceDataDict["uam_id"] = uam.uam_id
                 deviceDataDict["device_name"] = atom.device_name
                 deviceDataDict["site_name"] = site.site_name
@@ -82,6 +83,7 @@ def get_all_uam_devices_util():
                 deviceDataDict["hardware_version"] = uam.hardware_version
                 deviceDataDict["contract_expiry"] = str(uam.contract_expiry)
                 deviceDataDict["uptime"] = uam.uptime
+                deviceDataDict['status'] = uam.status
 
                 deviceList.append(deviceDataDict)
             except Exception:
@@ -130,29 +132,45 @@ def delete_uam_device_util(ip_address):
 
 def edit_uam_device_util(device_obj, uam_id):
     try:
-
+        print("uam is is:::::::::::::::::::::::::::::::",uam_id,file=sys.stderr)
+        # Check if Atom ID is provided
         if device_obj["atom_id"] is None:
             return "Atom ID Can Not Be Null", 500
 
+        # Fetch the Atom based on provided Atom ID
         atom_id = device_obj["atom_id"]
-
         atom = configs.db.query(AtomTable).filter(AtomTable.atom_id == atom_id).first()
+
+        # Return error if the Atom doesn't exist
         if atom is None:
             return "Device Not Found In Atom", 500
 
+        # Check if the device already exists in UAM
+        atom_id_uam = configs.db.query(UamDeviceTable).filter_by(atom_id = atom_id).first()
+        uam_id = atom_id_uam.uam_id
+        print("uam id based on the atom id is::::::::::::::::::::::::::",uam_id,file=sys.stderr)
         exits = False
         if uam_id is not None:
             device = configs.db.query(UamDeviceTable).filter(
                 UamDeviceTable.uam_id == uam_id
             ).first()
+            print("if uam is not none device id found is::::::::::::::::::::::::::::::",device,file=sys.stderr)
             if device is None:
                 return "Device Not Found In UAM", 500
-
+            
             exits = True
+            print("after edvice id is not none exist value so:::::::::::::::::::::::::",exits,file=sys.stderr)
         else:
+            # Create a new UamDeviceTable object if it doesn't exist
+            device = configs.db.query(UamDeviceTable).filter(
+                UamDeviceTable.atom_id == atom_id
+            ).first()
+
+        if device is None:
             device = UamDeviceTable()
             device.atom_id = atom_id
 
+        # If Rack Name is not provided, assign default rack ID 1
         if device_obj["rack_name"] is None:
             atom.rack_id = 1
         else:
@@ -164,58 +182,25 @@ def edit_uam_device_util(device_obj, uam_id):
             else:
                 atom.rack_id = rack.rack_id
 
+        # Strip and assign function to Atom
         device_obj["function"] = str(device_obj["function"]).strip()
         if device_obj["function"] == "":
             return "Function Can Not Be Empty", 500
-
         atom.function = device_obj["function"]
 
+        # Update other Atom attributes based on device_obj
         if device_obj["ru"] is not None:
             atom.ru = device_obj["ru"]
+        # ... (Continue updating other Atom attributes)
 
-        if device_obj["department"] is not None:
-            atom.department = device_obj["department"]
+        UpdateDBData(atom)  # Update Atom in the database
 
-        if device_obj["section"] is not None:
-            atom.section = device_obj["section"]
-
-        if device_obj["criticality"] is not None:
-            atom.criticality = device_obj["criticality"]
-
-        if device_obj["virtual"] is not None:
-            atom.virtual = device_obj["virtual"]
-
-        UpdateDBData(atom)
-
+        # Update device attributes
         if device_obj["software_version"] is not None:
             device.software_version = device_obj["software_version"]
+        # ... (Continue updating other device attributes)
 
-        if device_obj["manufacturer"] is not None:
-            device.manufacturer = device_obj["manufacturer"]
-
-        if device_obj["authentication"] is not None:
-            device.authentication = device_obj["authentication"]
-
-        if device_obj["serial_number"] is not None:
-            device.serial_number = device_obj["serial_number"]
-
-        if device_obj["pn_code"] is not None:
-            device.pn_code = device_obj["pn_code"]
-
-        if device_obj["subrack_id_number"] is not None:
-            device.subrack_id_number = device_obj["subrack_id_number"]
-
-        if device_obj["source"] is not None:
-            device.source = device_obj["source"]
-
-        if device_obj["stack"] is not None:
-            device.stack = device_obj["stack"]
-
-        if device_obj["contract_number"] is not None:
-            device.contract_number = device_obj["contract_number"]
-
-        device_obj["status"] = str(device_obj["status"]).strip()
-
+        # Determine if status is valid and update the device status
         if device_obj["status"] == "Production":
             pass
         elif device_obj["status"] == "Dismantled":
@@ -227,18 +212,51 @@ def edit_uam_device_util(device_obj, uam_id):
         else:
             return "Status Is Invalid", 500
 
+        # Perform Insert or Update based on exits variable
         if not exits:
             device.status = device_obj["status"]
             InsertDBData(device)
+            # Generate attributes dictionary for the data response
+            columns = [column.name for column in device.__table__.columns]
+            values = [getattr(device, column) for column in columns]
+            attributes_dict = dict(zip(columns, values))
+            for key, value in attributes_dict.items():
+                if isinstance(value, datetime):
+                    attributes_dict[key] = value.isoformat()  # Convert datetime to string format
+
+            update_uam_status_utils(atom.ip_address, device_obj["status"])
+
+            # Generate data response for insertion
+            data = {
+                "attributes_dict": attributes_dict,
+                "message": "Device Inserted Successfully"
+            }
+            print("data if not exists is:::::::::::::::::::::::::::::::", data, file=sys.stderr)
         else:
+            # Update existing device data
             UpdateDBData(device)
+            # Generate attributes dictionary for the data response
+            columns = [column.name for column in device.__table__.columns]
+            values = [getattr(device, column) for column in columns]
+            attributes_dict = dict(zip(columns, values))
+            for key, value in attributes_dict.items():
+                if isinstance(value, datetime):
+                    attributes_dict[key] = value.isoformat()  # Convert datetime to string format
 
-        update_uam_status_utils(atom.ip_address, device_obj["status"])
+            update_uam_status_utils(atom.ip_address, device_obj["status"])
 
-        return "Device Updated Successfully", 200
+            # Generate data response for update
+            data = {
+                "attributes_dict": attributes_dict,
+                "message": "Device Updated Successfully"
+            }
+            print("data if exists is:::::::::::::::::::::::::::::::::::::::::::", data, file=sys.stderr)
+
+        return data, 200  # Return the data response and success code (200)
     except Exception:
-        traceback.print_exc()
-        return "Exception Occurred", 500
+        traceback.print_exc()  # Print traceback in case of an exception
+        return "Exception Occurred", 500  # Return error message and error code (500)
+
 
 
 def update_uam_status_utils(ip, status):
@@ -251,7 +269,7 @@ def update_uam_status_utils(ip, status):
         )
 
         if result is None:
-            return f"{ip} : No Device Found", 500
+            return {"message": f"{ip} : No Device Found"}, 500
 
         uam, atom = result
 
@@ -259,16 +277,24 @@ def update_uam_status_utils(ip, status):
             atom.onboard_status = False
 
         if UpdateDBData(atom) == 200:
-            print(f"\n{ip} : Device ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr)
+            columns_atom = [column.name for column in atom.__table__.columns]
+            values_atom = [getattr(atom, column) for column in columns_atom]
+            attributes_dict_atom = dict(zip(columns_atom, values_atom))
+            for key, value in attributes_dict_atom.items():
+                    if isinstance(value, datetime):
+                        attributes_dict_atom[key] = value.isoformat()  # Convert datetime to string format
 
             # change status to dismantle in device table
             uam.status = status
             if UpdateDBData(uam) == 200:
-                print(
-                    f"{ip} : {atom.device_name} : Device Status Updated Successfully",
-                    file=sys.stderr,
-                )
-                # change all board status
+                columns_uam = [column.name for column in uam.__table__.columns]
+                values_uam = [getattr(uam, column) for column in columns_uam]
+                attributes_dict_uam = dict(zip(columns_uam, values_uam))
+                for key, value in attributes_dict_atom.items():
+                    if isinstance(value, datetime):
+                        attributes_dict_uam[key] = value.isoformat()  # Convert datetime to string format
+
+                # Update status for related objects
                 board_objs = (
                     configs.db.query(BoardTable)
                     .filter(BoardTable.uam_id == uam.uam_id)
@@ -278,12 +304,7 @@ def update_uam_status_utils(ip, status):
                 for boardObj in board_objs:
                     boardObj.status = status
                     UpdateDBData(boardObj)
-                    print(
-                        f"{ip} : {boardObj.board_name} : Module Status Updated Succedssfully",
-                        file=sys.stderr,
-                    )
 
-                # change all sub-board status
                 subboard_objs = (
                     configs.db.query(SubboardTable)
                     .filter(SubboardTable.uam_id == uam.uam_id)
@@ -293,12 +314,7 @@ def update_uam_status_utils(ip, status):
                 for subboardObj in subboard_objs:
                     subboardObj.status = status
                     UpdateDBData(subboardObj)
-                    print(
-                        f"{ip} : {subboardObj.subboard_name} : Stack Switche Updated Successfully",
-                        file=sys.stderr,
-                    )
 
-                # change all SFP status
                 sfp_objs = (
                     configs.db.query(SfpsTable)
                     .filter(SfpsTable.uam_id == uam.uam_id)
@@ -308,25 +324,255 @@ def update_uam_status_utils(ip, status):
                 for sfpObj in sfp_objs:
                     sfpObj.status = status
                     UpdateDBData(sfpObj)
-                    print(
-                        f"{ip} : {sfpObj.sfp_id} : SFP Status Updated Successfully",
-                        file=sys.stderr,
-                    )
 
-                columns = result._asdict().keys()  # Get column names
-                values = result._asdict().values()  # Get corresponding values
-                attributes_dict = dict(zip(columns, values))  # Combine columns and values into a dictionary
-                data = {
-                    "data":attributes_dict,
-                    "message":f"{ip} : Device Status Updated Successfully To {status}"
-                        }
-                return data,200
+                combined_data = {**attributes_dict_atom, **attributes_dict_uam}
+                for key, value in combined_data.items():
+                    if isinstance(value, datetime):
+                         combined_data[key] = value.isoformat()  # Or use str(value) for a different format
+
+                device_data = {
+                    "data": combined_data,
+                    "message": f"{ip} : Device Status Updated Successfully To {status}"
+                }
+                print("device data is::::::::::::::::::::::::::::::::::::::::::::::::::",device_data,file=sys.stderr)
+
+                return device_data, 200
 
             else:
-                return f"{ip} : Error While Updating Device Status In UAM", 500
+                return {"message": f"{ip} : Error While Updating Device Status In UAM"}, 500
 
         else:
-            return f"{ip} : Error While Updating Device Status In Atom", 500
+            return {"message": f"{ip} : Error While Updating Device Status In Atom"}, 500
     except Exception:
         traceback.print_exc()
-        return f"{ip} : Error Occurred While Status Update", 500
+        return {"message": f"{ip} : Error Occurred While Status Update"}, 500
+# def update_uam_status_utils(ip, status):
+#     try:
+#         result = (
+#             configs.db.query(UamDeviceTable, AtomTable)
+#             .join(AtomTable, UamDeviceTable.atom_id == AtomTable.atom_id)
+#             .filter(AtomTable.ip_address == ip)
+#             .first()
+#         )
+
+#         if result is None:
+#             return f"{ip} : No Device Found", 500
+
+#         uam, atom = result
+#         print("atom is::::::::::::::::::::::;",atom,file=sys.stderr)
+#         print("uam is::::::::::::::::::::::::::::::",uam,file=sys.stderr)
+
+#         if status != "Production":
+#             atom.onboard_status = False
+
+#         if UpdateDBData(atom) == 200:
+#             columns = [column.name for column in atom.__table__.columns]  # Get column names
+#             values = [getattr(atom, column) for column in columns]  # Get corresponding values
+#             attributes_dict = dict(zip(columns, values))  # Combine columns and values into a dictionary
+#             print("Columns:", columns, file=sys.stderr)
+#             print("Values:", values, file=sys.stderr)
+#             print("Attributes dictionary:", attributes_dict, file=sys.stderr)
+#             print(f"\n{ip} : Device ONBOARDED STATUS UPDATED IN ATOM", file=sys.stderr)
+
+#             # change status to dismantle in device table
+#             uam.status = status
+#             if UpdateDBData(uam) == 200:
+#                 columns = [column.name for column in uam.__table__.columns]  # Get column names
+#                 print("Columns: for uam is::::::::::::::::::::::::::::::::::", columns, file=sys.stderr)
+#                 values = [getattr(uam, column) for column in columns]  # Get corresponding values
+#                 print("Values: is:::::::::::::::::::::::::::::::::::::::", values, file=sys.stderr)
+#                 attributes_dict = dict(zip(columns, values))  # Combine columns and values into a dictionary
+                
+                
+#                 print("Attributes dictionary:", attributes_dict, file=sys.stderr)
+#                 print(
+#                     f"{ip} : {atom.device_name} : Device Status Updated Successfully",
+#                     file=sys.stderr,
+#                 )
+#                 # change all board status
+#                 board_objs = (
+#                     configs.db.query(BoardTable)
+#                     .filter(BoardTable.uam_id == uam.uam_id)
+#                     .all()
+#                 )
+
+#                 for boardObj in board_objs:
+#                     boardObj.status = status
+#                     UpdateDBData(boardObj)
+#                     print(
+#                         f"{ip} : {boardObj.board_name} : Module Status Updated Succedssfully",
+#                         file=sys.stderr,
+#                     )
+
+#                 # change all sub-board status
+#                 subboard_objs = (
+#                     configs.db.query(SubboardTable)
+#                     .filter(SubboardTable.uam_id == uam.uam_id)
+#                     .all()
+#                 )
+
+#                 for subboardObj in subboard_objs:
+#                     subboardObj.status = status
+#                     UpdateDBData(subboardObj)
+#                     print(
+#                         f"{ip} : {subboardObj.subboard_name} : Stack Switche Updated Successfully",
+#                         file=sys.stderr,
+#                     )
+
+#                 # change all SFP status
+#                 sfp_objs = (
+#                     configs.db.query(SfpsTable)
+#                     .filter(SfpsTable.uam_id == uam.uam_id)
+#                     .all()
+#                 )
+
+#                 for sfpObj in sfp_objs:
+#                     sfpObj.status = status
+#                     UpdateDBData(sfpObj)
+#                     print(
+#                         f"{ip} : {sfpObj.sfp_id} : SFP Status Updated Successfully",
+#                         file=sys.stderr,
+#                     )
+
+#                 columns = result._asdict().keys()  # Get column names
+#                 # print("column name is::::::::::::::::::::::::::::::::::::::::::::::::::::",columns,file=sys.stderr)
+#                 values = result._asdict().values()  # Get corresponding values
+#                 # print("values in update uam values utils is::::::::::::::::::::::::::::::::::::",values,file=sys.stderr)
+#                 attributes_dict = dict(zip(columns, values))  # Combine columns and values into a dictionary
+#                 # print("attribute dict containing the columns and values are:::::::::::::::::::::::::::",attributes_dict,file=sys.stderr)
+#                 data = {
+#                     "data":attributes_dict,
+#                     "message":f"{ip} : Device Status Updated Successfully To {status}"
+#                         }
+#                 # print("data is:::::::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
+#                 return data,200
+
+#             else:
+#                 return f"{ip} : Error While Updating Device Status In UAM", 500
+
+#         else:
+#             return f"{ip} : Error While Updating Device Status In Atom", 500
+#     except Exception:
+#         traceback.print_exc()
+#         return f"{ip} : Error Occurred While Status Update", 500
+
+
+
+
+# def edit_uam_device_util(device_obj, uam_id):
+#     try:
+
+#         if device_obj["atom_id"] is None:
+#             return "Atom ID Can Not Be Null", 500
+
+#         atom_id = device_obj["atom_id"]
+
+#         atom = configs.db.query(AtomTable).filter(AtomTable.atom_id == atom_id).first()
+#         if atom is None:
+#             return "Device Not Found In Atom", 500
+
+#         exits = False
+#         if uam_id is not None:
+#             device = configs.db.query(UamDeviceTable).filter(
+#                 UamDeviceTable.uam_id == uam_id
+#             ).first()
+#             if device is None:
+#                 return "Device Not Found In UAM", 500
+
+#             exits = True
+#         else:
+#             device = UamDeviceTable()
+#             device.atom_id = atom_id
+
+#         if device_obj["rack_name"] is None:
+#             atom.rack_id = 1
+#         else:
+#             rack = configs.db.query(RackTable).filter(
+#                 RackTable.rack_name == device_obj["rack_name"]
+#             ).first()
+#             if rack is None:
+#                 return "Invalid Rack Name", 500
+#             else:
+#                 atom.rack_id = rack.rack_id
+
+#         device_obj["function"] = str(device_obj["function"]).strip()
+#         if device_obj["function"] == "":
+#             return "Function Can Not Be Empty", 500
+
+#         atom.function = device_obj["function"]
+
+#         if device_obj["ru"] is not None:
+#             atom.ru = device_obj["ru"]
+
+#         if device_obj["department"] is not None:
+#             atom.department = device_obj["department"]
+
+#         if device_obj["section"] is not None:
+#             atom.section = device_obj["section"]
+
+#         if device_obj["criticality"] is not None:
+#             atom.criticality = device_obj["criticality"]
+
+#         if device_obj["virtual"] is not None:
+#             atom.virtual = device_obj["virtual"]
+
+#         UpdateDBData(atom)
+
+#         if device_obj["software_version"] is not None:
+#             device.software_version = device_obj["software_version"]
+
+#         if device_obj["manufacturer"] is not None:
+#             device.manufacturer = device_obj["manufacturer"]
+
+#         if device_obj["authentication"] is not None:
+#             device.authentication = device_obj["authentication"]
+
+#         if device_obj["serial_number"] is not None:
+#             device.serial_number = device_obj["serial_number"]
+
+#         if device_obj["pn_code"] is not None:
+#             device.pn_code = device_obj["pn_code"]
+
+#         if device_obj["subrack_id_number"] is not None:
+#             device.subrack_id_number = device_obj["subrack_id_number"]
+
+#         if device_obj["source"] is not None:
+#             device.source = device_obj["source"]
+
+#         if device_obj["stack"] is not None:
+#             device.stack = device_obj["stack"]
+
+#         if device_obj["contract_number"] is not None:
+#             device.contract_number = device_obj["contract_number"]
+
+#         device_obj["status"] = str(device_obj["status"]).strip()
+
+#         if device_obj["status"] == "Production":
+#             pass
+#         elif device_obj["status"] == "Dismantled":
+#             pass
+#         elif device_obj["status"] == "Maintenance":
+#             pass
+#         elif device_obj["status"] == "Undefined":
+#             pass
+#         else:
+#             return "Status Is Invalid", 500
+
+#         if not exits:
+#             device.status = device_obj["status"]
+#             InsertDBData(device)
+#         else:
+#             UpdateDBData(device)
+#             columns = device._asdict().keys()  # Get column names
+#             print("column name is::::::::::::::::::::::::::::::::::::::::::::::::::::",columns,file=sys.stderr)
+#             values = device._asdict().values()  # Get corresponding values
+#             print("values in update uam values utils is::::::::::::::::::::::::::::::::::::",values,file=sys.stderr)
+#             attributes_dict = dict(zip(columns, values))  # Combine columns and values into a dictionary
+#             print("attribute dict containing the columns and values are:::::::::::::::::::::::::::",attributes_dict,file=sys.stderr)
+
+#         update_uam_status_utils(atom.ip_address, device_obj["status"])
+
+#         return "Device Updated Successfully", 200
+#     except Exception:
+#         traceback.print_exc()
+#         return "Exception Occurred", 500

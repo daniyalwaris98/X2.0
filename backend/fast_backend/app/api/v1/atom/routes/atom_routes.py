@@ -27,12 +27,14 @@ async def add_atom(atom: AddAtomRequestSchema):
                 print("if reponse not 200::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
                 transition_message = response.get('message', '')
                 print("tranistion message is:::::::::::::::",transition_message,file=sys.stderr)
-                # Appending the transition atom message to the existing atom_response message
-                updated_message = f"{atom_response} {transition_message}"
-                print("update message is:::::::::::::::::::",updated_message,file=sys.stderr)
-                # Assigning the updated_message to the 'message' key in the existing response
-                response['message'] = updated_message
-                print("reposne message is::::::::::::::::::",response['message'],file=sys.stderr)
+                if re.search(r"Can Not be Empty$", atom_response):
+                    print("cannot be empty is true::::::::::::::::::::::", file=sys.stderr)
+                    message = f"{transition_message} and Note: (To complete the atom following fields are required: Device Name, Function, device type, vendor)"
+                    response['message'] = message
+                else:
+                    message = f"{transition_message} and Note: ({atom_response})"
+                    response['message'] = message
+             
                 return JSONResponse(content=response, status_code=status)
             else:
                 return JSONResponse(content=response, status_code=status)
@@ -46,7 +48,12 @@ async def add_atom(atom: AddAtomRequestSchema):
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Atom Device", status_code=500)
 
-
+   # # Appending the transition atom message to the existing atom_response message
+                # updated_message = f"{atom_response} {transition_message}"
+                # print("update message is:::::::::::::::::::",updated_message,file=sys.stderr)
+                # # Assigning the updated_message to the 'message' key in the existing response
+                # response['message'] = updated_message
+                # print("reposne message is::::::::::::::::::",response['message'],file=sys.stderr)
 @router.post("/add_atom_devices", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
