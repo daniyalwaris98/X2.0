@@ -1,20 +1,16 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import DefaultCard from "../../../components/cards";
-import DefaultTable from "../../../components/tables";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
+  useSyncFromInventoryQuery,
+  useSyncToInventoryQuery,
 } from "../../../store/features/uamModule/hwLifeCycle/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/uamModule/hwLifeCycle/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import {
-  jsonToExcel,
-  generateObject,
-  getTableScrollWidth,
-} from "../../../utils/helpers";
+import { jsonToExcel, generateObject } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
@@ -45,18 +41,17 @@ const Index = () => {
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { buttonsConfigurationList } = useButtonsConfiguration({
-    configure_table: { handleClick: handleTableConfigurationsOpen },
-    template_export: { handleClick: handleExport },
-    default_delete: {
-      handleClick: handleDelete,
-      visible: selectedRowKeys.length > 0,
-    },
-    inventory_sync: { handleClick: handleAdd, namePostfix: PAGE_NAME },
-    default_import: { handleClick: handleAdd },
-  });
-
-  // refs
+  const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
+    useButtonsConfiguration({
+      configure_table: { handleClick: handleTableConfigurationsOpen },
+      template_export: { handleClick: handleExport },
+      default_delete: {
+        handleClick: handleDelete,
+        visible: selectedRowKeys.length > 0,
+      },
+      inventory_sync: { handleClick: handleSync, namePostfix: PAGE_NAME },
+      default_import: { handleClick: handleDefaultAdd },
+    });
 
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -77,6 +72,24 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
+
+  const {
+    data: syncFromInventoryData,
+    isSuccess: isSyncFromInventorySuccess,
+    isLoading: isSyncFromInventoryLoading,
+    isError: isSyncFromInventoryError,
+    error: syncFromInventoryError,
+    refetch: syncFromInventory,
+  } = useSyncFromInventoryQuery({ skip: true });
+
+  const {
+    data: syncToInventoryData,
+    isSuccess: isSyncToInventorySuccess,
+    isLoading: isSyncToInventoryLoading,
+    isError: isSyncToInventoryError,
+    error: syncToInventoryError,
+    refetch: syncToInventory,
+  } = useSyncToInventoryQuery({ skip: true });
 
   const [
     deleteRecords,
@@ -99,6 +112,22 @@ const Index = () => {
   });
 
   useErrorHandling({
+    data: syncFromInventoryData,
+    isSuccess: isSyncFromInventorySuccess,
+    isError: isSyncFromInventoryError,
+    error: syncFromInventoryError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: syncToInventoryData,
+    isSuccess: isSyncToInventorySuccess,
+    isError: isSyncToInventoryError,
+    error: syncToInventoryError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
     data: deleteRecordsData,
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
@@ -109,7 +138,10 @@ const Index = () => {
   // handlers
   function deleteData(allowed) {
     if (allowed) {
-      deleteRecords(selectedRowKeys);
+      const result = dataSource
+        .filter((obj) => selectedRowKeys.includes(obj.sntc_id))
+        .map((obj) => obj.pn_code);
+      deleteRecords(result);
     } else {
       setSelectedRowKeys([]);
     }
@@ -131,8 +163,18 @@ const Index = () => {
     setOpen(true);
   }
 
-  function handleAdd(optionType) {
+  function handleDefaultAdd() {
     setOpen(true);
+  }
+
+  function handleSync(optionType) {
+    const { SYNC_FROM_INVENTORY, SYNC_TO_INVENTORY } =
+      dropdownButtonOptionsConstants.inventory_sync;
+    if (optionType === SYNC_FROM_INVENTORY) {
+      syncFromInventory();
+    } else if (optionType === SYNC_TO_INVENTORY) {
+      syncToInventory();
+    }
   }
 
   function handleClose() {
@@ -140,14 +182,12 @@ const Index = () => {
     setOpen(false);
   }
 
-  function handleChange(pagination, filters, sorter, extra) {
-    console.log("Various parameters", pagination, filters, sorter, extra);
-  }
-
   function handleExport(optionType) {
-    if (optionType === "All Data") {
-      jsonToExcel(dataSource, "sites");
-    } else if (optionType === "Template") {
+    const { ALL_DATA, TEMPLATE } =
+      dropdownButtonOptionsConstants.template_export;
+    if (optionType === ALL_DATA) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+    } else if (optionType === TEMPLATE) {
       jsonToExcel([generateObject(dataKeys)], "site_template");
     } else {
       jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
@@ -159,18 +199,15 @@ const Index = () => {
     setTableConfigurationsOpen(true);
   }
 
-  // row selection
-  function onSelectChange(selectedRowKeys) {
-    setSelectedRowKeys(selectedRowKeys);
-  }
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
-
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+    <Spin
+      spinning={
+        isFetchRecordsLoading ||
+        isSyncFromInventoryLoading ||
+        isSyncToInventoryLoading ||
+        isDeleteRecordsLoading
+      }
+    >
       <div>
         {open ? (
           <Modal
