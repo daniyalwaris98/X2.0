@@ -3,6 +3,7 @@ import DefaultCard from "./cards";
 import PageHeader from "./pageHeader";
 import DefaultTable from "./tables";
 import useWindowDimensions from "../hooks/useWindowDimensions";
+import { Table } from "antd";
 
 export default function DefaultPageTableSection({
   PAGE_NAME,
@@ -12,12 +13,15 @@ export default function DefaultPageTableSection({
   dataSource,
   selectedRowKeys = null,
   setSelectedRowKeys = null,
+  getCheckboxProps = null,
 }) {
   const { height, width } = useWindowDimensions();
 
   const rowSelection = {
+    getCheckboxProps,
     selectedRowKeys,
     onChange: onSelectChange,
+    selection: Table.SELECTION_ALL,
   };
 
   function onSelectChange(selectedRowKeys) {

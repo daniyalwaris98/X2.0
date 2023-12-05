@@ -24,7 +24,7 @@ import {
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { PAGE_NAME } from "./constants";
+import { PAGE_NAME, TELNET } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
@@ -45,7 +45,7 @@ const schema = yup.object().shape({
     .when(
       indexColumnNameConstants.PASSWORD_GROUP_TYPE,
       (passwordGroupType, schema) => {
-        if (passwordGroupType == "TELNET")
+        if (passwordGroupType == TELNET)
           return schema.required("Secret password is required");
         return schema;
       }
@@ -172,6 +172,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               required
             />
             <DefaultFormUnit
+              type="password"
               control={control}
               dataKey={indexColumnNameConstants.PASSWORD}
               required
@@ -182,12 +183,15 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               options={passwordGroupTypeNames}
               required
             />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SECRET_PASSWORD}
-              disabled={isSecretPasswordDisable}
-              required
-            />
+            {watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE) == TELNET ? (
+              <DefaultFormUnit
+                type="password"
+                control={control}
+                dataKey={indexColumnNameConstants.SECRET_PASSWORD}
+                disabled={isSecretPasswordDisable}
+                required
+              />
+            ) : null}
           </Grid>
           <Grid item xs={12}>
             <DefaultDialogFooter handleClose={handleClose} />

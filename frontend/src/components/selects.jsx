@@ -42,7 +42,7 @@ export function AddableSelect({ field, sx, onAddClick, children, ...rest }) {
   }));
 
   return (
-    <div style={{ display: "flex" }}>
+    <>
       <select
         {...field}
         style={{
@@ -60,6 +60,6 @@ export function AddableSelect({ field, sx, onAddClick, children, ...rest }) {
         {children}
       </select>
       <StyledActionDiv onClick={onAddClick}>+</StyledActionDiv>
-    </div>
+    </>
   );
 }

@@ -1,7 +1,7 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
-import { indexColumnNameConstants } from "./constants";
+import { DEFAULT_SITE, indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
@@ -19,22 +19,24 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
       fixed: "right",
       align: "center",
       width: 100,
-      render: (text, record) => (
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            justifyContent: "center",
-          }}
-        >
-          <Icon
-            fontSize={"15px"}
-            onClick={() => handleEdit(record)}
-            icon="bx:edit"
-            style={{ cursor: "pointer" }}
-          />
-        </div>
-      ),
+      render: (text, record) => {
+        return record[indexColumnNameConstants.SITE_NAME] !== DEFAULT_SITE ? (
+          <div
+            style={{
+              display: "flex",
+              gap: "10px",
+              justifyContent: "center",
+            }}
+          >
+            <Icon
+              fontSize={"15px"}
+              onClick={() => handleEdit(record)}
+              icon="bx:edit"
+              style={{ cursor: "pointer" }}
+            />
+          </div>
+        ) : null;
+      },
     },
   ];
 

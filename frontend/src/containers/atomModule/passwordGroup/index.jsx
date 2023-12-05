@@ -31,6 +31,8 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   FILE_NAME_EXPORT_TEMPLATE,
   TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+  DEFAULT_PASSWORD,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
@@ -183,10 +185,6 @@ const Index = () => {
     setOpen(false);
   }
 
-  function handleChange(pagination, filters, sorter, extra) {
-    console.log("Various parameters", pagination, filters, sorter, extra);
-  }
-
   function handleExport(optionType) {
     const { ALL_DATA, TEMPLATE } =
       dropdownButtonOptionsConstants.template_export;
@@ -202,15 +200,12 @@ const Index = () => {
     setTableConfigurationsOpen(true);
   }
 
-  // row selection
-  function onSelectChange(selectedRowKeys) {
-    setSelectedRowKeys(selectedRowKeys);
+  function getCheckboxProps(record) {
+    return {
+      disabled:
+        record[indexColumnNameConstants.PASSWORD_GROUP] === DEFAULT_PASSWORD,
+    };
   }
-
-  const rowSelection = {
-    selectedRowKeys,
-    onChange: onSelectChange,
-  };
 
   return (
     <Spin
@@ -254,6 +249,7 @@ const Index = () => {
           displayColumns={displayColumns}
           dataSource={dataSource}
           setSelectedRowKeys={setSelectedRowKeys}
+          getCheckboxProps={getCheckboxProps}
         />
       </div>
     </Spin>

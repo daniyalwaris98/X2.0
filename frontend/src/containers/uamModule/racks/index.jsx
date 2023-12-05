@@ -20,6 +20,8 @@ import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  DEFAULT_RACK,
+  indexColumnNameConstants,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
@@ -153,6 +155,12 @@ const Index = () => {
     setTableConfigurationsOpen(true);
   }
 
+  function getCheckboxProps(record) {
+    return {
+      disabled: record[indexColumnNameConstants.RACK_NAME] === DEFAULT_RACK,
+    };
+  }
+
   return (
     <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
       {open ? (
@@ -193,6 +201,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
         setSelectedRowKeys={setSelectedRowKeys}
+        getCheckboxProps={getCheckboxProps}
       />
     </Spin>
   );

@@ -48,7 +48,7 @@ def get_all_uam_devices_util():
         for uam, atom, rack, site in devices:
             try:
                 deviceDataDict = {}
-                deviceDataDict["atom_id"] = atom.atom_id
+                # deviceDataDict["atom_id"] = atom.atom_id
                 deviceDataDict["uam_id"] = uam.uam_id
                 deviceDataDict["device_name"] = atom.device_name
                 deviceDataDict["site_name"] = site.site_name

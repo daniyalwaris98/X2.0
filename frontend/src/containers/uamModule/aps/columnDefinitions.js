@@ -1,22 +1,19 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions() {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "board_name",
-    "device_name",
-    "serial_number",
-    "pn_code",
-    "status",
-    "device_slot_id",
-    "software_version",
-    "hardware_version",
-    "manufacture_date",
-    "eos_date",
-    "eol_date",
+    indexColumnNameConstants.AP_IP,
+    indexColumnNameConstants.AP_NAME,
+    indexColumnNameConstants.SERIAL_NUMBER,
+    indexColumnNameConstants.AP_MODEL,
+    indexColumnNameConstants.HARDWARE_VERSION,
+    indexColumnNameConstants.SOFTWARE_VERSION,
+    indexColumnNameConstants.DESCRIPTION,
   ];
 
   const dataKeys = columnDefinitions
@@ -27,7 +24,7 @@ export function useIndexTableColumnDefinitions() {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => true);
 
   return {
     columnDefinitions,

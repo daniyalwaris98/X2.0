@@ -380,6 +380,7 @@ const Index = () => {
             handleClose={handleCloseRackModal}
             open={rackModalOpen}
             recordToEdit={null}
+            nested={true}
           />
         ) : null}
 
