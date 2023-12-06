@@ -6,7 +6,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchRacks: builder.query({
       query: () => "/api/v1/uam/rack/get_all_racks",
     }),
-   
+
     deleteRack: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/rack/delete_rack",
@@ -14,6 +14,7 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
+
     // form apis
     addRack: builder.mutation({
       query: (data) => ({
@@ -22,6 +23,7 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
+
     updateRack: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/rack/edit_rack",

@@ -1,14 +1,5 @@
 import { extendedApi } from "./apis";
-import { createSlice, createAsyncThunk, isAnyOf } from "@reduxjs/toolkit";
-
-// Define an async thunk for the additional API call
-export const additionalApiCall = createAsyncThunk(
-  "drop_downs/fetchSiteNames",
-  async () => {
-    const response = await extendedApi.fetchSiteNames(); // Replace with your actual API call
-    return response.data;
-  }
-);
+import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   all_data: [],
@@ -26,23 +17,6 @@ const siteSlice = createSlice({
           state.all_data = action.payload;
         }
       )
-      // .addMatcher(
-      //   extendedApi.endpoints.addSite.matchFulfilled,
-      //   (state, action) => {
-      //     action.payload.data.forEach((responseItem) => {
-      //       const indexToUpdate = state.all_data.findIndex((tableItem) => {
-      //         return (
-      //           tableItem.sites_id === responseItem.sites_id
-      //         );
-      //       });
-      //       if (indexToUpdate !== -1) {
-      //         state.all_data[indexToUpdate] = responseItem;
-      //       } else {
-      //         state.all_data.push(responseItem);
-      //       }
-      //     });
-      //   }
-      // )
       .addMatcher(
         extendedApi.endpoints.deleteSites.matchFulfilled,
         (state, action) => {
@@ -61,12 +35,6 @@ const siteSlice = createSlice({
         extendedApi.endpoints.addSite.matchFulfilled,
         (state, action) => {
           state.all_data.push(action.payload.data);
-          // console.log("extendedApi", extendedApi.endpoints.fetchSiteNames);
-          // Manually initiate the refetch using the query method
-          // extendedApi.endpoints.updateSite.initiate();
-          // extendedApi.query.fetchSiteNames({}, undefined, {
-          //   dispatchCondition: true,
-          // });
         }
       )
       .addMatcher(
@@ -85,5 +53,4 @@ const siteSlice = createSlice({
   },
 });
 
-// export const { setNextPage, initiateItem } = passwordGroupSlice.actions;
 export default siteSlice.reducer;

@@ -21,6 +21,7 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DetailsByIPAdressModal from "./modal";
 
 const Index = () => {
   // theme
@@ -33,7 +34,7 @@ const Index = () => {
   const { handleCallbackAlert, handleSuccessAlert, handleInfoAlert } =
     useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
-    handleEdit,
+    handleIPAddressClick,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
@@ -46,15 +47,18 @@ const Index = () => {
   });
 
   // states
-  const [recordToEdit, setRecordToEdit] = useState(null);
+  const [selectedRecord, setSelectedRecord] = useState(null);
   const [open, setOpen] = useState(false);
+  const [openDetailsByIPAddressModal, setOpenDetailsByIPAddressModal] =
+    useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = useSelector(selectTableData);
+  const dataSource = [{ ip_address: "10.20.23.71" }];
+  // const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -95,13 +99,17 @@ const Index = () => {
   });
 
   // handlers
-  function handleEmptySelectedRowKeys() {
-    setSelectedRowKeys([]);
+  function handleIPAddressClick(record) {
+    setSelectedRecord(record);
+    setOpenDetailsByIPAddressModal(true);
   }
 
-  function handleEdit(record) {
-    setRecordToEdit(record);
-    setOpen(true);
+  function handleDetailsByIPAddressModalClose() {
+    setOpenDetailsByIPAddressModal(false);
+  }
+
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
   }
 
   function dismantleData(allowed) {
@@ -134,6 +142,14 @@ const Index = () => {
 
   return (
     <Spin spinning={isFetchRecordsLoading}>
+      {openDetailsByIPAddressModal ? (
+        <DetailsByIPAdressModal
+          handleClose={handleDetailsByIPAddressModalClose}
+          open={openDetailsByIPAddressModal}
+          record={selectedRecord}
+        />
+      ) : null}
+
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}

@@ -211,11 +211,36 @@ const DefaultStyledAntDesignTable = styled(Table)`
   }
 `;
 
-export default function DefaultTable({ displayColumns = [], ...rest }) {
+export default function DefaultTable({
+  displayColumns = [],
+  selectedRowKeys = null,
+  setSelectedRowKeys = null,
+  getCheckboxProps = null,
+  ...rest
+}) {
   const theme = useTheme();
+
+  const rowSelection = {
+    getCheckboxProps,
+    selectedRowKeys,
+    onChange: onSelectChange,
+    selection: Table.SELECTION_ALL,
+  };
+
+  function onSelectChange(selectedRowKeys) {
+    setSelectedRowKeys(selectedRowKeys);
+  }
+
+  function handleChange(pagination, filters, sorter, extra) {
+    console.log("Various parameters", pagination, filters, sorter, extra);
+  }
+
   return (
     <DefaultScrollbar>
       <DefaultStyledAntDesignTable
+        onChange={handleChange}
+        rowSelection={selectedRowKeys ? rowSelection : null}
+        columns={displayColumns}
         scroll={{ x: getTableScrollWidth(displayColumns) }}
         style={{ whiteSpace: "pre" }}
         rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}

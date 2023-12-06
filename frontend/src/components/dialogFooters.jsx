@@ -5,11 +5,10 @@ import useButtonsConfiguration from "../hooks/useButtonsConfiguration";
 
 export default function DefaultDialogFooter({ handleClose, sx, ...rest }) {
   const theme = useTheme();
-  const { buttonsConfigurationList, buttonsConfigurationObject } =
-    useButtonsConfiguration({
-      default_cancel: { handleClick: handleClose },
-      default_submit: null,
-    });
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_cancel: { handleClick: handleClose },
+    default_submit: null,
+  });
   const buttonGenerator = useButtonGenerator();
 
   return (
@@ -17,8 +16,6 @@ export default function DefaultDialogFooter({ handleClose, sx, ...rest }) {
       style={{ display: "flex", justifyContent: "center", gap: "10px", ...sx }}
       {...rest}
     >
-      {/* {buttonGenerator(buttonsConfigurationObject?.default_cancel)}
-      {buttonGenerator(buttonsConfigurationObject?.default_submit)} */}
       {buttonsConfigurationList.map((item) => buttonGenerator(item))}
     </div>
   );
@@ -45,6 +42,23 @@ export function TableConfigurationDialogFooter({
       {...rest}
     >
       {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}
+
+export function DeviceDetailsDialogFooter({ handleClose, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationObject } = useButtonsConfiguration({
+    default_ok: { handleClick: handleClose },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{ display: "flex", justifyContent: "center", gap: "10px", ...sx }}
+      {...rest}
+    >
+      {buttonGenerator(buttonsConfigurationObject.default_ok)}
     </div>
   );
 }

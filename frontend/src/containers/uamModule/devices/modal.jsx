@@ -1,145 +1,273 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
-import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
+import React, { useState } from "react";
+import DetailsModal from "../../../components/dialogs";
 import DefaultDialogFooter from "../../../components/dialogFooters";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
+import Grid from "@mui/material/Grid";
+import { Spin } from "antd";
 import {
-  useUpdateRecordMutation,
-  useAddRecordMutation,
+  useFetchSitesByIPAddressQuery,
+  useFetchRacksByIPAddressQuery,
+  useFetchBoardsByIPAddressQuery,
+  useFetchSubBoardsByIPAddressQuery,
+  useFetchSFPsByIPAddressQuery,
+  useFetchLicensesByIPAddressQuery,
 } from "../../../store/features/uamModule/devices/apis";
-import { useFetchSiteNamesQuery } from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
-import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
+import {
+  selectSitesByIPAddressData,
+  selectRacksByIPAddressData,
+  selectBoardsByIPAddressData,
+  selectSubBoardsByIPAddressData,
+  selectSFPsByIPAddressData,
+  selectLicensesByIPAddressData,
+} from "../../../store/features/uamModule/devices/selectors";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import { indexColumnNameConstants } from "./constants";
+import { PAGE_NAME } from "./constants";
+import DefaultTable from "../../../components/tables";
+import { TABLE_DATA_UNIQUE_ID as SITE_ID } from "../sites/constants";
+import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
+import { useIndexTableColumnDefinitions as useSitesTableColumnDefinitions } from "../sites/columnDefinitions";
+import { useIndexTableColumnDefinitions as useRacksTableColumnDefinitions } from "../racks/columnDefinitions";
+import { useIndexTableColumnDefinitions as useBoardsTableColumnDefinitions } from "../boards/columnDefinitions";
+import { useIndexTableColumnDefinitions as useSubBoardsTableColumnDefinitions } from "../subBoards/columnDefinitions";
+import { useIndexTableColumnDefinitions as useSFPsTableColumnDefinitions } from "../sfps/columnDefinitions";
+import { useIndexTableColumnDefinitions as useLicensesTableColumnDefinitions } from "../licenses/columnDefinitions";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import { DeviceDetailsPageHeader } from "../../../components/pageHeaders";
+import { DeviceDetailsDialogFooter } from "../../../components/dialogFooters";
 
-const schema = yup.object().shape({
-  rack_name: yup.string().required("Rack name is required"),
-  site_name: yup.string().required("Site name is required"),
-});
-
-const Index = ({ handleClose, open, recordToEdit }) => {
+const Index = ({ handleClose, open, record }) => {
   const theme = useTheme();
+  const parameters = {
+    [indexColumnNameConstants.IP_ADDRESS]:
+      record[indexColumnNameConstants.IP_ADDRESS],
+  };
 
-  // states
+  // hooks
+  const { plainColumnDefinitions: plainSitesColumnDefinitions } =
+    useSitesTableColumnDefinitions({});
+  const { plainColumnDefinitions: plainRacksColumnDefinitions } =
+    useRacksTableColumnDefinitions({});
+  const { plainColumnDefinitions: plainBoardsColumnDefinitions } =
+    useBoardsTableColumnDefinitions({});
+  const { plainColumnDefinitions: plainSubBoardsColumnDefinitions } =
+    useSubBoardsTableColumnDefinitions({});
+  const { plainColumnDefinitions: plainSFPsColumnDefinitions } =
+    useSFPsTableColumnDefinitions({});
+  const { plainColumnDefinitions: plainLicensesColumnDefinitions } =
+    useLicensesTableColumnDefinitions({});
 
-  // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
-    resolver: yupResolver(schema),
+  const generatedSitesColumns = useColumnsGenerator({
+    columnDefinitions: plainSitesColumnDefinitions,
+  });
+  const generatedRacksColumns = useColumnsGenerator({
+    columnDefinitions: plainRacksColumnDefinitions,
+  });
+  const generatedBoardsColumns = useColumnsGenerator({
+    columnDefinitions: plainBoardsColumnDefinitions,
+  });
+  const generatedSubBoardsColumns = useColumnsGenerator({
+    columnDefinitions: plainSubBoardsColumnDefinitions,
+  });
+  const generatedSFPsColumns = useColumnsGenerator({
+    columnDefinitions: plainSFPsColumnDefinitions,
+  });
+  const generatedLicensesColumns = useColumnsGenerator({
+    columnDefinitions: plainLicensesColumnDefinitions,
   });
 
-  // effects
-  useEffect(() => {
-    formSetter(recordToEdit, setValue);
-  }, []);
+  const { buttonsConfigurationObject } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+  });
 
-  // fetching dropdowns data from backend using apis
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
+  // fetch apis
+  const {
+    data: fetchSitesByIPAddressRecordsData,
+    isSuccess: isFetchSitesByIPAddressRecordsSuccess,
+    isLoading: isFetchSitesByIPAddressRecordsLoading,
+    isError: isFetchSitesByIPAddressRecordsError,
+    error: fetchSitesByIPAddressRecordsError,
+  } = useFetchSitesByIPAddressQuery(parameters);
 
-  // post api for the form
-  const [
-    addRecord,
-    {
-      data: addRecordData,
-      isSuccess: isAddRecordSuccess,
-      isLoading: isAddRecordLoading,
-      isError: isAddRecordError,
-      error: addRecordError,
-    },
-  ] = useAddRecordMutation();
+  const {
+    data: fetchRacksByIPAddressRecordsData,
+    isSuccess: isFetchRacksByIPAddressRecordsSuccess,
+    isLoading: isFetchRacksByIPAddressRecordsLoading,
+    isError: isFetchRacksByIPAddressRecordsError,
+    error: fetchRacksByIPAddressRecordsError,
+  } = useFetchRacksByIPAddressQuery(parameters);
 
-  const [
-    updateRecord,
-    {
-      data: updateRecordData,
-      isSuccess: isUpdateRecordSuccess,
-      isLoading: isUpdateRecordLoading,
-      isError: isUpdateRecordError,
-      error: updateRecordError,
-    },
-  ] = useUpdateRecordMutation();
+  const {
+    data: fetchBoardsByIPAddressRecordsData,
+    isSuccess: isFetchBoardsByIPAddressRecordsSuccess,
+    isLoading: isFetchBoardsByIPAddressRecordsLoading,
+    isError: isFetchBoardsByIPAddressRecordsError,
+    error: fetchBoardsByIPAddressRecordsError,
+  } = useFetchBoardsByIPAddressQuery(parameters);
+
+  const {
+    data: fetchSubBoardsByIPAddressRecordsData,
+    isSuccess: isFetchSubBoardsByIPAddressRecordsSuccess,
+    isLoading: isFetchSubBoardsByIPAddressRecordsLoading,
+    isError: isFetchSubBoardsByIPAddressRecordsError,
+    error: fetchSubBoardsByIPAddressRecordsError,
+  } = useFetchSubBoardsByIPAddressQuery(parameters);
+
+  const {
+    data: fetchSFPsByIPAddressRecordsData,
+    isSuccess: isFetchSFPsByIPAddressRecordsSuccess,
+    isLoading: isFetchSFPsByIPAddressRecordsLoading,
+    isError: isFetchSFPsByIPAddressRecordsError,
+    error: fetchSFPsByIPAddressRecordsError,
+  } = useFetchSFPsByIPAddressQuery(parameters);
+
+  const {
+    data: fetchLicensesByIPAddressRecordsData,
+    isSuccess: isFetchLicensesByIPAddressRecordsSuccess,
+    isLoading: isFetchLicensesByIPAddressRecordsLoading,
+    isError: isFetchLicensesByIPAddressRecordsError,
+    error: fetchLicensesByIPAddressRecordsError,
+  } = useFetchLicensesByIPAddressQuery(parameters);
 
   // error handling custom hooks
   useErrorHandling({
-    data: addRecordData,
-    isSuccess: isAddRecordSuccess,
-    isError: isAddRecordError,
-    error: addRecordError,
-    type: "single",
+    data: fetchSitesByIPAddressRecordsData,
+    isSuccess: isFetchSitesByIPAddressRecordsSuccess,
+    isError: isFetchSitesByIPAddressRecordsError,
+    error: fetchSitesByIPAddressRecordsError,
+    type: TYPE_FETCH,
   });
 
   useErrorHandling({
-    data: updateRecordData,
-    isSuccess: isUpdateRecordSuccess,
-    isError: isUpdateRecordError,
-    error: updateRecordError,
-    type: "single",
+    data: fetchRacksByIPAddressRecordsData,
+    isSuccess: isFetchRacksByIPAddressRecordsSuccess,
+    isError: isFetchRacksByIPAddressRecordsError,
+    error: fetchRacksByIPAddressRecordsError,
+    type: TYPE_FETCH,
   });
 
-  // ///getting dropdowns data from the store
-  const siteNames = useSelector(selectSiteNames);
+  useErrorHandling({
+    data: fetchBoardsByIPAddressRecordsData,
+    isSuccess: isFetchBoardsByIPAddressRecordsSuccess,
+    isError: isFetchBoardsByIPAddressRecordsError,
+    error: fetchBoardsByIPAddressRecordsError,
+    type: TYPE_FETCH,
+  });
 
-  // on form submit
-  const onSubmit = (data) => {
-    if (recordToEdit) {
-      data.device_id = recordToEdit.device_id;
-      updateRecord(data);
-    } else {
-      addRecord(data);
-    }
-  };
+  useErrorHandling({
+    data: fetchSubBoardsByIPAddressRecordsData,
+    isSuccess: isFetchSubBoardsByIPAddressRecordsSuccess,
+    isError: isFetchSubBoardsByIPAddressRecordsError,
+    error: fetchSubBoardsByIPAddressRecordsError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchSFPsByIPAddressRecordsData,
+    isSuccess: isFetchSFPsByIPAddressRecordsSuccess,
+    isError: isFetchSFPsByIPAddressRecordsError,
+    error: fetchSFPsByIPAddressRecordsError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchLicensesByIPAddressRecordsData,
+    isSuccess: isFetchLicensesByIPAddressRecordsSuccess,
+    isError: isFetchLicensesByIPAddressRecordsError,
+    error: fetchLicensesByIPAddressRecordsError,
+    type: TYPE_FETCH,
+  });
+
+  // getting tables data from the store
+  const sitesByIPAddressData = useSelector(selectSitesByIPAddressData);
+  const racksByIPAddressData = useSelector(selectRacksByIPAddressData);
+  const boardsByIPAddressData = useSelector(selectBoardsByIPAddressData);
+  const subBoardsByIPAddressData = useSelector(selectSubBoardsByIPAddressData);
+  const sfpsByIPAddressData = useSelector(selectSFPsByIPAddressData);
+  const licensesByIPAddressData = useSelector(selectLicensesByIPAddressData);
+
+  // states
+  const [selectedTableId, setSelectedTableId] = useState(SITE_ID);
+  const [selectedTableData, setSelectedTableData] =
+    useState(sitesByIPAddressData);
+  const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
+  const [columns, setColumns] = useState(generatedSitesColumns);
+  const [availableColumns, setAvailableColumns] = useState([]);
+  const [displayColumns, setDisplayColumns] = useState(generatedSitesColumns);
+
+  // handlers
+  function handleTableConfigurationsOpen() {
+    setTableConfigurationsOpen(true);
+  }
 
   return (
-    <FormModal
+    <DetailsModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Rack`}
+      title={`${PAGE_NAME} Details`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit
-              control={control}
-              dataKey="rack_name"
-              disabled={recordToEdit !== null}
-              required
-            />
+      <Spin
+        spinning={
+          isFetchSitesByIPAddressRecordsLoading ||
+          isFetchRacksByIPAddressRecordsLoading ||
+          isFetchBoardsByIPAddressRecordsLoading ||
+          isFetchSubBoardsByIPAddressRecordsLoading ||
+          isFetchSFPsByIPAddressRecordsLoading ||
+          isFetchLicensesByIPAddressRecordsLoading
+        }
+      >
+        {tableConfigurationsOpen ? (
+          <DefaultTableConfigurations
+            columns={columns}
+            availableColumns={availableColumns}
+            setAvailableColumns={setAvailableColumns}
+            displayColumns={displayColumns}
+            setDisplayColumns={setDisplayColumns}
+            setColumns={setColumns}
+            open={tableConfigurationsOpen}
+            setOpen={setTableConfigurationsOpen}
+          />
+        ) : null}
 
-            <SelectFormUnit
-              control={control}
-              dataKey="site_name"
-              options={siteNames}
-              required
-            />
-            <DefaultFormUnit control={control} dataKey="function" />
-            <DefaultFormUnit control={control} dataKey="ru" />
-            <DefaultFormUnit control={control} dataKey="section" />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="department" />
-            <DefaultFormUnit control={control} dataKey="criticality" required />
-            <DefaultFormUnit control={control} dataKey="virtual" />
-            <DefaultFormUnit control={control} dataKey="software_version" />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="manufacturer" />
-            <DefaultFormUnit control={control} dataKey="authentication" />
-            <DefaultFormUnit control={control} dataKey="serial_number" />
-            <DefaultFormUnit control={control} dataKey="pn_code" />
-          </Grid>
-
+        <Grid container spacing={2}>
           <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
+            <DeviceDetailsPageHeader
+              selectedTableId={selectedTableId}
+              setSelectedTableId={setSelectedTableId}
+              setSelectedTableData={setSelectedTableData}
+              setColumns={setColumns}
+              setAvailableColumns={setAvailableColumns}
+              setDisplayColumns={setDisplayColumns}
+              buttons={buttonsConfigurationObject}
+              sitesByIPAddressData={sitesByIPAddressData}
+              generatedSitesColumns={generatedSitesColumns}
+              racksByIPAddressData={racksByIPAddressData}
+              generatedRacksColumns={generatedRacksColumns}
+              boardsByIPAddressData={boardsByIPAddressData}
+              generatedBoardsColumns={generatedBoardsColumns}
+              subBoardsByIPAddressData={subBoardsByIPAddressData}
+              generatedSubBoardsColumns={generatedSubBoardsColumns}
+              sfpsByIPAddressData={sfpsByIPAddressData}
+              generatedSFPsColumns={generatedSFPsColumns}
+              licensesByIPAddressData={licensesByIPAddressData}
+              generatedLicensesColumns={generatedLicensesColumns}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <DefaultTable
+              rowKey={selectedTableId}
+              dataSource={selectedTableData}
+              displayColumns={displayColumns}
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <DeviceDetailsDialogFooter handleClose={handleClose} />
           </Grid>
         </Grid>
-      </form>
-    </FormModal>
+      </Spin>
+    </DetailsModal>
   );
 };
 
