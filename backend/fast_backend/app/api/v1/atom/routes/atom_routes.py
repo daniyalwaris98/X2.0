@@ -1,6 +1,10 @@
 from app.api.v1.atom.utils.atom_utils import *
 from app.schema.validation_schema import Validator
-# from app.schema.response_schema import Response200
+from app.schema.response_schema import Response200
+from app.api.v1.atom.utils.atom_import import *
+
+
+# from app.api.v1.atom.utils.atom_import import APIRouter,JSONResponse
 
 
 router = APIRouter(
@@ -60,7 +64,7 @@ async def add_atom(atom: AddAtomRequestSchema):
 })
 async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
     try:
-
+        print("atom objs is:::::::::::::::::::::::::::::::::::::::::::::::",atom_objs,file=sys.stderr)
         row = 0
         error_list = []
         success_list = []
@@ -164,8 +168,8 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                     if atom_transition_id not in filtered_dict and atom_id not in filtered_dict:
                         filtered_dict[atom_transition_id] = item
                         filtered_dict[atom_id] = item
-            filtered_list.append(filtered_dict.values())
-            unique_success_list.append(success_list)
+            filtered_list.extend(filtered_dict.values())
+            unique_success_list.extend(success_list)
             # filtered_list = list(filtered_dict.values())
             # unique_success_list = list(success_list)
         print("step 3 is::::::::::::::::::::::::::::::::::::::::",file=sys.stderr)
@@ -174,6 +178,7 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
         if not filtered_list:
             print("step4::::::::::::::::::::::::::::::::::Filtered list is None")
             error_list.append("Empty Import")
+        print("filtered list is:::::::::::::::::::::::::::",filtered_list,file=sys.stderr)
         response = SummeryResponseSchema(
             data = filtered_list,
             success=len(unique_success_list),
@@ -206,7 +211,7 @@ async def edit_atom(atom: EditAtomRequestSchema):
 
 
 @router.get("/get_atoms", responses={
-    200: {"model": list[GetAtomResponseSchema] | None},
+    200: {"model": list[GetAtomResponseSchema]},
     500: {"model": str}
 })
 async def get_atoms():

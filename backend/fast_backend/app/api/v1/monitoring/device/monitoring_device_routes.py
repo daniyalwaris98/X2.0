@@ -64,7 +64,7 @@ async def get_all_monitoring_functions():
     400: {"model": str},
     500: {"model": str}
 })
-def add_monitoring_device(monitoring_obj):
+def add_monitoring_device(monitoring_obj:AtomInMonitoringSchema):
     try:
 
         msg, status = AddMonitoringDevice(monitoring_obj, 0, False)
@@ -194,16 +194,18 @@ async def add_atom_in_monitoring(ip_list: list[str]):
         success_list = []
         error_list = []
         for ip in ip_list:
+            atom = configs.db.query(AtomTable).filter_by(ip_address=ip).first()
+            print("atom is::::::::::::::::::::::::::::::::::::;",atom,file=sys.stderr)
             atom = AtomTable.query.filter_by(ip_address=ip).first()
 
             if atom is None:
                 error_list.append(f"{ip} : Device Not Found In Atom")
                 continue
 
-            monitoringDevice = Monitoring_Devices_Table.query.filter_by(
+            monitoringDevice = configs.db.query(Monitoring_Devices_Table).filter_by(
                 atom_id=atom.atom_id
             ).first()
-
+            print("monitoring device is:::::::::::::::::::::::::::",file=sys.stderr)
             if monitoringDevice is None:
                 monitoringDevice = Monitoring_Devices_Table()
                 monitoringDevice.atom_id = atom.atom_id
@@ -212,6 +214,16 @@ async def add_atom_in_monitoring(ip_list: list[str]):
                 monitoringDevice.active = "Inactive"
 
                 if InsertDBData(monitoringDevice) == 200:
+                    monitoring_device_dict = {
+                        "monitoring_device_id":monitoringDevice.monitoring_device_id,
+                        "source":monitoringDevice.source,
+                        "active":monitoringDevice.active,
+                        "ping_status":monitoringDevice.ping_status,
+                        "active_id":monitoringDevice.active_id,
+                        "device_heatmap":monitoringDevice.device_heatmap,
+                        "monitoring_credentials_id":monitoringDevice.monitoring_credentials_id
+                    }
+                    data.append(monitoring_device_dict)
                     success_list.append(f"{ip} : Device Added Successfully")
                 else:
                     error_list.append(f"{ip} : Error While Inserting Device")
@@ -220,6 +232,7 @@ async def add_atom_in_monitoring(ip_list: list[str]):
                 error_list.append(f"{ip} : Device Already Exist In Monitoring")
 
         response_dict = {
+            "data":data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
@@ -239,7 +252,7 @@ async def add_atom_in_monitoring(ip_list: list[str]):
 # @token_required
 # def deleteAtomInMonitoring(user_data):
 #     if True:
-#         try:
+#         try::
 #             from app import client
 #
 #             org = "monetx"
