@@ -23,7 +23,7 @@ router = APIRouter(
 summary = "Use this api in HW Life cycle UAM module to list down all the sntc in the table",
 description = "Use this api in HW Life cycle UAM module to list down all the sntc in the table"
 )
-def get_all_sntcs():
+async def get_all_sntcs():
     try:
         sntc_list = []
         sntc_results = configs.db.query(SntcTable).filter(SntcTable.pn_code !="" and SntcTable.pn_code != "N/A").all()
@@ -57,7 +57,7 @@ def get_all_sntcs():
             summary="Use this API in HW lifecycle to sync from inventory in UAM module Upon calling this API it will check for the pn_code in device,board,subboard and sfp if exsist in sntc it will update else insert in sntc table",
             description="Use this API in HW lifecycle to sync from inventory in UAM module Upon calling this API it will check for the pn_code in device,board,subboard and sfp if exsist in sntc it will update else insert in sntc table"
 )
-def sync_from_inventorys():
+async def sync_from_inventorys():
     try:
         data_lst = []
         error_list = []
@@ -144,7 +144,7 @@ def sync_from_inventorys():
             summary="Use this API in HW lifecycle in sync to inventory UAM module Upon calling this API this will check for the pn code in the device,board,subboard and sfps table update them",
             description="Use this API in HW lifecycle in sync to inventory UAM module Upon calling this API this will check for the pn code in the device,board,subboard and sfps table update them"
 )
-def sync_to_inventory():
+async def sync_to_inventory():
     try:
         error_list = []
         success_list = []
