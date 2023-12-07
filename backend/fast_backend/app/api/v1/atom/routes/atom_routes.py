@@ -366,3 +366,4 @@ def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Deleting Atom", status_code=500)
+#updated

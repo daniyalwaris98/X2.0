@@ -38,8 +38,8 @@ class AddRackRequestSchema(BaseSchema):
     rack_name: str
     site_name: str
     status: str
-    manufacture_date: constr(regex=r"\d{4}-\d{2}-\d{2}")  # Date format: YYYY-MM-DD
-    rfs_date: constr(regex=r"\d{4}-\d{2}-\d{2}")
+    manufacture_date: datetime| None = None # Date format: YYYY-MM-DD
+    rfs_date: datetime | None = None
     serial_number: str | None = None
     # manufacture_date: datetime | None = None
     unit_position: str | None = None
@@ -51,6 +51,19 @@ class AddRackRequestSchema(BaseSchema):
     pn_code: str | None = None
     rack_model: str | None = None
     floor: str | None = None
+
+    @validator('manufacture_date', 'rfs_date', pre=True)
+    def parse_date(cls, v):
+        if v is not None and not isinstance(v, datetime):
+            try:
+                parsed_date = datetime.strptime(v, '%Y-%m-%d')
+                if not (
+                        1000 <= parsed_date.year <= 9999 and 1 <= parsed_date.month <= 12 and 1 <= parsed_date.day <= 31):
+                    raise ValueError('Date does not have a valid year, month, or day.')
+                return parsed_date
+            except ValueError:
+                raise ValueError('Invalid date format. Date should be in YYYY-MM-DD format and must have a valid year, month, or day')
+        return v
 
 
 class EditRackRequestSchema(AddRackRequestSchema):

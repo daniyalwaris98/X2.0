@@ -45,10 +45,10 @@ def get_all_rack():
             "rack_name": rack_obj.rack_name,
             "site_name": site_obj.site_name,
             "serial_number": rack_obj.serial_number,
-            "manufacture_date": format_date(rack_obj.manufacture_date),
+            "manufacture_date": rack_obj.manufacture_date,
             "unit_position": rack_obj.unit_position,
-            "creation_date": format_date(rack_obj.creation_date),
-            "modification_date": format_date(rack_obj.modification_date),
+            "creation_date": rack_obj.creation_date,
+            "modification_date": rack_obj.modification_date,
             "status": rack_obj.status,
             "ru": rack_obj.ru,
             "rfs_date": format_date(rack_obj.rfs_date),
@@ -133,25 +133,33 @@ def check_rack_status(rack_obj):
 def FormatStringDate(date):
     try:
         if date is not None:
-            print("date in formatStringdate is:", date, file=sys.stderr)
-            if '-' in date:
-                result = datetime.strptime(date, '%Y-%m-%d')
-                print("- result for fomat string date is::::",result,file=sys.stderr)
-            elif '/' in date:
-                result = datetime.strptime(date, '%Y-%m-%d')
-                print("/ result for format date string is:::::",result,file=sys.stderr)
+            print("date in FormatStringDate is:", date, file=sys.stderr)
+
+            if isinstance(date, str):
+                if '-' in date:
+                    result = datetime.strptime(date, '%Y-%m-%d')
+                    print("- result for format string date is:", result, file=sys.stderr)
+                elif '/' in date:
+                    result = datetime.strptime(date, '%Y/%m/%d')
+                    print("/ result for format date string is:", result, file=sys.stderr)
+                else:
+                    print("Incorrect date format", file=sys.stderr)
+                    result = datetime(2000, 1, 1)
+            elif isinstance(date, datetime):
+                result = date  # Use the received datetime object as it is
+                print("Received datetime object, using as is:", result, file=sys.stderr)
             else:
-                print("incorrect date format", file=sys.stderr)
+                print("Unsupported date format", file=sys.stderr)
                 result = datetime(2000, 1, 1)
-            print("formatted date is:", result, file=sys.stderr)  # Add this line to check the formatted result
+
+            print("Formatted date is:", result, file=sys.stderr)
             return result
         else:
             return datetime(2000, 1, 1)
     except Exception as e:
-        print("date format exception:", e, file=sys.stderr)
+        print("Date format exception:", e, file=sys.stderr)
         traceback.print_exc()
         return datetime(2000, 1, 1)
-
 
 def check_rack_optional_data(rack_obj, rack_exist):
     rack_obj = dict(rack_obj)
