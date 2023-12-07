@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
+export function useIndexTableColumnDefinitions({ handleEdit = null }) {
   const theme = useTheme();
 
   const columnDefinitions = [

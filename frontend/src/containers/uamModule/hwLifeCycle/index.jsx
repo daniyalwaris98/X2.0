@@ -1,8 +1,9 @@
-import React, { useState } from "react";
+import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
+  useAddRecordsMutation,
   useDeleteRecordsMutation,
   useSyncFromInventoryQuery,
   useSyncToInventoryQuery,
@@ -10,7 +11,12 @@ import {
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/uamModule/hwLifeCycle/selectors";
 import useWindowDimensions from "../../../hooks/useWindowDimensions";
-import { jsonToExcel, generateObject } from "../../../utils/helpers";
+import {
+  jsonToExcel,
+  convertToJson,
+  handleFileChange,
+  generateObject,
+} from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
@@ -21,6 +27,7 @@ import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
+  FILE_NAME_EXPORT_TEMPLATE,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
@@ -50,8 +57,11 @@ const Index = () => {
         visible: selectedRowKeys.length > 0,
       },
       inventory_sync: { handleClick: handleSync, namePostfix: PAGE_NAME },
-      default_import: { handleClick: handleDefaultAdd },
+      default_import: { handleClick: handleInputClick },
     });
+
+  // refs
+  const fileInputRef = useRef(null);
 
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -73,6 +83,17 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
+  const [
+    addRecords,
+    {
+      data: addRecordsData,
+      isSuccess: isAddRecordsSuccess,
+      isLoading: isAddRecordsLoading,
+      isError: isAddRecordsError,
+      error: addRecordsError,
+    },
+  ] = useAddRecordsMutation();
+
   const {
     data: syncFromInventoryData,
     isSuccess: isSyncFromInventorySuccess,
@@ -80,7 +101,7 @@ const Index = () => {
     isError: isSyncFromInventoryError,
     error: syncFromInventoryError,
     refetch: syncFromInventory,
-  } = useSyncFromInventoryQuery({ skip: true });
+  } = useSyncFromInventoryQuery();
 
   const {
     data: syncToInventoryData,
@@ -89,7 +110,7 @@ const Index = () => {
     isError: isSyncToInventoryError,
     error: syncToInventoryError,
     refetch: syncToInventory,
-  } = useSyncToInventoryQuery({ skip: true });
+  } = useSyncToInventoryQuery();
 
   const [
     deleteRecords,
@@ -111,21 +132,13 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
-  useErrorHandling({
-    data: syncFromInventoryData,
-    isSuccess: isSyncFromInventorySuccess,
-    isError: isSyncFromInventoryError,
-    error: syncFromInventoryError,
-    type: TYPE_FETCH,
-  });
-
-  useErrorHandling({
-    data: syncToInventoryData,
-    isSuccess: isSyncToInventorySuccess,
-    isError: isSyncToInventoryError,
-    error: syncToInventoryError,
-    type: TYPE_FETCH,
-  });
+  // useErrorHandling({
+  //   data: addRecordsData,
+  //   isSuccess: isAddRecordsSuccess,
+  //   isError: isAddRecordsError,
+  //   error: addRecordsError,
+  //   type: TYPE_BULK,
+  // });
 
   useErrorHandling({
     data: deleteRecordsData,
@@ -135,13 +148,36 @@ const Index = () => {
     type: TYPE_BULK,
   });
 
+  useErrorHandling({
+    data: syncFromInventoryData,
+    isSuccess: isSyncFromInventorySuccess,
+    isError: isSyncFromInventoryError,
+    error: syncFromInventoryError,
+    type: TYPE_BULK,
+  });
+
+  useErrorHandling({
+    data: syncToInventoryData,
+    isSuccess: isSyncToInventorySuccess,
+    isError: isSyncToInventoryError,
+    error: syncToInventoryError,
+    type: TYPE_BULK,
+  });
+
   // handlers
+  function handlePostSeed(data) {
+    addRecords(data);
+  }
+
+  function handleInputClick() {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+
   function deleteData(allowed) {
     if (allowed) {
-      const result = dataSource
-        .filter((obj) => selectedRowKeys.includes(obj.sntc_id))
-        .map((obj) => obj.pn_code);
-      deleteRecords(result);
+      deleteRecords(selectedRowKeys);
     } else {
       setSelectedRowKeys([]);
     }
@@ -160,10 +196,6 @@ const Index = () => {
 
   function handleEdit(record) {
     setRecordToEdit(record);
-    setOpen(true);
-  }
-
-  function handleDefaultAdd() {
     setOpen(true);
   }
 
@@ -188,10 +220,9 @@ const Index = () => {
     if (optionType === ALL_DATA) {
       jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     } else if (optionType === TEMPLATE) {
-      jsonToExcel([generateObject(dataKeys)], "site_template");
-    } else {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
     }
+
     handleSuccessAlert("File exported successfully.");
   }
 
@@ -203,43 +234,48 @@ const Index = () => {
     <Spin
       spinning={
         isFetchRecordsLoading ||
+        isAddRecordsLoading ||
+        isDeleteRecordsLoading ||
         isSyncFromInventoryLoading ||
-        isSyncToInventoryLoading ||
-        isDeleteRecordsLoading
+        isSyncToInventoryLoading
       }
     >
-      <div>
-        {open ? (
-          <Modal
-            handleClose={handleClose}
-            open={open}
-            recordToEdit={recordToEdit}
-          />
-        ) : null}
-
-        {tableConfigurationsOpen ? (
-          <DefaultTableConfigurations
-            columns={columns}
-            availableColumns={availableColumns}
-            setAvailableColumns={setAvailableColumns}
-            displayColumns={displayColumns}
-            setDisplayColumns={setDisplayColumns}
-            setColumns={setColumns}
-            open={tableConfigurationsOpen}
-            setOpen={setTableConfigurationsOpen}
-          />
-        ) : null}
-
-        <DefaultPageTableSection
-          PAGE_NAME={PAGE_NAME}
-          TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
-          buttonsConfigurationList={buttonsConfigurationList}
-          selectedRowKeys={selectedRowKeys}
-          displayColumns={displayColumns}
-          dataSource={dataSource}
-          setSelectedRowKeys={setSelectedRowKeys}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
+      />
+      {open ? (
+        <Modal
+          handleClose={handleClose}
+          open={open}
+          recordToEdit={recordToEdit}
         />
-      </div>
+      ) : null}
+
+      {tableConfigurationsOpen ? (
+        <DefaultTableConfigurations
+          columns={columns}
+          availableColumns={availableColumns}
+          setAvailableColumns={setAvailableColumns}
+          displayColumns={displayColumns}
+          setDisplayColumns={setDisplayColumns}
+          setColumns={setColumns}
+          open={tableConfigurationsOpen}
+          setOpen={setTableConfigurationsOpen}
+        />
+      ) : null}
+
+      <DefaultPageTableSection
+        PAGE_NAME={PAGE_NAME}
+        TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+        buttonsConfigurationList={buttonsConfigurationList}
+        selectedRowKeys={selectedRowKeys}
+        displayColumns={displayColumns}
+        dataSource={dataSource}
+        setSelectedRowKeys={setSelectedRowKeys}
+      />
     </Spin>
   );
 };
