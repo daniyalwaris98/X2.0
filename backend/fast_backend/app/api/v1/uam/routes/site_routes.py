@@ -110,8 +110,18 @@ async def get_all_site():
             response.append(result.as_dict())
 
         print(response)
+        non_default_sorted = sorted(
+            (x for x in response if x['site_name'] != 'default_site'),
+            key=lambda x: datetime.strptime(x['creation_date'], '%Y-%m-%d %H:%M:%S'),
+            reverse=True
+        )
 
-        return JSONResponse(content=response, status_code=200)
+        # Sort 'default_password' groups and place them at the beginning
+        default_site = [x for x in response if x['site_name'] == 'default_site']
+        sorted_list = default_site + non_default_sorted
+        print("sorted list is::::::::::::::::::::::", sorted_list, file=sys.stderr)
+
+        return JSONResponse(content=sorted_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)

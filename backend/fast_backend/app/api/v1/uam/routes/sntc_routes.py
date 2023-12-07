@@ -42,7 +42,8 @@ async def get_all_sntcs():
                 "modification_date":FormatDate(sntcs.modification_date)
             }
             sntc_list.append(sntc_dict)
-        return JSONResponse(content =sntc_list,status_code=200)
+        sorted_list = sorted(sntc_list, key=lambda x: x['creation_date'], reverse=True)
+        return JSONResponse(content =sorted_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content = "Error Occured while fetching SNTC",status_code = 500)

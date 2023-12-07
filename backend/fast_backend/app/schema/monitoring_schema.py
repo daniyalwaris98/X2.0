@@ -138,14 +138,19 @@ class MonitoringDeviceSchema(BaseSchema):
     active: str | None
     status: str | None
     snmp_status: str | None
-    creation_date: datetime
-    modification_date: datetime
+    # creation_date: datetime
+    # modification_date: datetime
+class UpdateMonitoringDeviceSchema(BaseSchema):
+    monitoring_id: int
+    credentials: str | None
+    active: str | None
 
 
 class AtomInMonitoringSchema(BaseSchema):
     ip_address: str
     device_name: str
     device_type: str
+    vendor : str
 
 
 class GetFunctionDataSchema(BaseSchema):
