@@ -48,7 +48,6 @@ const Index = () => {
 
   // states
   const [selectedRecord, setSelectedRecord] = useState(null);
-  const [open, setOpen] = useState(false);
   const [openDetailsByIPAddressModal, setOpenDetailsByIPAddressModal] =
     useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
@@ -57,8 +56,8 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = [{ ip_address: "10.20.23.71" }];
-  // const dataSource = useSelector(selectTableData);
+  // const dataSource = [{ ip_address: "10.20.23.71" }];
+  const dataSource = useSelector(selectTableData);
 
   // apis
   const {
