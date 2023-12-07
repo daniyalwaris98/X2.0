@@ -459,3 +459,6 @@ async def AddSntc(sntc_obj: list[AddSntcRequestSchema]):
     except Exception as e:
         traceback.print_exc()
         return "Failed To Update Data", 500
+
+
+#updated file sntc_route
