@@ -6,6 +6,7 @@ import DefaultFormUnit from "../../../components/formUnits";
 import {
   SelectFormUnit,
   AddableSelectFormUnit,
+  DateFormUnit,
 } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -23,7 +24,7 @@ import {
 import { useSelector } from "react-redux";
 import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
+import { formSetter, transformDateTimeToDate } from "../../../utils/helpers";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
@@ -41,6 +42,12 @@ const schema = yup.object().shape({
   [indexColumnNameConstants.STATUS]: yup
     .string()
     .required("Status is required"),
+  [indexColumnNameConstants.MANUFACTURE_DATE]: yup
+    .string()
+    .transform(transformDateTimeToDate),
+  [indexColumnNameConstants.RFS_DATE]: yup
+    .string()
+    .transform(transformDateTimeToDate),
 });
 
 const Index = ({
@@ -61,7 +68,12 @@ const Index = ({
 
   // effects
   useEffect(() => {
-    formSetter(recordToEdit, setValue);
+    formSetter(recordToEdit, setValue, {
+      dates: [
+        indexColumnNameConstants.MANUFACTURE_DATE,
+        indexColumnNameConstants.RFS_DATE,
+      ],
+    });
   }, []);
 
   // post api for the form
@@ -160,7 +172,7 @@ const Index = ({
               control={control}
               dataKey={indexColumnNameConstants.SERIAL_NUMBER}
             />
-            <DefaultFormUnit
+            <DateFormUnit
               control={control}
               dataKey={indexColumnNameConstants.MANUFACTURE_DATE}
             />
@@ -214,7 +226,7 @@ const Index = ({
               control={control}
               dataKey={indexColumnNameConstants.RU}
             />
-            <DefaultFormUnit
+            <DateFormUnit
               control={control}
               dataKey={indexColumnNameConstants.RFS_DATE}
             />
