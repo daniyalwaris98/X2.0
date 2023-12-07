@@ -133,6 +133,7 @@ def sync_from_inventorys():
         return response
 
     except Exception as e:
+        configs.db.rollback()
         return f"Error: {str(e)}", 500
 @router.get('/sync_to_inventory',
             responses={
@@ -286,6 +287,7 @@ def sync_to_inventory():
         return response
 
     except Exception as e:
+        configs.db.rollback()
         raise JSONResponse(status_code=500, content="Error Occurred while syncing to Inventory")
 @router.post('/edit_sntc',
              responses={
