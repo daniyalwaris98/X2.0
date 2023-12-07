@@ -33,13 +33,13 @@ def get_all_sntcs():
             sntc_dict = {
                 "sntc_id":sntcs.sntc_id,
                 "pn_code":sntcs.pn_code,
-                "hw_eos_date":sntcs.hw_eos_date,
-                "hw_eol_date":sntcs.hw_eol_date,
-                "sw_eos_date":sntcs.sw_eos_date,
-                "sw_eol_date":sntcs.sw_eol_date,
-                "manufacture_date":sntcs.manufacture_date,
-                "creation_date":sntcs.creation_date,
-                "modification_date":sntcs.modification_date
+                "hw_eos_date":FormatDate(sntcs.hw_eos_date),
+                "hw_eol_date":FormatDate(sntcs.hw_eol_date),
+                "sw_eos_date":FormatDate(sntcs.sw_eos_date),
+                "sw_eol_date":FormatDate(sntcs.sw_eol_date),
+                "manufacture_date":FormatDate(sntcs.manufacture_date),
+                "creation_date":FormatDate(sntcs.creation_date),
+                "modification_date":FormatDate(sntcs.modification_date)
             }
             sntc_list.append(sntc_dict)
         return JSONResponse(content =sntc_list,status_code=200)
@@ -94,6 +94,13 @@ def sync_from_inventorys():
                     data_lst.append({
                         "sntc_id":sntc.sntc_id,
                         "pn_code": sntc.pn_code,
+                        "hw_eos_date": FormatDate(sntc.hw_eos_date),
+                        "hw_eol_date": FormatDate(sntc.hw_eol_date),
+                        "sw_eos_date": FormatDate(sntc.sw_eos_date),
+                        "sw_eol_date": FormatDate(sntc.sw_eol_date),
+                        "manufacture_date": FormatDate(sntc.manufacture_date),
+                        "creation_date": FormatDate(sntc.creation_date),
+                        "modification_date": FormatDate(sntc.modification_date)
                     })
                     success_list.append(f"{sntc.pn_code} : Inserted in SNTC Table")
                 else:
@@ -104,8 +111,15 @@ def sync_from_inventorys():
                         configs.db.commit()
 
                         data_lst.append({
-                            "sntc":sntc.sntc_id,
+                            "sntc_id":sntc.sntc_id,
                             "pn_code": sntc.pn_code,
+                            "hw_eos_date": FormatDate(sntc.hw_eos_date),
+                            "hw_eol_date": FormatDate(sntc.hw_eol_date),
+                            "sw_eos_date": FormatDate(sntc.sw_eos_date),
+                            "sw_eol_date": FormatDate(sntc.sw_eol_date),
+                            "manufacture_date": FormatDate(sntc.manufacture_date),
+                            "creation_date": FormatDate(sntc.creation_date),
+                            "modification_date": FormatDate(sntc.modification_date)
                         })
                         success_list.append(f"{sntc.pn_code} : Updated In SNTC Table")
 
@@ -135,10 +149,12 @@ def sync_to_inventory():
         success_list = []
         data_lst = []
         results = configs.db.query(SntcTable).all()
+        print("results re::::::::::::::",results,file=sys.stderr)
         sync_results = []
 
         for sntc in results:
             try:
+                print("sntc in result is:::::::::::",sntc,file=sys.stderr)
                 # Create a new dictionary for each table update
                 updated_fields = {}
 
@@ -172,6 +188,7 @@ def sync_to_inventory():
                         uam_updated_object = {
                             "data": updated_fields.copy()  # Create a copy to append distinct dictionary objects
                         }
+                        print("updates uam object is::",uam_updated_object,file=sys.stderr)
                         data_lst.append(uam_updated_object)
                         success_list.append(f"{uam.uam_id} : UAM Updated Successfully")
                     else:
@@ -269,7 +286,7 @@ def sync_to_inventory():
         return response
 
     except Exception as e:
-        raise JSONResponse(status_code=500, detail="Error Occurred while syncing to Inventory")
+        raise JSONResponse(status_code=500, content="Error Occurred while syncing to Inventory")
 @router.post('/edit_sntc',
              responses={
                  200: {"model": Response200},
