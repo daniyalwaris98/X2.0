@@ -73,7 +73,7 @@ class Configs:
     IN_TOKEN: str = "nItzto4Hc22kXuLsawB76lhKPM-wbK1DAQc7uBiFpYUCntoHDE6TC-uGeezzx7S89fyClKv2YXLfDi15Ujhn5A=="
     IN_ORG: str = "monetx"
     IN_BUCKET: str = "monitoring"
-    IN_URL: str = "http://updated_influx_db:8086"
+    IN_URL: str = "http://localhost:8086"
     client: str = InfluxDBClient(url=IN_URL, token=IN_TOKEN)
 
     templates = Jinja2Templates(directory="templates")
