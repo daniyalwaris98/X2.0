@@ -116,28 +116,28 @@ def validate_atom(device, update):
             print("atom_device_name is::::::::::",atom_device_name,file=sys.stderr)
             if atom_device_name:
             # if atom.ip_address != device["ip_address"].strip():
-                return f"{device['ip_address']} : Device Name Already Assigned To An Other Device", 400
+                return f"Device Name Already Assigned To An Other Device", 400 #{device['ip_address']} : 
 
         if device["function"] is None or device['function'] == 'string':
-            return f"{device['ip_address']} : Function Can Not be Empty", 400
+            return f"Function Can Not be Empty", 400 #{device['ip_address']} : 
 
         elif device["function"].strip() == "":
-            return f"{device['ip_address']} : Function Can Not be Empty", 400
+            return f"Function Can Not be Empty", 400 #{device['ip_address']} : 
 
         if device["device_type"] is None or device['device_type'] == 'string':
-            return f"{device['ip_address']} : Device Type Can Not be Empty", 400
+            return f"Device Type Can Not be Empty", 400 #{device['ip_address']} : 
 
         device["device_type"] = device["device_type"].strip()
         device["device_type"] = device["device_type"].lower()
 
         if device["device_type"] == "":
-            return f"{device['ip_address']} : Device Type Can Not be Empty", 400
+            return f"Device Type Can Not be Empty", 400 #{device['ip_address']} :
 
         if device["device_type"] not in device_type_list:
-            return f"{device['ip_address']} : Device Type Is Not Supported - {device['device_type']}", 400
+            return f"Device Type Is Not Supported - {device['device_type']}", 400#{device['ip_address']} :
 
         if device["vendor"] is None:
-            return f"{device['ip_address']} : Vendor Can Not be Empty", 400
+            return f"Vendor Can Not be Empty", 400 #{device['ip_address']} :
 
         device["vendor"] = str(device["vendor"]).strip().capitalize()
         if device["vendor"] not in vendor_list:
