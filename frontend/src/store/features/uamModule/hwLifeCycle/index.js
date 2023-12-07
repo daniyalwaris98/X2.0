@@ -18,29 +18,81 @@ const hwLifeCycleSlice = createSlice({
         }
       )
       .addMatcher(
+        extendedApi.endpoints.addHwLifeCycles.matchFulfilled,
+        (state, action) => {
+          console.log(state, "addHwLifeCycles state");
+          console.log(action, "addHwLifeCycles action");
+          // action?.payload?.data?.forEach((responseItem) => {
+          //   const indexToUpdate = state.all_data.findIndex((tableItem) => {
+          //     return tableItem.sntc_id === responseItem.sntc_id;
+          //   });
+          //   if (indexToUpdate !== -1) {
+          //     state.all_data[indexToUpdate] = responseItem;
+          //   } else {
+          //     state.all_data.push(responseItem);
+          //   }
+          // });
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.syncFromInventory.matchFulfilled,
         (state, action) => {
-          state.all_data = action.payload;
+          console.log(state, "syncFromInventory state");
+          console.log(action, "syncFromInventory action");
+          // action.payload.data?.forEach((responseItem) => {
+          //   const indexToUpdate = state.all_data.findIndex((tableItem) => {
+          //     return tableItem.sntc_id === responseItem.sntc_id;
+          //   });
+          //   if (indexToUpdate !== -1) {
+          //     state.all_data[indexToUpdate] = responseItem;
+          //   } else {
+          //     state.all_data.push(responseItem);
+          //   }
+          // });
         }
       )
       .addMatcher(
         extendedApi.endpoints.syncToInventory.matchFulfilled,
         (state, action) => {
-          state.all_data = action.payload;
+          console.log(state, "syncToInventory state");
+          console.log(action, "syncToInventory action");
+          // action.payload.data?.forEach((responseItem) => {
+          //   const indexToUpdate = state.all_data.findIndex((tableItem) => {
+          //     return tableItem.sntc_id === responseItem.sntc_id;
+          //   });
+          //   if (indexToUpdate !== -1) {
+          //     state.all_data[indexToUpdate] = responseItem;
+          //   } else {
+          //     state.all_data.push(responseItem);
+          //   }
+          // });
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteHwLifeCycleByPNCode.matchFulfilled,
+        extendedApi.endpoints.deleteHwLifeCycle.matchFulfilled,
         (state, action) => {
-          // const deletedIds = action.payload?.data || [];
-          // if (deletedIds.length > 0) {
-          //   state.all_data = state.all_data.filter((item) => {
-          //     const shouldKeepItem = deletedIds.some((deletedId) => {
-          //       return deletedId === item.site_id;
-          //     });
-          //     return !shouldKeepItem;
-          //   });
-          // }
+          const deletedIds = action.payload?.data || [];
+          if (deletedIds.length > 0) {
+            state.all_data = state.all_data.filter((item) => {
+              const shouldKeepItem = deletedIds.some((deletedId) => {
+                return deletedId === item.sntc_id;
+              });
+              return !shouldKeepItem;
+            });
+          }
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.updateHwLifeCycle.matchFulfilled,
+        (state, action) => {
+          let objectToReplace = action.payload.data;
+          state.all_data = state.all_data.map((item) => {
+            if (item.sntc_id === objectToReplace.sntc_id) {
+              return { ...item, ...objectToReplace };
+            } else {
+              return item;
+            }
+          });
         }
       );
   },

@@ -7,6 +7,15 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/uam/uam_sntc/get_all_sntc",
     }),
 
+    addHwLifeCycles: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/uam/uam_sntc/add_sntc",
+        method: "POST",
+        body: data,
+      }),
+      keepUnusedDataFor: 0,
+    }),
+
     syncFromInventory: builder.query({
       query: () => "/api/v1/uam/uam_sntc/sync_from_inventory",
     }),
@@ -15,9 +24,17 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/uam/uam_sntc/sync_to_inventory",
     }),
 
-    deleteHwLifeCycleByPNCode: builder.mutation({
+    deleteHwLifeCycle: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/uam_sntc/delete_pn_code",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    updateHwLifeCycle: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/uam/uam_sntc/edit_sntc",
         method: "POST",
         body: data,
       }),
@@ -27,7 +44,9 @@ export const extendedApi = monetxApi.injectEndpoints({
 
 export const {
   useFetchHwLifeCycleQuery: useFetchRecordsQuery,
-  useDeleteHwLifeCycleByPNCodeMutation: useDeleteRecordsMutation,
+  useAddHwLifeCyclesMutation: useAddRecordsMutation,
+  useDeleteHwLifeCycleMutation: useDeleteRecordsMutation,
+  useUpdateHwLifeCycleMutation: useUpdateRecordMutation,
   useSyncFromInventoryQuery,
   useSyncToInventoryQuery,
 } = extendedApi;

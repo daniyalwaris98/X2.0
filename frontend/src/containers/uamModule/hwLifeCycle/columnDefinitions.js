@@ -1,19 +1,20 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    "hw_eol_date",
-    "hw_eos_date",
-    "manufacturer_date",
-    "pn_code",
-    "sw_eol_date",
-    "sw_eos_date",
+    indexColumnNameConstants.HW_EOL_DATE,
+    indexColumnNameConstants.HW_EOS_DATE,
+    indexColumnNameConstants.MANUFACTURE_DATE,
+    indexColumnNameConstants.PN_CODE,
+    indexColumnNameConstants.SW_EOL_DATE,
+    indexColumnNameConstants.SW_EOS_DATE,
     {
-      data_key: "actions",
+      data_key: indexColumnNameConstants.ACTIONS,
       search: false,
       fixed: "right",
       align: "center",
@@ -45,7 +46,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return item;
       }
     })
-    .filter((item) => item !== "status" && item !== "actions");
+    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
     columnDefinitions,

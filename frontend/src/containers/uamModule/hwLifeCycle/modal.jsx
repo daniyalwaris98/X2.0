@@ -1,35 +1,28 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
 import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
-import {
-  useUpdateRecordMutation,
-  useAddRecordMutation,
-} from "../../../store/features/uamModule/racks/apis";
-import { useFetchSiteNamesQuery } from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
+import { useUpdateRecordMutation } from "../../../store/features/uamModule/hwLifeCycle/apis";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter } from "../../../utils/helpers";
+import { PAGE_NAME, indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
-  rack_name: yup.string().required("Rack name is required"),
-  site_name: yup.string().required("Site name is required"),
+  [indexColumnNameConstants.PN_CODE]: yup
+    .string()
+    .required("PN Code is required"),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
-  // states
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -37,22 +30,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   useEffect(() => {
     formSetter(recordToEdit, setValue);
   }, []);
-
-  // fetching dropdowns data from backend using apis
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
-
-  // post api for the form
-  const [
-    addRecord,
-    {
-      data: addRecordData,
-      isSuccess: isAddRecordSuccess,
-      isLoading: isAddRecordLoading,
-      isError: isAddRecordError,
-      error: addRecordError,
-    },
-  ] = useAddRecordMutation();
 
   const [
     updateRecord,
@@ -65,15 +42,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
-  // error handling custom hooks
-  useErrorHandling({
-    data: addRecordData,
-    isSuccess: isAddRecordSuccess,
-    isError: isAddRecordError,
-    error: addRecordError,
-    type: "single",
-  });
-
   useErrorHandling({
     data: updateRecordData,
     isSuccess: isUpdateRecordSuccess,
@@ -82,23 +50,18 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     type: "single",
   });
 
-  // ///getting dropdowns data from the store
-  const siteNames = useSelector(selectSiteNames);
-
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.rack_id = recordToEdit.rack_id;
+      data.sntc_id = recordToEdit.sntc_id;
       updateRecord(data);
-    } else {
-      addRecord(data);
     }
   };
 
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Rack`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
@@ -106,32 +69,32 @@ const Index = ({ handleClose, open, recordToEdit }) => {
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit
               control={control}
-              dataKey="rack_name"
-              disabled={recordToEdit !== null}
+              dataKey={indexColumnNameConstants.PN_CODE}
               required
             />
 
-            <SelectFormUnit
+            <DefaultFormUnit
               control={control}
-              dataKey="site_name"
-              options={siteNames}
-              required
+              dataKey={indexColumnNameConstants.HW_EOL_DATE}
             />
-            <DefaultFormUnit control={control} dataKey="serial_number" />
-            <DefaultFormUnit control={control} dataKey="manufacture_date" />
-            <DefaultFormUnit control={control} dataKey="pn_code" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.HW_EOS_DATE}
+            />
           </Grid>
           <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="unit_position" />
-            <DefaultFormUnit control={control} dataKey="status" required />
-            <DefaultFormUnit control={control} dataKey="ru" />
-            <DefaultFormUnit control={control} dataKey="height" />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="rfs_date" />
-            <DefaultFormUnit control={control} dataKey="rack_model" />
-            <DefaultFormUnit control={control} dataKey="brand" />
-            <DefaultFormUnit control={control} dataKey="width" />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.SW_EOS_DATE}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.SW_EOL_DATE}
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.MANUFACTURE_DATE}
+            />
           </Grid>
 
           <Grid item xs={12}>

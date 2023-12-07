@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
@@ -73,7 +73,10 @@ const Index = () => {
         handleClick: handleOnBoard,
         visible: shouldOnboardBeVisible(),
       },
-      atom_add: { handleClick: handleAdd, namePostfix: PAGE_NAME },
+      atom_add: {
+        handleClick: handleAdd,
+        namePostfix: PAGE_NAME,
+      },
       default_import: { handleClick: handleInputClick },
     });
 
@@ -162,13 +165,6 @@ const Index = () => {
     type: TYPE_BULK,
     callback: handleEmptySelectedRowKeys,
   });
-
-  // effects
-  // useEffect(() => {
-  //   setSelectedRowKeys((prev) =>
-  //     prev.filter((item) => !deleteRecordsData?.data.includes(item))
-  //   );
-  // }, [isDeleteRecordsSuccess]);
 
   // handlers
   function handleEmptySelectedRowKeys() {
