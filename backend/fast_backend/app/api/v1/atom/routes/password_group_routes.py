@@ -174,8 +174,17 @@ async def get_password_groups():
         results = configs.db.query(PasswordGroupTable).all()
         for result in results:
             response.append(result.as_dict())
+        non_default_sorted = sorted(
+            (x for x in response if x['password_group'] != 'default_password'),
+            key=lambda x: datetime.strptime(x['creation_date'], '%Y-%m-%d %H:%M:%S'),
+            reverse=True
+        )
 
-        return JSONResponse(content=response, status_code=200)
+        # Sort 'default_password' groups and place them at the beginning
+        default_passwords = [x for x in response if x['password_group'] == 'default_password']
+        sorted_list = default_passwords + non_default_sorted
+        print("sorted list is::::::::::::::::::::::",sorted_list,file=sys.stderr)
+        return JSONResponse(content=sorted_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Password Groups",

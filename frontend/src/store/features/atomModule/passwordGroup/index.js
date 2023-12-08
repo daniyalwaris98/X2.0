@@ -1,5 +1,6 @@
 import { extendedApi } from "./apis";
-import { createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { TABLE_DATA_UNIQUE_ID } from "../../../../containers/atomModule/passwordGroup/constants";
 
 const initialState = {
   all_data: [],
@@ -23,13 +24,14 @@ const passwordGroupSlice = createSlice({
           action.payload.data.forEach((responseItem) => {
             const indexToUpdate = state.all_data.findIndex((tableItem) => {
               return (
-                tableItem.password_group_id === responseItem.password_group_id
+                tableItem[TABLE_DATA_UNIQUE_ID] ===
+                responseItem[TABLE_DATA_UNIQUE_ID]
               );
             });
             if (indexToUpdate !== -1) {
               state.all_data[indexToUpdate] = responseItem;
             } else {
-              state.all_data.push(responseItem);
+              state.all_data = [responseItem, ...state.all_data];
             }
           });
         }
@@ -41,7 +43,7 @@ const passwordGroupSlice = createSlice({
           if (deletedIds.length > 0) {
             state.all_data = state.all_data.filter((item) => {
               const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item.password_group_id;
+                return deletedId === item[TABLE_DATA_UNIQUE_ID];
               });
               return !shouldKeepItem;
             });
@@ -51,7 +53,7 @@ const passwordGroupSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.addPasswordGroup.matchFulfilled,
         (state, action) => {
-          state.all_data.push(action.payload.data);
+          state.all_data = [action.payload.data, ...state.all_data];
         }
       )
       .addMatcher(
@@ -59,7 +61,10 @@ const passwordGroupSlice = createSlice({
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {
-            if (item.password_group_id === objectToReplace.password_group_id) {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
               return { ...item, ...objectToReplace };
             } else {
               return item;
@@ -70,5 +75,4 @@ const passwordGroupSlice = createSlice({
   },
 });
 
-// export const { setNextPage, initiateItem } = passwordGroupSlice.actions;
 export default passwordGroupSlice.reducer;

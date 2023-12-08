@@ -116,11 +116,24 @@ async def get_all_racks():
     try:
         response = get_all_rack()
         # print("reposne in get all racks is::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
-        return response
+        non_default_sorted = sorted(
+            (x for x in response if x['rack_name'] != 'default_rack'),
+            key=lambda x: datetime.strptime(x['creation_date'], '%Y-%m-%d %H:%M:%S') if isinstance(x['creation_date'],
+                                                                                                   str) else x[
+                'creation_date'],
+            reverse=True
+        )
+
+        # Sort 'default_rack' and place it at the beginning
+        default_rack = [x for x in response if x['rack_name'] == 'default_rack']
+        sorted_list = default_rack + non_default_sorted
+
+        return sorted_list
+
 
     except Exception:
-        traceback.print_exc()
-        return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
+            traceback.print_exc()
+            return JSONResponse(content="Error Occurred While Fetching Rack", status_code=500)
 
 # GetTotalRacksSchema
 @router.get("/get_total_racks",responses={

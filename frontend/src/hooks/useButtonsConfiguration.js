@@ -234,6 +234,13 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
+    default_ok: {
+      name: "Ok",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
   };
 
   const dropdownButtonOptionsConstants = Object.keys(buttonDetails).reduce(

@@ -14,6 +14,7 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
+
     // form apis
     addSite: builder.mutation({
       query: (data) => ({
@@ -22,6 +23,7 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
+
     updateSite: builder.mutation({
       query: (data) => ({
         url: "/api/v1/uam/site/edit_site",

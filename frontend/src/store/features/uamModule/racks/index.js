@@ -1,5 +1,6 @@
 import { extendedApi } from "./apis";
-import { createSlice, isAnyOf } from "@reduxjs/toolkit";
+import { createSlice } from "@reduxjs/toolkit";
+import { TABLE_DATA_UNIQUE_ID } from "../../../../containers/uamModule/racks/constants";
 
 const initialState = {
   all_data: [],
@@ -24,7 +25,7 @@ const rackSlice = createSlice({
           if (deletedIds.length > 0) {
             state.all_data = state.all_data.filter((item) => {
               const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item.rack_id;
+                return deletedId === item[TABLE_DATA_UNIQUE_ID];
               });
               return !shouldKeepItem;
             });
@@ -34,7 +35,7 @@ const rackSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.addRack.matchFulfilled,
         (state, action) => {
-          state.all_data.push(action.payload.data);
+          state.all_data = [action.payload.data, ...state.all_data];
         }
       )
       .addMatcher(
@@ -42,7 +43,10 @@ const rackSlice = createSlice({
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {
-            if (item.rack_id === objectToReplace.rack_id) {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
               return { ...item, ...objectToReplace };
             } else {
               return item;
@@ -53,5 +57,4 @@ const rackSlice = createSlice({
   },
 });
 
-// export const { setNextPage, initiateItem } = passwordGroupSlice.actions;
 export default rackSlice.reducer;

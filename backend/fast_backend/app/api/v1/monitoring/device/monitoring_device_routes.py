@@ -1,3 +1,5 @@
+import sys
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 
@@ -14,7 +16,11 @@ router = APIRouter(
 @router.get("/get_all_monitoring_vendors", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
-})
+},
+summary="Use this API in the Monitoring device page to list down the vendors which are associated in monitoring table",
+description="Use this API in the Monitoring device page to list down the vendors which are associated in monitoring table"
+
+)
 async def get_all_monitoring_vendors():
     try:
         query_string = (f"SELECT vendor,COUNT(*) FROM monitoring_devices_table "
@@ -40,7 +46,10 @@ async def get_all_monitoring_vendors():
 @router.get("/get_all_monitoring_functions", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
-})
+},
+summary="Use this API in Monitoring device page to display the name of device function and its value which are stored in monitoring device table ",
+description= "Use this API in Monitoring device page to display the name of device function and its value which are stored in monitoring device table "
+            )
 async def get_all_monitoring_functions():
     try:
         query_string = (f"SELECT `function`,count(*) FROM monitoring_devices_table INNER "
@@ -63,12 +72,17 @@ async def get_all_monitoring_functions():
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
-})
-def add_monitoring_device(monitoring_obj):
+},
+summary= "Use this API in motioring device table to edit the device based on the monitoring_device_id",
+description="Use this API in motioring device table to edit the device based on the monitoring_device_id"
+             )
+def add_monitoring_device(monitoring_obj:UpdateMonitoringDeviceSchema):
     try:
 
-        msg, status = AddMonitoringDevice(monitoring_obj, 0, False)
-        return JSONResponse(content=msg, status_code=status)
+        msg = UpdateMonitoringDevice(monitoring_obj, 0, False)
+        print("mesag is::::::::::::::::::::::::::::::",msg,file=sys.stderr)
+        # print("status is:::::::::::::::::::::::::::::::::::::::::::::::::",status,file=sys.stderr)
+        return JSONResponse(content=msg, status_code=200)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
@@ -110,7 +124,10 @@ def add_monitoring_devices(monitoring_objs):
 @router.get("/get_all_monitoring_devices", responses={
     200: {"model": list[MonitoringDeviceSchema]},
     500: {"model": str}
-})
+},
+summary= "Use this API in device page to list down all the device in Monitoring devices page table",
+description= "Use this API in device page to list down all the device in Monitoring devices page table",
+            )
 async def get_all_monitoring_devices():
     try:
         monitoring_obj_list = []
@@ -158,14 +175,17 @@ async def get_all_monitoring_devices():
 @router.get("/get_atom_in_monitoring", responses={
     200: {"model": list[AtomInMonitoringSchema]},
     500: {"model": str}
-})
+},
+summary = "Use this API in device page while adding device to list down all the device which are in atom in Monitoring module",
+description = "Use this API in device page while adding device to list down all the device which are in atom in Monitoring module",
+)
 async def get_atom_in_monitoring():
     try:
         monitoring_obj_list = []
-        atoms = AtomTable.query.all()
+        atoms = configs.db.query(AtomTable).all()
 
         for atom in atoms:
-            monitoringDevice = Monitoring_Devices_Table.query.filter_by(
+            monitoringDevice = configs.db.query(Monitoring_Devices_Table).filter_by(
                 atom_id=atom.atom_id
             ).first()
 
@@ -175,6 +195,7 @@ async def get_atom_in_monitoring():
                         "ip_address": atom.ip_address,
                         "device_name": atom.device_name,
                         "device_type": atom.device_type,
+                        "vendor":atom.vendor
                     }
                 )
 
@@ -188,22 +209,28 @@ async def get_atom_in_monitoring():
 @router.post("/add_atom_in_monitoring", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
-})
+},
+summary="Use this API in monitoring module in device page to add device from atom",
+description="Use this API in monitoring module in device page to add device from atom"
+)
 async def add_atom_in_monitoring(ip_list: list[str]):
     try:
+        data = []
         success_list = []
         error_list = []
         for ip in ip_list:
-            atom = AtomTable.query.filter_by(ip_address=ip).first()
-
+            atom = configs.db.query(AtomTable).filter_by(ip_address=ip).first()
+            print("atom is::::::::::::::::::::::::::::::::::::;",atom,file=sys.stderr)
+            atom = configs.db.query(AtomTable).filter_by(ip_address=ip).first()
+            print("atom is:::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
             if atom is None:
                 error_list.append(f"{ip} : Device Not Found In Atom")
                 continue
 
-            monitoringDevice = Monitoring_Devices_Table.query.filter_by(
+            monitoringDevice = configs.db.query(Monitoring_Devices_Table).filter_by(
                 atom_id=atom.atom_id
             ).first()
-
+            print("monitoring device is:::::::::::::::::::::::::::",file=sys.stderr)
             if monitoringDevice is None:
                 monitoringDevice = Monitoring_Devices_Table()
                 monitoringDevice.atom_id = atom.atom_id
@@ -212,7 +239,18 @@ async def add_atom_in_monitoring(ip_list: list[str]):
                 monitoringDevice.active = "Inactive"
 
                 if InsertDBData(monitoringDevice) == 200:
+                    monitoring_device_dict = {
+                        "monitoring_device_id":monitoringDevice.monitoring_device_id,
+                        "source":monitoringDevice.source,
+                        "active":monitoringDevice.active,
+                        "ping_status":monitoringDevice.ping_status,
+                        "active_id":monitoringDevice.active_id,
+                        "device_heatmap":monitoringDevice.device_heatmap,
+                        "monitoring_credentials_id":monitoringDevice.monitoring_credentials_id
+                    }
+                    data.append(monitoring_device_dict)
                     success_list.append(f"{ip} : Device Added Successfully")
+                    print("devices added from atom:::::::::::::::::::::::::::::",file=sys.stderr)
                 else:
                     error_list.append(f"{ip} : Error While Inserting Device")
 
@@ -220,6 +258,7 @@ async def add_atom_in_monitoring(ip_list: list[str]):
                 error_list.append(f"{ip} : Device Already Exist In Monitoring")
 
         response_dict = {
+            "data":data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
@@ -239,7 +278,7 @@ async def add_atom_in_monitoring(ip_list: list[str]):
 # @token_required
 # def deleteAtomInMonitoring(user_data):
 #     if True:
-#         try:
+#         try::
 #             from app import client
 #
 #             org = "monetx"
@@ -304,6 +343,7 @@ async def get_interface_filter_date(data_list: list[GetFunctionDataSchema]):
     try:
         final_list = []
         for data in data_list:
+            print("data in get interface filtered date is:::::::::::::::::::::",data,file=sys.stderr)
             final_list.append(get_interface_monitoring_data(data))
 
         return JSONResponse(content=final_list, status_code=200)

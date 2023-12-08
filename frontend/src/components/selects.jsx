@@ -12,7 +12,7 @@ export default function DefaultSelect({ field, sx, children, ...rest }) {
         backgroundColor: theme?.palette?.default_option?.background,
         border: `2px solid ${theme?.palette?.default_option?.border}`,
         borderRadius: "5px",
-        padding: "5px 10px",
+        padding: "7px 10px",
         width: "100%",
         ...sx,
       }}
@@ -34,6 +34,7 @@ export function AddableSelect({ field, sx, onAddClick, children, ...rest }) {
     width: "30px",
     textAlign: "center",
     cursor: "pointer",
+    paddingTop: "2px",
     "&:hover": {
       color: `${theme?.palette?.horizontal_menu?.secondary_text} !important`,
       borderBottom: `3px solid ${theme?.palette?.horizontal_menu?.secondary_text} !important`,
@@ -51,7 +52,7 @@ export function AddableSelect({ field, sx, onAddClick, children, ...rest }) {
           border: `2px solid ${theme?.palette?.default_option?.border}`,
           borderRadius: "5px 0px 0px 5px",
           borderRight: "none",
-          padding: "5px 10px",
+          padding: "7px 10px",
           width: "100%",
           ...sx,
         }}

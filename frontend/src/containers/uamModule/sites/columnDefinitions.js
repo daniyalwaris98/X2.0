@@ -3,7 +3,7 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { DEFAULT_SITE, indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
+export function useIndexTableColumnDefinitions({ handleEdit = null }) {
   const theme = useTheme();
 
   const columnDefinitions = [
@@ -40,6 +40,15 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     },
   ];
 
+  const plainColumnDefinitions = [
+    indexColumnNameConstants.SITE_NAME,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.REGION_NAME,
+    indexColumnNameConstants.LATITUDE,
+    indexColumnNameConstants.LONGITUDE,
+    indexColumnNameConstants.CITY,
+  ];
+
   const dataKeys = columnDefinitions
     .map((item) => {
       if (typeof item === "object") {
@@ -51,6 +60,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     .filter((item) => item !== indexColumnNameConstants.ACTIONS);
 
   return {
+    plainColumnDefinitions,
     columnDefinitions,
     dataKeys,
   };

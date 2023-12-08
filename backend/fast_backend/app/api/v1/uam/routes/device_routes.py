@@ -96,6 +96,7 @@ async def total_devices_in_device_dashboard():
         return JSONResponse(content=response, status_code=200)
 
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occurred Fetching Data", status_code=500)
 
@@ -172,25 +173,36 @@ async def edit_uam_device(device_obj: EditUamDeviceRequestSchema):
         data = []
         success_list = []
         error_list = []
-        response = edit_uam_device_util(device_obj, device_obj['uam_id'])
-        print("repons is::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
-        if isinstance(response,dict):
-            for key,value in response:
-                if key == "data":
+
+        # Getting the response from the edit_uam_device_util function
+        response, status_code = edit_uam_device_util(device_obj, device_obj['uam_id'])
+        print("response is::::::::::::::::::::::::::::::::::::::::", response, file=sys.stderr)
+        print("status_code is::::::::::::::::::::::::::::::::::::::::", status_code, file=sys.stderr)
+
+        # Checking the status code to determine success or error
+        if status_code == 200:
+            # If status code is 200, the operation was successful
+            for key, value in response.items():
+                if key == "attributes_dict":  # Assuming this is where your data is stored
                     data.append(value)
                 if key == "message":
                     success_list.append(value)
         else:
+            # If status code is different than 200, it indicates an error
             error_list.append(response)
 
+        # Creating the response to be sent back
         respons = {
-            "data":data,
+            "data": data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
             "success_list": success_list,
         }
+
+        # Returning the response as a JSONResponse
         return JSONResponse(content=respons)
+
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred Updating Uam Device", status_code=500)
@@ -403,25 +415,33 @@ summary = "Use this API on the UAM device page to dismantel the Device bansed on
 )
 async def dismantle_onboard_device(device_ips: list[str]):
     try:
-
+        data = []
         error_list = []
         success_list = []
 
         for ip in device_ips:
             try:
                 response, status = update_uam_status_utils(ip, "Dismantled")
+                print("repsonse for the dismanteled onboard device is :::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
                 print(response, status, file=sys.stderr)
 
                 if status == 500:
                     error_list.append(response)
                 else:
-                    success_list.append(response)
+                    for key,value in response.items():
+                        print("key in dismantel onboard devices is::::::::::::::::::::::::::",key,file=sys.stderr)
+                        print("value is::::::::::::::::::::::::::::::::::",value,file=sys.stderr)
+                        if key == "data":
+                            data.append(value)
+                        elif key == "message":
+                            success_list.append(value)
 
             except Exception:
                 traceback.print_exc()
                 error_list.append(f"{ip} : Error Occurred While Dismantling")
 
         response_dict = {
+            "data":data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,

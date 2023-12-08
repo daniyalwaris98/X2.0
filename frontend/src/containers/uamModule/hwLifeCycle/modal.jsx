@@ -1,58 +1,63 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
+import DefaultFormUnit, { DateFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
-import {
-  useUpdateRecordMutation,
-  useAddRecordMutation,
-} from "../../../store/features/uamModule/racks/apis";
-import { useFetchSiteNamesQuery } from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
+import { useUpdateRecordMutation } from "../../../store/features/uamModule/hwLifeCycle/apis";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
+import { formSetter, transformDateTimeToDate } from "../../../utils/helpers";
+import {
+  PAGE_NAME,
+  indexColumnNameConstants,
+  TABLE_DATA_UNIQUE_ID,
+} from "./constants";
+import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 
 const schema = yup.object().shape({
-  rack_name: yup.string().required("Rack name is required"),
-  site_name: yup.string().required("Site name is required"),
+  [indexColumnNameConstants.PN_CODE]: yup
+    .string()
+    .required("PN Code is required"),
+  [indexColumnNameConstants.HW_EOS_DATE]: yup
+    .string()
+    .transform(transformDateTimeToDate),
+  [indexColumnNameConstants.HW_EOL_DATE]: yup
+    .string()
+    .transform(transformDateTimeToDate),
+  [indexColumnNameConstants.SW_EOS_DATE]: yup
+    .string()
+    .transform(transformDateTimeToDate),
+  [indexColumnNameConstants.SW_EOL_DATE]: yup
+    .string()
+    .transform(transformDateTimeToDate),
+  [indexColumnNameConstants.MANUFACTURE_DATE]: yup
+    .string()
+    .transform(transformDateTimeToDate),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
-  // states
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
   // effects
   useEffect(() => {
-    formSetter(recordToEdit, setValue);
+    formSetter(recordToEdit, setValue, {
+      dates: [
+        indexColumnNameConstants.HW_EOS_DATE,
+        indexColumnNameConstants.HW_EOL_DATE,
+        indexColumnNameConstants.SW_EOS_DATE,
+        indexColumnNameConstants.SW_EOL_DATE,
+        indexColumnNameConstants.MANUFACTURE_DATE,
+      ],
+    });
   }, []);
-
-  // fetching dropdowns data from backend using apis
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
-
-  // post api for the form
-  const [
-    addRecord,
-    {
-      data: addRecordData,
-      isSuccess: isAddRecordSuccess,
-      isLoading: isAddRecordLoading,
-      isError: isAddRecordError,
-      error: addRecordError,
-    },
-  ] = useAddRecordMutation();
 
   const [
     updateRecord,
@@ -65,73 +70,59 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
-  // error handling custom hooks
-  useErrorHandling({
-    data: addRecordData,
-    isSuccess: isAddRecordSuccess,
-    isError: isAddRecordError,
-    error: addRecordError,
-    type: "single",
-  });
-
   useErrorHandling({
     data: updateRecordData,
     isSuccess: isUpdateRecordSuccess,
     isError: isUpdateRecordError,
     error: updateRecordError,
-    type: "single",
+    type: TYPE_SINGLE,
   });
-
-  // ///getting dropdowns data from the store
-  const siteNames = useSelector(selectSiteNames);
 
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.rack_id = recordToEdit.rack_id;
+      data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
-    } else {
-      addRecord(data);
     }
   };
 
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} Rack`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={3}>
-          <Grid item xs={12} sm={4}>
+          <Grid item xs={12} sm={6}>
             <DefaultFormUnit
               control={control}
-              dataKey="rack_name"
-              disabled={recordToEdit !== null}
+              dataKey={indexColumnNameConstants.PN_CODE}
+              disabled={true}
               required
             />
-
-            <SelectFormUnit
+            <DateFormUnit
               control={control}
-              dataKey="site_name"
-              options={siteNames}
-              required
+              dataKey={indexColumnNameConstants.HW_EOS_DATE}
             />
-            <DefaultFormUnit control={control} dataKey="serial_number" />
-            <DefaultFormUnit control={control} dataKey="manufacture_date" />
-            <DefaultFormUnit control={control} dataKey="pn_code" />
+            <DateFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.HW_EOL_DATE}
+            />
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="unit_position" />
-            <DefaultFormUnit control={control} dataKey="status" required />
-            <DefaultFormUnit control={control} dataKey="ru" />
-            <DefaultFormUnit control={control} dataKey="height" />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit control={control} dataKey="rfs_date" />
-            <DefaultFormUnit control={control} dataKey="rack_model" />
-            <DefaultFormUnit control={control} dataKey="brand" />
-            <DefaultFormUnit control={control} dataKey="width" />
+          <Grid item xs={12} sm={6}>
+            <DateFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.SW_EOS_DATE}
+            />
+            <DateFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.SW_EOL_DATE}
+            />
+            <DateFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.MANUFACTURE_DATE}
+            />
           </Grid>
 
           <Grid item xs={12}>
