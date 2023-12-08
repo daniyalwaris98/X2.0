@@ -227,7 +227,7 @@ const Index = () => {
 
   function onBoardData(allowed) {
     if (allowed) {
-      const onBoardData = selectedRowKeys.map((rowKey) => {
+      const ipAddressesToOnBoard = selectedRowKeys.map((rowKey) => {
         const dataObject = dataSource.find(
           (row) => row.atom_table_id === rowKey
         );
@@ -239,12 +239,12 @@ const Index = () => {
         return null;
       });
 
-      const filteredOnBoardDataData = onBoardData.filter(
+      ipAddressesToOnBoard = ipAddressesToOnBoard.filter(
         (data) => data !== null
       );
 
-      if (filteredOnBoardDataData.length > 0) {
-        onBoardRecords(filteredOnBoardDataData);
+      if (ipAddressesToOnBoard.length > 0) {
+        onBoardRecords(ipAddressesToOnBoard);
       }
     } else {
       setSelectedRowKeys([]);
