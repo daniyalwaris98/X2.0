@@ -10,7 +10,6 @@ import {
 } from "../../../store/features/uamModule/hwLifeCycle/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/uamModule/hwLifeCycle/selectors";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
   jsonToExcel,
   convertToJson,
@@ -41,7 +40,6 @@ const Index = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { height, width } = useWindowDimensions();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
@@ -72,6 +70,13 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
+  // const dataSource = [
+  //   {
+  //     pn_code: "10.20.23.71",
+  //     hw_eos_date: "2023-09-07",
+  //     hw_eol_date: "2023-09-07",
+  //   },
+  // ];
   const dataSource = useSelector(selectTableData);
 
   // apis
@@ -132,13 +137,13 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
-  // useErrorHandling({
-  //   data: addRecordsData,
-  //   isSuccess: isAddRecordsSuccess,
-  //   isError: isAddRecordsError,
-  //   error: addRecordsError,
-  //   type: TYPE_BULK,
-  // });
+  useErrorHandling({
+    data: addRecordsData,
+    isSuccess: isAddRecordsSuccess,
+    isError: isAddRecordsError,
+    error: addRecordsError,
+    type: TYPE_BULK,
+  });
 
   useErrorHandling({
     data: deleteRecordsData,

@@ -1,5 +1,6 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
+import { TABLE_DATA_UNIQUE_ID } from "../../../../containers/uamModule/devices/constants";
 
 const initialState = {
   all_data: [],
@@ -28,8 +29,10 @@ const deviceSlice = createSlice({
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
             const indexToUpdate = state.all_data.findIndex((tableItem) => {
-              let uamId = responseItem.uam_id;
-              return tableItem.uam_id === uamId;
+              return (
+                tableItem[TABLE_DATA_UNIQUE_ID] ===
+                responseItem[TABLE_DATA_UNIQUE_ID]
+              );
             });
 
             if (indexToUpdate !== -1) {

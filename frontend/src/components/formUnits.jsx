@@ -8,6 +8,7 @@ import DefaultOption from "./options";
 import { Controller } from "react-hook-form";
 import { getTitle } from "../utils/helpers";
 import { useTheme } from "@mui/material/styles";
+import DefaultDate from "./dates";
 
 export default function DefaultFormUnit({
   control,
@@ -161,6 +162,48 @@ export function AddableSelectFormUnit({
                   <DefaultOption value={value}>{value}</DefaultOption>
                 ))}
               </AddableSelect>
+            </InputWrapper>
+            <div
+              style={{
+                color: theme?.palette?.form_unit?.error_text,
+                fontSize: "12px",
+              }}
+            >
+              {fieldState.error && fieldState.error.message}
+            </div>
+          </DefaultWrapper>
+        );
+      }}
+    />
+  );
+}
+
+export function DateFormUnit({
+  control,
+  dataKey,
+  options,
+  required = false,
+  ...rest
+}) {
+  const theme = useTheme();
+  const title = getTitle(dataKey);
+  return (
+    <Controller
+      name={dataKey}
+      control={control}
+      render={({ field, fieldState }) => {
+        return (
+          <DefaultWrapper sx={{ marginBottom: "10px" }}>
+            <DefaultLabel htmlFor={dataKey} required={required}>
+              {title}:
+            </DefaultLabel>
+            <InputWrapper>
+              <DefaultDate
+                field={field}
+                sx={{ outline: "none" }}
+                id={dataKey}
+                {...rest}
+              />
             </InputWrapper>
             <div
               style={{

@@ -1,4 +1,5 @@
 import * as XLSX from "xlsx";
+import dayjs from "dayjs";
 
 export function getPathLastSegment() {
   const path = window.location.pathname;
@@ -58,6 +59,7 @@ export function handleFileChange(event, convertToJson, handlePostSeed) {
     );
     handlePostSeed(data);
   };
+  event.target.value = null;
 }
 
 export function columnGenerator(dataKeys, getColumnSearchProps, getTitle) {
@@ -79,10 +81,14 @@ export function jsonToExcel(jsonData, fileName) {
   XLSX.writeFile(wb, `${fileName}.xlsx`);
 }
 
-export function formSetter(data, setValue) {
+export function formSetter(data, setValue, keyTypes = { dates: [] }) {
   if (data) {
     Object.keys(data).forEach((key) => {
-      setValue(key, data[key]);
+      if (keyTypes.dates.includes(key)) {
+        setValue(key, dayjs(data[key], "YYYY-MM-DD"));
+      } else {
+        setValue(key, data[key]);
+      }
     });
   }
 }
@@ -103,6 +109,14 @@ export function convertToAsterisks(inputString) {
   return "*".repeat(inputString?.length);
 }
 
+export function transformDateTimeToDate(originalValue, originalObject) {
+  const date = new Date(originalValue);
+  return date instanceof Date && !isNaN(date)
+    ? new Date(date.getTime() - date.getTimezoneOffset() * 60000)
+        .toISOString()
+        .split("T")[0]
+    : originalValue;
+}
 // const menuItems = [
 //   { id: "Atom", name: "Atom", path: "/" },
 //   {

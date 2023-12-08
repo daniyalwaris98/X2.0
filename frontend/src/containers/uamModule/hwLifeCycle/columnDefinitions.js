@@ -7,12 +7,12 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
+    indexColumnNameConstants.PN_CODE,
     indexColumnNameConstants.HW_EOL_DATE,
     indexColumnNameConstants.HW_EOS_DATE,
-    indexColumnNameConstants.MANUFACTURE_DATE,
-    indexColumnNameConstants.PN_CODE,
     indexColumnNameConstants.SW_EOL_DATE,
     indexColumnNameConstants.SW_EOS_DATE,
+    indexColumnNameConstants.MANUFACTURE_DATE,
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,

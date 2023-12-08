@@ -1,5 +1,6 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
+import { TABLE_DATA_UNIQUE_ID } from "../../../../containers/uamModule/hwLifeCycle/constants";
 
 const initialState = {
   all_data: [],
@@ -20,52 +21,55 @@ const hwLifeCycleSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.addHwLifeCycles.matchFulfilled,
         (state, action) => {
-          console.log(state, "addHwLifeCycles state");
-          console.log(action, "addHwLifeCycles action");
-          // action?.payload?.data?.forEach((responseItem) => {
-          //   const indexToUpdate = state.all_data.findIndex((tableItem) => {
-          //     return tableItem.sntc_id === responseItem.sntc_id;
-          //   });
-          //   if (indexToUpdate !== -1) {
-          //     state.all_data[indexToUpdate] = responseItem;
-          //   } else {
-          //     state.all_data.push(responseItem);
-          //   }
-          // });
+          let temp = action?.payload?.data?.forEach((responseItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
+              return (
+                tableItem[TABLE_DATA_UNIQUE_ID] ===
+                responseItem[TABLE_DATA_UNIQUE_ID]
+              );
+            });
+            if (indexToUpdate !== -1) {
+              state.all_data[indexToUpdate] = responseItem;
+            } else {
+              state.all_data = [responseItem, ...state.all_data];
+            }
+          });
         }
       )
       .addMatcher(
         extendedApi.endpoints.syncFromInventory.matchFulfilled,
         (state, action) => {
-          console.log(state, "syncFromInventory state");
-          console.log(action, "syncFromInventory action");
-          // action.payload.data?.forEach((responseItem) => {
-          //   const indexToUpdate = state.all_data.findIndex((tableItem) => {
-          //     return tableItem.sntc_id === responseItem.sntc_id;
-          //   });
-          //   if (indexToUpdate !== -1) {
-          //     state.all_data[indexToUpdate] = responseItem;
-          //   } else {
-          //     state.all_data.push(responseItem);
-          //   }
-          // });
+          let temp = action?.payload?.data?.forEach((responseItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
+              return (
+                tableItem[TABLE_DATA_UNIQUE_ID] ===
+                responseItem[TABLE_DATA_UNIQUE_ID]
+              );
+            });
+            if (indexToUpdate !== -1) {
+              state.all_data[indexToUpdate] = responseItem;
+            } else {
+              state.all_data = [responseItem, ...state.all_data];
+            }
+          });
         }
       )
       .addMatcher(
         extendedApi.endpoints.syncToInventory.matchFulfilled,
         (state, action) => {
-          console.log(state, "syncToInventory state");
-          console.log(action, "syncToInventory action");
-          // action.payload.data?.forEach((responseItem) => {
-          //   const indexToUpdate = state.all_data.findIndex((tableItem) => {
-          //     return tableItem.sntc_id === responseItem.sntc_id;
-          //   });
-          //   if (indexToUpdate !== -1) {
-          //     state.all_data[indexToUpdate] = responseItem;
-          //   } else {
-          //     state.all_data.push(responseItem);
-          //   }
-          // });
+          let temp = action.payload.data?.forEach((responseItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
+              return (
+                tableItem[TABLE_DATA_UNIQUE_ID] ===
+                responseItem[TABLE_DATA_UNIQUE_ID]
+              );
+            });
+            if (indexToUpdate !== -1) {
+              state.all_data[indexToUpdate] = responseItem;
+            } else {
+              state.all_data = [responseItem, ...state.all_data];
+            }
+          });
         }
       )
       .addMatcher(
@@ -75,7 +79,7 @@ const hwLifeCycleSlice = createSlice({
           if (deletedIds.length > 0) {
             state.all_data = state.all_data.filter((item) => {
               const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item.sntc_id;
+                return deletedId === item[TABLE_DATA_UNIQUE_ID];
               });
               return !shouldKeepItem;
             });
@@ -87,7 +91,10 @@ const hwLifeCycleSlice = createSlice({
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {
-            if (item.sntc_id === objectToReplace.sntc_id) {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
               return { ...item, ...objectToReplace };
             } else {
               return item;
