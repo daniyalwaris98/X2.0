@@ -47,6 +47,10 @@ export const {
   useAddHwLifeCyclesMutation: useAddRecordsMutation,
   useDeleteHwLifeCycleMutation: useDeleteRecordsMutation,
   useUpdateHwLifeCycleMutation: useUpdateRecordMutation,
-  useSyncFromInventoryQuery,
-  useSyncToInventoryQuery,
 } = extendedApi;
+
+export const useSyncFromInventoryLazyQuery =
+  extendedApi.endpoints.syncFromInventory.useLazyQuery;
+
+export const useSyncToInventoryLazyQuery =
+  extendedApi.endpoints.syncToInventory.useLazyQuery;
