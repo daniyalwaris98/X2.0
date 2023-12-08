@@ -1,6 +1,6 @@
 from app.api.v1.atom.utils.atom_import import *
 import ipaddress
-
+from sqlalchemy import and_
 
 def validate_site(device):
     # Site Check
@@ -73,7 +73,13 @@ def validate_password_group(device):
     ).first()
 
     return password, 200
-
+def check_device_name_uniqueness(device_ip, device_name):
+    existing_device = (
+        configs.db.query(AtomTable)
+        .filter(and_(AtomTable.ip_address != device_ip, AtomTable.device_name == device_name))
+        .first()
+    )
+    return existing_device is None
 
 def validate_atom(device, update):
     try:
@@ -113,10 +119,21 @@ def validate_atom(device, update):
         print("atom is::::::::::::::::::::::::::::::",atom,file=sys.stderr)
         if atom is not None:
             atom_device_name = atom.device_name
-            print("atom_device_name is::::::::::",atom_device_name,file=sys.stderr)
+            print("atom_device_name is::::::::::", atom_device_name, file=sys.stderr)
             if atom_device_name:
-            # if atom.ip_address != device["ip_address"].strip():
-                return f"Device Name Already Assigned To An Other Device", 400 #{device['ip_address']} : 
+                if atom_device_name != device['device_name']:
+                    print(f"{device['ip_address']}: already assigned with the {device['device_name']}", file=sys.stderr)
+                    return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
+                else:
+                    # For update, check if the device name is unique among other devices
+                    is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
+                    if not is_unique_name:
+                        return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
+        else:
+            # For new device addition, check if the device name is unique among other devices
+            is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
+            if not is_unique_name:
+                return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
 
         if device["function"] is None or device['function'] == 'string':
             return f"Function Can Not be Empty", 400 #{device['ip_address']} : 
@@ -475,11 +492,11 @@ def fill_transition_data(device, trans_obj):
 
 def edit_atom_util(device):
     try:
-
+        print("atom utils is:::::::::::::::::::::::::::::",device,file=sys.stderr)
         atom = None
         trans_atom = None
-        transition_data = {}
-
+        data = {}
+        attributes_dict = {}
         if "atom_id" not in device and "atom_transition_id" not in device:
             return "Atom ID Or Atom Transition ID is Missing", 400
 
@@ -520,7 +537,7 @@ def edit_atom_util(device):
 
             trans_atom.ip_address = device['ip_address']
             trans_atom = fill_transition_data(device, trans_atom)
-            attributes_dict = {}
+
             status = UpdateDBData(trans_atom)
             try:
                 # attributes_dict = {}
@@ -537,6 +554,18 @@ def edit_atom_util(device):
                             value = getattr(trans_atom, column_name, None)
                             attributes_dict[column_name] = value
                     print("attribute dict is:::::::::::::::::::::::::::::111111111111",attributes_dict,file=sys.stderr)
+
+                elif atom:
+                    print("atom exsist is::::::::::::::::::::::",atom,file=sys.stderr)
+                    inspector = inspect(atom.__class__)
+                    columns = inspector.columns
+                    print("inspector is:::::::::::::::::::::::::::::;",inspector,file=sys.stderr)
+                    print("columns is:::::::::::::::::::::::;",columns,file = sys.stderr)
+                    for column in columns:
+                        column_name = column.key
+                        if column_name not in ['creation_date', 'modification_date']:
+                            value = getattr(trans_atom, column_name, None)
+                            attributes_dict[column_name] = value
             except Exception as e:
                             traceback.print_exc()
                             print("error occured while getting the attribute of trans atom::::::::::::",file=sys.stderr)
@@ -545,20 +574,28 @@ def edit_atom_util(device):
             return "Device Not Found", 400
 
         if status == 200:
-            msg = f"{device['ip_address']} : Atom Updated Successfully"
-            devices_data =dict(device)
-            devices_data['atom_transition_id'] = trans_atom.atom_transition_id
 
-            print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
-            data = {"transition id":trans_atom.atom_transition_id}
-            transition_data = {
-                    "data":attributes_dict,
-                    "message":msg
-            }
+            devices_data =dict(device)
+
+            if trans_atom:
+                print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
+                data = {"transition id":trans_atom.atom_transition_id}
+                devices_data['atom_transition_id'] = trans_atom.atom_transition_id
+                msg = f"{device['ip_address']} : Transition Atom Updated Successfully"
+                data = {
+                        "data":attributes_dict,
+                        "message":msg
+                }
+            elif atom:
+                msg = f"{device['ip_address']} : Atom Updated Successfully"
+                data = {
+                    "data": attributes_dict,
+                    "message": msg
+                }
         else:
             msg = f"{device['ip_address']} : Error While Updating Atom"
 
-        return transition_data, status
+        return data, status
 
     except Exception:
         error = f"Error : Exception Occurred"

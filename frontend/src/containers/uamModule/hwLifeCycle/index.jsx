@@ -1,12 +1,12 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
-  useSyncFromInventoryQuery,
-  useSyncToInventoryQuery,
+  useSyncFromInventoryLazyQuery,
+  useSyncToInventoryLazyQuery,
 } from "../../../store/features/uamModule/hwLifeCycle/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/uamModule/hwLifeCycle/selectors";
@@ -68,6 +68,16 @@ const Index = () => {
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
+  const [initialRender, setInitialRender] = useState(true);
+
+  // effects
+  // useEffect(() => {
+  //   // skip the first render
+  //   if (initialRender) {
+  //     setInitialRender(false);
+  //     return;
+  //   }
+  // }, []);
 
   // selectors
   // const dataSource = [
@@ -99,23 +109,27 @@ const Index = () => {
     },
   ] = useAddRecordsMutation();
 
-  const {
-    data: syncFromInventoryData,
-    isSuccess: isSyncFromInventorySuccess,
-    isLoading: isSyncFromInventoryLoading,
-    isError: isSyncFromInventoryError,
-    error: syncFromInventoryError,
-    refetch: syncFromInventory,
-  } = useSyncFromInventoryQuery();
+  const [
+    syncFromInventory,
+    {
+      data: syncFromInventoryData,
+      isSuccess: isSyncFromInventorySuccess,
+      isLoading: isSyncFromInventoryLoading,
+      isError: isSyncFromInventoryError,
+      error: syncFromInventoryError,
+    },
+  ] = useSyncFromInventoryLazyQuery();
 
-  const {
-    data: syncToInventoryData,
-    isSuccess: isSyncToInventorySuccess,
-    isLoading: isSyncToInventoryLoading,
-    isError: isSyncToInventoryError,
-    error: syncToInventoryError,
-    refetch: syncToInventory,
-  } = useSyncToInventoryQuery();
+  const [
+    syncToInventory,
+    {
+      data: syncToInventoryData,
+      isSuccess: isSyncToInventorySuccess,
+      isLoading: isSyncToInventoryLoading,
+      isError: isSyncToInventoryError,
+      error: syncToInventoryError,
+    },
+  ] = useSyncToInventoryLazyQuery();
 
   const [
     deleteRecords,
@@ -241,7 +255,7 @@ const Index = () => {
         isFetchRecordsLoading ||
         isAddRecordsLoading ||
         isDeleteRecordsLoading ||
-        isSyncFromInventoryLoading ||
+        // isSyncFromInventoryLoading ||
         isSyncToInventoryLoading
       }
     >

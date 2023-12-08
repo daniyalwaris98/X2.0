@@ -15,7 +15,12 @@ router = APIRouter(
 @router.post("/get_monitoring_devices_cards", responses={
     200: {"model": GetMonitoringDevicesCardsResponseSchema},
     500: {"model": str}
-})
+},
+summary= "Integrate the specified API into the monitoring device page to fetch and showcase data in card formats upon clicking the IP address ",
+description = "Integrate the specified API into the monitoring device page to fetch and showcase data in card formats upon clicking the IP address"
+
+
+)
 def get_monitoring_devices_cards(ip: str = Query(..., description="IP address of the device")):
     try:
 
@@ -32,7 +37,7 @@ def get_monitoring_devices_cards(ip: str = Query(..., description="IP address of
             |> highestMax(n:1,column: "_time")'
 
             global_dict["device"] = get_device_influx_data(query)
-
+            print('query is::::::::::::::::::::::::::::::::::::::::::',query,file=sys.stderr)
         except Exception:
             traceback.print_exc()
             return "Server Error While Getting Device Data", 500
@@ -73,9 +78,12 @@ def get_monitoring_devices_cards(ip: str = Query(..., description="IP address of
                     .filter(AtomTable.ip_address == ip)
                     .all()
                 )
-
+                print('results is::::::::::::::::::::::::::::',results,file=sys.stderr)
                 monitoring_alerts_list = []
                 for alert, monitoring, atom in results:
+                    print("alert in monitoring result is:::::::",alert,file=sys.stderr)
+                    print("monitriing in result is:::::::::::::::::::",monitoring,file=sys.stderr)
+                    print("atom in monitoring is:::::::::::::::::::",atom,file=sys.stderr)
                     monitoring_data_dict = {"alarm_id": alert.monitoring_alert_id,
                                             "ip_address": atom.ip_address,
                                             "description": alert.description,
@@ -119,8 +127,11 @@ def ip_alerts(ip: str = Query(..., description="IP address of the device")):
             .order_by(Monitoring_Alerts_Table.modification_date.desc())
             .all()
         )
-
+        print("ip alerts result is::::::::::::::::::::::::::::::::::::::::",ip_alerts,file=sys.stderr)
         for alert, monitoring, atom in results:
+            print("alert is::::::::::::::::::::::::::::::::::",alert,file=sys.stderr)
+            print("monitoring is:::::::::::::::::::::::::::::::",monitoring,file=sys.stderr)
+            print("atom is:::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
             monitoring_data_dict = {}
             monitoring_data_dict["alarm_id"] = alert.monitoring_alert_id
             monitoring_data_dict["ip_address"] = atom.ip_address
