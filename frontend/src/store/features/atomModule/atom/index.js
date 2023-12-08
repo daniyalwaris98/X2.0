@@ -74,21 +74,22 @@ const atomSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.onBoardAtoms.matchFulfilled,
         (state, action) => {
-          // const deletedIds = action.payload?.data || [];
-          // if (deletedIds.length > 0) {
-          //   state.all_data = state.all_data.filter((item) => {
-          //     const atomId = item.atom_id;
-          //     const transitionId = item.atom_transition_id;
-          //     const shouldKeepItem = deletedIds.some((id) => {
-          //       if (atomId) {
-          //         return id.atom_id === atomId;
-          //       } else {
-          //         return id.atom_transition_id === transitionId;
-          //       }
-          //     });
-          //     return !shouldKeepItem;
-          //   });
-          // }
+          action.payload.data.forEach((responseItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
+              let atomId = responseItem[ATOM_ID];
+
+              if (atomId) {
+                return tableItem[ATOM_ID] === atomId;
+              } else return false;
+            });
+
+            if (indexToUpdate !== -1) {
+              state.all_data[indexToUpdate] = {
+                ...state.all_data[indexToUpdate],
+                ...responseItem,
+              };
+            }
+          });
         }
       )
       .addMatcher(
