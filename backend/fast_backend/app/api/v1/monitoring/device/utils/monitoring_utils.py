@@ -1,23 +1,81 @@
+import sys
+
 from app.api.v1.monitoring.device.utils.common_puller import *
 
 
-def AddMonitoringDevice(MonitoringObj, row, update):
-    return "Currently Device Can Not Be Added Directly In Monitoring", 500
+def UpdateMonitoringDevice(MonitoringObj, row, update):
     try:
+        MonitoringObj = dict(MonitoringObj)
+        print("MOnitoring object is::::::::::::::::::::::::::;",MonitoringObj,file=sys.stderr)
+        monitoring_id_exsist = configs.db.query(Monitoring_Devices_Table).filter_by(monitoring_device_id = MonitoringObj['monitoring_id']).first()
+        if monitoring_id_exsist:
+            print("MOnitoring device id exsist:::::::::::::::::::")
+            print("procedding to next step")
+            atom_id_in_monitoring = monitoring_id_exsist.atom_id
+            atom_id_exsist = configs.db.query(AtomTable).filter_by(atom_id = atom_id_in_monitoring).first()
+            monitoring_credential_exsist = configs.db.query(Monitoring_Credentails_Table).filter_by(profile_name = MonitoringObj['credentials']).first()
+            if monitoring_credential_exsist:
+                monitoring_id_exsist.monitoring_credentials_id = monitoring_credential_exsist.monitoring_credentials_id
+            if atom_id_exsist:
+                atom_id = atom_id_exsist.atom_id
+                print("atom id is::::::::::::::::::::::::::",atom_id,file=sys.stderr)
+            else:
+                return f"No Atom ID Against the Monitoring ID {monitoring_id_exsist}", 400
+            status = ping(atom_id_exsist.ip_address)[0]
+            print("status is:::::::::::::::::::::::::::",file=sys.stderr)
+            monitoring_id_exsist.atom_id = atom_id
+            monitoring_id_exsist.active = MonitoringObj["active"]
+
+            # print("monitoring active is::::::::::::::::::::::::::::::::::;", Monitoringdb.active, file=sys.stderr)
+            monitoring_id_exsist.device_heatmap = MonitoringObj["active"]
+            if MonitoringObj["active"] == "Active":
+                    monitoring_id_exsist.status = status
+            else:
+                    monitoring_id_exsist.status = "NA"
+            UpdateDBData(monitoring_id_exsist)
+            monitoring_device_object = {
+                    "monitoring_device_if":monitoring_id_exsist.monitoring_device_id,
+                    "ip_address":atom_id_exsist.ip_address,
+                    "device_name":atom_id_exsist.device_name,
+                    "device_type":atom_id_exsist.device_type,
+                    "vendor":atom_id_exsist.vendor,
+                    "function":atom_id_exsist.function,
+                    "active":monitoring_id_exsist.active,
+                    "status":monitoring_id_exsist.status,
+                    "credentials":monitoring_credential_exsist.profile_name
+                }
+            data = {
+                "data":monitoring_device_object,
+                "message":f"{monitoring_id_exsist.monitoring_device_id} : Updated successfully"
+            }
+            print("data is:::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
+            return data
+        else:
+            return "No Monitoring Device ID found",400
+    except Exception as e:
+        traceback.print_exc()
+        print("Error Occured While Updating the Monitoring device")
+
+def AddMonitoringDevice(MonitoringObj, row, update):
+    # return "Currently Device Can Not Be Added Directly In Monitoring", 500
+    try:
+        print("monitoring device is:::::::::::::::::::::::::::::::::::::::::",MonitoringObj,file=sys.stderr)
+        MonitoringObj = dict(MonitoringObj)
+        print("Monitoring Obj in deict is:::::::",MonitoringObj,file=sys.stderr)
         if "ip_address" not in MonitoringObj.keys():
-            return f"Row {row} : Ip Address Is Missing", 500
+            return f"Row {row} : Ip Address Is Missing", 400
 
         if MonitoringObj["ip_address"] is None:
-            return f"Row {row} : Ip Address Can Not Be Empty", 500
+            return f"Row {row} : Ip Address Can Not Be Empty", 400
 
         MonitoringObj["ip_address"] = MonitoringObj["ip_address"].strip()
         if MonitoringObj["ip_address"] == "":
-            return f"Row {row} : Ip Address Can Not Be Empty", 500
+            return f"Row {row} : Ip Address Can Not Be Empty", 400
 
-        atom = Atom_Table.query.filter_by(
+        atom = configs.db.query(AtomTable).filter_by(
             ip_address=MonitoringObj["ip_address"]
         ).first()
-
+        atom_id = atom.atom_id
         if atom is None:
             return f"{MonitoringObj['ip_address']} : Ip Address Not Found In Atom", 500
 
@@ -44,23 +102,34 @@ def AddMonitoringDevice(MonitoringObj, row, update):
         MonitoringObj["device_name"] = "NA"
     else:
         Monitoringdb.device_name = MonitoringObj["device_name"]
-    Monitoringdb.source = "Static"
+    Monitoringdb.source = "Atom"
+    Monitoringdb.atom_id = atom_id
+    print("Monitoring is:::::::::::::::::::::::::::::::::",file=sys.stderr)
     Monitoringdb.vendor = MonitoringObj["vendor"]
+    print("Monitoring vendor is",Monitoringdb.vendor,file=sys.stderr)
     Monitoringdb.device_type = MonitoringObj["device_type"]
+    print("Monitoring device type is:::::::::::::::::::",Monitoringdb.device_type,file=sys.stderr)
     Monitoringdb.function = MonitoringObj["function"]
+    print("Monitoring device function is:::::::::",Monitoringdb.function,file=sys.stderr)
     Monitoringdb.credentials = MonitoringObj["credentials"]
+    print("Monitoring credentials are:::::::::::::::::::::",Monitoringdb.credentials,file=sys.stderr)
     Monitoringdb.active = MonitoringObj["active"]
+    print("monitoring active is::::::::::::::::::::::::::::::::::;",Monitoringdb.active,file=sys.stderr)
     Monitoringdb.device_heatmap = MonitoringObj["active"]
+    print("Monitoring active is::::::::::::::::::::::",Monitoringdb.device_heatmap,file=sys.stderr)
     if MonitoringObj["active"] == "Active":
         Monitoringdb.status = status
     else:
         Monitoringdb.status = "NA"
 
     id = None
-    queryString = f"select monitoring_device_id from monitoring_devices_table where ip_address='{MonitoringObj['ip_address']}';"
-    result = db.session.execute(queryString)
+    queryString = f"select monitoring_device_id from monitoring_devices_table where atom_id='{atom_id}';"
+    result = configs.db.execute(queryString)
+    print("result for the query string in monitoring is:::::::::::::::::",result,file=sys.stderr)
     for row in result:
+        print("row is:::::::::::::::::::::::::::",row,file=sys.stderr)
         id = row[0]
+        print("id is:::::::::::::::::::::::::::::::::::::::",id,file=sys.stderr)
     if id == None:
         InsertDBData(Monitoringdb)
         print("Inserted ", MonitoringObj["ip_address"], file=sys.stderr)
@@ -123,7 +192,7 @@ def get_interface_monitoring_data(data):
                 |> sort(columns: ["_time"], desc: true)\
                 |> unique(column: "Interface_Name")\
                 |> yield(name: "unique")'
-
+    print("query is:::::::::::::::::::::::::::::::::::::::::",query,file=sys.stderr)
     if device_type is not None:
         query = f'import "strings"\
                 import "influxdata/influxdb/schema"\
@@ -136,7 +205,7 @@ def get_interface_monitoring_data(data):
                 |> sort(columns: ["_time"], desc: true)\
                 |> unique(column: "Interface_Name")\
                 |> yield(name: "unique")'
-
+        print("query is:::::::::::::::::::::::::::::::::::::::::::::::",query,file=sys.stderr)
     return get_interface_influx_data(query)
 
 
