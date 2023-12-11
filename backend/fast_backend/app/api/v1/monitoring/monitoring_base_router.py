@@ -6,14 +6,17 @@ from app.api.v1.monitoring.device.monitoring_device_dashboard_routes import \
 from app.api.v1.monitoring.device.monitoring_device_routes import router as monitoring_device_routes
 from app.api.v1.monitoring.device.monitoring_alert_routes import router as monitoring_alert_routes
 from app.api.v1.monitoring.device.monitoring_credentials_routes import router as monitoring_credentials_routes
-
+from app.api.v1.monitoring.networks.monitoring_networks_routes import router as monitoring_network_routes
 
 routers = APIRouter(
     prefix="/monitoring",
     tags=["monitoring"]
 )
 router_list = [dashboard_routes, monitoring_device_routes, device_dashboard_routes,
-               monitoring_alert_routes, monitoring_credentials_routes]
+               monitoring_alert_routes, monitoring_credentials_routes,monitoring_network_routes]
 
 for router in router_list:
     routers.include_router(router)
+
+
+

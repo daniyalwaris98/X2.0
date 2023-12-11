@@ -59,6 +59,7 @@ export function handleFileChange(event, convertToJson, handlePostSeed) {
     );
     handlePostSeed(data);
   };
+  event.target.value = null;
 }
 
 export function columnGenerator(dataKeys, getColumnSearchProps, getTitle) {
