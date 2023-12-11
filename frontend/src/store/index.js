@@ -11,7 +11,12 @@ import sfpsReducer from "./features/uamModule/sfps";
 import licenseReducer from "./features/uamModule/licenses";
 import apsReducer from "./features/uamModule/aps";
 import hwLifeCycleReducer from "./features/uamModule/hwLifeCycle";
+import mdeviceReducer from "./features/monitoringModule/devices";
+import alertReducer from "./features/monitoringModule/alerts";
+import credentialsReducer from "./features/monitoringModule/credentials"
 import dropDownsReducer from "./features/dropDowns";
+
+
 
 export const store = configureStore({
   reducer: {
@@ -26,6 +31,9 @@ export const store = configureStore({
     license: licenseReducer,
     aps: apsReducer,
     hwLifeCycle: hwLifeCycleReducer,
+    mdevice: mdeviceReducer,
+    alert: alertReducer,
+    credentials:credentialsReducer,
     drop_downs: dropDownsReducer,
     [monetxApi.reducerPath]: monetxApi.reducer,
   },

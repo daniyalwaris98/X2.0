@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/alerts/apis";
+import { useFetchRecordsQuery } from "../../../store/features/uamModule/boards/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/monitoringModule/alerts/selectors";
+import { selectTableData } from "../../../store/features/uamModule/boards/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
