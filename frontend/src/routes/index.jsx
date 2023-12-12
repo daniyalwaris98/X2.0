@@ -5,6 +5,7 @@ import AtomModuleRoutes from "./atomModuleRoutes";
 import UamModuleRoutes from "./uamModuleRoutes";
 import MonitoringModuleRoutes from "./monitoringModuleRoutes";
 import AutoDiscoveryModuleRoutes from "./autoDiscoveryModuleRoutes";
+import NCMModuleRoutes from "./ncmModuleRoutes";
 import DefaultFallbackUI from "../components/fallbackUI";
 
 const router = createBrowserRouter([
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
       UamModuleRoutes,
       MonitoringModuleRoutes,
       AutoDiscoveryModuleRoutes,
+      NCMModuleRoutes,
     ],
     errorElement: <DefaultFallbackUI />,
   },

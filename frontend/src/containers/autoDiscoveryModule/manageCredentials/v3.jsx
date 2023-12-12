@@ -15,6 +15,7 @@ import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import {
+  V3_ELEMENT_NAME as ELEMENT_NAME,
   V3_PAGE_NAME as PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
@@ -42,6 +43,10 @@ const Index = () => {
     default_delete: {
       handleClick: handleDelete,
       visible: selectedRowKeys.length > 0,
+    },
+    default_add: {
+      handleClick: handleDefaultExport,
+      namePostfix: ELEMENT_NAME,
     },
   });
 

@@ -30,6 +30,7 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
+    default_fetch: { handleClick: handleDefaultExport },
   });
 
   // states
