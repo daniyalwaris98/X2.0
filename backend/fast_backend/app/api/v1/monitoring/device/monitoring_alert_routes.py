@@ -1,6 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
+from fastapi import FastAPI,Query
 from app.api.v1.monitoring.device.utils.alerts_utils import *
 from app.schema.monitoring_schema import *
 
@@ -20,11 +20,11 @@ router = APIRouter(
 #         traceback.print_exc()
 #
 #
-@router.get("/get_monitoring_alerts/{alert_level}", responses={
+@router.get("/get_monitoring_alerts", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
 })
-async def low_alerts(alert_level: str):
+async def low_alerts(alert_level: str =  Query(..., description="alert level of the device of the device")):
     try:
         alert_level = str(alert_level).lower()
         return JSONResponse(content=get_level_alert(alert_level), status_code=200)
@@ -37,7 +37,10 @@ async def low_alerts(alert_level: str):
 @router.get("/alert_status", responses={
     200: {"model": AlertStatusSchema},
     500: {"model": str}
-})
+},
+summary="Use this API in the monitoring alert page to alert status count",
+description= "Use this API in the monitoring alert page to alert status count"
+)
 async def alert_status():
     try:
         MonitoringObjList = []
@@ -70,11 +73,14 @@ async def alert_status():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/get_ip_alerts/{ip}", responses={
+@router.get("/get_ip_alerts", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
-})
-async def get_ip_alerts(ip: str):
+},
+summary="Use this API to be used in monitoring alerts page to display the alert based on ip click",
+description="Use this API to be used in monitoring alerts page to display the alert based on ip click"
+)
+async def get_ip_alerts(ip: str = Query(..., description="IP address of the device")):
     try:
         monitoring_alert_list = []
 
