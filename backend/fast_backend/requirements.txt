@@ -5,6 +5,7 @@ asgiref==3.5.2
 asyncpg==0.26.0
 attrs==21.4.0
 bcrypt==3.2.2
+boto3==1.33.12
 certifi==2022.9.24
 cffi==1.15.0
 charset-normalizer==2.1.1
