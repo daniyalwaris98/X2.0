@@ -4,13 +4,19 @@ import MainLayout from "../layouts/mainLayout";
 import AtomModuleRoutes from "./atomModuleRoutes";
 import UamModuleRoutes from "./uamModuleRoutes";
 import MonitoringModuleRoutes from "./monitoringModuleRoutes";
+import AutoDiscoveryModuleRoutes from "./autoDiscoveryModuleRoutes";
 import DefaultFallbackUI from "../components/fallbackUI";
 
 const router = createBrowserRouter([
   {
     path: "/",
     element: <MainLayout />,
-    children: [AtomModuleRoutes, UamModuleRoutes, MonitoringModuleRoutes],
+    children: [
+      AtomModuleRoutes,
+      UamModuleRoutes,
+      MonitoringModuleRoutes,
+      AutoDiscoveryModuleRoutes,
+    ],
     errorElement: <DefaultFallbackUI />,
   },
 ]);
