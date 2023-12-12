@@ -1,5 +1,8 @@
 export const PAGE_NAME = "Manage Credentials";
-export const ELEMENT_NAME = "Credentials";
+export const V1_V2_PAGE_NAME = "Manage V1/V2 Credentials";
+export const V3_PAGE_NAME = "Manage V3 Credentials";
+export const V1_V2_ELEMENT_NAME = "V1/V2 Credential";
+export const V3_ELEMENT_NAME = "V3 Credential";
 export const PAGE_PATH = "manage_credentials";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_managed_credentials";
 export const FILE_NAME_EXPORT_TEMPLATE = "managed_credentials_template";

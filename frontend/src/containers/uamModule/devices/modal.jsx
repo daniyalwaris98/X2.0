@@ -1,6 +1,5 @@
 import React, { useState } from "react";
 import DetailsModal from "../../../components/dialogs";
-import DefaultDialogFooter from "../../../components/dialogFooters";
 import { useTheme } from "@mui/material/styles";
 import Grid from "@mui/material/Grid";
 import { Spin } from "antd";
