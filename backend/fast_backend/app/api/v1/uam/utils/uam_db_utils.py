@@ -587,23 +587,27 @@ def uam_inventory_data(puller_data):
         for ip_addr in puller_data.keys():
             print(f"\n\n{ip_addr} : Checking Device For Onboarding", file=sys.stderr)
             data = puller_data[ip_addr]
-
+            print("data is:::::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
             if data["status"] == "error":
                 print(f"\n\n{ip_addr} : Error - Login Failed Skipping", file=sys.stderr)
+                print("data error failed is true:::::::::::",file=sys.stderr)
                 failed = True
 
             elif data["status"] == "success":
                 atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_addr).first()
+                print("atom success is:;;",atom,file=sys.stderr)
                 if atom is None:
                     print(f"\n\n{ip_addr} : Error - Not Found In Atom", file=sys.stderr)
                     # return "IP Address Not Found",500
                     failed = True
+                    print("failed is true at 603:::::::::",file=sys.stderr)
                     continue
 
                 print(f"\n\n{ip_addr} : Device Found in Atom", file=sys.stderr)
 
                 status_code, uam_id = insert_uam_device_data(data, atom, ip_addr)
-
+                print("status code for the uam insert devices is:::::",status_code,file=sys.stderr)
+                print("uam id whike insert uam devices iss:::::::",uam_id,file=sys.stderr)
                 if status_code == 200 and uam_id != 0:
 
                     if data["device"]["manufecturer"] is not None:
@@ -617,6 +621,7 @@ def uam_inventory_data(puller_data):
                         print(
                             f"\n{ip_addr} : Boards Added Successfully", file=sys.stderr
                         )
+                        print("board addded successfully:::::::::::::::",file=sys.stderr)
                     except Exception:
                         print(
                             f"\n{ip_addr} : Error In Board Insertion", file=sys.stderr
