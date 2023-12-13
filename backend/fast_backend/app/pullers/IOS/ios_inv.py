@@ -48,7 +48,7 @@ class IOSPuller(object):
                                  banner_timeout=300)
                 # device = ConnectHandler(**host)
                 # device.enable()
-                print(device, file=sys.stderr)
+                print("devices are:::::::::::",device, file=sys.stderr)
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
                 is_login = True
                 break
@@ -123,7 +123,7 @@ class IOSPuller(object):
                 print(f"Inventory try {c}")
                 try:
                     inv = device.send_command('show inventory', use_textfsm=True)
-                    print(inv, file=sys.stderr)
+                    print("inv is:::::::::::::::::::::::::::::::",inv, file=sys.stderr)
                     break
                 except Exception as e:
                     print(f"Inv Data Exception {e}", file=sys.stderr)
@@ -222,6 +222,7 @@ class IOSPuller(object):
                         'serial_number': inv.get('sn'),
                         "description": inv.get('descr')
                     })
+            print("board data is::::::::::::::::::::",board_data,file=sys.stderr)
 
             self.inv_data[host['ip_address']].update({'board': board_data})
         except Exception:
@@ -258,7 +259,7 @@ class IOSPuller(object):
                                                'status': 'Production',
                                                'description': inv['descr']
                                                })
-
+            print("sub board data is:::::::",sub_board_data,file=sys.stderr)
             self.inv_data[host['ip_address']].update({'sub_board': sub_board_data})
         except Exception as e:
             self.inv_data[host['ip_address']].update({'sub_board': []})
@@ -317,7 +318,7 @@ class IOSPuller(object):
                                 'media_type': optics_data.get('media_type') if optics_data.get('media_type') and (
                                             'Unspecified' not in optics_data.get('media_type')) else None}
                     sfps_data.append(sfp_data)
-
+            print("sfps data is:::::::::::",sfp_data,file=sys.stderr)
             self.inv_data[host['ip_address']].update({"sfp": sfps_data})
         except Exception:
             self.inv_data[host['ip_address']].update({"sfp": []})
