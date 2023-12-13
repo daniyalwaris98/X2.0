@@ -53,6 +53,7 @@ class IOSPuller(object):
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
                 self.is_login = True
                 self.failed = True
+                print("failed in login is:::;",self.failed,file=sys.stderr)
                 break
             except Exception as e:
                 c += 1
@@ -191,9 +192,10 @@ class IOSPuller(object):
                 self.get_license(host, device)
 
                 self.inv_data[host['ip_address']].update({'status': 'success'})
-                print(self.inv_data, file=sys.stderr)
+                print("self inventory data is::::::::::::::::::::::",self.inv_data, file=sys.stderr)
 
                 self.failed = uam_inventory_data(self.inv_data)
+                print("self.failed is::::::::::::::::::::::::::",self.failed,file=sys.stderr)
             except Exception as e:
                 print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
                 if host['ip_address'] in self.inv_data:
