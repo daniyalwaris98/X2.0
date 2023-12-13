@@ -117,6 +117,7 @@ class IOSPuller(object):
                             self.stack_switch = stk['switch']
 
             except Exception as e:
+                traceback.print_exc()
                 print(f"stack switches not found {e}")
 
             print("getting inventory....", file=sys.stderr)
