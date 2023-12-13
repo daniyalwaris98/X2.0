@@ -227,7 +227,7 @@ const Index = () => {
 
   function onBoardData(allowed) {
     if (allowed) {
-      const ipAddressesToOnBoard = selectedRowKeys.map((rowKey) => {
+      let ipAddressesToOnBoard = selectedRowKeys.map((rowKey) => {
         const dataObject = dataSource.find(
           (row) => row.atom_table_id === rowKey
         );
