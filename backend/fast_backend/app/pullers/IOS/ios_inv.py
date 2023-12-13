@@ -104,12 +104,14 @@ class IOSPuller(object):
                 stack = 1
                 print("getting stack switches")
                 stacks = device.send_command("show switch detail", use_textfsm=True)
-                print(stacks)
+                print("stack switches are:::::::::::::::::",stacks,file=sys.stderr)
                 for stk in stacks:
+                    print("stk is:::::::::::::::::::::::::::::::::;",stk,file=sys.stderr)
                     if (stk['state'] == 'Ready'):
                         stack += 1
                 if (stack > 1):
                     for stk in stacks:
+                        print("stk if stck is >1 ::::::::::::",stk,file=sys.stderr)
                         if int(stk['priority']) > self.stack_priority:
                             self.stack_priority = int(stk['priority'])
                             self.stack_switch = stk['switch']
