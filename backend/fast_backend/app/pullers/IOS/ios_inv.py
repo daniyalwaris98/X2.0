@@ -15,6 +15,7 @@ class IOSPuller(object):
         self.stack_priority = 0
         self.stack_switch = ""
         self.failed = False
+        self.is_login = False
 
     def get_inventory_data(self, hosts):
         threads = []
@@ -39,7 +40,7 @@ class IOSPuller(object):
         print(f"Connecting to {host['ip_address']}")
         login_tries = 3
         c = 0
-        is_login = False
+        self.is_login = False
         login_exception = None
         while c < login_tries:
             try:
@@ -50,14 +51,15 @@ class IOSPuller(object):
                 # device.enable()
                 print("devices are:::::::::::",device, file=sys.stderr)
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
-                is_login = True
+                self.is_login = True
+                self.failed = True
                 break
             except Exception as e:
                 c += 1
                 print(f"Failed to login {host['ip_address']}", file=sys.stderr)
                 traceback.print_exc()
                 login_exception = str(e)
-        if is_login == False:
+        if self.is_login == False:
             self.inv_data[host['ip_address']] = {"error": "Login Failed"}
             date = datetime.now()
             self.failed = True
@@ -83,7 +85,7 @@ class IOSPuller(object):
             # except Exception as e:
             #     print(e)
             #     print("Failed to update failed devices list: "+str(e), file=sys.stderr)
-        if is_login == True:
+        if self.is_login == True:
             print("LOGIN IS SUCCESSFUL", file=sys.stderr)
             try:
                 print("getting version")
@@ -104,18 +106,20 @@ class IOSPuller(object):
                 stack = 1
                 print("getting stack switches")
                 stacks = device.send_command("show switch detail", use_textfsm=True)
-                print("stack switches are:::::::::::::::::",stacks,file=sys.stderr)
-                for stk in stacks:
-                    print("stk is:::::::::::::::::::::::::::::::::;",stk,file=sys.stderr)
-                    if (stk['state'] == 'Ready'):
-                        stack += 1
-                if (stack > 1):
+                if stacks:
+                    print("stack switches are:::::::::::::::::",stacks,file=sys.stderr)
                     for stk in stacks:
-                        print("stk if stck is >1 ::::::::::::",stk,file=sys.stderr)
-                        if int(stk['priority']) > self.stack_priority:
-                            self.stack_priority = int(stk['priority'])
-                            self.stack_switch = stk['switch']
-
+                        print("stk is:::::::::::::::::::::::::::::::::;",stk,file=sys.stderr)
+                        if (stk['state'] == 'Ready'):
+                            stack += 1
+                    if (stack > 1):
+                        for stk in stacks:
+                            print("stk if stck is >1 ::::::::::::",stk,file=sys.stderr)
+                            if int(stk['priority']) > self.stack_priority:
+                                self.stack_priority = int(stk['priority'])
+                                self.stack_switch = stk['switch']
+                else:
+                    print("stack switches not found::::::",file=sys.stderr)
             except Exception as e:
                 traceback.print_exc()
                 print(f"stack switches not found {e}")
@@ -196,7 +200,7 @@ class IOSPuller(object):
                     self.inv_data[host['ip_address']].update({'status': 'error'})
                 self.failed = True
 
-            if is_login: device.disconnect()
+            if self.is_login: device.disconnect()
 
     def get_boards(self, host, inventory, sw):
         try:
