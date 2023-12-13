@@ -582,12 +582,14 @@ def insert_uam_device_aps_data(uam_id, data):
 
 
 def uam_inventory_data(puller_data):
+    success = False
     failed = False
     try:
         for ip_addr in puller_data.keys():
             print(f"\n\n{ip_addr} : Checking Device For Onboarding", file=sys.stderr)
             data = puller_data[ip_addr]
             print("data is:::::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
+            success = True
             if data["status"] == "error":
                 print(f"\n\n{ip_addr} : Error - Login Failed Skipping", file=sys.stderr)
                 print("data error failed is true:::::::::::",file=sys.stderr)
@@ -596,6 +598,7 @@ def uam_inventory_data(puller_data):
             elif data["status"] == "success":
                 atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_addr).first()
                 print("atom success is:;;",atom,file=sys.stderr)
+                success = True
                 if atom is None:
                     print(f"\n\n{ip_addr} : Error - Not Found In Atom", file=sys.stderr)
                     # return "IP Address Not Found",500
@@ -614,8 +617,9 @@ def uam_inventory_data(puller_data):
                         atom.vendor = data["device"]["manufecturer"]
 
                     atom.onboard_status = True
-                    UpdateDBData(atom)
 
+                    UpdateDBData(atom)
+                    success = True
                     try:
                         insert_uam_device_board_data(uam_id, data)
                         print(
@@ -667,10 +671,15 @@ def uam_inventory_data(puller_data):
                     print("Device Not Found", file=sys.stderr)
                     failed = True
 
+
     except Exception as e:
         traceback.print_exc()
         print(
             f"Error while getting data from device error {e}", file=sys.stderr
         )
         failed = True
-    return failed
+        return failed
+    if success == True:
+        return success
+    else:
+        return failed
