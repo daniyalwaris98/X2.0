@@ -37,32 +37,32 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
         obj_list = []
         for board in results:
             try:
-                obj_dict = {"board_name": board.board_name,
-                            "device_name": atom.device_name,
-                            "device_slot_id": board.device_slot_id,
-                            "software_version": board.software_version,
-                            "hardware_version": board.hardware_version,
-                            "serial_number": board.serial_number,
-                            "creation_date": board.creation_date,
-                            "modification_date": board.modification_date,
-                            "status": board.status,
-                            "manufacturer_date": str(board.manufacture_date),
-                            "eos_date": str(board.eos_date),
-                            "eol_date": str(board.eol_date),
-                            "pn_code": board.pn_code,
-                            "board_id":board.board_id
-                            }
+                obj_dict = {
+                    "board_id": board.board_id,
+                    "board_name": board.board_name,
+                    "device_name": atom.device_name,
+                    "serial_number": board.serial_number,
+                    "pn_code": board.pn_code,
+                    "status": board.status,
+                    "device_slot_id": board.device_slot_id,
+                    "software_version": board.software_version,
+                    "hardware_version": board.hardware_version,
+                    "manufacturer_date": board.manufacturer_date,
+                    "eos_date": board.eos_date,
+                    "eol_date": board.eol_date,
+                    "creation_date": board.creation_date,
+                    "modification_date": board.modification_date
+                }
                 obj_list.append(obj_dict)
 
             except Exception:
                 traceback.print_exc()
-        return obj_list,200
-        # return JSONResponse(content=obj_list, status_code=200)
+
+        return JSONResponse(content=obj_list, status_code=200)
 
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error While Fetching Board Data", status_code=500)
-
 # getSubBoardDetailsByIpAddress
 @router.get("/get_subboard_details_by_ip_address", responses={
     200: {"model": list[GetSubboardResponseSchema]},
