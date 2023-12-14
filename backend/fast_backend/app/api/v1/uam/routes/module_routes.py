@@ -47,7 +47,7 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
                     "device_slot_id": board.device_slot_id,
                     "software_version": board.software_version,
                     "hardware_version": board.hardware_version,
-                    "manufacturer_date": board.manufacturer_date,
+                    "manufacture_date": board.manufacturer_date,
                     "eos_date": board.eos_date,
                     "eol_date": board.eol_date,
                     "creation_date": board.creation_date,
