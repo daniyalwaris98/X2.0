@@ -1,7 +1,7 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from fastapi import FastAPI, Query
-
+from app.api.v1.uam.utils.uam_utils import FormatDate
 from app.api.v1.uam.utils.module_utils import *
 from app.schema.uam_module_schema import *
 
@@ -47,10 +47,10 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
                     "device_slot_id": board.device_slot_id,
                     "software_version": board.software_version,
                     "hardware_version": board.hardware_version,
-                    "manufacture_date": board.manufacture_date,
-                    "eos_date": board.eos_date,
-                    "eol_date": board.eol_date,
-                    "creation_date": board.creation_date,
+                    "manufacture_date": FormatDate(board.manufacture_date),
+                    "eos_date": FormatDate(board.eos_date),
+                    "eol_date": FormatDate(board.eol_date),
+                    "creation_date": FormatDate(board.creation_date),
                     "modification_date": board.modification_date
                 }
                 obj_list.append(obj_dict)
