@@ -11,19 +11,9 @@ from app.schema.monitoring_network_schema import *
 
 router = APIRouter(
     prefix="/monitoring_network",
-    tags=["monitoring-network"]
+    tags=["monitoring_network"]
 )
 
-@router.get('/netwok_monitoring_testin',responses={
-    200 : {"model":str},
-    500 : {"model":str},
-},
-summary="this is testing route")
-async def testing_route():
-    try:
-        return {"message":"testing"}
-    except Exception as e:
-        traceback.print_exc()
 
 
 @router.get('/get_all_devices_in_networks',
@@ -32,6 +22,7 @@ async def testing_route():
                 500:{"model":str}
             },
             summary="use this api in monitoring network=>devices to list down all devices in table",
+            description = "use this api in monitoring network=>devices to list down all devices in table"
 
 )
 async def get_all_devices_in_networks():
@@ -95,6 +86,7 @@ async def get_all_devices_in_networks():
                 500:{"model":str}
             },
             summary="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table",
+            description="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table"
 
 )
 async def get_all_interfaces_in_network():
@@ -215,6 +207,7 @@ def get_all_devices_in_router():
                 500:{"model":str}
             },
             summary="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table",
+            description="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table"
 
 )
 async def get_all_interfaces_in_routers():
@@ -272,8 +265,8 @@ async def get_all_interfaces_in_routers():
               200:{"model":list[GetMonitoringNetworkDevicesSchema]},
               500:{"model":str}
             },
-            summary="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
-            description="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
+            summary="Use this API in Monitoring ==>Netowrk==>Switch==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
+            description="Use this API in Monitoring ==>Netowrk==>Switch==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
 )
 def get_all_devices_in_switch():
     try:
@@ -332,7 +325,8 @@ def get_all_devices_in_switch():
                 200:{"model":list[GetDevicesInterfaceRecordSchema]},
                 500:{"model":str}
             },
-            summary="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table",
+            summary="use this api in monitoring network=>Switch=>interfaces to list down all switch devices interfaces in table",
+            description="use this api in monitoring network=>Switch=>interfaces to list down all switch devices interfaces in table"
 
 )
 async def get_all_interfaces_in_switch():
@@ -382,7 +376,7 @@ async def get_all_interfaces_in_switch():
     except Exception as e:
         print("Error ",str(e),file=sys.stderr)
         traceback.print_exc()
-        return JSONResponse("Error Ocucred while getting Router interfaces",status_code=500)
+        return JSONResponse("Error Ocucred while getting Switch interfaces",status_code=500)
 
 
 @router.get('/get_all_devices_in_firewall',
@@ -390,8 +384,8 @@ async def get_all_interfaces_in_switch():
               200:{"model":list[GetMonitoringNetworkDevicesSchema]},
               500:{"model":str}
             },
-            summary="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
-            description="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
+            summary="Use this API in Monitoring ==>Netowrk==>FireWall==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of Firewall",
+            description="Use this API in Monitoring ==>Netowrk==>Firewall==>devices.Use this API in the monitoring netowrk page to list down the interface  in the table of interface Firewall",
 )
 def get_all_devices_in_firewall():
     try:
@@ -442,7 +436,7 @@ def get_all_devices_in_firewall():
         return JSONResponse(content=final_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting th firewall devices")
+        return ("Error Occured While Getting the firewall devices")
 
 
 @router.get('/get_all_devices_interfaces_in_firewall',
@@ -450,7 +444,8 @@ def get_all_devices_in_firewall():
                 200:{"model":list[GetDevicesInterfaceRecordSchema]},
                 500:{"model":str}
             },
-            summary="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table",
+            summary="use this api in monitoring network=>Firewall=>interfaces to list down all firewall devices in table",
+            description="use this api in monitoring network=>Firewall=>interfaces to list down all firewall interfaces in table",
 
 )
 async def get_all_interfaces_in_firewall():
@@ -510,8 +505,8 @@ async def get_all_interfaces_in_firewall():
               200:{"model":list[GetMonitoringNetworkDevicesSchema]},
               500:{"model":str}
             },
-            summary="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
-            description="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
+            summary="Use this API in Monitoring ==>Netowrk==>Wireless==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of Wireless",
+            description="Use this API in Monitoring ==>Netowrk==>Wireless==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of Wireless",
 )
 def get_all_devices_in_wireless():
     try:
@@ -562,7 +557,7 @@ def get_all_devices_in_wireless():
         return JSONResponse(content=final_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting th firewall devices")
+        return ("Error Occured While Getting the Wireless devices")
 
 
 @router.get('/get_all_devices_interfaces_in_wireless',
@@ -570,7 +565,8 @@ def get_all_devices_in_wireless():
                 200:{"model":list[GetDevicesInterfaceRecordSchema]},
                 500:{"model":str}
             },
-            summary="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table",
+            summary="use this api in monitoring network=>Wireless=>interfaces to list down all Wireless devices  in table",
+            description="use this api in monitoring network=>Wireless=>interfaces to list down all Wireless interfaces  in table",
 
 )
 async def get_all_interfaces_in_wireless():

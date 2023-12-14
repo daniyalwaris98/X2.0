@@ -241,6 +241,22 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
+    default_fetch: {
+      name: "Fetch",
+      icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_backup: {
+      name: "Backup",
+      icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
   };
 
   const dropdownButtonOptionsConstants = Object.keys(buttonDetails).reduce(

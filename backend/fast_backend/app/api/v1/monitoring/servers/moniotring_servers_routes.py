@@ -11,8 +11,8 @@ from app.schema.monitoring_network_schema import *
 
 
 router = APIRouter(
-    prefix="/monitoring_network",
-    tags=["monitoring-network"]
+    prefix="/monitoring_server",
+    tags=["monitoring_server"]
 )
 
 
@@ -23,8 +23,8 @@ router = APIRouter(
               200:{"model":list[GetMonitoringNetworkDevicesSchema]},
               500:{"model":str}
             },
-            summary="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
-            description="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
+            summary="Use this API in Monitoring ==>Netowrk==>Server==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of Server all devices",
+            description="Use this API in Monitoring ==>Netowrk==>Server==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of Server all devices",
 )
 def get_all_devices_in_servers():
     try:
@@ -75,7 +75,7 @@ def get_all_devices_in_servers():
         return JSONResponse(content=final_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting th firewall devices")
+        return ("Error Occured While Getting the serever devices")
 
 
 @router.get('/get_all_devices_interfaces_in_servers',
@@ -83,7 +83,8 @@ def get_all_devices_in_servers():
                 200:{"model":list[GetDevicesInterfaceRecordSchema]},
                 500:{"model":str}
             },
-            summary="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table",
+            summary="use this api in monitoring network=>Server=>interfaces to list down all Server devices interfaces in table",
+            description="use this api in monitoring network=>Server=>interfaces to list down all Server devices interfaces in table",
 
 )
 async def get_all_interfaces_in_servers():
@@ -133,7 +134,7 @@ async def get_all_interfaces_in_servers():
     except Exception as e:
         print("Error ",str(e),file=sys.stderr)
         traceback.print_exc()
-        return JSONResponse("Error Ocucred while getting Wireless interfaces",status_code=500)
+        return JSONResponse("Error Ocucred while getting server interfaces",status_code=500)
 
 
 @router.get('/get_all_devices_in_windows',
@@ -141,8 +142,8 @@ async def get_all_interfaces_in_servers():
               200:{"model":list[GetMonitoringNetworkDevicesSchema]},
               500:{"model":str}
             },
-            summary="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
-            description="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
+            summary="Use this API in Monitoring ==>Netowrk==>Windows==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of windows",
+            description="Use this API in Monitoring ==>Netowrk==>Windows==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of windows",
 )
 def get_all_devices_in_windows():
     try:
@@ -194,7 +195,7 @@ def get_all_devices_in_windows():
         return JSONResponse(content=final_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting th firewall devices")
+        return ("Error Occured While Getting the windows devices")
 
 
 @router.get('/get_all_devices_interfaces_in_windows',
@@ -202,7 +203,8 @@ def get_all_devices_in_windows():
                 200:{"model":list[GetDevicesInterfaceRecordSchema]},
                 500:{"model":str}
             },
-            summary="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table",
+            summary="use this api in monitoring network=>Windows=>interfaces to list down all windows devices interfaces in table",
+            description="use this api in monitoring network=>Windows=>interfaces to list down all windows devices interfaces in table"
 
 )
 async def get_all_interfaces_in_windows():
@@ -253,7 +255,7 @@ async def get_all_interfaces_in_windows():
     except Exception as e:
         print("Error ",str(e),file=sys.stderr)
         traceback.print_exc()
-        return JSONResponse("Error Ocucred while getting Wireless interfaces",status_code=500)
+        return JSONResponse("Error Ocucred while getting windows interfaces",status_code=500)
 
 
 @router.get('/get_all_devices_in_linux',
@@ -261,8 +263,8 @@ async def get_all_interfaces_in_windows():
               200:{"model":list[GetMonitoringNetworkDevicesSchema]},
               500:{"model":str}
             },
-            summary="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
-            description="Use this API in Monitoring ==>Netowrk==>Router==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of router",
+            summary="Use this API in Monitoring ==>Netowrk==>linux==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of linux",
+            description="Use this API in Monitoring ==>Netowrk==>linux==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of linux",
 )
 def get_all_devices_in_linux():
     try:
@@ -314,18 +316,19 @@ def get_all_devices_in_linux():
         return JSONResponse(content=final_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting th firewall devices")
+        return ("Error Occured While Getting th linux devices")
 
 
-@router.get('/get_all_devices_interfaces_in_windows',
+@router.get('/get_all_devices_interfaces_in_linux',
             responses={
                 200:{"model":list[GetDevicesInterfaceRecordSchema]},
                 500:{"model":str}
             },
-            summary="use this api in monitoring network=>devices=>interfaces to list down all devices interfaces in table",
+            summary="use this api in monitoring network=>linux=>interfaces to list down all devices interfaces in table for linux",
+            description="use this api in monitoring network=>linux=>interfaces to list down all devices interfaces in table for linux",
 
 )
-async def get_all_interfaces_in_windows():
+async def get_all_interfaces_in_linux():
     try:
         router_interface_records = []
         query_api = configs.client.query_api()
@@ -373,5 +376,5 @@ async def get_all_interfaces_in_windows():
     except Exception as e:
         print("Error ",str(e),file=sys.stderr)
         traceback.print_exc()
-        return JSONResponse("Error Ocucred while getting Wireless interfaces",status_code=500)
+        return JSONResponse("Error Ocucred while getting linux interfaces",status_code=500)
 

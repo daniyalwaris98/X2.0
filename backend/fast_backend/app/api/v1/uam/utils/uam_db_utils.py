@@ -581,6 +581,65 @@ def insert_uam_device_aps_data(uam_id, data):
             traceback.print_exc()
 
 
+def insert_uam_device_aps_data(uam_id, data):
+    for ap in data["aps"]:
+        try:
+            if "serial_number" not in ap:
+                continue
+
+            if ap["serial_number"] is None:
+                continue
+
+            ap["serial_number"] = ap["serial_number"].strip()
+            if ap["serial_number"] == "":
+                continue
+
+            aps_data = configs.db.query(APS_TABLE).filter(
+                APS_TABLE.serial_number == ap["serial_number"], uam_id == uam_id
+            ).first()
+
+            update = False
+            if aps_data is not None:
+                update = True
+            else:
+                aps_data = APS_TABLE()
+                aps_data.uam_id = uam_id
+                aps_data.serial_number = ap["serial_number"]
+
+            if "name" in ap:
+                aps_data.ap_name = ap["name"]
+
+            if ap["description"] is not None:
+                aps_data.description = ap["description"]
+            else:
+                aps_data.description = na
+
+            if "ip_addr" in ap:
+                aps_data.ap_ip = ap["ip_addr"]
+
+            if ap["serial_number"] is not None:
+                aps_data.serial_number = ap["serial_number"]
+            else:
+                aps_data.serial_number = na
+
+            if ap["hw_version"] is not None:
+                aps_data.hardware_version = ap["hw_version"]
+            else:
+                aps_data.hardware_version = na
+
+            if ap["software_version"] is not None:
+                aps_data.software_version = ap["software_version"]
+            else:
+                aps_data.software_version = na
+
+            if update:
+                UpdateDBData(aps_data)
+            else:
+                InsertDBData(aps_data)
+        except Exception:
+            traceback.print_exc()
+
+
 def uam_inventory_data(puller_data):
     failed = False
     try:

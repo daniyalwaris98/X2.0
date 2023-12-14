@@ -56,8 +56,8 @@ async def get_board_details_by_ip_address(ip_address: str = Query(..., descripti
 
             except Exception:
                 traceback.print_exc()
-
-        return JSONResponse(content=obj_list, status_code=200)
+        return obj_list,200
+        # return JSONResponse(content=obj_list, status_code=200)
 
     except Exception as e:
         traceback.print_exc()
