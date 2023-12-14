@@ -26,15 +26,12 @@ class GetBoardResponseSchema(BaseSchema):
     serial_number: str
     pn_code: str
     status: str
-
     device_slot_id: str | None = None
     software_version: str | None = None
     hardware_version: str | None = None
-
-    manufacturer_date: datetime | None = None
+    manufacture_date: datetime | None = None
     eos_date: datetime | None = None
     eol_date: datetime | None = None
-
     creation_date: datetime
     modification_date: datetime
 
