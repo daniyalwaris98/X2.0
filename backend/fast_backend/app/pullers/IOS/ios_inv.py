@@ -195,6 +195,11 @@ class IOSPuller(object):
                 print("self inventory data is::::::::::::::::::::::",self.inv_data, file=sys.stderr)
 
                 self.failed = uam_inventory_data(self.inv_data)
+                if self.filed != True:
+                    self.failed = False
+                else:
+                    self.failed = True
+
                 print("self.failed is::::::::::::::::::::::::::",self.failed,file=sys.stderr)
             except Exception as e:
                 print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
