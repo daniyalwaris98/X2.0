@@ -198,7 +198,7 @@ class IOSPuller(object):
                 if self.failed != True:
                     self.failed = False
                 else:
-                    self.failed = True
+                    self.failed = False
 
                 print("self.failed is::::::::::::::::::::::::::",self.failed,file=sys.stderr)
             except Exception as e:
