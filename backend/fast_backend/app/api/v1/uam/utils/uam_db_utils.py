@@ -14,7 +14,7 @@ def insert_uam_device_data(data, atom, ip_addr):
         #     )
 
         device_obj = configs.db.query(UamDeviceTable).filter(UamDeviceTable.atom_id == atom.atom_id).first()
-
+        print("device obj is:::::::::::::::;",device_obj,file=sys.stderr)
         update = False
         if device_obj is not None:
             update = True
@@ -24,8 +24,10 @@ def insert_uam_device_data(data, atom, ip_addr):
             device_obj.atom_id = atom.atom_id
 
         if "device" in data:
+            print("device in data is:::::::::::::::::",data,file=sys.stderr)
             if data["device"]["software_version"] is not None:
                 device_obj.software_version = data["device"]["software_version"]
+                print("device obj is not none")
             else:
                 device_obj.software_version = na
             if "patch_version" in data and data["device"]["patch_version"] is not None:
