@@ -195,7 +195,7 @@ class IOSPuller(object):
                 print("self inventory data is::::::::::::::::::::::",self.inv_data, file=sys.stderr)
 
                 self.failed = uam_inventory_data(self.inv_data)
-                if self.filed != True:
+                if self.failed != True:
                     self.failed = False
                 else:
                     self.failed = True
