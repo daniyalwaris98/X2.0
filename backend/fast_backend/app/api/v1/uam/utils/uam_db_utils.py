@@ -90,15 +90,17 @@ def insert_uam_device_data(data, atom, ip_addr):
             if update:
                 print("Updated device " + ip_addr, file=sys.stderr)
                 status_code = UpdateDBData(device_obj)
+                print("statud code is::::::::::::::::::",status_code,file=sys.stderr)
 
             else:
                 print("Inserted device " + ip_addr, file=sys.stderr)
                 status_code = InsertDBData(device_obj)
+                print("status code ofr isnertion is:::::::::",status_code,file=sys.stderr)
 
             uam_id = 0
             if status_code == 200:
                 uam_id = device_obj.uam_id
-
+                print("uam id is:::::::::::::::for 200",uam_id,file=sys.stderr)
             return status_code, uam_id
         else:
             print("Device Inventory Not Found", file=sys.stderr)
@@ -664,7 +666,8 @@ def uam_inventory_data(puller_data):
                 print(f"\n\n{ip_addr} : Device Found in Atom", file=sys.stderr)
 
                 status_code, uam_id = insert_uam_device_data(data, atom, ip_addr)
-
+                print("status code is :::::::::::::::::",status_code,file=sys.stderr)
+                print("uam id is::::::::::::::::::::::::::::;",uam_id,file=sys.stderr)
                 if status_code == 200 and uam_id != 0:
 
                     if data["device"]["manufecturer"] is not None:
