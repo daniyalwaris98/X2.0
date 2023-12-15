@@ -15,7 +15,7 @@ class IOSPuller(object):
         self.stack_priority = 0
         self.stack_switch = ""
         self.failed = False
-        self.is_login = False
+
 
     def get_inventory_data(self, hosts):
         threads = []
@@ -49,11 +49,9 @@ class IOSPuller(object):
                                  banner_timeout=300)
                 # device = ConnectHandler(**host)
                 # device.enable()
+                self.is_login = True
                 print("devices are:::::::::::",device, file=sys.stderr)
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
-                self.is_login = True
-                self.failed = True
-                print("failed in login is:::;",self.failed,file=sys.stderr)
                 break
             except Exception as e:
                 c += 1
