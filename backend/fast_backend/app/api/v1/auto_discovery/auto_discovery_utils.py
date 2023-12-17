@@ -52,8 +52,9 @@ def check_subnet(network_obj):
 
 def add_network_util(network_obj, update):
     try:
-
+        data = {}
         network, status = check_network_name(network_obj)
+
         if status != 200:
             return network, status
 
@@ -97,21 +98,38 @@ def add_network_util(network_obj, update):
 
         if exist:
             if UpdateDBData(network) == 200:
+                data_dict = {
+                    "network_id": network.network_id,
+                    "network_name": network.network_name,
+                    "scan_status": network.scan_status,
+                    "excluded_ip_range": network.excluded_ip_range
+                }
                 msg = f"{network_obj['network_name']} : Network Updated Successfully"
+                data['data'] = data_dict
+                data['message'] = msg
                 status = 200
             else:
+
                 msg = f"{network_obj['network_name']} : Error While Updating Network"
                 status = 500
         else:
             if InsertDBData(network) == 200:
+                data_dict = {
+                    "network_id": network.network_id,
+                    "network_name": network.network_name,
+                    "scan_status": network.scan_status,
+                    "excluded_ip_range": network.excluded_ip_range
+                }
                 msg = f"{network_obj['network_name']} : Network Inserted Successfully"
+                data['data'] = data_dict
+                data['message'] = msg
                 status = 200
             else:
                 msg = f"{network_obj['network_name']} : Error While Inserting Network"
                 status = 500
 
         print(msg, file=sys.stderr)
-        return msg, status
+        return data, status
 
     except Exception:
         traceback.print_exc()
@@ -120,6 +138,7 @@ def add_network_util(network_obj, update):
 
 def edit_network_util(network_obj):
     try:
+        data = {}
 
         network, status = check_network_id(network_obj)
 
@@ -162,14 +181,22 @@ def edit_network_util(network_obj):
             network.excluded_ip_range = network_obj['excluded_ip_range'].strip()
 
         if UpdateDBData(network) == 200:
+            data_dict = {
+                "network_id": network.network_id,
+                "network_name": network.network_name,
+                "scan_status": network.scan_status,
+                "excluded_ip_range": network.excluded_ip_range
+            }
             msg = f"{network_obj['network_name']} : Network Updated Successfully"
+            data['data'] = data_dict
+            data['message'] = msg
             status = 200
         else:
             msg = f"{network_obj['network_name']} : Error While Updating Network"
             status = 500
 
         print(msg, file=sys.stderr)
-        return msg, status
+        return data, status
 
     except Exception:
         traceback.print_exc()
@@ -183,18 +210,22 @@ def get_discovery_data_util(subnet, function):
             if function is None:
                 results = configs.db.query(AutoDiscoveryTable).filter(
                     AutoDiscoveryTable.subnet == subnet).all()
+                print("result is::::::::::::::::::::::auto discovery table is",results,file=sys.stderr)
             else:
                 results = configs.db.query(AutoDiscoveryTable).filter(
                     AutoDiscoveryTable.subnet == subnet and AutoDiscoveryTable.function == function
                 ).all()
+                print("result is::::::::::::::::::",results,file=sys.stderr)
         else:
             if function is None:
                 results = configs.db.query(AutoDiscoveryTable).all()
+                print("result is:::::::::::::::::::::",results,file=sys.stderr)
             else:
                 results = configs.db.query(AutoDiscoveryTable).filter(
                     AutoDiscoveryTable.function == function).all()
 
         for data in results:
+            print("data is:::::::::::::::::::::",data,file=sys.stderr)
             obj_list.append(data.as_dict())
 
         return obj_list, 200

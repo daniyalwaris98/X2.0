@@ -9,12 +9,12 @@ from app.api.v1.ncm.utils.ncm_utils import *
 from app.schema.ncm_schema import *
 
 router = APIRouter(
-    prefix="/ncm-device",
-    tags=["ncm-device"],
+    prefix="/ncm_device",
+    tags=["ncm_device"],
 )
 
 
-@router.get("/ncm-backup-summery-dashboard", responses={
+@router.get("/ncm_backup_summery_dashboard", responses={
     200: {"model": list[NcmAlarmSchema]},
     500: {"model": str}
 })
@@ -46,30 +46,40 @@ async def ncm_backup_summery_dashboard():
         return JSONResponse(content="Server Error While Fetching Data", status_code=500)
 
 
-@router.get("/get-vendors-in-ncm", responses={})
+@router.get("/get_vendors_in_ncm", responses={
+    200:{"model":GetNcmVendorSchema},
+    500:{"model":str}
+},
+
+)
 async def ncm_vendor_count():
     try:
         queryString = (f"select atom_table.vendor, count(*) from ncm_device_table inner join "
                        f"atom_table on ncm_device_table.atom_id = atom_table.atom_id  "
                        f"group by vendor;")
+        print("query string is::::::::::::::::::::::::",queryString,file=sys.stderr)
         result = configs.db.execute(queryString)
+        print("reuslt is:::::::::::",result,file=sys.stderr)
         obj_list = []
 
         for row in result:
+            print("row is::::::::::::::::::::::",row,file=sys.stderr)
+            print("row [0] is:::::::::::::::",row[0],file=sys.stderr)
+            print("row[1] is:::::::::::::::::::",row[1],file=sys.stderr)
             obj_dict = {"name": row[0], "value": row[1]}
-
+            print("obj dict is::::::::::::::::::::",obj_dict,file=sys.stderr)
             if row[0] is None:
                 obj_dict["name"] = "Other"
 
             obj_list.append(obj_dict)
-
+        print("objlist is:::::::::::::::::",obj_list,file=sys.stderr)
         return JSONResponse(content=obj_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse("Server Error While Fetching Data", status_code=500)
 
 
-@router.post("/addNcmDevice", responses={
+@router.post("/add_ncm_device", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -83,12 +93,13 @@ async def add_ncm_device(ncm_obj: AddNcmRequestSchema):
         return JSONResponse(content="Server Error While Adding NCM Device", status_code=500)
 
 
-@router.post("/addNcmDevices", responses={
+@router.post("/add_ncm_devices", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
 async def add_ncm_devices(ncm_objs: list[AddNcmRequestSchema]):
     try:
+        data = []
         success_list = []
         error_list = []
 
@@ -107,20 +118,40 @@ async def add_ncm_devices(ncm_objs: list[AddNcmRequestSchema]):
 
                 if atom is not None:
                     msg, status = add_complete_atom(ncm_obj, True)
+                    print("msg is:::::::::::::::::::::::",msg,file=sys.stderr)
+                    print("if atom is not none::::",status,file=sys.stderr)
+                    if isinstance(msg,dict):
+                        for key,value in msg.items():
+                            print("key is::::::::::::::::::::::",key,file=sys.stderr)
+                            print("msg is::::::::::::::::::::::",msg,file=sys.stderr)
+                            if key == 'data':
+                                data.append(value)
+                            elif key == 'message':
+                                success_list.append(value)
                 else:
                     msg, status = add_ncm_device_util(ncm_obj, False)
-
+                    print("ncm is:::::::::",msg,file=sys.stderr)
+                    print("ncm status is:::::::::::::::::",status,file=sys.stderr)
+                    if isinstance(msg,dict):
+                        for key,value in msg.items():
+                            print("key is::::::::::::::::::::::",key,file=sys.stderr)
+                            print("msg is::::::::::::::::::::::",msg,file=sys.stderr)
+                            if key == 'data':
+                                data.append(value)
+                            elif key == 'message':
+                                success_list.append(value)
             except Exception:
                 traceback.print_exc()
                 status = 500
                 msg = f"{ncm_obj['ip_address']} : Exception Occurred"
 
-            if status == 500:
+            if status == 500 or status ==400:
                 error_list.append(msg)
             else:
                 success_list.append(msg)
 
         response_dict = {
+            "data":data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
@@ -135,7 +166,7 @@ async def add_ncm_devices(ncm_objs: list[AddNcmRequestSchema]):
                             status_code=500)
 
 
-@router.post("/editNcmDevice", responses={
+@router.post("/edit_ncm_device", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -149,7 +180,7 @@ async def edit_ncm_device(ncm_obj: AddNcmRequestSchema):
         return JSONResponse(content="Server Error While Adding NCM Device", status_code=500)
 
 
-@router.get("/get-all-ncm-devices", responses={
+@router.get("/get_all_ncm_devices", responses={
     200: {"model": list[GetAllNcmResponseSchema]},
     500: {"model": str}
 
@@ -164,7 +195,7 @@ async def get_all_ncm_devices():
         )
 
         for ncm, atom in results:
-            password = PasswordGroupTable.query.filter(
+            password = configs.db.query(PasswordGroupTable).filter(
                 PasswordGroupTable.password_group_id == atom.password_group_id
             ).first()
 
@@ -178,14 +209,14 @@ async def get_all_ncm_devices():
                         "creation_date": ncm.creation_date}
 
             ncm_list.append(ncm_dict)
-        return JSONResponse(content=ncm_list, status_code=200)
+        return ncm_list
 
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching NCM Devices", status_code=500)
 
 
-@router.get("/get-atom-in-ncm", responses={
+@router.get("/get_atom_in_ncm", responses={
     200: {"model": list[GetAtomInNcmResponseSchema]},
     500: {"model": str}
 
@@ -193,11 +224,11 @@ async def get_all_ncm_devices():
 async def get_atom_in_ncm():
     try:
         atom_ids = []
-        ncm_devices = NcmDeviceTable.query.all()
+        ncm_devices = configs.db.query(NcmDeviceTable).all()
         for ncm in ncm_devices:
             atom_ids.append(ncm.atom_id)
 
-        results = AtomTable.query.all()
+        results = configs.db.query(AtomTable).all()
 
         atom_list = []
         for atom in results:
@@ -206,7 +237,7 @@ async def get_atom_in_ncm():
 
             password_group = None
             if atom.password_group_id is not None:
-                password = PasswordGroupTable.query.filter(
+                password = configs.db.query(PasswordGroupTable).filter(
                     PasswordGroupTable.password_group_id == atom.password_group_id
                 ).first()
 
@@ -225,25 +256,40 @@ async def get_atom_in_ncm():
         return JSONResponse(content="Server Error While Fetching Atom In NCM", status_code=500)
 
 
-@router.post("/add-ncm-from-atom", responses={
+@router.post("/add_ncm_from_atom", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
 async def add_ncm_from_atom(atom_ids: list[int]):
     try:
-
+        data =[]
         success_list = []
         error_list = []
 
         for atom_id in atom_ids:
-            atom = AtomTable.query.filter(AtomTable.atom_id == atom_id).first()
-
+            print("atom id is:::::::::::::::::",atom_id,file=sys.stderr)
+            atom = configs.db.query(AtomTable).filter(AtomTable.atom_id == atom_id).first()
             if atom is not None:
+                print("atom is not none::::::::::::",atom,file=sys.stderr)
                 ncm = NcmDeviceTable()
                 ncm.atom_id = atom.atom_id
                 ncm.status = "Active"
 
                 if InsertDBData(ncm) == 200:
+                    data_dict = {
+                        # "atom_id":atom.atom_id,
+                        "ip_address":atom.ip_address,
+                        "device_name":atom.device_name,
+                        "vendor":atom.vendor,
+                        "device_type":atom.device_type,
+                        "fucntion":atom.function,
+                        "ncm_device_id":ncm.ncm_device_id,
+                        "status":ncm.status,
+                        "config_change_date":ncm.config_change_date,
+                        "backup_status":ncm.backup_status
+                    }
+                    print("data dict is::::::::::::::",data_dict,file=sys.stderr)
+                    data.append(data_dict)
                     success_list.append(f"{atom.ip_address} : Device Added Successfully")
                 else:
                     error_list.append(
@@ -254,6 +300,7 @@ async def add_ncm_from_atom(atom_ids: list[int]):
                 error_list.append(f"{atom_id} : Atom Not Found")
 
         response_dict = {
+            "data":data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
@@ -267,17 +314,19 @@ async def add_ncm_from_atom(atom_ids: list[int]):
         return JSONResponse(content="Server Error While Importing Atom In NCM", status_code=500)
 
 
-@router.post("/delete-ncm-device", responses={
+@router.post("/delete_ncm_device", responses={
 
 })
 async def delete_ncm_device(ncm_ids: list[int]):
     try:
+        data = []
         error_list = []
         response_list = []
         for ncm_id in ncm_ids:
             ncm = configs.db.query(NcmDeviceTable).filter(
                 NcmDeviceTable.ncm_device_id == ncm_id).first()
-
+            data.append(ncm_id)
+            print("ncm is:::::::::::::::::::",ncm,file=sys.stderr)
             if ncm is None:
                 error_list.append(f"{ncm_id} : No NCM Device Found")
             elif DeleteDBData(ncm):
@@ -286,6 +335,7 @@ async def delete_ncm_device(ncm_ids: list[int]):
                 error_list.append(f"{ncm_id} : Error While Deleting Device")
 
         response_dict = {
+            "data":data,
             "success": len(response_list),
             "error": len(error_list),
             "error_list": error_list,
@@ -299,14 +349,14 @@ async def delete_ncm_device(ncm_ids: list[int]):
         return JSONResponse(content="Server Error While Deleting NCM Devices", status_code=500)
 
 
-@router.post("/get-all-configurations/{ncm_device_id}", responses={
+@router.post("/get_all_configurations", responses={
     200: {"model": list[NcmConfigHistorySchema]},
     500: {"model": str}
 })
 async def get_all_configuration(ncm_device_id: int):
     try:
 
-        results = NCM_History_Table.query.filter(
+        results = configs.db.query(NCM_History_Table).filter(
             NCM_History_Table.ncm_device_id == ncm_device_id
         ).all()
 
@@ -361,15 +411,15 @@ def check_path(file_path):
 #         return "Server Error While Fetching Configuration Dates", 500
 #
 #
-@router.post("/get-device-configuration/{ncm_history_id}", responses={
+@router.post("/get_device_configuration", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
 })
-async def get_device_configuration(ncm_history_id):
+async def get_device_configuration(ncm_history_id:int):
     try:
 
-        history = NCM_History_Table.query.filter(
+        history = configs.db.query(NCM_History_Table).filter(
             NCM_History_Table.ncm_history_id == ncm_history_id
         ).first()
 
@@ -378,7 +428,9 @@ async def get_device_configuration(ncm_history_id):
 
         cwd = os.getcwd()
         file_path = cwd + "/app/configuration_backups/" + history.file_name
+        print("file path is::::::::::::::",file_path,file=sys.stderr)
         pathFlag = check_path(file_path)
+        print("Path flag is:::::::::::::",pathFlag,file=sys.stderr)
 
         if pathFlag:
             f = open(file_path, "r")
@@ -402,6 +454,7 @@ async def send_command(ncm_obj: SendCommandRequestSchema):
     try:
 
         ncmPuller = NCMPuller()
+        print("ncm puller is::::::::::::::::::",ncmPuller,file=sys.stderr)
         ncmPuller.setup_puller(ncm_obj)
 
         if ncmPuller.status != 200:
@@ -421,7 +474,7 @@ async def send_command(ncm_obj: SendCommandRequestSchema):
         return JSONResponse(content="Server Error While Sending Remote Command", status_code=500)
 
 
-@router.post("/get-configuration-backup", responses={
+@router.post("/get_configuration_backup", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -430,7 +483,9 @@ async def get_configuration_backup(ncm_obj: NcmDeviceId):
     try:
 
         ncmPuller = NCMPuller()
+        print("ncm puller is::::::::::::::",ncmPuller,file=sys.stderr)
         ncmPuller.setup_puller(ncm_obj)
+        print("ncm pulerr obj is::::::::::::::::",ncmPuller.setup_puller(ncm_obj),file=sys.stderr)
 
         if ncmPuller.status != 200:
             return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
@@ -501,7 +556,7 @@ async def get_configuration_backup(ncm_obj: NcmDeviceId):
 #         return jsonify({"message": "Authentication Failed"}), 401
 #
 #
-@router.post("/configuration-comparison", response_class=HTMLResponse, responses={
+@router.post("/configuration_comparison", response_class=HTMLResponse, responses={
     400: {"model": str},
     500: {"model": str}
 })
@@ -511,20 +566,22 @@ async def configuration_comparison(ncm_obj: NcmDeviceId, request: Request):
         history1 = configs.db.query(NCM_History_Table).filter(
             NCM_History_Table.ncm_history_id == ncm_obj["ncm_history_id_1"],
         ).first()
-
+        print("history 1 is:::::::::::::::::::::::::",history1,file=sys.stderr)
         history2 = configs.db.query(NCM_History_Table).filter(
             NCM_History_Table.ncm_history_id == ncm_obj["ncm_history_id_2"],
         ).first()
-
+        print("history2 is::::::::::::::::::",history2,file=sys.stderr)
         if history1 is None or history2 is None:
-            return "One of the Configurations Not Found", 400
+            return JSONResponse(content="One of the Configurations Not Found",status_code=400)
 
         if history1.ncm_history_id == history2.ncm_history_id:
-            return "Can not compare same configurations", 400
+            return JSONResponse(content = "Can not compare same configurations",status_code= 400)
 
         cwd = os.getcwd()
         existingPath = f"{cwd}/app/templates/html_diff_output.html"
+        print("exsisting path is::::::::::::",existingPath,file=sys.stderr)
         existingPath1 = os.path.exists(existingPath)
+        print("exisisting path1 is::::::::::",existingPath1,file=sys.stderr)
         if existingPath1:
             print("Existing File Removed", file=sys.stderr)
             os.remove(existingPath)
