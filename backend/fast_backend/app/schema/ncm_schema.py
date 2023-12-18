@@ -55,3 +55,7 @@ class NcmConfigHistorySchema(BaseSchema):
 
 class SendCommandRequestSchema(NcmDeviceId):
     cmd: str
+
+class GetNcmVendorSchema(BaseSchema):
+    name: str
+    value : int

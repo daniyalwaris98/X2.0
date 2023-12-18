@@ -14,7 +14,7 @@ def insert_uam_device_data(data, atom, ip_addr):
         #     )
 
         device_obj = configs.db.query(UamDeviceTable).filter(UamDeviceTable.atom_id == atom.atom_id).first()
-
+        print("device obj is:::::::::::::::;",device_obj,file=sys.stderr)
         update = False
         if device_obj is not None:
             update = True
@@ -24,8 +24,10 @@ def insert_uam_device_data(data, atom, ip_addr):
             device_obj.atom_id = atom.atom_id
 
         if "device" in data:
+            print("device in data is:::::::::::::::::",data,file=sys.stderr)
             if data["device"]["software_version"] is not None:
                 device_obj.software_version = data["device"]["software_version"]
+                print("device obj is not none")
             else:
                 device_obj.software_version = na
             if "patch_version" in data and data["device"]["patch_version"] is not None:
@@ -88,15 +90,17 @@ def insert_uam_device_data(data, atom, ip_addr):
             if update:
                 print("Updated device " + ip_addr, file=sys.stderr)
                 status_code = UpdateDBData(device_obj)
+                print("statud code is::::::::::::::::::",status_code,file=sys.stderr)
 
             else:
                 print("Inserted device " + ip_addr, file=sys.stderr)
                 status_code = InsertDBData(device_obj)
+                print("status code ofr isnertion is:::::::::",status_code,file=sys.stderr)
 
             uam_id = 0
             if status_code == 200:
                 uam_id = device_obj.uam_id
-
+                print("uam id is:::::::::::::::for 200",uam_id,file=sys.stderr)
             return status_code, uam_id
         else:
             print("Device Inventory Not Found", file=sys.stderr)
@@ -581,51 +585,102 @@ def insert_uam_device_aps_data(uam_id, data):
             traceback.print_exc()
 
 
+def insert_uam_device_aps_data(uam_id, data):
+    for ap in data["aps"]:
+        try:
+            if "serial_number" not in ap:
+                continue
+
+            if ap["serial_number"] is None:
+                continue
+
+            ap["serial_number"] = ap["serial_number"].strip()
+            if ap["serial_number"] == "":
+                continue
+
+            aps_data = configs.db.query(APS_TABLE).filter(
+                APS_TABLE.serial_number == ap["serial_number"], uam_id == uam_id
+            ).first()
+
+            update = False
+            if aps_data is not None:
+                update = True
+            else:
+                aps_data = APS_TABLE()
+                aps_data.uam_id = uam_id
+                aps_data.serial_number = ap["serial_number"]
+
+            if "name" in ap:
+                aps_data.ap_name = ap["name"]
+
+            if ap["description"] is not None:
+                aps_data.description = ap["description"]
+            else:
+                aps_data.description = na
+
+            if "ip_addr" in ap:
+                aps_data.ap_ip = ap["ip_addr"]
+
+            if ap["serial_number"] is not None:
+                aps_data.serial_number = ap["serial_number"]
+            else:
+                aps_data.serial_number = na
+
+            if ap["hw_version"] is not None:
+                aps_data.hardware_version = ap["hw_version"]
+            else:
+                aps_data.hardware_version = na
+
+            if ap["software_version"] is not None:
+                aps_data.software_version = ap["software_version"]
+            else:
+                aps_data.software_version = na
+
+            if update:
+                UpdateDBData(aps_data)
+            else:
+                InsertDBData(aps_data)
+        except Exception:
+            traceback.print_exc()
+
+
 def uam_inventory_data(puller_data):
-    success = False
     failed = False
     try:
         for ip_addr in puller_data.keys():
             print(f"\n\n{ip_addr} : Checking Device For Onboarding", file=sys.stderr)
             data = puller_data[ip_addr]
-            print("data is:::::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
-            success = True
+
             if data["status"] == "error":
                 print(f"\n\n{ip_addr} : Error - Login Failed Skipping", file=sys.stderr)
-                print("data error failed is true:::::::::::",file=sys.stderr)
                 failed = True
 
             elif data["status"] == "success":
                 atom = configs.db.query(AtomTable).filter(AtomTable.ip_address == ip_addr).first()
-                print("atom success is:;;",atom,file=sys.stderr)
-                success = True
                 if atom is None:
                     print(f"\n\n{ip_addr} : Error - Not Found In Atom", file=sys.stderr)
                     # return "IP Address Not Found",500
                     failed = True
-                    print("failed is true at 603:::::::::",file=sys.stderr)
                     continue
 
                 print(f"\n\n{ip_addr} : Device Found in Atom", file=sys.stderr)
 
                 status_code, uam_id = insert_uam_device_data(data, atom, ip_addr)
-                print("status code for the uam insert devices is:::::",status_code,file=sys.stderr)
-                print("uam id whike insert uam devices iss:::::::",uam_id,file=sys.stderr)
+                print("status code is :::::::::::::::::",status_code,file=sys.stderr)
+                print("uam id is::::::::::::::::::::::::::::;",uam_id,file=sys.stderr)
                 if status_code == 200 and uam_id != 0:
 
                     if data["device"]["manufecturer"] is not None:
                         atom.vendor = data["device"]["manufecturer"]
 
                     atom.onboard_status = True
-
                     UpdateDBData(atom)
-                    success = True
+
                     try:
                         insert_uam_device_board_data(uam_id, data)
                         print(
                             f"\n{ip_addr} : Boards Added Successfully", file=sys.stderr
                         )
-                        print("board addded successfully:::::::::::::::",file=sys.stderr)
                     except Exception:
                         print(
                             f"\n{ip_addr} : Error In Board Insertion", file=sys.stderr
@@ -671,15 +726,10 @@ def uam_inventory_data(puller_data):
                     print("Device Not Found", file=sys.stderr)
                     failed = True
 
-
     except Exception as e:
         traceback.print_exc()
         print(
             f"Error while getting data from device error {e}", file=sys.stderr
         )
         failed = True
-        return failed
-    if success == True:
-        return success
-    else:
-        return failed
+    return failed

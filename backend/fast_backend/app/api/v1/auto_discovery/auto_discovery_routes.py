@@ -13,7 +13,7 @@ router = APIRouter(
 )
 
 
-@router.post("/addNetwork", responses={
+@router.post("/add_network", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -28,7 +28,7 @@ async def add_network(network_obj: AddDiscoveryNetworkRequestSchema):
         return JSONResponse(content="Server Error While Adding Network", status_code=500)
 
 
-@router.post("/editNetwork", responses={
+@router.post("/edit_network", responses={
     200: {"model": str},
     400: {"model": str},
     500: {"model": str}
@@ -43,24 +43,32 @@ async def edit_network(network_obj: EditDiscoveryNetworkRequestSchema):
         return JSONResponse(content="Server Error While Updating Network", status_code=500)
 
 
-@router.post("/addNetworks", responses={
+@router.post("/add_networks", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
 async def add_networks(network_objs: list[AddDiscoveryNetworkRequestSchema]):
     try:
+        data = []
         error_list = []
         success_list = []
 
         for networkObj in network_objs:
             response, status = add_network_util(networkObj, True)
-
-            if status == 200:
-                success_list.append(response)
-            else:
+            print("repsosne is::::::::",response,file=sys.stderr)
+            print("status is::::::::::::::::::::::",status,file=sys.stderr)
+            if isinstance(response,dict):
+                for key,value in response.items():
+                    if key == 'data':
+                        data.append(value)
+                    elif key=='message':
+                            success_list.append(value)
+            if status == 400:
                 error_list.append(response)
 
+
         response_dict = {
+            "data":data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
@@ -108,6 +116,7 @@ async def get_all_networks():
 })
 async def delete_networks(network_objs: list[int]):
     try:
+        data = []
         success_ist = []
         error_ist = []
 
@@ -118,13 +127,13 @@ async def delete_networks(network_objs: list[int]):
                 query_string = (f"select subnet from auto_discovery_network_table where "
                                 f"network_id='{networkObj}';")
                 subnet = configs.db.execute(query_string).fetchone()
-
+                data.append(networkObj)
                 if subnet is not None:
                     query_string = (f"delete from auto_discovery_network_table where "
                                     f"network_id='{networkObj}';")
                     configs.db.execute(query_string)
                     configs.db.commit()
-
+                    # data.append(networkObj)
                     query_string = f"delete from auto_discovery_table where subnet='{subnet[0]}';"
                     configs.db.execute(query_string)
                     configs.db.commit()
@@ -139,6 +148,7 @@ async def delete_networks(network_objs: list[int]):
                 error_ist.append(f"Row {row} : Error While Deleting")
 
         response = {
+            "data":data,
             "success": len(success_ist),
             "error": len(error_ist),
             "success_list": success_ist,
@@ -353,6 +363,8 @@ def get_discovery_function_count(subnet: str):
 async def get_discovery_data(subnet: str):
     try:
         response, status = get_discovery_data_util(subnet, None)
+        print("response is:::::::::::::::::",response,file=sys.stderr)
+        print("status is::::::::::::::::::::::::::",status,file=sys.stderr)
         return JSONResponse(content=response, status_code=status)
     except Exception:
         traceback.print_exc()
