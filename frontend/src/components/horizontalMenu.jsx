@@ -23,12 +23,12 @@ export default function HorizontalMenu({ menuItems, defaultPage }) {
     },
   }));
 
-  const handleMenuClick = (event, id) => {
+  const handleMenuClick = (event, id, type = "page") => {
     setOpenSubmenus((prevOpenSubmenus) => ({
       ...prevOpenSubmenus,
       [id]: !prevOpenSubmenus[id],
     }));
-    setSelectedMenuItem(id);
+    if (type === "page") setSelectedMenuItem(id);
   };
 
   const renderMenuItems = (
@@ -45,14 +45,15 @@ export default function HorizontalMenu({ menuItems, defaultPage }) {
             <StyledMenuItem
               key={id}
               id={id}
-              onClick={(event) => handleMenuClick(event, id)}
+              onClick={(event) => handleMenuClick(event, id, "dropDown")}
               sx={{
                 color: isClicked
                   ? theme?.palette?.horizontal_menu?.secondary_text
                   : theme?.palette?.horizontal_menu?.primary_text,
+                isClicked: isClicked,
               }}
             >
-              {item.name}
+              {item.name} DropDown
             </StyledMenuItem>
             <Menu
               anchorEl={document.getElementById(id)}
@@ -64,10 +65,10 @@ export default function HorizontalMenu({ menuItems, defaultPage }) {
                 left:
                   position.left +
                     document.getElementById(id)?.offsetWidth +
-                    10 || 0,
+                    240 || 0,
               }} // Position the nested menu to the right side of the parent menu item
             >
-              {renderMenuItems(item.children, id, { top: 215, left: 160 })}
+              {renderMenuItems(item.children, id)}
             </Menu>
           </div>
         );
@@ -77,7 +78,8 @@ export default function HorizontalMenu({ menuItems, defaultPage }) {
             id={id}
             key={id}
             component={Link}
-            to={item.path}
+            to={parentId ? `${parentId}/${item.path}` : item.path}
+            // to={item.path}
             onClick={(event) => handleMenuClick(event, id)}
             sx={{
               color: isClicked
