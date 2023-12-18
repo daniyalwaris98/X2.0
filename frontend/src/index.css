@@ -31,7 +31,6 @@ code {
 }
 
 /* ////////////////////////////////////////////////////////////////////////////////// */
-
 header {
   box-shadow: 0 1px 3px 0 rgba(0, 0, 0, 0.07), 0 1px 2px 0 rgba(0, 0, 0, 0.05);
   color: #212529;
@@ -95,7 +94,8 @@ header {
 
 .desktop-nav .menu-items a:hover,
 .desktop-nav .menu-items button:hover {
-  background-color: #f2f2f2;
+  /* background-color: #f2f2f2; */
+  border-bottom: 2px solid green;
 }
 
 .desktop-nav .arrow::after {
@@ -233,4 +233,9 @@ header {
   .mobile-nav .dropdown.show {
     display: block;
   }
+}
+
+.selected {
+  color: green !important;
+  border-bottom: 2px solid green !important;
 }

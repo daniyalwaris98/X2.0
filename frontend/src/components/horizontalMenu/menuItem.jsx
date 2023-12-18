@@ -3,7 +3,15 @@ import Dropdown from "./dropdown";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 
-const MenuItems = ({ items, depthLevel }) => {
+const MenuItems = ({
+  item,
+  depthLevel,
+  menuPath,
+  handleAddMenuPath,
+  handleRemoveMenuPath,
+  selectedMenuPath,
+  setSelectedMenuPath,
+}) => {
   const [dropdown, setDropdown] = useState(false);
   let ref = useRef();
 
@@ -23,10 +31,12 @@ const MenuItems = ({ items, depthLevel }) => {
   }, [dropdown]);
 
   const onMouseEnter = () => {
+    handleAddMenuPath(item.name);
     setDropdown(true);
   };
 
   const onMouseLeave = () => {
+    handleRemoveMenuPath();
     setDropdown(false);
   };
 
@@ -46,41 +56,66 @@ const MenuItems = ({ items, depthLevel }) => {
       onMouseLeave={onMouseLeave}
       onClick={closeDropdown}
     >
-      {items.path && items.children ? (
+      {item.path && item.children ? (
         <>
           <button
             type="button"
             aria-haspopup="menu"
             aria-expanded={dropdown ? "true" : "false"}
+            className={`${
+              selectedMenuPath[depthLevel] === item.name ? "selected" : ""
+            }`}
             onClick={() => toggleDropdown()}
           >
-            <Link to={items.path}>{items.name}</Link>
+            <Link to={item.path}>{item.name}</Link>
             {depthLevel > 0 ? <span>&raquo;</span> : <span className="arrow" />}
           </button>
           <Dropdown
             depthLevel={depthLevel}
-            submenus={items.children}
+            submenus={item.children}
             dropdown={dropdown}
+            menuPath={menuPath}
+            handleAddMenuPath={handleAddMenuPath}
+            handleRemoveMenuPath={handleRemoveMenuPath}
+            selectedMenuPath={selectedMenuPath}
+            setSelectedMenuPath={setSelectedMenuPath}
           />
         </>
-      ) : !items.path && items.children ? (
+      ) : !item.path && item.children ? (
         <>
           <button
             type="button"
             aria-haspopup="menu"
             aria-expanded={dropdown ? "true" : "false"}
+            className={`${
+              selectedMenuPath[depthLevel] === item.name ? "selected" : ""
+            }`}
+            onClick={() => toggleDropdown()}
           >
-            {items.name}
+            {item.name}
             {depthLevel > 0 ? <span>&raquo;</span> : <span className="arrow" />}
           </button>
           <Dropdown
             depthLevel={depthLevel}
-            submenus={items.children}
+            submenus={item.children}
             dropdown={dropdown}
+            menuPath={menuPath}
+            handleAddMenuPath={handleAddMenuPath}
+            handleRemoveMenuPath={handleRemoveMenuPath}
+            selectedMenuPath={selectedMenuPath}
+            setSelectedMenuPath={setSelectedMenuPath}
           />
         </>
       ) : (
-        <Link to={items.path}>{items.name}</Link>
+        <Link
+          to={item.path}
+          onClick={() => setSelectedMenuPath([...menuPath])}
+          className={`${
+            selectedMenuPath[depthLevel] === item.name ? "selected" : ""
+          }`}
+        >
+          {item.name}
+        </Link>
       )}
     </li>
   );
