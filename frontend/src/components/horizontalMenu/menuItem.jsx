@@ -2,6 +2,7 @@ import React from "react";
 import Dropdown from "./dropdown";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
+import "./main.css";
 
 const MenuItems = ({
   item,
@@ -12,6 +13,10 @@ const MenuItems = ({
   selectedMenuPath,
   setSelectedMenuPath,
 }) => {
+  const menuItemClassName =
+    depthLevel === 0 ? "root-menu-item menu-item" : "menu-item";
+  const menuItemTextClassName =
+    depthLevel === 0 ? "root-menu-item-text" : "menu-item-text";
   const [dropdown, setDropdown] = useState(false);
   let ref = useRef();
 
@@ -31,7 +36,7 @@ const MenuItems = ({
   }, [dropdown]);
 
   const onMouseEnter = () => {
-    handleAddMenuPath(item.name);
+    handleAddMenuPath(item.id);
     setDropdown(true);
   };
 
@@ -50,11 +55,12 @@ const MenuItems = ({
 
   return (
     <li
-      className="menu-items"
+      className={menuItemClassName}
       ref={ref}
       onMouseEnter={onMouseEnter}
       onMouseLeave={onMouseLeave}
       onClick={closeDropdown}
+      style={{ cursor: "pointer", border: "0px solid red" }}
     >
       {item.path && item.children ? (
         <>
@@ -62,10 +68,11 @@ const MenuItems = ({
             type="button"
             aria-haspopup="menu"
             aria-expanded={dropdown ? "true" : "false"}
-            className={`${
-              selectedMenuPath[depthLevel] === item.name ? "selected" : ""
-            }`}
             onClick={() => toggleDropdown()}
+            className={`${menuItemTextClassName} ${
+              selectedMenuPath[depthLevel] === item.id ? "selected" : ""
+            }`}
+            style={{ border: "0px solid red", height: "51px" }}
           >
             <Link to={item.path}>{item.name}</Link>
             {depthLevel > 0 ? <span>&raquo;</span> : <span className="arrow" />}
@@ -87,10 +94,11 @@ const MenuItems = ({
             type="button"
             aria-haspopup="menu"
             aria-expanded={dropdown ? "true" : "false"}
-            className={`${
-              selectedMenuPath[depthLevel] === item.name ? "selected" : ""
-            }`}
             onClick={() => toggleDropdown()}
+            className={`${menuItemTextClassName} ${
+              selectedMenuPath[depthLevel] === item.id ? "selected" : ""
+            }`}
+            style={{ border: "0px solid red", height: "100%" }}
           >
             {item.name}
             {depthLevel > 0 ? <span>&raquo;</span> : <span className="arrow" />}
@@ -108,13 +116,19 @@ const MenuItems = ({
         </>
       ) : (
         <Link
+          className={`${menuItemTextClassName} ${
+            selectedMenuPath[depthLevel] === item.id ? "selected" : ""
+          }`}
           to={item.path}
           onClick={() => setSelectedMenuPath([...menuPath])}
-          className={`${
-            selectedMenuPath[depthLevel] === item.name ? "selected" : ""
-          }`}
+          style={{
+            height: "100%",
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
         >
-          {item.name}
+          <div>{item.name}</div>
         </Link>
       )}
     </li>

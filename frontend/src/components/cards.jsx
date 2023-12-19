@@ -10,7 +10,7 @@ export default function DefaultCard({ sx, children }) {
     <div
       style={{
         ...sx,
-        position: "relative",
+        // position: "relative",
         backgroundColor: theme?.palette?.default_card?.background,
         borderRadius: "7px",
       }}

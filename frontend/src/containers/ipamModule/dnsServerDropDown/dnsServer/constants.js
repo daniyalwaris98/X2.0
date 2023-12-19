@@ -5,11 +5,10 @@ export const FILE_NAME_EXPORT_ALL_DATA = "all_dns_servers";
 export const FILE_NAME_EXPORT_TEMPLATE = "dns_servers_template";
 export const TABLE_DATA_UNIQUE_ID = "dns_server_id";
 export const indexColumnNameConstants = {
-  DEVICE_ID: TABLE_DATA_UNIQUE_ID,
+  DNS_SERVER_ID: TABLE_DATA_UNIQUE_ID,
   IP_ADDRESS: "ip_address",
-  DEVICE_NAME: "device_name",
-  DEVICE_TYPE: "device_type",
-  PASSWORD_GROUP: "password_group",
-  SOURCE: "source",
+  SERVER_NAME: "server_name",
+  TYPE: "type",
+  NUMBER_OF_ZONES: "number_of_zones",
   ACTIONS: "actions",
 };

@@ -1,14 +1,14 @@
 import React from "react";
 // import MobileNav from "./mobileNav";
 import Navbar from "./navbar";
-import { Link } from "react-router-dom";
+import "./main.css";
 
-const Header = ({ menuItems }) => {
+const Header = ({ menuItems, defaultPagePath }) => {
   return (
     <header>
       <div className="nav-area">
         {/* for large screens */}
-        <Navbar menuItems={menuItems} />
+        <Navbar menuItems={menuItems} defaultPagePath={defaultPagePath} />
 
         {/* for small screens */}
         {/* <MobileNav /> */}

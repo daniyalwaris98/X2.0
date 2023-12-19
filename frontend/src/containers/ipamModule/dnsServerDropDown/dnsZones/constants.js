@@ -7,9 +7,11 @@ export const TABLE_DATA_UNIQUE_ID = "dns_zone_id";
 export const indexColumnNameConstants = {
   DEVICE_ID: TABLE_DATA_UNIQUE_ID,
   IP_ADDRESS: "ip_address",
-  DEVICE_NAME: "device_name",
-  DEVICE_TYPE: "device_type",
-  PASSWORD_GROUP: "password_group",
-  SOURCE: "source",
+  ZONE_NAME: "zone_name",
+  ZONE_TYPE: "zone_type",
+  LOOKUP_TYPE: "lookup_type",
+  DNS_SERVER: "dns_server",
+  SERVER_TYPE: "server_type",
+  ZONE_STATUS: "zone_status",
   ACTIONS: "actions",
 };

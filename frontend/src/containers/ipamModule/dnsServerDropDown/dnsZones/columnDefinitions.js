@@ -8,10 +8,12 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
 
   const columnDefinitions = [
     indexColumnNameConstants.IP_ADDRESS,
-    indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.DEVICE_TYPE,
-    indexColumnNameConstants.PASSWORD_GROUP,
-    indexColumnNameConstants.SOURCE,
+    indexColumnNameConstants.ZONE_NAME,
+    indexColumnNameConstants.ZONE_TYPE,
+    indexColumnNameConstants.LOOKUP_TYPE,
+    indexColumnNameConstants.DNS_SERVER,
+    indexColumnNameConstants.SERVER_TYPE,
+    indexColumnNameConstants.ZONE_STATUS,
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,

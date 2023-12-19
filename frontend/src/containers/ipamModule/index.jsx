@@ -1,7 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
-import HorizontalMenu from "../../components/horizontalMenu";
+import { getPathAllSegments } from "../../utils/helpers";
+// import HorizontalMenu from "../../components/horizontalMenu";
 import {
   PAGE_NAME as PAGE_NAME_DEVICES,
   PAGE_PATH as PAGE_PATH_DEVICES,
@@ -10,7 +11,6 @@ import {
   PAGE_NAME as PAGE_NAME_DEVICE_SUBNET,
   PAGE_PATH as PAGE_PATH_DEVICE_SUBNET,
 } from "./deviceSubnet/constants";
-import { getPathLastSegment } from "../../utils/helpers";
 import {
   DROPDOWN_NAME as DROPDOWN_NAME_SUBNETS,
   DROPDOWN_PATH as DROPDOWN_PATH_SUBNETS,
@@ -59,7 +59,7 @@ import {
   PAGE_NAME as PAGE_NAME_LOAD_BALANCERS,
   PAGE_PATH as PAGE_PATH_LOAD_BALANCERS,
 } from "./vipDropDown/loadBalancers/constants";
-import Header from "../../components/horizontalMenu/header";
+import HorizontalMenu from "../../components/horizontalMenu/index";
 
 export const MODULE_PATH = "ipam_module";
 
@@ -140,21 +140,15 @@ const menuItems = [
 ];
 
 function Index(props) {
-  let pagePath = getPathLastSegment();
-  if (pagePath === MODULE_PATH) pagePath = PAGE_PATH_DEVICES;
+  let pagePath = getPathAllSegments();
+  if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
+    pagePath = [PAGE_PATH_DEVICES];
+  } else pagePath = pagePath.splice(2);
 
   return (
     <>
-      {/* <Header menuItems={menuItems} /> */}
-
-      <Card
-        sx={{
-          marginBottom: "10px",
-          height: "50px",
-        }}
-      >
-        <Header menuItems={menuItems} />
-        {/* <HorizontalMenu menuItems={menuItems} defaultPage={pagePath} /> */}
+      <Card>
+        <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>
       <Outlet />
     </>

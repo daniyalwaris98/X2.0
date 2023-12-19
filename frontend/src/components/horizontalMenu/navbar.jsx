@@ -1,14 +1,21 @@
 import React, { useEffect, useState } from "react";
+import { useTheme, styled } from "@mui/material/styles";
 import MenuItem from "./menuItem";
+import "./main.css";
 
-const Navbar = ({ menuItems }) => {
+const Navbar = ({ menuItems, defaultPagePath = [] }) => {
   const depthLevel = 0;
   const [menuPath, setMenuPath] = useState([]);
-  const [selectedMenuPath, setSelectedMenuPath] = useState([]);
+  const [selectedMenuPath, setSelectedMenuPath] = useState(defaultPagePath);
 
-  // useEffect(() => {
-  //   if (menuPath.length === 1) alert("menuPath" + JSON.stringify(menuPath));
-  // }, [menuPath]);
+  const StyledNav = styled("nav")(({ theme, sx }) => ({}));
+
+  const StyledUL = styled("ul")(({ theme, sx }) => ({
+    display: "flex",
+    alignItems: "center",
+    flexWrap: "wrap",
+    listStyle: "none",
+  }));
 
   function handleAddMenuPath(menuItem) {
     setMenuPath((prev) => [...prev, menuItem]);

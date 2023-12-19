@@ -7,11 +7,12 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS,
-    indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.DEVICE_TYPE,
-    indexColumnNameConstants.PASSWORD_GROUP,
-    indexColumnNameConstants.SOURCE,
+    indexColumnNameConstants.NAME,
+    indexColumnNameConstants.TYPE,
+    indexColumnNameConstants.DATA,
+    indexColumnNameConstants.ZONE_NAME,
+    indexColumnNameConstants.SERVER_NAME,
+    indexColumnNameConstants.SERVER_IP,
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,
