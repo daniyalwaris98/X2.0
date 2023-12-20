@@ -1,6 +1,5 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
@@ -17,7 +16,6 @@ import DefaultTableConfigurations from "../../../../components/tableConfiguratio
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import {
   PAGE_NAME,
-  ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
@@ -34,22 +32,18 @@ const Index = () => {
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
+  const { columnDefinitions } = useIndexTableColumnDefinitions({});
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
-    useButtonsConfiguration({
-      configure_table: { handleClick: handleTableConfigurationsOpen },
-      default_export: { handleClick: handleDefaultExport },
-      default_delete: {
-        handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
-      },
-      default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
-    });
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    default_export: { handleClick: handleDefaultExport },
+    default_delete: {
+      handleClick: handleDelete,
+      visible: selectedRowKeys.length > 0,
+    },
+  });
 
   // states
-  const [recordToEdit, setRecordToEdit] = useState(null);
-  const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -120,20 +114,6 @@ const Index = () => {
     }
   }
 
-  function handleEdit(record) {
-    setRecordToEdit(record);
-    setOpen(true);
-  }
-
-  function handleAdd(optionType) {
-    setOpen(true);
-  }
-
-  function handleClose() {
-    setRecordToEdit(null);
-    setOpen(false);
-  }
-
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     handleSuccessAlert("File exported successfully.");
@@ -145,14 +125,6 @@ const Index = () => {
 
   return (
     <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
-      {open ? (
-        <Modal
-          handleClose={handleClose}
-          open={open}
-          recordToEdit={recordToEdit}
-        />
-      ) : null}
-
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}

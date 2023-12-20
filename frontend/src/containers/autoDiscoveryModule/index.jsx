@@ -1,7 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
-import HorizontalMenu from "../../components/horizontalMenu";
+import HorizontalMenu from "../../components/horizontalMenu/index";
+import { getPathAllSegments } from "../../utils/helpers";
 import {
   PAGE_NAME as PAGE_NAME_MANAGE_NETWORKS,
   PAGE_PATH as PAGE_PATH_MANAGE_NETWORKS,
@@ -46,8 +47,10 @@ const menuItems = [
 ];
 
 function Index(props) {
-  let pagePath = getPathLastSegment();
-  if (pagePath === MODULE_PATH) pagePath = PAGE_PATH_MANAGE_NETWORKS;
+  let pagePath = getPathAllSegments();
+  if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
+    pagePath = [PAGE_PATH_MANAGE_NETWORKS];
+  } else pagePath = pagePath.splice(2);
 
   return (
     <>
@@ -57,7 +60,7 @@ function Index(props) {
           height: "50px",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} defaultPage={pagePath} />
+        <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>
       <Outlet />
     </>

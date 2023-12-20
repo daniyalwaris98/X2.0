@@ -1,8 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
+import HorizontalMenu from "../../components/horizontalMenu/index";
 import { getPathAllSegments } from "../../utils/helpers";
-// import HorizontalMenu from "../../components/horizontalMenu";
 import {
   PAGE_NAME as PAGE_NAME_DEVICES,
   PAGE_PATH as PAGE_PATH_DEVICES,
@@ -59,7 +59,6 @@ import {
   PAGE_NAME as PAGE_NAME_LOAD_BALANCERS,
   PAGE_PATH as PAGE_PATH_LOAD_BALANCERS,
 } from "./vipDropDown/loadBalancers/constants";
-import HorizontalMenu from "../../components/horizontalMenu/index";
 
 export const MODULE_PATH = "ipam_module";
 

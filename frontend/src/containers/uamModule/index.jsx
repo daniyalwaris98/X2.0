@@ -1,7 +1,8 @@
 import React from "react";
-import { Outlet, useParams } from "react-router-dom";
+import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
-import HorizontalMenu from "../../components/horizontalMenu";
+import HorizontalMenu from "../../components/horizontalMenu/index";
+import { getPathAllSegments } from "../../utils/helpers";
 import {
   PAGE_NAME as PAGE_NAME_SITE,
   PAGE_PATH as PAGE_PATH_SITE,
@@ -38,7 +39,6 @@ import {
   PAGE_NAME as PAGE_NAME_HW_LIFE_CYCLE,
   PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLE,
 } from "./hwLifeCycle/constants";
-import { getPathLastSegment } from "../../utils/helpers";
 
 export const MODULE_PATH = "uam_module";
 
@@ -63,19 +63,15 @@ const menuItems = [
 ];
 
 function Index(props) {
-  let pagePath = getPathLastSegment();
-  if (pagePath === MODULE_PATH) pagePath = PAGE_PATH_SITE;
+  let pagePath = getPathAllSegments();
+  if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
+    pagePath = [PAGE_PATH_SITE];
+  } else pagePath = pagePath.splice(2);
 
   return (
     <>
-      <Card
-        sx={{
-          marginBottom: "10px",
-          height: "50px",
-          boxShadow: "unset !important",
-        }}
-      >
-        <HorizontalMenu menuItems={menuItems} defaultPage={pagePath} />
+      <Card>
+        <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>
       <Outlet />
     </>

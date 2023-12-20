@@ -9,32 +9,11 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
   const columnDefinitions = [
     indexColumnNameConstants.IP_ADDRESS,
     indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.DEVICE_TYPE,
-    indexColumnNameConstants.PASSWORD_GROUP,
-    indexColumnNameConstants.SOURCE,
-    {
-      data_key: indexColumnNameConstants.ACTIONS,
-      search: false,
-      fixed: "right",
-      align: "center",
-      width: 100,
-      render: (text, record) => (
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            justifyContent: "center",
-          }}
-        >
-          <Icon
-            fontSize={"15px"}
-            onClick={() => handleEdit(record)}
-            icon="bx:edit"
-            style={{ cursor: "pointer" }}
-          />
-        </div>
-      ),
-    },
+    indexColumnNameConstants.INTERNAL_IP,
+    indexColumnNameConstants.VIP,
+    indexColumnNameConstants.SOURCE_PORT,
+    indexColumnNameConstants.DESTINATION_PORT,
+    indexColumnNameConstants.EXTERNAL_INTERFACE,
   ];
 
   const dataKeys = columnDefinitions
@@ -45,7 +24,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return item;
       }
     })
-    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
+    .filter((item) => true);
 
   return {
     columnDefinitions,
