@@ -190,3 +190,25 @@ class SnmpV2CredentialsResponseSchema(SnmpV2CredentialsRequestSchema):
 class SnmpV3CredentialsResponseSchema(SnmpV3CredentialsRequestSchema):
     credentials_id: int
 
+class Response200(BaseSchema):
+    data: dict
+    message: str
+
+class DeleteResponseSchema(BaseSchema):
+    data: dict
+    success: int
+    error: int
+    success_list: list[str]
+    error_list: list[str]
+
+class WMIMonitoringCredentialSchema(BaseSchema):
+    username:str
+    profile_name:str
+    password:str
+
+class GetWMIMonitoringCredentialSchema(BaseSchema):
+    monitoring_credentials_id:int
+    username:str
+    profile_name:str
+    password:str
+    category:str
