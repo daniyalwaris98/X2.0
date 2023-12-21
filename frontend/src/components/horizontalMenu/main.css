@@ -35,9 +35,9 @@ header {
   height: 50px;
 }
 
-.desktop-nav .menu-item:hover .root-menu-item {
+/* .desktop-nav .menu-item:hover .root-menu-item {
   border-bottom: 3px solid green !important;
-}
+} */
 
 .desktop-nav .menu-item {
   margin-top: -1px;
@@ -52,7 +52,7 @@ header {
 }
 
 .selected {
-  margin-bottom: -3px !important;
+  /* margin-bottom: -3px !important; */
   color: green !important;
   border-bottom: 3px solid green !important;
 }
@@ -109,7 +109,7 @@ header {
   background-color: #fff;
   border-radius: 0.5rem;
   display: none;
-  top: 52px;
+  top: 51px;
 }
 
 .desktop-nav .dropdown.show {

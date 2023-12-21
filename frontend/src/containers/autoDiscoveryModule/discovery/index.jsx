@@ -1,8 +1,8 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../store/features/atomModule/passwordGroup/apis";
+import { useFetchRecordsMutation } from "../../../store/features/autoDiscoveryModule/discovery/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
+import { selectTableData } from "../../../store/features/autoDiscoveryModule/discovery/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
@@ -42,13 +42,20 @@ const Index = () => {
   const dataSource = useSelector(selectTableData);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchRecords,
+    {
+      data: fetchRecordsData,
+      isSuccess: isFetchRecordsSuccess,
+      isLoading: isFetchRecordsLoading,
+      isError: isFetchRecordsError,
+      error: fetchRecordsError,
+    },
+  ] = useFetchRecordsMutation();
+
+  useEffect(() => {
+    fetchRecords({ subnet: "All" });
+  }, []);
 
   // error handling custom hooks
   useErrorHandling({

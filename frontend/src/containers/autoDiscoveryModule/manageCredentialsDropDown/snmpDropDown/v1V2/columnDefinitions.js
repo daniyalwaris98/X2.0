@@ -8,6 +8,7 @@ export function useIndexTableColumnDefinitions({}) {
 
   const columnDefinitions = [
     indexColumnNameConstants.DESCRIPTION,
+    indexColumnNameConstants.PORT,
     indexColumnNameConstants.VERSION,
     indexColumnNameConstants.PROFILE_NAME,
     indexColumnNameConstants.COMMUNITY,

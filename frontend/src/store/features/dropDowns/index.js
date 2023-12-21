@@ -10,6 +10,7 @@ const initialState = {
   password_group_names: [],
   password_group_type_names: [],
   status_names: [],
+  subnets_names: [],
 };
 
 const dropDownsSlice = createSlice({
@@ -64,6 +65,12 @@ const dropDownsSlice = createSlice({
         extendedApi.endpoints.fetchStatusNames.matchFulfilled,
         (state, action) => {
           state.status_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchSubnetsNames.matchFulfilled,
+        (state, action) => {
+          state.subnets_names = action.payload;
         }
       );
   },
