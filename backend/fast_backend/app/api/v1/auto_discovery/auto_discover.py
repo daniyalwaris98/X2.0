@@ -9,45 +9,54 @@ from pysnmp.hlapi import *
 
 
 def discover_ip_list(ip_list, results):
-    for ip in ip_list:
-        try:
-            scanner = nmap.PortScanner()
-            scanner.scan(ip, arguments='-O -T5')
-            host = scanner.all_hosts()[0]
+    try:
+        for ip in ip_list:
+            print("ip in discover ip list is::::::::::::::",ip,file=sys.stderr)
+            try:
+                scanner = nmap.PortScanner()
+                scanner.scan(ip, arguments='-O -T5')
+                host = scanner.all_hosts()[0]
+                if host:
+                    udp = nmap.PortScanner()
+                    udp.scan(ip, arguments='-sU -T5')
 
-            udp = nmap.PortScanner()
-            udp.scan(ip, arguments='-sU -T5')
+                    data_list = extract_ip_data(scanner, udp, host)
 
-            data_list = extract_ip_data(scanner, udp, host)
-
-            if data_list is not None:
-                results.append(data_list)
-
-        except Exception:
-            print("Error In DiscoverIPList For " + ip, file=sys.stderr)
-
-
+                    if data_list is not None:
+                        results.append(data_list)
+                else:
+                    print("Host Not found",file=sys.stderr)
+            except Exception:
+                traceback.print_exc()
+                print("Error In DiscoverIPList For " + ip, file=sys.stderr)
+    except Exception as e:
+        traceback.print_exc()
+        print("error in discover ip list",str(e))
 def get_range_inventory_data(start_ip, end_ip):
-    ip_list = get_all_ips_from_range(start_ip, end_ip)
+    try:
+        ip_list = get_all_ips_from_range(start_ip, end_ip)
+        print("ip list is::::::::::::::::::",ip_list,file=sys.stderr)
 
-    if len(ip_list) < 10:
-        poll_size = len(ip_list)
-    else:
-        poll_size = 10
+        if len(ip_list) < 10:
+            poll_size = len(ip_list)
+        else:
+            poll_size = 10
 
-    ip_polls = create_poll(ip_list, poll_size)
-    threads = []
-    results = []
-    for poll in ip_polls:
-        th = threading.Thread(target=discover_ip_list, args=(poll, results))
-        th.start()
-        threads.append(th)
+        ip_polls = create_poll(ip_list, poll_size)
+        threads = []
+        results = []
+        for poll in ip_polls:
+            th = threading.Thread(target=discover_ip_list, args=(poll, results))
+            th.start()
+            threads.append(th)
 
-    for t in threads:
-        t.join()
+        for t in threads:
+            t.join()
 
-    return results
-
+        return results
+    except Exception as e:
+        traceback.print_exc()
+        print("Error in get range inventory data",str(e))
 
 def get_subnet_inventory_data(subnet, exclude):
     ip_list = get_all_ips_from_subnet(subnet)
@@ -61,7 +70,7 @@ def get_subnet_inventory_data(subnet, exclude):
         last = ip_list[end + 1:]
 
         ip_list = first + last
-
+        print("ip list is:::::::::::::::::::get subnet inventory data",ip_list,file=sys.stderr)
         # dot = subnet.rfind('.')
         # startIP = subnet[:dot+1]+str(start)
         # endIP = subnet[:dot+1]+str(end)
@@ -154,6 +163,17 @@ def extract_ip_data(scanner, udp, host):
         vendor = "Unknown"
 
     try:
+        mac_address = scanner[host]['osmatch'][0]['osclass'][0]['mac']
+    except Exception:
+        mac_address = "Unknown"
+
+    try:
+        # Extract device name if available
+        device_name = scanner[host]['hostnames'][0]['name']
+    except KeyError:
+        device_name = "Unknown"
+
+    try:
         if udp[host]['udp'][161]['state'] == 'open':
             snmp_status = "Enabled"
         else:
@@ -190,44 +210,51 @@ def extract_ip_data(scanner, udp, host):
     Vendor: {vendor}
     SNMP Status: {snmp_status}
     SNMP Version: {snmp_version}
+    MAC Address:{mac_address}
+    Device Name: {device_name}
     \n""", file=sys.stderr)
 
-    return [host, device, device_model, device_type, vendor, snmp_status, snmp_version]
+    return [host, device, device_model, device_type, vendor, snmp_status, snmp_version,mac_address,device_name]
 
 
 def get_all_ips_from_subnet(subnet):
-    return [str(ip) for ip in ipaddress.IPv4Network(subnet)]
-
+    try:
+        return [str(ip) for ip in ipaddress.IPv4Network(subnet)]
+    except Exception as e:
+        traceback.print_exc()
+        print("error in get all ips from subnet",str(e))
 
 def create_poll(ips, poll_size):
-    return [ips[i:i + poll_size] for i in range(0, len(ips), poll_size)]
+    try:
+        return [ips[i:i + poll_size] for i in range(0, len(ips), poll_size)]
+    except Exception as e:
+        traceback.print_exc()
+        print("Error in create poll",str(e),file=sys.stderr)
 
 
 def get_all_ips_from_range(start_ip, end_ip):
-    """
-    Get all live IP addresses between start_ip and end_ip
-    """
-    # Convert the start and end IP addresses to IPv4Address objects
-    start_ip = ipaddress.IPv4Address(start_ip)
-    end_ip = ipaddress.IPv4Address(end_ip)
+    try:
+        start_ip = start_ip.split('/')[0]
+        start_ip = ipaddress.IPv4Address(start_ip)
 
-    live_ips = []
+        # Split multiple IP addresses in end_ip by commas
+        end_ips = end_ip.split(',')
+        live_ips = []
 
-    # Iterate through all IP addresses between start_ip and end_ip
-    for ip_int in range(int(start_ip), int(end_ip) + 1):
-        ip_address = ipaddress.IPv4Address(ip_int)
-        ip_str = str(ip_address)
-        live_ips.append(ip_str)
+        for end_ip in end_ips:
+            end_ip = end_ip.strip()  # Remove any leading/trailing spaces
+            end_ip = ipaddress.IPv4Address(end_ip)
 
-        # try:
-        #     socket.create_connection((ip_str, 80), timeout=1)
-        #     live_ips.append(ip_str)
-        # except OSError:
-        #     pass
+            # Iterate through all IP addresses between start_ip and end_ip
+            for ip_int in range(int(start_ip), int(end_ip) + 1):
+                ip_address = ipaddress.IPv4Address(ip_int)
+                ip_str = str(ip_address)
+                live_ips.append(ip_str)
 
-    return live_ips
-
-
+        return live_ips
+    except Exception as e:
+        traceback.print_exc()
+        print("Exception in get_all_ips_from_range:", str(e), file=sys.stderr)
 def test_snmp_v2_credentials(ip_address, credentials):
     for credential in credentials:
 
@@ -314,5 +341,49 @@ def test_snmp_v_credentials(ip_address, credentials):
                         'credential': credential}
         except Exception:
             print('SNMPv3 connection failed: %s')
+
+    return None
+def TestSNMPV3Credentials(ip_address, credentials):
+    for credential in credentials:
+
+        user = UsmUserData(userName=credential['username'],
+                           authKey=credential['authentication_password'],
+                           authProtocol=credential['authentication_protocol'],
+                           privKey=credential['encryption_password'],
+                           privProtocol=credential['encryption_protocol'])
+
+        # Define SNMPv3 parameters
+        snmp_engine = SnmpEngine()
+        target = UdpTransportTarget(
+            ('target_host', credential['port']))  # Define SNMPv3 request
+        oid = ObjectIdentity('SNMPv2-MIB', 'sysDescr', 0)
+        get_req = getCmd(snmp_engine, user, target,
+                         ContextData(), ObjectType(oid))
+        # Try to establish SNMPv3 connection and retrieve response
+        try:
+            errorIndication, errorStatus, errorIndex, varBinds = next(get_req)
+            if errorIndication:
+                print(f'{ip_address} : {credential} : SNMP GET request failed: %s' %
+                      errorIndication, file=sys.stderr)
+            elif errorStatus:
+                print(f'{ip_address} : {credential} : SNMP GET request failed: %s at %s' % (errorStatus.prettyPrint(),
+                                                                                            errorIndex and varBinds[int(errorIndex) - 1][0] or '?'), file=sys.stderr)
+            else:
+                for varBind in varBinds:
+                    print(' = '.join([x.prettyPrint()
+                                      for x in varBind]), file=sys.stderr)
+
+                try:
+                    snmp_version = "Unknown"
+                    for name in varBinds:
+                        version = name.prettyPrint()
+                        index = version.index(':')
+                        snmp_version = version[0:index]
+                except Exception as e:
+                    snmp_version = 'Unresolved'
+
+                return {'ip_address': ip_address, 'snmp_version': snmp_version, 'credential': credential}
+        except Exception as e:
+            print('SNMPv3 connection failed: %s' % e)
 
     return None

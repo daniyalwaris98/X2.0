@@ -23,7 +23,11 @@ router = APIRouter(
 @router.get("/get_monitoring_alerts", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
-})
+},
+summary="Use this API in Monitoring module ALerts Page to list down all alerts in table.This API is of get method",
+description="Use this API in Monitoring module ALerts Page to list down all alerts in table.This API is of get method"
+
+)
 async def low_alerts(alert_level: str =  Query(..., description="alert level of the device of the device")):
     try:
         alert_level = str(alert_level).lower()
@@ -77,8 +81,8 @@ async def alert_status():
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
 },
-summary="Use this API to be used in monitoring alerts page to display the alert based on ip click",
-description="Use this API to be used in monitoring alerts page to display the alert based on ip click"
+summary="Use this API to be used in monitoring alerts page to display the alert based on ip click.This API is of get method but requires ip_address as an query parameter",
+description="Use this API to be used in monitoring alerts page to display the alert based on ip click.This API is of get method but requires ip_address as an query parameter"
 )
 async def get_ip_alerts(ip: str = Query(..., description="IP address of the device")):
     try:

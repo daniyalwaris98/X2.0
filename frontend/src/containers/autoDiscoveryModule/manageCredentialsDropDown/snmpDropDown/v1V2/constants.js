@@ -4,8 +4,9 @@ export const PAGE_PATH = "v1_v2";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_v1_v2_credentials";
 export const TABLE_DATA_UNIQUE_ID = "credentials_id";
 export const indexColumnNameConstants = {
-  MANAGE_NETWORK_ID: TABLE_DATA_UNIQUE_ID,
+  CREDENTIALS_ID: TABLE_DATA_UNIQUE_ID,
   DESCRIPTION: "description",
+  PORT: "port",
   VERSION: "version",
   PROFILE_NAME: "profile_name",
   COMMUNITY: "community",

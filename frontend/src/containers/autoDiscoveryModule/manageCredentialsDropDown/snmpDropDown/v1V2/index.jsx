@@ -1,11 +1,12 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
+import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../../../store/features/atomModule/passwordGroup/apis";
+} from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmp/v1V2/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../../store/features/atomModule/passwordGroup/selectors";
+import { selectTableData } from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmp/v1V2/selectors";
 import { jsonToExcel } from "../../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
@@ -15,8 +16,8 @@ import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import {
-  ELEMENT_NAME,
   PAGE_NAME,
+  ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
@@ -33,7 +34,9 @@ const Index = () => {
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleEdit,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -42,13 +45,12 @@ const Index = () => {
       handleClick: handleDelete,
       visible: selectedRowKeys.length > 0,
     },
-    default_add: {
-      handleClick: handleDefaultExport,
-      namePostfix: ELEMENT_NAME,
-    },
+    default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
   });
 
   // states
+  const [recordToEdit, setRecordToEdit] = useState(null);
+  const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -119,6 +121,20 @@ const Index = () => {
     }
   }
 
+  function handleEdit(record) {
+    setRecordToEdit(record);
+    setOpen(true);
+  }
+
+  function handleAdd() {
+    setOpen(true);
+  }
+
+  function handleClose() {
+    setRecordToEdit(null);
+    setOpen(false);
+  }
+
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     handleSuccessAlert("File exported successfully.");
@@ -130,6 +146,14 @@ const Index = () => {
 
   return (
     <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+      {open ? (
+        <Modal
+          handleClose={handleClose}
+          open={open}
+          recordToEdit={recordToEdit}
+        />
+      ) : null}
+
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}

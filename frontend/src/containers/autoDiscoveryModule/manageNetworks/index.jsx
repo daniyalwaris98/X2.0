@@ -5,10 +5,9 @@ import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
-} from "../../../store/features/atomModule/passwordGroup/apis";
+} from "../../../store/features/autoDiscoveryModule/manageNetworks/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
+import { selectTableData } from "../../../store/features/autoDiscoveryModule/manageNetworks/selectors";
 import {
   jsonToExcel,
   convertToJson,

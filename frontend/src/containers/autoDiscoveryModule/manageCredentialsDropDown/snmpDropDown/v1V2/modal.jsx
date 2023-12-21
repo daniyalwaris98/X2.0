@@ -1,44 +1,53 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
+import FormModal from "../../../../../components/dialogs";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultFormUnit from "../../../../../components/formUnits";
+import { SelectFormUnit } from "../../../../../components/formUnits";
+import DefaultDialogFooter from "../../../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/autoDiscoveryModule/manageNetworks/apis";
+} from "../../../../../store/features/atomModule/passwordGroup/apis";
+import {
+  useFetchPasswordGroupNamesQuery,
+  useFetchPasswordGroupTypeNamesQuery,
+} from "../../../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import {
+  selectPasswordGroupNames,
+  selectPasswordGroupTypeNames,
+} from "../../../../../store/features/dropDowns/selectors";
+import useErrorHandling from "../../../../../hooks/useErrorHandling";
+import { formSetter } from "../../../../../utils/helpers";
+import { TYPE_SINGLE } from "../../../../../hooks/useErrorHandling";
 import { ELEMENT_NAME } from "./constants";
 import { indexColumnNameConstants } from "./constants";
+import { getTitle } from "../../../../../utils/helpers";
 
 const schema = yup.object().shape({
-  [indexColumnNameConstants.NETWORK_NAME]: yup
+  [indexColumnNameConstants.DESCRIPTION]: yup
     .string()
-    .required("Network name is required"),
-  [indexColumnNameConstants.SUBNET]: yup
+    .required(`${getTitle(indexColumnNameConstants.DESCRIPTION)} is required`),
+  [indexColumnNameConstants.PORT]: yup
     .string()
-    .required("Subnet is required"),
-  [indexColumnNameConstants.SCAN_STATUS]: yup
+    .required(`${getTitle(indexColumnNameConstants.PORT)} is required`),
+  [indexColumnNameConstants.PROFILE_NAME]: yup
     .string()
-    .required("Scan status is required"),
-  [indexColumnNameConstants.EXCLUDED_IP_RANGE]: yup
+    .required(`${getTitle(indexColumnNameConstants.PROFILE_NAME)} is required`),
+  [indexColumnNameConstants.COMMUNITY]: yup
     .string()
-    .required("Excluded IP range is required"),
+    .required(`${getTitle(indexColumnNameConstants.COMMUNITY)} is required`),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // useForm hook
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit, control, setValue, watch, trigger } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -70,6 +79,12 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
+  // fetching dropdowns data from backend using apis
+  const {
+    error: passwordGroupTypeNamesError,
+    isLoading: isPasswordGroupTypeNamesLoading,
+  } = useFetchPasswordGroupTypeNamesQuery();
+
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -89,11 +104,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     callback: handleClose,
   });
 
+  // getting dropdowns data from the store
+  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
+
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data[indexColumnNameConstants.MANAGE_NETWORK_ID] =
-        recordToEdit[indexColumnNameConstants.MANAGE_NETWORK_ID];
+      data[indexColumnNameConstants.CREDENTIALS_ID] =
+        recordToEdit[indexColumnNameConstants.CREDENTIALS_ID];
       updateRecord(data);
     } else {
       addRecord(data);
@@ -111,23 +129,22 @@ const Index = ({ handleClose, open, recordToEdit }) => {
           <Grid item xs={12}>
             <DefaultFormUnit
               control={control}
-              dataKey={indexColumnNameConstants.NETWORK_NAME}
+              dataKey={indexColumnNameConstants.DESCRIPTION}
               required
             />
             <DefaultFormUnit
               control={control}
-              dataKey={indexColumnNameConstants.SUBNET}
-              required
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SCAN_STATUS}
-              options={["Active", "InActive"]}
+              dataKey={indexColumnNameConstants.PORT}
               required
             />
             <DefaultFormUnit
               control={control}
-              dataKey={indexColumnNameConstants.EXCLUDED_IP_RANGE}
+              dataKey={indexColumnNameConstants.PROFILE_NAME}
+              required
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.COMMUNITY}
               required
             />
           </Grid>
