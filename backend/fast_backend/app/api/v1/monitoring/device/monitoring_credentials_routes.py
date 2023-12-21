@@ -1,6 +1,8 @@
+import traceback
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
+from app.models.auto_discovery_models import *
 from app.api.v1.monitoring.device.utils.alerts_utils import *
 from app.schema.monitoring_schema import *
 
@@ -17,6 +19,7 @@ router = APIRouter(
 })
 async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema):
     try:
+        data = {}
         if (configs.db.query(Monitoring_Credentails_Table).filter(
                 Monitoring_Credentails_Table.profile_name == credential_obj["profile_name"])
                 .first() is not None):
@@ -32,11 +35,23 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
                 credential_obj.description = credential_obj["description"]
 
             if InsertDBData(credential) == 200:
+                v1_2_dict = {
+                    "monitoring_credentials_id": credential.monitoring_credentials_id,
+                    "profile_name": credential.profile_name,
+                    "port": credential.snmp_port,
+                    "username": credential.username,
+                    "password": credential.password,
+                    "encryption_password": credential.encryption_password,
+                    "authentication_method": credential.authentication_method,
+                    "encryption_method": credential.encryption_method
+                }
+                data['data'] = v1_2_dict
+                data['message'] =  f"Inserted {credential.monitoring_credentials_id} Credentials Successfully"
                 print(
                     f"Inserted {credential.monitoring_credentials_id} Credentials Successfully",
                     file=sys.stderr,
                 )
-                return JSONResponse(content="Credentials Successfully Added", status_code=200)
+                return JSONResponse(content=data, status_code=200)
             else:
                 return JSONResponse(content="Error While Adding Credentials", status_code=500)
 
@@ -52,6 +67,7 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
 })
 async def add_snmp_v3_credentials(credential_obj: SnmpV3CredentialsRequestSchema):
     try:
+        data = {}
         if (configs.db.query(Monitoring_Credentails_Table).filter(
                 Monitoring_Credentails_Table.profile_name == credential_obj["profile_name"])
                 .first() is not None):
@@ -72,12 +88,25 @@ async def add_snmp_v3_credentials(credential_obj: SnmpV3CredentialsRequestSchema
             credential.authentication_method = credential_obj["authentication_protocol"]
             credential.encryption_method = credential_obj["encryption_protocol"]
 
+
             if InsertDBData(credential) == 200:
+                v3_dict = {
+                    "monitoring_credentials_id": credential.monitoring_credentials_id,
+                    "profile_name": credential.profile_name,
+                    "port": credential.snmp_port,
+                    "username": credential.username,
+                    "password": credential.password,
+                    "encryption_password": credential.encryption_password,
+                    "authentication_method": credential.authentication_method,
+                    "encryption_method": credential.encryption_method
+                }
+                data['data'] = v3_dict
+                data['message'] =  f"Inserted {credential.monitoring_credentials_id} Credentials Successfully"
                 print(
                     f"Inserted {credential.monitoring_credentials_id} Credentials Successfully",
                     file=sys.stderr,
                 )
-                return JSONResponse(content="Credentials Successfully Added", status_code=200)
+                return JSONResponse(content=data, status_code=200)
             else:
                 return JSONResponse(content="Error While Adding Credentials", status_code=500)
 
@@ -132,9 +161,72 @@ def get_snmp_v2_credentials():
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
 
+@router.post('/add_WMI_credentials',
+             responses={
+                 200:{"model":Response200},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="use this api to add the WMI credentials",
+             description="Use this api to add the WMI credentials"
+             )
+def add_wmi_credentials(wmiObj:WMIMonitoringCredentialSchema):
+    try:
+        data_dict_wmi = {}
+        wmiObj = dict(wmiObj)
+        credentials = Monitoring_Credentails_Table()
+        if configs.db.query(Monitoring_Credentails_Table).filter_by(profile_name=wmiObj['profile_name']).first():
+            return JSONResponse(content={"message": "Duplicate Entry"}, status_code=400)
+        credentials.username = wmiObj['username']
+        credentials.profile_name = wmiObj['profile_name']
+        credentials.password = wmiObj['password']
+        credentials.category = "wmi"
+        InsertDBData(credentials)
+        data_dict = {
+            "monitoring_credentials_id":credentials.monitoring_credentials_id,
+            "username":credentials.username,
+            "password":credentials.password,
+            "profile_name":credentials.profile_name,
+            "category":credentials.category
+        }
+        data_dict_wmi['data'] = data_dict
+        data_dict_wmi['message'] = f"{credentials.profile_name} : Inserted Successfully"
 
-#
-#
+        return JSONResponse(content=data_dict_wmi,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while adding wmi credentials",status_code=500)
+
+
+
+@router.get('/get_WMI_credentials',
+            responses={
+                200:{"model":list[GetWMIMonitoringCredentialSchema]},
+                500:{"model":str}
+            },
+            summary="Use this API in monitoring credentials to list down WMI credentials",
+            description="Use this API in monitoring credentials to list down WMI credentials"
+            )
+def get_wmi_credentials():
+    try:
+        wmi_lst = []
+        wmiObj = configs.db.query(Monitoring_Credentails_Table).filter_by(category='wmi').all()
+        for row in wmiObj:
+            wmi_dict = {
+            "monitoring_credentials_id":row.monitoring_credentials_id,
+            "username":row.username,
+            "password":row.password,
+            "profile_name":row.profile_name,
+            "category":row.category
+            }
+            wmi_lst.append(wmi_dict)
+        return  JSONResponse(content=wmi_lst,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while getting WMI credentials",status_code=500)
+
+
+
 # @app.route("/getWMICredentials", methods=["GET"])
 # def WMICredentials():
 #     if True:

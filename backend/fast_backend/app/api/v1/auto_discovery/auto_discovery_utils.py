@@ -2,10 +2,10 @@ import re
 import sys
 import traceback
 from datetime import datetime
-
+import paramiko
 from app.models.auto_discovery_models import *
 from app.utils.db_utils import *
-
+from app.api.v1.auto_discovery import auto_discover
 
 def validate_subnet(subnet):
     subnet_pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}$'
@@ -233,3 +233,103 @@ def get_discovery_data_util(subnet, function):
     except Exception:
         traceback.print_exc()
         return "Server Error While Fetching Discovery Data", 500
+
+
+
+def CheckSSHConnection(ip_address, username, password):
+    response = 'False'
+    try:
+        client = paramiko.SSHClient()
+        client.set_missing_host_key_policy(paramiko.AutoAddPolicy())
+        client.connect(ip_address, 22, username=username, password=password)
+        print(f"Successfully connected to {ip_address}:{22} via SSH.")
+        client.close()
+        response = 'True'
+        return response
+    except paramiko.AuthenticationException:
+        print(
+            f"Failed to connect to {ip_address}:{22} via SSH. Authentication failed.")
+        response = 'False'
+        return response
+    except paramiko.SSHException:
+        print(
+            f"Failed to connect to {ip_address}:{22} via SSH. Connection failed.")
+        response = 'False'
+        return response
+    except Exception as e:
+        print(f"Failed to connect to {ip_address}:{22} via SSH. {str(e)}")
+        response = 'False'
+        return response
+
+
+def CheckSSHStatus():
+    try:
+        ipList = []
+        query_string = f"select IP_ADDRESS from auto_discovery_table;"
+        result = configs.db.execute(query_string)
+        for row in result:
+            ipList.append(row[0])
+        query_string = f"select username,password from password_group_table;"
+        result = configs.db.execute(query_string)
+
+        objList = []
+        for row in result:
+            objDict = {}
+            username = row[0]
+            password = row[1]
+            objDict['username'] = username
+            objDict['password'] = password
+            objList.append(objDict)
+        for dict in objList:
+            for ip in ipList:
+
+                status = CheckSSHConnection(ip, dict['username'], dict['password'])
+                print(f"SSH STATUS is {status}", file=sys.stderr)
+                queryString1 = f"update auto_discovery_table set SSH_STATUS='{status}' where IP_ADDRESS='{ip}' or SSH_STATUS!='True';"
+                configs.db.execute(queryString1)
+                configs.db.commit()
+                print(f"SSH STATUS SUCCESSFULLY UPDATED FOR {ip}", file=sys.stderr)
+
+    except Exception as e:
+        traceback.print_exc()
+def CheckSNMPCredentials():
+    query_string = f"select * from auto_discovery_table where `SNMP_STATUS`='Enabled';"
+    results = configs.db.execute(query_string)
+
+    query_string = f"select snmp_read_community from snmp_credentials_table where category='v1/v2';;"
+    creds = configs.db.execute(query_string)
+    v2_list = []
+    for row in creds:
+        v2_list.append(row[0])
+
+    query_string = f"select profile_name,username,description,snmp_port,authentication_method,password,encryption_method,encryption_password,CREDENTIALS_ID from snmp_credentials_table where category='v3';"
+    results = configs.db.execute(query_string)
+
+    v3_list = []
+    for row in results:
+        SNMPObj = {}
+        SNMPObj['username'] = row[1]
+        SNMPObj['port'] = row[3]
+        SNMPObj['authentication_protocol'] = row[4]
+        SNMPObj['authentication_password'] = row[5]
+
+        SNMPObj['encryption_protocol'] = row[6]
+
+        SNMPObj['encryption_password'] = row[7]
+        v3_list.append(SNMPObj)
+
+    for row in results:
+        test_result = auto_discover.test_snmp_v2_credentials(row[1], v2_list)
+        if test_result is None:
+            # no credentials matched
+            test_result = auto_discover.test_snmp_v3_credentials(row[1], v3_list)
+
+        if test_result is not None:
+            # credentials matched
+            query_string = f"UPDATE auto_discovery_table SET SNMP_VERSION='{test_result['snmp_version']}',MODIFICATION_DATE='{datetime.now()}' where IP_ADDRESS='{row[1]}';"
+            configs.db.execute(query_string)
+            configs.db.commit()
+
+
+
+
