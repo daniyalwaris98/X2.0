@@ -104,15 +104,19 @@ const routes = {
     },
     {
       path: DROPDOWN_PATH_SERVERS,
-      element: <serversDropDown />,
+      element: <ServersDropDown />,
       children: [
         {
           path: DROPDOWN_PATH_LINUX,
           element: <LinuxDropDown />,
           children: [
             {
-              path: PAGE_PATH_ALL_DEVICES,
-              element: <AllDevices />,
+              path: PAGE_PATH_DEVICE,
+              element: <Devices />,
+            },
+            {
+              path: PAGE_PATH_INTERFACE,
+              element: <Interfaces />,
             },
 
           ],
