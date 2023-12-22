@@ -1,9 +1,8 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../../../components/dialogs";
 import Grid from "@mui/material/Grid";
 import DefaultFormUnit from "../../../../../components/formUnits";
-import { SelectFormUnit } from "../../../../../components/formUnits";
 import DefaultDialogFooter from "../../../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
@@ -11,16 +10,7 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../../../store/features/atomModule/passwordGroup/apis";
-import {
-  useFetchPasswordGroupNamesQuery,
-  useFetchPasswordGroupTypeNamesQuery,
-} from "../../../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
-} from "../../../../../store/features/dropDowns/selectors";
+} from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmp/v1V2/apis";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
 import { formSetter } from "../../../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../../../hooks/useErrorHandling";
@@ -47,7 +37,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -79,12 +69,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
-  // fetching dropdowns data from backend using apis
-  const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
-
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -103,9 +87,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     type: TYPE_SINGLE,
     callback: handleClose,
   });
-
-  // getting dropdowns data from the store
-  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
 
   // on form submit
   const onSubmit = (data) => {

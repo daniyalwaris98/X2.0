@@ -12,7 +12,7 @@ const discoverySlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addMatcher(
-      extendedApi.endpoints.fetchDiscoveredDevices.matchFulfilled,
+      extendedApi.endpoints.fetchDiscoveredDevicesBySubnet.matchFulfilled,
       (state, action) => {
         state.all_data = action.payload;
       }

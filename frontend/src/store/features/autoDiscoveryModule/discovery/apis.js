@@ -2,16 +2,12 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    fetchDiscoveredDevices: builder.mutation({
+    fetchDiscoveredDevicesBySubnet: builder.mutation({
       query: (data) => ({
         url: "/api/v1/auto_discovery/get_discovery_data",
         method: "POST",
         body: data,
       }),
-    }),
-
-    fetchDiscoveryFunctionAllSubnetsCounts: builder.query({
-      query: () => "/api/v1/auto_discovery/auto_discovery_function_count",
     }),
 
     fetchDiscoveryFunctionCountsBySubnet: builder.mutation({
@@ -33,7 +29,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useFetchDiscoveredDevicesMutation: useFetchRecordsMutation,
+  useFetchDiscoveredDevicesBySubnetMutation: useFetchRecordsMutation,
   useFetchDiscoveryFunctionAllSubnetsCountsQuery,
   useFetchDiscoveryFunctionCountsBySubnetMutation,
   useAutoDiscoverDevicesBySubnetMutation,

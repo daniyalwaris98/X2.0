@@ -11,7 +11,7 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../../../store/features/atomModule/passwordGroup/apis";
+} from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmp/v3/apis";
 import {
   useFetchPasswordGroupNamesQuery,
   useFetchPasswordGroupTypeNamesQuery,

@@ -6,20 +6,20 @@ const initialState = {
   all_data: [],
 };
 
-const v3Slice = createSlice({
-  name: "v3",
+const v3CredentialSlice = createSlice({
+  name: "v3Credential",
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchV3s.matchFulfilled,
+        extendedApi.endpoints.fetchV3Credentials.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteV3s.matchFulfilled,
+        extendedApi.endpoints.deleteV3Credentials.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -33,12 +33,28 @@ const v3Slice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addV3.matchFulfilled,
+        extendedApi.endpoints.addV3Credential.matchFulfilled,
         (state, action) => {
           state.all_data = [action.payload.data, ...state.all_data];
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.updateV3Credential.matchFulfilled,
+        (state, action) => {
+          let objectToReplace = action.payload.data;
+          state.all_data = state.all_data.map((item) => {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
+              return { ...item, ...objectToReplace };
+            } else {
+              return item;
+            }
+          });
         }
       );
   },
 });
 
-export default v3Slice.reducer;
+export default v3CredentialSlice.reducer;
