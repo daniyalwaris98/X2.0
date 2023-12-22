@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/atomModule/passwordGroup/apis";
+import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/alerts/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/atomModule/passwordGroup/selectors";
-import { jsonToExcel } from "../../../../utils/helpers";
+import { selectTableData } from "../../../store/features/monitoringModule/alerts/selectors";
+import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
-import useSweetAlert from "../../../../hooks/useSweetAlert";
-import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
+import useErrorHandling from "../../../hooks/useErrorHandling";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import useSweetAlert from "../../../hooks/useSweetAlert";
+import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
-import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
+import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
   // theme
@@ -25,7 +25,7 @@ const Index = () => {
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
