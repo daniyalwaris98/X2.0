@@ -234,7 +234,7 @@ def validate_ip_range(ip_range):
 summary="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
 description="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
 )
-async def auto_discover_endpoint(subnet: str):
+async def auto_discover_endpoint(subnet: RequestSubnetSchema):
     try:
         data = {}
         if str(subnet).lower() == "all":
@@ -347,7 +347,7 @@ async def auto_discover_endpoint(subnet: str):
 summary="Use this API on Auto Discovery Discovery page to show the counts of devices on cards in network section algong start scanning device button['all',firewall,switches...]",
 description="Use this API on Auto Discovery Discovery page to show the counts of devices on cards in network section algong start scanning device button['all',firewall,switches...]"
 )
-def get_discovery_function_count(subnet: str):
+def get_discovery_function_count(subnet: RequestSubnetSchema):
     try:
         function_count = {}
         if str(subnet).lower() == "All":
@@ -388,6 +388,7 @@ def get_discovery_function_count(subnet: str):
                             f"`FUNCTION`='firewall' and subnet = '{subnet}';")
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["firewall"] = row
+            function_count["firewall"] = row
 
             query_string = (f"select count(*) from auto_discovery_table where "
                             f"`FUNCTION`='router' and subnet = '{subnet}';")
@@ -419,7 +420,7 @@ def get_discovery_function_count(subnet: str):
 summary="Use This API in Auto Discovery Discovery page to list down the discovery data in table based on the selected subnet this api is of post method",
 description="Use This API in Auto Discovery Discovery page to list down the discovery data in table based on the selected subnet this api is of post method",
 )
-async def get_discovery_data(subnet: str):
+async def get_discovery_data(subnet: RequestSubnetSchema):
     try:
         response, status = get_discovery_data_util(subnet, None)
         print("response is:::::::::::::::::",response,file=sys.stderr)
@@ -476,132 +477,40 @@ async def get_function_discovery_data(data_obj: GetFunctionDiscoveryDataRequestS
         return JSONResponse(content="Server Error While Fetching Discovery Data", status_code=500)
 
 
-#
-#
-# @app.route("/getDiscoveryDataFirewalls", methods=["POST"])
-# # @token_required
-# def GetDiscoveryDataFirewalls():
-#     try:
-#         subnetObj = request.get_json()
-#         response, status = GetDiscoveryData(subnetObj, "firewall")
-#
-#         if status == 200:
-#             return jsonify(response), 200
-#         else:
-#             return response, 500
-#
-#     except Exception:
-#         traceback.print_exc()
-#         return "Server Error While Fetching Discovery Data", 500
-#
-#
-# @app.route("/getDiscoveryDataRouters", methods=["POST"])
-# # @token_required
-# def GetDiscoveryDataRouters():
-#     try:
-#         subnetObj = request.get_json()
-#         response, status = GetDiscoveryData(subnetObj, "router")
-#
-#         if status == 200:
-#             return jsonify(response), 200
-#         else:
-#             return response, 500
-#
-#     except Exception:
-#         traceback.print_exc()
-#         return "Server Error While Fetching Discovery Data", 500
-#
-#
-# @app.route("/getDiscoveryDataSwitches", methods=["POST"])
-# # @token_required
-# def GetDiscoveryDataSwitches():
-#     try:
-#         subnetObj = request.get_json()
-#         response, status = GetDiscoveryData(subnetObj, "switch")
-#
-#         if status == 200:
-#             return jsonify(response), 200
-#         else:
-#             return response, 500
-#
-#     except Exception:
-#         traceback.print_exc()
-#         return "Server Error While Fetching Discovery Data", 500
-#
-#
-# @app.route("/getDiscoveryDataOthers", methods=["POST"])
-# # @token_required
-# def GetDiscoveryDataOthers():
-#     try:
-#         subnetObj = request.get_json()
-#         objList = []
-#
-#         if "subnet" not in subnetObj:
-#             return "Subnet Not Found", 500
-#
-#         if subnetObj["subnet"] is None:
-#             return "Subnet Not Found", 500
-#
-#         subnet = subnetObj["subnet"]
-#
-#         results = None
-#         if subnet != "All":
-#             results = AutoDiscoveryTable.query.filter(
-#                 AutoDiscoveryTable.subnet == subnet
-#                 and AutoDiscoveryTable.function != "firewall"
-#                 and AutoDiscoveryTable.function != "router"
-#                 and AutoDiscoveryTable.function != "switch"
-#             ).all()
-#         else:
-#             results = AutoDiscoveryTable.query.filter(
-#                 AutoDiscoveryTable.function != "firewall"
-#                 and AutoDiscoveryTable.function != "router"
-#                 and AutoDiscoveryTable.function != "switch"
-#             ).all()
-#
-#         for data in results:
-#             objDict = data.as_dict()
-#             objList.append(objDict)
-#
-#         return jsonify(objList), 200
-#
-#     except Exception:
-#         traceback.print_exc()
-#         return "Server Error While Fetching Discovery Data", 500
-#
 
-@router.get("/auto_discovery_function_count", responses={
-    200: {"model": AutoDiscoveryFunctionCountResponseSchema},
-    500: {"model": str}
-},
-summary="Use this API in Auto Discovery Discovery Page to display count in cards",
-description="Use this API in Auto Discovery Discovery Page to display count in cards"
-)
-async def auto_discovery_function_count():
-    try:
-        query_string = (f"SELECT `function`, COUNT(`function`) FROM auto_discovery_table "
-                        f"GROUP BY `function`;")
-        result = configs.db.execute(query_string)
-        obj_dict = {
-            "switches": 0,
-            "firewalls": 0,
-            "routers": 0,
-            "others": 0
-        }
-        for row in result:
-            if row[0] == "switch":
-                obj_dict["switches"] = row[1]
-            elif row[0] == "firewall":
-                obj_dict["firewalls"] = row[1]
-            elif row[0] == "router":
-                obj_dict["routers"] = row[1]
-            else:
-                obj_dict["others"] += row[1]
 
-        return JSONResponse(content=obj_dict, status_code=200)
-    except Exception:
-        traceback.print_exc()
-        return JSONResponse(content="Server Error While Fetching Data", status_code=500)
+# @router.get("/auto_discovery_function_count", responses={
+#     200: {"model": AutoDiscoveryFunctionCountResponseSchema},
+#     500: {"model": str}
+# },
+# summary="Use this API in Auto Discovery Discovery Page to display count in cards",
+# description="Use this API in Auto Discovery Discovery Page to display count in cards"
+# )
+# async def auto_discovery_function_count():
+#     try:
+#         query_string = (f"SELECT `function`, COUNT(`function`) FROM auto_discovery_table "
+#                         f"GROUP BY `function`;")
+#         result = configs.db.execute(query_string)
+#         obj_dict = {
+#             "switches": 0,
+#             "firewalls": 0,
+#             "routers": 0,
+#             "others": 0
+#         }
+#         for row in result:
+#             if row[0] == "switch":
+#                 obj_dict["switches"] = row[1]
+#             elif row[0] == "firewall":
+#                 obj_dict["firewalls"] = row[1]
+#             elif row[0] == "router":
+#                 obj_dict["routers"] = row[1]
+#             else:
+#                 obj_dict["others"] += row[1]
+#
+#         return JSONResponse(content=obj_dict, status_code=200)
+#     except Exception:
+#         traceback.print_exc()
+#         return JSONResponse(content="Server Error While Fetching Data", status_code=500)
 
 
 @router.get("/get_manage_devices", responses={
@@ -637,9 +546,11 @@ async def get_manage_devices():
 def check_credential_status():
     try:
         ssh_threading = threading.Thread(target=CheckSSHStatus)
+        print("snmp threading is::::::::::::::::::::::",ssh_threading,file=sys.stderr)
         ssh_threading.start()
 
         snmp_thread = threading.Thread(target=CheckSNMPCredentials)
+        print("snmp threading is:::::",snmp_thread,file=sys.stderr)
         snmp_thread.start()
 
         ssh_threading.join()
@@ -648,92 +559,7 @@ def check_credential_status():
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting Checking Credential Status",status_code=500)
 
-# @router.post("/add_snmp_credentials",
-#              responses={
-#                  200:{"model":Response200},
-#                  400:{"model":str},
-#                  500:{"model":str}
-#              },
-#              description="API to add snmp credentials",
-#              summary="API to add snmp credentials"
-#              )
-# async def add_snmp_credentials(credentialObj: SNMPCredentials):
-#     try:
-#         data = {}
-#         credentials = SNMP_CREDENTIALS_TABLE()
-#         version = dict(credentialObj)
-#         print("version is:", version, file=sys.stderr)
-#         category = version['category']
-#
-#         if category == 'v1/v2':
-#             v1v2_credentials = dict(credentialObj)
-#             profile_name = v1v2_credentials['profile_name']
-#             if configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(profile_name=profile_name).first():
-#                 return JSONResponse(content={"message": "Duplicate Entry"}, status_code=400)
-#
-#             community = v1v2_credentials['community']
-#             description = v1v2_credentials['description']
-#             port = v1v2_credentials['port']
-#             credentials.profile_name = profile_name
-#             credentials.snmp_read_community = community
-#             credentials.description = description
-#             credentials.snmp_port = port
-#             credentials.category = category
-#             InsertDBData(credentials)
-#
-#             snmp_dict = {
-#                 "profile_name": credentials.profile_name,
-#                 "community": credentials.snmp_read_community,
-#                 "description": credentials.description,
-#                 "port": credentials.snmp_port,
-#                 "category": credentials.category
-#             }
-#             message = f"{credentials.profile_name} : Inserted Successfully"
-#             data['data'] = snmp_dict
-#             data['message'] = message
-#             # Process SNMPv1/v2 credentials as needed
-#
-#         elif category == 'v3':
-#             v3_credentials = dict(credentialObj)
-#             username = v3_credentials['username']
-#             if configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(username=username).first():
-#                 return JSONResponse(content={"message": "Duplicate Entry"}, status_code=400)
-#
-#             description = v3_credentials['description']
-#             username = v3_credentials['username']
-#             port = v3_credentials['port']
-#             authorization_protocol = v3_credentials['authorization_protocol']
-#             authorization_password = v3_credentials['authorization_password']
-#             encryption_protocol = v3_credentials['encryption_protocol']
-#             encryption_password = v3_credentials['encryption_password']
-#             credentials.description = description
-#             credentials.username = username
-#             credentials.snmp_port = port
-#             credentials.authentication_method = authorization_protocol
-#             credentials.password = authorization_password
-#             credentials.encryption_method = encryption_protocol
-#             credentials.encryption_password = encryption_password
-#             credentials.category = category
-#             InsertDBData(credentials)
-#
-#             snmp_dict = {
-#                 "profile_name": credentials.profile_name,
-#                 "username":credentials.profile_name,
-#                 "community": credentials.snmp_read_community,  # Check if this field is required
-#                 "description": credentials.description,
-#                 "port": credentials.snmp_port,
-#                 "category":category
-#             }
-#             message = f"{credentials.username} : Inserted Successfully"
-#             data['data'] = snmp_dict
-#             data['message'] = message
-#
-#         return JSONResponse(content=data, status_code=200)
-#
-#     except Exception as e:
-#         traceback.print_exc()
-#         # Handle exceptions
-#         return "Something Went Wrong!", 500
+
 
 @router.post('/add_snmp_v1_v2_credentials',
              responses={
@@ -821,7 +647,8 @@ def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
             "community": credentials.snmp_read_community,  # Check if this field is required
             "description": credentials.description,
             "port": credentials.snmp_port,
-            "category": credentials.category
+            "category": credentials.category,
+
         }
         message = f"{credentials.username} : Inserted Successfully"
         data['data'] = snmp_dict
@@ -852,8 +679,8 @@ def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
              )
 def delete_snmp_credentials(credential_id:list[int]):
     try:
-        data ={}
-        delete_ids = []
+        data =[]
+
         success_list = []
         error_list = []
         print("credentials ids are;",credential_id,file=sys.stderr)
@@ -862,9 +689,8 @@ def delete_snmp_credentials(credential_id:list[int]):
             credentials_exsist = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(credentials_id = credentials).first()
             if credentials_exsist:
                 DeleteDBData(credentials_exsist)
-                delete_ids.append(credentials)
                 message = f"{credentials} : Deleted Successfully"
-                data['deleted_credentials'] = delete_ids
+                data.append(credentials)
                 success_list.append(message)
 
             else:
@@ -884,7 +710,7 @@ def delete_snmp_credentials(credential_id:list[int]):
 
 @router.get("/get_snmp_v1_v2_credentials",
             responses={
-                200:{"model":str},
+                200:{"model":GetSnmpV1V2Schema},
                 500:{"model":str}
             },
             summary="Use This API to in Auto Discovery Manage Credentials Page to list down all snmp v1/v2 credentials",
@@ -897,10 +723,11 @@ def get_snmp_v1_v2_credentials():
         for cred in snmpObj:
             credentials = {
                 "credential_id":cred.credentials_id,
-                "version":cred.category,
+                "category":cred.category,
                 "profile_name":cred.profile_name,
                 "description":cred.description,
-                "community":cred.snmp_read_community
+                "community":cred.snmp_read_community,
+                "port":cred.snmp_port
             }
             snmp_lst.append(credentials)
         return JSONResponse(content=snmp_lst,status_code=200)
@@ -911,7 +738,7 @@ def get_snmp_v1_v2_credentials():
 
 @router.get("/get_snmp_v3_credentials",
             responses={
-                200:{"model":str},
+                200:{"model":GetSnmpV3Schema},
                 500:{"model":str}
             },
             summary="Use This API in Auto Discovery Manage credentials page to list down snmp v3 in tables",
@@ -924,12 +751,17 @@ def get_snmp_v1_v2_credentials():
         for cred in snmpObj:
             credentials = {
                 "credential_id":cred.credentials_id,
-                "version":cred.category,
+                "category":cred.category,
                 "profile_name":cred.profile_name,
                 "description":cred.description,
                 "community":cred.snmp_read_community,
                 "port":cred.snmp_port,
-                "user_name":cred.username
+                "user_name":cred.username,
+                "authentication_protocol":cred.authentication_method,
+                "authentication_password":cred.password,
+                "encryption_protocol":cred.encryption_method,
+                "encryption_password":cred.encryption_password
+
             }
             snmp_lst.append(credentials)
         return JSONResponse(content=snmp_lst,status_code=200)
@@ -1206,4 +1038,96 @@ def ssh_login_credentials():
 # #         print(str(e), file=sys.stderr)
 # #         traceback.print_exc()
 # #         return "Something Went Wrong!", 500
+##
+#
+# @app.route("/getDiscoveryDataFirewalls", methods=["POST"])
+# # @token_required
+# def GetDiscoveryDataFirewalls():
+#     try:
+#         subnetObj = request.get_json()
+#         response, status = GetDiscoveryData(subnetObj, "firewall")
+#
+#         if status == 200:
+#             return jsonify(response), 200
+#         else:
+#             return response, 500
+#
+#     except Exception:
+#         traceback.print_exc()
+#         return "Server Error While Fetching Discovery Data", 500
+#
+#
+# @app.route("/getDiscoveryDataRouters", methods=["POST"])
+# # @token_required
+# def GetDiscoveryDataRouters():
+#     try:
+#         subnetObj = request.get_json()
+#         response, status = GetDiscoveryData(subnetObj, "router")
+#
+#         if status == 200:
+#             return jsonify(response), 200
+#         else:
+#             return response, 500
+#
+#     except Exception:
+#         traceback.print_exc()
+#         return "Server Error While Fetching Discovery Data", 500
+#
+#
+# @app.route("/getDiscoveryDataSwitches", methods=["POST"])
+# # @token_required
+# def GetDiscoveryDataSwitches():
+#     try:
+#         subnetObj = request.get_json()
+#         response, status = GetDiscoveryData(subnetObj, "switch")
+#
+#         if status == 200:
+#             return jsonify(response), 200
+#         else:
+#             return response, 500
+#
+#     except Exception:
+#         traceback.print_exc()
+#         return "Server Error While Fetching Discovery Data", 500
+#
+#
+# @app.route("/getDiscoveryDataOthers", methods=["POST"])
+# # @token_required
+# def GetDiscoveryDataOthers():
+#     try:
+#         subnetObj = request.get_json()
+#         objList = []
+#
+#         if "subnet" not in subnetObj:
+#             return "Subnet Not Found", 500
+#
+#         if subnetObj["subnet"] is None:
+#             return "Subnet Not Found", 500
+#
+#         subnet = subnetObj["subnet"]
+#
+#         results = None
+#         if subnet != "All":
+#             results = AutoDiscoveryTable.query.filter(
+#                 AutoDiscoveryTable.subnet == subnet
+#                 and AutoDiscoveryTable.function != "firewall"
+#                 and AutoDiscoveryTable.function != "router"
+#                 and AutoDiscoveryTable.function != "switch"
+#             ).all()
+#         else:
+#             results = AutoDiscoveryTable.query.filter(
+#                 AutoDiscoveryTable.function != "firewall"
+#                 and AutoDiscoveryTable.function != "router"
+#                 and AutoDiscoveryTable.function != "switch"
+#             ).all()
+#
+#         for data in results:
+#             objDict = data.as_dict()
+#             objList.append(objDict)
+#
+#         return jsonify(objList), 200
+#
+#     except Exception:
+#         traceback.print_exc()
+#         return "Server Error While Fetching Discovery Data", 500
 #

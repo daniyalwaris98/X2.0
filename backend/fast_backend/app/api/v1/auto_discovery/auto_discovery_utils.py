@@ -102,7 +102,9 @@ def add_network_util(network_obj, update):
                     "network_id": network.network_id,
                     "network_name": network.network_name,
                     "scan_status": network.scan_status,
-                    "excluded_ip_range": network.excluded_ip_range
+                    "excluded_ip_range": network.excluded_ip_range,
+                    "no_of_devices": network.no_of_devices,
+                    "subnet": network.subnet
                 }
                 msg = f"{network_obj['network_name']} : Network Updated Successfully"
                 data['data'] = data_dict
@@ -118,7 +120,9 @@ def add_network_util(network_obj, update):
                     "network_id": network.network_id,
                     "network_name": network.network_name,
                     "scan_status": network.scan_status,
-                    "excluded_ip_range": network.excluded_ip_range
+                    "excluded_ip_range": network.excluded_ip_range,
+                    "no_of_devices":network.no_of_devices,
+                    "subnet":network.subnet
                 }
                 msg = f"{network_obj['network_name']} : Network Inserted Successfully"
                 data['data'] = data_dict
@@ -185,7 +189,9 @@ def edit_network_util(network_obj):
                 "network_id": network.network_id,
                 "network_name": network.network_name,
                 "scan_status": network.scan_status,
-                "excluded_ip_range": network.excluded_ip_range
+                "excluded_ip_range": network.excluded_ip_range,
+                "no_of_devices":network.no_of_devices,
+                "subnet":network.subnet
             }
             msg = f"{network_obj['network_name']} : Network Updated Successfully"
             data['data'] = data_dict
@@ -267,10 +273,14 @@ def CheckSSHStatus():
         ipList = []
         query_string = f"select IP_ADDRESS from auto_discovery_table;"
         result = configs.db.execute(query_string)
+        print("result for query string on ip address is::::::",result,file=sys.stderr)
         for row in result:
+            print("row is::::::::",row,file=sys.stderr)
             ipList.append(row[0])
         query_string = f"select username,password from password_group_table;"
         result = configs.db.execute(query_string)
+        print("Result is:::::::::::::::::",result,file=sys.stderr)
+
 
         objList = []
         for row in result:
@@ -284,6 +294,7 @@ def CheckSSHStatus():
             for ip in ipList:
 
                 status = CheckSSHConnection(ip, dict['username'], dict['password'])
+                print("status is::::::::::::::::::::::::",status,file=sys.stderr)
                 print(f"SSH STATUS is {status}", file=sys.stderr)
                 queryString1 = f"update auto_discovery_table set SSH_STATUS='{status}' where IP_ADDRESS='{ip}' or SSH_STATUS!='True';"
                 configs.db.execute(queryString1)
@@ -292,44 +303,90 @@ def CheckSSHStatus():
 
     except Exception as e:
         traceback.print_exc()
+
+
 def CheckSNMPCredentials():
-    query_string = f"select * from auto_discovery_table where `SNMP_STATUS`='Enabled';"
-    results = configs.db.execute(query_string)
+    try:
+        # Fetch enabled SNMP statuses using ORM
+        enabled_snmp_devices = configs.db.query(AutoDiscoveryTable).filter_by(snmp_status='Enabled').all()
 
-    query_string = f"select snmp_read_community from snmp_credentials_table where category='v1/v2';;"
-    creds = configs.db.execute(query_string)
-    v2_list = []
-    for row in creds:
-        v2_list.append(row[0])
+        # Fetch SNMP v1/v2 credentials using ORM
+        v1_v2_credentials = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(category='v1/v2').all()
 
-    query_string = f"select profile_name,username,description,snmp_port,authentication_method,password,encryption_method,encryption_password,CREDENTIALS_ID from snmp_credentials_table where category='v3';"
-    results = configs.db.execute(query_string)
+        # Fetch SNMP v3 credentials using ORM
+        v3_credentials = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(category='v3').all()
 
-    v3_list = []
-    for row in results:
-        SNMPObj = {}
-        SNMPObj['username'] = row[1]
-        SNMPObj['port'] = row[3]
-        SNMPObj['authentication_protocol'] = row[4]
-        SNMPObj['authentication_password'] = row[5]
+        v2_list = [cred.snmp_read_community for cred in v1_v2_credentials]
+        v3_list = []
+        for cred in v3_credentials:
+            snmp_obj = {
+                'username': cred.username,
+                'port': cred.snmp_port,
+                'authentication_protocol': cred.authentication_method,
+                'authentication_password': cred.password,
+                'encryption_protocol': cred.encryption_method,
+                'encryption_password': cred.encryption_password
+            }
+            v3_list.append(snmp_obj)
 
-        SNMPObj['encryption_protocol'] = row[6]
+        for device in enabled_snmp_devices:
+            test_result = auto_discover.test_snmp_v2_credentials(device.IP_ADDRESS, v2_list)
+            if test_result is None:
+                # No v2 credentials matched, try v3
+                test_result = auto_discover.test_snmp_v3_credentials(device.IP_ADDRESS, v3_list)
 
-        SNMPObj['encryption_password'] = row[7]
-        v3_list.append(SNMPObj)
+            if test_result is not None:
+                # Credentials matched, update the device entry
+                device.SNMP_VERSION = test_result['snmp_version']
+                device.MODIFICATION_DATE = datetime.now()
+                configs.db.session.commit()
 
-    for row in results:
-        test_result = auto_discover.test_snmp_v2_credentials(row[1], v2_list)
-        if test_result is None:
-            # no credentials matched
-            test_result = auto_discover.test_snmp_v3_credentials(row[1], v3_list)
-
-        if test_result is not None:
-            # credentials matched
-            query_string = f"UPDATE auto_discovery_table SET SNMP_VERSION='{test_result['snmp_version']}',MODIFICATION_DATE='{datetime.now()}' where IP_ADDRESS='{row[1]}';"
-            configs.db.execute(query_string)
-            configs.db.commit()
-
-
+    except Exception as e:
+        configs.db.session.rollback()
+        traceback.print_exc()
+        print("Error in SNMP credentials:", str(e), file=sys.stderr)
 
 
+
+# def CheckSNMPCredentials():
+#     try:
+#         query_string = f"SELECT * FROM auto_discovery_table WHERE `SNMP_STATUS`='Enabled';"
+#         results = configs.db.execute(query_string)
+#         print("result for query string enable SNMP status", results, file=sys.stderr)
+#
+#         # Fetch v2 credentials
+#         query_string = f"SELECT snmp_read_community FROM snmp_credentials_table WHERE category='v1/v2';"
+#         creds = configs.db.execute(query_string)
+#         print("creds are::::::::::::::::::::::", creds, file=sys.stderr)
+#         v2_list = [row[0] for row in creds]
+#
+#         # Fetch v3 credentials
+#         query_string = f"SELECT profile_name, username, snmp_port, authentication_method, password, encryption_method, encryption_password, CREDENTIALS_ID FROM snmp_credentials_table WHERE category='v3';"
+#         results = configs.db.execute(query_string)
+#         v3_list = []
+#         for row in results:
+#             SNMPObj = {
+#                 'username': row[1],
+#                 'port': row[2],
+#                 'authentication_protocol': row[3],
+#                 'authentication_password': row[4],
+#                 'encryption_protocol': row[5],
+#                 'encryption_password': row[6]
+#             }
+#             v3_list.append(SNMPObj)
+#
+#         for row in results:
+#             test_result = auto_discover.test_snmp_v2_credentials(row[1], v2_list)
+#             if test_result is None:
+#                 test_result = auto_discover.test_snmp_v3_credentials(row[1], v3_list)
+#
+#             if test_result is not None:
+#                 query_string = f"UPDATE auto_discovery_table SET SNMP_VERSION='{test_result['snmp_version']}', MODIFICATION_DATE='{datetime.now()}' WHERE IP_ADDRESS='{row[1]}';"
+#                 configs.db.execute(query_string)
+#                 configs.db.commit()
+#                 break  # Add a break statement to exit the loop after updating
+#
+#     except Exception as e:
+#         configs.db.rollback()
+#         traceback.print_exc()
+#         print("Error in SNMP credentials ", str(e))
