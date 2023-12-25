@@ -1,8 +1,9 @@
-from app.api.v1.ipam.ipam_import import *
-
-
-import sys
+from app.api.v1.ipam.utils.ipam_imports import *
 from subprocess import Popen, PIPE
+from app.ipam_scripts.ipam import *
+from app.ipam_scripts.f5 import *
+from app.ipam_scripts.ipam_physical_mapping import *
+from app.ipam_scripts.fortigate_vip import *
 
 # from app.api.v1.ipam.ipam_import import *
 # from app.api.v1.ipam.ipam_import import *
@@ -15,6 +16,40 @@ totalPortScanThreads = 50
 totalNmapScanningThreads = 200
 startPort = 1
 endPort = 200
+# function for date on POST request
+def FormatStringDate(date):
+    print(date, file=sys.stderr)
+
+    try:
+        if date is not None:
+            if '-' in date:
+                result = datetime.strptime(date, '%d-%m-%Y')
+            elif '/' in date:
+                result = datetime.strptime(date, '%d/%m/%Y')
+            else:
+                print("incorrect date format", file=sys.stderr)
+                result = datetime(2000, 1, 1)
+        else:
+            # result = datetime(2000, 1, 1)
+            result = datetime(2000, 1, 1)
+    except:
+        result = datetime(2000, 1, 1)
+        print("date format exception", file=sys.stderr)
+
+    return result
+
+
+# API for date format for GET methods
+def FormatDate(date):
+    # print(date, addIosTrackerfile=sys.stderr)
+    if date is not None:
+        result = date.strftime('%d-%m-%Y')
+    else:
+        # result = datetime(2000, 1, 1)
+        result = datetime(1, 1, 2000)
+
+    return result
+
 
 
 def ping(ip, subnet_obj_lst):
@@ -43,31 +78,32 @@ def ping(ip, subnet_obj_lst):
     subnet_obj_lst.append(objDict)
 
 
-def FetchIpamDevices():
+def FetchIpamDevices(atom):
     try:
+        print("atom in fetch ipam devices is:::::::::::::::",atom,file=sys.stderr)
         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
         print("Current time format is:", current_time, file=sys.stderr)
-
-        ipam_devices = configs.db.query(IPAM_DEVICES_TABLE) \
-            .join(PasswordGroupTable, IPAM_DEVICES_TABLE.password_group == PasswordGroupTable.password_group) \
-            .all()
+        atom_devices = configs.db.query(AtomTable) \
+            .join(PasswordGroupTable, AtomTable.password_group_id == PasswordGroupTable.password_group_id) \
+            .filter(AtomTable.atom_id == atom).all()
         ipam_lst = []
         # print("ipam devices are::::::::::::::::::::::",ipam_devices,file=sys.stderr)
         ipam_dict = {}
         # Iterate over IPAM devices
-        for ipam in ipam_devices:
+        for atom in atom_devices:
             # print("ipam is::::::::::::::::::::::::::::::::::::::::::::",ipam,file=sys.stderr)
             ipam_dict = {
-                "ip_address": ipam.ip_address,
-                "device_type": ipam.device_type,
-                "device_name": ipam.device_name,
+                "atom_id":atom.atom_id,
+                "ip_address": atom.ip_address,
+                "device_type": atom.device_type,
+                "device_name": atom.device_name,
                 "time": current_time
             }
             # print("ipam dict is::::::::::::::::::::::::::::::::::::::::::",ipam_dict,file=sys.stderr)
-            password_gp = ipam.password_group
-            pwd_group_exsist = configs.db.query(PasswordGroupTable).filter_by(password_group = password_gp).first()
-            # print("password_group is:::::::::::::::::::::::",pwd_group_exsist,file=sys.stderr)
-
+            password_gp = atom.password_group_id
+            print("password group exsist is:::::::::::::::::::",password_gp,file=sys.stderr)
+            pwd_group_exsist = configs.db.query(PasswordGroupTable).filter_by(password_group_id=password_gp).first()
+            print("password_group is:::::::::::::::::::::::",pwd_group_exsist,file=sys.stderr)
             ipam_dict['username'] = pwd_group_exsist.username
             ipam_dict['password'] = pwd_group_exsist.password
 
@@ -79,7 +115,8 @@ def FetchIpamDevices():
         fortinet_lst = []
 
         # Iterate over IPAM devices for F5 Load Balancer
-        for data in configs.db.query(IPAM_DEVICES_TABLE).filter_by(device_type='f5_ltm').all():
+        for data in configs.db.query(AtomTable).filter_by(device_type='f5_ltm').all():
+            print("data for f5 load balancer is:::::::::",data,file=sys.stderr)
             ipam_f5_dict = {
                 "ip_address": data.ip_address,
                 "device_type": data.device_type,
@@ -87,22 +124,23 @@ def FetchIpamDevices():
                 "time": current_time
             }
 
-            if data.source == 'Atom' or data.source == 'Static':
+            if data:
                 pwd_group_query = configs.db.query(PasswordGroupTable).filter_by(
-                    password_group=data.password_group).first()
+                    password_group_id=data.password_group_id).first()
                 ipam_f5_dict['username'] = pwd_group_query.username
                 ipam_f5_dict['password'] = pwd_group_query.password
 
-            if data.source == "Devices":
-                pwd_grp_dev = configs.db.query(PasswordGroupTable).filter_by(
-                    password_group_id=atom.password_group_id).first()
-                ipam_f5_dict['username'] = pwd_grp_dev.username
-                ipam_f5_dict['password'] = pwd_grp_dev.password
+            # if data.source == "Devices":
+            #     pwd_grp_dev = configs.db.query(PasswordGroupTable).filter_by(
+            #         password_group_id=atom.password_group_id).first()
+            #     ipam_f5_dict['username'] = pwd_grp_dev.username
+            #     ipam_f5_dict['password'] = pwd_grp_dev.password
 
             f5_lst.append(ipam_f5_dict)
 
         # Iterate over IPAM devices for Fortinet VIP
-        for data in configs.db.query(IPAM_DEVICES_TABLE).filter_by(device_type='fortinet').all():
+        for data in configs.db.query(AtomTable).filter_by(device_type='fortinet').all():
+            print("data is in fortinet vip is::::::::::::::",data,file=sys.stderr)
             fortinet_dict = {
                 "ip_address": data.ip_address,
                 "device_type": data.device_type,
@@ -110,44 +148,43 @@ def FetchIpamDevices():
                 "time": current_time
             }
 
-            if data.source == 'Atom' or data.source == 'Static':
-                query1 = configs.db.query(PasswordGroupTable).filter_by(password_group=data.password_group).first()
+            if data:
+                query1 = configs.db.query(PasswordGroupTable).filter_by(password_group_id=data.password_group_id).first()
                 fortinet_dict['username'] = query1.username
                 fortinet_dict['password'] = query1.password
 
-            if data.source == 'Devices':
-                query2 = configs.db.query(PasswordGroupTable).filter_by(
-                    password_group_id=atom.password_group_id).first()
-                fortinet_dict['username'] = query2.username
-                fortinet_dict['password'] = query2.password
+            # if data.source == 'Devices':
+            #     query2 = configs.db.query(PasswordGroupTable).filter_by(
+            #         password_group_id=atom.password_group_id).first()
+            #     fortinet_dict['username'] = query2.username
+            #     fortinet_dict['password'] = query2.password
 
             fortinet_lst.append(fortinet_dict)
 
-        # try:
-        #     print("IPAM is being xecuted::::::::::::::::::::::::::::::::::",file=sys.stderr)
-        #     print("IPAM dict is:::::::::::::::::::::",ipam_dict,file=sys.stderr)
-        #     ipam_data = [ipam_dict]
-        #     # IPAM(host,ipam_data)
-        #     ipam_instance = IPAM()
-        #     ipam_instance.addInventoryToDB(ipam_dict, ipam_data)
-        #     ipam_instance.poll(ipam_dict)
-        #     print("ipam ended execution:::::::::::::::::::::::::::::::::",file=sys.stderr)
-
-        # except Exception as e:
-        #     traceback.print_exc()
-        #     print("Error occurred in IPAM:", file=sys.stderr)
-        #     return {"Response": "Error Occurred In IPAM"}
-        
         try:
-            print("F5 is being executed:::::::::::::::::::::::",file=sys.stderr)
-            print('f5 list is::::::::::::::::::::::::::::::::',f5_lst,file=sys.stderr)
-            print("f5 dict is::::::::::::::::::::::::::::::::::::::::::,f5",ipam_f5_dict,file=sys.stderr)
-            f5 = F5()
-            host = ipam_dict
-            f5Data = f5_lst
-            f5.addInventoryToDB(host,f5Data)
-            f5.poll(host)
-            print("f5 is ended executed:::::::::::::::::::::::::::",f5,file=sys.stderr)
+            print("IPAM is being xecuted::::::::::::::::::::::::::::::::::",file=sys.stderr)
+            print("IPAM dict is:::::::::::::::::::::",ipam_dict,file=sys.stderr)
+            ipam_data = [ipam_dict]
+            print("ipam data in fetch ipam devices is::::::::",ipam_data,file=sys.stderr)
+            # IPAM(host,ipam_data)
+            ipam_instance = IPAM()
+            ipam_instance.addInventoryToDB(ipam_dict, ipam_data)
+            ipam_instance.poll(ipam_dict)
+            print("ipam ended execution:::::::::::::::::::::::::::::::::",file=sys.stderr)
+
+        except Exception as e:
+            traceback.print_exc()
+            print("Error occurred in IPAM:", file=sys.stderr)
+            return {"Response": "Error Occurred In IPAM"}
+
+        try:
+
+            # f5 = F5()
+            # host = ipam_dict
+            # f5Data = f5_lst
+            # f5.addInventoryToDB(host, f5Data)
+            # f5.poll(host)
+            print("f5 is ended executed:::::::::::::::::::::::::::", f5, file=sys.stderr)
         except Exception as e:
             traceback.print_exc()
             print("Exception Occured in F5")
@@ -190,9 +227,6 @@ def GetIps(subnet):
     except Exception as e:
         print(e)
         return ips
-
-
-
 
 
 def DnsName(ip):
@@ -703,36 +737,6 @@ def MultiPurpose(options):
 
         traceback.print_exc()
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-
 # def FetchIpamDevices():
 #     try:
 #         current_time = datetime.now().strftime("%Y-%m-%d %H:%M:%S")
@@ -756,7 +760,7 @@ def MultiPurpose(options):
 #         print("ipam lst after joining is::::::::::::::::::::::::",ipam_lst,file=sys.stderr) 
 
 #         atom = AtomTable()
-        
+
 #         for ipam in ipam_devices:
 #             print("ipam in fetch ipam devices is>>>>>", ipam, file=sys.stderr)
 #             ipam_dict = {
@@ -840,9 +844,6 @@ def MultiPurpose(options):
 #             traceback.print_exc()
 #             print("Error Ocrred In Ipam:::::::::",file=sys.stderr)
 #             return {"Reponse":"Error Occured In IPAM"}
-
-
-
 
 
 #     except Exception as e:

@@ -8,7 +8,7 @@ from app.api.v1.monitoring.monitoring_base_router import routers as monitoring_r
 from app.api.v1.ncm.ncm_base_router import routers as ncm_router
 from app.api.v1.uam.uam_base_router import routers as uam_router
 from app.api.v1.migrations import routers as migration_router
-
+from app.api.v1.ipam.ipam_base_routes import routers as ipam_router
 routers = APIRouter()
 
 router_list = [
@@ -18,7 +18,8 @@ router_list = [
     uam_router,
     monitoring_routers,
     ncm_router,
-    migration_router
+    migration_router,
+    ipam_router
 ]
 
 for router in router_list:
