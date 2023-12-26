@@ -125,20 +125,25 @@ class SNMPCredentials(BaseSchema):
         return v
 
 class GetSnmpV1V2Schema(BaseSchema):
-    credential_id: int | None = None
-    version:str |None = None
+    credential_id: int
+    category:str |None = None
     profile_name:str | None = None
     description:str | None = None
     community:str | None = None
+    port:str | None = None
 
 class GetSnmpV3Schema(BaseSchema):
     credential_id:int | None = None
-    version:str | None = None
+    category:str | None = None
     profile_name:str | None = None
     description:str | None = None
     community:str | None = None
     port:int | None = None
     user_name:str | None = None
+    authentication_protocol:str | None = None
+    authentication_password:str | None = None
+    encryption_protocol:str | None = None
+    encryption_password:str | None = None
 
 
 class GetSnmpV2_V2_V2_login_Count(BaseSchema):
@@ -152,3 +157,6 @@ class GetSSHLoginSchema(BaseSchema):
     password_group_type:str
     username:str
     password:str
+
+class RequestSubnetSchema(BaseSchema):
+    subnet : str

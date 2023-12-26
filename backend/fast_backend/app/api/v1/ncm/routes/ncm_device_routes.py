@@ -1,3 +1,6 @@
+import os
+import threading
+import traceback
 from pathlib import Path
 
 from fastapi import Request
@@ -44,8 +47,6 @@ async def ncm_backup_summery_dashboard():
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching Data", status_code=500)
-
-
 @router.get("/get_vendors_in_ncm", responses={
     200:{"model":GetNcmVendorSchema},
     500:{"model":str}
@@ -80,7 +81,7 @@ async def ncm_vendor_count():
 
 
 @router.post("/add_ncm_device", responses={
-    200: {"model": str},
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
@@ -167,7 +168,7 @@ async def add_ncm_devices(ncm_objs: list[AddNcmRequestSchema]):
 
 
 @router.post("/edit_ncm_device", responses={
-    200: {"model": str},
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
@@ -315,7 +316,9 @@ async def add_ncm_from_atom(atom_ids: list[int]):
 
 
 @router.post("/delete_ncm_device", responses={
-
+            200:{"model":DeleteResponseSchema},
+            400:{"model":str},
+            500:{"model":str}
 })
 async def delete_ncm_device(ncm_ids: list[int]):
     try:
@@ -383,42 +386,15 @@ def check_path(file_path):
     return path.is_file()
 
 
-# @app.route("/getAllConfigurationDatesInString", methods=["POST"])
-# @token_required
-# def GetAllConfigurationDatesInString(user_data):
-#     try:
-#         ncmObj = request.get_json()
-#
-#         if "ncm_device_id" not in ncmObj.keys():
-#             return "NCM Device ID Is Missing", 500
-#
-#         if ncmObj["ncm_device_id"] is None:
-#             return "NCM Device ID Is Empty", 500
-#
-#         results = NCM_History_Table.query.filter(
-#             NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"]
-#         ).all()
-#
-#         objList = []
-#         for history in results:
-#             date = (history.configuration_date).strftime("%Y-%m-%d %H:%M:%S")
-#             objList.append(date)
-#
-#         return jsonify(objList), 200
-#     except Exception as e:
-#         print(str(e), file=sys.stderr)
-#         traceback.print_exc()
-#         return "Server Error While Fetching Configuration Dates", 500
-#
-#
+
 @router.post("/get_device_configuration", responses={
-    200: {"model": str},
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
 async def get_device_configuration(ncm_history_id:int):
     try:
-
+        data = {}
         history = configs.db.query(NCM_History_Table).filter(
             NCM_History_Table.ncm_history_id == ncm_history_id
         ).first()
@@ -435,7 +411,9 @@ async def get_device_configuration(ncm_history_id:int):
         if pathFlag:
             f = open(file_path, "r")
             configuration = f.read()
-            return JSONResponse(content=configuration, status_code=200)
+            data['configuration'] = configuration
+            data['message'] = f"{history.file_name} : Retrieved Successfully"
+            return JSONResponse(content=data, status_code=200)
         else:
             DeleteDBData(history)
             return JSONResponse(content="Configuration File Does Not Exist", status_code=400)
@@ -446,13 +424,13 @@ async def get_device_configuration(ncm_history_id:int):
 
 
 @router.post("/send-command", responses={
-    200: {"model": str},
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
 async def send_command(ncm_obj: SendCommandRequestSchema):
     try:
-
+        data = {}
         ncmPuller = NCMPuller()
         print("ncm puller is::::::::::::::::::",ncmPuller,file=sys.stderr)
         ncmPuller.setup_puller(ncm_obj)
@@ -465,8 +443,9 @@ async def send_command(ncm_obj: SendCommandRequestSchema):
             return JSONResponse(content="Command Is Empty", status_code=400)
 
         ncmPuller.send_remote_command(ncm_obj["cmd"])
-
-        return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
+        data['response'] = ncmPuller.response
+        data['message'] = f"{ncm_obj['cmd'] : Executed Successfully}"
+        return JSONResponse(content=data, status_code=ncmPuller.status)
 
     except Exception as e:
         print(str(e), file=sys.stderr)
@@ -475,13 +454,13 @@ async def send_command(ncm_obj: SendCommandRequestSchema):
 
 
 @router.post("/get_configuration_backup", responses={
-    200: {"model": str},
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
 async def get_configuration_backup(ncm_obj: NcmDeviceId):
     try:
-
+        data = {}
         ncmPuller = NCMPuller()
         print("ncm puller is::::::::::::::",ncmPuller,file=sys.stderr)
         ncmPuller.setup_puller(ncm_obj)
@@ -491,71 +470,16 @@ async def get_configuration_backup(ncm_obj: NcmDeviceId):
             return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
 
         ncmPuller.backup_config()
-
-        return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
+        data['response'] = ncmPuller.response
+        data['message'] = f"Configuration Backup Is Successfull"
+        return JSONResponse(content=data, status_code=ncmPuller.status)
 
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error In Configuration Backup", status_code=500)
 
 
-#
-#
-# @app.route("/restoreConfiguration", methods=["POST"])
-# @token_required
-# def RestoreConfiguration(user_data):
-#     return "Service Not Available At This Time", 500
-#     if True:
-#         try:
-#             ncmObj = request.get_json()
-#             queryString = f"select IP_ADDRESS,DEVICE_TYPE,PASSWORD_GROUP,DEVICE_NAME from ncm_table where IP_ADDRESS='{ncmObj['ip_address']}';"
-#             result = db.session.execute(queryString)
-#
-#             for row in result:
-#                 objDict = {}
-#                 ip_address = row[0]
-#                 device_type = row[1]
-#                 password_group = row[2]
-#                 device_name = row[3]
-#                 objDict["ip_address"] = ip_address
-#                 objDict["device_type"] = device_type
-#                 objDict["device_name"] = device_name
-#                 queryString2 = f"select USERNAME,PASSWORD from password_group_table where password_group='{password_group}';"
-#                 result2 = db.session.execute(queryString2)
-#                 for row2 in result2:
-#                     username = row2[0]
-#                     password = row2[1]
-#                     username = username.strip()
-#                     password = password.strip()
-#                     objDict["username"] = username
-#                     objDict["password"] = password
-#
-#             restoreConfigurationPoller = RestorePuller()
-#
-#             if device_type == "cisco_ios_xe":
-#                 device_type = "cisco_xe"
-#             if device_type == "cisco_ios_xr":
-#                 device_type = "cisco_xr"
-#
-#             endResult = restoreConfigurationPoller.poll(
-#                 objDict, device_type, ncmObj["date"]
-#             )
-#             if restoreConfigurationPoller.success() == True:
-#                 return "Configuration Restored Successfully", 200
-#             elif restoreConfigurationPoller.FileDoesNotExist() == True:
-#                 return "File Does Not Exist", 500
-#             elif restoreConfigurationPoller.FailedLogin():
-#                 return "Failed to Login into Device", 500
-#
-#         except Exception as e:
-#             print(str(e), file=sys.stderr)
-#             traceback.print_exc()
-#             return str(e), 500
-#     else:
-#         print("Authentication Failed", file=sys.stderr)
-#         return jsonify({"message": "Authentication Failed"}), 401
-#
-#
+
 @router.post("/configuration_comparison", response_class=HTMLResponse, responses={
     400: {"model": str},
     500: {"model": str}
@@ -606,8 +530,357 @@ async def configuration_comparison(ncm_obj: NcmDeviceId, request: Request):
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error While Config Comparison", status_code=500)
+
+
+@router.post('/bulk_backup_configuration',
+             responses={
+                 200: {"model": SummeryResponseSchema},
+                 400: {"model": str},
+                 500: {"model": str}
+             },
+             summary="API to get bulk backup",
+             description='API to get bulk backup'
+             )
+def get_bulk_backup_configurration(ncm_device_id: list[int]):
+    try:
+        configuration_status = {
+            1:"Completed",
+            0:"Failed",
+            3:"In Progress",
+            4:"Pending"
+        }
+        data = []
+        errorList = []
+        successList = []
+        configuration = NcmDeviceTable()
+        for id in ncm_device_id:
+            device = configs.db.query(NcmDeviceTable).filter_by(ncm_device_id = id).first()
+            device.configuration_status = configuration_status[3]
+            device.backup_state = 'True'
+            print("id in ncm devices is::::::::::::",id,file=sys.stderr)
+            ncm = {"ncm_device_id": id}
+            print("ncm is ::::::::::::::::::;",ncm,file=sys.stderr)
+            ncm_puller = NCMPuller()  # Assuming NCMPuller is properly defined
+            print("ncm puller is::::::::::::::::",ncm_puller,file=sys.stderr)
+            ncm_puller.setup_puller(ncm)
+
+
+            if ncm_puller.status == 500 or ncm_puller.status == 400:
+                errorList.append(ncm_puller.response)
+                device.configuration_status = configuration_status[0]
+                device.backup_state = 'True'
+                UpdateDBData(device)
+                continue
+
+            ncm_puller.backup_config()
+            print("ncm puller is:::::::::::::",ncm_puller.backup_config(),file=sys.stderr)
+            if ncm_puller.status == 200:
+                print("ncm puller response is 200:::::",ncm_puller.response,file=sys.stderr)
+                data.append(id)
+                message = f"{id} :"+f"{ncm_puller.response}"
+                successList.append(message)
+                device.configuration_status =configuration_status[1]
+                device.backup_state = 'True'
+            else:
+                device.backup_state = 'True'
+                device.configuration_status = configuration_status[0]
+                print("ncm puller response is::::::::::::",ncm_puller.response,file=sys.stderr)
+                errorList.append(f"{id} : Backup Not Successful due to {ncm_puller.response}")
+            UpdateDBData(device)
+        responses = {
+            "data": data,
+            "success": len(successList),
+            "error": len(errorList),
+            "success_list": successList,
+            "error_list": errorList
+        }
+        return responses  # No need for JSONResponse, FastAPI handles JSON serialization
+
+    except Exception as e:
+        # Handle exceptions appropriately, maybe log the error for debugging
+        raise JSONResponse(status_code=500, content="Error Occurred While Getting Bulk Backup")
+# @router.get('/recent_configuration',
+#             responses={
+#                 400:{"model":str},
+#                 500:{"model":str}
+#             },
+#             summary="Recent Configuration API",
+#             description="Recent Configuration SPI"
+#             )
+# def get_recent_configuration(request: Request):
+#     try:
+#         data = {}
+#         queryString = f"select distinct CONFIGURATION_DATE from ncm_history_table order by CONFIGURATION_DATE desc limit 2;"
+#         result = configs.db.execute(queryString).fetchall()
+#         for row in result:
+#             dt1 = row[1]
+#             queryString1 = f"select FILE_NAME from ncm_history_table where CONFIGURATION_DATE={dt1};"
+#         if queryString == "" or queryString1 =="":
+#             return JSONResponse(content="One of the Configuration Not Found",status_code=500)
+#         else:
+#             html_diff = ConfDiff(f"{queryString}",f"{queryString1}")
+#             # difference = html_diff.diff()
+#             # if difference is None:
+#             #     return JSONResponse(content="No Difference Found In Configurations", status_code=500)
+#             return configs.templates.TemplateResponse("html_diff_output.html", context=request,
+#                                                   status_code=200)
+#     except Exception as e:
+#         print("Error:",str(e))
+#         traceback.print_exc()
 #
 #
+#
+#
+#
+#
+#
+# @router.post('/download_configuration',
+#              responses={
+#                  200: {"model": Response200},
+#                  400: {"model": str},
+#                  500: {"model": str}
+#              },
+#              summary="To download configuration",
+#              description="to download configuration"
+#              )
+# def download_configuration(ncm_obj: str):
+#     try:
+#         ncm_obj = dict(ncm_obj)
+#         if "ncm_history_id" not in ncm_obj or ncm_obj['ncm_history_id'] is None:
+#             return "NCM History ID Is Missing OR Empty", 500
+#
+#         history = configs.db.query(NCM_History_Table).filter(
+#             NCM_History_Table.ncm_history_id == ncm_obj["ncm_history_id"]
+#         ).first()
+#
+#         if history is None:
+#             return "Configuration Does Not Exist", 500
+#
+#         if history.file_name != "":
+#             cwd = os.getcwd()
+#             path = cwd + f"/app/configuration_backups/{history.file_name}"
+#             path_exists = os.path.exists(path)
+#
+#             if path_exists:
+#                 with open(path, "r") as f:
+#                     output = f.read()
+#                     if output == "":
+#                         return "Configuration Does Not Exist", 500
+#                     else:
+#                         data = {
+#                             output
+#                         }
+#                         data['message'] = f"{history.file_name} : Downloaded Successfully"
+#                         return JSONResponse(content=data, status_code=200)
+#             else:
+#                 return JSONResponse(content="File Does Not Exist", status_code=500)
+#         else:
+#             return JSONResponse(content="File Does Not Exist", status_code=500)
+#     except Exception as e:
+#         traceback.print_exc()
+#
+#
+#
+# def checkFile(id):
+#     queryString = f"select file_name from ncm_history_table h1 where h1.ncm_device_id= {id} and h1.configuration_date = (SELECT MAX(h2.configuration_date) FROM ncm_history_table h2 WHERE h2.ncm_device_id = h1.ncm_device_id);"
+#     result = configs.db.execute(queryString)
+#     file_name = ""
+#
+#     for row in result:
+#         file_name += row[0]
+#
+#     if file_name != "":
+#         cwd = os.getcwd()
+#         path = cwd + f"/app/configuration_backups/{file_name}"
+#         pathExists = os.path.exists(path)
+#
+#         output = ""
+#         if pathExists:
+#             f = open(path, "r")
+#             output = f.read()
+#             if output == "":
+#                 return None
+#
+#             return file_name, output
+#
+#         else:
+#             return None
+#     else:
+#         return None
+#
+#
+# def bulkDownloadThread(ncmObj, responseList, errorList):
+#     ncmPuller = NCMPuller()
+#     ncmPuller.setup_puller(ncmObj)
+#
+#     if ncmPuller.status == 500:
+#         errorList.append(ncmPuller.response)
+#     else:
+#         ncmPuller.backup_config()
+#
+#         if ncmPuller.status == 200:
+#             responseList.append(ncmPuller.response)
+#         else:
+#             errorList.append(ncmPuller.response)
+#
+#
+# @router.post('/download_bulk_configuration',
+#              responses= {
+#                  200:{"model":str},
+#                  400:{"model":str},
+#                  500:{"model":str}
+#              },
+#              summary="API to download bulk configuration",
+#              description="API to download bulk configuration"
+#              )
+# def download_bulk_configuration(ips:list[str]):
+#     try:
+#         ips = dict(ips)
+#         print("ips in download bulk configuration is:::",ips,file=sys.stderr)
+#         final_result = []
+#         pullet_lst = []
+#         for ip in ips:
+#             file_data = checkFile(ip)
+#             if file_data is None:
+#                 pullet_lst.append(ip)
+#             else:
+#                 file_name,output = file_data
+#                 final_result.append({"name":file_name,"value":output})
+#
+#         threads = []
+#         for ip in pullet_lst:
+#             print("ip in puller list is::::::::::",ip,file=sys.stderr)
+#             thread = threading.Thread(
+#                 target=bulkDownloadThread,
+#                 args=(
+#                     ip,
+#                     final_result
+#                 ),
+#             )
+#             thread.start()
+#             threads.append(thread)
+#
+#         for thread in threads:
+#             thread.join()
+#         return JSONResponse(content=final_result,status_code=200)
+#
+#     except Exception as e:
+#         traceback.print_exc()
+#         return  JSONResponse(content="Error Occured While Downloading Bulk Configuration",status_code=500)
+#
+#
+# @router.post('/delete_configuration',
+#              responses = {
+#                  200:{"model":DeleteResponseSchema},
+#                  400:{"model":str},
+#                  500:{"model":str}
+#              },
+#              summary="API to delte configuration",
+#              description="API to delete configuration"
+#              )
+# def delete_configuration(configurationObj:list['str']):
+#     try:
+#         configurationObj = dict(configurationObj)
+#         print("configuration obj is :::::::::",configurationObj,file=sys.stderr)
+#         for conf in configurationObj:
+#             print("conf is::::::::::::",conf,file=sys.stderr)
+#             config_exsist = configs.db.query(NCM_History_Table).filter(file_name = conf).first()
+#             if config_exsist:
+#
+#                 DeleteDBData(config_exsist)
+#                 if os.path.exists(f"{conf}.cfg"):
+#                     os.remove(f"{conf}.cfg")
+#             else:
+#                 return JSONResponse(content=f"{conf} : Configuration Not Found",status_code=400)
+#     except Exception as e:
+#         traceback.print_exc()
+#         return JSONResponse(content="Error Occurred While Deleting Configuration",status_code=500)
+#
+#
+# @router.get('/most_recent_changes',
+#             responses = {
+#                 400:{"model":str},
+#                 500:{"model":str}
+#             },
+#             description="API to get the most recent changes",
+#             summary="API to get the most recent changes"
+#             )
+# def most_recent_changes(request: Request):
+#     try:
+#         cwd = os.getcwd()
+#         existing_path = f"{cwd}/app/templates/html_diff_output_most_recent.html"
+#         existing_path1 = os.path.exists(existing_path)
+#         print("Existing path is:::::::::",existing_path,file=sys.stderr)
+#         print("Existing path1 is:::::::::::;",existing_path1,file=sys.stderr)
+#         if existing_path1:
+#             print("Existing file removed:::::",file=sys.stderr)
+#             os.remove(existing_path)
+#         else:
+#             pass
+#         queryString = f"SELECT CONFIGURATION_DATE from ncm_history_table order by CONFIGURATION_DATE DESC LIMIT 2;"
+#         result = configs.db.execute(queryString)
+#         print("result is:::::::::::::",result,file=sys.stderr)
+#         dateList = []
+#         for row in result:
+#             dateList.append(row[0])
+#         if len(dateList) <=2:
+#             return JSONResponse(content="There Should Be At-least Two Backup",status_code=400)
+#         else:
+#             fileList = []
+#             queryString1 = f"SELECT FILE_NAME from ncm_history_table where CONFIGURATION_DATE='{dateList[1]}';"
+#             result1 = configs.db.execute(queryString1)
+#             for row in result1:
+#                 fileList.append(row[0])
+#             queryString2 = f"select FILE_NAME from ncm_history_table where CONFIGURATION_DATE='{dateList[0]}';"
+#             result2 = configs.db.execute(queryString2)
+#             for row in result2:
+#                 fileList.append(row[0])
+#             if len(fileList) ==2:
+#                 cwd = os.getcwd()
+#                 path = f"{cwd}/app/configuration_backups"
+#                 path1 = f"/app/app/templates/html_diff_output_most_recent.html"
+#                 html_diff = ConfDiff(
+#                     f"{path} {fileList[0]}.cfg",f"{path} {fileList[1]}.cfg",path1
+#                 )
+#                 html_diff.diff()
+#                 return configs.templates.TemplateResponse("html_diff_output.html", context=request,
+#                                                           status_code=200)
+#
+#             else:
+#                 return "Something Went Wrong",500
+#
+#     except Exception as e:
+#         traceback.print_exc()
+#         return  JSONResponse(content="Error Ooccured While Getting Most Recent Changes",status_code=500)
+
+
+
+#
+#
+#
+#
+#
+#
+#
+#
+#
+#
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 # # @app.route('/recentConfigrations',methods = ["GET"])
 # # # @token_required
 # # def recentConfigrations():
@@ -883,3 +1156,92 @@ async def configuration_comparison(ncm_obj: NcmDeviceId, request: Request):
 #     else:
 #         print("Authentication Failed", file=sys.stderr)
 #         return jsonify({"message": "Authentication Failed"}), 401
+#
+#
+# @app.route("/restoreConfiguration", methods=["POST"])
+# @token_required
+# def RestoreConfiguration(user_data):
+#     return "Service Not Available At This Time", 500
+#     if True:
+#         try:
+#             ncmObj = request.get_json()
+#             queryString = f"select IP_ADDRESS,DEVICE_TYPE,PASSWORD_GROUP,DEVICE_NAME from ncm_table where IP_ADDRESS='{ncmObj['ip_address']}';"
+#             result = db.session.execute(queryString)
+#
+#             for row in result:
+#                 objDict = {}
+#                 ip_address = row[0]
+#                 device_type = row[1]
+#                 password_group = row[2]
+#                 device_name = row[3]
+#                 objDict["ip_address"] = ip_address
+#                 objDict["device_type"] = device_type
+#                 objDict["device_name"] = device_name
+#                 queryString2 = f"select USERNAME,PASSWORD from password_group_table where password_group='{password_group}';"
+#                 result2 = db.session.execute(queryString2)
+#                 for row2 in result2:
+#                     username = row2[0]
+#                     password = row2[1]
+#                     username = username.strip()
+#                     password = password.strip()
+#                     objDict["username"] = username
+#                     objDict["password"] = password
+#
+#             restoreConfigurationPoller = RestorePuller()
+#
+#             if device_type == "cisco_ios_xe":
+#                 device_type = "cisco_xe"
+#             if device_type == "cisco_ios_xr":
+#                 device_type = "cisco_xr"
+#
+#             endResult = restoreConfigurationPoller.poll(
+#                 objDict, device_type, ncmObj["date"]
+#             )
+#             if restoreConfigurationPoller.success() == True:
+#                 return "Configuration Restored Successfully", 200
+#             elif restoreConfigurationPoller.FileDoesNotExist() == True:
+#                 return "File Does Not Exist", 500
+#             elif restoreConfigurationPoller.FailedLogin():
+#                 return "Failed to Login into Device", 500
+#
+#         except Exception as e:
+#             print(str(e), file=sys.stderr)
+#             traceback.print_exc()
+#             return str(e), 500
+#     else:
+#         print("Authentication Failed", file=sys.stderr)
+#         return jsonify({"message": "Authentication Failed"}), 401
+#
+#
+
+# @app.route("/getAllConfigurationDatesInString", methods=["POST"])
+# @token_required
+# def GetAllConfigurationDatesInString(user_data):
+#     try:
+#         ncmObj = request.get_json()
+#
+#         if "ncm_device_id" not in ncmObj.keys():
+#             return "NCM Device ID Is Missing", 500
+#
+#         if ncmObj["ncm_device_id"] is None:
+#             return "NCM Device ID Is Empty", 500
+#
+#         results = NCM_History_Table.query.filter(
+#             NCM_History_Table.ncm_device_id == ncmObj["ncm_device_id"]
+#         ).all()
+#
+#         objList = []
+#         for history in results:
+#             date = (history.configuration_date).strftime("%Y-%m-%d %H:%M:%S")
+#             objList.append(date)
+#
+#         return jsonify(objList), 200
+#     except Exception as e:
+#         print(str(e), file=sys.stderr)
+#         traceback.print_exc()
+#         return "Server Error While Fetching Configuration Dates", 500
+#
+#
+
+
+print("files in ncms")

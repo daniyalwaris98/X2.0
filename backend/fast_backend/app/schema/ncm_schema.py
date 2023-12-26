@@ -59,3 +59,15 @@ class SendCommandRequestSchema(NcmDeviceId):
 class GetNcmVendorSchema(BaseSchema):
     name: str
     value : int
+
+
+class Response200(BaseSchema):
+    data: dict
+    message: str
+
+class DeleteResponseSchema(BaseSchema):
+    data: dict
+    success: int
+    error: int
+    success_list: list[str]
+    error_list: list[str]

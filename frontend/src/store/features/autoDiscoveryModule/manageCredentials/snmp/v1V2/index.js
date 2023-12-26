@@ -6,20 +6,20 @@ const initialState = {
   all_data: [],
 };
 
-const v1V2Slice = createSlice({
-  name: "v1_v2",
+const v1V2CredentialSlice = createSlice({
+  name: "v1_v2_credential",
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchV1V2s.matchFulfilled,
+        extendedApi.endpoints.fetchV1V2Credentials.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteV1V2s.matchFulfilled,
+        extendedApi.endpoints.deleteV1V2Credentials.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -33,12 +33,28 @@ const v1V2Slice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addV1V2.matchFulfilled,
+        extendedApi.endpoints.addV1V2Credential.matchFulfilled,
         (state, action) => {
           state.all_data = [action.payload.data, ...state.all_data];
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.updateV1V2Credential.matchFulfilled,
+        (state, action) => {
+          let objectToReplace = action.payload.data;
+          state.all_data = state.all_data.map((item) => {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
+              return { ...item, ...objectToReplace };
+            } else {
+              return item;
+            }
+          });
         }
       );
   },
 });
 
-export default v1V2Slice.reducer;
+export default v1V2CredentialSlice.reducer;
