@@ -1,7 +1,7 @@
-export const PAGE_NAME = "devicessss";
-export const ELEMENT_NAME = "devices";
-export const PAGE_PATH = "devices";
-export const FILE_NAME_EXPORT_ALL_DATA = "all_devices_credentials";
+export const PAGE_NAME = "interfaces";
+export const ELEMENT_NAME = "interfaces";
+export const PAGE_PATH = "interfaces";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_interfaces_credentials";
 export const TABLE_DATA_UNIQUE_ID = "credentials_id";
 export const indexColumnNameConstants = {
   MANAGE_NETWORK_ID: TABLE_DATA_UNIQUE_ID,

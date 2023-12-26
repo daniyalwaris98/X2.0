@@ -27,7 +27,7 @@ const Index = () => {
   // theme
   const theme = useTheme();
 
-  // states required in hooksss
+  // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks

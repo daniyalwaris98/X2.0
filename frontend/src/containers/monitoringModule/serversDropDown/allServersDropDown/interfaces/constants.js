@@ -1,5 +1,5 @@
-export const PAGE_NAME = "interfaces";
-export const ELEMENT_NAME = "interfaces";
+export const PAGE_NAME = "Interfaces";
+export const ELEMENT_NAME = "Interface";
 export const PAGE_PATH = "interfaces";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_interfaces_credentials";
 export const TABLE_DATA_UNIQUE_ID = "credentials_id";
