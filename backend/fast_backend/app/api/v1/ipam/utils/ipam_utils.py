@@ -1,10 +1,13 @@
-from app.api.v1.ipam.utils.ipam_imports import *
+import traceback
 from subprocess import Popen, PIPE
+from netaddr import IPNetwork
+from ipaddress import ip_network, ip_address
+from ipaddress import ip_interface
 from app.ipam_scripts.ipam import *
 from app.ipam_scripts.f5 import *
 from app.ipam_scripts.ipam_physical_mapping import *
 from app.ipam_scripts.fortigate_vip import *
-
+from app.api.v1.ipam.routes.device_routes import *
 # from app.api.v1.ipam.ipam_import import *
 # from app.api.v1.ipam.ipam_import import *
 
@@ -213,22 +216,46 @@ def FetchIpamDevices(atom):
 #         traceback.print_exc()
 
 
-def GetIps(subnet):
+def is_valid_ipv4_subnet(subnet):
+    try:
+        # Convert subnet to a string if it's not already in string format
+        subnet_str = str(subnet)
+
+        # Regular expression to validate IPv4 CIDR notation
+        ipv4_subnet_regex = r'^(\d{1,3}\.){3}\d{1,3}/(3[0-2]|[1-2][0-9]|[0-9])$'
+        return bool(re.match(ipv4_subnet_regex, subnet_str))
+    except Exception as e:
+        print(f"Error in validating subnet: {e}")
+        return False
+
+
+def GetIps(subnet_data):
     ips = []
     try:
+        # Access the subnet information from the AddSubnetInSubnetSchema object
+        subnet = subnet_data.subnet
 
-        for ip in IPNetwork(subnet):
-            ipStr = "" + str(ip)
-            # if ipStr=="192.168.30.2" or ipStr=="192.168.30.20" or ipStr=="192.168.30.30" or ipStr=="192.168.30.40" or ipStr=="192.168.18.37" or ipStr=="192.168.30.186" or ipStr=="192.168.30.167" or ipStr=="192.168.30.151" or ipStr=="192.168.30.152" or ipStr=="192.168.30.168"  or ipStr=="192.168.30.171" or ipStr=="192.168.30.190" or ipStr=="192.168.30.192" or ipStr=="192.168.30.195" or ipStr=="192.168.30.200" or ipStr=="192.168.30.225" or ipStr=="192.168.30.31":
-            ips.append(ipStr)
-        ips.pop(0)
-        ips.pop(-1)
+        # Print the type and value of the subnet variable for debugging
+        print(f"Type of subnet: {type(subnet)}")
+        print(f"Value of subnet: {subnet}")
+
+        if isinstance(subnet, str):
+            # Call the is_valid_ipv4_subnet function if the subnet is a string
+            if is_valid_ipv4_subnet(subnet):
+                network = ip_network(subnet)
+                for ip in network.hosts():
+                    ips.append(str(ip))
+                return ips
+            else:
+                print(f"{subnet} is not a valid IPv4 subnet")
+                return ips
+        else:
+            print(f"{subnet} is not a string")
+            return ips
+    except ValueError:
+        traceback.print_exc()
+        print(f"{subnet} is not a valid IPv4 subnet")
         return ips
-    except Exception as e:
-        print(e)
-        return ips
-
-
 def DnsName(ip):
     try:
         data = ""
@@ -369,20 +396,17 @@ def scanPorts(subnet):
         PortScanner(ip)
 
 
-def GetIps(subnet):
-    ips = []
-    try:
-
-        for ip in IPNetwork(subnet):
-            ipStr = "" + str(ip)
-            # if ipStr=="192.168.30.2" or ipStr=="192.168.30.20" or ipStr=="192.168.30.30" or ipStr=="192.168.30.40" or ipStr=="192.168.18.37" or ipStr=="192.168.30.186" or ipStr=="192.168.30.167" or ipStr=="192.168.30.151" or ipStr=="192.168.30.152" or ipStr=="192.168.30.168"  or ipStr=="192.168.30.171" or ipStr=="192.168.30.190" or ipStr=="192.168.30.192" or ipStr=="192.168.30.195" or ipStr=="192.168.30.200" or ipStr=="192.168.30.225" or ipStr=="192.168.30.31":
-            ips.append(ipStr)
-        ips.pop(0)
-        ips.pop(-1)
-        return ips
-    except Exception as e:
-        print(e)
-        return ips
+# def GetIps(subnet):
+#     ips = []
+#     try:
+#         network = ip_network(subnet)
+#         for ip in network.hosts():
+#             ips.append(str(ip))
+#         return ips
+#     except Exception as e:
+#         traceback.print_exc()
+#         print(e)
+#         return ips
 
 
 def sizeCalculator(subnet):
@@ -849,3 +873,15 @@ def MultiPurpose(options):
 #     except Exception as e:
 #         traceback.print_exc()
 #         return {"Repsonse": "Error Occured while Fetching IPAM Devcies"}
+def is_valid_ipv4_subnet(subnet):
+    # Regular expression to validate IPv4 CIDR notation
+    ipv4_subnet_regex = r'^(\d{1,3}\.){3}\d{1,3}/(3[0-2]|[1-2][0-9]|[0-9])$'
+    return bool(re.match(ipv4_subnet_regex, subnet))
+
+subnet_input = '192.168.0.5/24'
+is_valid = is_valid_ipv4_subnet(subnet_input)
+
+if is_valid:
+    print(f"{subnet_input} is a valid IPv4 subnet.",file=sys.stderr)
+else:
+    print(f"{subnet_input} is NOT a valid IPv4 subnet.",file=sys.stderr)

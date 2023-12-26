@@ -149,6 +149,65 @@ class IPAM(object):
 
                     InsertDBData(ipamDb)
                     print('Successfully added to the Database::::::::::::::::::::::::::::::::::::::', file=sys.stderr)
+                    try:
+                        interface_tab = ip_interface_table()
+                        interface_tab.interface_ip = ipam['ip_address']
+                        interface_tab.interface_location = ipam.get("description", "")
+                        interface_tab.discovered_from = host['device_name']
+                        interface_tab.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
+                        interface_tab.ipam_device_id = ipamDb.ipam_device_id
+                        InsertDBData(interface_tab)
+                    except Exception as e:
+                        traceback.print_exc()
+                        print("Error Occured While add interfaces for ipam",str(e),file=sys.stderr)
+                    try:
+                        subnet_tab = subnet_table()
+                        subnet_data = ipam.get("subnet", "")
+                        print("subnet data is:::::::::", subnet_data, file=sys.stderr)
+                        subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address=subnet_data).first()
+
+                        if subnet_exsist:
+                            subnet_exsist.ipam_device_id = interface_tab.ipam_device_id
+                            subnet_exsist.subnet_mask = ipam.get('subnet_mask', '')
+                            subnet_exsist.subnet_address = subnet_data
+                            subnet_exsist.discovered_from = host['device_name']
+                            subnet_exsist.discovered = 'Discovered' if subnet_data is not None else 'Not Discovered'
+                            # Set discovered based on subnet_data
+                            if subnet_data is None:
+                                subnet_exsist.discovered = 'Not Discovered'
+                            else:
+                                subnet_exsist.discovered = 'Discovered'
+
+                            UpdateDBData(subnet_exsist)
+                            print("subnet updated:::::::", file=sys.stderr)
+                        else:
+                            # Subnet doesn't exist, perform insertion
+                            subnet_tab.ipam_device_id = interface_tab.ipam_device_id
+                            subnet_tab.subnet_mask = ipam.get('subnet_mask', '')
+                            subnet_tab.subnet_address = subnet_data
+                            subnet_tab.discovered_from = host['device_name']
+                            subnet_exsist.discovered = 'Discovered' if subnet_data is not None else 'Not Discovered'
+                            if subnet_data is None:
+                                subnet_tab.discovered = 'Not Discovered'
+                            else:
+                                subnet_tab.discovered = 'Discovered'
+
+                            InsertDBData(subnet_tab)
+                            print("Data Inserted into subnet table", file=sys.stderr)
+
+                        try:
+                            subnet_usage = subnet_usage_table()
+                            # Assign subnet_id based on whether it's an existing subnet or newly inserted
+                            subnet_usage.subnet_id = subnet_exsist.subnet_id if subnet_exsist else subnet_tab.subnet_id
+                            subnet_usage.subnet_size = self.sizeCalculator(str(subnet_data))
+                            InsertDBData(subnet_usage)
+                        except Exception as e:
+                            traceback.print_exc()
+                            print("error occurred while adding subnet usage table", str(e))
+                    except Exception as e:
+                        traceback.print_exc()
+                        print("Error Occurred while adding ipam subnet", str(e))
+
                     devices_dict = {
                         "ipam_device_id": ipamDb.ipam_device_id,
                         "interface": ipamDb.interface,
