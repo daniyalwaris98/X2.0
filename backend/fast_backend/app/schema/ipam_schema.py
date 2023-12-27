@@ -95,7 +95,6 @@ class GetIpamDevicesSchema(BaseSchema):
     fetch_date:datetime
     interface_location:str
     discovered_from:str
-    interface_ststus:str
     subnet:str
     subnet_mask:str
     subnet_name:str
@@ -159,4 +158,18 @@ class IPDetailScehma(BaseSchema):
     dns_ip:str
     creation_date:datetime
     modification_date:datetime
+    ip_address:str
+
+class ScanSubnetSchema(BaseSchema):
+    subnet:str
+    port_scan:bool
+    dns_scan:bool
+
+class ScanAllSubnetSchema(BaseSchema):
+    port_scan:bool
+    dns_scan:bool
+
+class TestDnsSchema(BaseSchema):
+    user_name:str
+    password:str
     ip_address:str

@@ -44,6 +44,7 @@ class IpTable(Base):
     ip_dns = Column(String(256),nullable=True)
     dns_ip =  Column(String(256),nullable=True)
     user_id = Column(Integer,nullable=True)
+    last_used = Column(DateTime,nullable=True)
     ip_address = Column(String(256), nullable=True)  # New field for IP address
     subnet_id = Column(Integer, ForeignKey('subnet_table.subnet_id'), nullable=True)  # Foreign key to subnet_table
     # atom_id = Column(Integer,
@@ -61,7 +62,24 @@ class IpTable(Base):
             if isinstance(value, datetime):
                 data[key] = str(value)
         return data
+class IP_HISTORY_TABLE(Base):
+    __tablename__ = 'ip_history_table'
+    ip_history_id =Column(Integer, primary_key=True,autoincrement=True)
+    ip_address = Column(String(50),nullable=True)
+    mac_address = Column(String(50),nullable=True)
+    asset_tag = Column(String(50),nullable=True)
+    date = Column(DateTime, default=datetime.now(),
+                     onupdate=datetime.now())
+    ip_id = Column(Integer,ForeignKey('ip_table.ip_id'),nullable=True)
+    creation_date = Column(DateTime, default=datetime.now())
+    modification_date = Column(DateTime, default=datetime.now())
 
+    def as_dict(self):
+        data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        for key, value in data.items():
+            if isinstance(value, datetime):
+                data[key] = str(value)
+        return data
 
 class subnet_table(Base):
     __tablename__ = 'subnet_table'
@@ -74,6 +92,7 @@ class subnet_table(Base):
     user_id = Column(Integer,nullable=True)
     scan_date = Column(DateTime,nullable=True)
     discovered = Column(String(40),nullable=True)
+    status = Column(String(45),nullable=True)
     ipam_device_id = Column(Integer,
         ForeignKey('ipam_devices_fetch_table.ipam_device_id'
                    ),
@@ -142,7 +161,7 @@ class ip_interface_table(Base):
 class ADD_DNS_TABLE(Base):
     __tablename__ = 'add_dns_table'
     dns_id = Column(Integer, primary_key=True)
-    ip_address = Column(String(50))
+
     server_name = Column(String(50))
     username = Column(String(50))
     password = Column(String(50))
@@ -157,6 +176,9 @@ class ADD_DNS_TABLE(Base):
 class DnsServerTable(Base):
     __tablename__ = 'dns_server_table'
     dns_server_id = Column(Integer,primary_key=True,autoincrement=True)
+    ip_address = Column(String(50))
+    user_name = Column(String(50))
+    password = Column(String(50))
     server_name = Column(String(256),nullable=True)
     type = Column(String(256),nullable=True)
     status = Column(String(256),nullable = True)
@@ -185,6 +207,7 @@ class DnsZonesTable(Base):
     zone_type = Column(String(256),nullable=True)
     lookup_type = Column(String(256),nullable=True)
     zone_status = Column(String(256),nullable=True)
+    number_of_zones = Column(Integer, nullable=True)
     dns_server_id = Column(Integer,
                            ForeignKey('dns_server_table.dns_server_id')
                            )

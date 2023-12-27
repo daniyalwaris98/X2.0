@@ -53,7 +53,6 @@ class IPAM(object):
     def __init__(self):
         self.connections_limit = 50
         self.failed_devices = []
-        self.login = False
         # self.addInventoryToDB(host,ipam_data)
         # self.poll(host)
 
@@ -69,7 +68,7 @@ class IPAM(object):
         print("Printing Failed Devices::::::::::::::::::::::::::::::::::::::::::::::")
         file_name = time.strftime("%d-%m-%Y") + "-IPAM.txt"
         failed_device = []
-        # Read existing file
+        self.is_login =False        # Read existing file
         try:
             with open('app/failed/ims/' + file_name, 'r', encoding='utf-8') as fd:
                 failed_device = json.load(fd)
@@ -109,126 +108,126 @@ class IPAM(object):
         return temp_size
 
     def addInventoryToDB(self, host, ipam_data):
-        inventory_data = []
-        print("IPAM data is:::::::::::::::::::::::::::::::::::::::::", ipam_data, file=sys.stderr)
-        print("host is::::::::::::::::::::::::::::::::::::::::::::::::", host, file=sys.stderr)
-        atom_id = host['atom_id']
-        print("atom id is:::::::", atom_id, file=sys.stderr)
-        for ipam in ipam_data:
-            print("ipam is::::::::::::::::::::::::::::::::::::::::", ipam, file=sys.stderr)
-            print("ipam with ip addres is::::::::::::::::::::::::::::::::::::::::", ipam['ip_address'], file=sys.stderr)
-            if ipam.get('ip_address', ''):
+            inventory_data = []
+            print("IPAM data is:::::::::::::::::::::::::::::::::::::::::", ipam_data, file=sys.stderr)
+            print("host is::::::::::::::::::::::::::::::::::::::::::::::::", host, file=sys.stderr)
+            atom_id = host['atom_id']
+            print("atom id is:::::::", atom_id, file=sys.stderr)
+            for ipam in ipam_data:
+                print("ipam is::::::::::::::::::::::::::::::::::::::::", ipam, file=sys.stderr)
+                print("ipam with ip addres is::::::::::::::::::::::::::::::::::::::::", ipam['ip_address'], file=sys.stderr)
+                if ipam.get('ip_address', ''):
 
-                ipamDb = IpamDevicesFetchTable()
-                print("ipam db is:::::::::::::::::::::::::::::::::::::::::::::::::", ipamDb, file=sys.stderr)
+                    ipamDb = IpamDevicesFetchTable()
+                    print("ipam db is:::::::::::::::::::::::::::::::::::::::::::::::::", ipamDb, file=sys.stderr)
 
-                try:
-                    # ipamDb.region = host['region']
-                    # ipamDb.site_id = host['site_id']
-                    # ipamDb.site_type = host['site_type']
-                    ipamDb.interface_ip = ipam.get('ip_address', '')
-                    # ipamDb.subnet_mask = ipam.get('I', '')
-                    ipamDb.interface = ipam.get("interface", "")
-                    ipamDb.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
-
-                    # if 'up' in ipam.get("protocol_status",""):
-                    #     ipamDb.admin_status = 'enable'
-                    # else:
-                    #     ipamDb.admin_status = 'enable' if ipam.get("admin_status","")== 'up'else 'disable'
-
-                    ipamDb.vlan_number = ipam.get("vlan_number", "")
-                    ipamDb.interface_description = ipam.get("description", "")
-                    ipamDb.vlan = ipam.get("vlan_name")
-                    # ipamDb.subnet = ipam.get("subnet", "")
-                    ipamDb.virtual_ip = ipam.get("virtual_ip", "")
-                    # ipamDb.creation_date = host['time']
-                    ipamDb.fetch_date = host['time']
-                    # ipamDb.size = self.sizeCalculator(str(ipam.get("subnet", "")))
-                    # ipamDb.discovered = 'Not Discovered'
-                    ipamDb.atom_id = atom_id
-                    print("INserting data to ipam fetched table:::::::::::::::::::::::::::::", file=sys.stderr)
-
-                    InsertDBData(ipamDb)
-                    print('Successfully added to the Database::::::::::::::::::::::::::::::::::::::', file=sys.stderr)
                     try:
-                        interface_tab = ip_interface_table()
-                        interface_tab.interface_ip = ipam['ip_address']
-                        interface_tab.interface_location = ipam.get("description", "")
-                        interface_tab.discovered_from = host['device_name']
-                        interface_tab.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
-                        interface_tab.ipam_device_id = ipamDb.ipam_device_id
-                        InsertDBData(interface_tab)
-                    except Exception as e:
-                        traceback.print_exc()
-                        print("Error Occured While add interfaces for ipam",str(e),file=sys.stderr)
-                    try:
-                        subnet_tab = subnet_table()
-                        subnet_data = ipam.get("subnet", "")
-                        print("subnet data is:::::::::", subnet_data, file=sys.stderr)
-                        subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address=subnet_data).first()
+                        # ipamDb.region = host['region']
+                        # ipamDb.site_id = host['site_id']
+                        # ipamDb.site_type = host['site_type']
+                        ipamDb.interface_ip = ipam.get('ip_address', '')
+                        # ipamDb.subnet_mask = ipam.get('I', '')
+                        ipamDb.interface = ipam.get("interface", "")
+                        ipamDb.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
 
-                        if subnet_exsist:
-                            subnet_exsist.ipam_device_id = interface_tab.ipam_device_id
-                            subnet_exsist.subnet_mask = ipam.get('subnet_mask', '')
-                            subnet_exsist.subnet_address = subnet_data
-                            subnet_exsist.discovered_from = host['device_name']
-                            subnet_exsist.discovered = 'Discovered' if subnet_data is not None else 'Not Discovered'
-                            # Set discovered based on subnet_data
-                            if subnet_data is None:
-                                subnet_exsist.discovered = 'Not Discovered'
-                            else:
-                                subnet_exsist.discovered = 'Discovered'
+                        # if 'up' in ipam.get("protocol_status",""):
+                        #     ipamDb.admin_status = 'enable'
+                        # else:
+                        #     ipamDb.admin_status = 'enable' if ipam.get("admin_status","")== 'up'else 'disable'
 
-                            UpdateDBData(subnet_exsist)
-                            print("subnet updated:::::::", file=sys.stderr)
-                        else:
-                            # Subnet doesn't exist, perform insertion
-                            subnet_tab.ipam_device_id = interface_tab.ipam_device_id
-                            subnet_tab.subnet_mask = ipam.get('subnet_mask', '')
-                            subnet_tab.subnet_address = subnet_data
-                            subnet_tab.discovered_from = host['device_name']
-                            subnet_exsist.discovered = 'Discovered' if subnet_data is not None else 'Not Discovered'
-                            if subnet_data is None:
-                                subnet_tab.discovered = 'Not Discovered'
-                            else:
-                                subnet_tab.discovered = 'Discovered'
+                        ipamDb.vlan_number = ipam.get("vlan_number", "")
+                        ipamDb.interface_description = ipam.get("description", "")
+                        ipamDb.vlan = ipam.get("vlan_name")
+                        # ipamDb.subnet = ipam.get("subnet", "")
+                        ipamDb.virtual_ip = ipam.get("virtual_ip", "")
+                        # ipamDb.creation_date = host['time']
+                        ipamDb.fetch_date = host['time']
+                        # ipamDb.size = self.sizeCalculator(str(ipam.get("subnet", "")))
+                        # ipamDb.discovered = 'Not Discovered'
+                        ipamDb.atom_id = atom_id
+                        print("INserting data to ipam fetched table:::::::::::::::::::::::::::::", file=sys.stderr)
 
-                            InsertDBData(subnet_tab)
-                            print("Data Inserted into subnet table", file=sys.stderr)
-
+                        InsertDBData(ipamDb)
+                        print('Successfully added to the Database::::::::::::::::::::::::::::::::::::::', file=sys.stderr)
                         try:
-                            subnet_usage = subnet_usage_table()
-                            # Assign subnet_id based on whether it's an existing subnet or newly inserted
-                            subnet_usage.subnet_id = subnet_exsist.subnet_id if subnet_exsist else subnet_tab.subnet_id
-                            subnet_usage.subnet_size = self.sizeCalculator(str(subnet_data))
-                            InsertDBData(subnet_usage)
+                            interface_tab = ip_interface_table()
+                            interface_tab.interface_ip = ipam['ip_address']
+                            interface_tab.interface_location = ipam.get("description", "")
+                            interface_tab.discovered_from = host['device_name']
+                            interface_tab.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
+                            interface_tab.ipam_device_id = ipamDb.ipam_device_id
+                            InsertDBData(interface_tab)
                         except Exception as e:
                             traceback.print_exc()
-                            print("error occurred while adding subnet usage table", str(e))
+                            print("Error Occured While add interfaces for ipam",str(e),file=sys.stderr)
+                        try:
+                            subnet_tab = subnet_table()
+                            subnet_data = ipam.get("subnet", "")
+                            print("subnet data is:::::::::", subnet_data, file=sys.stderr)
+                            subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address=subnet_data).first()
+
+                            if subnet_exsist:
+                                subnet_exsist.ipam_device_id = interface_tab.ipam_device_id
+                                subnet_exsist.subnet_mask = ipam.get('subnet_mask', '')
+                                subnet_exsist.subnet_address = subnet_data
+                                subnet_exsist.discovered_from = host['device_name']
+                                subnet_exsist.discovered = 'Discovered' if subnet_data is not None else 'Not Discovered'
+                                # Set discovered based on subnet_data
+                                if subnet_data is None:
+                                    subnet_exsist.discovered = 'Not Discovered'
+                                else:
+                                    subnet_exsist.discovered = 'Discovered'
+
+                                UpdateDBData(subnet_exsist)
+                                print("subnet updated:::::::", file=sys.stderr)
+                            else:
+                                # Subnet doesn't exist, perform insertion
+                                subnet_tab.ipam_device_id = interface_tab.ipam_device_id
+                                subnet_tab.subnet_mask = ipam.get('subnet_mask', '')
+                                subnet_tab.subnet_address = subnet_data
+                                subnet_tab.discovered_from = host['device_name']
+                                subnet_exsist.discovered = 'Discovered' if subnet_data is not None else 'Not Discovered'
+                                if subnet_data is None:
+                                    subnet_tab.discovered = 'Not Discovered'
+                                else:
+                                    subnet_tab.discovered = 'Discovered'
+
+                                InsertDBData(subnet_tab)
+                                print("Data Inserted into subnet table", file=sys.stderr)
+
+                            try:
+                                subnet_usage = subnet_usage_table()
+                                # Assign subnet_id based on whether it's an existing subnet or newly inserted
+                                subnet_usage.subnet_id = subnet_exsist.subnet_id if subnet_exsist else subnet_tab.subnet_id
+                                subnet_usage.subnet_size = self.sizeCalculator(str(subnet_data))
+                                InsertDBData(subnet_usage)
+                            except Exception as e:
+                                traceback.print_exc()
+                                print("error occurred while adding subnet usage table", str(e))
+                        except Exception as e:
+                            traceback.print_exc()
+                            print("Error Occurred while adding ipam subnet", str(e))
+
+                        devices_dict = {
+                            "ipam_device_id": ipamDb.ipam_device_id,
+                            "interface": ipamDb.interface,
+                            "interface_ip": ipamDb.interface_ip,
+                            "interface_descripton": ipamDb.interface_description,
+                            "virtual_ip": ipamDb.virtual_ip,
+                            "vlan": ipamDb.vlan,
+                            "vlan_number": ipamDb.vlan_number,
+                            "interface_status": ipamDb.interface_status,
+                            "fetch_date": ipamDb.fetch_date,
+                            "creation_date": ipamDb.creation_date,
+                            "modification_date": ipamDb.modification_date,
+                        }
+                        inventory_data.append(devices_dict)
                     except Exception as e:
                         traceback.print_exc()
-                        print("Error Occurred while adding ipam subnet", str(e))
-
-                    devices_dict = {
-                        "ipam_device_id": ipamDb.ipam_device_id,
-                        "interface": ipamDb.interface,
-                        "interface_ip": ipamDb.interface_ip,
-                        "interface_descripton": ipamDb.interface_description,
-                        "virtual_ip": ipamDb.virtual_ip,
-                        "vlan": ipamDb.vlan,
-                        "vlan_number": ipamDb.vlan_number,
-                        "interface_status": ipamDb.interface_status,
-                        "fetch_date": ipamDb.fetch_date,
-                        "creation_date": ipamDb.creation_date,
-                        "modification_date": ipamDb.modification_date,
-                    }
-                    inventory_data.append(devices_dict)
-                except Exception as e:
-                    traceback.print_exc()
-                    configs.db.rollback()
-                    print(f"Error while inserting data into DB {e}", file=sys.stderr)
-                    # self.add_to_failed_devices(host['ip_address'], f"Failed to insert Data to DB "+str(e))
-        return inventory_data
+                        configs.db.rollback()
+                        print(f"Error while inserting data into DB {e}", file=sys.stderr)
+                        # self.add_to_failed_devices(host['ip_address'], f"Failed to insert Data to DB "+str(e))
+            return inventory_data
 
     def get_inventory_data(self, hosts):
         print("Get Inventory data is::::::::::::::::::::::::::", hosts, file=sys.stderr)
