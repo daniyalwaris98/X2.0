@@ -487,7 +487,7 @@ def AddDNS(data: AddDnsSchema):
         traceback.print_exc()
         return {"Reponse": "Error Occured while Adding DNS"}
 
-@router.get('/getDnsServers',
+@router.get('/get_dns_servers',
             responses={
                 200:{"model":list[GetallDnsServers]},
                 500:{"model":str}
