@@ -11,7 +11,7 @@ import { Spin } from "antd";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import { useIndexTableColumnDefinitions } from "./colmnDefinition";
 import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import {

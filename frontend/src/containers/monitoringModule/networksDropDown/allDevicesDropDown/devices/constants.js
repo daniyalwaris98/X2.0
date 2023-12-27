@@ -1,4 +1,4 @@
-export const PAGE_NAME = "devicessss";
+export const PAGE_NAME = "devices";
 export const ELEMENT_NAME = "devices";
 export const PAGE_PATH = "devices";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_devices_credentials";
