@@ -8,9 +8,9 @@ import {
   PAGE_PATH as PAGE_PATH_DEVICES,
 } from "./devices/constants";
 import {
-  PAGE_NAME as PAGE_NAME_DEVICE_SUBNET,
-  PAGE_PATH as PAGE_PATH_DEVICE_SUBNET,
-} from "./deviceSubnet/constants";
+  PAGE_NAME as PAGE_NAME_DEVICE_SUBNETS,
+  PAGE_PATH as PAGE_PATH_DEVICE_SUBNETS,
+} from "./deviceSubnets/constants";
 import {
   DROPDOWN_NAME as DROPDOWN_NAME_SUBNETS,
   DROPDOWN_PATH as DROPDOWN_PATH_SUBNETS,
@@ -18,11 +18,11 @@ import {
 import {
   PAGE_NAME as PAGE_NAME_SUBNETS,
   PAGE_PATH as PAGE_PATH_SUBNETS,
-} from "./subnetsDropDown/subnet/constants";
+} from "./subnetsDropDown/subnets/constants";
 import {
-  PAGE_NAME as PAGE_NAME_DISCOVER_SUBNET,
-  PAGE_PATH as PAGE_PATH_DISCOVER_SUBNET,
-} from "./subnetsDropDown/discoverSubnet/constants";
+  PAGE_NAME as PAGE_NAME_DISCOVERED_SUBNETS,
+  PAGE_PATH as PAGE_PATH_DISCOVERED_SUBNETS,
+} from "./subnetsDropDown/discoveredSubnets/constants";
 import {
   PAGE_NAME as PAGE_NAME_IP_DETAILS,
   PAGE_PATH as PAGE_PATH_IP_DETAILS,
@@ -36,13 +36,13 @@ import {
   DROPDOWN_PATH as DROPDOWN_PATH_DNS_SERVERS,
 } from "./dnsServerDropDown";
 import {
-  PAGE_NAME as PAGE_NAME_DNS_RECORD,
-  PAGE_PATH as PAGE_PATH_DNS_RECORD,
-} from "./dnsServerDropDown/dnsRecord/constants";
+  PAGE_NAME as PAGE_NAME_DNS_RECORDS,
+  PAGE_PATH as PAGE_PATH_DNS_RECORDS,
+} from "./dnsServerDropDown/dnsRecords/constants";
 import {
-  PAGE_NAME as PAGE_NAME_DNS_SERVER,
-  PAGE_PATH as PAGE_PATH_DNS_SERVER,
-} from "./dnsServerDropDown/dnsServer/constants";
+  PAGE_NAME as PAGE_NAME_DNS_SERVERS,
+  PAGE_PATH as PAGE_PATH_DNS_SERVERS,
+} from "./dnsServerDropDown/dnsServers/constants";
 import {
   PAGE_NAME as PAGE_NAME_DNS_ZONES,
   PAGE_PATH as PAGE_PATH_DNS_ZONES,
@@ -69,9 +69,9 @@ const menuItems = [
     path: PAGE_PATH_DEVICES,
   },
   {
-    id: PAGE_PATH_DEVICE_SUBNET,
-    name: PAGE_NAME_DEVICE_SUBNET,
-    path: PAGE_PATH_DEVICE_SUBNET,
+    id: PAGE_PATH_DEVICE_SUBNETS,
+    name: PAGE_NAME_DEVICE_SUBNETS,
+    path: PAGE_PATH_DEVICE_SUBNETS,
   },
   {
     id: DROPDOWN_PATH_SUBNETS,
@@ -88,9 +88,9 @@ const menuItems = [
         path: `/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_DETAILS}`,
       },
       {
-        id: PAGE_PATH_DISCOVER_SUBNET,
-        name: PAGE_NAME_DISCOVER_SUBNET,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_DISCOVER_SUBNET}`,
+        id: PAGE_PATH_DISCOVERED_SUBNETS,
+        name: PAGE_NAME_DISCOVERED_SUBNETS,
+        path: `/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_DISCOVERED_SUBNETS}`,
       },
       {
         id: PAGE_PATH_IP_HISTORY,
@@ -104,14 +104,14 @@ const menuItems = [
     name: DROPDOWN_NAME_DNS_SERVERS,
     children: [
       {
-        id: PAGE_PATH_DNS_SERVER,
-        name: PAGE_NAME_DNS_SERVER,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_SERVER}`,
+        id: PAGE_PATH_DNS_SERVERS,
+        name: PAGE_NAME_DNS_SERVERS,
+        path: `/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_SERVERS}`,
       },
       {
-        id: PAGE_PATH_DNS_RECORD,
-        name: PAGE_NAME_DNS_RECORD,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_RECORD}`,
+        id: PAGE_PATH_DNS_RECORDS,
+        name: PAGE_NAME_DNS_RECORDS,
+        path: `/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_RECORDS}`,
       },
       {
         id: PAGE_PATH_DNS_ZONES,

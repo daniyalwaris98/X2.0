@@ -1,1 +1,2 @@
-export const selectTableData = (state) => state.discovery.all_data;
+export const selectTableData = (state) =>
+  state.auto_discovery_discovery.all_data;

@@ -1,4 +1,1 @@
-export const selectTableData = (state) => state.credentials.all_data;
-
-    
-
+export const selectTableData = (state) => state.monitoring_credentials.all_data;

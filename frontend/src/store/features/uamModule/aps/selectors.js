@@ -1,4 +1,1 @@
-export const selectTableData = (state) => state.aps.all_data;
-
-    
-
+export const selectTableData = (state) => state.uam_aps.all_data;

@@ -1,25 +1,28 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
-import { TABLE_DATA_UNIQUE_ID } from "../../../../containers/autoDiscoveryModule/manageNetworks/constants";
+import {
+  TABLE_DATA_UNIQUE_ID,
+  ELEMENT_NAME,
+} from "../../../../containers/autoDiscoveryModule/manageNetworks/constants";
 
 const initialState = {
   all_data: [],
 };
 
-const networkSlice = createSlice({
-  name: "network",
+const defaultSlice = createSlice({
+  name: ELEMENT_NAME,
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchNetworks.matchFulfilled,
+        extendedApi.endpoints.autoDiscoveryFetchNetworks.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addNetworks.matchFulfilled,
+        extendedApi.endpoints.autoDiscoveryAddNetworks.matchFulfilled,
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
             const indexToUpdate = state.all_data.findIndex((tableItem) => {
@@ -37,7 +40,7 @@ const networkSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteNetworks.matchFulfilled,
+        extendedApi.endpoints.autoDiscoveryDeleteNetworks.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -51,13 +54,13 @@ const networkSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addNetwork.matchFulfilled,
+        extendedApi.endpoints.autoDiscoveryAddNetwork.matchFulfilled,
         (state, action) => {
           state.all_data = [action.payload.data, ...state.all_data];
         }
       )
       .addMatcher(
-        extendedApi.endpoints.updateNetwork.matchFulfilled,
+        extendedApi.endpoints.autoDiscoveryUpdateNetwork.matchFulfilled,
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {
@@ -75,4 +78,4 @@ const networkSlice = createSlice({
   },
 });
 
-export default networkSlice.reducer;
+export default defaultSlice.reducer;

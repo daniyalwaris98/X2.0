@@ -4,68 +4,72 @@ import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
 import { getPathAllSegments } from "../../utils/helpers";
 import {
-  PAGE_NAME as PAGE_NAME_SITE,
-  PAGE_PATH as PAGE_PATH_SITE,
+  PAGE_NAME as PAGE_NAME_SITES,
+  PAGE_PATH as PAGE_PATH_SITES,
 } from "./sites/constants";
 import {
-  PAGE_NAME as PAGE_NAME_RACK,
-  PAGE_PATH as PAGE_PATH_RACK,
+  PAGE_NAME as PAGE_NAME_RACKS,
+  PAGE_PATH as PAGE_PATH_RACKS,
 } from "./racks/constants";
 import {
-  PAGE_NAME as PAGE_NAME_DEVICE,
-  PAGE_PATH as PAGE_PATH_DEVICE,
+  PAGE_NAME as PAGE_NAME_DEVICES,
+  PAGE_PATH as PAGE_PATH_DEVICES,
 } from "./devices/constants";
 import {
-  PAGE_NAME as PAGE_NAME_BOARD,
-  PAGE_PATH as PAGE_PATH_BOARD,
+  PAGE_NAME as PAGE_NAME_BOARDS,
+  PAGE_PATH as PAGE_PATH_BOARDS,
 } from "./boards/constants";
 import {
-  PAGE_NAME as PAGE_NAME_SUB_BOARD,
-  PAGE_PATH as PAGE_PATH_SUB_BOARD,
+  PAGE_NAME as PAGE_NAME_SUB_BOARDS,
+  PAGE_PATH as PAGE_PATH_SUB_BOARDS,
 } from "./subBoards/constants";
 import {
-  PAGE_NAME as PAGE_NAME_SFP,
-  PAGE_PATH as PAGE_PATH_SFP,
+  PAGE_NAME as PAGE_NAME_SFPS,
+  PAGE_PATH as PAGE_PATH_SFPS,
 } from "./sfps/constants";
 import {
-  PAGE_NAME as PAGE_NAME_LICENSE,
-  PAGE_PATH as PAGE_PATH_LICENSE,
+  PAGE_NAME as PAGE_NAME_LICENSES,
+  PAGE_PATH as PAGE_PATH_LICENSES,
 } from "./licenses/constants";
 import {
-  PAGE_NAME as PAGE_NAME_AP,
-  PAGE_PATH as PAGE_PATH_AP,
+  PAGE_NAME as PAGE_NAME_APS,
+  PAGE_PATH as PAGE_PATH_APS,
 } from "./aps/constants";
 import {
-  PAGE_NAME as PAGE_NAME_HW_LIFE_CYCLE,
-  PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLE,
-} from "./hwLifeCycle/constants";
+  PAGE_NAME as PAGE_NAME_HW_LIFE_CYCLES,
+  PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLES,
+} from "./hwLifeCycles/constants";
 
 export const MODULE_PATH = "uam_module";
 
 const menuItems = [
-  { id: PAGE_PATH_SITE, name: PAGE_NAME_SITE, path: PAGE_PATH_SITE },
-  { id: PAGE_PATH_RACK, name: PAGE_NAME_RACK, path: PAGE_PATH_RACK },
-  { id: PAGE_PATH_DEVICE, name: PAGE_NAME_DEVICE, path: PAGE_PATH_DEVICE },
-  { id: PAGE_PATH_BOARD, name: PAGE_NAME_BOARD, path: PAGE_PATH_BOARD },
+  { id: PAGE_PATH_SITES, name: PAGE_NAME_SITES, path: PAGE_PATH_SITES },
+  { id: PAGE_PATH_RACKS, name: PAGE_NAME_RACKS, path: PAGE_PATH_RACKS },
+  { id: PAGE_PATH_DEVICES, name: PAGE_NAME_DEVICES, path: PAGE_PATH_DEVICES },
+  { id: PAGE_PATH_BOARDS, name: PAGE_NAME_BOARDS, path: PAGE_PATH_BOARDS },
   {
-    id: PAGE_PATH_SUB_BOARD,
-    name: PAGE_NAME_SUB_BOARD,
-    path: PAGE_PATH_SUB_BOARD,
+    id: PAGE_PATH_SUB_BOARDS,
+    name: PAGE_NAME_SUB_BOARDS,
+    path: PAGE_PATH_SUB_BOARDS,
   },
-  { id: PAGE_PATH_SFP, name: PAGE_NAME_SFP, path: PAGE_PATH_SFP },
-  { id: PAGE_PATH_LICENSE, name: PAGE_NAME_LICENSE, path: PAGE_PATH_LICENSE },
-  { id: PAGE_PATH_AP, name: PAGE_NAME_AP, path: PAGE_PATH_AP },
+  { id: PAGE_PATH_SFPS, name: PAGE_NAME_SFPS, path: PAGE_PATH_SFPS },
   {
-    id: PAGE_PATH_HW_LIFE_CYCLE,
-    name: PAGE_NAME_HW_LIFE_CYCLE,
-    path: PAGE_PATH_HW_LIFE_CYCLE,
+    id: PAGE_PATH_LICENSES,
+    name: PAGE_NAME_LICENSES,
+    path: PAGE_PATH_LICENSES,
+  },
+  { id: PAGE_PATH_APS, name: PAGE_NAME_APS, path: PAGE_PATH_APS },
+  {
+    id: PAGE_PATH_HW_LIFE_CYCLES,
+    name: PAGE_NAME_HW_LIFE_CYCLES,
+    path: PAGE_PATH_HW_LIFE_CYCLES,
   },
 ];
 
 function Index(props) {
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
-    pagePath = [PAGE_PATH_SITE];
+    pagePath = [PAGE_PATH_SITES];
   } else pagePath = pagePath.splice(2);
 
   return (

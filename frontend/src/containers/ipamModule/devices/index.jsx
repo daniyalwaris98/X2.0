@@ -4,9 +4,9 @@ import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../store/features/atomModule/passwordGroup/apis";
+} from "../../../store/features/atomModule/passwordGroups/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
+import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";

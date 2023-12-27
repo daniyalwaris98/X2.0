@@ -1,58 +1,62 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { monetxApi } from "./features/apiSlice";
 
-import atomReducer from "./features/atomModule/atom";
-import passwordGroupReducer from "./features/atomModule/passwordGroup";
+import atomAtomsReducer from "./features/atomModule/atoms";
+import atomPasswordGroupsReducer from "./features/atomModule/passwordGroups";
 
-import siteReducer from "./features/uamModule/sites";
-import rackReducer from "./features/uamModule/racks";
-import deviceReducer from "./features/uamModule/devices";
-import boardReducer from "./features/uamModule/boards";
-import subBoardReducer from "./features/uamModule/subBoards";
-import sfpsReducer from "./features/uamModule/sfps";
-import licenseReducer from "./features/uamModule/licenses";
-import apsReducer from "./features/uamModule/aps";
-import hwLifeCycleReducer from "./features/uamModule/hwLifeCycle";
+import uamSitesReducer from "./features/uamModule/sites";
+import uamRacksReducer from "./features/uamModule/racks";
+import uamDevicesReducer from "./features/uamModule/devices";
+import uamBoardsReducer from "./features/uamModule/boards";
+import uamSubBoardsReducer from "./features/uamModule/subBoards";
+import uamSFPsReducer from "./features/uamModule/sfps";
+import uamLicenseReducer from "./features/uamModule/licenses";
+import uamAPsReducer from "./features/uamModule/aps";
+import uamHWLifeCyclesReducer from "./features/uamModule/hwLifeCycles";
 
-import mdeviceReducer from "./features/monitoringModule/devices";
-import alertReducer from "./features/monitoringModule/alerts";
-import credentialsReducer from "./features/monitoringModule/credentials";
+import monitoringDevicesReducer from "./features/monitoringModule/devices";
+import monitoringAlertsReducer from "./features/monitoringModule/alerts";
+import monitoringCredentialsReducer from "./features/monitoringModule/credentials";
 
-import manageNetworksReducer from "./features/autoDiscoveryModule/manageNetworks";
-import manageDevicesReducer from "./features/autoDiscoveryModule/manageDevices";
-import discoveryReducer from "./features/autoDiscoveryModule/discovery";
-import v1V2CredentialsReducer from "./features/autoDiscoveryModule/manageCredentials/snmp/v1V2";
-import v3CredentialsReducer from "./features/autoDiscoveryModule/manageCredentials/snmp/v3";
-import sshLoginCredentialsReducer from "./features/autoDiscoveryModule/manageCredentials/login";
+import autoDiscoveryManageNetworksReducer from "./features/autoDiscoveryModule/manageNetworks";
+import autoDiscoveryManageDevicesReducer from "./features/autoDiscoveryModule/manageDevices";
+import autoDiscoveryDiscoveryReducer from "./features/autoDiscoveryModule/discovery";
+import autoDiscoveryV1V2CredentialsReducer from "./features/autoDiscoveryModule/manageCredentials/snmpCredentials/v1V2Credentials";
+import autoDiscoveryV3CredentialsReducer from "./features/autoDiscoveryModule/manageCredentials/snmpCredentials/v3Credentials";
+import autoDiscoverySSHLoginCredentialsReducer from "./features/autoDiscoveryModule/manageCredentials/loginCredentials";
 
 import dropDownsReducer from "./features/dropDowns";
 
 export const store = configureStore({
   reducer: {
     // atom module
-    atom: atomReducer,
-    password_group: passwordGroupReducer,
+    atom_atoms: atomAtomsReducer,
+    atom_password_groups: atomPasswordGroupsReducer,
+
     // uam module
-    site: siteReducer,
-    rack: rackReducer,
-    device: deviceReducer,
-    board: boardReducer,
-    sub_board: subBoardReducer,
-    sfps: sfpsReducer,
-    license: licenseReducer,
-    aps: apsReducer,
-    hwLifeCycle: hwLifeCycleReducer,
+    uam_sites: uamSitesReducer,
+    uam_racks: uamRacksReducer,
+    uam_devices: uamDevicesReducer,
+    uam_boards: uamBoardsReducer,
+    uam_sub_boards: uamSubBoardsReducer,
+    uam_sfps: uamSFPsReducer,
+    uam_licenses: uamLicenseReducer,
+    uam_aps: uamAPsReducer,
+    uam_hw_life_cycles: uamHWLifeCyclesReducer,
+
     // monitoring module
-    mdevice: mdeviceReducer,
-    alert: alertReducer,
-    credentials: credentialsReducer,
+    monitoring_devices: monitoringDevicesReducer,
+    monitoring_alerts: monitoringAlertsReducer,
+    monitoring_credentials: monitoringCredentialsReducer,
+
     // auto discovery module
-    manage_networks: manageNetworksReducer,
-    manage_devices: manageDevicesReducer,
-    discovery: discoveryReducer,
-    v1_v2_credentials: v1V2CredentialsReducer,
-    v3_credentials: v3CredentialsReducer,
-    ssh_login_credentials: sshLoginCredentialsReducer,
+    auto_discovery_manage_networks: autoDiscoveryManageNetworksReducer,
+    auto_discovery_manage_devices: autoDiscoveryManageDevicesReducer,
+    auto_discovery_discovery: autoDiscoveryDiscoveryReducer,
+    auto_discovery_v1_v2_credentials: autoDiscoveryV1V2CredentialsReducer,
+    auto_discovery_v3_credentials: autoDiscoveryV3CredentialsReducer,
+    auto_discovery_login_credentials: autoDiscoverySSHLoginCredentialsReducer,
+
     // dropdowns
     drop_downs: dropDownsReducer,
 
