@@ -53,6 +53,7 @@ class IPAM(object):
     def __init__(self):
         self.connections_limit = 50
         self.failed_devices = []
+        self.login = False
         # self.addInventoryToDB(host,ipam_data)
         # self.poll(host)
 
@@ -219,7 +220,7 @@ class IPAM(object):
                         "interface_status": ipamDb.interface_status,
                         "fetch_date": ipamDb.fetch_date,
                         "creation_date": ipamDb.creation_date,
-                        "modification_date": ipamDb.modification_date
+                        "modification_date": ipamDb.modification_date,
                     }
                     inventory_data.append(devices_dict)
                 except Exception as e:
@@ -252,7 +253,7 @@ class IPAM(object):
         print('HOST IN POLL IS::::::::::::::::::::::::::::::::::::::', host, file=sys.stderr)
         vlans = interfaces = virtualIps = ipamData = secondary_ips = []
         print(f"Connecting to {host['ip_address']}", file=sys.stderr)
-        login_tries = 10
+        login_tries = 4
         login_exception = ''
         c = 0
         is_login = False

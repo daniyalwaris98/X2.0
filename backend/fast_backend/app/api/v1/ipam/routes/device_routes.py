@@ -2,6 +2,7 @@ from app.models.ipam_models import *
 from app.api.v1.ipam.utils import *
 from app.api.v1.ipam.routes.device_routes import *
 from app.api.v1.ipam.utils.ipam_utils import *
+from app.models.common_models import *
 import sys
 import traceback
 from app.models.ipam_models import *
@@ -32,7 +33,8 @@ from io import BytesIO
 # from app.ipam_scripts.fortigate_vip import FORTIGATEVIP
 # from app.ipam_scripts.ipam import IPAM
 # from app.ipam_scripts.ipam_physical_mapping import IPAMPM
-from fastapi import FastAPI,APIRouter,Query,Response
+from fastapi import FastAPI,APIRouter,Query
+from starlette.responses import Response
 from fastapi.responses import JSONResponse
 router = APIRouter(
     prefix = '/ipam_device',
@@ -53,8 +55,8 @@ def test_route():
                 400:{"model":str},
                 500:{"model":str}
             },
-            summary="API to get atom in ipam",
-            description="API to ge atom in ipam"
+            summary="Use this API in IPAM devices page to list down all the atom the atoms in add device from atom.This API is of get method",
+            description="Use this API in IPAM devices page to list down all the atom the atoms in add device from atom.This API is of get method"
             )
 def get_atom_in_ipam():
     try:
@@ -70,6 +72,7 @@ def get_atom_in_ipam():
                     "device_name": atom.device_name,
                     "function": atom.function,
                     "vendor": atom.vendor,
+                    "on_board_status":atom.onboard_status
                 }
                 atom_list.append(atom_obj)
 
@@ -80,7 +83,7 @@ def get_atom_in_ipam():
 
 
 @router.post('/add_atom_in_ipam',responses={
-    200:{"model":str},
+    200:{"model":SummeryResponseSchema},
     400:{"model":str},
     500:{"model":str}
 },
@@ -89,9 +92,19 @@ description="API to add atom in IPAM"
 )
 async def add_atom_in_ipam(ipam_obj: list[int]):
     try:
+        data = []
+        success_lst = []
+        error_list = []
         for atom_data in ipam_obj:
             atom_id = atom_data
             print("atom_id is:", atom_id, file=sys.stderr)
+            # atom_ip = configs.db.query(AtomTable).filter_by(atom_id = atom_id).first=()
+            # ip_address = atom_ip.ip_address
+            # print("ip address is::::",ip_address,file=sys.stderr)
+            # failed_ip = configs.db.query(FailedDevicesTable).filter_by(ip_address = ip_address).first()
+            # if failed_ip:
+            #     error_list.append(f"{failed_ip.ip_address} : failed due to {failed_ip.failure_reason}")
+            # else:
 
             atom_exists = configs.db.query(IpamDevicesFetchTable).filter_by(atom_id=atom_id).first()
 
@@ -104,6 +117,7 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
                 print("Atom added to the IPAM devices fetch table", file=sys.stderr)
                 from app.api.v1.ipam.utils.ipam_utils import FetchIpamDevices
                 resposne = FetchIpamDevices(atom_id)
+
                 print("repsonse of the fetch ipam devices is::::",resposne,file=sys.stderr)
         return JSONResponse(content = "Atom Added ",status_code=200)
 
@@ -114,18 +128,21 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
 
 @router.get('/get_all_ipam_devices',
             responses={
-                200: {"model": str},
+                200: {"model": list[GetIpamDevicesSchema]},
                 400: {"model": str},
                 500: {"model": str}
             },
-            summary = "API to list dowen the devices",
-            description="API to list downt the devices"
+            summary = "Use This API to list down all the IPAM devices in a table",
+            description="Use This API to list down all the IPAM devices in a table"
             )
 def get_ipam_fetch_devices():
     try:
         devices_list =[]
         ipam_devices = configs.db.query(IpamDevicesFetchTable).all()
         for devices in ipam_devices:
+            interfaces = configs.db.query(ip_interface_table).filter_by(ipam_device_id = devices.ipam_device_id).first()
+            subnet = configs.db.query(subnet_table).filter_by(ipam_device_id = devices.ipam_device_id).first()
+            subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnet.subnet_id).first()
             devices_dict = {
                 "ipam_device_id":devices.ipam_device_id,
                 "interface":devices.interface,
@@ -136,8 +153,15 @@ def get_ipam_fetch_devices():
                 "vlan_number":devices.vlan_number,
                 "interface_status":devices.interface_status,
                 "fetch_date":devices.fetch_date,
-                "creation_date":devices.creation_date,
-                "modification_date":devices.modification_date
+                "interface_location":interfaces.interface_location,
+                "discovered_from":interfaces.discovered_from,
+                "interface_ststus":interfaces.interface_status,
+                "subnet":subnet.subnet_address,
+                "subnet_mask":subnet.subnet_mask,
+                "subnet_name":subnet.subnet_name,
+                "scan_date":subnet.scan_date,
+                "subnet_usage":subnet_usage.subnet_usage,
+                "subnet_size":subnet_usage.subnet_size
             }
             devices_list.append(devices_dict)
         return devices_list
@@ -150,8 +174,8 @@ def get_ipam_fetch_devices():
     400:{"model":str},
     500:{"model":str}
 },
-summary="API to add subnet manually",
-             description="API to add subnert manually"
+summary="Use this API to add subnet mnaually",
+             description="Use this API to add subnet mnaually"
 )
 def add_subnet(subnetObj:AddSubnetManually):
     try:
@@ -298,8 +322,8 @@ def AddSusbnetInSunet(data:list[AddSubnetInSubnetSchema]):
                 400:{"model":str},
                 500:{"model":str}
             },
-            summary = "API to get the subnet detail",
-            description="API to get the subnet detail"
+            summary = "Use this API in the subnet table while clicking on the subnet get the detail of its ip",
+            description="Use this API in the subnet table while clicking on the subnet get the detail of its ip"
             )
 def get_ip_detail_by_stubnet(subnet:str=Query(..., description="subnet")):
     try:
@@ -361,8 +385,8 @@ def get_ip_detail_by_stubnet(subnet:str=Query(..., description="subnet")):
                 400:{"model":str},
                 500:{"model":str}
             },
-            summary="API to get all discovered subnet",
-            description="API to get all discovered subnet"
+            summary="Use this API to list down all the discovered subnet in subnet page in discovered subnet table",
+            description="Use this API to list down all the discovered subnet in subnet page in discovered subnet table"
             )
 def get_all_discovered_subnet():
     try:
@@ -467,7 +491,10 @@ def AddDNS(data: AddDnsSchema):
             responses={
                 200:{"model":list[GetallDnsServers]},
                 500:{"model":str}
-            })
+            },
+            summary="Use this API to list down all the dns server in the dns server page",
+            description="Use this API to list down all the dns server in the dns server page"
+            )
 def GetAllDnsServers():
     if True:
         try:
@@ -475,14 +502,14 @@ def GetAllDnsServers():
             dnsServersObjs = configs.db.query(DnsServerTable).all()
             for dnsServerObj in dnsServersObjs:
                 objDict = {}
-                objDict['dns_server_id'] = dnsServerObj.dns_id
+                objDict['dns_server_id'] = dnsServerObj.dns_server_id
                 objDict['server_name'] = dnsServerObj.server_name
                 objDict['number_of_zones'] = dnsServerObj.number_of_zones
                 objDict['type'] = dnsServerObj.type
                 objList.append(objDict)
             print(objList, file=sys.stderr)
             # return jsonify(objList),200
-            return {objList}
+            return objList
 
         except Exception as e:
             print(str(e), file=sys.stderr)
@@ -490,19 +517,21 @@ def GetAllDnsServers():
             return str(e), 500
     else:
         print("Authentication Failed", file=sys.stderr)
-        return jsonify({'message': 'Authentication Failed'}), 401
+        return JSONResponse(content="Error Occured while Getting dns servers",status_code=500)
 
 
 @router.get('/get_dns_zones',responses={
     200:{"model":list[getDnsZones]},
     500:{"model":str}
 },
+summary="Use this api to list down all the dns zones in the table.this api is of get method",
+description="Use this api to list down all the dns zones in the table.this api is of get method"
 )
 def GetAllDnsZones():
     if True:
         try:
             objList = []
-            dnsZonesObjs = DnsZonesTable.query.all()
+            dnsZonesObjs = configs.db.query(DnsZonesTable)
             for dnsZoneObj in dnsZonesObjs:
                 objDict = {}
                 objDict['dns_id'] = dnsZoneObj.dns_zone_id
@@ -512,7 +541,7 @@ def GetAllDnsZones():
                 objDict['lookup_type'] = dnsZoneObj.lookup_type
                 objList.append(objDict)
             print(objList,file=sys.stderr)
-            return objList,200
+            return objList
         except Exception as e:
             print(str(e),file=sys.stderr)
             traceback.print_exc()
@@ -525,12 +554,14 @@ def GetAllDnsZones():
     200:{"model":list[GetDnsRecoed]},
     500:{"model":str}
 },
+summary="Use this API to get all the dns records in the table",
+description="Use this API to get all the dns records in the table"
 )
 def GetAllDnsServersRecord():
     if True:
         try:
             objList = []
-            dnsServersRecordObjs = DnsRecordTable.query.all()
+            dnsServersRecordObjs = configs.db.query(DnsRecordTable).all()
             for dnsServersRecordObj in dnsServersRecordObjs:
                 objDict = {}
                 objDict['dns_record_id'] = dnsServersRecordObj.dns_id
@@ -538,7 +569,7 @@ def GetAllDnsServersRecord():
                 objDict['server_ip'] = dnsServersRecordObj.server_ip
                 objList.append(objDict)
             print(objList,file=sys.stderr)
-            return objList,200
+            return objList
         except Exception as e:
             print(str(e),file=sys.stderr)
             traceback.print_exc()
@@ -549,50 +580,172 @@ def GetAllDnsServersRecord():
 
 @router.get('/get_all_f5',
             responses={
-                200:{'model':str},
+                200:{'model':list[F5Obj]},
                 400:{"model":str},
                 500:{"model":str}
             })
 def get_all_f5():
     try:
         f5ObjList = []
-        f5Objs = db.session.execute('SELECT * FROM f5 WHERE creation_date = (SELECT max(creation_date) FROM f5)')
+        f5Objs = configs.db.execute('SELECT * FROM f5 WHERE creation_date = (SELECT max(creation_date) FROM f5)')
 
         for f5Obj in f5Objs:
-            f5DataDict = {}
-            f5DataDict['f5_id'] = f5Obj[0]
-            f5DataDict['ip_address'] = f5Obj[1]
-            f5DataDict['device_name'] = f5Obj[2]
-            f5DataDict['vserver_name'] = f5Obj[3]
-            f5DataDict['vip'] = f5Obj[4]
-            f5DataDict['pool_name'] = f5Obj[5]
-            f5DataDict['pool_member'] = f5Obj[6]
-            f5DataDict['node'] = f5Obj[7]
-            f5DataDict['service_port'] = f5Obj[8]
-            f5DataDict['monitor_value'] = f5Obj[9]
-            f5DataDict['monitor_status'] = f5Obj[10]
-            f5DataDict['lb_method'] = f5Obj[11]
-            f5DataDict['creation_date'] = str(f5Obj[12])
-            f5DataDict['modification_date'] = str(f5Obj[13])
-            f5DataDict['created_by'] = f5Obj[14]
-            f5DataDict['modified_by'] = f5Obj[15]
+            f5DataDict = {
+                "f5_id":f5Obj.f5_id,
+                "ip_address":f5Obj.ip_address,
+                "device_name":f5Obj.device_name,
+                "vserver_name":f5Obj.vserver_name,
+                "vip":f5Obj.vip,
+                "pool_name":f5Obj.pool_name,
+                "pool_member":f5Obj.pool_member,
+                "node":f5Obj.node,
+                "service_port":f5Obj.service_port,
+                "monitor_value":f5Obj.monitor_value,
+                "monitor_status":f5Obj.monitor_status,
+                "lb_method":f5Obj.lb_method,
+                "creation_date":f5Obj.creation_date,
+                "modification_date":f5Obj.modification_date,
+                "created_by":f5Obj.created_by,
+                "modified_by":f5Obj.modified_by
+            }
             f5ObjList.append(f5DataDict)
 
         content = json.dumps(f5ObjList).encode('utf-8')
         compressed_content = gzip.compress(content)
 
-        # Create a BytesIO object to wrap the compressed content
+        # Use BytesIO to wrap the compressed content
         compressed_stream = BytesIO(compressed_content)
 
-        # Create a FastAPI Response object with gzip compression and appropriate headers
+        # Extract bytes from BytesIO object using getvalue()
+        compressed_bytes = compressed_stream.getvalue()
+
+        # Create FastAPI Response with gzip compression and appropriate headers
         response = Response(
-            content=compressed_stream,
+            content=compressed_bytes,
             media_type="application/json",
             headers={
                 "Content-Encoding": "gzip",
-                "Content-Length": str(len(compressed_content)),
+                "Content-Length": str(len(compressed_bytes)),
             },
         )
         return response
+    except Exception as e:
+        traceback.print_exc()
+
+
+@router.get('/get_all_firewall_vip',
+            responses = {
+                200:{"model":list[GetAllFirewallVIP]},
+                500:{"model":str}
+            },
+            summary="Use this aspi in the VIP to list down all the firewall vip",
+            description="Use this aspi in the VIP to list down all the firewall vip"
+            )
+def get_all_firewall_vip():
+    try:
+        firewall_lst = []
+        firewall = configs.db.query(FIREWALL_VIP).all()
+        for row in firewall:
+            firewall_dict ={
+                "firewall_vip_id":row.firewall_vip_id,
+                "ip_address":row.ip_address,
+                "device_name":row.device_name,
+                "internal_ip":row.internal_ip,
+                "vip":row.vip,
+                "sport":row.sport,
+                "dport":row.dport,
+                "extintf":row.extintf,
+                "creation_date":row.creation_date,
+                "modification_date":row.modification_date
+            }
+            firewall_lst.append(firewall_dict)
+        content = json.dumps(firewall_lst).encode('utf-8')
+        compressed_content = gzip.compress(content)
+
+        # Use BytesIO to wrap the compressed content
+        compressed_stream = BytesIO(compressed_content)
+
+        # Extract bytes from BytesIO object using getvalue()
+        compressed_bytes = compressed_stream.getvalue()
+
+        # Create FastAPI Response with gzip compression and appropriate headers
+        response = Response(
+            content=compressed_bytes,
+            media_type="application/json",
+            headers={
+                "Content-Encoding": "gzip",
+                "Content-Length": str(len(compressed_bytes)),
+            },
+        )
+        return response
+    except Exception as e:
+        traceback.print_exc()
+        return (JSONResponse
+                (content="Error occured while getting all firewall vip",status_code=500))
+
+@router.get('/get_all_subnet',
+            responses={
+                200:{"model":list[GetAllSubnetSchema]},
+                500:{"model":str}
+            },
+            summary="Use this API to list down all the subnet in subnet details",
+            description="Use this API to list down all the subnet in subnet details",
+            )
+def get_all_subnet():
+    try:
+        subnet_list = []
+        subnet = configs.db.query(subnet_table).all()
+        for row in subnet:
+            subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).first()
+            subnet_dict = {
+                "subnet_id":row.subnet_id,
+                "subnet":row.subnet_address,
+                "subnet_mask":row.subnet_mask,
+                "subnet_name":row.subnet_name,
+                "location":row.location,
+                "discovered_from":row.discovered_from,
+                "discovered":row.discovered,
+                "scan_date":row.scan_date,
+                "subnet_usage":subnet_usage.subnet_usage,
+                "subnet_size":subnet_usage.subnet_size
+            }
+            subnet_list.append(subnet_dict)
+        return subnet_list
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While getting subnet",status_code=500)
+
+@router.get('/get_all_ip_details',
+            responses={
+                200:{"model":list[IPDetailScehma]},
+                500:{"model":str}
+            },
+            summary= "use this ip to list down all the ip details",
+            description = "use thi api to list down all the ip details in ip details"
+            )
+def get_all_details():
+    try:
+        ip_list = []
+        ip_detail = configs.db.query(IpTable).all()
+        for ip in ip_detail:
+            print("ip is::", ip, file=sys.stderr)
+            print("ip is::", ip, file=sys.stderr)
+            ip_dict = {
+                "ip_id": ip.ip_address,
+                "mac_address": ip.mac_address,
+                "status": ip.status,
+                "vip": ip.vip,
+                "asset_tag": ip.asset_tag,
+                "configuration_switch": ip.configuration_switch,
+                "configuration_interface": ip.configuration_interface,
+                "open_ports": ip.open_ports,
+                "ip_dns": ip.ip_dns,
+                "dns_ip": ip.dns_ip,
+                "creation_date": ip.creation_date,
+                "modification_date": ip.modification_date,
+                "ip_address": ip.ip_address,
+            }
+            ip_list.append(ip_dict)
+        return ip_list
     except Exception as e:
         traceback.print_exc()

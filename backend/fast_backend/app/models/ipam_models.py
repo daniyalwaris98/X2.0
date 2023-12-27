@@ -244,3 +244,25 @@ class F5(Base):
             if isinstance(value, datetime):
                 data[key] = str(value)
         return data
+
+
+class FIREWALL_VIP(Base):
+    __tablename__ = 'firewall_vip'
+    firewall_vip_id = Column(Integer, primary_key=True)
+    ip_address = Column(String(50))
+    device_name = Column(String(50))
+    internal_ip = Column(String(500))
+    vip = Column(String(50))
+    sport = Column(String(500))
+    dport = Column(String(500))
+    extintf = Column(String(500))
+    creation_date = Column(DateTime, default=datetime.now())
+    modification_date = Column(
+        DateTime, default=datetime.now(), onupdate=datetime.now())
+
+    def as_dict(self):
+        data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
+        for key, value in data.items():
+            if isinstance(value, datetime):
+                data[key] = str(value)
+        return data

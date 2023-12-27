@@ -8,6 +8,7 @@ from app.ipam_scripts.f5 import *
 from app.ipam_scripts.ipam_physical_mapping import *
 from app.ipam_scripts.fortigate_vip import *
 from app.api.v1.ipam.routes.device_routes import *
+from app.models.atom_models import *
 # from app.api.v1.ipam.ipam_import import *
 # from app.api.v1.ipam.ipam_import import *
 
