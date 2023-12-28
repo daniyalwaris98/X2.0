@@ -3,18 +3,24 @@ from app.api.v1.ipam.utils import *
 from app.api.v1.ipam.routes.device_routes import *
 from app.api.v1.ipam.utils.ipam_utils import *
 from app.models.common_models import *
+from sqlalchemy import desc
 import sys
 import traceback
 from app.models.ipam_models import *
 from app.schema.ipam_schema import *
 from app.schema.base_schema import *
 # from app.schema.
+from sqlalchemy import and_, distinct
+from sqlalchemy.orm import aliased
+from sqlalchemy.orm import joinedload
 from app.schema.ipam_schema import *
 from app.core.config import configs
 from app.models.atom_models import *
 from app.utils.db_utils import *
 import threading
+from threading import Thread
 import subprocess
+from pywinos import WinOSClient
 # from ping3 import ping, verbose_ping
 import os
 from subprocess import *
@@ -87,8 +93,8 @@ def get_atom_in_ipam():
     400:{"model":str},
     500:{"model":str}
 },
-summary="API to add atom in IPAM",
-description="API to add atom in IPAM"
+summary="Use this API in IPAM devices page to insert the atom in IPAM Devices page.This is of post API and insert the atom based on the atom_id",
+description="Use this API in IPAM devices page to insert the atom in IPAM Devices page.This is of post API and insert the atom based on the atom_id"
 )
 async def add_atom_in_ipam(ipam_obj: list[int]):
     try:
@@ -98,16 +104,10 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
         for atom_data in ipam_obj:
             atom_id = atom_data
             print("atom_id is:", atom_id, file=sys.stderr)
-            # atom_ip = configs.db.query(AtomTable).filter_by(atom_id = atom_id).first=()
-            # ip_address = atom_ip.ip_address
-            # print("ip address is::::",ip_address,file=sys.stderr)
-            # failed_ip = configs.db.query(FailedDevicesTable).filter_by(ip_address = ip_address).first()
-            # if failed_ip:
-            #     error_list.append(f"{failed_ip.ip_address} : failed due to {failed_ip.failure_reason}")
-            # else:
-
+            atom_ip = configs.db.query(AtomTable).filter_by(atom_id=atom_id).first()
+            ip_address = atom_ip.ip_address
+            print("ip address is::::",ip_address,file=sys.stderr)
             atom_exists = configs.db.query(IpamDevicesFetchTable).filter_by(atom_id=atom_id).first()
-
             if atom_exists:
                 pass
                 return JSONResponse(status_code=400, content="Atom Already Exists")
@@ -116,10 +116,47 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
                 print("new atom is ::::::::::::::",new_atom,file=sys.stderr)
                 print("Atom added to the IPAM devices fetch table", file=sys.stderr)
                 from app.api.v1.ipam.utils.ipam_utils import FetchIpamDevices
-                resposne = FetchIpamDevices(atom_id)
-
-                print("repsonse of the fetch ipam devices is::::",resposne,file=sys.stderr)
-        return JSONResponse(content = "Atom Added ",status_code=200)
+                response = FetchIpamDevices(atom_id)
+                print("response of the puller is:::::::::::::::",response,file=sys.stderr)
+            failed_ip = configs.db.query(FailedDevicesTable).filter_by(ip_address=ip_address).first()
+            print("failed ip is::::::::::::::::::", failed_ip, file=sys.stderr)
+            if failed_ip:
+                error_list.append(f"{failed_ip.ip_address} : failed due to {failed_ip.failure_reason}")
+            else:
+                ipam_devices = configs.db.query(IpamDevicesFetchTable).filter_by(atom_id = atom_id).all()
+                for device in ipam_devices:
+                    devices_data = {}
+                    devices_data['ipam_device_id'] = device.ipam_device_id
+                    devices_data['interface_ip'] = device.interface_ip
+                    devices_data['interface_description'] = device.interface_description
+                    devices_data['virtual_ip'] = device.virtual_ip
+                    devices_data['vlan'] = device.vlan
+                    devices_data['vlan_number'] = device.vlan_number
+                    devices_data['interface_status'] = device.interface_status
+                    devices_data['fetch_date'] = device.fetch_date
+                    ip_interfaces = configs.db.query(ip_interface_table).filter_by(ipam_device_id = device.ipam_device_id).all()
+                    for ip in ip_interfaces:
+                        devices_data['discovered_from'] = ip.discovered_from
+                    subnet = configs.db.query(subnet_table).filter_by(ipam_device_id = device.ipam_device_id).all()
+                    for row in subnet:
+                        devices_data['subnet'] = row.subnet_address
+                        devices_data['subnet_mask'] = row.subnet_mask
+                        devices_data['location'] = row.location
+                        subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).all()
+                        for usage in subnet_usage:
+                            devices_data['subnet_usage'] = usage.subnet_usage
+                            devices_data['subnet_size'] = usage.subnet_size
+                    data.append(devices_data)
+            success_lst.append(f"{atom_id} : Inserted Successfully")
+        print("data is::::::",data,file=sys.stderr)
+        responses = {
+            'data':data,
+            "success_list":success_lst,
+            "error_list":error_list,
+            "success":len(success_lst),
+            "erro":len(error_list)
+        }
+        return responses
 
     except Exception as e:
         traceback.print_exc()
@@ -174,11 +211,12 @@ def get_ipam_fetch_devices():
     400:{"model":str},
     500:{"model":str}
 },
-summary="Use this API to add subnet mnaually",
-             description="Use this API to add subnet mnaually"
+summary="Use this API in subnet page to add the subnet manually or static subnet this api is of post method",
+             description="Use this API in subnet page to add the subnet manually or static subnet this api is of post method"
 )
 def add_subnet(subnetObj:AddSubnetManually):
     try:
+        subnet_data_dict = {}
         subnet_list =[]
         subnet_obj = dict(subnetObj)
         print("subnet obj is :::::",file=sys.stderr)
@@ -201,8 +239,10 @@ def add_subnet(subnetObj:AddSubnetManually):
                 "location":subnet_tab.location,
                 "discovered":subnet_tab.discovered
             }
+            subnet_data_dict['data'] = subnet_dict
+            subnet_data_dict['message'] = f"{subnet_tab.subnet_address} : Inserted Successfully"
             subnet_list.append(subnet_dict)
-        return JSONResponse(content=subnet_list,status_code=200)
+        return JSONResponse(content=subnet_data_dict,status_code=200)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While adding the subenrt",status_code=500)
@@ -411,77 +451,60 @@ def get_all_discovered_subnet():
 
 @router.post('/add_dns',
              responses={
-                 200:{"model":str},
+                 200:{"model":Response200},
                  400:{"model":str},
                  500:{"model":str}
              },
-             summary="API to add dns",
-             description="API to add dns"
+             summary="Use this API to add the DNS in the DNs page.This API is of post method",
+             description="Use this API to add the DNS in the DNs page.This API is of post method"
              )
 def AddDNS(data: AddDnsSchema):
     try:
+        data_dns = {}
+        dns_data_dict = {}
         print("data is::::",data,file=sys.stderr)
         dns_data = dict(data)
-        dns_query = configs.db.query(ADD_DNS_TABLE).all()
-        print("DNS query is:::::::::::::::::::::", dns_query, file=sys.stderr)
-        dns_ip = False
-        add_dns = ADD_DNS_TABLE()
-        dns_server = DnsServerTable()
-        for ip in dns_query:
-            print("ip in ip addrres::::::::", ip, file=sys.stderr)
-            ip_address = ip.ip_address
-            if ip_address:
-                dns_ip = True
-                if ip_address == dns_data['ip_address']:
-                    print("ip_address found in dns ip address True updating executing>>", file=sys.stderr)
-                    dns_query1 = configs.db.query(ADD_DNS_TABLE).filter_by(ip_address=dns_data['ip_address']).first()
-                    if dns_query1:
-                        print("dns query is >>>>>>>>>>>", dns_query1, file=sys.stderr)
-                        # updating the add dns table
-                        add_dns.ip_address = dns_data['ip_address']
-                        add_dns.username = dns_data['username']
-                        add_dns.password = dns_data['password']
-                        add_dns.server_name = dns_data['server_name']
-                        UpdateDBData(add_dns)
-                        print("DNS Table Updated >>>>>>>>>>", file=sys.stderr)
-                    else:
-                        add_dns.ip_address = dns_data['ip_address']
-                        add_dns.username = dns_data['username']
-                        add_dns.password = dns_data['password']
-                        add_dns.server_name = dns_data['server_name']
-                        InsertDBData(add_dns)
-                        print("Inserted Into ADD DNS TABLE>", file=sys.stderr)
-
-                    dns_query2 = configs.db.query(DnsServerTable).filter_by(server_name=dns_data['server_name']).first()
-                    if dns_query2:
-                        # dns_server.ip_address = dns_data['ip_address']
-                        dns_server.server_name = dns_data['server_name']
-                        dns_server.number_of_zones = 0
-                        dns_server.type = ''
-                        UpdateDBData(dns_server)
-                        print("Dns server updated successfully>>>>>>", file=sys.stderr)
-                    else:
-                        # dns_server.ip_address = dns_data['ip_address']
-                        dns_server.server_name = dns_data['server_name']
-                        InsertDBData(dns_server)
-                        print("Inserted into DNS server table", file=sys.stderr)
-
-        if not dns_ip:
-            for key, value in dns_data.items():
-                if hasattr(add_dns, key):
-                    setattr(add_dns, key, value)
-
-            # add_dns.ip_address = dns_data.ip_address
-            # add_dns.username = dns_data.username
-            # add_dns.password = dns_data.password
-            # add_dns.server_name = dns_data.server_name
+        add_dns = DnsServerTable()
+        print("ip_address found in dns ip address True updating executing>>", file=sys.stderr)
+        dns_query1 = configs.db.query(DnsServerTable).filter_by(ip_address=dns_data['ip_address']).first()
+        if dns_query1:
+            print("dns query is >>>>>>>>>>>", dns_query1, file=sys.stderr)
+            # updating the add dns table
+            dns_query1.ip_address = dns_data['ip_address']
+            dns_query1.user_name = dns_data['username']
+            dns_query1.password = dns_data['password']
+            dns_query1.server_name = dns_data['server_name']
+            dns_query1.number_of_zones = 0
+            dns_query1.type = ''
+            UpdateDBData(add_dns)
+            dns_data_dict['ip_address'] = dns_query1.ip_address
+            dns_data_dict['user_name'] = dns_query1.user_name
+            dns_data_dict['password'] = dns_query1.password
+            dns_data_dict['server_name'] = dns_query1.server_name
+            dns_data_dict['number_of_zones'] = dns_query1.number_of_zones
+            dns_data_dict['type'] = dns_query1.type
+            dns_data_dict['dns_server_id'] = dns_query1.dns_server_id
+            print("DNS Table Updated >>>>>>>>>>", file=sys.stderr)
+            data_dns['data'] = dns_data_dict
+            data_dns['message'] = f"{dns_data['ip_address']} : DNS Updated Successfully"
+        else:
+            add_dns.ip_address = dns_data['ip_address']
+            add_dns.username = dns_data['username']
+            add_dns.password = dns_data['password']
+            add_dns.server_name = dns_data['server_name']
             InsertDBData(add_dns)
-            print("Inserted Into ADD DNS TABLE::::::::>", file=sys.stderr)
-            # dns_server.ip_address = dns_data['ip_address']
-            dns_server.server_name = dns_data['server_name']
-            InsertDBData(dns_server)
-            print("Inserted into DNS server table::::::::::::::::::::", file=sys.stderr)
-            return {"Reposne": "DataInserted"}
+            dns_data_dict['ip_address'] = add_dns.ip_address
+            dns_data_dict['user_name'] = add_dns.username
+            dns_data_dict['password'] = add_dns.password
+            dns_data_dict['server_name'] = add_dns.server_name
+            dns_data_dict['number_of_zones'] = add_dns.number_of_zones
+            dns_data_dict['type'] = add_dns.type
+            dns_data_dict['dns_server_id'] = add_dns.dns_server_id
+            print("Inserted Into ADD DNS TABLE>", file=sys.stderr)
+            data_dns['data'] = dns_data_dict
+            # data_dns['message'] = f"{ip_address} DNS Inserted Successfully"
+            data_dns['message'] = f"{dns_data['ip_address']} : DNS Inserted Successfully"
+        return data_dns
 
     except Exception as e:
         traceback.print_exc()
@@ -749,3 +772,393 @@ def get_all_details():
         return ip_list
     except Exception as e:
         traceback.print_exc()
+
+@router.post('/scan_subnet',
+             responses = {
+                 200:{"model":Response200},
+                 400:{"model":str},
+                 500:{"model":str},
+             },
+             summary="Use this API to in the subnet subnet table to scan the subnet this API will scan a subnet based on the subent in the body.This API is of post method",
+             description = 'Use this API to in the subnet subnet table to scan the subnet this API will scan a subnet based on the subent in the body.This API is of post method'
+             )
+def scan_subnets(subnet:ScanSubnetSchema):
+    try:
+        data = {}
+        options = []
+        data = dict(subnet)
+        if data['port_scan'] is True:
+            options.append('Port Scan')
+
+        if data['dns_scan'] is True:
+            options.append('DNS Scan')
+
+        # If you want to append both 'Port Scan' and 'DNS Scan' when both are True
+        if data['port_scan'] and data['dns_scan']:
+            options.append('Port Scan')
+            options.append('DNS Scan')
+        print("data in scan subent is:::::::",data,file=sys.stderr)
+        subnet_data = configs.db.query(subnet_table).filter_by(subnet_address = data['subnet']).first()
+        option_dict = {"options":options}
+        subnet_data_dict = {
+            "subnet_id": subnet_data.subnet_id,
+            "subnet_address": subnet_data.subnet_address,
+            "subnet_mask": subnet_data.subnet_mask,
+            "subnet_usage": subnet_data.subnet_usage,
+            "subnet_size": subnet_data.subnet_size
+        }
+        data = {"data": subnet_data_dict,
+                "message":f"{subnet_data.subnet_address} : Scanned Successfully"
+                }
+        try:
+            if subnet_data:
+                subnet_data.status = 'Waiting'
+                UpdateDBData(subnet_data)
+                ip_data = configs.db.query(IpTable).filter_by(subnet_id = subnet_data.subnet_id).first()
+                ip_data.mac_address = ''
+                ip_data.configuration_switch = ''
+                ip_data.configuration_interface = ''
+                ip_data.status= ''
+                ip_data.ip_dns = ''
+                ip_data.dns_ip =''
+                ip_data.vip = ''
+                UpdateDBData(ip_data)
+                print("DB updated::::::::::",file=sys.stderr)
+        except Exception as e:
+            traceback.print_exc()
+        Thread(target=MultiPurpose,args=(option_dict.get('options'),)).start()
+        print("threading is being executed::",file=sys.stderr)
+        return data
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Scanning the subnets",status_code=500)
+
+@router.post('/scan_all_subnets',
+             responses = {
+                 200:{"model":SummeryResponseSchema},
+                 400:{"model":str},
+                 500:{"model":str},
+             },
+             summary="Use this API in the subnet page on a scan subnet button to scan all the option this API accepts the dns_scan or port_scan in  a boolean.This API is of post method",
+             description = 'Use this API in the subnet page on a scan subnet button to scan all the option this API accepts the dns_scan or port_scan in  a boolean.This API is of post method'
+             )
+def scan_all_subnets(subnet: ScanAllSubnetSchema):
+    try:
+        data = {}
+        success_list = []
+        error_list = []
+
+        options = []
+        data = dict(subnet)
+        if data['port_scan'] is True:
+            options.append('Port Scan')
+
+        if data['dns_scan'] is True:
+            options.append('DNS Scan')
+
+        # If you want to append both 'Port Scan' and 'DNS Scan' when both are True
+        if data['port_scan'] and data['dns_scan']:
+            options.append('Port Scan')
+            options.append('DNS Scan')
+
+        print("data in scan subnet is:::::::", data, file=sys.stderr)
+        option_dict = {"options": options}
+
+        subnet_data = configs.db.query(subnet_table).all()
+        for obj in subnet_data:
+            try:
+                if obj:
+                    obj.status = 'Waiting'
+                    # Update other attributes accordingly
+                    configs.db.merge(obj)
+                    configs.db.commit()  # Commit changes after merging
+                    ip_data = configs.db.query(IpTable).filter_by(subnet_id=obj.subnet_id).first()
+                    if ip_data:
+                        ip_data.mac_address = ''
+                        ip_data.configuration_switch = ''
+                        ip_data.configuration_interface = ''
+                        ip_data.status = ''
+                        ip_data.ip_dns = ''
+                        ip_data.dns_ip = ''
+                        ip_data.vip = ''
+                    configs.db.merge(ip_data)
+                    configs.db.commit()  # Commit changes after merging
+                print("DB updated::::::::::", file=sys.stderr)
+                subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = obj.subnet_id).first()
+                subnet_data_dict = {
+                    "subnet_id":obj.subnet_id,
+                    "subnet_address":obj.subnet_address,
+                    "subnet_mask":obj.subnet_mask,
+                    "subnet_usage":subnet_usage.subnet_usage,
+                    "subnet_size":subnet_usage.subnet_size
+                }
+                data = {"data":subnet_data_dict}
+                success_list.append(f"{obj.subnet_address} : Scanned Successfully")
+            except Exception as e:
+                configs.db.rollback()  # Rollback changes if an exception occurs
+                traceback.print_exc()
+
+
+        Thread(target=MultiPurpose, args=(option_dict.get('options'),)).start()
+        print("threading is being executed::", file=sys.stderr)
+        responses = {
+            "data":data,
+            "success_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "errror":len(error_list)
+        }
+        return responses
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred While Scanning the subnets", status_code=500)
+
+
+@router.post('/test_dns',
+             responses = {
+                 200:{"model":Response200},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="Use this API in the DNS Serevr page in add dns fom to test the dns before adding the table",
+             description = "Use this API in the DNS Serevr page in add dns fom to test the dns before adding the table"
+             )
+def test_dns(dns:TestDnsSchema):
+    try:
+        data = {}
+        dns_data = dict(dns)
+        print("dns data is:::::::",dns_data,file=sys.stderr)
+        if dns_data['ip_address'] and dns_data['user_name'] and dns_data['password']:
+            try:
+                tool = WinOSClient(host=dns_data['ip_address'], username=dns_data['user_name'],
+                                   password=dns_data['password'])
+
+                response = tool.run_ps('Get-DnsServerZone | ConvertTo-Json')
+                data = {"ip_address":dns_data['ip_address'],
+                     "user_name":dns_data['user_nsame'],
+                        "password":dns_data['password']
+                     }
+
+                response_dict = {
+                    "data":data,
+                    "message":f"{dns_data['ip_address']} : Authenticated"
+                }
+                return JSONResponse(content=response_dict,status_code=200)
+            except Exception as e:
+                traceback.print_exc()
+                return JSONResponse(content="Authentication Failed",status_code=500)
+    except Exception as e:
+        traceback.print_exc()
+
+
+@router.post('/scan_dns',responses = {
+                 200:{"model":str},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="Use this API in the dns server table to scan a DNS based on the IP address",
+             description="Use this API in the dns server table to scan a DNS based on the IP address"
+             )
+def scan_dns(ip_address:ScanDNSSchema):
+    try:
+        dns_server = configs.db.query(DnsServerTable).filter_by(ip_address=ip_address).first()
+        if dns_server:
+            dns_server_id = dns_server.dns_server_id
+            dns_zones = configs.db.query(DnsZonesTable).filter_by(dns_server_id=dns_server_id).all()
+            for dns_zone in dns_zones:
+                dns_records = configs.db.query(DnsRecordTable).filter_by(dns_zone_id=dns_zone.dns_zone_id).all()
+                for dns_record in dns_records:
+                    configs.db.delete(dns_record)
+                configs.db.delete(dns_zone)
+            configs.db.commit()
+
+        status = scan_dns(ip_address)
+        return status
+    except Exception as e:
+        traceback.print_exc()
+
+
+
+@router.post('/add_subnets', responses={
+    200: {"model": SummeryResponseSchema},
+    400: {"model": str},
+    500: {"model": str}
+},
+summary="Use this API in the subnet page to add the subent from the execel",
+description="Use this API in the subnet page to add the subent from the execel"
+)
+def add_subnets(subnetObj: list[AddSubnetManually]):
+    try:
+        success_list = []
+        error_list = []
+        subnet_data_dict = {"data": []}  # Initialize subnet_data_dict as a list
+
+        for obj in subnetObj:
+            try:
+                subnet_existing = configs.db.query(subnet_table).filter_by(subnet_address=obj.subnet).first()
+
+                if subnet_existing:
+                    # Update existing subnet details
+                    subnet_existing.subnet_mask = obj.subnet_mask
+                    subnet_existing.subnet_name = obj.subnet_name
+                    subnet_existing.location = obj.location
+                    subnet_existing.discovered = 'Not Discovered'
+                    UpdateDBData(subnet_existing)
+                    configs.db.commit()
+
+                    subnet_dict = {
+                        "subnet_id": subnet_existing.subnet_id,
+                        "subnet_mask": subnet_existing.subnet_mask,
+                        "subnet": subnet_existing.subnet_address,
+                        "subnet_name": subnet_existing.subnet_name,
+                        "location": subnet_existing.location,
+                        "discovered": subnet_existing.discovered
+                    }
+                    success_list.append(f"{subnet_existing.subnet_address} : Updated Successfully")
+                else:
+                    subnet_tab = subnet_table()
+                    subnet_tab.subnet_address = obj.subnet
+                    subnet_tab.subnet_mask = obj.subnet_mask
+                    subnet_tab.subnet_name = obj.subnet_name
+                    subnet_tab.location = obj.location
+                    subnet_tab.discovered = 'Not Discovered'
+                    InsertDBData(subnet_tab)
+                    subnet_dict = {
+                        "subnet_id": subnet_tab.subnet_id,
+                        "subnet_mask": subnet_tab.subnet_mask,
+                        "subnet": subnet_tab.subnet_address,
+                        "subnet_name": subnet_tab.subnet_name,
+                        "location": subnet_tab.location,
+                        "discovered": subnet_tab.discovered
+                    }
+                    success_list.append(f"{subnet_tab.subnet_address} : Inserted Successfully")
+
+                subnet_data_dict["data"].append(subnet_dict)  # Append subnet_dict to subnet_data_dict
+
+            except Exception as e:
+                # If an error occurs during processing, append the error message to error_list
+                error_list.append(f"Error occurred: {str(e)}")
+
+        responses = {
+            "data": subnet_data_dict["data"],  # Return the list of subnet data
+            "success_list": success_list,
+            "error_list": error_list,
+            "success": len(success_list),
+            "error": len(error_list)
+        }
+        return JSONResponse(content=responses, status_code=200)
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred While adding the subnet", status_code=500)
+
+
+@router.post('/edit_subnet',responses={
+    200:{"model":Response200},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="Use this API in the subent page in a subent table to edit a subnet",
+             description="Use this API in the subent page in a subent table to edit a subnet"
+)
+def add_subnet(subnetObj:EditSubnetSchema):
+    try:
+        subnet_data_dict = {}
+        subnet_list =[]
+        subnet_obj = dict(subnetObj)
+        print("subnet obj is :::::",file=sys.stderr)
+        subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_id = subnet_obj['subnet_id']).first()
+        if subnet_exsist:
+            subnet_exsist.subnet_mask = subnet_obj['subnet_mask']
+            subnet_exsist.subnet_name = subnet_obj['subnet_name']
+            subnet_exsist.location = subnet_obj['location']
+            subnet_exsist.discovered = 'Not Discovered'
+            UpdateDBData(subnet_exsist)
+            subnet_dict = {
+                "subnet_id":subnet_exsist.subnet_id,
+                "subnet_mask":subnet_exsist.subnet_mask,
+                "subnet": subnet_exsist.subnet_address,
+                "subnet_name":subnet_exsist.subnet_name,
+                "location":subnet_exsist.location,
+                "discovered":subnet_exsist.discovered
+            }
+            subnet_data_dict['data'] = subnet_dict
+            subnet_data_dict['message'] = f"{subnet_exsist.subnet_address} : Updated Successfully"
+            subnet_list.append(subnet_dict)
+        return JSONResponse(content=subnet_data_dict,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While adding the subenrt",status_code=500)
+
+
+@router.get('/fetch_ipam_devices',responses={
+    200:{"model":SummeryResponseSchema},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="Use API in the IPam devices page on a fetch button to fetch all the devices this API is of get method",
+description="Use API in the IPam devices page on a fetch button to fetch all the devices this API is of get method"
+            )
+def fetch_ipam_devices():
+    try:
+        data = []
+        success_list = []
+        error_list = []
+        ipam_devices = configs.db.query(IpamDevicesFetchTable).all()
+        for row in ipam_devices:
+            atom_id = row.atom_id
+            status = FetchIpamDevices(atom_id)
+            print("status",status,file=sys.stderr)
+            atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = atom_id).first()
+            if atom_exsist:
+                ip_address = atom_exsist.ip_address
+                latest_failed_device = (
+                    configs.db.query(FailedDevicesTable)
+                    .filter_by(ip_address=ip_address)
+                    .order_by(desc(FailedDevicesTable.date))
+                    .first()
+                )
+
+                if latest_failed_device:
+                    error_list.append(f"{latest_failed_device.ip_address} : failed due to {latest_failed_device.failure_reason}")
+                else:
+                    ipam_devices = configs.db.query(IpamDevicesFetchTable).filter_by(atom_id=atom_id).all()
+                    for device in ipam_devices:
+                        devices_data = {}
+                        devices_data['ipam_device_id'] = device.ipam_device_id
+                        devices_data['interface_ip'] = device.interface_ip
+                        devices_data['interface_description'] = device.interface_description
+                        devices_data['virtual_ip'] = device.virtual_ip
+                        devices_data['vlan'] = device.vlan
+                        devices_data['vlan_number'] = device.vlan_number
+                        devices_data['interface_status'] = device.interface_status
+                        devices_data['fetch_date'] = device.fetch_date
+                        ip_interfaces = configs.db.query(ip_interface_table).filter_by(
+                            ipam_device_id=device.ipam_device_id).all()
+                        for ip in ip_interfaces:
+                            devices_data['discovered_from'] = ip.discovered_from
+                        subnet = configs.db.query(subnet_table).filter_by(ipam_device_id=device.ipam_device_id).all()
+                        for row in subnet:
+                            devices_data['subnet'] = row.subnet_address
+                            devices_data['subnet_mask'] = row.subnet_mask
+                            devices_data['location'] = row.location
+                            subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id=row.subnet_id).all()
+                            for usage in subnet_usage:
+                                devices_data['subnet_usage'] = usage.subnet_usage
+                                devices_data['subnet_size'] = usage.subnet_size
+                        data.append(devices_data)
+                        success_list.append(f"{atom_exsist.ip_address} : Fetched Successfully")
+        respones = {
+            "dict":data,
+            "suucess_list":success_list,
+            "error_list": error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+
+        print("reposne",respones,file=sys.stderr)
+        return respones
+        return JSONResponse(content="IPAM devices Fetched",status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Fetching Ipam Devices",status_code=500)
