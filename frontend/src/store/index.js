@@ -25,6 +25,8 @@ import autoDiscoveryV1V2CredentialsReducer from "./features/autoDiscoveryModule/
 import autoDiscoveryV3CredentialsReducer from "./features/autoDiscoveryModule/manageCredentials/snmpCredentials/v3Credentials";
 import autoDiscoverySSHLoginCredentialsReducer from "./features/autoDiscoveryModule/manageCredentials/loginCredentials";
 
+import ipamDevicesReducer from "./features/ipamModule/devices";
+
 import dropDownsReducer from "./features/dropDowns";
 
 export const store = configureStore({
@@ -56,6 +58,9 @@ export const store = configureStore({
     auto_discovery_v1_v2_credentials: autoDiscoveryV1V2CredentialsReducer,
     auto_discovery_v3_credentials: autoDiscoveryV3CredentialsReducer,
     auto_discovery_login_credentials: autoDiscoverySSHLoginCredentialsReducer,
+
+    // auto discovery module
+    ipam_devices: ipamDevicesReducer,
 
     // dropdowns
     drop_downs: dropDownsReducer,
