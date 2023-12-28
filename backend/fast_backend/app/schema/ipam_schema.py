@@ -28,6 +28,13 @@ class AddSubnetManually(BaseSchema):
     subnet_name:str | None = None
     location:str | None = None
 
+
+class EditSubnetSchema(BaseSchema):
+    subnet_id:int
+    subnet_mask:str
+    subnet_name:str | None = None
+    location:str | None = None
+
 class AddSubnetInSubnetSchema(BaseSchema):
     subnet:str
 
@@ -173,3 +180,6 @@ class TestDnsSchema(BaseSchema):
     user_name:str
     password:str
     ip_address:str
+
+class ScanDNSSchema(BaseSchema):
+    ip_addresss:str
