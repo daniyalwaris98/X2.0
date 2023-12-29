@@ -8,10 +8,6 @@ import {
   PAGE_PATH as PAGE_PATH_DEVICES,
 } from "./devices/constants";
 import {
-  PAGE_NAME as PAGE_NAME_DEVICE_SUBNETS,
-  PAGE_PATH as PAGE_PATH_DEVICE_SUBNETS,
-} from "./deviceSubnets/constants";
-import {
   DROPDOWN_NAME as DROPDOWN_NAME_SUBNETS,
   DROPDOWN_PATH as DROPDOWN_PATH_SUBNETS,
 } from "./subnetsDropDown";
@@ -67,11 +63,6 @@ const menuItems = [
     id: PAGE_PATH_DEVICES,
     name: PAGE_NAME_DEVICES,
     path: PAGE_PATH_DEVICES,
-  },
-  {
-    id: PAGE_PATH_DEVICE_SUBNETS,
-    name: PAGE_NAME_DEVICE_SUBNETS,
-    path: PAGE_PATH_DEVICE_SUBNETS,
   },
   {
     id: DROPDOWN_PATH_SUBNETS,

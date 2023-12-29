@@ -3,8 +3,9 @@ import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
+  useFetchIpamDevicesLazyQuery,
   useDeleteRecordsMutation,
-} from "../../../store/features/atomModule/passwordGroups/apis";
+} from "../../../store/features/ipamModule/devices/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
@@ -36,16 +37,16 @@ const Index = () => {
     useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
-    useButtonsConfiguration({
-      configure_table: { handleClick: handleTableConfigurationsOpen },
-      default_export: { handleClick: handleDefaultExport },
-      default_delete: {
-        handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
-      },
-      default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
-    });
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    default_export: { handleClick: handleDefaultExport },
+    default_delete: {
+      handleClick: handleDelete,
+      visible: selectedRowKeys.length > 0,
+    },
+    default_fetch: { handleClick: handleFetch },
+    default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
+  });
 
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -68,6 +69,17 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   const [
+    fetchIpamDevices,
+    {
+      data: ipamFetchIpamDevicesData,
+      isSuccess: isFetchIpamDevicesSuccess,
+      isLoading: isFetchIpamDevicesLoading,
+      isError: isFetchIpamDevicesError,
+      error: fetchIpamDevicesError,
+    },
+  ] = useFetchIpamDevicesLazyQuery();
+
+  const [
     deleteRecords,
     {
       data: deleteRecordsData,
@@ -88,6 +100,14 @@ const Index = () => {
   });
 
   useErrorHandling({
+    data: ipamFetchIpamDevicesData,
+    isSuccess: isFetchIpamDevicesSuccess,
+    isError: isFetchIpamDevicesError,
+    error: fetchIpamDevicesError,
+    type: TYPE_BULK,
+  });
+
+  useErrorHandling({
     data: deleteRecordsData,
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
@@ -97,6 +117,10 @@ const Index = () => {
   });
 
   // handlers
+  function handleFetch() {
+    fetchIpamDevices();
+  }
+
   function handleEmptySelectedRowKeys() {
     setSelectedRowKeys([]);
   }
@@ -144,7 +168,13 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+    <Spin
+      spinning={
+        isFetchRecordsLoading ||
+        isFetchIpamDevicesLoading ||
+        isDeleteRecordsLoading
+      }
+    >
       {open ? (
         <Modal
           handleClose={handleClose}
