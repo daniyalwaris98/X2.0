@@ -574,16 +574,19 @@ def getPhysicalMapping(subnet_list):
     try:
         threads = []
         physical_mapping = IPAMPM()
+        password=""
+        hosts = []
         for subnet in subnet_list:
-            hosts = []
+
             result1 = configs.db.query(subnet_table).filter_by(subnet_address=subnet).all()
             for row in result1:
                 print('row is>>>>>>>', row, file=sys.stderr)
                 atom_exsist = configs.db.query(AtomTable).filter_by(device_name = row.discovered_from).first()
                 device_name = atom_exsist.device_name
+                password=""
                 ip_address = atom_exsist.ip_address
                 if device_name:
-                    ip_address = password_group = device_type = user_name = password = ""
+                    password_group = device_type = user_name = password = ""
                     print("ip address is:::::::::::::::::::::::::",ip_address,file=sys.stderr)
                     result2 = configs.db.query(AtomTable).filter_by(ip_address=atom_exsist.ip_address).first()
                     password_group = result2.password_group_id
@@ -592,18 +595,19 @@ def getPhysicalMapping(subnet_list):
                         result4 = configs.db.query(PasswordGroupTable).filter_by(
                             password_group_id=password_group).first()
                         user_name = result4.username
-                        passowrd = result4.password
+                        password = result4.password
 
                     host = {
                         "ip_address": ip_address,
                         "user": user_name,
-                        "pwd": passowrd,
+                        "pwd": password,
                         "sw_type": device_type,
                         "device_name": device_name
                     }
                     hosts.append(host)
                     print(f"Host is {host}:::::", file=sys.stderr)
         physical_mapping.get_inventory_data(hosts)
+        # physical_mapping.poll(host)
 
 
     except Exception as e:
@@ -644,16 +648,18 @@ def MultiPurpose(options):
                     try:
                         for subnt in get_subnet:
                             if get_subnet:
+                                subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnt.subnet_id).first()
                                 subnt.status = 'Scanning'
-                                subnt.size = size
-                                UpdateDBData(subnet_display)
+                                subnet_usage.subnet_size = size
+                                UpdateDBData(subnt)
+                                UpdateDBData(subnet_usage)
                                 print("Subnet Display Table Updated Successfully::::::", file=sys.stderr)
                             else:
                                 print("No subnet found in subnet display table:::::", file=sys.stderr)
                     except Exception as e:
                         for subnetscan in get_subnet_scan:
                             subnetscan.status = 'Failed'
-                        UpdateDBData(get_subnet_scan)
+                            UpdateDBData(subnetscan)
                         traceback.print_exc()
                 except Exception as e:
                     traceback.print_exc()
@@ -677,14 +683,14 @@ def MultiPurpose(options):
                                 for row in get_ip:
                                     row.ip_address = ip
                                     row.subnet_id = subnet1.subnet_id
-                        InsertDBData(ip_data)
+                            InsertDBData(row)
                         print("data inserted to ip tabl::::::", file=sys.stderr)
                     except Exception as e:
                         for row in get_subnet_scan:
                             print("row is::::::::::::", row, file=sys.stderr)
                             row.staus = 'Failed'
                             row.scan_date = datetime.now()
-                        UpdateDBData(get_subnet_scan)
+                            UpdateDBData(row)
                         traceback.print_exc()
 
                     print("Finished Getting IP Address:::::::::::::", file=sys.stderr)
@@ -698,14 +704,14 @@ def MultiPurpose(options):
                                 print("row in get subnet is:::::::", file=sys.stderr)
                                 subnet_usage.subnet_usage = usage
                                 print(f"Usage {subnet_usage.subnet_usage} Upaded successfuly for subnet {subnet}:::", file=sys.stderr)
-                            UpdateDBData(subnet_display)
-                            UpdateDBData(subnet_usage)
+                                UpdateDBData(row)
+                                UpdateDBData(subnet_usage)
                         except Exception as e:
                             for row in get_subnet_scan:
                                 print("row is::::::::::::", row, file=sys.stderr)
                                 row.staus = 'Failed'
                                 row.scan_date = datetime.now()
-                            UpdateDBData(get_subnet_scan)
+                                UpdateDBData(row)
                             traceback.print_exc()
 
                     print("Populating F5 VIP:::::::::::::::::::", file=sys.stderr)
@@ -724,7 +730,7 @@ def MultiPurpose(options):
                                     ip_dat = configs.db.query(IpTable).filter_by(ip_address=ip).all()
                                     for ips in ip_dat:
                                         ips.vip = vip
-                                    UpdateDBData(ip_data)
+                                        UpdateDBData(ips)
                                 except Exception as e:
                                     traceback.print_exc()
                         except Exception as e:
@@ -745,7 +751,7 @@ def MultiPurpose(options):
                                     ip_dat = configs.db.query(IpTable).filter_by(ip_address=ip).all()
                                     for ips in ip_dat:
                                         ips.vip = vip
-                                    UpdateDBData(ip_data)
+                                        UpdateDBData(ips)
                                 except Exception as e:
                                     traceback.print_exc()
                         except Exception as e:
@@ -774,7 +780,7 @@ def MultiPurpose(options):
                     for subnet in get_subntt_scan:
                         subnet.status = 'Scanned'
                         subnet.scan_date = datetime.now()
-                    UpdateDBData(subnet_display)
+                        UpdateDBData(subnet)
             except Exception as e:
                 subnet_scanned_stat = configs.db.query(subnet_table).filter_by(subnet_address=subnet,
                                                                                     status='Scanning').all()
