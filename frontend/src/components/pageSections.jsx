@@ -27,9 +27,9 @@ export default function DefaultPageTableSection({
         rowKey={TABLE_DATA_UNIQUE_ID}
         dataSource={dataSource}
         displayColumns={displayColumns}
+        getCheckboxProps={getCheckboxProps}
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
-        getCheckboxProps={getCheckboxProps}
       />
     </DefaultCard>
   );

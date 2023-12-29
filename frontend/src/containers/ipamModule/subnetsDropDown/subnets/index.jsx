@@ -3,11 +3,20 @@ import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
+  useAddRecordsMutation,
   useDeleteRecordsMutation,
-} from "../../../../store/features/atomModule/passwordGroups/apis";
+  useGetIpDetailsBySubnetLazyQuery,
+  useScanAllIpamSubnetsMutation,
+  useScanIpamSubnetMutation,
+} from "../../../../store/features/ipamModule/subnetsDropDown/subnets/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/atomModule/passwordGroups/selectors";
-import { jsonToExcel } from "../../../../utils/helpers";
+import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/selectors";
+import {
+  jsonToExcel,
+  convertToJson,
+  handleFileChange,
+  generateObject,
+} from "../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
@@ -19,7 +28,11 @@ import {
   PAGE_NAME,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
+  FILE_NAME_EXPORT_TEMPLATE,
   TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+  PORT_SCAN,
+  DNS_SCAN,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
@@ -34,18 +47,33 @@ const Index = () => {
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
+  const { buttonsConfigurationObject } = useButtonsConfiguration({
+    default_scan: {
+      handleClick: handleScan,
+    },
+  });
+  const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    buttonsConfigurationObject,
+    handleEdit,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
     useButtonsConfiguration({
       configure_table: { handleClick: handleTableConfigurationsOpen },
-      default_export: { handleClick: handleDefaultExport },
+      template_export: { handleClick: handleExport },
+      default_scan: {
+        handleClick: handleBulkScan,
+      },
       default_delete: {
         handleClick: handleDelete,
         visible: selectedRowKeys.length > 0,
       },
-      default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
+      default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
+      default_import: { handleClick: handleInputClick },
     });
+
+  // refs
+  const fileInputRef = useRef(null);
 
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -56,7 +84,8 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = useSelector(selectTableData);
+  const dataSource = [{}, {}, {}, {}, {}];
+  // const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -66,6 +95,17 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
+
+  const [
+    addRecords,
+    {
+      data: addRecordsData,
+      isSuccess: isAddRecordsSuccess,
+      isLoading: isAddRecordsLoading,
+      isError: isAddRecordsError,
+      error: addRecordsError,
+    },
+  ] = useAddRecordsMutation();
 
   const [
     deleteRecords,
@@ -78,6 +118,39 @@ const Index = () => {
     },
   ] = useDeleteRecordsMutation();
 
+  const [
+    getIpDetailsBySubnet,
+    {
+      data: getIpDetailsBySubnetData,
+      isSuccess: isGetIpDetailsBySubnetSuccess,
+      isLoading: isGetIpDetailsBySubnetLoading,
+      isError: isGetIpDetailsBySubnetError,
+      error: getIpDetailsBySubnetError,
+    },
+  ] = useGetIpDetailsBySubnetLazyQuery();
+
+  const [
+    scanAllIpamSubnets,
+    {
+      data: scanAllIpamSubnetsData,
+      isSuccess: isScanAllIpamSubnetsSuccess,
+      isLoading: isScanAllIpamSubnetsLoading,
+      isError: isScanAllIpamSubnetsError,
+      error: scanAllIpamSubnetsError,
+    },
+  ] = useScanAllIpamSubnetsMutation();
+
+  const [
+    scanIpamSubnet,
+    {
+      data: scanIpamSubnetData,
+      isSuccess: isScanIpamSubnetSuccess,
+      isLoading: isScanIpamSubnetLoading,
+      isError: isScanIpamSubnetError,
+      error: scanIpamSubnetError,
+    },
+  ] = useScanIpamSubnetMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -85,6 +158,14 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
     type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: addRecordsData,
+    isSuccess: isAddRecordsSuccess,
+    isError: isAddRecordsError,
+    error: addRecordsError,
+    type: TYPE_BULK,
   });
 
   useErrorHandling({
@@ -96,9 +177,39 @@ const Index = () => {
     callback: handleEmptySelectedRowKeys,
   });
 
+  useErrorHandling({
+    data: getIpDetailsBySubnetData,
+    isSuccess: isGetIpDetailsBySubnetSuccess,
+    isError: isGetIpDetailsBySubnetError,
+    error: getIpDetailsBySubnetError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: scanAllIpamSubnetsData,
+    isSuccess: isScanAllIpamSubnetsSuccess,
+    isError: isScanAllIpamSubnetsError,
+    error: scanAllIpamSubnetsError,
+    type: TYPE_BULK,
+  });
+
+  useErrorHandling({
+    data: scanIpamSubnetData,
+    isSuccess: isScanIpamSubnetSuccess,
+    isError: isScanIpamSubnetError,
+    error: scanIpamSubnetError,
+    type: TYPE_BULK,
+  });
+
+  // effects
+
   // handlers
   function handleEmptySelectedRowKeys() {
     setSelectedRowKeys([]);
+  }
+
+  function handlePostSeed(data) {
+    addRecords(data);
   }
 
   function deleteData(allowed) {
@@ -125,8 +236,28 @@ const Index = () => {
     setOpen(true);
   }
 
-  function handleAdd(optionType) {
+  function handleDefaultAdd() {
+    setRecordToEdit(null);
     setOpen(true);
+  }
+
+  function handleInputClick() {
+    if (fileInputRef.current) {
+      fileInputRef.current.click();
+    }
+  }
+
+  function handleScan(record) {
+    scanIpamSubnet({
+      [indexColumnNameConstants.SUBNET_ADDRESS]:
+        record[indexColumnNameConstants.SUBNET_ADDRESS],
+      [PORT_SCAN]: true,
+      [DNS_SCAN]: true,
+    });
+  }
+
+  function handleBulkScan(data) {
+    scanAllIpamSubnets(data);
   }
 
   function handleClose() {
@@ -134,8 +265,14 @@ const Index = () => {
     setOpen(false);
   }
 
-  function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+  function handleExport(optionType) {
+    const { ALL_DATA, TEMPLATE } =
+      dropdownButtonOptionsConstants.template_export;
+    if (optionType === ALL_DATA) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+    } else if (optionType === TEMPLATE) {
+      jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
+    }
     handleSuccessAlert("File exported successfully.");
   }
 
@@ -144,37 +281,55 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
-      {open ? (
-        <Modal
-          handleClose={handleClose}
-          open={open}
-          recordToEdit={recordToEdit}
+    <Spin
+      spinning={
+        isFetchRecordsLoading ||
+        isAddRecordsLoading ||
+        isDeleteRecordsLoading ||
+        isGetIpDetailsBySubnetLoading ||
+        isScanAllIpamSubnetsLoading ||
+        isScanIpamSubnetLoading
+      }
+    >
+      <div>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
         />
-      ) : null}
 
-      {tableConfigurationsOpen ? (
-        <DefaultTableConfigurations
-          columns={columns}
-          availableColumns={availableColumns}
-          setAvailableColumns={setAvailableColumns}
+        {open ? (
+          <Modal
+            handleClose={handleClose}
+            open={open}
+            recordToEdit={recordToEdit}
+          />
+        ) : null}
+
+        {tableConfigurationsOpen ? (
+          <DefaultTableConfigurations
+            columns={columns}
+            availableColumns={availableColumns}
+            setAvailableColumns={setAvailableColumns}
+            displayColumns={displayColumns}
+            setDisplayColumns={setDisplayColumns}
+            setColumns={setColumns}
+            open={tableConfigurationsOpen}
+            setOpen={setTableConfigurationsOpen}
+          />
+        ) : null}
+
+        <DefaultPageTableSection
+          PAGE_NAME={PAGE_NAME}
+          TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+          buttonsConfigurationList={buttonsConfigurationList}
           displayColumns={displayColumns}
-          setDisplayColumns={setDisplayColumns}
-          setColumns={setColumns}
-          open={tableConfigurationsOpen}
-          setOpen={setTableConfigurationsOpen}
+          dataSource={dataSource}
+          selectedRowKeys={selectedRowKeys}
+          setSelectedRowKeys={setSelectedRowKeys}
         />
-      ) : null}
-
-      <DefaultPageTableSection
-        PAGE_NAME={PAGE_NAME}
-        TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
-        buttonsConfigurationList={buttonsConfigurationList}
-        selectedRowKeys={selectedRowKeys}
-        displayColumns={displayColumns}
-        dataSource={dataSource}
-        setSelectedRowKeys={setSelectedRowKeys}
-      />
+      </div>
     </Spin>
   );
 };

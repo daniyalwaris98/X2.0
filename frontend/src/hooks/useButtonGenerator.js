@@ -1,6 +1,9 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
-import DefaultButton, { DropDownButton } from "../components/buttons";
+import DefaultButton, {
+  DropDownButton,
+  DropDownCheckboxButton,
+} from "../components/buttons";
 
 export default function useButtonGenerator() {
   const theme = useTheme();
@@ -58,6 +61,28 @@ export default function useButtonGenerator() {
           ) : null}
           {iconPosition === "right" ? icon : null}
         </DropDownButton>
+      );
+    } else if (category === "dropDownCheckbox") {
+      return (
+        <DropDownCheckboxButton
+          handleClick={handleClick}
+          sx={sx}
+          options={options}
+        >
+          {iconPosition === "left" ? icon : null}
+          {name || namePostfix ? (
+            <span
+              style={{
+                fontSize: "13px",
+                textTransform: "capitalize",
+                gap: "5px",
+              }}
+            >
+              {name} {namePostfix}
+            </span>
+          ) : null}
+          {iconPosition === "right" ? icon : null}
+        </DropDownCheckboxButton>
       );
     }
   };

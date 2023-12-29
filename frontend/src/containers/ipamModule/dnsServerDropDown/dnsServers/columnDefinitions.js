@@ -2,8 +2,9 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import Tooltip from "@mui/material/Tooltip";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
+export function useIndexTableColumnDefinitions({ handleEdit, handleScan }) {
   const theme = useTheme();
 
   const columnDefinitions = [
@@ -25,12 +26,22 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
             justifyContent: "center",
           }}
         >
-          <Icon
-            fontSize={"15px"}
-            onClick={() => handleEdit(record)}
-            icon="bx:edit"
-            style={{ cursor: "pointer" }}
-          />
+          <Tooltip title="Scan">
+            <Icon
+              fontSize={"15px"}
+              onClick={() => handleScan(record)}
+              icon="bx:scan"
+              style={{ cursor: "pointer" }}
+            />
+          </Tooltip>
+          <Tooltip title="Edit">
+            <Icon
+              fontSize={"15px"}
+              onClick={() => handleEdit(record)}
+              icon="bx:edit"
+              style={{ cursor: "pointer" }}
+            />
+          </Tooltip>
         </div>
       ),
     },

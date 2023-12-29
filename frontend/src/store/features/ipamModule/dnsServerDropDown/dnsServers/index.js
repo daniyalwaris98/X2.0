@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../../containers/ipamModule/dnsServerDropDown/dnsServers/constants";
+} from "../../../../../containers/ipamModule/subnetsDropDown/subnets/constants";
 
 const initialState = {
   all_data: [],
@@ -14,12 +14,65 @@ const defaultSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    builder.addMatcher(
-      extendedApi.endpoints.fetchDiscoveredDevicesBySubnet.matchFulfilled,
-      (state, action) => {
-        state.all_data = action.payload;
-      }
-    );
+    builder
+      .addMatcher(
+        extendedApi.endpoints.getAllIpamDnsServers.matchFulfilled,
+        (state, action) => {
+          state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.deleteIpamDnsServers.matchFulfilled,
+        (state, action) => {
+          const deletedIds = action.payload?.data || [];
+          if (deletedIds.length > 0) {
+            state.all_data = state.all_data.filter((item) => {
+              const shouldKeepItem = deletedIds.some((deletedId) => {
+                return deletedId === item[TABLE_DATA_UNIQUE_ID];
+              });
+              return !shouldKeepItem;
+            });
+          }
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.addIpamDnsServer.matchFulfilled,
+        (state, action) => {
+          state.all_data = [action.payload.data, ...state.all_data];
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.scanIpamDnsServer.matchFulfilled,
+        (state, action) => {
+          let objectToReplace = action.payload.data;
+          state.all_data = state.all_data.map((item) => {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
+              return { ...item, ...objectToReplace };
+            } else {
+              return item;
+            }
+          });
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.updateIpamDnsServer.matchFulfilled,
+        (state, action) => {
+          let objectToReplace = action.payload.data;
+          state.all_data = state.all_data.map((item) => {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
+              return { ...item, ...objectToReplace };
+            } else {
+              return item;
+            }
+          });
+        }
+      );
   },
 });
 

@@ -19,24 +19,32 @@ import {
 import { useSelector } from "react-redux";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
+import { formSetter, getTitle } from "../../../utils/helpers";
 import DefaultSelect from "../../../components/selects";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
 import { indexColumnNameConstants } from "./constants";
-import { PAGE_NAME } from "./constants";
+import { ELEMENT_NAME } from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.SITE_NAME]: yup
     .string()
-    .required("Site name is required")
-    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters in site name"),
+    .required(`${getTitle(indexColumnNameConstants.SITE_NAME)} is required`)
+    .matches(
+      ALPHA_NUMERIC_REGEX,
+      `Invalid characters in ${getTitle(
+        indexColumnNameConstants.SITE_NAME
+      )} is required`
+    ),
   [indexColumnNameConstants.STATUS]: yup
     .string()
-    .required("Status is required"),
+    .required(`${getTitle(indexColumnNameConstants.STATUS)} is required`),
   [indexColumnNameConstants.CITY]: yup
     .string()
-    .matches(/^[A-Za-z]+$/, "City must contain only alphabets"),
+    .matches(
+      /^[A-Za-z]+$/,
+      `${getTitle(indexColumnNameConstants.CITY)} must contain only alphabets`
+    ),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -127,7 +135,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>

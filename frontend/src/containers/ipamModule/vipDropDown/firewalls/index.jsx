@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/atomModule/passwordGroups/apis";
+import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/vipDropDown/firewalls/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/atomModule/passwordGroups/selectors";
+import { selectTableData } from "../../../../store/features/ipamModule/vipDropDown/firewalls/selectors";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../hooks/useErrorHandling";

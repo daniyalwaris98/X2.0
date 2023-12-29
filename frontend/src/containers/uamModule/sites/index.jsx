@@ -184,9 +184,9 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
+        getCheckboxProps={getCheckboxProps}
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
-        getCheckboxProps={getCheckboxProps}
       />
     </Spin>
   );

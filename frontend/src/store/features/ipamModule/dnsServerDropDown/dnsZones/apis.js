@@ -1,36 +1,11 @@
-import { monetxApi } from "../../apiSlice";
+import { monetxApi } from "../../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    fetchDiscoveredDevicesBySubnet: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/auto_discovery/get_discovery_data",
-        method: "POST",
-        body: data,
-      }),
-    }),
-
-    fetchDiscoveryFunctionCountsBySubnet: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/auto_discovery/get_discovery_function_count",
-        method: "POST",
-        body: data,
-      }),
-    }),
-
-    autoDiscoverDevicesBySubnet: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/auto_discovery/auto_discover",
-        method: "POST",
-        body: data,
-      }),
+    getAllIpamDnsZones: builder.query({
+      query: () => "/api/v1/ipam/ipam_device/get_dns_zones",
     }),
   }),
 });
 
-export const {
-  useFetchDiscoveredDevicesBySubnetMutation: useFetchRecordsMutation,
-  useFetchDiscoveryFunctionAllSubnetsCountsQuery,
-  useFetchDiscoveryFunctionCountsBySubnetMutation,
-  useAutoDiscoverDevicesBySubnetMutation,
-} = extendedApi;
+export const { useGetAllIpamDnsZonesQuery: useFetchRecordsQuery } = extendedApi;

@@ -24,24 +24,31 @@ import {
 import { useSelector } from "react-redux";
 import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter, transformDateTimeToDate } from "../../../utils/helpers";
+import {
+  formSetter,
+  getTitle,
+  transformDateTimeToDate,
+} from "../../../utils/helpers";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
-import { PAGE_NAME } from "./constants";
+import { ELEMENT_NAME } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.RACK_NAME]: yup
     .string()
-    .required("Rack name is required")
-    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters in rack name"),
+    .required(`${getTitle(indexColumnNameConstants.RACK_NAME)} is required`)
+    .matches(
+      ALPHA_NUMERIC_REGEX,
+      `Invalid characters in ${getTitle(indexColumnNameConstants.RACK_NAME)}`
+    ),
   [indexColumnNameConstants.SITE_NAME]: yup
     .string()
-    .required("Site name is required"),
+    .required(`${getTitle(indexColumnNameConstants.SITE_NAME)} is required`),
   [indexColumnNameConstants.STATUS]: yup
     .string()
-    .required("Status is required"),
+    .required(`${getTitle(indexColumnNameConstants.STATUS)} is required`),
   [indexColumnNameConstants.MANUFACTURE_DATE]: yup
     .string()
     .transform(transformDateTimeToDate),
@@ -156,7 +163,7 @@ const Index = ({
   return (
     <FormModal
       sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)}>

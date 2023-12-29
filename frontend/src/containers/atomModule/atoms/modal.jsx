@@ -32,7 +32,11 @@ import {
   selectPasswordGroupNames,
 } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter, generateNumbersArray } from "../../../utils/helpers";
+import {
+  formSetter,
+  generateNumbersArray,
+  getTitle,
+} from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { PAGE_NAME } from "./constants";
 import { indexColumnNameConstants } from "./constants";
@@ -40,7 +44,7 @@ import { indexColumnNameConstants } from "./constants";
 const schema = yup.object().shape({
   [indexColumnNameConstants.IP_ADDRESS]: yup
     .string()
-    .required("Ip address is required"),
+    .required(`${getTitle(indexColumnNameConstants.IP_ADDRESS)} is required`),
 });
 
 const Index = ({

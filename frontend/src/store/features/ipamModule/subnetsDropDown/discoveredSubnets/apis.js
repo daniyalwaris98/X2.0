@@ -1,12 +1,12 @@
-import { monetxApi } from "../../apiSlice";
+import { monetxApi } from "../../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    ipamFetchDiscoveredSubnets: builder.query({
+    getAllIpamDiscoveredSubnets: builder.query({
       query: () => "/api/v1/ipam/ipam_device/get_all_discovered_subnet",
     }),
   }),
 });
 
-export const { useIpamFetchDiscoveredSubnetsQuery: useFetchRecordsQuery } =
+export const { useGetAllIpamDiscoveredSubnetsQuery: useFetchRecordsQuery } =
   extendedApi;

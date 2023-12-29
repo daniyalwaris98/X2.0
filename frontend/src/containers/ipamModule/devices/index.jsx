@@ -4,7 +4,6 @@ import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useFetchIpamDevicesLazyQuery,
-  useDeleteRecordsMutation,
 } from "../../../store/features/ipamModule/devices/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
@@ -29,27 +28,18 @@ const Index = () => {
   // theme
   const theme = useTheme();
 
-  // states required in hooks
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
   // hooks
-  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
-    useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
+  const { handleSuccessAlert } = useSweetAlert();
+  const { columnDefinitions } = useIndexTableColumnDefinitions({});
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    default_delete: {
-      handleClick: handleDelete,
-      visible: selectedRowKeys.length > 0,
-    },
     default_fetch: { handleClick: handleFetch },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
   });
 
   // states
-  const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
@@ -79,17 +69,6 @@ const Index = () => {
     },
   ] = useFetchIpamDevicesLazyQuery();
 
-  const [
-    deleteRecords,
-    {
-      data: deleteRecordsData,
-      isSuccess: isDeleteRecordsSuccess,
-      isLoading: isDeleteRecordsLoading,
-      isError: isDeleteRecordsError,
-      error: deleteRecordsError,
-    },
-  ] = useDeleteRecordsMutation();
-
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -107,54 +86,16 @@ const Index = () => {
     type: TYPE_BULK,
   });
 
-  useErrorHandling({
-    data: deleteRecordsData,
-    isSuccess: isDeleteRecordsSuccess,
-    isError: isDeleteRecordsError,
-    error: deleteRecordsError,
-    type: TYPE_BULK,
-    callback: handleEmptySelectedRowKeys,
-  });
-
   // handlers
   function handleFetch() {
     fetchIpamDevices();
   }
 
-  function handleEmptySelectedRowKeys() {
-    setSelectedRowKeys([]);
-  }
-
-  function deleteData(allowed) {
-    if (allowed) {
-      deleteRecords(selectedRowKeys);
-    } else {
-      setSelectedRowKeys([]);
-    }
-  }
-
-  function handleDelete() {
-    if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
-    } else {
-      handleInfoAlert("No record has been selected to delete!");
-    }
-  }
-
-  function handleEdit(record) {
-    setRecordToEdit(record);
-    setOpen(true);
-  }
-
-  function handleAdd(optionType) {
+  function handleAdd() {
     setOpen(true);
   }
 
   function handleClose() {
-    setRecordToEdit(null);
     setOpen(false);
   }
 
@@ -168,20 +109,8 @@ const Index = () => {
   }
 
   return (
-    <Spin
-      spinning={
-        isFetchRecordsLoading ||
-        isFetchIpamDevicesLoading ||
-        isDeleteRecordsLoading
-      }
-    >
-      {open ? (
-        <Modal
-          handleClose={handleClose}
-          open={open}
-          recordToEdit={recordToEdit}
-        />
-      ) : null}
+    <Spin spinning={isFetchRecordsLoading || isFetchIpamDevicesLoading}>
+      {open ? <Modal handleClose={handleClose} open={open} /> : null}
 
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
@@ -200,10 +129,8 @@ const Index = () => {
         PAGE_NAME={PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
-        selectedRowKeys={selectedRowKeys}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        setSelectedRowKeys={setSelectedRowKeys}
       />
     </Spin>
   );

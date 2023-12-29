@@ -7,22 +7,26 @@ export default function useButtonsConfiguration(buttonDetails) {
 
   const optionConstants = {
     atom_export: {
-      ALL_DATA: "All Data",
-      TEMPLATE: "Template",
-      COMPLETE: "Complete",
-      INCOMPLETE: "Incomplete",
+      ALL_DATA: "all_data",
+      TEMPLATE: "template",
+      COMPLETE: "complete",
+      INCOMPLETE: "incomplete",
     },
     atom_add: {
-      ADD_MANUALLY: "Add Manually",
-      FROM_DISCOVERY: "From Discovery",
+      ADD_MANUALLY: "add_manually",
+      FROM_DISCOVERY: "from_discovery",
     },
     template_export: {
-      ALL_DATA: "All Data",
-      TEMPLATE: "Template",
+      ALL_DATA: "all_data",
+      TEMPLATE: "template",
     },
     inventory_sync: {
-      SYNC_FROM_INVENTORY: "Sync From Inventory",
-      SYNC_TO_INVENTORY: "Sync To Inventory",
+      SYNC_FROM_INVENTORY: "sync_from_inventory",
+      SYNC_TO_INVENTORY: "sync_to_inventory",
+    },
+    default_scan: {
+      PORT_SCAN: "port_scan",
+      DNS_SCAN: "dns_scan",
     },
   };
 
@@ -255,6 +259,20 @@ export default function useButtonsConfiguration(buttonDetails) {
       sx: {
         backgroundColor: theme?.palette?.default_button?.add_background,
         color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+
+    default_scan: {
+      category: "dropDownCheckbox",
+      name: "Scan",
+      icon: <Icon fontSize="16px" icon="bx:scan" />,
+      options: [
+        optionConstants.default_scan.PORT_SCAN,
+        optionConstants.default_scan.DNS_SCAN,
+      ],
+      sx: {
+        backgroundColor: theme?.palette?.drop_down_button?.export_background,
+        color: theme?.palette?.drop_down_button?.export_text,
       },
     },
   };

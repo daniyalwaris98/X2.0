@@ -8,6 +8,8 @@ export const indexColumnNameConstants = {
   DNS_SERVER_ID: TABLE_DATA_UNIQUE_ID,
   IP_ADDRESS: "ip_address",
   SERVER_NAME: "server_name",
+  USER_NAME: "user_name",
+  PASSWORD: "password",
   TYPE: "type",
   NUMBER_OF_ZONES: "number_of_zones",
   ACTIONS: "actions",

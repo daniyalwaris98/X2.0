@@ -198,11 +198,11 @@ const Index = () => {
         PAGE_NAME={PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
-        selectedRowKeys={selectedRowKeys}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        setSelectedRowKeys={setSelectedRowKeys}
         getCheckboxProps={getCheckboxProps}
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
       />
     </Spin>
   );

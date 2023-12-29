@@ -1,18 +1,58 @@
-import { monetxApi } from "../../apiSlice";
+import { monetxApi } from "../../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    fetchIPAMSubnets: builder.query({
+    getAllIpamSubnets: builder.query({
       query: () => "/api/v1/ipam/ipam_device/get_all_subnet",
     }),
 
-    fetchAtomsForIPAM: builder.query({
-      query: () => "/api/v1/ipam/ipam_device/get_atom_in_ipam",
+    getIpDetailsBySubnet: builder.query({
+      query: () => "/api/v1/ipam/ipam_device/get_ip_detail_by_subnet",
     }),
 
-    autoDiscoverDevicesBySubnet: builder.mutation({
+    addIpamSubnets: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/auto_discovery/auto_discover",
+        url: "/api/v1/ipam/ipam_device/add_subnets",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    deleteIpamSubnets: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/ipam/ipam_device/delete_subnets",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    addIpamSubnet: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/ipam/ipam_device/add_subnet",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    updateIpamSubnet: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/ipam/ipam_device/edit_subnet",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    scanAllIpamSubnets: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/ipam/ipam_device/scan_all_subnets",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    scanIpamSubnet: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/ipam/ipam_device/scan_subnet",
         method: "POST",
         body: data,
       }),
@@ -21,7 +61,14 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useFetchIPAMSubnetsQuery: useFetchRecordsQuery,
-  useFetchAtomsForIPAMQuery,
-  useAutoDiscoverDevicesBySubnetMutation,
+  useGetAllIpamSubnetsQuery: useFetchRecordsQuery,
+  useAddIpamSubnetsMutation: useAddRecordsMutation,
+  useDeleteIpamSubnetsMutation: useDeleteRecordsMutation,
+  useAddIpamSubnetMutation: useAddRecordMutation,
+  useUpdateIpamSubnetMutation: useUpdateRecordMutation,
+  useScanAllIpamSubnetsMutation,
+  useScanIpamSubnetMutation,
 } = extendedApi;
+
+export const useGetIpDetailsBySubnetLazyQuery =
+  extendedApi.endpoints.getIpDetailsBySubnet.useLazyQuery;

@@ -15,7 +15,7 @@ const defaultSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addMatcher(
-      extendedApi.endpoints.fetchDiscoveredDevicesBySubnet.matchFulfilled,
+      extendedApi.endpoints.getAllIpamDnsZones.matchFulfilled,
       (state, action) => {
         state.all_data = action.payload;
       }

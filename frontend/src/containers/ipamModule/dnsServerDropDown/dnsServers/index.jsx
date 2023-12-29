@@ -4,12 +4,15 @@ import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../../store/features/atomModule/passwordGroups/apis";
+  useScanIpamDnsServerMutation,
+} from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/atomModule/passwordGroups/selectors";
+import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { Spin } from "antd";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_SINGLE,
+} from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
@@ -23,6 +26,7 @@ import {
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
+import { indexColumnNameConstants } from "./constants";
 
 const Index = () => {
   // theme
@@ -34,7 +38,10 @@ const Index = () => {
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleEdit,
+    handleScan,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
     useButtonsConfiguration({
@@ -78,6 +85,17 @@ const Index = () => {
     },
   ] = useDeleteRecordsMutation();
 
+  const [
+    scanIpamDnsServer,
+    {
+      data: scanIpamDnsServerData,
+      isSuccess: isScanIpamDnsServerSuccess,
+      isLoading: isScanIpamDnsServerLoading,
+      isError: isScanIpamDnsServerError,
+      error: scanIpamDnsServerError,
+    },
+  ] = useScanIpamDnsServerMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -94,6 +112,14 @@ const Index = () => {
     error: deleteRecordsError,
     type: TYPE_BULK,
     callback: handleEmptySelectedRowKeys,
+  });
+
+  useErrorHandling({
+    data: scanIpamDnsServerData,
+    isSuccess: isScanIpamDnsServerSuccess,
+    isError: isScanIpamDnsServerError,
+    error: scanIpamDnsServerError,
+    type: TYPE_SINGLE,
   });
 
   // handlers
@@ -125,6 +151,13 @@ const Index = () => {
     setOpen(true);
   }
 
+  function handleScan(record) {
+    scanIpamDnsServer({
+      [indexColumnNameConstants.IP_ADDRESS]:
+        record[indexColumnNameConstants.IP_ADDRESS],
+    });
+  }
+
   function handleAdd(optionType) {
     setOpen(true);
   }
@@ -144,7 +177,13 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+    <Spin
+      spinning={
+        isFetchRecordsLoading ||
+        isDeleteRecordsLoading ||
+        isScanIpamDnsServerLoading
+      }
+    >
       {open ? (
         <Modal
           handleClose={handleClose}
@@ -170,9 +209,9 @@ const Index = () => {
         PAGE_NAME={PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
-        selectedRowKeys={selectedRowKeys}
         displayColumns={displayColumns}
         dataSource={dataSource}
+        selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
       />
     </Spin>

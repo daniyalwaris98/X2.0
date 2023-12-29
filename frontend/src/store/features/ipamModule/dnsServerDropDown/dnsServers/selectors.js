@@ -1,1 +1,1 @@
-export const selectTableData = (state) => state.discovery.all_data;
+export const selectTableData = (state) => state.ipam_dns_servers.all_data;

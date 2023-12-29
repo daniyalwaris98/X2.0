@@ -22,7 +22,7 @@ import {
   selectPasswordGroupTypeNames,
 } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
+import { formSetter, getTitle } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { PAGE_NAME, TELNET } from "./constants";
 import { indexColumnNameConstants } from "./constants";
@@ -30,23 +30,29 @@ import { indexColumnNameConstants } from "./constants";
 const schema = yup.object().shape({
   [indexColumnNameConstants.PASSWORD_GROUP]: yup
     .string()
-    .required("Password Group is required"),
+    .required(
+      `${getTitle(indexColumnNameConstants.PASSWORD_GROUP)} is required`
+    ),
   [indexColumnNameConstants.USER_NAME]: yup
     .string()
-    .required("User name is required"),
+    .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
   [indexColumnNameConstants.PASSWORD]: yup
     .string()
-    .required("Password is required"),
+    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
   [indexColumnNameConstants.PASSWORD_GROUP_TYPE]: yup
     .string()
-    .required("Password group type is required"),
+    .required(
+      `${getTitle(indexColumnNameConstants.PASSWORD_GROUP_TYPE)} is required`
+    ),
   secret_password: yup
     .string()
     .when(
       indexColumnNameConstants.PASSWORD_GROUP_TYPE,
       (passwordGroupType, schema) => {
         if (passwordGroupType == TELNET)
-          return schema.required("Secret password is required");
+          return schema.required(
+            `${getTitle(indexColumnNameConstants.SECRET_PASSWORD)} is required`
+          );
         return schema;
       }
     ),
