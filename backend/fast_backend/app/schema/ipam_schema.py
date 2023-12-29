@@ -183,3 +183,13 @@ class TestDnsSchema(BaseSchema):
 
 class ScanDNSSchema(BaseSchema):
     ip_addresss:str
+
+class DeleteSubnetScehma(BaseSchema):
+    subnet_id:int
+
+class IPhistorySchema(BaseSchema):
+    ip_history_id:int
+    ip_address:str
+    mac_address:str
+    asset_tag:str
+    date:datetime

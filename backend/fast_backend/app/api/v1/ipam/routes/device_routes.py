@@ -804,8 +804,7 @@ def scan_subnets(subnet:ScanSubnetSchema):
             "subnet_id": subnet_data.subnet_id,
             "subnet_address": subnet_data.subnet_address,
             "subnet_mask": subnet_data.subnet_mask,
-            "subnet_usage": subnet_data.subnet_usage,
-            "subnet_size": subnet_data.subnet_size
+
         }
         data = {"data": subnet_data_dict,
                 "message":f"{subnet_data.subnet_address} : Scanned Successfully"
@@ -1162,3 +1161,184 @@ def fetch_ipam_devices():
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Fetching Ipam Devices",status_code=500)
+
+
+@router.post('/delete_subnets',responses = {
+    200:{"model":DeleteResponseSchema},
+    500:{"model":str}
+},
+summary="Use this API in the subnet table to delete the subents based on there ids",
+description="Use this APi in the subnet table to delete the subnet based on there ids"
+)
+def delete_subnets(subnet:list[int]):
+    try:
+        data = []
+        success_list = []
+        error_list = []
+
+        # Assuming subnet is a list of subnet IDs
+        for subnet_id in subnet:
+            subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_id=subnet_id).first()
+            if subnet_exsist:
+                data.append(subnet_id)
+                DeleteDBData(subnet_exsist)
+                success_list.append(f"{subnet_id} : Subnet Deleted Successfully")
+            else:
+                error_list.append(f"{subnet_id} : Subnet Not Found")
+
+        responses = {
+            "data": data,
+            "success_list": success_list,
+            "error_list": error_list,
+            "success": len(success_list),
+            "error": len(error_list)
+        }
+        return responses
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred While Deleting the Subnet", status_code=500)
+
+
+@router.get('/get_ip_history',
+            responses = {
+                200:{"model":list[IPhistorySchema]},
+                500:{"model":str}
+            },
+            summary = "Use this API in the subnet IP history page to list down all the IP history in a table",
+            description = "Use this API in the subnet IP histoory page to list down all the IP history in a table"
+            )
+def get_ip_history():
+    try:
+        history_list = []
+        history = configs.db.query(IP_HISTORY_TABLE).all()
+        for data in history:
+            history_dict = {
+                "ip_history_id":data.ip_history_id,
+                "mac_address":data.mac_address,
+                "ip_address":data.ip_address,
+                "asset_tag":data.asset_tag,
+                "date":data.date
+            }
+            history_list.append(history_dict)
+        return  history_list
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Getting the IP History",status_code=500)
+
+
+@router.get('/get_history_by_ip',
+            responses={
+                200: {"model": list[IPhistorySchema]},
+                500: {"model": str}
+            },
+            summary="Use this API in the subnet => IP details page to get the history based on the IP click",
+            description="Use this API in the subnet => IP details page to get the history based on the IP click"
+            )
+def get_history_by_ip(ip_address: str = Query(..., description="IP address of the device")):
+    try:
+        history_list = []
+        history = configs.db.query(IP_HISTORY_TABLE).filter_by(ip_address=ip_address).all()
+        for data in history:
+            history_dict = {
+                "ip_history_id": data.ip_history_id,
+                "mac_address": data.mac_address,
+                "ip_address": data.ip_address,
+                "asset_tag": data.asset_tag,
+                "date": data.date
+            }
+            history_list.append(history_dict)
+        return history_list
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error occurred while fetching history", status_code=500)
+
+
+@router.post('/delete_dns',responses = {
+    200:{"model":DeleteResponseSchema},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary = "Use this API in the DNS Server Page to delete the DNS Servers.This API is of post methods and accepts list of integers",
+description = "Use this API in the DNS Server Page to delete the DNS Servers.This API is of post methods and accepts list of integers"
+)
+def delete_dns(dns:list[int]):
+    try:
+        deleted_ids =[]
+        error_list = []
+        success_list = []
+        for ids in dns:
+            dns_exsist = configs.db.query(DnsServerTable).filter_by(dns_server_id = ids).first()
+            if dns_exsist:
+                deleted_ids.append(ids)
+                DeleteDBData(dns_exsist)
+                success_list.append(f"{ids} : Deleted Successfully")
+            else:
+                error_list.append(f"{ids} : DNS Server ID Not Found")
+        responses = {
+            "data":deleted_ids,
+            "success_list":success_list,
+            "error_lsit":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Deleting the DNS Server",status_code=500)
+
+
+@router.get('/_get_dns_server_zones',responses={
+    200:{"model":list[GetallDnsServers]},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="Use this API in the dns server page while clicking on dns server get the dns zones",
+description="Use this API in the dns server page while clicking on dns server get the dns zones"
+)
+def get_dns_zones_by_server(dns_server_id: int = Query(..., description="ID of dns server")):
+    try:
+        objList = []
+        dns_server_exsist = configs.db.query(DnsServerTable).filter_by(dns_server_id = dns_server_id).first()
+        if dns_server_exsist:
+           dns_zones = configs.db.query(DnsZonesTable).filter_by(dns_server_id = dns_server_exsist.dns_server_id).all()
+           for dnsZoneObj in dns_zones:
+               objDict = {}
+               objDict['dns_id'] = dnsZoneObj.dns_zone_id
+               objDict['zone_name'] = dnsZoneObj.zone_name
+               objDict['zone_status'] = dnsZoneObj.zone_status
+               objDict['zone_type'] = dnsZoneObj.zone_type
+               objDict['lookup_type'] = dnsZoneObj.lookup_type
+               objList.append(objDict)
+        else:
+            return JSONResponse(content=f"f{dns_server_exsist} : Not Found",status_code=400)
+        return objList
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While getting the DNS Server Zones",status_code=500)
+
+
+@router.get('/get_dns_record_by_zone',
+            responses = {
+                200:{"model":list[GetDnsRecoed]},
+                400:{"model":str},
+                500:{"model":str}
+            })
+def get_dns_record_by_zones(dns_zone_id: int = Query(..., description="ID of dns server")):
+    try:
+        objList =[]
+        dns_zone_exsist = configs.db.query(DnsZonesTable).filter_by(dns_zone_id = dns_zone_id).first()
+        if dns_zone_exsist:
+            dns_record = configs.db.query(DnsRecordTable).all()
+            for dnsServersRecordObj in dns_record:
+                objDict = {}
+                objDict['dns_record_id'] = dnsServersRecordObj.dns_id
+                objDict['server_name'] = dnsServersRecordObj.server_name
+                objDict['server_ip'] = dnsServersRecordObj.server_ip
+                objList.append(objDict)
+            print(objList,file=sys.stderr)
+            return objList
+        else:
+            return JSONResponse(content=f"{dns_zone_id} : Not Founbd",status_code=400)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Getting Dns Record by zone",status_code=500)
