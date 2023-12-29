@@ -62,3 +62,25 @@ export function DeviceDetailsDialogFooter({ handleClose, sx, ...rest }) {
     </div>
   );
 }
+
+export function CancelDialogFooter({ handleClose, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_cancel: { handleClick: handleClose },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        padding: "20px",
+        ...sx,
+      }}
+      {...rest}
+    >
+      {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}

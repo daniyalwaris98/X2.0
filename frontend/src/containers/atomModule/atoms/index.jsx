@@ -346,72 +346,72 @@ const Index = () => {
         isOnBoardRecordsLoading
       }
     >
-      <div>
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
+      {/* <div style={{ width: "196vh" }}> */}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
+      />
+      {open ? (
+        <Modal
+          open={open}
+          handleClose={handleClose}
+          recordToEdit={recordToEdit}
+          handleOpenSiteModal={handleOpenSiteModal}
+          handleOpenRackModal={handleOpenRackModal}
+          handleOpenPasswordGroupModal={handleOpenPasswordGroupModal}
         />
-        {open ? (
-          <Modal
-            open={open}
-            handleClose={handleClose}
-            recordToEdit={recordToEdit}
-            handleOpenSiteModal={handleOpenSiteModal}
-            handleOpenRackModal={handleOpenRackModal}
-            handleOpenPasswordGroupModal={handleOpenPasswordGroupModal}
-          />
-        ) : null}
+      ) : null}
 
-        {siteModalOpen ? (
-          <SiteModal
-            handleClose={handleCloseSiteModal}
-            open={siteModalOpen}
-            recordToEdit={null}
-          />
-        ) : null}
+      {siteModalOpen ? (
+        <SiteModal
+          handleClose={handleCloseSiteModal}
+          open={siteModalOpen}
+          recordToEdit={null}
+        />
+      ) : null}
 
-        {rackModalOpen ? (
-          <RackModal
-            handleClose={handleCloseRackModal}
-            open={rackModalOpen}
-            recordToEdit={null}
-            nested={true}
-          />
-        ) : null}
+      {rackModalOpen ? (
+        <RackModal
+          handleClose={handleCloseRackModal}
+          open={rackModalOpen}
+          recordToEdit={null}
+          nested={true}
+        />
+      ) : null}
 
-        {passwordGroupModalOpen ? (
-          <PasswordGroupModal
-            handleClose={handleClosePasswordGroupModal}
-            open={passwordGroupModalOpen}
-            recordToEdit={null}
-          />
-        ) : null}
+      {passwordGroupModalOpen ? (
+        <PasswordGroupModal
+          handleClose={handleClosePasswordGroupModal}
+          open={passwordGroupModalOpen}
+          recordToEdit={null}
+        />
+      ) : null}
 
-        {tableConfigurationsOpen ? (
-          <DefaultTableConfigurations
-            columns={columns}
-            availableColumns={availableColumns}
-            setAvailableColumns={setAvailableColumns}
-            displayColumns={displayColumns}
-            setDisplayColumns={setDisplayColumns}
-            setColumns={setColumns}
-            open={tableConfigurationsOpen}
-            setOpen={setTableConfigurationsOpen}
-          />
-        ) : null}
-
-        <DefaultPageTableSection
-          PAGE_NAME={PAGE_NAME}
-          TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
-          buttonsConfigurationList={buttonsConfigurationList}
-          selectedRowKeys={selectedRowKeys}
+      {tableConfigurationsOpen ? (
+        <DefaultTableConfigurations
+          columns={columns}
+          availableColumns={availableColumns}
+          setAvailableColumns={setAvailableColumns}
           displayColumns={displayColumns}
-          dataSource={dataSource}
-          setSelectedRowKeys={setSelectedRowKeys}
+          setDisplayColumns={setDisplayColumns}
+          setColumns={setColumns}
+          open={tableConfigurationsOpen}
+          setOpen={setTableConfigurationsOpen}
         />
-      </div>
+      ) : null}
+
+      <DefaultPageTableSection
+        PAGE_NAME={PAGE_NAME}
+        TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+        buttonsConfigurationList={buttonsConfigurationList}
+        selectedRowKeys={selectedRowKeys}
+        displayColumns={displayColumns}
+        dataSource={dataSource}
+        setSelectedRowKeys={setSelectedRowKeys}
+      />
+      {/* </div> */}
     </Spin>
   );
 };

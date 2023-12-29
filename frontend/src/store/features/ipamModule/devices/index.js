@@ -57,7 +57,7 @@ const defaultSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.getAtomsToAddInIpamDevices.matchFulfilled,
         (state, action) => {
-          state.atoms_to_add_in_ipam = action.payload;
+          state.atoms_to_add_in_ipam_devices = action.payload;
         }
       )
       .addMatcher(

@@ -1,6 +1,5 @@
 import React from "react";
 import Dialog from "@mui/material/Dialog";
-import DialogActions from "@mui/material/DialogActions";
 import DialogContent from "@mui/material/DialogContent";
 import DialogTitle from "@mui/material/DialogTitle";
 import { useTheme, styled } from "@mui/material/styles";
@@ -20,12 +19,13 @@ export default function DefaultDialog({ title, open, sx, children, ...rest }) {
     <Dialog
       open={open}
       maxWidth="md"
-      sx={{ zIndex: "999", ...sx }}
+      sx={{ zIndex: "999", ...sx?.dialog }}
       PaperComponent={StyledPaper}
       {...rest}
     >
       <DialogTitle
         sx={{
+          ...sx?.title,
           color: theme?.palette?.dialog?.title_text,
           backgroundColor: theme?.palette?.dialog?.title_background,
         }}
@@ -34,16 +34,13 @@ export default function DefaultDialog({ title, open, sx, children, ...rest }) {
       </DialogTitle>
       <DialogContent
         sx={{
+          ...sx?.content,
           color: theme?.palette?.dialog?.content_text,
           backgroundColor: theme?.palette?.dialog?.content_background,
         }}
       >
         {children}
       </DialogContent>
-      {/* <DialogActions>
-        <Button onClick={handleClose}>Cancel</Button>
-        <Button onClick={handleClose}>{submitText}</Button>
-      </DialogActions> */}
     </Dialog>
   );
 }

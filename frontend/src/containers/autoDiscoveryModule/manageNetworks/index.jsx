@@ -197,43 +197,45 @@ const Index = () => {
         isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
       }
     >
-      <input
-        type="file"
-        ref={fileInputRef}
-        style={{ display: "none" }}
-        onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
-      />
-
-      {open ? (
-        <Modal
-          handleClose={handleClose}
-          open={open}
-          recordToEdit={recordToEdit}
+      <div style={{ width: "196vh" }}>
+        <input
+          type="file"
+          ref={fileInputRef}
+          style={{ display: "none" }}
+          onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
         />
-      ) : null}
 
-      {tableConfigurationsOpen ? (
-        <DefaultTableConfigurations
-          columns={columns}
-          availableColumns={availableColumns}
-          setAvailableColumns={setAvailableColumns}
+        {open ? (
+          <Modal
+            handleClose={handleClose}
+            open={open}
+            recordToEdit={recordToEdit}
+          />
+        ) : null}
+
+        {tableConfigurationsOpen ? (
+          <DefaultTableConfigurations
+            columns={columns}
+            availableColumns={availableColumns}
+            setAvailableColumns={setAvailableColumns}
+            displayColumns={displayColumns}
+            setDisplayColumns={setDisplayColumns}
+            setColumns={setColumns}
+            open={tableConfigurationsOpen}
+            setOpen={setTableConfigurationsOpen}
+          />
+        ) : null}
+
+        <DefaultPageTableSection
+          PAGE_NAME={PAGE_NAME}
+          TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+          buttonsConfigurationList={buttonsConfigurationList}
           displayColumns={displayColumns}
-          setDisplayColumns={setDisplayColumns}
-          setColumns={setColumns}
-          open={tableConfigurationsOpen}
-          setOpen={setTableConfigurationsOpen}
+          dataSource={dataSource}
+          selectedRowKeys={selectedRowKeys}
+          setSelectedRowKeys={setSelectedRowKeys}
         />
-      ) : null}
-
-      <DefaultPageTableSection
-        PAGE_NAME={PAGE_NAME}
-        TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
-        buttonsConfigurationList={buttonsConfigurationList}
-        displayColumns={displayColumns}
-        dataSource={dataSource}
-        selectedRowKeys={selectedRowKeys}
-        setSelectedRowKeys={setSelectedRowKeys}
-      />
+      </div>
     </Spin>
   );
 };

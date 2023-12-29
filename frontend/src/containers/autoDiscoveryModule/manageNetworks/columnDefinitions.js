@@ -12,6 +12,12 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     indexColumnNameConstants.NO_OF_DEVICES,
     indexColumnNameConstants.SCAN_STATUS,
     indexColumnNameConstants.EXCLUDED_IP_RANGE,
+    ////////
+    indexColumnNameConstants.NETWORK_NAME,
+    indexColumnNameConstants.SUBNET,
+    indexColumnNameConstants.NO_OF_DEVICES,
+    indexColumnNameConstants.SCAN_STATUS,
+    indexColumnNameConstants.EXCLUDED_IP_RANGE,
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,
