@@ -6,7 +6,7 @@ import {
 } from "../../../../../containers/ipamModule/subnetsDropDown/subnets/constants";
 
 const initialState = {
-  all_data: [{ subnet_address: "56345634" }, { subnet_address: "3214567" }],
+  all_data: [],
 };
 
 const defaultSlice = createSlice({
