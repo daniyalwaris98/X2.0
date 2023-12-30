@@ -1,11 +1,12 @@
 import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
+import IpDetailsModal from "../ipDetails/modal";
+import IpHistoryModal from "../ipHistory/modal";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
-  useGetIpDetailsBySubnetLazyQuery,
   useScanAllIpamSubnetsMutation,
   useScanIpamSubnetMutation,
 } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/apis";
@@ -47,22 +48,28 @@ const Index = () => {
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  const { buttonsConfigurationObject } = useButtonsConfiguration({
-    default_scan: {
-      handleClick: handleScan,
-    },
-  });
+  // const { buttonsConfigurationObject } = useButtonsConfiguration({
+  //   default_scan: {
+  //     handleClick: handleScan,
+  //   },
+  // });
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
-    buttonsConfigurationObject,
+    // buttonsConfigurationObject,
     handleEdit,
+    handleIpDetailsModalOpen,
+    handleIpHistoryModalOpen,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
     useButtonsConfiguration({
       configure_table: { handleClick: handleTableConfigurationsOpen },
       template_export: { handleClick: handleExport },
-      default_scan: {
+      bulk_scan: {
         handleClick: handleBulkScan,
+      },
+      default_scan: {
+        handleClick: handleDefaultScan,
+        visible: selectedRowKeys.length > 0,
       },
       default_delete: {
         handleClick: handleDelete,
@@ -78,14 +85,18 @@ const Index = () => {
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
+  const [subnetAddressForIpDetails, setSubnetAddressForIpDetails] =
+    useState(null);
+  const [openIpDetailsModal, setOpenIpDetailsModal] = useState(false);
+  const [ipAddressForIpHistory, setIpAddressForIpHistory] = useState(null);
+  const [openIpHistoryModal, setOpenIpHistoryModal] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = [{}, {}, {}, {}, {}];
-  // const dataSource = useSelector(selectTableData);
+  const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -117,17 +128,6 @@ const Index = () => {
       error: deleteRecordsError,
     },
   ] = useDeleteRecordsMutation();
-
-  const [
-    getIpDetailsBySubnet,
-    {
-      data: getIpDetailsBySubnetData,
-      isSuccess: isGetIpDetailsBySubnetSuccess,
-      isLoading: isGetIpDetailsBySubnetLoading,
-      isError: isGetIpDetailsBySubnetError,
-      error: getIpDetailsBySubnetError,
-    },
-  ] = useGetIpDetailsBySubnetLazyQuery();
 
   const [
     scanAllIpamSubnets,
@@ -175,14 +175,6 @@ const Index = () => {
     error: deleteRecordsError,
     type: TYPE_BULK,
     callback: handleEmptySelectedRowKeys,
-  });
-
-  useErrorHandling({
-    data: getIpDetailsBySubnetData,
-    isSuccess: isGetIpDetailsBySubnetSuccess,
-    isError: isGetIpDetailsBySubnetError,
-    error: getIpDetailsBySubnetError,
-    type: TYPE_FETCH,
   });
 
   useErrorHandling({
@@ -247,10 +239,9 @@ const Index = () => {
     }
   }
 
-  function handleScan(record) {
+  function handleDefaultScan() {
     scanIpamSubnet({
-      [indexColumnNameConstants.SUBNET_ADDRESS]:
-        record[indexColumnNameConstants.SUBNET_ADDRESS],
+      [indexColumnNameConstants.SUBNET_ID]: selectedRowKeys,
       [PORT_SCAN]: true,
       [DNS_SCAN]: true,
     });
@@ -263,6 +254,26 @@ const Index = () => {
   function handleClose() {
     setRecordToEdit(null);
     setOpen(false);
+  }
+
+  function handleCloseIpDetailsModal() {
+    setSubnetAddressForIpDetails(null);
+    setOpenIpDetailsModal(false);
+  }
+
+  function handleIpDetailsModalOpen(subnetAddress) {
+    setSubnetAddressForIpDetails(subnetAddress);
+    setOpenIpDetailsModal(true);
+  }
+
+  function handleCloseIpHistoryModal() {
+    setIpAddressForIpHistory(null);
+    setOpenIpHistoryModal(false);
+  }
+
+  function handleIpHistoryModalOpen(ipAddress) {
+    setIpAddressForIpHistory(ipAddress);
+    setOpenIpHistoryModal(true);
   }
 
   function handleExport(optionType) {
@@ -286,7 +297,6 @@ const Index = () => {
         isFetchRecordsLoading ||
         isAddRecordsLoading ||
         isDeleteRecordsLoading ||
-        isGetIpDetailsBySubnetLoading ||
         isScanAllIpamSubnetsLoading ||
         isScanIpamSubnetLoading
       }
@@ -304,6 +314,23 @@ const Index = () => {
             handleClose={handleClose}
             open={open}
             recordToEdit={recordToEdit}
+          />
+        ) : null}
+
+        {openIpDetailsModal ? (
+          <IpDetailsModal
+            handleClose={handleCloseIpDetailsModal}
+            handleIpHistoryModalOpen={handleIpHistoryModalOpen}
+            open={openIpDetailsModal}
+            subnetAddress={subnetAddressForIpDetails}
+          />
+        ) : null}
+
+        {openIpHistoryModal ? (
+          <IpHistoryModal
+            handleClose={handleCloseIpHistoryModal}
+            open={openIpHistoryModal}
+            ipAddress={ipAddressForIpHistory}
           />
         ) : null}
 

@@ -262,6 +262,20 @@ export default function useButtonsConfiguration(buttonDetails) {
       },
     },
 
+    bulk_scan: {
+      category: "dropDownCheckbox",
+      name: "Bulk Scan",
+      icon: <Icon fontSize="16px" icon="bx:scan" />,
+      options: [
+        optionConstants.default_scan.PORT_SCAN,
+        optionConstants.default_scan.DNS_SCAN,
+      ],
+      sx: {
+        backgroundColor: theme?.palette?.drop_down_button?.export_background,
+        color: theme?.palette?.drop_down_button?.export_text,
+      },
+    },
+
     default_scan: {
       category: "dropDownCheckbox",
       name: "Scan",

@@ -7,6 +7,7 @@ import {
 
 const initialState = {
   all_data: [],
+  ip_history_by_ip_address: [],
 };
 
 const defaultSlice = createSlice({
@@ -14,12 +15,19 @@ const defaultSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    builder.addMatcher(
-      extendedApi.endpoints.getAllIpamIPHistory.matchFulfilled,
-      (state, action) => {
-        state.all_data = action.payload;
-      }
-    );
+    builder
+      .addMatcher(
+        extendedApi.endpoints.getAllIpamIPHistory.matchFulfilled,
+        (state, action) => {
+          state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getIpHistoryByIpAddress.matchFulfilled,
+        (state, action) => {
+          state.ip_history_by_ip_address = action.payload;
+        }
+      );
   },
 });
 

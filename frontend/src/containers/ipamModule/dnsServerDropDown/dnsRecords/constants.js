@@ -6,11 +6,11 @@ export const FILE_NAME_EXPORT_TEMPLATE = "dns_records_template";
 export const TABLE_DATA_UNIQUE_ID = "dns_record_id";
 export const indexColumnNameConstants = {
   DNS_RECORD_ID: TABLE_DATA_UNIQUE_ID,
-  NAME: "name",
-  TYPE: "type",
-  DATA: "data",
+  IP_ADDRESS: "ip_address",
+  DNS_NAME: "dns_name",
+  DNS_TYPE: "dns_type",
   ZONE_NAME: "zone_name",
   SERVER_NAME: "server_name",
-  SERVER_IP: "server_ip",
+  DATA: "data",
   ACTIONS: "actions",
 };

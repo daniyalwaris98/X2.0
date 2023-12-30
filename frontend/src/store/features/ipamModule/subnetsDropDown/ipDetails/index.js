@@ -7,6 +7,10 @@ import {
 
 const initialState = {
   all_data: [],
+  ip_details_by_subnet_address: [
+    { ip_address: "56345634" },
+    { ip_address: "3214567" },
+  ],
 };
 
 const defaultSlice = createSlice({
@@ -14,12 +18,19 @@ const defaultSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    builder.addMatcher(
-      extendedApi.endpoints.getAllIpamIPDetails.matchFulfilled,
-      (state, action) => {
-        state.all_data = action.payload;
-      }
-    );
+    builder
+      .addMatcher(
+        extendedApi.endpoints.getAllIpamIPDetails.matchFulfilled,
+        (state, action) => {
+          state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getIpDetailsBySubnetAddress.matchFulfilled,
+        (state, action) => {
+          // state.ip_details_by_subnet_address = action.payload;
+        }
+      );
   },
 });
 

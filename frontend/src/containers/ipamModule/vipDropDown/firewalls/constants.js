@@ -5,13 +5,13 @@ export const FILE_NAME_EXPORT_ALL_DATA = "all_firewalls";
 export const FILE_NAME_EXPORT_TEMPLATE = "firewalls_template";
 export const TABLE_DATA_UNIQUE_ID = "firewall_vip_id";
 export const indexColumnNameConstants = {
-  FIREWALL_ID: TABLE_DATA_UNIQUE_ID,
+  FIREWALL_VIP_ID: TABLE_DATA_UNIQUE_ID,
   IP_ADDRESS: "ip_address",
   DEVICE_NAME: "device_name",
   INTERNAL_IP: "internal_ip",
+  SOURCE_PORT: "source_port",
+  DESTINATION_PORT: "destination_port",
+  EXTERNAL_INTERFACE: "external_interface",
   VIP: "vip",
-  SOURCE_PORT: "sport",
-  DESTINATION_PORT: "dport",
-  EXTERNAL_INTERFACE: "extintf",
   ACTIONS: "actions",
 };

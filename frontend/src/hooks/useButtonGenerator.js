@@ -45,7 +45,7 @@ export default function useButtonGenerator() {
       );
       return <>{visible ? defaultButton : null}</>;
     } else if (category === "dropDown") {
-      return (
+      let dropDownButton = (
         <DropDownButton handleClick={handleClick} sx={sx} options={options}>
           {iconPosition === "left" ? icon : null}
           {name || namePostfix ? (
@@ -62,8 +62,9 @@ export default function useButtonGenerator() {
           {iconPosition === "right" ? icon : null}
         </DropDownButton>
       );
+      return <>{visible ? dropDownButton : null}</>;
     } else if (category === "dropDownCheckbox") {
-      return (
+      let dropDownCheckboxButton = (
         <DropDownCheckboxButton
           handleClick={handleClick}
           sx={sx}
@@ -84,6 +85,7 @@ export default function useButtonGenerator() {
           {iconPosition === "right" ? icon : null}
         </DropDownCheckboxButton>
       );
+      return <>{visible ? dropDownCheckboxButton : null}</>;
     }
   };
   return buttonGenerator;

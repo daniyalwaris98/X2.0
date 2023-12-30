@@ -9,9 +9,18 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
   const columnDefinitions = [
     indexColumnNameConstants.IP_ADDRESS,
     indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.DEVICE_TYPE,
-    indexColumnNameConstants.PASSWORD_GROUP,
-    indexColumnNameConstants.SOURCE,
+    indexColumnNameConstants.SUBNET_ADDRESS,
+    indexColumnNameConstants.SUBNET_MASK,
+    indexColumnNameConstants.SUBNET_NAME,
+    indexColumnNameConstants.INTERFACE,
+    indexColumnNameConstants.INTERFACE_IP,
+    indexColumnNameConstants.INTERFACE_LOCATION,
+    indexColumnNameConstants.INTERFACE_DESCRIPTION,
+    indexColumnNameConstants.INTERFACE_STATUS,
+    indexColumnNameConstants.VIRTUAL_IP,
+    indexColumnNameConstants.VLAN,
+    indexColumnNameConstants.VLAN_NUMBER,
+    indexColumnNameConstants.FETCH_DATE,
   ];
 
   const dataKeys = columnDefinitions

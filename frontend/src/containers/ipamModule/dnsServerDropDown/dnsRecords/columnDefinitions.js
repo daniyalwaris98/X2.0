@@ -7,12 +7,12 @@ export function useIndexTableColumnDefinitions({}) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.NAME,
-    indexColumnNameConstants.TYPE,
-    indexColumnNameConstants.DATA,
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.DNS_NAME,
+    indexColumnNameConstants.DNS_TYPE,
     indexColumnNameConstants.ZONE_NAME,
     indexColumnNameConstants.SERVER_NAME,
-    indexColumnNameConstants.SERVER_IP,
+    indexColumnNameConstants.DATA,
   ];
 
   const dataKeys = columnDefinitions

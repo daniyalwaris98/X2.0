@@ -1,5 +1,6 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
+import IpHistoryModal from "../ipHistory/modal";
 import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/selectors";
@@ -25,7 +26,9 @@ const Index = () => {
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleIpHistoryModalOpen,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -33,6 +36,8 @@ const Index = () => {
   });
 
   // states
+  const [ipAddressForIpHistory, setIpAddressForIpHistory] = useState(null);
+  const [openIpHistoryModal, setOpenIpHistoryModal] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -65,12 +70,30 @@ const Index = () => {
     handleSuccessAlert("File exported successfully.");
   }
 
+  function handleCloseIpHistoryModal() {
+    setIpAddressForIpHistory(null);
+    setOpenIpHistoryModal(false);
+  }
+
+  function handleIpHistoryModalOpen(ipAddress) {
+    setIpAddressForIpHistory(ipAddress);
+    setOpenIpHistoryModal(true);
+  }
+
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
 
   return (
     <Spin spinning={isFetchRecordsLoading}>
+      {openIpHistoryModal ? (
+        <IpHistoryModal
+          handleClose={handleCloseIpHistoryModal}
+          open={openIpHistoryModal}
+          ipAddress={ipAddressForIpHistory}
+        />
+      ) : null}
+
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}

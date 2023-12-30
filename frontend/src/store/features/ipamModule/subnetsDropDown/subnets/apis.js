@@ -6,10 +6,6 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/ipam/ipam_device/get_all_subnet",
     }),
 
-    getIpDetailsBySubnet: builder.query({
-      query: () => "/api/v1/ipam/ipam_device/get_ip_detail_by_subnet",
-    }),
-
     addIpamSubnets: builder.mutation({
       query: (data) => ({
         url: "/api/v1/ipam/ipam_device/add_subnets",
@@ -69,6 +65,3 @@ export const {
   useScanAllIpamSubnetsMutation,
   useScanIpamSubnetMutation,
 } = extendedApi;
-
-export const useGetIpDetailsBySubnetLazyQuery =
-  extendedApi.endpoints.getIpDetailsBySubnet.useLazyQuery;

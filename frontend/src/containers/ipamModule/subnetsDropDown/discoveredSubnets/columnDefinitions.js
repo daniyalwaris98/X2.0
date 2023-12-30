@@ -10,9 +10,12 @@ export function useIndexTableColumnDefinitions({}) {
     indexColumnNameConstants.SUBNET_ADDRESS,
     indexColumnNameConstants.SUBNET_NAME,
     indexColumnNameConstants.SUBNET_MASK,
-    indexColumnNameConstants.SIZE,
-    indexColumnNameConstants.DISCOVER_FROM,
-    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.SUBNET_SIZE,
+    indexColumnNameConstants.SUBNET_USAGE,
+    indexColumnNameConstants.SUBNET_LOCATION,
+    indexColumnNameConstants.SUBNET_STATUS,
+    indexColumnNameConstants.DISCOVERED_FROM,
+    indexColumnNameConstants.SCAN_DATE,
   ];
 
   const dataKeys = columnDefinitions

@@ -3,12 +3,17 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({}) {
+export function useIndexTableColumnDefinitions({ handleIpHistoryModalOpen }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS,
-    indexColumnNameConstants.SUBNET,
+    {
+      data_key: indexColumnNameConstants.IP_ADDRESS,
+      render: (text, record) => (
+        <a onClick={() => handleIpHistoryModalOpen(text)}>{text}</a>
+      ),
+    },
+    indexColumnNameConstants.SUBNET_ADDRESS,
     indexColumnNameConstants.MAC_ADDRESS,
     indexColumnNameConstants.STATUS,
     indexColumnNameConstants.VIP,
@@ -16,8 +21,8 @@ export function useIndexTableColumnDefinitions({}) {
     indexColumnNameConstants.CONFIGURATION_SWITCH,
     indexColumnNameConstants.CONFIGURATION_INTERFACE,
     indexColumnNameConstants.OPEN_PORTS,
-    indexColumnNameConstants.IP_TO_DNS,
-    indexColumnNameConstants.DNS_TO_IP,
+    indexColumnNameConstants.IP_DNS,
+    indexColumnNameConstants.DNS_IP,
   ];
 
   const dataKeys = columnDefinitions
