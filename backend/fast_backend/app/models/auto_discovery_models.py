@@ -42,3 +42,24 @@ class AutoDiscoveryNetworkTable(Base):
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class SNMP_CREDENTIALS_TABLE(Base):
+    __tablename__ = 'snmp_credentials_table'
+    credentials_id = Column(Integer, primary_key=True)
+    category = Column(String(100))
+    credentials = Column(String(100),nullable=True)
+    profile_name = Column(String(250),nullable=True)
+    description = Column(String(250),nullable=True)
+    ip_address = Column(String(50),nullable=True)
+    snmp_read_community = Column(String(50),nullable=True)
+    snmp_port = Column(String(100),nullable=True)
+    username = Column(String(100),nullable=True)
+    password = Column(String(100),nullable=True)
+    encryption_password = Column(String(100),nullable=True)
+    authentication_method = Column(String(50),nullable=True)
+    encryption_method = Column(String(50),nullable=True)
+    date = Column(DateTime, default=datetime.now())
+    creation_date = Column(DateTime,default=datetime.now())
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}

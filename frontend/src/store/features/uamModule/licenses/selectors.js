@@ -1,4 +1,1 @@
-export const selectTableData = (state) => state.license.all_data;
-
-    
-
+export const selectTableData = (state) => state.uam_licenses.all_data;

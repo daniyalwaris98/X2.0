@@ -7,14 +7,15 @@ export default function DefaultCard({ sx, children }) {
   const theme = useTheme();
 
   return (
-    <Card
-      sx={{
+    <div
+      style={{
         ...sx,
-        position: "relative",
+        // position: "relative",
         backgroundColor: theme?.palette?.default_card?.background,
+        borderRadius: "7px",
       }}
     >
       <CardContent style={{ padding: "0px" }}>{children}</CardContent>
-    </Card>
+    </div>
   );
 }

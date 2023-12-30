@@ -1,8 +1,11 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../store/features/atomModule/passwordGroup/apis";
+import {
+  useFetchRecordsQuery,
+  useAutoDiscoveryCheckCredentialsStatusLazyQuery,
+} from "../../../store/features/autoDiscoveryModule/manageDevices/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
+import { selectTableData } from "../../../store/features/autoDiscoveryModule/manageDevices/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
@@ -30,7 +33,7 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    default_fetch: { handleClick: handleDefaultExport },
+    default_fetch: { handleClick: handleFetch },
   });
 
   // states
@@ -51,6 +54,17 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
+  const [
+    autoDiscoveryCheckCredentialsStatus,
+    {
+      data: checkCredentialsStatusData,
+      isSuccess: isCheckCredentialsStatusSuccess,
+      isLoading: isCheckCredentialsStatusLoading,
+      isError: isCheckCredentialsStatusError,
+      error: checkCredentialsStatusError,
+    },
+  ] = useAutoDiscoveryCheckCredentialsStatusLazyQuery();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -60,10 +74,22 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: checkCredentialsStatusData,
+    isSuccess: isCheckCredentialsStatusSuccess,
+    isError: isCheckCredentialsStatusError,
+    error: checkCredentialsStatusError,
+    type: TYPE_FETCH,
+  });
+
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     handleSuccessAlert("File exported successfully.");
+  }
+
+  function handleFetch() {
+    autoDiscoveryCheckCredentialsStatus();
   }
 
   function handleTableConfigurationsOpen() {

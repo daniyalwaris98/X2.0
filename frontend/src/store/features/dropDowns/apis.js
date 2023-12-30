@@ -37,6 +37,10 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchStatusNames: builder.query({
       query: () => "/api/v1/atom/static_list/get_status_dropdown",
     }),
+
+    fetchSubnetsNames: builder.query({
+      query: () => "/api/v1/atom/static_list/get_status_dropdown",
+    }),
   }),
 });
 
@@ -49,4 +53,5 @@ export const {
   useFetchPasswordGroupNamesQuery,
   useFetchPasswordGroupTypeNamesQuery,
   useFetchStatusNamesQuery,
+  useFetchSubnetsNamesQuery,
 } = extendedApi;

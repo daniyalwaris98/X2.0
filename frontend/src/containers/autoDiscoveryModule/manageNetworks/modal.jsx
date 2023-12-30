@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
@@ -11,18 +11,10 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/atomModule/passwordGroup/apis";
-import {
-  useFetchPasswordGroupNamesQuery,
-  useFetchPasswordGroupTypeNamesQuery,
-} from "../../../store/features/dropDowns/apis";
+} from "../../../store/features/autoDiscoveryModule/manageNetworks/apis";
 import { useSelector } from "react-redux";
-import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
-} from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
+import { formSetter, getTitle } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ELEMENT_NAME } from "./constants";
 import { indexColumnNameConstants } from "./constants";
@@ -30,23 +22,25 @@ import { indexColumnNameConstants } from "./constants";
 const schema = yup.object().shape({
   [indexColumnNameConstants.NETWORK_NAME]: yup
     .string()
-    .required("Network name is required"),
+    .required(`${getTitle(indexColumnNameConstants.NETWORK_NAME)} is required`),
   [indexColumnNameConstants.SUBNET]: yup
     .string()
-    .required("Subnet is required"),
+    .required(`${getTitle(indexColumnNameConstants.SUBNET)} is required`),
   [indexColumnNameConstants.SCAN_STATUS]: yup
     .string()
-    .required("Scan status is required"),
+    .required(`${getTitle(indexColumnNameConstants.SCAN_STATUS)} is required`),
   [indexColumnNameConstants.EXCLUDED_IP_RANGE]: yup
     .string()
-    .required("Excluded IP range is required"),
+    .required(
+      `${getTitle(indexColumnNameConstants.EXCLUDED_IP_RANGE)} is required`
+    ),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -78,12 +72,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
-  // fetching dropdowns data from backend using apis
-  const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
-
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -102,9 +90,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     type: TYPE_SINGLE,
     callback: handleClose,
   });
-
-  // getting dropdowns data from the store
-  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
 
   // on form submit
   const onSubmit = (data) => {
@@ -139,7 +124,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <SelectFormUnit
               control={control}
               dataKey={indexColumnNameConstants.SCAN_STATUS}
-              options={passwordGroupTypeNames}
+              options={["Active", "InActive"]}
               required
             />
             <DefaultFormUnit

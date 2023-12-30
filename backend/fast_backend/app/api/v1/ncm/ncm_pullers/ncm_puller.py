@@ -174,19 +174,39 @@ class NCMPuller(object):
     # Method for getting command set output
     #
     def run_puller(self, command_set):
+        successful_commands = []  # List to store successful commands
+        failed_commands = []  # List to store failed commands and their associated errors
+        command_output = ""  # Store the combined output of all commands
+
         try:
             self.connection.enable()
-            command_output = ""
+
             for command in command_set:
-                command_output += self.connection.send_command(f"{command}")
-                command_output += "\n\n\n"
-            self.connection.disconnect()
+                try:
+                    output = self.connection.send_command(command)
+                    successful_commands.append(command)
+                    command_output += f"Command '{command}' executed successfully:\n\n"
+                except Exception as e:
+                    failed_commands.append((command, str(e)))
+                    command_output += f"Command '{command}' failed to execute: {str(e)}\n\n"
+
+            # try:
+            #
+            # except Exception as e:
+            #     print(f"Error during disconnection: {str(e)}", file=sys.stderr)
+            #     traceback.print_exc()
+
+            self.status = 200
+            self.response = command_output
+
         except Exception:
             traceback.print_exc()
             self.status = 500
             self.response = f"{self.atom.ip_address} : Failed To Send Command"
-            return
 
+        # Log successful and failed commands for debugging
+        print("Successful commands:", successful_commands, file=sys.stderr)
+        print("Failed commands:", failed_commands, file=sys.stderr)
         self.status = 200
         self.response = command_output
 
@@ -255,6 +275,10 @@ class NCMPuller(object):
             file_name = (
                 f"{self.atom.ip_address}_{self.atom.device_name}_{string_time}.cfg"
             )
+            directory = f"{cwd}/app/configuration_backups/"
+            if not os.path.exists(directory):
+                os.makedirs(directory)
+            print("directoy is::::::::::",directory,file=sys.stderr)
 
             path = f"{cwd}/app/configuration_backups/{file_name}"
             f = open(path, "w")
@@ -283,7 +307,7 @@ class NCMPuller(object):
             UpdateDBData(self.ncm)
 
             self.response = "Configuration Backup Successful"
-
+            self.connection.disconnect()
     def update_status(self):
         try:
             if self.status == 200:
@@ -294,3 +318,7 @@ class NCMPuller(object):
             UpdateDBData(self.ncm)
         except Exception:
             traceback.print_exc()
+
+
+print("values in ncm ")
+print("changint the file ")

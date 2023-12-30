@@ -18,6 +18,7 @@ import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import SiteModal from "../sites/modal";
 import {
   PAGE_NAME,
+  ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   DEFAULT_RACK,
@@ -45,7 +46,7 @@ const Index = () => {
       handleClick: handleDelete,
       visible: selectedRowKeys.length > 0,
     },
-    default_add: { handleClick: handleDefaultAdd, namePostfix: PAGE_NAME },
+    default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
   });
 
   // states
@@ -197,11 +198,11 @@ const Index = () => {
         PAGE_NAME={PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
-        selectedRowKeys={selectedRowKeys}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        setSelectedRowKeys={setSelectedRowKeys}
         getCheckboxProps={getCheckboxProps}
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
       />
     </Spin>
   );

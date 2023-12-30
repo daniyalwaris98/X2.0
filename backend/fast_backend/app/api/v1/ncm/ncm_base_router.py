@@ -12,3 +12,5 @@ router_list = [dashboard_router, device_router]
 
 for router in router_list:
     routers.include_router(router)
+
+

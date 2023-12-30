@@ -1,4 +1,4 @@
-import boto3
+# import boto3
 import os
 import sys
 from app.utils.db_utils import *

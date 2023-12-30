@@ -1,31 +1,33 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
-import HorizontalMenu from "../../components/horizontalMenu";
+import HorizontalMenu from "../../components/horizontalMenu/index";
+import { getPathAllSegments } from "../../utils/helpers";
 import {
-  PAGE_NAME as PAGE_NAME_ATOM,
-  PAGE_PATH as PAGE_PATH_ATOM,
-} from "./atom/constants";
+  PAGE_NAME as PAGE_NAME_ATOMS,
+  PAGE_PATH as PAGE_PATH_ATOMS,
+} from "./atoms/constants";
 import {
-  PAGE_NAME as PAGE_NAME_PASSWORD_GROUP,
-  PAGE_PATH as PAGE_PATH_PASSWORD_GROUP,
-} from "./passwordGroup/constants";
-import { getPathLastSegment } from "../../utils/helpers";
+  PAGE_NAME as PAGE_NAME_PASSWORD_GROUPS,
+  PAGE_PATH as PAGE_PATH_PASSWORD_GROUPS,
+} from "./passwordGroups/constants";
 
 export const MODULE_PATH = "atom_module";
 
 const menuItems = [
-  { id: PAGE_PATH_ATOM, name: PAGE_NAME_ATOM, path: PAGE_PATH_ATOM },
+  { id: PAGE_PATH_ATOMS, name: PAGE_NAME_ATOMS, path: PAGE_PATH_ATOMS },
   {
-    id: PAGE_PATH_PASSWORD_GROUP,
-    name: PAGE_NAME_PASSWORD_GROUP,
-    path: PAGE_PATH_PASSWORD_GROUP,
+    id: PAGE_PATH_PASSWORD_GROUPS,
+    name: PAGE_NAME_PASSWORD_GROUPS,
+    path: PAGE_PATH_PASSWORD_GROUPS,
   },
 ];
 
 function Index(props) {
-  let pagePath = getPathLastSegment();
-  if (pagePath === MODULE_PATH) pagePath = PAGE_PATH_ATOM;
+  let pagePath = getPathAllSegments();
+  if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
+    pagePath = [PAGE_PATH_ATOMS];
+  } else pagePath = pagePath.splice(2);
 
   return (
     <>
@@ -35,7 +37,7 @@ function Index(props) {
           height: "50px",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} defaultPage={pagePath} />
+        <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>
       <Outlet />
     </>

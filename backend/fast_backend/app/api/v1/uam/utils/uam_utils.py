@@ -261,15 +261,18 @@ def edit_uam_device_util(device_obj, uam_id):
 
 def update_uam_status_utils(ip, status):
     try:
+        print("ip is::::::::::::::::::::",ip,file=sys.stderr)
         result = (
             configs.db.query(UamDeviceTable, AtomTable)
             .join(AtomTable, UamDeviceTable.atom_id == AtomTable.atom_id)
             .filter(AtomTable.ip_address == ip)
             .first()
         )
+        print("result is::::::::::::::::::::::",result,file=sys.stderr)
+
 
         if result is None:
-            return {"message": f"{ip} : No Device Found"}, 500
+            return (f"{ip} : No Device Found"), 400
 
         uam, atom = result
 
@@ -339,10 +342,10 @@ def update_uam_status_utils(ip, status):
                 return device_data, 200
 
             else:
-                return {"message": f"{ip} : Error While Updating Device Status In UAM"}, 500
+                return  (f"{ip} : Error While Updating Device Status In UAM"), 400
 
         else:
-            return {"message": f"{ip} : Error While Updating Device Status In Atom"}, 500
+            return (f"{ip} : Error While Updating Device Status In Atom"), 400
     except Exception:
         traceback.print_exc()
         return {"message": f"{ip} : Error Occurred While Status Update"}, 500

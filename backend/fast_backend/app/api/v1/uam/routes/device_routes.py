@@ -425,7 +425,7 @@ async def dismantle_onboard_device(device_ips: list[str]):
                 print("repsonse for the dismanteled onboard device is :::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
                 print(response, status, file=sys.stderr)
 
-                if status == 500:
+                if status == 400:
                     error_list.append(response)
                 else:
                     for key,value in response.items():

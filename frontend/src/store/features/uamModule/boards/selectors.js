@@ -1,4 +1,1 @@
-export const selectTableData = (state) => state.board.all_data;
-
-    
-
+export const selectTableData = (state) => state.uam_boards.all_data;

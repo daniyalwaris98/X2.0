@@ -1,7 +1,8 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
 import Card from "../../components/cards";
-import HorizontalMenu from "../../components/horizontalMenu";
+import HorizontalMenu from "../../components/horizontalMenu/index";
+import { getPathAllSegments } from "../../utils/helpers";
 import {
   PAGE_NAME as PAGE_NAME_MANAGE_NETWORKS,
   PAGE_PATH as PAGE_PATH_MANAGE_NETWORKS,
@@ -15,10 +16,25 @@ import {
   PAGE_PATH as PAGE_PATH_MANAGE_DEVICES,
 } from "./manageDevices/constants";
 import {
-  PAGE_NAME as PAGE_NAME_MANAGE_CREDENTIALS,
-  PAGE_PATH as PAGE_PATH_MANAGE_CREDENTIALS,
-} from "./manageCredentials/constants";
-import { getPathLastSegment } from "../../utils/helpers";
+  DROPDOWN_NAME as DROPDOWN_NAME_MANAGE_CREDENTIALS,
+  DROPDOWN_PATH as DROPDOWN_PATH_MANAGE_CREDENTIALS,
+} from "./manageCredentialsDropDown";
+import {
+  PAGE_NAME as PAGE_NAME_LOGIN_CREDENTIALS,
+  PAGE_PATH as PAGE_PATH_LOGIN_CREDENTIALS,
+} from "./manageCredentialsDropDown/loginCredentials/constants";
+import {
+  DROPDOWN_NAME as DROPDOWN_NAME_SNMP_CREDENTIALS,
+  DROPDOWN_PATH as DROPDOWN_PATH_SNMP_CREDENTIALS,
+} from "./manageCredentialsDropDown/snmpDropDown";
+import {
+  PAGE_NAME as PAGE_NAME_V1_V2_CREDENTIALS,
+  PAGE_PATH as PAGE_PATH_V1_V2_CREDENTIALS,
+} from "./manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
+import {
+  PAGE_NAME as PAGE_NAME_V3_CREDENTIALS,
+  PAGE_PATH as PAGE_PATH_V3_CREDENTIALS,
+} from "./manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
 export const MODULE_PATH = "auto_discovery_module";
 
@@ -39,15 +55,39 @@ const menuItems = [
     path: PAGE_PATH_MANAGE_DEVICES,
   },
   {
-    id: PAGE_PATH_MANAGE_CREDENTIALS,
-    name: PAGE_NAME_MANAGE_CREDENTIALS,
-    path: PAGE_PATH_MANAGE_CREDENTIALS,
+    id: DROPDOWN_PATH_MANAGE_CREDENTIALS,
+    name: DROPDOWN_NAME_MANAGE_CREDENTIALS,
+    children: [
+      {
+        id: PAGE_PATH_LOGIN_CREDENTIALS,
+        name: PAGE_NAME_LOGIN_CREDENTIALS,
+        path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
+      },
+      {
+        id: DROPDOWN_PATH_SNMP_CREDENTIALS,
+        name: DROPDOWN_NAME_SNMP_CREDENTIALS,
+        children: [
+          {
+            id: PAGE_PATH_V1_V2_CREDENTIALS,
+            name: PAGE_NAME_V1_V2_CREDENTIALS,
+            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
+          },
+          {
+            id: PAGE_PATH_V3_CREDENTIALS,
+            name: PAGE_NAME_V3_CREDENTIALS,
+            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
+          },
+        ],
+      },
+    ],
   },
 ];
 
 function Index(props) {
-  let pagePath = getPathLastSegment();
-  if (pagePath === MODULE_PATH) pagePath = PAGE_PATH_MANAGE_NETWORKS;
+  let pagePath = getPathAllSegments();
+  if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
+    pagePath = [PAGE_PATH_MANAGE_NETWORKS];
+  } else pagePath = pagePath.splice(2);
 
   return (
     <>
@@ -57,7 +97,7 @@ function Index(props) {
           height: "50px",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} defaultPage={pagePath} />
+        <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>
       <Outlet />
     </>

@@ -1,4 +1,1 @@
-export const selectTableData = (state) => state.alert.all_data;
-
-    
-
+export const selectTableData = (state) => state.monitoring_alerts.all_data;

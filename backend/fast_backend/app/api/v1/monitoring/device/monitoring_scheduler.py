@@ -1,202 +1,133 @@
-from app.monitoring_device.monitoring_utils import *
-from app.monitoring_device.common_puller import CommonPuller
-from flask_apscheduler import APScheduler
-from app import app, db
+from fastapi import FastAPI
+from fastapi.responses import JSONResponse
+from fastapi import APIRouter
+from app.api.v1.monitoring.device.utils.monitoring_utils import *
+from app.api.v1.monitoring.device.utils.alerts_utils import *
+from app.api.v1.monitoring.device.utils.puller_utils import *
+from app.api.v1.monitoring.device.utils.common_puller import *
+from app.api.v1.monitoring.device.utils.ping_parse import *
 import sys
-
-from datetime import datetime
-from flask import request
-
 import traceback
+from datetime import  datetime
 import threading
+from app.api.v1.monitoring.device.utils.scheduler import *
 
 
-scheduler = APScheduler()
-scheduler.api_enabled = True
-scheduler.init_app(app)
-scheduler.start()
+
+router = APIRouter(
+    prefix="/start_monitoring_scheduler",
+    tags=["statr_monitoring_scheduler"]
+)
+
+scheduler = Scheduler()
+
+def job_to_execute():
+    print("jon executed at:::",datetime.now(),file=sys.stderr)
 
 
-def GenerateAlertMails():
-    from datetime import datetime, timedelta
-    from app.mail import send_mail
+scheduler.add_job(
+    func=job_to_execute,
+    trigger=CronTrigger(hour=12, minute=27),
+    id='job_two'
+)
 
-    print("\n### Generating Mails For Monitoring Alerts ###\n", file=sys.stderr)
+def GenerateAlertMail():
+    pass
+
+def create_monitoring_poll(devicePoll):
     try:
-        mailQuery = "select * from mail_credentials where status = 'active'"
-        mail_cred = db.session.execute(mailQuery).fetchone()
-        if mail_cred is None:
-            return
-        mail_cred = dict(mail_cred)
-        print("\n---> Active Mail Credentials <---\n", file=sys.stderr)
-        print(mail_cred, file=sys.stderr)
-
-        query = "select * from alert_recipents_table where `CATEGORY`='Monitoring' and `STATUS`='Active';"
-        recipents = []
-
-        try:
-            results = db.session.execute(query)
-            for row in results:
-                recipents.append(row[1])
-        except Exception as e:
-            traceback.print_exc()
-            print(e, file=sys.stderr)
-
-        print(f"Recipents : {recipents}", file=sys.stderr)
-
-        # query = f"select * from alerts_table where DATE >= '{datetime.now()- timedelta(minutes=60)}' and MAIL_STATUS = 'no' and (ALERT_TYPE='critical' or CATEGORY = 'device_down');"
-        query = f"select * from alerts_table where MAIL_STATUS = 'no' and (ALERT_TYPE='critical' or CATEGORY = 'device_down');"
-        results = db.session.execute(query)
-
-        # print(f"Total Alerts : {len(results)}", file=sys.stderr)
-
-        for row in results:
-            print(
-                f"-----> Sendig Mail for alert id = {row[0]} <------\n", file=sys.stderr
+        threads = []
+        for host in devicePoll:
+            Obj = CommonPuller()
+            thread = threading.Thread(
+                target=Obj.poll,
+                args=(host,)
             )
+            thread.start()
+            threads.append(thread)
 
-            try:
-                # recipents = [
-                # 'najam.hassan@nets-international.com',
-                # 'hamza.zahid@nets-international.com',
-                # 'muhammad.naseem@nets-international.com',
-                # 'usama.islam@nets-international.com'
-                # ]
-
-                subject = f"MonetX - Monitoring Alert - {row[3]} | {row[4]}"
-                msg = f"""
-                Alert ID : {row[0]}\n
-                IP Address : {row[1]}\n
-                Description : {row[2]}\n
-                Alert Type : {row[3]}\n
-                Category : {row[4]}\n
-                Alert Status : {row[5]}\n
-                Date/Time : {row[8]}
-                """
-
-                # sending email
-                print(
-                    f"-----> Sendig Mail for alert id = {row[0]} <------\n",
-                    file=sys.stderr,
-                )
-
-                send_mail(
-                    send_from=mail_cred["MAIL"],
-                    send_to=recipents,
-                    subject=subject,
-                    message=msg,
-                    username=mail_cred["MAIL"],
-                    password=mail_cred["PASSWORD"],
-                    server=mail_cred["SERVER"],
-                )
-
-                query = f"update alerts_table set mail_status='yes' where alert_id = {row[0]};"
-                db.session.execute(query)
-                db.session.commit()
-
-            except Exception as e:
-                print("\n*** ERROR In Mail Generation ***\n", file=sys.stderr)
-                traceback.print_exc()
-                print(f"\n{e}\n", file=sys.stderr)
-
+        for th in threads:
+            th.join()
     except Exception as e:
-        print("\n*** ERROR In Mail Generation ***\n")
         traceback.print_exc()
-        print(f"\n{e}\n", file=sys.stderr)
 
 
-def creatMonitoringPoll(devicePoll):
-    threads = []
-    for host in devicePoll:
-        obj = CommonPuller()
-        th = threading.Thread(target=obj.poll, args=(host,))
-        th.start()
-        threads.append(th)
+def monitoring_operations():
+    try:
+        iterations= 1
+        while True:
+            print(f"Iteration : {iterations}",file=sys.stderr)
+            iterations = iterations + 1
 
-    for thread in threads:
-        thread.join()
+            if iterations == 100000:
+                iterations = 1
 
-
-def MonitoringOperations():
-    iteration = 1
-    while True:
-        print(f"\n\n\n** Iteration : {iteration} **\n\n\n", file=sys.stderr)
-        iteration = iteration + 1
-
-        if iteration == 100000:
-            iteration = 1
-
-        # GenerateAlertMails()
-        print(f"Running Monitoring Schedular\n", file=sys.stderr)
-
+        # Generating Alerts
+        print(f"Running Monitoring Scheduler::",file=sys.stderr)
         try:
-            results = (
-                db.session.query(
-                    Atom_Table, Monitoring_Devices_Table, Monitoring_Credentails_Table
-                )
-                .join(
-                    Atom_Table, Atom_Table.atom_id == Monitoring_Devices_Table.atom_id
-                )
-                .join(
+            results= (
+                configs.db.query(AtomTable,Monitoring_Devices_Table,Monitoring_Credentails_Table
+                ).join(
+                    AtomTable,AtomTable.atom_id == Monitoring_Devices_Table.atom_id
+                ).join(
                     Monitoring_Credentails_Table,
-                    Monitoring_Credentails_Table.monitoring_credentials_id
-                    == Monitoring_Devices_Table.monitoring_credentials_id,
-                )
-                .all()
+                    Monitoring_Credentails_Table.monitoring_credentials_id == Monitoring_Devices_Table.monitoring_credentials_id,
+                ).all()
             )
+            print(" result in monitoring scheduler is::::::::::::",results,file=sys.stderr)
 
-            devicePoll = []
+            devicePolls = []
             for result in results:
                 atom, monitoring_device, credentials = result
+                print("result is::::::::::::::::",result,file=sys.stderr)
                 try:
                     if credentials is None:
                         print(
                             f"{atom.ip_address} : Error - No SNMP Credentials",
-                            file=sys.stderr,
+                            file=sys.stderr
                         )
                     else:
-                        devicePoll.append(result)
+                        devicePolls.append(result)
                 except Exception as e:
                     traceback.print_exc()
-
             try:
-                creatMonitoringPoll(devicePoll)
-                # GenerateAlertMails()
-            except Exception:
+                create_monitoring_poll(devicePolls)
+            except Exception as e:
                 traceback.print_exc()
-
-            # queryString1 = f"select * from alerts_table;"
-            # alerts = db.session.execute(queryString1)
-            # for alert in alerts:
-            #     alert_manage(alert)
-            # AlarmOperations()
-
         except Exception as e:
-            print("Error in Monitoring Scheduler: ", str(e), file=sys.stderr)
             traceback.print_exc()
-
-
-def RunningActiveDevices():
-    # @scheduler.task('interval', id="testingpolls", seconds=300)
-    try:
-        monitoringThread = threading.Thread(target=MonitoringOperations)
-        monitoringThread.start()
-    except Exception:
+    except Exception as e:
+        print("Error In Monitoring Scheduler:::",str(e),file=sys.stderr)
         traceback.print_exc()
 
 
-@app.route("/runa_ctive", methods=["GET"])
-# @token_required
-def runactivedevice():
+def running_active_devices():
     try:
-        print("\n\nMonitoring Started\n\n", file=sys.stderr)
-        RunningActiveDevices()
-        return "Monitoring Has Been Started"
+        monitoringThread = threading.Thread(target=monitoring_operations)
+        print("Monitoring thread is::::::::::::::",monitoringThread,file=sys.stderr)
+        print("thread activated::::::::::::::",file=sys.stderr)
+        monitoringThread.start()
     except Exception as e:
-        print("Error While Starting Monitoring", file=sys.stderr)
-        error = "Something Went Wrong:", type(e).__name__, str(e)
-        return error
+        traceback.print_exc()
 
+
+@router.get('/run_active',
+            responses = {
+                200:{"model":str},
+                500:{"model":str}
+            },
+            description="Use this api to start monitoring",
+            summary="Use this api to start the monitoring"
+)
+def run_active_devices():
+    try:
+        print("\n\nMonitoring Started\n\n",file=sys.stderr)
+        running_active_devices()
+        return JSONResponse(content="Monitoring Has Been Started",status_code=200)
+    except Exception as e:
+        print("Error Occured While Monitoring Active",str(e),file=sys.stderr)
+        traceback.print_exc()
+        return JSONResponse(content="Error While Monitoring Startup",status_code=500)
 
 # host = ['0', '192.168.0.2', 'fortinet', '3', '4', '5', '6', '7', '8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'public', '161']
@@ -244,106 +175,82 @@ host = [
 ]
 
 
-@app.route("/test_puller", methods=["GET"])
-def TestPuller():
-    puller = CommonPuller()
-    puller.poll(host)
-    # queryString = f"select * from alerts_table;"
-    # results = db.session.execute(queryString)
-    # for result in results:
-    #     difference = datetime.now() - result[8]
-    #     print(result[8])
-    #     print(difference.total_seconds())
-
-    # queryString = f"select * from monitoring_devices_table where active='Active';"
-    # results = db.session.execute(queryString)
-
-    # for result in results:
-    #     try:
-
-    #         community_string = f"select * from monitoring_credentials_table where profile_name='{result[4]}';"
-    #         community_result = db.session.execute(community_string)
-    #         community = None
-    #         for communityv in community_result:
-    #             community = communityv[:]
-
-    #         result = list(result) + list(community)
-
-    #         if community is not None:
-    #             creatMonitoringPoll(CommonPuller,result)
-    #         else:
-    #             print(f"{result[1]}: Error : No SNMP Credentials")
-
-    #     except Exception as e:
-    #         traceback.print_exc()
-    return "OK", 200
-
-
-@app.route("/ping_test", methods=["GET"])
-def PingShed():
-    queryString = f"select ip_address from monitoring_devices_table;"
-    results = db.session.execute(queryString)
-    status = None
-    for result in results:
-        ip_address = result[0].strip()
-        status = ping(ip_address)
-        print(ip_address + " : " + status, file=sys.stderr)
-        updatequery = f"update monitoring_devices_table set status = '{status}' where ip_address='{ip_address}';"
-        db.session.execute(updatequery)
-        db.session.commit()
-    return "OK", 200
-
-
-#
-#
-#
-#
-#
-#
-#
-#
-#
-#
-
-
-@app.route("/alarm_active")
-# @token_required
-def alarmactivedevice():
+@router.post('/test_puller',
+             resposnes = {
+                 200:{"model":str},
+                 500:{"model":str}
+             },
+             description="Test puller API",
+             summary="Test puller api"
+)
+def test_puller():
     try:
-        # host = request.get_json()
+        puller = CommonPuller()
+        puller.poll(host)
+        # queryString = f"select * from alerts_table;"
+        # results = db.session.execute(queryString)
+        # for result in results:
+        #     difference = datetime.now() - result[8]
+        #     print(result[8])
+        #     print(difference.total_seconds())
 
-        print(" I am in try block  of alarmactivedevices", file=sys.stderr)
-        return "operation sucssesfull"
-    except Exception as e:
-        print(" I am in excp block  of alarmactivedevices", file=sys.stderr)
+        # queryString = f"select * from monitoring_devices_table where active='Active';"
+        # results = db.session.execute(queryString)
 
-        error = "Something Went Wrong:", type(e).__name__, str(e)
-        return error
+        # for result in results:
+        #     try:
 
+        #         community_string = f"select * from monitoring_credentials_table where profile_name='{result[4]}';"
+        #         community_result = db.session.execute(community_string)
+        #         community = None
+        #         for communityv in community_result:
+        #             community = communityv[:]
 
-def AlarmOperations():
-    print(f"Data Fetching for alarms devices", file=sys.stderr)
+        #         result = list(result) + list(community)
 
-    try:
-        queryString = f"select * from alerts_table;"
-        results = db.session.execute(queryString)
-        for result in results:
-            alert_manage(result)
+        #         if community is not None:
+        #             creatMonitoringPoll(CommonPuller,result)
+        #         else:
+        #             print(f"{result[1]}: Error : No SNMP Credentials")
+        return JSONResponse(content="Test Puller Exceuted",status_code=200)
 
     except Exception as e:
-        error = "Something Went Wrong:", type(e).__name__, str(e)
-        print(" I am in excp block  of alarm scheduler", error, file=sys.stderr)
-        return error
+        traceback.print_exc()
+        return JSONResponse(content = "Error In Test Puller",status_code=500)
 
 
-# def alarms():
-#         @scheduler.task('interval', id="testingalrams", seconds=60)#
-#         Ala
+@router.get('/ping_test',responses={
+    200:{"model":str},
+    500:{"model":str}
+})
+def ping_testing():
+    try:
+        monitoringDevice = configs.db.query(Monitoring_Devices_Table).all()
+        for devices in monitoringDevice:
+            atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = devices.atom_id).first()
+            if atom_exsist:
+                ipaddress = atom_exsist.ip_address.strip()
+                print("ip address in pring test is::::::::::::::",ipaddress,file=sys.stderr)
+                status = ping(ipaddress)
+                print("ip address is:::"+ipaddress+ " : "  + status,file=sys.stderr)
+                devices.ping_status = status
+                UpdateDBData(monitoringDevice)
+        return JSONResponse(content="Ping tested Executed",status_code=200)
 
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content = "Error in Ping test is",status_code=500)
 
-def alert_manage(
-    alert,
-):  # (`IP_ADDRESS`,`DESCRIPTION`,,`ALERT_TYPE`,`MAIL_STATUS`,`DATE`)
+def alarm_operations():
+    try:
+        print(f"Data Fetching for Alarm devices:::",file=sys.stderr)
+        monitoring_alerts = configs.db.query(Monitoring_Alerts_Table).all()
+        for alerts in monitoring_alerts:
+            alert_manage(alerts)
+    except Exception as e:
+        traceback.print_exc()
+
+def alert_manage(alert):# (`IP_ADDRESS`,`DESCRIPTION`,,`ALERT_TYPE`,`MAIL_STATUS`,`DATE`)
     try:
         if alert[3] == "memory" or alert[3] == "cpu":
             temptime = datetime.strptime(
@@ -351,30 +258,27 @@ def alert_manage(
             ) - datetime.strptime(alert[4], "%Y-%m-%d %H:%M:%S")
             time = temptime.total_seconds() / 60
 
-            # if time > 5:
-            #         # if alert[2]=="informational":
-            #         #         des = f"""An automated alarm generated,{alert[0]} is utilizing more than 70% of cpu."""
-            #         #         sqlquery = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`MAIL_STATUS`,`DATE`) values ('{alert[0]}','{des}','informal','no','{datetime.now()}');"
-            #         #         db.session.execute(sqlquery)
-            #         if  alert[2]=="informational" and alert[3]=="no":
-            #                 #enter send mail function
-            #                 des = f"""An automated alarm generated,{alert[0]} is utilizing more than 70% of cpu."""
-            #                 sqlquery = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`MAIL_STATUS`,`DATE`) values ('{alert[0]}','{des}','(critical','yes','{datetime.now()}');"
-            #                 db.session.execute(sqlquery)
             if time >= 5:
                 if alert[2] == "critical" and alert[3] == "no":
-                    # enter send mail function
-                    sqlquery = f"update alerts_table set alert_type='yes' where ip_address='{alert[1]}';"
-                    db.session.execute(sqlquery)
-                    sqlquery = f"update alerts_table set alert_type='yes' where ip_address='{alert[1]}';"
-                    db.session.execute(sqlquery)
+                    query1 = configs.db.query(AtomTable).filter_by(ip_address=alert[1]).first()
+                    if query1:
+                        query2 = configs.db.query(Monitoring_Devices_Table).filter_by(atom_id=query1.atom_id).first()
+                        if query2:
+                            query3 = configs.db.query(Monitoring_Alerts_Table).filter_by(monitoring_device_id=query2.monitoring_device_id).first()
+                            if query3:
+                                query3.alert_type = "yes"
+                                UpdateDBData(query3)  # Commit changes to the database
 
         if alert[3] == "device_down":
             if alert[3] == "no":
-                # enter send mail function
-                sqlquery = f"update alerts_table set mail_status='yes' where ip_address='{alert[1]}';"
-                db.session.execute(sqlquery)
+                query1 = configs.db.query(AtomTable).filter_by(ip_address=alert[1]).first()
+                if query1:
+                    query2 = configs.db.query(Monitoring_Devices_Table).filter_by(atom_id=query1.atom_id).first()
+                    if query2:
+                        query3 = configs.db.query(Monitoring_Alerts_Table).filter_by(monitoring_device_id=query2.monitoring_device_id).first()
+                        if query3:
+                            query3.mail_status = "yes"
+                            UpdateDBData(query3)  # Commit changes to the database
+
     except Exception as e:
-        error = "Something Went Wrong:", type(e).__name__, str(e)
-        print(error, file=sys.stderr)
-        return error
+        traceback.print_exc()

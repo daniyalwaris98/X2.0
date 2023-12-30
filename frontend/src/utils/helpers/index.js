@@ -13,6 +13,12 @@ export function getPathSecondSegment() {
   return segments[1];
 }
 
+export function getPathAllSegments() {
+  const path = window.location.pathname;
+  const segments = path.split("/");
+  return segments;
+}
+
 export function getTitle(dataKey) {
   return dataKey
     ?.split("_")

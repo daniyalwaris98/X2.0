@@ -1,10 +1,10 @@
 import React from "react";
 import AtomModule from "../containers/atomModule";
-import Atom from "../containers/atomModule/atom";
-import PasswordGroup from "../containers/atomModule/passwordGroup";
+import Atoms from "../containers/atomModule/atoms";
+import PasswordGroups from "../containers/atomModule/passwordGroups";
 import { Navigate } from "react-router-dom";
-import { PAGE_PATH as PAGE_PATH_ATOM } from "../containers/atomModule/atom/constants";
-import { PAGE_PATH as PAGE_PATH_PASSWORD_GROUP } from "../containers/atomModule/passwordGroup/constants";
+import { PAGE_PATH as PAGE_PATH_ATOMS } from "../containers/atomModule/atoms/constants";
+import { PAGE_PATH as PAGE_PATH_PASSWORD_GROUPS } from "../containers/atomModule/passwordGroups/constants";
 import { MODULE_PATH } from "../containers/atomModule";
 
 const routes = {
@@ -13,15 +13,15 @@ const routes = {
   children: [
     {
       path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_ATOM} replace />,
+      element: <Navigate to={PAGE_PATH_ATOMS} replace />,
     },
     {
-      path: PAGE_PATH_ATOM,
-      element: <Atom />,
+      path: PAGE_PATH_ATOMS,
+      element: <Atoms />,
     },
     {
-      path: PAGE_PATH_PASSWORD_GROUP,
-      element: <PasswordGroup />,
+      path: PAGE_PATH_PASSWORD_GROUPS,
+      element: <PasswordGroups />,
     },
   ],
 };

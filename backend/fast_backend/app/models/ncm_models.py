@@ -20,7 +20,8 @@ class NcmDeviceTable(Base):
     status = Column(String(50), default='InActive', nullable=False)
     config_change_date = Column(DateTime, nullable=True)
     backup_status = Column(Boolean, nullable=True)
-
+    configuration_status = Column(String(60),nullable=True)
+    backup_state = Column(String(25),nullable=True)
     creation_date = Column(DateTime, default=datetime.now())
     modification_date = Column(
         DateTime, default=datetime.now(), onupdate=datetime.now()
