@@ -7,10 +7,7 @@ import {
 
 const initialState = {
   all_data: [],
-  ip_details_by_subnet_address: [
-    { ip_address: "56345634" },
-    { ip_address: "3214567" },
-  ],
+  ip_details_by_subnet_address: [],
 };
 
 const defaultSlice = createSlice({
