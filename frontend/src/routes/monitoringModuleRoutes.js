@@ -17,6 +17,9 @@ import RoutersDevices from "../containers/monitoringModule/networksDropDown/rout
 import RoutersInterfaces from "../containers/monitoringModule/networksDropDown/routeDropDown/interfaces"
 
 
+import SwitchesDevices from "../containers/monitoringModule/networksDropDown/switchesDropDown/devices"
+import SwitchesInterfaces from "../containers/monitoringModule/networksDropDown/switchesDropDown/interfaces"
+
 import LinuxDevices from "../containers/monitoringModule/serversDropDown/linuxDropDown/devices"
 
 
@@ -29,6 +32,9 @@ import AllServersDropDown from "../containers/monitoringModule/serversDropDown/a
 import NetworkDropDown from "../containers/monitoringModule/networksDropDown"
 
 import RoutersDropDown from "../containers/monitoringModule/networksDropDown/routeDropDown"
+
+import SwitchesDropDown from "../containers/monitoringModule/networksDropDown/switchesDropDown"
+
 import AllDevicesDropDown from "../containers/monitoringModule/networksDropDown/allDevicesDropDown"
 
 import { DROPDOWN_PATH as DROPDOWN_PATH_CLOUDS } from "../containers/monitoringModule/cloudsDropDown";
@@ -53,6 +59,8 @@ import { DROPDOWN_PATH as DROPDOWN_PATH_NETWORKS } from "../containers/monitorin
 import { DROPDOWN_PATH as DROPDOWN_PATH_ALL_DEVICES } from "../containers/monitoringModule/networksDropDown/allDevicesDropDown";
 
 import { DROPDOWN_PATH as DROPDOWN_PATH_ROUTERS } from "../containers/monitoringModule/networksDropDown/routeDropDown";
+import { DROPDOWN_PATH as DROPDOWN_PATH_SWITCHES } from "../containers/monitoringModule/networksDropDown/switchesDropDown";
+
 
 
 
@@ -71,8 +79,11 @@ import { PAGE_PATH as PAGE_PATH_NETWORKS_INTERFACE } from "../containers/monitor
 
 
 import { PAGE_PATH as PAGE_PATH_ROUTERS_INTERFACE } from "../containers/monitoringModule/networksDropDown/routeDropDown/interfaces/constants";
-
 import { PAGE_PATH as PAGE_PATH_ROUTERS_DEVICES } from "../containers/monitoringModule/networksDropDown/routeDropDown/devices/constants";
+
+
+import { PAGE_PATH as PAGE_PATH_SWITCHES_INTERFACE } from "../containers/monitoringModule/networksDropDown/switchesDropDown/interfaces/constants";
+import { PAGE_PATH as PAGE_PATH_SWITCHES_DEVICES } from "../containers/monitoringModule/networksDropDown/switchesDropDown/devices/constants";
 
 
 import { PAGE_PATH as PAGE_PATH_CLOUDS } from "../containers/monitoringModule/clouds/constants";
@@ -195,6 +206,21 @@ const routes = {
             {
               path: PAGE_PATH_ROUTERS_INTERFACE,
               element: <RoutersInterfaces />,
+            },
+
+          ],
+        },
+        {
+          path: DROPDOWN_PATH_SWITCHES,
+          element: <SwitchesDropDown />,
+          children: [
+            {
+              path: PAGE_PATH_SWITCHES_DEVICES,
+              element: <SwitchesDevices />,
+            },
+            {
+              path: PAGE_PATH_SWITCHES_INTERFACE,
+              element: <SwitchesInterfaces />,
             },
 
           ],
