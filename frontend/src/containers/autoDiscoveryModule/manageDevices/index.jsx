@@ -2,7 +2,7 @@ import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import {
   useFetchRecordsQuery,
-  useCheckCredentialsStatusLazyQuery,
+  useAutoDiscoveryCheckCredentialsStatusLazyQuery,
 } from "../../../store/features/autoDiscoveryModule/manageDevices/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/autoDiscoveryModule/manageDevices/selectors";
@@ -55,7 +55,7 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   const [
-    checkCredentialsStatus,
+    autoDiscoveryCheckCredentialsStatus,
     {
       data: checkCredentialsStatusData,
       isSuccess: isCheckCredentialsStatusSuccess,
@@ -63,7 +63,7 @@ const Index = () => {
       isError: isCheckCredentialsStatusError,
       error: checkCredentialsStatusError,
     },
-  ] = useCheckCredentialsStatusLazyQuery();
+  ] = useAutoDiscoveryCheckCredentialsStatusLazyQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -89,7 +89,7 @@ const Index = () => {
   }
 
   function handleFetch() {
-    checkCredentialsStatus();
+    autoDiscoveryCheckCredentialsStatus();
   }
 
   function handleTableConfigurationsOpen() {

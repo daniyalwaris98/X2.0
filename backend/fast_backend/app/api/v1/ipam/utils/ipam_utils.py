@@ -1,12 +1,20 @@
-from app.api.v1.ipam.utils.ipam_imports import *
+import traceback
 from subprocess import Popen, PIPE
+from netaddr import IPNetwork
+from ipaddress import ip_network, ip_address
+from ipaddress import ip_interface
 from app.ipam_scripts.ipam import *
 from app.ipam_scripts.f5 import *
 from app.ipam_scripts.ipam_physical_mapping import *
 from app.ipam_scripts.fortigate_vip import *
-
+from app.api.v1.ipam.routes.device_routes import *
+from pywinos import WinOSClient
+from app.models.atom_models import *
 # from app.api.v1.ipam.ipam_import import *
 # from app.api.v1.ipam.ipam_import import *
+import platform
+import subprocess
+import nmap
 
 upIpsQueue = []
 totalPingThreads = 200
@@ -168,7 +176,6 @@ def FetchIpamDevices(atom):
             print("ipam data in fetch ipam devices is::::::::",ipam_data,file=sys.stderr)
             # IPAM(host,ipam_data)
             ipam_instance = IPAM()
-            ipam_instance.addInventoryToDB(ipam_dict, ipam_data)
             ipam_instance.poll(ipam_dict)
             print("ipam ended execution:::::::::::::::::::::::::::::::::",file=sys.stderr)
 
@@ -213,22 +220,47 @@ def FetchIpamDevices(atom):
 #         traceback.print_exc()
 
 
-def GetIps(subnet):
+def is_valid_ipv4_subnet(subnet):
+    try:
+        # Convert subnet to a string if it's not already in string format
+        subnet_str = str(subnet)
+
+        # Regular expression to validate IPv4 CIDR notation
+        ipv4_subnet_regex = r'^(\d{1,3}\.){3}\d{1,3}/(3[0-2]|[1-2][0-9]|[0-9])$'
+        return bool(re.match(ipv4_subnet_regex, subnet_str))
+    except Exception as e:
+        print(f"Error in validating subnet: {e}")
+        return False
+
+
+def GetIps(subnet_data):
     ips = []
     try:
+        print("subnet data is:::::::::::::::::::::",subnet_data,file=sys.stderr)
+        # Access the subnet information from the AddSubnetInSubnetSchema object
+        subnet = subnet_data
 
-        for ip in IPNetwork(subnet):
-            ipStr = "" + str(ip)
-            # if ipStr=="192.168.30.2" or ipStr=="192.168.30.20" or ipStr=="192.168.30.30" or ipStr=="192.168.30.40" or ipStr=="192.168.18.37" or ipStr=="192.168.30.186" or ipStr=="192.168.30.167" or ipStr=="192.168.30.151" or ipStr=="192.168.30.152" or ipStr=="192.168.30.168"  or ipStr=="192.168.30.171" or ipStr=="192.168.30.190" or ipStr=="192.168.30.192" or ipStr=="192.168.30.195" or ipStr=="192.168.30.200" or ipStr=="192.168.30.225" or ipStr=="192.168.30.31":
-            ips.append(ipStr)
-        ips.pop(0)
-        ips.pop(-1)
+        # Print the type and value of the subnet variable for debugging
+        print(f"Type of subnet: {type(subnet)}")
+        print(f"Value of subnet: {subnet}")
+
+        if isinstance(subnet, str):
+            # Call the is_valid_ipv4_subnet function if the subnet is a string
+            if is_valid_ipv4_subnet(subnet):
+                network = ip_network(subnet)
+                for ip in network.hosts():
+                    ips.append(str(ip))
+                return ips
+            else:
+                print(f"{subnet} is not a valid IPv4 subnet")
+                return ips
+        else:
+            print(f"{subnet} is not a string")
+            return ips
+    except ValueError:
+        traceback.print_exc()
+        print(f"{subnet} is not a valid IPv4 subnet")
         return ips
-    except Exception as e:
-        print(e)
-        return ips
-
-
 def DnsName(ip):
     try:
         data = ""
@@ -360,7 +392,8 @@ def PortScanner(target):
 
 def scanPorts(subnet):
     threads = []
-    ip_query = configs.db.query(IP_TABLE).filter_by(subnet=subnet,
+    subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address = subnet).first()
+    ip_query = configs.db.query(IpTable).filter_by(subnet_id=subnet_exsist.subnet_id,
                                                     status='Used'
                                                     ).all()
     for ips in ip_query:
@@ -369,20 +402,17 @@ def scanPorts(subnet):
         PortScanner(ip)
 
 
-def GetIps(subnet):
-    ips = []
-    try:
-
-        for ip in IPNetwork(subnet):
-            ipStr = "" + str(ip)
-            # if ipStr=="192.168.30.2" or ipStr=="192.168.30.20" or ipStr=="192.168.30.30" or ipStr=="192.168.30.40" or ipStr=="192.168.18.37" or ipStr=="192.168.30.186" or ipStr=="192.168.30.167" or ipStr=="192.168.30.151" or ipStr=="192.168.30.152" or ipStr=="192.168.30.168"  or ipStr=="192.168.30.171" or ipStr=="192.168.30.190" or ipStr=="192.168.30.192" or ipStr=="192.168.30.195" or ipStr=="192.168.30.200" or ipStr=="192.168.30.225" or ipStr=="192.168.30.31":
-            ips.append(ipStr)
-        ips.pop(0)
-        ips.pop(-1)
-        return ips
-    except Exception as e:
-        print(e)
-        return ips
+# def GetIps(subnet):
+#     ips = []
+#     try:
+#         network = ip_network(subnet)
+#         for ip in network.hosts():
+#             ips.append(str(ip))
+#         return ips
+#     except Exception as e:
+#         traceback.print_exc()
+#         print(e)
+#         return ips
 
 
 def sizeCalculator(subnet):
@@ -423,38 +453,45 @@ def PingTest(host, subnet):
     try:
         parameter = '-n' if platform.system().lower() == 'windows' else '-c'
         command = ['ping', parameter, '3', host]
-        response = subprocess.call(command)
+        response = subprocess.call(command,shell=True)
+        print("host is:::::::at pingtest 454",host,file=sys.stderr)
+        print("subnet is::::::::::::::455",subnet,file=sys.stderr)
+        subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address=subnet).first()
+        Iptable = IpTable()
         if response == 0:
             upIpsQueue.append(host)
             time = datetime.now()
-            IpTable = IP_TABLE()
             ip_history = IP_HISTORY_TABLE()
-            ip_query = configs.db.query(IP_TABLE).filter_by(ip_address=host, subnet=subnet).first()
+            ip_query = configs.db.query(IpTable).filter_by(ip_address=host, subnet_id=subnet_exsist.subnet_id).first()
             if ip_query:
-                IpTable.status = 'Used'
-                IpTable.status_history = 'UP'
-                IpTable.last_used = time
+                ip_query.status = 'Used'
+                ip_query.status_history = 'UP'
+                ip_query.last_used = time
                 # inerting ip history tbale
 
                 ip_history.ip_address = host
                 ip_history.status = 'Used'
                 ip_history.date = time
-            UpdateDBData(IpTable)
+                ip_history.ip_id = ip_query.ip_id
+            UpdateDBData(Iptable)
             print("ip table updated", file=sys.stderr)
             InsertDBData(ip_history)
             print("data inserted to the IP history table::", file=sys.stderr)
         else:
-            ip_query = configs.db.query(IP_TABLE).filter_by(ip_address=host, subnet=subnet).first()
+            ip_query = configs.db.query(IpTable).filter_by(ip_address=host, subnet_id=subnet_exsist.subnet_id).first()
+            ip_history = IP_HISTORY_TABLE()
             if ip_query:
-                IpTable.status = 'Available'
+                time = datetime.now()
+                ip_query.status = 'Available'
                 # IpTable.status_history = 'UP'
-                IpTable.last_used = time
+                ip_query.last_used = time
                 # inerting ip history tbale
 
                 ip_history.ip_address = host
                 ip_history.status = 'Available'
                 ip_history.date = time
-            UpdateDBData(IpTable)
+                ip_history.ip_id = ip_query.ip_id
+            UpdateDBData(Iptable)
             print("ip table updated", file=sys.stderr)
             InsertDBData(ip_history)
             print("data inserted to the IP history table::", file=sys.stderr)
@@ -514,7 +551,8 @@ def UsageCalculator(available_ips, total_ips):
 def calculateDnsIp(subnet):
     try:
         threads = []
-        ip_query = configs.db.query(IP_TABLE).filter_by(status='Used', subnet=subnet).all()
+        subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address = subnet).first()
+        ip_query = configs.db.query(IpTable).filter_by(status='Used', subnet_id=subnet_exsist.subnet_id).all()
         for row in ip_query:
             print("row is>>>>>>>>>>", row, file=sys.stderr)
             ip = row.ip_address
@@ -536,33 +574,40 @@ def getPhysicalMapping(subnet_list):
     try:
         threads = []
         physical_mapping = IPAMPM()
+        password=""
+        hosts = []
         for subnet in subnet_list:
-            hosts = []
-            result1 = configs.db.query(IPAM_DEVICES_FETCH_TABLE).filter_by(subnet=subnet).all()
+
+            result1 = configs.db.query(subnet_table).filter_by(subnet_address=subnet).all()
             for row in result1:
                 print('row is>>>>>>>', row, file=sys.stderr)
-                device_name = row.device_name
+                atom_exsist = configs.db.query(AtomTable).filter_by(device_name = row.discovered_from).first()
+                device_name = atom_exsist.device_name
+                password=""
+                ip_address = atom_exsist.ip_address
                 if device_name:
-                    ip_address = password_group = device_type = user_name = password = ""
-                    result2 = configs.db.query(AtomTable).filter_by(ip_address=ip_address).first()
+                    password_group = device_type = user_name = password = ""
+                    print("ip address is:::::::::::::::::::::::::",ip_address,file=sys.stderr)
+                    result2 = configs.db.query(AtomTable).filter_by(ip_address=atom_exsist.ip_address).first()
                     password_group = result2.password_group_id
-                    device_type = row.device_type
+                    device_type = atom_exsist.device_type
                     if password_group:
                         result4 = configs.db.query(PasswordGroupTable).filter_by(
                             password_group_id=password_group).first()
                         user_name = result4.username
-                        passowrd = result4.password
+                        password = result4.password
 
                     host = {
                         "ip_address": ip_address,
                         "user": user_name,
-                        "pwd": passowrd,
+                        "pwd": password,
                         "sw_type": device_type,
                         "device_name": device_name
                     }
                     hosts.append(host)
                     print(f"Host is {host}:::::", file=sys.stderr)
         physical_mapping.get_inventory_data(hosts)
+        # physical_mapping.poll(host)
 
 
     except Exception as e:
@@ -571,13 +616,14 @@ def getPhysicalMapping(subnet_list):
 
 def MultiPurpose(options):
     try:
+        print("Multipurpose is being executed::::::::::",file=sys.stderr)
         size = 0
         total_up_ips = 0
         subnett = ''
         print("scheduler started::::::::::::::::::", file=sys.stderr)
-        subnet_display = SUBNET_DISPLAY_TABLE()
-        ip_data = IP_TABLE()
-
+        subnet_display = subnet_table()
+        ip_data = IpTable()
+        subnet_waiting = configs.db.query(subnet_table).filter_by(status='Waiting').all()
         print("subnet waiting is>>>>>>>>>>", subnet_waiting, file=sys.stderr)
         subnet_lst = []
         for subnets in subnet_waiting:
@@ -590,10 +636,10 @@ def MultiPurpose(options):
 
         for subnet in subnet_lst:
             print("subnet is:::::::::::::::::::::::", subnet, file=sys.stderr)
-            get_subnet = configs.db.query(SUBNET_DISPLAY_TABLE).filter_by(subnet_address=subnet).all()
-            get_subnet_scan = configs.db.query(SUBNET_DISPLAY_TABLE).filter_by(subnet_address=subnet,
+            get_subnet = configs.db.query(subnet_table).filter_by(subnet_address=subnet).all()
+            get_subnet_scan = configs.db.query(subnet_table).filter_by(subnet_address=subnet,
                                                                                status='Scanning').all()
-            subnet_waiting = configs.db.query(SUBNET_DISPLAY_TABLE).filter_by(status='Waiting').all()
+            subnet_waiting = configs.db.query(subnet_table).filter_by(status='Waiting').all()
             try:
                 subnett = subnet
                 try:
@@ -602,27 +648,32 @@ def MultiPurpose(options):
                     try:
                         for subnt in get_subnet:
                             if get_subnet:
+                                subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnt.subnet_id).first()
                                 subnt.status = 'Scanning'
-                                subnt.size = size
-                                UpdateDBData(subnet_display)
+                                subnet_usage.subnet_size = size
+                                UpdateDBData(subnt)
+                                UpdateDBData(subnet_usage)
                                 print("Subnet Display Table Updated Successfully::::::", file=sys.stderr)
                             else:
                                 print("No subnet found in subnet display table:::::", file=sys.stderr)
                     except Exception as e:
                         for subnetscan in get_subnet_scan:
                             subnetscan.status = 'Failed'
-                        UpdateDBData(get_subnet_scan)
+                            UpdateDBData(subnetscan)
                         traceback.print_exc()
                 except Exception as e:
-                    traceback.print()
+                    traceback.print_exc()
                 for subnet in subnet_lst:
                     print("Getting IP Adress::::::::::::::::::", file=sys.stderr)
+                    subnet1 = configs.db.query(subnet_table).filter_by(subnet_address = subnet).first()
                     try:
+                        print("subnet is::::::::::::for get ip at 649",subnet,file=sys.stderr)
                         ips = GetIps(subnet)
+                        print("ips for the subnet id::::::::",subnet,file=sys.stderr)
                         date = datetime.now()
                         for ip in ips:
                             ipExists = False
-                            get_ip = configs.db.query(IP_TABLE).filter_by(ip_address=ip, subnet=subnet).all()
+                            get_ip = configs.db.query(IpTable).filter_by(ip_address=ip, subnet_id=subnet1.subnet_id).all()
                             for row in get_ip:
                                 if ip == row.ip_address:
                                     ipExists = True
@@ -631,15 +682,15 @@ def MultiPurpose(options):
                             else:
                                 for row in get_ip:
                                     row.ip_address = ip
-                                    row.subnet = subnet
-                        InsertDBData(ip_data)
+                                    row.subnet_id = subnet1.subnet_id
+                            InsertDBData(row)
                         print("data inserted to ip tabl::::::", file=sys.stderr)
                     except Exception as e:
                         for row in get_subnet_scan:
                             print("row is::::::::::::", row, file=sys.stderr)
                             row.staus = 'Failed'
                             row.scan_date = datetime.now()
-                        UpdateDBData(get_subnet_scan)
+                            UpdateDBData(row)
                         traceback.print_exc()
 
                     print("Finished Getting IP Address:::::::::::::", file=sys.stderr)
@@ -649,34 +700,37 @@ def MultiPurpose(options):
                             upIpsList = CheckUpIps(subnet)
                             usage = UsageCalculator(len(upIpsList), sizeCalculator(subnet))
                             for row in get_subnet:
+                                subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).first()
                                 print("row in get subnet is:::::::", file=sys.stderr)
-                                row.usage = usage
-                                print(f"Usage {row.usage} Upaded successfuly for subnet {subnet}:::", file=sys.stderr)
-                            UpdateDBData(subnet_display)
+                                subnet_usage.subnet_usage = usage
+                                print(f"Usage {subnet_usage.subnet_usage} Upaded successfuly for subnet {subnet}:::", file=sys.stderr)
+                                UpdateDBData(row)
+                                UpdateDBData(subnet_usage)
                         except Exception as e:
                             for row in get_subnet_scan:
                                 print("row is::::::::::::", row, file=sys.stderr)
                                 row.staus = 'Failed'
                                 row.scan_date = datetime.now()
-                            UpdateDBData(get_subnet_scan)
+                                UpdateDBData(row)
                             traceback.print_exc()
 
                     print("Populating F5 VIP:::::::::::::::::::", file=sys.stderr)
 
                     for subnet in subnet_lst:
                         try:
-                            ip_result = configs.db.query(IP_TABLE).filter_by(subnet).all()
+                            subnet_exsist2 = configs.db.query(subnet_table).filter_by(subnet_address = subnet).first()
+                            ip_result = configs.db.query(IpTable).filter_by(subnet_id = subnet_exsist2.subnet_id).all()
                             for ips in ip_result:
                                 try:
-                                    ip = row.ip_address
-                                    f5_ip = configs.db.query(f5).filter_by(node=ip).all()
+                                    ip = ips.ip_address
+                                    f5_ip = configs.db.query(F5).filter_by(node=ip).all()
                                     vip = ""
                                     for row in f5_ip:
                                         vip = row.vip
-                                    ip_dat = configs.db.query(IP_TABLE).filet(ip_address=ip).all()
+                                    ip_dat = configs.db.query(IpTable).filter_by(ip_address=ip).all()
                                     for ips in ip_dat:
                                         ips.vip = vip
-                                    UpdateDBData(ip_data)
+                                        UpdateDBData(ips)
                                 except Exception as e:
                                     traceback.print_exc()
                         except Exception as e:
@@ -685,18 +739,19 @@ def MultiPurpose(options):
 
                     for subnet in subnet_lst:
                         try:
-                            ip_result = configs.db.query(IP_TABLE).filter_by(subnet).all()
+                            subnet_exsist3 = configs.db.query(subnet_table).filter_by(subnet_address=subnet).first()
+                            ip_result = configs.db.query(IpTable).filter_by(subnet_id=subnet_exsist3.subnet_id).all()
                             for ips in ip_result:
                                 try:
-                                    ip = row.ip_address
-                                    f5_ip = configs.db.query(firewall_vip).filter_by(internal_ip=ip).all()
+                                    ip = ips.ip_address
+                                    f5_ip = configs.db.query(FIREWALL_VIP).filter_by(internal_ip=ip).all()
                                     vip = ""
                                     for row in f5_ip:
                                         vip = row.vip
-                                    ip_dat = configs.db.query(IP_TABLE).filet(ip_address=ip).all()
+                                    ip_dat = configs.db.query(IpTable).filter_by(ip_address=ip).all()
                                     for ips in ip_dat:
                                         ips.vip = vip
-                                    UpdateDBData(ip_data)
+                                        UpdateDBData(ips)
                                 except Exception as e:
                                     traceback.print_exc()
                         except Exception as e:
@@ -706,6 +761,7 @@ def MultiPurpose(options):
                         for subnet in subnet_lst:
                             print("Resolving Host IP::::::::::::::::", file=sys.stderr)
                             try:
+                                print("calculating the dns ip")
                                 calculateDnsIp(subnet)
                             except Exception as e:
                                 traceback.print_exc()
@@ -718,15 +774,15 @@ def MultiPurpose(options):
                         traceback.print_exc()
 
                     print("Finished Getting Physical Mapping::::::::", file=sys.stderr)
-
+                    print("scaing port is::::::::",file=sys.stderr)
                     scanPorts(subnet)
-                    get_subntt_scan = configs.db.query(SUBNET_DISPLAY_TABLE).filter_by(subnet_address=subnett).all()
+                    get_subntt_scan = configs.db.query(subnet_table).filter_by(subnet_address=subnett).all()
                     for subnet in get_subntt_scan:
                         subnet.status = 'Scanned'
                         subnet.scan_date = datetime.now()
-                    UpdateDBData(subnet_display)
+                        UpdateDBData(subnet)
             except Exception as e:
-                subnet_scanned_stat = configs.db.query(SUBNET_DATA_TABLE).filter_by(subnet_address=subnet,
+                subnet_scanned_stat = configs.db.query(subnet_table).filter_by(subnet_address=subnet,
                                                                                     status='Scanning').all()
                 for row in subnet_scanned_stat:
                     row.status = 'Failed'
@@ -849,3 +905,85 @@ def MultiPurpose(options):
 #     except Exception as e:
 #         traceback.print_exc()
 #         return {"Repsonse": "Error Occured while Fetching IPAM Devcies"}
+def is_valid_ipv4_subnet(subnet):
+    # Regular expression to validate IPv4 CIDR notation
+    ipv4_subnet_regex = r'^(\d{1,3}\.){3}\d{1,3}/(3[0-2]|[1-2][0-9]|[0-9])$'
+    return bool(re.match(ipv4_subnet_regex, subnet))
+
+subnet_input = '192.168.0.5/24'
+is_valid = is_valid_ipv4_subnet(subnet_input)
+
+if is_valid:
+    print(f"{subnet_input} is a valid IPv4 subnet.",file=sys.stderr)
+else:
+    print(f"{subnet_input} is NOT a valid IPv4 subnet.",file=sys.stderr)
+
+
+def scan_dns(ip_address):
+    try:
+        user_name=passsword=server_name = ""
+        dns_server = configs.db.query(DnsServerTable).filter_by(ip_address = ip_address).all()
+        dns_server_id =''
+        dns_zone_model = DnsZonesTable()
+        for row in dns_server:
+            user_name = row.user_name
+            passowrd = row.password
+            server_name = row.passowrd
+            dns_server_id = row.dns_server_id
+        if ip_address and user_name and passowrd:
+            try:
+                tool = WinOSClient(host=ip_address,username = user_name,passowrd = passowrd)
+                response = tool.run_ps('Get-DnsServerZone | ConvertTo-Json')
+                print("Authenticated Server", file=sys.stderr)
+            except Exception as e:
+                traceback.print_exc()
+            try:
+                dns_zones = tool.run_ps('Get-DnsServerZone | ConvertTo-Json')
+                dns_zones = json.loads(str(dns_zones.stdout))
+                dns_server_obj = configs.db.query(DnsServerTable).filter_by(ip_address = ip_address).first()
+                if dns_server_obj:
+                    dns_server_obj.number_of_zones = len(dns_zones)
+                    dns_server_obj.zone_type='Windows'
+                    UpdateDBData(dns_server_obj)
+                for zone in dns_zones:
+                    try:
+                        lookup = zone.get('IsReverseLookupZone')
+                        if lookup=="false":
+                            lookup=="fprward"
+                        else:
+                            lookup="Reverse"
+                        dns_zone_model.zone_name = zone.get('ZoneName')
+                        dns_zone_model.zone_status = zone.get('status')
+                        dns_zone_model.zone_type = zone.get('ZoneType')
+                        dns_zone_model.dns_server_id = dns_server_obj.dns_server_id
+                        try:
+                            zone =zone.get('ZoneName')
+                            zoneRecords = tool.run_ps(f'Get-DnsServerResourceRecord -ZoneName {zone} | ConvertTo-Json')
+                            zoneRecords = zoneRecords.stdout
+                            # print(type(zoneRecords), file=sys.stderr)
+                            zoneRecords = json.loads(zoneRecords)
+                            for record in zoneRecords:
+                                try:
+                                    recordData = record['RecordData'].get('CimInstanceProperties', "")
+                                    recordData = recordData.split('"')
+                                    if len(recordData) > 0:
+                                        recordData = recordData[1]
+                                    else:
+                                        recordData = recordData[0]
+                                    recordData = recordData.split('...')
+                                    recordData = recordData[0]
+                                    dns_record_model = DnsRecordTable()
+                                    dns_record_model.server_name = server_name
+                                    dns_record_model.dns_zone_id = dns_zone_model.dns_zone_id
+                                    InsertDBData(dns_record_model)
+                                except Exception as e:
+                                    traceback.print_exc(())
+                        except Exception as e:
+                            traceback.print_exc()
+                    except Exception as e:
+                        traceback.print_exc()
+            except Exception as e:
+                traceback.print_exc()
+    except Exception as e:
+        traceback.print_exc()
+

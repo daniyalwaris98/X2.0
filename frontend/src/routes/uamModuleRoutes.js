@@ -8,17 +8,17 @@ import SubBoards from "../containers/uamModule/subBoards";
 import Sfps from "../containers/uamModule/sfps";
 import Licenses from "../containers/uamModule/licenses";
 import Aps from "../containers/uamModule/aps";
-import Hwlifecycle from "../containers/uamModule/hwLifeCycle";
+import Hwlifecycles from "../containers/uamModule/hwLifeCycles";
 import { Navigate } from "react-router-dom";
-import { PAGE_PATH as PAGE_PATH_SITE } from "../containers/uamModule/sites/constants";
-import { PAGE_PATH as PAGE_PATH_RACK } from "../containers/uamModule/racks/constants";
-import { PAGE_PATH as PAGE_PATH_DEVICE } from "../containers/uamModule/devices/constants";
-import { PAGE_PATH as PAGE_PATH_BOARD } from "../containers/uamModule/boards/constants";
-import { PAGE_PATH as PAGE_PATH_SUB_BOARD } from "../containers/uamModule/subBoards/constants";
-import { PAGE_PATH as PAGE_PATH_SFP } from "../containers/uamModule/sfps/constants";
-import { PAGE_PATH as PAGE_PATH_LICENSE } from "../containers/uamModule/licenses/constants";
-import { PAGE_PATH as PAGE_PATH_AP } from "../containers/uamModule/aps/constants";
-import { PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLE } from "../containers/uamModule/hwLifeCycle/constants";
+import { PAGE_PATH as PAGE_PATH_SITES } from "../containers/uamModule/sites/constants";
+import { PAGE_PATH as PAGE_PATH_RACKS } from "../containers/uamModule/racks/constants";
+import { PAGE_PATH as PAGE_PATH_DEVICES } from "../containers/uamModule/devices/constants";
+import { PAGE_PATH as PAGE_PATH_BOARDS } from "../containers/uamModule/boards/constants";
+import { PAGE_PATH as PAGE_PATH_SUB_BOARDS } from "../containers/uamModule/subBoards/constants";
+import { PAGE_PATH as PAGE_PATH_SFPS } from "../containers/uamModule/sfps/constants";
+import { PAGE_PATH as PAGE_PATH_LICENSES } from "../containers/uamModule/licenses/constants";
+import { PAGE_PATH as PAGE_PATH_APS } from "../containers/uamModule/aps/constants";
+import { PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLES } from "../containers/uamModule/hwLifeCycles/constants";
 import { MODULE_PATH } from "../containers/uamModule";
 
 const routes = {
@@ -27,43 +27,43 @@ const routes = {
   children: [
     {
       path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_SITE} replace />,
+      element: <Navigate to={PAGE_PATH_SITES} replace />,
     },
     {
-      path: PAGE_PATH_SITE,
+      path: PAGE_PATH_SITES,
       element: <Sites />,
     },
     {
-      path: PAGE_PATH_RACK,
+      path: PAGE_PATH_RACKS,
       element: <Racks />,
     },
     {
-      path: PAGE_PATH_DEVICE,
+      path: PAGE_PATH_DEVICES,
       element: <Devices />,
     },
     {
-      path: PAGE_PATH_BOARD,
+      path: PAGE_PATH_BOARDS,
       element: <Boards />,
     },
     {
-      path: PAGE_PATH_SUB_BOARD,
+      path: PAGE_PATH_SUB_BOARDS,
       element: <SubBoards />,
     },
     {
-      path: PAGE_PATH_SFP,
+      path: PAGE_PATH_SFPS,
       element: <Sfps />,
     },
     {
-      path: PAGE_PATH_LICENSE,
+      path: PAGE_PATH_LICENSES,
       element: <Licenses />,
     },
     {
-      path: PAGE_PATH_AP,
+      path: PAGE_PATH_APS,
       element: <Aps />,
     },
     {
-      path: PAGE_PATH_HW_LIFE_CYCLE,
-      element: <Hwlifecycle />,
+      path: PAGE_PATH_HW_LIFE_CYCLES,
+      element: <Hwlifecycles />,
     },
   ],
 };

@@ -16,29 +16,25 @@ import {
   PAGE_PATH as PAGE_PATH_MANAGE_DEVICES,
 } from "./manageDevices/constants";
 import {
-  PAGE_NAME as PAGE_NAME_MANAGE_CREDENTIALS,
-  PAGE_PATH as PAGE_PATH_MANAGE_CREDENTIALS,
-} from "./manageCredentials/constants";
-import {
   DROPDOWN_NAME as DROPDOWN_NAME_MANAGE_CREDENTIALS,
   DROPDOWN_PATH as DROPDOWN_PATH_MANAGE_CREDENTIALS,
 } from "./manageCredentialsDropDown";
 import {
-  PAGE_NAME as PAGE_NAME_LOGIN,
-  PAGE_PATH as PAGE_PATH_LOGIN,
-} from "./manageCredentialsDropDown/login/constants";
+  PAGE_NAME as PAGE_NAME_LOGIN_CREDENTIALS,
+  PAGE_PATH as PAGE_PATH_LOGIN_CREDENTIALS,
+} from "./manageCredentialsDropDown/loginCredentials/constants";
 import {
-  DROPDOWN_NAME as DROPDOWN_NAME_SNMP,
-  DROPDOWN_PATH as DROPDOWN_PATH_SNMP,
+  DROPDOWN_NAME as DROPDOWN_NAME_SNMP_CREDENTIALS,
+  DROPDOWN_PATH as DROPDOWN_PATH_SNMP_CREDENTIALS,
 } from "./manageCredentialsDropDown/snmpDropDown";
 import {
-  PAGE_NAME as PAGE_NAME_V1_V2,
-  PAGE_PATH as PAGE_PATH_V1_V2,
-} from "./manageCredentialsDropDown/snmpDropDown/v1V2/constants";
+  PAGE_NAME as PAGE_NAME_V1_V2_CREDENTIALS,
+  PAGE_PATH as PAGE_PATH_V1_V2_CREDENTIALS,
+} from "./manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
 import {
-  PAGE_NAME as PAGE_NAME_V3,
-  PAGE_PATH as PAGE_PATH_V3,
-} from "./manageCredentialsDropDown/snmpDropDown/v3/constants";
+  PAGE_NAME as PAGE_NAME_V3_CREDENTIALS,
+  PAGE_PATH as PAGE_PATH_V3_CREDENTIALS,
+} from "./manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
 export const MODULE_PATH = "auto_discovery_module";
 
@@ -58,33 +54,28 @@ const menuItems = [
     name: PAGE_NAME_MANAGE_DEVICES,
     path: PAGE_PATH_MANAGE_DEVICES,
   },
-  // {
-  //   id: PAGE_PATH_MANAGE_CREDENTIALS,
-  //   name: PAGE_NAME_MANAGE_CREDENTIALS,
-  //   path: PAGE_PATH_MANAGE_CREDENTIALS,
-  // },
   {
     id: DROPDOWN_PATH_MANAGE_CREDENTIALS,
     name: DROPDOWN_NAME_MANAGE_CREDENTIALS,
     children: [
       {
-        id: PAGE_PATH_LOGIN,
-        name: PAGE_NAME_LOGIN,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN}`,
+        id: PAGE_PATH_LOGIN_CREDENTIALS,
+        name: PAGE_NAME_LOGIN_CREDENTIALS,
+        path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
       },
       {
-        id: DROPDOWN_PATH_SNMP,
-        name: DROPDOWN_NAME_SNMP,
+        id: DROPDOWN_PATH_SNMP_CREDENTIALS,
+        name: DROPDOWN_NAME_SNMP_CREDENTIALS,
         children: [
           {
-            id: PAGE_PATH_V1_V2,
-            name: PAGE_NAME_V1_V2,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP}/${PAGE_PATH_V1_V2}`,
+            id: PAGE_PATH_V1_V2_CREDENTIALS,
+            name: PAGE_NAME_V1_V2_CREDENTIALS,
+            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
           },
           {
-            id: PAGE_PATH_V3,
-            name: PAGE_NAME_V3,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP}/${PAGE_PATH_V3}`,
+            id: PAGE_PATH_V3_CREDENTIALS,
+            name: PAGE_NAME_V3_CREDENTIALS,
+            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
           },
         ],
       },

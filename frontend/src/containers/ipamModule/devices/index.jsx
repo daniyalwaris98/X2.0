@@ -3,10 +3,10 @@ import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
-  useDeleteRecordsMutation,
-} from "../../../store/features/atomModule/passwordGroup/apis";
+  useFetchIpamDevicesLazyQuery,
+} from "../../../store/features/ipamModule/devices/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroup/selectors";
+import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
@@ -28,27 +28,18 @@ const Index = () => {
   // theme
   const theme = useTheme();
 
-  // states required in hooks
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
   // hooks
-  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
-    useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
+  const { handleSuccessAlert } = useSweetAlert();
+  const { columnDefinitions } = useIndexTableColumnDefinitions({});
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
-    useButtonsConfiguration({
-      configure_table: { handleClick: handleTableConfigurationsOpen },
-      default_export: { handleClick: handleDefaultExport },
-      default_delete: {
-        handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
-      },
-      default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
-    });
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    default_export: { handleClick: handleDefaultExport },
+    default_fetch: { handleClick: handleFetch },
+    default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
+  });
 
   // states
-  const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
@@ -68,15 +59,15 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   const [
-    deleteRecords,
+    fetchIpamDevices,
     {
-      data: deleteRecordsData,
-      isSuccess: isDeleteRecordsSuccess,
-      isLoading: isDeleteRecordsLoading,
-      isError: isDeleteRecordsError,
-      error: deleteRecordsError,
+      data: ipamFetchIpamDevicesData,
+      isSuccess: isFetchIpamDevicesSuccess,
+      isLoading: isFetchIpamDevicesLoading,
+      isError: isFetchIpamDevicesError,
+      error: fetchIpamDevicesError,
     },
-  ] = useDeleteRecordsMutation();
+  ] = useFetchIpamDevicesLazyQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -88,49 +79,23 @@ const Index = () => {
   });
 
   useErrorHandling({
-    data: deleteRecordsData,
-    isSuccess: isDeleteRecordsSuccess,
-    isError: isDeleteRecordsError,
-    error: deleteRecordsError,
+    data: ipamFetchIpamDevicesData,
+    isSuccess: isFetchIpamDevicesSuccess,
+    isError: isFetchIpamDevicesError,
+    error: fetchIpamDevicesError,
     type: TYPE_BULK,
-    callback: handleEmptySelectedRowKeys,
   });
 
   // handlers
-  function handleEmptySelectedRowKeys() {
-    setSelectedRowKeys([]);
+  function handleFetch() {
+    fetchIpamDevices();
   }
 
-  function deleteData(allowed) {
-    if (allowed) {
-      deleteRecords(selectedRowKeys);
-    } else {
-      setSelectedRowKeys([]);
-    }
-  }
-
-  function handleDelete() {
-    if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
-    } else {
-      handleInfoAlert("No record has been selected to delete!");
-    }
-  }
-
-  function handleEdit(record) {
-    setRecordToEdit(record);
-    setOpen(true);
-  }
-
-  function handleAdd(optionType) {
+  function handleAdd() {
     setOpen(true);
   }
 
   function handleClose() {
-    setRecordToEdit(null);
     setOpen(false);
   }
 
@@ -144,14 +109,8 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
-      {open ? (
-        <Modal
-          handleClose={handleClose}
-          open={open}
-          recordToEdit={recordToEdit}
-        />
-      ) : null}
+    <Spin spinning={isFetchRecordsLoading || isFetchIpamDevicesLoading}>
+      {open ? <Modal handleClose={handleClose} open={open} /> : null}
 
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
@@ -170,10 +129,8 @@ const Index = () => {
         PAGE_NAME={PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
-        selectedRowKeys={selectedRowKeys}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        setSelectedRowKeys={setSelectedRowKeys}
       />
     </Spin>
   );

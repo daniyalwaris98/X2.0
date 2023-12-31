@@ -31,6 +31,15 @@ export default function useErrorHandling({
           handleErrorAlert(error?.data);
         } else if (error?.status === 404) {
           handleErrorAlert(error?.data?.detail);
+        } else if (error?.status === 422) {
+          handleErrorAlert(
+            error?.data?.detail
+              .map(
+                (item) =>
+                  `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+              )
+              .join("<br>")
+          );
         } else if (error?.status === 500) {
           handleErrorAlert(error?.data);
         } else {

@@ -1,18 +1,22 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
-import { TABLE_DATA_UNIQUE_ID } from "../../../../containers/autoDiscoveryModule/discovery/constants";
+import {
+  TABLE_DATA_UNIQUE_ID,
+  ELEMENT_NAME,
+} from "../../../../containers/autoDiscoveryModule/discovery/constants";
 
 const initialState = {
   all_data: [],
 };
 
-const discoverySlice = createSlice({
-  name: "discovery",
+const defaultSlice = createSlice({
+  name: ELEMENT_NAME,
   initialState,
   reducers: {},
   extraReducers(builder) {
     builder.addMatcher(
-      extendedApi.endpoints.fetchDiscoveredDevicesBySubnet.matchFulfilled,
+      extendedApi.endpoints.fetchAutoDiscoveryDiscoveredDevicesBySubnet
+        .matchFulfilled,
       (state, action) => {
         state.all_data = action.payload;
       }
@@ -20,4 +24,4 @@ const discoverySlice = createSlice({
   },
 });
 
-export default discoverySlice.reducer;
+export default defaultSlice.reducer;

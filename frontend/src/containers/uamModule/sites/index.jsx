@@ -17,6 +17,7 @@ import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import {
   PAGE_NAME,
+  ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
@@ -45,7 +46,7 @@ const Index = () => {
       handleClick: handleDelete,
       visible: selectedRowKeys.length > 0,
     },
-    default_add: { handleClick: handleDefaultAdd, namePostfix: PAGE_NAME },
+    default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
   });
 
   // refs
@@ -183,9 +184,9 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
+        getCheckboxProps={getCheckboxProps}
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
-        getCheckboxProps={getCheckboxProps}
       />
     </Spin>
   );

@@ -14,7 +14,7 @@ import {
 } from "../../../store/features/autoDiscoveryModule/manageNetworks/apis";
 import { useSelector } from "react-redux";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
+import { formSetter, getTitle } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ELEMENT_NAME } from "./constants";
 import { indexColumnNameConstants } from "./constants";
@@ -22,16 +22,18 @@ import { indexColumnNameConstants } from "./constants";
 const schema = yup.object().shape({
   [indexColumnNameConstants.NETWORK_NAME]: yup
     .string()
-    .required("Network name is required"),
+    .required(`${getTitle(indexColumnNameConstants.NETWORK_NAME)} is required`),
   [indexColumnNameConstants.SUBNET]: yup
     .string()
-    .required("Subnet is required"),
+    .required(`${getTitle(indexColumnNameConstants.SUBNET)} is required`),
   [indexColumnNameConstants.SCAN_STATUS]: yup
     .string()
-    .required("Scan status is required"),
+    .required(`${getTitle(indexColumnNameConstants.SCAN_STATUS)} is required`),
   [indexColumnNameConstants.EXCLUDED_IP_RANGE]: yup
     .string()
-    .required("Excluded IP range is required"),
+    .required(
+      `${getTitle(indexColumnNameConstants.EXCLUDED_IP_RANGE)} is required`
+    ),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {

@@ -9,9 +9,9 @@ export const indexColumnNameConstants = {
   IP_ADDRESS: "ip_address",
   ZONE_NAME: "zone_name",
   ZONE_TYPE: "zone_type",
+  ZONE_STATUS: "zone_status",
   LOOKUP_TYPE: "lookup_type",
   DNS_SERVER: "dns_server",
   SERVER_TYPE: "server_type",
-  ZONE_STATUS: "zone_status",
   ACTIONS: "actions",
 };
