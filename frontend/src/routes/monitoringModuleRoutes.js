@@ -100,6 +100,25 @@ import { PAGE_PATH as PAGE_PATH_ALL_DEVICES } from "../containers/monitoringModu
 import { DROPDOWN_PATH as DROPDOWN_PATH_LINUX } from "../containers/monitoringModule/serversDropDown/linuxDropDown";
 
 
+
+
+// credential drop down option started
+import ManageCredentialsDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown";
+import LoginCredentials from "../containers/autoDiscoveryModule//manageCredentialsDropDown/loginCredentials";
+
+import SNMPDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown";
+import V1V2Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials";
+import V3Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v3Credentials";
+
+// import { DROPDOWN_PATH as DROPDOWN_PATH_MANAGE_CREDENTIALS } from "../containers/autoDiscoveryModule/manageCredentialsDropDown";
+import { DROPDOWN_PATH as DROPDOWN_PATH_MANAGE_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown";
+import { PAGE_PATH as PAGE_PATH_LOGIN_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/loginCredentials/constants";
+
+import { DROPDOWN_PATH as DROPDOWN_PATH_SNMP } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown";
+import { PAGE_PATH as PAGE_PATH_V1_V2_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
+import { PAGE_PATH as PAGE_PATH_V3_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
+
+
 const routes = {
   path: MODULE_PATH,
   element: <MonitoringModule />,
@@ -226,6 +245,30 @@ const routes = {
           ],
         },
       
+      ],
+    },
+    {
+      path: DROPDOWN_PATH_MANAGE_CREDENTIALS,
+      element: <ManageCredentialsDropDown />,
+      children: [
+        {
+          path: PAGE_PATH_LOGIN_CREDENTIALS,
+          element: <LoginCredentials />,
+        },
+        {
+          path: DROPDOWN_PATH_SNMP,
+          element: <SNMPDropDown />,
+          children: [
+            {
+              path: PAGE_PATH_V1_V2_CREDENTIALS,
+              element: <V1V2Credentials />,
+            },
+            {
+              path: PAGE_PATH_V3_CREDENTIALS,
+              element: <V3Credentials />,
+            },
+          ],
+        },
       ],
     },
   
