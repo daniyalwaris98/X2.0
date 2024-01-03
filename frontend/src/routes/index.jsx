@@ -1,5 +1,6 @@
 import React from "react";
 import { createBrowserRouter } from "react-router-dom";
+import Login from "../containers/login";
 import MainLayout from "../layouts/mainLayout";
 import AtomModuleRoutes from "./atomModuleRoutes";
 import UamModuleRoutes from "./uamModuleRoutes";
@@ -12,6 +13,7 @@ import DefaultFallbackUI from "../components/fallbackUI";
 const router = createBrowserRouter([
   {
     path: "/",
+    // element: <Login />,
     element: <MainLayout />,
     children: [
       AtomModuleRoutes,
