@@ -154,13 +154,13 @@ def get_all_ec2():
              )
 def add_ec2(ec2Obj:str):
     try:
-        aws_credentials = configs.db.query(AWS_CREDENTIALS).filter_by(access_key = ec2Obj['access_key']).all()
+        aws_credentials = configs.db.query(AWS_CREDENTIALS).filter_by(access_key = ec2Obj['access_key']).first()
         if aws_credentials is None:
                 return f"{ec2Obj['access_key']} : Is invalid",400
         ec2 = AWS_EC2()
         ec2.instance_id = ec2Obj['instance_id']
         ec2.instance_name = ec2Obj['instance_name']
-        ec2.region_id = ec2Obj['']
+        ec2.region_id = ec2Obj['region_id']
         ec2.access_key = ec2Obj['access_key']
         InsertDBData(ec2)
         print("data inserted to the db:::::::",file=sys.stderr)
@@ -306,3 +306,132 @@ print("changes",file=sys.stderr)
 # @app.route("/get")
 # def get_Test():
 #     return "error"
+
+@router.post("/reload_elb",
+             responses={
+                 200:{"model":str},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="API to reload the AWS ELB",
+             description="API to reload AWS ELB"
+             )
+def reload_elb(credentials:str):
+    try:
+        credentials = dict(credentials)
+        aws_access_key = credentials['aws_access_key']
+        access_key = configs.db.query(AWS_CREDENTIALS).filter_by(access_key = aws_access_key).first()
+        if access_key:
+            credentials_row = dict(access_key)
+            print("credentials row are:::::::::::::::",credentials_row,file=sys.stderr)
+            aws = AWS(
+                 access_key,
+                 credentials_row['secret_access_key'],
+                credentials_row['account_label']
+             )
+            if aws.TestConnection() == False:
+                return JSONResponse(content="Error : Invalid Credentials", status_code=401)
+            all_elb = aws.GetAllELB()
+            print("elb is::::::::::::::",all_elb,file=sys.stderr)
+            elb_list = []
+            for elb in all_elb:
+                elb_exsist = configs.db.query(AWS_ELB).filter_by(lb_arn=elb['lb_arn']).firsd()
+                if elb_exsist:
+                    elb_list.append(elb)
+                else:
+                    elb_name_exsist = configs.db.query(AWS_ELB).filter_by(lb_name = elb['lb_name']).first()
+                    if elb_name_exsist:
+                        elb_name_exsist.lb_name = elb['lb_name']
+                        elb_name_exsist.lb_scheme = elb['lb_scheme']
+                        elb_name_exsist.lb_type = elb['lb_type']
+                        elb_name_exsist.region_id = elb['region_id']
+                        configs.db.merge(elb_name_exsist)
+                        configs.db.commit()
+                        print("ELB Already Exsist and updated",file=sys.stderr)
+                    pass
+        else:
+            return JSONResponse(content=f"{aws_access_key} : Not Found",status_code=400)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Reloading the Elb",status_code=500)
+
+
+@router.get('/get_all_elb',
+             responses = {
+                 200:{"model":str},
+                 500:{"model":str}
+             },
+             summary = "Get ALL ELB Data",
+             description = "Get ALL ELB"
+             )
+def get_all_elb():
+    try:
+        elb_list= []
+        elb_data = configs.db.query(AWS_ELB).all()
+        for data in elb_data:
+            elb_dict = {
+                "id":data.id,
+                "lb_name":data.lb_name,
+                "lb_type":data.lb_type,
+                "lb_scheme":data.lb_scheme,
+                "lb_arn":data.lb_arn,
+                "monitoring_status":data.monitoring_status,
+                "access_key":data.access_key
+            }
+            elb_list.append(elb_dict)
+        return elb_list
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Fetching the ELB data",status_code=500)
+
+
+@router.post('/add_elb',responses = {
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to add elb",
+description="API to add elb"
+)
+def add_elb(credentials:str):
+    try:
+        credential = dict(credentials)
+        credential_exsist = configs.db.query(AWS_CREDENTIALS).filter_by(access_key=credential['access_key']).first()
+        if credential_exsist is None:
+            return JSONResponse(content="Invalid Access Key",status_code=400)
+        elb = AWS_ELB()
+        elb.lb_name = credential['lb_name']
+        elb.lb_type = credential['lb_type']
+        elb.lb_scheme = credential['lb_scheme']
+        elb.lb_arn = credential['lb_arn']
+        elb.region_id = credential['region_id']
+        elb.access_key = credential['access_key']
+        InsertDBData(elb)
+        return JSONResponse(content="ELB Inserted Successfully",status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Adding ELB",status_code=500)
+
+
+
+@router.post('change_elb_status',
+             responses = {
+                 200:{"model":str},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="API to Change ELB Status",
+             description="api TO CHANGE THE ELB STATUS"
+             )
+def change_elb_status(status:str):
+    try:
+        status = dict(status)
+        if status['monitoring_status'] == "Enabled" or status['monitoring_status']=="Disabled":
+            elb_exsist = configs.db.query(AWS_ELB).filter_by(lb_arn = status['lb_arn']).first()
+            if elb_exsist:
+                elb_exsist.status =status['monitoring_status']
+                UpdateDBData(elb_exsist)
+            else:
+                return JSONResponse(content="AWS ELB does not exsist",status_code=400)
+    except Exception as e:
+        traceback.print_exc()

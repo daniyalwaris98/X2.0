@@ -116,7 +116,7 @@ def GenerateMailForCloudAlert(alert):
 
             send_email(
                 send_from=mail_cred['MAIL'],
-                send_to=recipents,
+                send_to=receipents,
                 subject=subject,
                 message=msg,
                 username=mail_cred['MAIL'],
