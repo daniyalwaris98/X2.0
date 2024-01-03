@@ -18,7 +18,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     // form apis
     addDevice: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/site/add_site",
+        url: "/api/v1/monitoring/devices/add_monitoring_device",
         method: "POST",
         body: data,
       }),

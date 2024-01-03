@@ -31,7 +31,7 @@ class AddEc2Schema(BaseSchema):
 class UpdateEc2Status(BaseSchema):
     instance_id : str
 
-class ReloadEc2(BaseSchema):
+class AWSReloadScehma(BaseSchema):
     aws_access_key : str
 
 class GetEc3Schema(BaseSchema):
@@ -39,3 +39,14 @@ class GetEc3Schema(BaseSchema):
     region_id : int
     account_label : str
     monitoring_status : str
+
+class Response200(BaseSchema):
+    data: dict
+    message: str
+
+class DeleteResponseSchema(BaseSchema):
+    data: dict
+    success: int
+    error: int
+    success_list: list[str]
+    error_list: list[str]

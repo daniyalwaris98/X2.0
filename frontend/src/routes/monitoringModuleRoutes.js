@@ -12,10 +12,18 @@ import ServerDevices from "../containers/monitoringModule/serversDropDown/allSer
 import NetworkDevices from "../containers/monitoringModule/networksDropDown/allDevicesDropDown/devices";
 import NetworkInterfaces from "../containers/monitoringModule/networksDropDown/allDevicesDropDown/interfaces";
 
+// import NetworkDevices from "../containers/monitoringModule/networksDropDown/allDevicesDropDown/devices";
+// import NetworkInterfaces from "../containers/monitoringModule/networksDropDown/allDevicesDropDown/interfaces";
+
 import RoutersDevices from "../containers/monitoringModule/networksDropDown/routeDropDown/devices";
 import RoutersInterfaces from "../containers/monitoringModule/networksDropDown/routeDropDown/interfaces";
 
+import SwitchesDevices from "../containers/monitoringModule/networksDropDown/switchesDropDown/devices";
+import SwitchesInterfaces from "../containers/monitoringModule/networksDropDown/switchesDropDown/interfaces";
+
 import LinuxDevices from "../containers/monitoringModule/serversDropDown/linuxDropDown/devices";
+
+// import LinuxDevices from "../containers/monitoringModule/serversDropDown/linuxDropDown/devices";
 
 import AllDevices from "../containers/monitoringModule/serversDropDown/allServersDropDown/devices";
 
@@ -26,6 +34,9 @@ import AllServersDropDown from "../containers/monitoringModule/serversDropDown/a
 import NetworkDropDown from "../containers/monitoringModule/networksDropDown";
 
 import RoutersDropDown from "../containers/monitoringModule/networksDropDown/routeDropDown";
+
+import SwitchesDropDown from "../containers/monitoringModule/networksDropDown/switchesDropDown";
+
 import AllDevicesDropDown from "../containers/monitoringModule/networksDropDown/allDevicesDropDown";
 
 import { DROPDOWN_PATH as DROPDOWN_PATH_CLOUDS } from "../containers/monitoringModule/cloudsDropDown";
@@ -47,6 +58,7 @@ import { DROPDOWN_PATH as DROPDOWN_PATH_NETWORKS } from "../containers/monitorin
 import { DROPDOWN_PATH as DROPDOWN_PATH_ALL_DEVICES } from "../containers/monitoringModule/networksDropDown/allDevicesDropDown";
 
 import { DROPDOWN_PATH as DROPDOWN_PATH_ROUTERS } from "../containers/monitoringModule/networksDropDown/routeDropDown";
+import { DROPDOWN_PATH as DROPDOWN_PATH_SWITCHES } from "../containers/monitoringModule/networksDropDown/switchesDropDown";
 
 import { PAGE_PATH as PAGE_PATH_SERVERS_DEVICES } from "../containers/monitoringModule/serversDropDown/allServersDropDown/devices/constants";
 import { PAGE_PATH as PAGE_PATH_INTERFACE } from "../containers/monitoringModule/serversDropDown/allServersDropDown/interfaces/constants";
@@ -57,8 +69,10 @@ import { PAGE_PATH as PAGE_PATH_NETWORKS_DEVICES } from "../containers/monitorin
 import { PAGE_PATH as PAGE_PATH_NETWORKS_INTERFACE } from "../containers/monitoringModule/networksDropDown/allDevicesDropDown/interfaces/constants";
 
 import { PAGE_PATH as PAGE_PATH_ROUTERS_INTERFACE } from "../containers/monitoringModule/networksDropDown/routeDropDown/interfaces/constants";
-
 import { PAGE_PATH as PAGE_PATH_ROUTERS_DEVICES } from "../containers/monitoringModule/networksDropDown/routeDropDown/devices/constants";
+
+import { PAGE_PATH as PAGE_PATH_SWITCHES_INTERFACE } from "../containers/monitoringModule/networksDropDown/switchesDropDown/interfaces/constants";
+import { PAGE_PATH as PAGE_PATH_SWITCHES_DEVICES } from "../containers/monitoringModule/networksDropDown/switchesDropDown/devices/constants";
 
 import { PAGE_PATH as PAGE_PATH_CLOUDS } from "../containers/monitoringModule/clouds/constants";
 
@@ -71,6 +85,22 @@ import { PAGE_PATH as PAGE_PATH_ALL_DEVICES } from "../containers/monitoringModu
 
 // import { DROPDOWN_PATH as DROPDOWN_PATH_ALL_DEVICES } from "../containers/monitoringModule/serversDropDown/allServersDropDown";
 import { DROPDOWN_PATH as DROPDOWN_PATH_LINUX } from "../containers/monitoringModule/serversDropDown/linuxDropDown";
+
+// credential drop down option started
+import ManageCredentialsDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown";
+import LoginCredentials from "../containers/autoDiscoveryModule//manageCredentialsDropDown/loginCredentials";
+
+import SNMPDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown";
+import V1V2Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials";
+import V3Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v3Credentials";
+
+// import { DROPDOWN_PATH as DROPDOWN_PATH_MANAGE_CREDENTIALS } from "../containers/autoDiscoveryModule/manageCredentialsDropDown";
+import { DROPDOWN_PATH as DROPDOWN_PATH_MANAGE_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown";
+import { PAGE_PATH as PAGE_PATH_LOGIN_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/loginCredentials/constants";
+
+import { DROPDOWN_PATH as DROPDOWN_PATH_SNMP } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown";
+import { PAGE_PATH as PAGE_PATH_V1_V2_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
+import { PAGE_PATH as PAGE_PATH_V3_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
 const routes = {
   path: MODULE_PATH,
@@ -167,6 +197,44 @@ const routes = {
             {
               path: PAGE_PATH_ROUTERS_INTERFACE,
               element: <RoutersInterfaces />,
+            },
+          ],
+        },
+        {
+          path: DROPDOWN_PATH_SWITCHES,
+          element: <SwitchesDropDown />,
+          children: [
+            {
+              path: PAGE_PATH_SWITCHES_DEVICES,
+              element: <SwitchesDevices />,
+            },
+            {
+              path: PAGE_PATH_SWITCHES_INTERFACE,
+              element: <SwitchesInterfaces />,
+            },
+          ],
+        },
+      ],
+    },
+    {
+      path: DROPDOWN_PATH_MANAGE_CREDENTIALS,
+      element: <ManageCredentialsDropDown />,
+      children: [
+        {
+          path: PAGE_PATH_LOGIN_CREDENTIALS,
+          element: <LoginCredentials />,
+        },
+        {
+          path: DROPDOWN_PATH_SNMP,
+          element: <SNMPDropDown />,
+          children: [
+            {
+              path: PAGE_PATH_V1_V2_CREDENTIALS,
+              element: <V1V2Credentials />,
+            },
+            {
+              path: PAGE_PATH_V3_CREDENTIALS,
+              element: <V3Credentials />,
             },
           ],
         },
