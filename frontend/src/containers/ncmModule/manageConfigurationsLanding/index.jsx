@@ -9,7 +9,8 @@ import {
 } from "./configurationBackups/constants";
 
 export const LANDING_PAGE_NAME = "Manage Configurations";
-export const LANDING_PAGE_PATH = "manage_configurations_landing";
+export const LANDING_PAGE_PATH =
+  "manage_configurations/manage_configurations_landing";
 
 const menuItems = [
   {
@@ -21,9 +22,9 @@ const menuItems = [
 
 function Index(props) {
   let pagePath = getPathAllSegments();
-  if (pagePath.length === 3 && pagePath[2] === LANDING_PAGE_PATH) {
+  if (pagePath.length === 4 && pagePath[3] === LANDING_PAGE_PATH) {
     pagePath = [PAGE_PATH_CONFIGURATIONS];
-  } else pagePath = pagePath.splice(3);
+  } else pagePath = pagePath.splice(4);
 
   return (
     <>

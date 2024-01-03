@@ -2,13 +2,24 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import { Link } from "react-router-dom";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
+export function useIndexTableColumnDefinitions({
+  handleEdit,
+  handleIpAddressClick,
+}) {
   const theme = useTheme();
 
   const columnDefinitions = [
     indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.IP_ADDRESS,
+    {
+      data_key: indexColumnNameConstants.IP_ADDRESS,
+      render: (text, record) => (
+        <a onClick={() => handleIpAddressClick(record)}>{text}</a>
+        // <Link to="manage_configurations_landing">{text}</Link>
+      ),
+    },
+    // indexColumnNameConstants.IP_ADDRESS,
     indexColumnNameConstants.RCS,
     indexColumnNameConstants.DEVICE_TYPE,
     indexColumnNameConstants.VENDOR,

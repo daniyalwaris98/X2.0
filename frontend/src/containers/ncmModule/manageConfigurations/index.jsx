@@ -32,10 +32,12 @@ import {
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
+import { useNavigate } from "react-router-dom";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const navigate = useNavigate();
 
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -45,6 +47,7 @@ const Index = () => {
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
     handleEdit,
+    handleIpAddressClick,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
@@ -73,7 +76,10 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = useSelector(selectTableData);
+  const dataSource = [
+    { ip_address: "1.2.3.4.5.6.7", device_name: "router_abc" },
+  ];
+  // const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -152,6 +158,12 @@ const Index = () => {
   });
 
   // handlers
+  function handleIpAddressClick(record) {
+    navigate("manage_configurations_landing/configuration_backups", {
+      state: record,
+    });
+  }
+
   function handleInputClick() {
     if (fileInputRef.current) {
       fileInputRef.current.click();
@@ -225,10 +237,11 @@ const Index = () => {
   return (
     <Spin
       spinning={
-        isFetchRecordsLoading ||
-        isDeleteRecordsLoading ||
-        isAddRecordsLoading ||
-        isBulkBackupLoading
+        false
+        // isFetchRecordsLoading ||
+        // isDeleteRecordsLoading ||
+        // isAddRecordsLoading ||
+        // isBulkBackupLoading
       }
     >
       <input

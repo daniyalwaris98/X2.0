@@ -1,22 +1,14 @@
-import React, { useState, useRef } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultDialog from "../../../../components/dialogs";
 import { CancelDialogFooter } from "../../../../components/dialogFooters";
 import Grid from "@mui/material/Grid";
 import {
-  useFetchRecordsMutation,
-  useDeleteRecordsMutation,
-  useGetNcmConfigurationBackupDetailsByNcmHistoryIdMutation,
   useGetAllDeletedNcmConfigurationBackupsByNcmDeviceIdMutation,
   useRestoreNcmConfigurationBackupsByNcmHistoryIdsMutation,
-  useBackupSingleNcmConfigurationByNcmDeviceIdMutation,
 } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
-import {
-  useGetAtomsToAddInIpamDevicesQuery,
-  useAddAtomsInIpamDevicesMutation,
-} from "../../../../store/features/ipamModule/devices/apis";
 import { useSelector } from "react-redux";
-import { selectAtomsToAddInIpamDevicesData } from "../../../../store/features/ipamModule/devices/selectors";
+import { selectDeletedConfigurationBackups } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
@@ -25,10 +17,10 @@ import DefaultTableConfigurations from "../../../../components/tableConfiguratio
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../../atomModule/atoms/constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
-import { PageTableSectionWithoutWidth } from "../../../../components/pageSections";
+import { PageTableSectionWithoutScrollAndWidth } from "../../../../components/pageSections";
 import { PAGE_NAME } from "./constants";
 
-const Index = ({ handleClose, open }) => {
+const Index = ({ handleClose, open, ncmDeviceId }) => {
   const theme = useTheme();
 
   // states required in hooks
@@ -42,7 +34,7 @@ const Index = ({ handleClose, open }) => {
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_restore: {
       handleClick: handleAdd,
-      // visible: selectedRowKeys.length > 0,
+      visible: selectedRowKeys.length > 0,
     },
   });
 
@@ -53,45 +45,53 @@ const Index = ({ handleClose, open }) => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // apis
-  const {
-    data: getAtomsToAddInIpamDevicesData,
-    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
-    isLoading: isGetAtomsToAddInIpamDevicesLoading,
-    isError: isGetAtomsToAddInIpamDevicesError,
-    error: getAtomsToAddInIpamDevicesError,
-  } = useGetAtomsToAddInIpamDevicesQuery();
+  const [
+    getDeletedBackups,
+    {
+      data: getDeletedBackupsData,
+      isSuccess: isGetDeletedBackupsSuccess,
+      isLoading: isGetDeletedBackupsLoading,
+      isError: isGetDeletedBackupsError,
+      error: getDeletedBackupsError,
+    },
+  ] = useGetAllDeletedNcmConfigurationBackupsByNcmDeviceIdMutation();
 
   const [
-    addAtomsInIpam,
+    restoreBackups,
     {
-      data: addAtomsInIpamDevicesData,
-      isSuccess: isAddAtomsInIpamDevicesSuccess,
-      isLoading: isAddAtomsInIpamDevicesLoading,
-      isError: isAddAtomsInIpamDevicesError,
-      error: addAtomsInIpamDevicesError,
+      data: restoreBackupsData,
+      isSuccess: isRestoreBackupsSuccess,
+      isLoading: isRestoreBackupsLoading,
+      isError: isRestoreBackupsError,
+      error: restoreBackupsError,
     },
-  ] = useAddAtomsInIpamDevicesMutation();
+  ] = useRestoreNcmConfigurationBackupsByNcmHistoryIdsMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: getAtomsToAddInIpamDevicesData,
-    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
-    isError: isGetAtomsToAddInIpamDevicesError,
-    error: getAtomsToAddInIpamDevicesError,
+    data: getDeletedBackupsData,
+    isSuccess: isGetDeletedBackupsSuccess,
+    isError: isGetDeletedBackupsError,
+    error: getDeletedBackupsError,
     type: TYPE_FETCH,
   });
 
   useErrorHandling({
-    data: addAtomsInIpamDevicesData,
-    isSuccess: isAddAtomsInIpamDevicesSuccess,
-    isError: isAddAtomsInIpamDevicesError,
-    error: addAtomsInIpamDevicesError,
+    data: restoreBackupsData,
+    isSuccess: isRestoreBackupsSuccess,
+    isError: isRestoreBackupsError,
+    error: restoreBackupsError,
     type: TYPE_BULK,
     callback: handleClose,
   });
 
+  // effects
+  useEffect(() => {
+    getDeletedBackups({ ncm_device_id: ncmDeviceId });
+  }, []);
+
   // getting dropdowns data from the store
-  const dataSource = useSelector(selectAtomsToAddInIpamDevicesData);
+  const dataSource = useSelector(selectDeletedConfigurationBackups);
 
   // handlers
   function handleTableConfigurationsOpen() {
@@ -99,22 +99,15 @@ const Index = ({ handleClose, open }) => {
   }
 
   function handleAdd() {
-    addAtomsInIpam(selectedRowKeys);
+    restoreBackups(selectedRowKeys);
   }
 
   return (
-    <DefaultDialog
-      sx={{ content: { padding: 0 } }}
-      title={`${"Restore"} ${PAGE_NAME}`}
-      open={open}
-    >
-      <Grid container>
+    <DefaultDialog title={`${"Restore"} ${PAGE_NAME}`} open={open}>
+      <Grid container style={{ marginTop: "15px" }}>
         <Grid item xs={12}>
           <Spin
-            spinning={
-              isGetAtomsToAddInIpamDevicesLoading ||
-              isAddAtomsInIpamDevicesLoading
-            }
+            spinning={isGetDeletedBackupsLoading || isRestoreBackupsLoading}
           >
             {tableConfigurationsOpen ? (
               <DefaultTableConfigurations
@@ -129,7 +122,7 @@ const Index = ({ handleClose, open }) => {
               />
             ) : null}
 
-            <PageTableSectionWithoutWidth
+            <PageTableSectionWithoutScrollAndWidth
               PAGE_NAME={PAGE_NAME}
               TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
               buttonsConfigurationList={buttonsConfigurationList}

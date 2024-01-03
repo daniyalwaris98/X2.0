@@ -147,7 +147,9 @@ const Index = ({ readOnly = false }) => {
           padding: "10px",
         }}
       >
-        <div>Backup</div>
+        <div style={{ marginBottom: "-12px", fontSize: "17px" }}>
+          Backup Details
+        </div>
         <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
           {readOnly ? null : (
             <>{buttonsConfigurationList.map((item) => generateButton(item))}</>
