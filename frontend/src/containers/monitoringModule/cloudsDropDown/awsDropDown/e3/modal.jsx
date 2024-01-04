@@ -1,24 +1,24 @@
 import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
-import DefaultDialog from "../../../components/dialogs";
-import { CancelDialogFooter } from "../../../components/dialogFooters";
+import DefaultDialog from "../../../../../components/dialogs";
+import { CancelDialogFooter } from "../../../../../components/dialogFooters";
 import Grid from "@mui/material/Grid";
 import {
-  useGetAtomsToAddInMonitoringDevicesQuery,
-  useAddAtomsInMonitoringDevicesMutation,
-} from "../../../store/features/monitoringModule/devices/apis";
+  useGetAtomsToAddInIpamDevicesQuery,
+  useAddAtomsInIpamDevicesMutation,
+} from "../../../../../store/features/ipamModule/devices/apis";
 import { useSelector } from "react-redux";
-import { selectAtomsToAddInMonitoringDevicesData } from "../../../store/features/monitoringModule/devices/selectors";
+import { selectAtomsToAddInIpamDevicesData } from "../../../../../store/features/ipamModule/devices/selectors";
 import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "../../atomModule/atoms/columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
-import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import { PageTableSectionWithoutWidth } from "../../../components/pageSections";
-import { PAGE_NAME } from "../../atomModule/atoms/constants";
+import useErrorHandling from "../../../../../hooks/useErrorHandling";
+import useColumnsGenerator from "../../../../../hooks/useColumnsGenerator";
+import { useIndexTableColumnDefinitions } from "../../../../atomModule/atoms/columnDefinitions";
+import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
+import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
+import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../../../atomModule/atoms/constants";
+import { TYPE_FETCH, TYPE_BULK } from "../../../../../hooks/useErrorHandling";
+import { PageTableSectionWithoutWidth } from "../../../../../components/pageSections";
+import { PAGE_NAME } from "../../../../atomModule/atoms/constants";
 
 const Index = ({ handleClose, open }) => {
   const theme = useTheme();
@@ -27,7 +27,7 @@ const Index = ({ handleClose, open }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { columnDefinitionsForMonitoringDevices: columnDefinitions } =
+  const { columnDefinitionsForIpamDevices: columnDefinitions } =
     useIndexTableColumnDefinitions({});
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
@@ -47,44 +47,44 @@ const Index = ({ handleClose, open }) => {
 
   // apis
   const {
-    data: getAtomsToAddInMonitoringDevicesData,
-    isSuccess: isGetAtomsToAddInMonitoringDevicesSuccess,
-    isLoading: isGetAtomsToAddInMonitoringDevicesLoading,
-    isError: isGetAtomsToAddInMonitoringDevicesError,
-    error: getAtomsToAddInMonitoringDevicesError,
-  } = useGetAtomsToAddInMonitoringDevicesQuery();
+    data: getAtomsToAddInIpamDevicesData,
+    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
+    isLoading: isGetAtomsToAddInIpamDevicesLoading,
+    isError: isGetAtomsToAddInIpamDevicesError,
+    error: getAtomsToAddInIpamDevicesError,
+  } = useGetAtomsToAddInIpamDevicesQuery();
 
   const [
-    addAtomsInMonitoring,
+    addAtomsInIpam,
     {
-      data: addAtomsInMonitoringDevicesData,
-      isSuccess: isAddAtomsInMonitoringDevicesSuccess,
-      isLoading: isAddAtomsInMonitoringDevicesLoading,
-      isError: isAddAtomsInMonitoringDevicesError,
-      error: addAtomsInMonitoringDevicesError,
+      data: addAtomsInIpamDevicesData,
+      isSuccess: isAddAtomsInIpamDevicesSuccess,
+      isLoading: isAddAtomsInIpamDevicesLoading,
+      isError: isAddAtomsInIpamDevicesError,
+      error: addAtomsInIpamDevicesError,
     },
-  ] = useAddAtomsInMonitoringDevicesMutation();
+  ] = useAddAtomsInIpamDevicesMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: getAtomsToAddInMonitoringDevicesData,
-    isSuccess: isGetAtomsToAddInMonitoringDevicesSuccess,
-    isError: isGetAtomsToAddInMonitoringDevicesError,
-    error: getAtomsToAddInMonitoringDevicesError,
+    data: getAtomsToAddInIpamDevicesData,
+    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
+    isError: isGetAtomsToAddInIpamDevicesError,
+    error: getAtomsToAddInIpamDevicesError,
     type: TYPE_FETCH,
   });
 
   useErrorHandling({
-    data: addAtomsInMonitoringDevicesData,
-    isSuccess: isAddAtomsInMonitoringDevicesSuccess,
-    isError: isAddAtomsInMonitoringDevicesError,
-    error: addAtomsInMonitoringDevicesError,
+    data: addAtomsInIpamDevicesData,
+    isSuccess: isAddAtomsInIpamDevicesSuccess,
+    isError: isAddAtomsInIpamDevicesError,
+    error: addAtomsInIpamDevicesError,
     type: TYPE_BULK,
     callback: handleClose,
   });
 
   // getting dropdowns data from the store
-  const dataSource = useSelector(selectAtomsToAddInMonitoringDevicesData);
+  const dataSource = useSelector(selectAtomsToAddInIpamDevicesData);
 
   // handlers
   function handleTableConfigurationsOpen() {
@@ -92,7 +92,7 @@ const Index = ({ handleClose, open }) => {
   }
 
   function handleAdd() {
-    addAtomsInMonitoring(selectedRowKeys);
+    addAtomsInIpam(selectedRowKeys);
   }
 
   return (
@@ -105,8 +105,8 @@ const Index = ({ handleClose, open }) => {
         <Grid item xs={12}>
           <Spin
             spinning={
-              isGetAtomsToAddInMonitoringDevicesLoading ||
-              isAddAtomsInMonitoringDevicesLoading
+              isGetAtomsToAddInIpamDevicesLoading ||
+              isAddAtomsInIpamDevicesLoading
             }
           >
             {tableConfigurationsOpen ? (
