@@ -4,7 +4,12 @@ from app.api.v1.ncm.utils.ncm_alarm_utils import *
 from app.models.atom_models import *
 from app.utils.db_utils import *
 from app.utils.static_list import *
-
+from app.models.ncm_models import *
+from app.api.v1.ncm.utils.ncm_alarm_utils import *
+from app.models.atom_models import *
+from app.utils.db_utils import *
+from app.utils.static_list import *
+from app.core.config import *
 
 class NCMPuller(object):
     def __init__(self):
@@ -16,22 +21,31 @@ class NCMPuller(object):
         self.ncm = None
         self.connection = None
 
-    def setup_puller(self, ncm_obj):
+    def setup_puller(self, ncmObj):
+        print("ncm obj is:::::::::::::::",ncmObj,file=sys.stderr)
+        ncmObj = dict(ncmObj)
+        if "ncm_device_id" not in ncmObj.keys():
+            self.response = "NCM Device ID"
+            self.status = 500
+            return
+
+        elif ncmObj["ncm_device_id"] is None:
+            self.response = "NCM Device"
+            self.status = 500
+            return
 
         # Check NCM
         ncm = configs.db.query(NcmDeviceTable).filter(
-            NcmDeviceTable.ncm_device_id == ncm_obj["ncm_device_id"]
+            NcmDeviceTable.ncm_device_id == ncmObj["ncm_device_id"]
         ).first()
-
         if ncm is None:
             self.response = (
-                f"{ncm_obj['ncm_device_id']} : No Device Found In NCM With Device ID"
+                f"{ncmObj['ip_address']} : No Device Found In NCM With Device ID"
             )
-            self.status = 400
+            self.status = 500
             return
-
         elif ncm.status == "Inactive":
-            self.response = f"{ncm_obj['ncm_device_id']} : Device Is InActive"
+            self.response = f"{ncmObj['ip_address']} : Device Is InActive"
             self.status = 500
             return
 
@@ -40,9 +54,21 @@ class NCMPuller(object):
             AtomTable.atom_id == ncm.atom_id
         ).first()
 
+        # Check Password Group
+        if atom.password_group_id is None:
+            self.response = (
+                f"{ncmObj['ip_address']} : No Passowrd Group Is Assigned To The Device"
+            )
+            self.status = 500
+            return
+
         password = configs.db.query(PasswordGroupTable).filter(
             PasswordGroupTable.password_group_id == atom.password_group_id
         ).first()
+        if password is None:
+            self.response = f"{ncmObj['ip_address']} : Passowrd Group Not Found"
+            self.status = 500
+            return
 
         self.atom = atom
         self.credential = password
@@ -61,8 +87,7 @@ class NCMPuller(object):
         # Telnet Connect
         if self.credential.password_group_type == "Telnet":
             if self.atom.device_type not in device_type_telnet_dictionary.keys():
-                self.response = (f"{self.atom.ip_address} : Telnet Support Not Available For "
-                                 f"{self.atom.device_type}")
+                self.response = f"{self.atom.ip_address} : Telnet Support Not Available For {self.atom.device_type}"
                 self.status = 500
                 return
 
@@ -86,7 +111,8 @@ class NCMPuller(object):
 
                     login = True
                     break
-                except Exception:
+                except Exception as e:
+                    login_exception = str(e)
                     telnet_tries += 1
                     print(
                         f"NCM - {self.atom.ip_address} : Telnet - Failed to login",
@@ -96,8 +122,7 @@ class NCMPuller(object):
         # SSH Connect
         else:
             if self.atom.device_type not in device_type_ssh_dictionary.keys():
-                self.response = (f"{self.atom.ip_address} : SSH Support Not Available For "
-                                 f"{self.atom.device_type}")
+                self.response = f"{self.atom.ip_address} : SSH Support Not Available For {self.atom.device_type}"
                 self.status = 500
                 return
 
@@ -120,15 +145,16 @@ class NCMPuller(object):
                     )
                     login = True
                     break
-                except Exception:
+                except Exception as e:
                     ssh_tries += 1
                     print(
                         f"NCM - {self.atom.ip_address} : SSH - Failed to login",
                         file=sys.stderr,
                     )
                     traceback.print_exc()
+                    login_exception = str(e)
 
-        if not login:
+        if login == False:
             self.status = 500
             self.response = f"{self.atom.ip_address} : Failed To Login"
             login_alarm(self.atom, self.ncm, login=False)
@@ -139,7 +165,8 @@ class NCMPuller(object):
             #     current_time,
             #     host["device_type"],
             #     login_exception,
-            #     "NCM")
+            #     "NCM",
+            # )
 
         else:
             self.connection = connection
@@ -157,8 +184,7 @@ class NCMPuller(object):
     #
     def backup_config(self):
         if self.atom.device_type not in ncm_command_list.keys():
-            self.response = (f"{self.atom.ip_address} : NCM Commands Not Found For "
-                             f"{self.atom.device_type}")
+            self.response = f"{self.atom.ip_address} : NCM Commands Not Found For {self.atom.device_tye}"
             self.status = 500
             return
 
@@ -171,89 +197,62 @@ class NCMPuller(object):
         self.update_status()
 
     #
-    # Method for getting command set output
+    # Method for getting command set ouput
     #
     def run_puller(self, command_set):
-        successful_commands = []  # List to store successful commands
-        failed_commands = []  # List to store failed commands and their associated errors
-        command_output = ""  # Store the combined output of all commands
-
         try:
             self.connection.enable()
-
+            command_output = ""
             for command in command_set:
-                try:
-                    output = self.connection.send_command(command)
-                    successful_commands.append(command)
-                    command_output += f"Command '{command}' executed successfully:\n\n"
-                except Exception as e:
-                    failed_commands.append((command, str(e)))
-                    command_output += f"Command '{command}' failed to execute: {str(e)}\n\n"
-
-            # try:
-            #
-            # except Exception as e:
-            #     print(f"Error during disconnection: {str(e)}", file=sys.stderr)
-            #     traceback.print_exc()
-
-            self.status = 200
-            self.response = command_output
-
+                command_output += self.connection.send_command(f"{command}")
+                command_output += "\n\n\n"
+            self.connection.disconnect()
         except Exception:
             traceback.print_exc()
             self.status = 500
             self.response = f"{self.atom.ip_address} : Failed To Send Command"
+            return
 
-        # Log successful and failed commands for debugging
-        print("Successful commands:", successful_commands, file=sys.stderr)
-        print("Failed commands:", failed_commands, file=sys.stderr)
         self.status = 200
         self.response = command_output
 
     #
-    # Method to save configuration backup
+    # Method to save configuration bcakup
     #
     def save_configuration(self):
 
-        query_string = (f"SELECT file_name FROM ncm_history_table WHERE "
-                        f"configuration_date=(SELECT MAX(configuration_date) FROM "
-                        f"ncm_history_table WHERE ncm_device_id={self.ncm.ncm_device_id}) "
-                        f"and ncm_device_id={self.ncm.ncm_device_id};")
-        result = configs.db.execute(query_string)
+        queryString1 = f"select FILE_NAME from ncm_history_table where CONFIGURATION_DATE=(select MAX(CONFIGURATION_DATE) from ncm_history_table where ncm_device_id={self.ncm.ncm_device_id}) and ncm_device_id={self.ncm.ncm_device_id};"
+        result = configs.db.execute(queryString1)
 
         previous_file_name = None
         for row in result:
-            previous_file_name = row[0]
+            file_name = row[0]
 
         cwd = os.getcwd()
         if self.response is not None:
-            previous_lines = None
             if previous_file_name is not None:
                 try:
 
                     path = f"{cwd}/app/configuration_backups/{previous_file_name}"
-                    existing_path = os.path.exists(path)
-                    if existing_path:
+                    existingPath = os.path.exists(path)
+                    if existingPath:
                         f = open(path, "r")
-                        previous_lines = f.readlines()
+                        previousLines = f.readlines()
                     else:
-                        query = (f"DELETE FROM ncm_history_table WHERE file_name = "
-                                 f"{previous_file_name};")
+                        query = f"DELETE FROM ncm_history_table where file_name = {previous_file_name};"
                         configs.db.execute(query)
                         configs.db.commit()
                 except Exception:
                     pass
 
                 previous_output = ""
-
-                if previous_lines is not None:
-                    length = len(previous_lines)
-                    count = 0
-                    for line in previous_lines:
-                        previous_output += line
-                        count += 1
-                        if count < length:
-                            previous_output += "\n"
+                length = len(previousLines)
+                count = 0
+                for line in previousLines:
+                    previous_output += line
+                    count += 1
+                    if count < length:
+                        previous_output += "\n"
 
                 if previous_output == self.response:
                     msg = f"{self.atom.ip_address} : Configuration Already Exists"
@@ -275,10 +274,6 @@ class NCMPuller(object):
             file_name = (
                 f"{self.atom.ip_address}_{self.atom.device_name}_{string_time}.cfg"
             )
-            directory = f"{cwd}/app/configuration_backups/"
-            if not os.path.exists(directory):
-                os.makedirs(directory)
-            print("directoy is::::::::::",directory,file=sys.stderr)
 
             path = f"{cwd}/app/configuration_backups/{file_name}"
             f = open(path, "w")
@@ -286,8 +281,7 @@ class NCMPuller(object):
             f.close()
 
             print(
-                f"{self.atom.ip_address} : BACKUP GENERATED FOR DEVICE {self.atom.device_name} "
-                f"at {current_time}",
+                f"{self.atom.ip_address} : BACKUP GENERATED FOR DEVICE {self.atom.device_name} at {current_time}",
                 file=sys.stderr,
             )
 
@@ -307,7 +301,7 @@ class NCMPuller(object):
             UpdateDBData(self.ncm)
 
             self.response = "Configuration Backup Successful"
-            self.connection.disconnect()
+
     def update_status(self):
         try:
             if self.status == 200:
@@ -318,7 +312,3 @@ class NCMPuller(object):
             UpdateDBData(self.ncm)
         except Exception:
             traceback.print_exc()
-
-
-print("values in ncm ")
-print("changint the file ")

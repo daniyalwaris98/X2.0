@@ -8,6 +8,7 @@ from fastapi.responses import HTMLResponse
 
 from app.api.v1.ncm.conf_diff_main.conf_diff import ConfDiff
 from app.api.v1.ncm.ncm_pullers.ncm_puller import NCMPuller
+from app.api.v1.ncm.ncm_pullers.ncm_restore import RestorePuller
 from app.api.v1.ncm.utils.ncm_utils import *
 from app.schema.ncm_schema import *
 
@@ -97,7 +98,10 @@ async def add_ncm_device(ncm_obj: AddNcmRequestSchema):
 @router.post("/add_ncm_devices", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
-})
+},
+summary="Use this API to add multiple devices",
+description="Use this API to add multiple devices"
+)
 async def add_ncm_devices(ncm_objs: list[AddNcmRequestSchema]):
     try:
         data = []
@@ -171,7 +175,10 @@ async def add_ncm_devices(ncm_objs: list[AddNcmRequestSchema]):
     200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary="Use this API to edit the NCM device",
+description="Use this API to edit the NCM devic"
+)
 async def edit_ncm_device(ncm_obj: AddNcmRequestSchema):
     try:
         msg, status = edit_ncm_device_util(ncm_obj)
@@ -185,7 +192,10 @@ async def edit_ncm_device(ncm_obj: AddNcmRequestSchema):
     200: {"model": list[GetAllNcmResponseSchema]},
     500: {"model": str}
 
-})
+},
+summary="Use this API to list down all the ncm devices",
+description="Use this API to list down all the ncm devices"
+)
 async def get_all_ncm_devices():
     try:
         ncm_list = []
@@ -221,7 +231,10 @@ async def get_all_ncm_devices():
     200: {"model": list[GetAtomInNcmResponseSchema]},
     500: {"model": str}
 
-})
+},
+summary="Use this API to list down the ATOM in NCM",
+description="Use this API to list down the Atom in NCM"
+)
 async def get_atom_in_ncm():
     try:
         atom_ids = []
@@ -260,7 +273,10 @@ async def get_atom_in_ncm():
 @router.post("/add_ncm_from_atom", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
-})
+},
+summary="use this API to add the NCM from the atom",
+description="Use this API to add the NCM from the atom"
+)
 async def add_ncm_from_atom(atom_ids: list[int]):
     try:
         data =[]
@@ -315,11 +331,14 @@ async def add_ncm_from_atom(atom_ids: list[int]):
         return JSONResponse(content="Server Error While Importing Atom In NCM", status_code=500)
 
 
-@router.post("/delete_ncm_device", responses={
+@router.post("/delete_ncm_devices", responses={
             200:{"model":DeleteResponseSchema},
             400:{"model":str},
             500:{"model":str}
-})
+},
+summary="Use this API to delete the ncm devices by ncm-device_id",
+             description="Use this API to delete the ncm devices by ncm-device_id"
+)
 async def delete_ncm_device(ncm_ids: list[int]):
     try:
         data = []
@@ -352,11 +371,14 @@ async def delete_ncm_device(ncm_ids: list[int]):
         return JSONResponse(content="Server Error While Deleting NCM Devices", status_code=500)
 
 
-@router.post("/get_all_configurations", responses={
+@router.post("/get_all_device_configurations_by_id", responses={
     200: {"model": list[NcmConfigHistorySchema]},
     500: {"model": str}
-})
-async def get_all_configuration(ncm_device_id: int):
+},
+summary = "Use this API in the NCM modeule to list down all the configurations based on ip_address click by sending ncm_device_id in a payload",
+description="Use this API in the NCM modeule to list down all the configurations based on ip_address click by sending ncm_device_id in a payload"
+)
+async def get_all_configuration(ncm_device_id: GetDeviceConfigurationById):
     try:
 
         results = configs.db.query(NCM_History_Table).filter(
@@ -371,7 +393,7 @@ async def get_all_configuration(ncm_device_id: int):
 
             obj_list.append(obj_dict)
 
-        return JSONResponse(content=obj_list, status_code=200)
+        return obj_list
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching Backup History", status_code=500)
@@ -391,14 +413,17 @@ def check_path(file_path):
     200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
-})
-async def get_device_configuration(ncm_history_id:int):
+},
+summary="Use this API to get the display the output of configuration based on ncm_history_id",
+description="Use this API to get the display the output of configuration based on ncm_history_id"
+)
+async def get_device_configuration(ncm_history_id:GetDeviceConfigurationByHistory):
     try:
         data = {}
         history = configs.db.query(NCM_History_Table).filter(
             NCM_History_Table.ncm_history_id == ncm_history_id
         ).first()
-
+        print("history is::::::::::::::",history,file=sys.stderr)
         if history is None:
             return JSONResponse(content="Backup Not Found", status_code=400)
 
@@ -410,7 +435,9 @@ async def get_device_configuration(ncm_history_id:int):
 
         if pathFlag:
             f = open(file_path, "r")
+            print("f file is:::::::::",file=sys.stderr)
             configuration = f.read()
+            print("configuration is:::::::::::",configuration,file=sys.stderr)
             data['configuration'] = configuration
             data['message'] = f"{history.file_name} : Retrieved Successfully"
             return JSONResponse(content=data, status_code=200)
@@ -427,7 +454,10 @@ async def get_device_configuration(ncm_history_id:int):
     200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary="Use this API in the NCM moodeul table to send the command and to display its output",
+description="Use this API in the NCM moodeul table to send the command and to display its output"
+)
 async def send_command(ncm_obj: SendCommandRequestSchema):
     try:
         data = {}
@@ -457,12 +487,16 @@ async def send_command(ncm_obj: SendCommandRequestSchema):
     200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
-})
+},
+summary="Use this API to get the configuration based on the ncm_device_id",
+description="Use this API to get the configuration based on the ncm_device_id"
+)
 async def get_configuration_backup(ncm_obj: NcmDeviceId):
     try:
         data = {}
         ncmPuller = NCMPuller()
         print("ncm puller is::::::::::::::",ncmPuller,file=sys.stderr)
+        print("ncm obj is:::",ncm_obj,file=sys.stderr)
         ncmPuller.setup_puller(ncm_obj)
         print("ncm pulerr obj is::::::::::::::::",ncmPuller.setup_puller(ncm_obj),file=sys.stderr)
 
@@ -483,8 +517,11 @@ async def get_configuration_backup(ncm_obj: NcmDeviceId):
 @router.post("/configuration_comparison", response_class=HTMLResponse, responses={
     400: {"model": str},
     500: {"model": str}
-})
-async def configuration_comparison(ncm_obj: NcmDeviceId, request: Request):
+},
+summary="use this API to compare the configuration based on ncm_history_ids",
+description="use this API to compare the configuration based on ncm_history_ids"
+)
+async def configuration_comparison(ncm_obj: CompareBackupSchema, request: Request):
     try:
 
         history1 = configs.db.query(NCM_History_Table).filter(
@@ -516,7 +553,7 @@ async def configuration_comparison(ncm_obj: NcmDeviceId, request: Request):
 
         path = f"{cwd}/app/configuration_backups/"
         file_1 = Path(f"{path}{history1.file_name}")
-        file_2 = Path(f"{path}{history2.file_name2}")
+        file_2 = Path(f"{path}{history2.file_name}")
         html_file = Path(f"{cwd}/app/templates/html_diff_output.html")
 
         html_diff = ConfDiff(file_1, file_2, html_file)
@@ -525,8 +562,8 @@ async def configuration_comparison(ncm_obj: NcmDeviceId, request: Request):
         if difference is None:
             return JSONResponse(content="No Difference Found In Configurations", status_code=500)
 
-        return configs.templates.TemplateResponse("html_diff_output.html", context=request,
-                                                  status_code=200)
+        return configs.templates.TemplateResponse("html_diff_output.html", {"request": request}, status_code=200)
+
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error While Config Comparison", status_code=500)
@@ -538,8 +575,8 @@ async def configuration_comparison(ncm_obj: NcmDeviceId, request: Request):
                  400: {"model": str},
                  500: {"model": str}
              },
-             summary="API to get bulk backup",
-             description='API to get bulk backup'
+             summary="API to get bulk backup by list of ncm_device_id",
+             description='API to get bulk backup list of ncm_device_id'
              )
 def get_bulk_backup_configurration(ncm_device_id: list[int]):
     try:
@@ -599,6 +636,105 @@ def get_bulk_backup_configurration(ncm_device_id: list[int]):
     except Exception as e:
         # Handle exceptions appropriately, maybe log the error for debugging
         raise JSONResponse(status_code=500, content="Error Occurred While Getting Bulk Backup")
+
+
+@router.post('/restore_configuration',
+             responses = {
+                 200:{"model":Response200},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="Use This API to restore configuration",
+             description="Use This API to restore configuration"
+             )
+def restore_configuration(data:RestoreConfigurationSchema):
+    try:
+        objDict = {}
+        ncm_data = dict(data)
+        device_type =""
+        print("NCM data is::::::::::::::",ncm_data,file=sys.stderr)
+        atom_exsist = configs.db.query(AtomTable).filter_by(ip_address = ncm_data['ip_address']).first()
+        ncm_device = configs.db.query(NcmDeviceTable).filter_by(atom_id = atom_exsist.atom_id).first()
+        if atom_exsist:
+            device_type = atom_exsist.device_type
+            objDict['ip_address'] = atom_exsist.ip_address
+            objDict['device_type'] = atom_exsist.device_type
+            objDict['device_name'] = atom_exsist.device_name
+            password_exsist = configs.db.query(PasswordGroupTable).filter_by(password_group_id = atom_exsist.password_group_id).first()
+            print("passowrd exsist is::::::",password_exsist,file=sys.stderr)
+            objDict['password'] = password_exsist.password.strip()
+            objDict['username'] = password_exsist.username.strip()
+        restore_configuration_puller = RestorePuller()
+        if device_type == "cisco_ios_xe":
+            device_type = "cisco_xe"
+
+        elif device_type == "cisco_ios_xr":
+            device_type = "cisco_xr"
+
+        elif device_type == "paloalto":
+            device_type = "paloalto_panaos"
+
+        elif device_type == 'h3c':
+            device_type = 'hp_comware'
+
+        end_result = restore_configuration_puller.poll(
+            objDict,device_type,ncm_data['date']
+        )
+        print("rnd resuotl for the restoration is the",end_result,file=sys.stderr)
+        if restore_configuration_puller.Success() == True:
+                data = {
+                    "configuration":{
+                        "ncm_device_id":ncm_device.ncm_device_id,
+                        "status":ncm_device.status,
+                        "ip_address":atom_exsist.ip_address,
+                        "date":ncm_device.config_change_date
+                    },
+                "message":f"{atom_exsist.ip_address} Is Restored"
+                }
+                return data
+        elif restore_configuration_puller.FileDoesNotExist():
+            return JSONResponse(content="File Does Not Exsist",status_code=500)
+        elif restore_configuration_puller.FailedLogin():
+            return JSONResponse(content="Failed To Login",status_code=500)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Restoring Configuration",status_code=500)
+
+
+@router.get('/get_all_true_backup',
+            responses={
+                200:{"model":list[GetTrueBackup]},
+                500:{"model":str}
+            },
+summary="API to use in the manage configuration to get the backup on the bulk bulk backup button",
+description="API to use in the manage configuration to get the backup on the bulk bulk backup button"
+)
+def get_true_backup():
+    try:
+        backups_list = []
+        backups = configs.db.query(NcmDeviceTable).filter_by(backup_state = 'True').all()
+        print("backups are :::::::::::::::::::::::::",backups,file=sys.stderr)
+        for backup in backups:
+            atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = backup.atom_id).first()
+            backup_dict = {
+                "ncm_device_id": backup.ncm_device_id,
+                "status":backup.status,
+                "config_change_date": backup.config_change_date,
+                "ip_address":atom_exsist.ip_address
+            }
+            backups_list.append(backup_dict)
+            backup.backup_state = 'False'
+            configs.db.merge(backup)
+            configs.db.commit()
+        return backups_list
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Getting the true backup",status_code=500)
+
+
+
+
 # @router.get('/recent_configuration',
 #             responses={
 #                 400:{"model":str},
@@ -1244,4 +1380,3 @@ def get_bulk_backup_configurration(ncm_device_id: list[int]):
 #
 
 
-print("files in ncms")
