@@ -84,3 +84,46 @@ export function CancelDialogFooter({ handleClose, sx, ...rest }) {
     </div>
   );
 }
+
+export function LoginDialogFooter({ handleClose, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_login: {
+      handleClick: handleClose,
+      sx: { width: "100%", backgroundColor: "#66B127" },
+    },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "left",
+        padding: "20px 0",
+        ...sx,
+      }}
+      {...rest}
+    >
+      {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}
+
+export function CompareDialogFooter({ handleClose, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_cancel: { handleClick: handleClose },
+    default_compare_submit: null,
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{ display: "flex", justifyContent: "center", gap: "10px", ...sx }}
+      {...rest}
+    >
+      {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}

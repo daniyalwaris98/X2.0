@@ -168,7 +168,7 @@ class IPDetailScehma(BaseSchema):
     ip_address:str
 
 class ScanSubnetSchema(BaseSchema):
-    subnet:str
+    subnet:int
     port_scan:bool
     dns_scan:bool
 

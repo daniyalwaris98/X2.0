@@ -177,11 +177,17 @@ def get_ipam_fetch_devices():
         devices_list =[]
         ipam_devices = configs.db.query(IpamDevicesFetchTable).all()
         for devices in ipam_devices:
+            atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = devices.atom_id).first()
             interfaces = configs.db.query(ip_interface_table).filter_by(ipam_device_id = devices.ipam_device_id).first()
             subnet = configs.db.query(subnet_table).filter_by(ipam_device_id = devices.ipam_device_id).first()
             subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnet.subnet_id).first()
             devices_dict = {
                 "ipam_device_id":devices.ipam_device_id,
+                "ip_address":atom_exsist.ip_address,
+                "device_name":atom_exsist.device_name,
+                "subnet_address": subnet.subnet_address,
+                "subnet_mask": subnet.subnet_mask,
+                "subnet_name": subnet.subnet_name,
                 "interface":devices.interface,
                 "interface_ip":devices.interface_ip,
                 "interface_descripton":devices.interface_description,
@@ -193,16 +199,15 @@ def get_ipam_fetch_devices():
                 "interface_location":interfaces.interface_location,
                 "discovered_from":interfaces.discovered_from,
                 "interface_ststus":interfaces.interface_status,
-                "subnet":subnet.subnet_address,
-                "subnet_mask":subnet.subnet_mask,
-                "subnet_name":subnet.subnet_name,
                 "scan_date":subnet.scan_date,
                 "subnet_usage":subnet_usage.subnet_usage,
                 "subnet_size":subnet_usage.subnet_size
             }
             devices_list.append(devices_dict)
+        print("device list in ipam fetch devices is::::::::",devices_list,file=sys.stderr)
         return devices_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting IPAM devices",status_code=500)
 
@@ -234,7 +239,7 @@ def add_subnet(subnetObj:AddSubnetManually):
             subnet_dict = {
                 "subnet_id":subnet_tab.subnet_id,
                 "subnet_mask":subnet_tab.subnet_mask,
-                "subnet": subnet_tab.subnet_address,
+                "subnet_address": subnet_tab.subnet_address,
                 "subnet_name":subnet_tab.subnet_name,
                 "location":subnet_tab.location,
                 "discovered":subnet_tab.discovered
@@ -365,10 +370,10 @@ def AddSusbnetInSunet(data:list[AddSubnetInSubnetSchema]):
             summary = "Use this API in the subnet table while clicking on the subnet get the detail of its ip",
             description="Use this API in the subnet table while clicking on the subnet get the detail of its ip"
             )
-def get_ip_detail_by_stubnet(subnet:str=Query(..., description="subnet")):
+def get_ip_detail_by_stubnet(subnet_address:str=Query(..., description="subnet")):
     try:
         ip_list = []
-        data = subnet.strip()
+        data = subnet_address.strip()
         print("data is::::", data, file=sys.stderr)
 
         # Fetch subnet detail from the database
@@ -404,7 +409,7 @@ def get_ip_detail_by_stubnet(subnet:str=Query(..., description="subnet")):
                     "creation_date":ip.creation_date,
                     "modification_date":ip.modification_date,
                     "ip_address":ip.ip_address,
-                    "subnet":subnet_detail.subnet_address
+                    "subnet_address":subnet_detail.subnet_address
                 }
                 ip_list.append(ip_dict)
 
@@ -436,7 +441,7 @@ def get_all_discovered_subnet():
             subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnet.subnet_id).first()
             subnet_dict = {
                 "subnet_id":subnet.subnet_id,
-                "subnet":subnet.subnet_address,
+                "subnet_address":subnet.subnet_address,
                 "subnet_mask":subnet.subnet_mask,
                 "subnet_name":subnet.subnet_name,
                 "location":subnet.location,
@@ -526,6 +531,7 @@ def GetAllDnsServers():
             for dnsServerObj in dnsServersObjs:
                 objDict = {}
                 objDict['dns_server_id'] = dnsServerObj.dns_server_id
+                objDict['ip_address'] = dnsServerObj.ip_address
                 objDict['server_name'] = dnsServerObj.server_name
                 objDict['number_of_zones'] = dnsServerObj.number_of_zones
                 objDict['type'] = dnsServerObj.type
@@ -556,12 +562,15 @@ def GetAllDnsZones():
             objList = []
             dnsZonesObjs = configs.db.query(DnsZonesTable)
             for dnsZoneObj in dnsZonesObjs:
+                dns_server_exsist = configs.db.query(DnsServerTable).filter_by(dns_server_id = dnsZoneObj.dns_server_id).first()
                 objDict = {}
                 objDict['dns_id'] = dnsZoneObj.dns_zone_id
                 objDict['zone_name'] = dnsZoneObj.zone_name
                 objDict['zone_status'] = dnsZoneObj.zone_status
                 objDict['zone_type'] = dnsZoneObj.zone_type
                 objDict['lookup_type'] = dnsZoneObj.lookup_type
+                objDict['server_type']= dns_server_exsist.server_name
+                objDict['ip_address'] = dns_server_exsist.ip_address
                 objList.append(objDict)
             print(objList,file=sys.stderr)
             return objList
@@ -586,10 +595,16 @@ def GetAllDnsServersRecord():
             objList = []
             dnsServersRecordObjs = configs.db.query(DnsRecordTable).all()
             for dnsServersRecordObj in dnsServersRecordObjs:
+                dns_zone_exsist = configs.db.query(DnsZonesTable).filter_by(dns_zone_id = dnsServersRecordObj.dns_zone_id).first()
+                dns_server_exsist = configs.db.query(DnsServerTable).filter_by(dns_Server_id = dns_zone_exsist.dns_server_id).first()
                 objDict = {}
                 objDict['dns_record_id'] = dnsServersRecordObj.dns_id
                 objDict['server_name'] = dnsServersRecordObj.server_name
                 objDict['server_ip'] = dnsServersRecordObj.server_ip
+                objDict['zone_name'] = dns_zone_exsist.zone_name
+                objDict['dns_name'] = dns_server_exsist.server_name
+                objDict['dns_type'] = dns_server_exsist.type
+
                 objList.append(objDict)
             print(objList,file=sys.stderr)
             return objList
@@ -722,15 +737,15 @@ def get_all_subnet():
             subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).first()
             subnet_dict = {
                 "subnet_id":row.subnet_id,
-                "subnet":row.subnet_address,
+                "subnet_address":row.subnet_address,
                 "subnet_mask":row.subnet_mask,
                 "subnet_name":row.subnet_name,
                 "location":row.location,
                 "discovered_from":row.discovered_from,
                 "discovered":row.discovered,
                 "scan_date":row.scan_date,
-                "subnet_usage":subnet_usage.subnet_usage,
-                "subnet_size":subnet_usage.subnet_size
+                "subnet_usage":subnet_usage.subnet_usage if subnet_usage else None,
+                "subnet_size":subnet_usage.subnet_size if subnet_usage else None
             }
             subnet_list.append(subnet_dict)
         return subnet_list
@@ -751,6 +766,7 @@ def get_all_details():
         ip_list = []
         ip_detail = configs.db.query(IpTable).all()
         for ip in ip_detail:
+            subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_id = ip.subnet_id).first()
             print("ip is::", ip, file=sys.stderr)
             print("ip is::", ip, file=sys.stderr)
             ip_dict = {
@@ -767,6 +783,7 @@ def get_all_details():
                 "creation_date": ip.creation_date,
                 "modification_date": ip.modification_date,
                 "ip_address": ip.ip_address,
+                "subnet_address":subnet_exsist.subnet_address
             }
             ip_list.append(ip_dict)
         return ip_list
@@ -782,49 +799,51 @@ def get_all_details():
              summary="Use this API to in the subnet subnet table to scan the subnet this API will scan a subnet based on the subent in the body.This API is of post method",
              description = 'Use this API to in the subnet subnet table to scan the subnet this API will scan a subnet based on the subent in the body.This API is of post method'
              )
-def scan_subnets(subnet:ScanSubnetSchema):
+def scan_subnets(subnet:list[ScanSubnetSchema]):
     try:
         data = {}
         options = []
         data = dict(subnet)
-        if data['port_scan'] is True:
-            options.append('Port Scan')
+        option_dict = {}
+        for subnets in data:
+            print("data in scan subent is:::::::",data,file=sys.stderr)
+            subnet_data = configs.db.query(subnet_table).filter_by(subnet_id = subnets['subnet_id']).first()
+            if subnets['port_scan'] is True:
+                options.append('Port Scan')
 
-        if data['dns_scan'] is True:
-            options.append('DNS Scan')
+            if subnets['dns_scan'] is True:
+                options.append('DNS Scan')
 
-        # If you want to append both 'Port Scan' and 'DNS Scan' when both are True
-        if data['port_scan'] and data['dns_scan']:
-            options.append('Port Scan')
-            options.append('DNS Scan')
-        print("data in scan subent is:::::::",data,file=sys.stderr)
-        subnet_data = configs.db.query(subnet_table).filter_by(subnet_address = data['subnet']).first()
-        option_dict = {"options":options}
-        subnet_data_dict = {
-            "subnet_id": subnet_data.subnet_id,
-            "subnet_address": subnet_data.subnet_address,
-            "subnet_mask": subnet_data.subnet_mask,
+            # If you want to append both 'Port Scan' and 'DNS Scan' when both are True
+            if subnets['port_scan'] and subnets['dns_scan']:
+                options.append('Port Scan')
+                options.append('DNS Scan')
+            option_dict['options'] = options
+            subnet_data_dict = {
+                "subnet_id": subnet_data.subnet_id,
+                "subnet_address": subnet_data.subnet_address,
+                "subnet_mask": subnet_data.subnet_mask,
 
-        }
-        data = {"data": subnet_data_dict,
-                "message":f"{subnet_data.subnet_address} : Scanned Successfully"
-                }
-        try:
-            if subnet_data:
-                subnet_data.status = 'Waiting'
-                UpdateDBData(subnet_data)
-                ip_data = configs.db.query(IpTable).filter_by(subnet_id = subnet_data.subnet_id).first()
-                ip_data.mac_address = ''
-                ip_data.configuration_switch = ''
-                ip_data.configuration_interface = ''
-                ip_data.status= ''
-                ip_data.ip_dns = ''
-                ip_data.dns_ip =''
-                ip_data.vip = ''
-                UpdateDBData(ip_data)
-                print("DB updated::::::::::",file=sys.stderr)
-        except Exception as e:
-            traceback.print_exc()
+            }
+            data = {"data": subnet_data_dict,
+                    "message":f"{subnet_data.subnet_address} : Scanned Successfully"
+                    }
+            try:
+                if subnet_data:
+                    subnet_data.status = 'Waiting'
+                    UpdateDBData(subnet_data)
+                    ip_data = configs.db.query(IpTable).filter_by(subnet_id = subnet_data.subnet_id).first()
+                    ip_data.mac_address = ''
+                    ip_data.configuration_switch = ''
+                    ip_data.configuration_interface = ''
+                    ip_data.status= ''
+                    ip_data.ip_dns = ''
+                    ip_data.dns_ip =''
+                    ip_data.vip = ''
+                    UpdateDBData(ip_data)
+                    print("DB updated::::::::::",file=sys.stderr)
+            except Exception as e:
+                traceback.print_exc()
         Thread(target=MultiPurpose,args=(option_dict.get('options'),)).start()
         print("threading is being executed::",file=sys.stderr)
         return data
@@ -1008,7 +1027,7 @@ def add_subnets(subnetObj: list[AddSubnetManually]):
                     subnet_dict = {
                         "subnet_id": subnet_existing.subnet_id,
                         "subnet_mask": subnet_existing.subnet_mask,
-                        "subnet": subnet_existing.subnet_address,
+                        "subnet_address": subnet_existing.subnet_address,
                         "subnet_name": subnet_existing.subnet_name,
                         "location": subnet_existing.location,
                         "discovered": subnet_existing.discovered
@@ -1025,7 +1044,7 @@ def add_subnets(subnetObj: list[AddSubnetManually]):
                     subnet_dict = {
                         "subnet_id": subnet_tab.subnet_id,
                         "subnet_mask": subnet_tab.subnet_mask,
-                        "subnet": subnet_tab.subnet_address,
+                        "subnet_address": subnet_tab.subnet_address,
                         "subnet_name": subnet_tab.subnet_name,
                         "location": subnet_tab.location,
                         "discovered": subnet_tab.discovered
@@ -1076,7 +1095,7 @@ def add_subnet(subnetObj:EditSubnetSchema):
             subnet_dict = {
                 "subnet_id":subnet_exsist.subnet_id,
                 "subnet_mask":subnet_exsist.subnet_mask,
-                "subnet": subnet_exsist.subnet_address,
+                "subnet_address": subnet_exsist.subnet_address,
                 "subnet_name":subnet_exsist.subnet_name,
                 "location":subnet_exsist.location,
                 "discovered":subnet_exsist.discovered

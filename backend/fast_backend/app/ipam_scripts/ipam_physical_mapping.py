@@ -87,10 +87,11 @@ class IPAMPM(object):
             return ""
 
     def poll(self, host):
+        global device, arps
         pmData = []
         ipData = []
-
-        # print(f"HOST IN POLL IS {host}", file=sys.stderr)
+        print("host is:::::::::::::::::::::::",host,file=sys.stderr)
+        print(f"HOST IN POLL IS {host}", file=sys.stderr)
         vlans = interfaces = virtualIps = ipamData = secondary_ips = []
         print(f"Connecting to {host['ip_address']}", file=sys.stderr)
         login_tries = 10
@@ -136,6 +137,7 @@ class IPAMPM(object):
                             temp['ip_address'] = systemArp['address']
                             temp['interface'] = systemArp['interface']
                             temp['mac_address'] = systemArp['mac']
+                            print("temp for showing the arp is:::",temp,file=sys.stderr)
                             pmData.append(temp)
 
                 except Exception as e:
@@ -210,8 +212,8 @@ class IPAMPM(object):
                     print("RECORDDDDDDDDDDDDDDDDD IS ", record, file=sys.stderr)
                     query = f"update ip_table set MAC_ADDRESS='{record['mac_address']}', CONFIGURATION_INTERFACE='{record['interface']}', CONFIGURATION_SWITCH='{host['device_name']}' where IP_ADDRESS='{record['ip_address']}';"
                     try:
-                        db.session.execute(query)
-                        db.session.commit()
+                        configs.db.execute(query)
+                        configs.db.commit()
                         print(f"Added recorded of PM for ip {arp['ip_address']}")
                     except Exception as e:
                         print("Exception Occured in Executing Database Query", file=sys.stderr)
@@ -220,12 +222,12 @@ class IPAMPM(object):
                     tagId = None
                     date = datetime.now()
                     query_string = f"SELECT ASSET_TAG FROM ip_table WHERE IP_ADDRESS='{record['ip_address']}';"
-                    result3 = db.session.execute(query_string)
+                    result3 = configs.db.execute(query_string)
                     for row in result3:
                         tagId = row[0]
 
                     query_string = f"SELECT MAC_ADDRESS FROM ip_history_table WHERE IP_ADDRESS='{record['ip_address']}';"
-                    result2 = db.session.execute(query_string)
+                    result2 = configs.db.execute(query_string)
                     historyMacAddress = ""
                     for row in result2:
                         historyMacAddress = row[0]

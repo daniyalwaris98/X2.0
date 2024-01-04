@@ -1,7 +1,7 @@
 import React from "react";
 import DefaultCard from "./cards";
 import DefaultPageHeader from "./pageHeaders";
-import DefaultTable from "./tables";
+import DefaultTable, { TableWithoutScroll } from "./tables";
 import useWindowDimensions from "../hooks/useWindowDimensions";
 
 export default function DefaultPageTableSection({
@@ -50,7 +50,6 @@ export function PageTableSectionWithoutWidth({
       <DefaultPageHeader
         pageName={PAGE_NAME}
         buttons={buttonsConfigurationList}
-        selectedRowKeys={selectedRowKeys}
       />
       <DefaultTable
         rowKey={TABLE_DATA_UNIQUE_ID}
@@ -59,6 +58,36 @@ export function PageTableSectionWithoutWidth({
         getCheckboxProps={getCheckboxProps}
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
+      />
+    </DefaultCard>
+  );
+}
+
+export function PageTableSectionWithoutScrollAndWidth({
+  PAGE_NAME,
+  TABLE_DATA_UNIQUE_ID,
+  buttonsConfigurationList,
+  displayColumns,
+  dataSource,
+  selectedRowKeys = null,
+  setSelectedRowKeys = null,
+  getCheckboxProps = null,
+  onRow = false,
+}) {
+  return (
+    <DefaultCard>
+      <DefaultPageHeader
+        pageName={PAGE_NAME}
+        buttons={buttonsConfigurationList}
+      />
+      <TableWithoutScroll
+        rowKey={TABLE_DATA_UNIQUE_ID}
+        dataSource={dataSource}
+        displayColumns={displayColumns}
+        getCheckboxProps={getCheckboxProps}
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
+        onRow={onRow}
       />
     </DefaultCard>
   );

@@ -224,6 +224,25 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
+
+    default_compare_submit: {
+      name: "Compare",
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+
+    default_login: {
+      name: "Login",
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+
     default_reset: {
       name: "Reset",
       sx: {
@@ -253,9 +272,26 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
+    default_restore: {
+      name: "Restore",
+      icon: <Icon fontSize="16px" icon="mdi:restore" />,
+      sx: {
+        backgroundColor: theme?.palette?.drop_down_button?.export_background,
+        color: theme?.palette?.drop_down_button?.export_text,
+        border: `1px solid ${theme?.palette?.drop_down_button?.border}`,
+      },
+    },
     default_backup: {
       name: "Backup",
-      icon: <Icon fontSize="16px" icon="fluent:board-20-regular" />,
+      icon: <Icon fontSize="16px" icon="tabler:restore" />,
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_compare: {
+      name: "Compare",
+      icon: <Icon fontSize="16px" icon="tabler:git-compare" />,
       sx: {
         backgroundColor: theme?.palette?.default_button?.add_background,
         color: theme?.palette?.default_button?.primary_text,
