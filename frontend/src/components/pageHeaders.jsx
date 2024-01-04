@@ -9,6 +9,7 @@ import { TABLE_DATA_UNIQUE_ID as BOARD_ID } from "../containers/uamModule/boards
 import { TABLE_DATA_UNIQUE_ID as SUB_BOARD_ID } from "../containers/uamModule/subBoards/constants";
 import { TABLE_DATA_UNIQUE_ID as SFP_ID } from "../containers/uamModule/sfps/constants";
 import { TABLE_DATA_UNIQUE_ID as LICENSE_ID } from "../containers/uamModule/licenses/constants";
+import DefaultCard from "./cards";
 
 export default function DefaultPageHeader({ pageName, buttons }) {
   const theme = useTheme();

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
@@ -11,42 +11,47 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/atomModule/passwordGroups/apis";
-import {
-  useFetchPasswordGroupNamesQuery,
-  useFetchPasswordGroupTypeNamesQuery,
-} from "../../../store/features/dropDowns/apis";
+} from "../../../store/features/ncmModule/manageConfigurations/apis";
+import { useFetchPasswordGroupNamesQuery } from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
-import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
-} from "../../../store/features/dropDowns/selectors";
+import { selectPasswordGroupNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
+import { formSetter, getTitle } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ELEMENT_NAME } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
-  [indexColumnNameConstants.NETWORK_NAME]: yup
+  [indexColumnNameConstants.DEVICE_NAME]: yup
     .string()
-    .required("Network name is required"),
-  [indexColumnNameConstants.SUBNET]: yup
+    .required(`${getTitle(indexColumnNameConstants.DEVICE_NAME)} is required`),
+  [indexColumnNameConstants.IP_ADDRESS]: yup
     .string()
-    .required("Subnet is required"),
-  [indexColumnNameConstants.SCAN_STATUS]: yup
+    .required(`${getTitle(indexColumnNameConstants.IP_ADDRESS)} is required`),
+  [indexColumnNameConstants.DEVICE_TYPE]: yup
     .string()
-    .required("Scan status is required"),
-  [indexColumnNameConstants.EXCLUDED_IP_RANGE]: yup
+    .required(`${getTitle(indexColumnNameConstants.DEVICE_TYPE)} is required`),
+  [indexColumnNameConstants.ACTIVE]: yup
     .string()
-    .required("Excluded IP range is required"),
+    .required(`${getTitle(indexColumnNameConstants.ACTIVE)} is required`),
+  [indexColumnNameConstants.VENDOR]: yup
+    .string()
+    .required(`${getTitle(indexColumnNameConstants.VENDOR)} is required`),
+  [indexColumnNameConstants.FUNCTION]: yup
+    .string()
+    .required(`${getTitle(indexColumnNameConstants.FUNCTION)} is required`),
+  [indexColumnNameConstants.PASSWORD_GROUP]: yup
+    .string()
+    .required(
+      `${getTitle(indexColumnNameConstants.PASSWORD_GROUP)} is required`
+    ),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -80,9 +85,9 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // fetching dropdowns data from backend using apis
   const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
+    error: passwordGroupNamesError,
+    isLoading: isPasswordGroupNamesLoading,
+  } = useFetchPasswordGroupNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -104,13 +109,12 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   });
 
   // getting dropdowns data from the store
-  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
+  const passwordGroupNames = useSelector(selectPasswordGroupNames);
 
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data[indexColumnNameConstants.MANAGE_NETWORK_ID] =
-        recordToEdit[indexColumnNameConstants.MANAGE_NETWORK_ID];
+      data.password_group_id = recordToEdit.password_group_id;
       updateRecord(data);
     } else {
       addRecord(data);
@@ -123,28 +127,46 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container>
-          <Grid item xs={12}>
+      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
+        <Grid container spacing={5}>
+          <Grid item xs={6}>
             <DefaultFormUnit
               control={control}
-              dataKey={indexColumnNameConstants.NETWORK_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SUBNET}
+              dataKey={indexColumnNameConstants.IP_ADDRESS}
               required
             />
             <SelectFormUnit
               control={control}
-              dataKey={indexColumnNameConstants.SCAN_STATUS}
-              options={passwordGroupTypeNames}
+              dataKey={indexColumnNameConstants.ACTIVE}
+              options={passwordGroupNames}
               required
             />
             <DefaultFormUnit
               control={control}
-              dataKey={indexColumnNameConstants.EXCLUDED_IP_RANGE}
+              dataKey={indexColumnNameConstants.DEVICE_TYPE}
+              required
+            />
+          </Grid>
+          <Grid item xs={6}>
+            <SelectFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.PASSWORD_GROUP}
+              options={passwordGroupNames}
+              required
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.VENDOR}
+              required
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.FUNCTION}
+              required
+            />
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.DEVICE_NAME}
               required
             />
           </Grid>

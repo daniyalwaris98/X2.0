@@ -4,25 +4,25 @@ import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../store/features/atomModule/passwordGroups/apis";
+} from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmpCredentials/v1V2Credentials/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
-import { jsonToExcel } from "../../../utils/helpers";
+import { selectTableData } from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmpCredentials/v1V2Credentials/selectors";
+import { jsonToExcel } from "../../../../../utils/helpers";
 import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import useSweetAlert from "../../../hooks/useSweetAlert";
-import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
+import useErrorHandling from "../../../../../hooks/useErrorHandling";
+import useSweetAlert from "../../../../../hooks/useSweetAlert";
+import useColumnsGenerator from "../../../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
-import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
+import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { TYPE_FETCH, TYPE_BULK } from "../../../../../hooks/useErrorHandling";
+import DefaultPageTableSection from "../../../../../components/pageSections";
 
 const Index = () => {
   // theme
@@ -45,7 +45,6 @@ const Index = () => {
       handleClick: handleDelete,
       visible: selectedRowKeys.length > 0,
     },
-    default_backup: { handleClick: handleDelete },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
   });
 
@@ -127,7 +126,7 @@ const Index = () => {
     setOpen(true);
   }
 
-  function handleAdd(optionType) {
+  function handleAdd() {
     setOpen(true);
   }
 

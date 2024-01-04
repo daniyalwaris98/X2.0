@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table } from "antd";
 import styled from "styled-components";
 import { useTheme } from "@mui/material/styles";
@@ -82,6 +82,10 @@ const DefaultStyledAntDesignTable = styled(Table)`
       tr.even > td {
         background-color: ${({ theme }) =>
           theme?.palette?.default_table?.even_row};
+      }
+
+      tr.selected-row > td {
+        background-color: green;
       }
     }
   }
@@ -250,6 +254,74 @@ export default function DefaultTable({
           pageSizeOptions: [20, 50, 100, 500, 1000],
         }}
         theme={theme}
+        {...rest}
+      />
+    </DefaultScrollbar>
+  );
+}
+
+export function TableWithoutScroll({
+  displayColumns = [],
+  selectedRowKeys = null,
+  setSelectedRowKeys = null,
+  getCheckboxProps = null,
+  onRow = false,
+  ...rest
+}) {
+  const theme = useTheme();
+  const [selectedRowKey, setSelectedRowKey] = useState(null);
+
+  const rowSelection = {
+    getCheckboxProps,
+    selectedRowKeys,
+    onChange: onSelectChange,
+    selection: Table.SELECTION_ALL,
+  };
+
+  function onSelectChange(selectedRowKeys) {
+    setSelectedRowKeys(selectedRowKeys);
+  }
+
+  function handleChange(pagination, filters, sorter, extra) {
+    console.log("Various parameters", pagination, filters, sorter, extra);
+  }
+
+  function handleRowClick(record) {
+    // Toggle selection on row click
+    console.log("handleRowClick", record);
+    const newSelectedRowKey =
+      selectedRowKey == record.backup_id ? null : record.backup_id;
+    setSelectedRowKey(newSelectedRowKey);
+  }
+
+  function handleRowClicked(record) {
+    return { onClick: () => handleRowClick(record) };
+  }
+
+  function getRowClassName(record, index) {
+    let classNames = index % 2 === 0 ? "even" : "odd";
+    if (record.backup_id === selectedRowKey) {
+      classNames += " selected-row";
+    }
+    // Add more conditions as needed
+    return classNames;
+  }
+
+  return (
+    <DefaultScrollbar>
+      <DefaultStyledAntDesignTable
+        onChange={handleChange}
+        rowSelection={selectedRowKeys ? rowSelection : null}
+        columns={displayColumns}
+        style={{ whiteSpace: "pre" }}
+        rowClassName={getRowClassName}
+        size="small"
+        pagination={{
+          defaultPageSize: 10,
+          pageSizeOptions: [20, 50, 100, 500, 1000],
+        }}
+        theme={theme}
+        onRow={onRow ? handleRowClicked : null}
         {...rest}
       />
     </DefaultScrollbar>

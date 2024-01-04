@@ -1,6 +1,6 @@
 export const PAGE_NAME = "Alerts";
 export const PAGE_NAME_SMALL = "alert";
-export const PAGE_PATH = "alert";
+export const PAGE_PATH = "alerts";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_alerts";
 export const TABLE_DATA_UNIQUE_ID = "alert_id";
 export const indexColumnNameConstants = {

@@ -108,7 +108,7 @@ export function generateObject(dataKeys) {
 }
 
 export function getTableScrollWidth(columns) {
-  return columns.length * 220;
+  return columns.length * 210;
 }
 
 export function convertToAsterisks(inputString) {
