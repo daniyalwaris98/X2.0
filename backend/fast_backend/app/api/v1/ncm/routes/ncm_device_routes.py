@@ -5,13 +5,14 @@ from pathlib import Path
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
-
+# from app.core.config import configs
+from starlette.templating import Jinja2Templates
 from app.api.v1.ncm.conf_diff_main.conf_diff import ConfDiff
 from app.api.v1.ncm.ncm_pullers.ncm_puller import NCMPuller
 from app.api.v1.ncm.ncm_pullers.ncm_restore import RestorePuller
 from app.api.v1.ncm.utils.ncm_utils import *
 from app.schema.ncm_schema import *
-
+# from app.core.config import *
 router = APIRouter(
     prefix="/ncm_device",
     tags=["ncm_device"],
@@ -382,16 +383,17 @@ async def get_all_configuration(ncm_device_id: GetDeviceConfigurationById):
     try:
 
         results = configs.db.query(NCM_History_Table).filter(
-            NCM_History_Table.ncm_device_id == ncm_device_id
+            NCM_History_Table.ncm_device_id == ncm_device_id['ncm_device_id']
         ).all()
 
         obj_list = []
         for history in results:
-            obj_dict = {"ncm_history_id": history.ncm_history_id,
-                        "date": history.configuration_date,
-                        "file_name": history.file_name}
+            if history.deleted_state !=True:
+                obj_dict = {"ncm_history_id": history.ncm_history_id,
+                            "date": history.configuration_date,
+                            "file_name": history.file_name}
 
-            obj_list.append(obj_dict)
+                obj_list.append(obj_dict)
 
         return obj_list
     except Exception:
@@ -421,7 +423,7 @@ async def get_device_configuration(ncm_history_id:GetDeviceConfigurationByHistor
     try:
         data = {}
         history = configs.db.query(NCM_History_Table).filter(
-            NCM_History_Table.ncm_history_id == ncm_history_id
+            NCM_History_Table.ncm_history_id == ncm_history_id['ncm_history_id']
         ).first()
         print("history is::::::::::::::",history,file=sys.stderr)
         if history is None:
@@ -523,7 +525,7 @@ description="use this API to compare the configuration based on ncm_history_ids"
 )
 async def configuration_comparison(ncm_obj: CompareBackupSchema, request: Request):
     try:
-
+        print("reqeust in coonfiguration compariosn is:::::",request,file=sys.stderr)
         history1 = configs.db.query(NCM_History_Table).filter(
             NCM_History_Table.ncm_history_id == ncm_obj["ncm_history_id_1"],
         ).first()
@@ -553,16 +555,24 @@ async def configuration_comparison(ncm_obj: CompareBackupSchema, request: Reques
 
         path = f"{cwd}/app/configuration_backups/"
         file_1 = Path(f"{path}{history1.file_name}")
+        print("file_1 is:::::::::",file_1,file=sys.stderr)
         file_2 = Path(f"{path}{history2.file_name}")
+        print("file2 is:::::::::::::::",file_2,file=sys.stderr)
         html_file = Path(f"{cwd}/app/templates/html_diff_output.html")
-
+        print("html file is::::::::::::",html_file,file=sys.stderr)
         html_diff = ConfDiff(file_1, file_2, html_file)
+        print("html diff is:::::::::::",html_diff,file=sys.stderr)
         difference = html_diff.diff()
-
+        print("html differnece iss:::",difference,file=sys.stderr)
+        template = Jinja2Templates(directory=f"{cwd}/app/templates")
+        print("templates in config file is:", template, file=sys.stderr)
         if difference is None:
             return JSONResponse(content="No Difference Found In Configurations", status_code=500)
+        context = {
+            "request":request
+        }
 
-        return configs.templates.TemplateResponse("html_diff_output.html", {"request": request}, status_code=200)
+        return template.TemplateResponse("html_diff_output.html", context, status_code=200)
 
     except Exception:
         traceback.print_exc()
@@ -638,67 +648,6 @@ def get_bulk_backup_configurration(ncm_device_id: list[int]):
         raise JSONResponse(status_code=500, content="Error Occurred While Getting Bulk Backup")
 
 
-@router.post('/restore_configuration',
-             responses = {
-                 200:{"model":Response200},
-                 400:{"model":str},
-                 500:{"model":str}
-             },
-             summary="Use This API to restore configuration",
-             description="Use This API to restore configuration"
-             )
-def restore_configuration(data:RestoreConfigurationSchema):
-    try:
-        objDict = {}
-        ncm_data = dict(data)
-        device_type =""
-        print("NCM data is::::::::::::::",ncm_data,file=sys.stderr)
-        atom_exsist = configs.db.query(AtomTable).filter_by(ip_address = ncm_data['ip_address']).first()
-        ncm_device = configs.db.query(NcmDeviceTable).filter_by(atom_id = atom_exsist.atom_id).first()
-        if atom_exsist:
-            device_type = atom_exsist.device_type
-            objDict['ip_address'] = atom_exsist.ip_address
-            objDict['device_type'] = atom_exsist.device_type
-            objDict['device_name'] = atom_exsist.device_name
-            password_exsist = configs.db.query(PasswordGroupTable).filter_by(password_group_id = atom_exsist.password_group_id).first()
-            print("passowrd exsist is::::::",password_exsist,file=sys.stderr)
-            objDict['password'] = password_exsist.password.strip()
-            objDict['username'] = password_exsist.username.strip()
-        restore_configuration_puller = RestorePuller()
-        if device_type == "cisco_ios_xe":
-            device_type = "cisco_xe"
-
-        elif device_type == "cisco_ios_xr":
-            device_type = "cisco_xr"
-
-        elif device_type == "paloalto":
-            device_type = "paloalto_panaos"
-
-        elif device_type == 'h3c':
-            device_type = 'hp_comware'
-
-        end_result = restore_configuration_puller.poll(
-            objDict,device_type,ncm_data['date']
-        )
-        print("rnd resuotl for the restoration is the",end_result,file=sys.stderr)
-        if restore_configuration_puller.Success() == True:
-                data = {
-                    "configuration":{
-                        "ncm_device_id":ncm_device.ncm_device_id,
-                        "status":ncm_device.status,
-                        "ip_address":atom_exsist.ip_address,
-                        "date":ncm_device.config_change_date
-                    },
-                "message":f"{atom_exsist.ip_address} Is Restored"
-                }
-                return data
-        elif restore_configuration_puller.FileDoesNotExist():
-            return JSONResponse(content="File Does Not Exsist",status_code=500)
-        elif restore_configuration_puller.FailedLogin():
-            return JSONResponse(content="Failed To Login",status_code=500)
-    except Exception as e:
-        traceback.print_exc()
-        return JSONResponse(content="Error Occured While Restoring Configuration",status_code=500)
 
 
 @router.get('/get_all_true_backup',
@@ -733,6 +682,184 @@ def get_true_backup():
         return JSONResponse(content="Error Occured While Getting the true backup",status_code=500)
 
 
+@router.post('/delete_configuration',
+             responses={
+                 200:{"model":DeleteResponseSchema},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="API to delete configuration",
+            description="API to delete configuration"
+
+             )
+def delete_configuration(ncm_history_id:int):
+    try:
+        deleted_ids = []
+        success_list = []
+        error_list = []
+        ncm_history = configs.db.query(NCM_History_Table).filter_by(ncm_history_id = ncm_history_id).first()
+        if ncm_history:
+            ncm_history.deleted_state = True
+            configs.db.merge(ncm_history)
+            configs.db.commit()
+            deleted_ids.append(ncm_history_id)
+            success_list.append(f"{ncm_history_id} has been deleted")
+        else:
+            error_list.append(f"{ncm_history_id} : Not Found")
+        responses = {
+            "data":deleted_ids,
+            "success_list":success_list,
+            "error_list":error_list,
+            "succes":len(success_list),
+            "errors":len(error_list)
+        }
+        return responses
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Deleting the configuration",status_code=500)
+
+
+@router.get('/get_configuration_to_restore',
+            responses={
+                200:{"model":list[NcmConfigHistorySchema]},
+                500:{"model":str}
+            },
+            summary="API to Get the deleted configurations",
+            description="API to get the deleted configurations"
+            )
+def get_deleted_configuration():
+    try:
+        config_list = []
+        configurations = configs.db.query(NCM_History_Table).filter_by(deleted_state=True).all()
+        for configuration in configurations:
+            ncm_device = configs.db.query(NcmDeviceTable).filter_by(ncm_device_id = configuration.ncm_device_id).first()
+            config_dict = {
+                "ncm_history_id":configuration.ncm_history_id,
+                "date":configuration.configuration_date,
+                "file_name":configuration.file_name
+            }
+            config_list.append(config_dict)
+        return config_list
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while Getting the configuration")
+
+
+
+@router.post('/restore_configuration',
+             responses={
+                 200:{"model":SummeryResponseSchema},
+                 400:{"model":str},
+                 500:{"model":str}
+             })
+def restore_configuration(ncm_history_id:list[int]):
+    try:
+        connfig_data = {}
+        success_list = []
+        error_list = []
+        for id in ncm_history_id:
+            ncm_history =configs.db.query(NCM_History_Table).filter_by(ncm_history_id = id).first()
+            if ncm_history.deleted_state == True:
+                ncm_history.deleted_state = False
+                configs.db.merge(ncm_history)
+                configs.db.commit()
+
+                data = {"ncm_history_id":ncm_history.ncm_history_id,
+                          "date":ncm_history.configuration_date,
+                            "file_name":ncm_history.file_name},
+
+                connfig_data['data'] = data
+                success_list.append(f"{ncm_history.configuration_date} : has been restored")
+            else:
+                error_list.append(f"{id} : Not Found ")
+        response = {
+                    "data":connfig_data,
+                    "success_list": success_list,
+                    "error_list":error_list,
+                    "success": len(success_list),
+                    "error": len(error_list)
+                    }
+        return  response
+    except Exception as e:
+        traceback.print_exc()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+# @router.post('/restore_configuration',
+#              responses = {
+#                  200:{"model":Response200},
+#                  400:{"model":str},
+#                  500:{"model":str}
+#              },
+#              summary="Use This API to restore configuration",
+#              description="Use This API to restore configuration"
+#              )
+# def restore_configuration(data:RestoreConfigurationSchema):
+#     try:
+#         objDict = {}
+#         ncm_data = dict(data)
+#         device_type =""
+#         print("NCM data is::::::::::::::",ncm_data,file=sys.stderr)
+#         atom_exsist = configs.db.query(AtomTable).filter_by(ip_address = ncm_data['ip_address']).first()
+#         ncm_device = configs.db.query(NcmDeviceTable).filter_by(atom_id = atom_exsist.atom_id).first()
+#         if atom_exsist:
+#             device_type = atom_exsist.device_type
+#             objDict['ip_address'] = atom_exsist.ip_address
+#             objDict['device_type'] = atom_exsist.device_type
+#             objDict['device_name'] = atom_exsist.device_name
+#             password_exsist = configs.db.query(PasswordGroupTable).filter_by(password_group_id = atom_exsist.password_group_id).first()
+#             print("passowrd exsist is::::::",password_exsist,file=sys.stderr)
+#             objDict['password'] = password_exsist.password.strip()
+#             objDict['username'] = password_exsist.username.strip()
+#         restore_configuration_puller = RestorePuller()
+#         if device_type == "cisco_ios_xe":
+#             device_type = "cisco_xe"
+#
+#         elif device_type == "cisco_ios_xr":
+#             device_type = "cisco_xr"
+#
+#         elif device_type == "paloalto":
+#             device_type = "paloalto_panaos"
+#
+#         elif device_type == 'h3c':
+#             device_type = 'hp_comware'
+#
+#         end_result = restore_configuration_puller.poll(
+#             objDict,device_type,ncm_data['date']
+#         )
+#         print("rnd resuotl for the restoration is the",end_result,file=sys.stderr)
+#         if restore_configuration_puller.Success() == True:
+#                 data = {
+#                     "configuration":{
+#                         "ncm_device_id":ncm_device.ncm_device_id,
+#                         "status":ncm_device.status,
+#                         "ip_address":atom_exsist.ip_address,
+#                         "date":ncm_device.config_change_date
+#                     },
+#                 "message":f"{atom_exsist.ip_address} Is Restored"
+#                 }
+#                 return data
+#         elif restore_configuration_puller.FileDoesNotExist():
+#             return JSONResponse(content="File Does Not Exsist",status_code=500)
+#         elif restore_configuration_puller.FailedLogin():
+#             return JSONResponse(content="Failed To Login",status_code=500)
+#     except Exception as e:
+#         traceback.print_exc()
+#         return JSONResponse(content="Error Occured While Restoring Configuration",status_code=500)
 
 
 # @router.get('/recent_configuration',
@@ -1380,3 +1507,8 @@ def get_true_backup():
 #
 
 
+import os
+print("Template directory path:", os.path.abspath("templates"),file=sys.stderr)
+
+template_path = os.path.join(os.path.dirname(__file__), 'templates', 'html_diff_output.html')
+print("Full path to the template:", template_path,file=sys.stderr)
