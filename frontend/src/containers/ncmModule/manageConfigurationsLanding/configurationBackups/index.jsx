@@ -14,6 +14,7 @@ import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import { PAGE_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
+import { TABLE_DATA_UNIQUE_ID as MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID } from "../../manageConfigurations/constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import { PageTableSectionWithoutScrollAndWidth } from "../../../../components/pageSections";
 import { Grid } from "@mui/material";
@@ -25,7 +26,7 @@ const Index = () => {
   // theme
   const theme = useTheme();
   const location = useLocation();
-  const receivedData = location.state;
+  const receivedData = location.state ? location.state : {};
 
   console.log("receivedData", receivedData);
   // hooks
@@ -45,10 +46,14 @@ const Index = () => {
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
+  const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   // selectors
-  const dataSource = [{ backup_id: 1 }, { backup_id: 2 }];
-  // const dataSource = useSelector(selectTableData);
+  // const dataSource = [
+  //   { ncm_history_id: 1, ip_address: "452" },
+  //   { ncm_history_id: 2, ip_address: "312" },
+  // ];
+  const dataSource = useSelector(selectTableData);
 
   // apis
   const [
@@ -92,12 +97,18 @@ const Index = () => {
 
   // effects
   useEffect(() => {
-    fetchRecords({ ncm_device_id: receivedData?.ncm_device_id });
+    fetchRecords({
+      [MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID]:
+        receivedData[MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID],
+    });
   }, []);
 
   // handlers
   function handleSingleBackup() {
-    singleBackup({ ncm_device_id: receivedData?.ncm_device_id });
+    singleBackup({
+      [MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID]:
+        receivedData[MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID],
+    });
   }
 
   function handleTableConfigurationsOpen() {
@@ -119,9 +130,10 @@ const Index = () => {
   function handleRestoreModalClose() {
     setRestoreModalOpen(false);
   }
+
   return (
-    // <Spin spinning={isFetchRecordsLoading || isSingleBackupLoading}>
-    <Spin spinning={false}>
+    <Spin spinning={isFetchRecordsLoading || isSingleBackupLoading}>
+      {/* <Spin spinning={false}> */}
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -159,11 +171,13 @@ const Index = () => {
             buttonsConfigurationList={buttonsConfigurationList}
             displayColumns={displayColumns}
             dataSource={dataSource}
-            onRow
+            rowClickable={true}
+            selectedRowKey={selectedRowKey}
+            setSelectedRowKey={setSelectedRowKey}
           />
         </Grid>
         <Grid item xs={12}>
-          <BackupDetails />
+          <BackupDetails ncmHistoryId={selectedRowKey} />
         </Grid>
       </Grid>
     </Spin>

@@ -1,31 +1,22 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../../components/dialogs";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../../components/formUnits";
-import { SelectFormUnit } from "../../../../components/formUnits";
-import DefaultDialogFooter, {
-  CompareDialogFooter,
-} from "../../../../components/dialogFooters";
+import { SelectFormUnitWithHiddenValues } from "../../../../components/formUnits";
+import { CompareDialogFooter } from "../../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
-import { useGetNcmConfigurationBackupDetailsByNcmHistoryIdMutation } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
-import {
-  useFetchPasswordGroupNamesQuery,
-  useFetchPasswordGroupTypeNamesQuery,
-} from "../../../../store/features/dropDowns/apis";
+import { useCompareNcmConfigurationBackupsMutation } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
+import { selectTableData } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
 import { useSelector } from "react-redux";
-import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
-} from "../../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
-import { formSetter, getTitle } from "../../../../utils/helpers";
+import { getTitle } from "../../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../../hooks/useErrorHandling";
 import { ELEMENT_NAME } from "./constants";
 import { compareModalConstants } from "./constants";
-import BackupDetails from "./backupDetails";
+import { Spin } from "antd";
+import ReactHtmlParser from "react-html-parser";
 
 const schema = yup.object().shape({
   [compareModalConstants.CONFIGURATION_TO_BE_COMPARED]: yup
@@ -40,34 +31,50 @@ const schema = yup.object().shape({
     .required(`${getTitle(compareModalConstants.COMPARE_TO)} is required`),
 });
 
-const Index = ({ handleClose, open, recordToEdit }) => {
+const Index = ({ handleClose, open }) => {
   const theme = useTheme();
 
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control } = useForm({
     resolver: yupResolver(schema),
   });
 
-  // effects
-  useEffect(() => {
-    formSetter(recordToEdit, setValue);
-  }, []);
-
-  // post api for the form
-
-  // fetching dropdowns data from backend using apis
-  const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
+  // apis
+  const [
+    compareBackups,
+    {
+      data: compareBackupsData,
+      isSuccess: isCompareBackupsSuccess,
+      isLoading: isCompareBackupsLoading,
+      isError: isCompareBackupsError,
+      error: compareBackupsError,
+    },
+  ] = useCompareNcmConfigurationBackupsMutation();
 
   // error handling custom hooks
+  useErrorHandling({
+    data: compareBackupsData,
+    isSuccess: isCompareBackupsSuccess,
+    isError: isCompareBackupsError,
+    error: compareBackupsError,
+    type: TYPE_SINGLE,
+  });
 
-  // getting dropdowns data from the store
-  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
+  // getting data from the store
+  const dataSource = useSelector(selectTableData);
+  const derivedOptions = dataSource.map((item) => ({
+    name: `${item.ip_address}-${item.date}`,
+    value: item.ncm_history_id,
+  }));
 
   // on form submit
-  const onSubmit = (data) => {};
+  const onSubmit = (data) => {
+    compareBackups({
+      ncm_history_id_1:
+        data[compareModalConstants.CONFIGURATION_TO_BE_COMPARED],
+      ncm_history_id_2: data[compareModalConstants.COMPARE_TO],
+    });
+  };
 
   return (
     <FormModal
@@ -75,35 +82,54 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${"Compare"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
-        <Grid container spacing={2}>
-          <Grid item xs={6}>
-            <SelectFormUnit
-              control={control}
-              dataKey={compareModalConstants.CONFIGURATION_TO_BE_COMPARED}
-              options={passwordGroupTypeNames}
-              required
-            />
+      <Spin spinning={isCompareBackupsLoading}>
+        <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
+          <Grid container spacing={2}>
+            <Grid item xs={6}>
+              <SelectFormUnitWithHiddenValues
+                control={control}
+                dataKey={compareModalConstants.CONFIGURATION_TO_BE_COMPARED}
+                options={derivedOptions}
+                required
+              />
+            </Grid>
+            <Grid item xs={6}>
+              <SelectFormUnitWithHiddenValues
+                control={control}
+                dataKey={compareModalConstants.COMPARE_TO}
+                options={derivedOptions}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              {compareBackupsData ? (
+                <div
+                  style={{
+                    margin: "8px",
+
+                    borderRadius: "12px",
+                    backgroundColor: "#fcfcfc",
+                    boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
+                  }}
+                >
+                  <div
+                    style={{
+                      width: "100%",
+                      overflowX: "auto",
+                      scrollBehavior: "smooth",
+                    }}
+                  >
+                    {ReactHtmlParser(compareBackupsData)}
+                  </div>
+                </div>
+              ) : null}
+            </Grid>
+            <Grid item xs={12}>
+              <CompareDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <SelectFormUnit
-              control={control}
-              dataKey={compareModalConstants.COMPARE_TO}
-              options={passwordGroupTypeNames}
-              required
-            />
-          </Grid>
-          <Grid item xs={6}>
-            <BackupDetails readOnly={true} />
-          </Grid>
-          <Grid item xs={6}>
-            <BackupDetails readOnly={true} />
-          </Grid>
-          <Grid item xs={12}>
-            <CompareDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </Spin>
     </FormModal>
   );
 };

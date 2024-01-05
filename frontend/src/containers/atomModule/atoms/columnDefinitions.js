@@ -156,6 +156,53 @@ export function useIndexTableColumnDefinitions({ handleEdit = null }) {
     },
   ];
 
+  const columnDefinitionsForNcmDevices = [
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.FUNCTION,
+    indexColumnNameConstants.VENDOR,
+    {
+      data_key: indexColumnNameConstants.ONBOARD_STATUS,
+      title: "Board",
+      fixed: "right",
+      align: "center",
+      width: 80,
+      render: (text, record) => (
+        <div
+          style={{
+            textAlign: "center",
+          }}
+        >
+          {record.on_board_status === true ? (
+            <span
+              style={{
+                display: "inline-block",
+                borderRadius: "10px",
+                backgroundColor: "#c2dfbf",
+                color: "#3D9E47",
+                padding: "1px 15px",
+              }}
+            >
+              True
+            </span>
+          ) : record.on_board_status === false ? (
+            <div
+              style={{
+                display: "inline-block",
+                borderRadius: "10px",
+                backgroundColor: "#ffe2dd",
+                color: "#E34444",
+                padding: "1px 15px",
+              }}
+            >
+              False
+            </div>
+          ) : null}
+        </div>
+      ),
+    },
+  ];
+
   const dataKeys = columnDefinitions
     .map((item) => {
       if (typeof item === "object") {
@@ -174,6 +221,7 @@ export function useIndexTableColumnDefinitions({ handleEdit = null }) {
   return {
     columnDefinitions,
     columnDefinitionsForIpamDevices,
+    columnDefinitionsForNcmDevices,
     dataKeys,
   };
 }

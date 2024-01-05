@@ -85,7 +85,15 @@ const DefaultStyledAntDesignTable = styled(Table)`
       }
 
       tr.selected-row > td {
-        background-color: green;
+        background-color: #e5ffda;
+      }
+
+      tr.selected-row:hover > td {
+        background-color: #e5ffda;
+      }
+
+      tr.clickable-row:hover > td {
+        cursor: pointer;
       }
     }
   }
@@ -265,11 +273,12 @@ export function TableWithoutScroll({
   selectedRowKeys = null,
   setSelectedRowKeys = null,
   getCheckboxProps = null,
-  onRow = false,
+  rowClickable = false,
+  selectedRowKey = null,
+  setSelectedRowKey = null,
   ...rest
 }) {
   const theme = useTheme();
-  const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   const rowSelection = {
     getCheckboxProps,
@@ -287,10 +296,8 @@ export function TableWithoutScroll({
   }
 
   function handleRowClick(record) {
-    // Toggle selection on row click
-    console.log("handleRowClick", record);
     const newSelectedRowKey =
-      selectedRowKey == record.backup_id ? null : record.backup_id;
+      selectedRowKey == record[rest.rowKey] ? null : record[rest.rowKey];
     setSelectedRowKey(newSelectedRowKey);
   }
 
@@ -300,10 +307,13 @@ export function TableWithoutScroll({
 
   function getRowClassName(record, index) {
     let classNames = index % 2 === 0 ? "even" : "odd";
-    if (record.backup_id === selectedRowKey) {
+    if (record[rest.rowKey] === selectedRowKey) {
       classNames += " selected-row";
     }
-    // Add more conditions as needed
+    if (rowClickable) {
+      classNames += " clickable-row";
+    }
+
     return classNames;
   }
 
@@ -321,7 +331,7 @@ export function TableWithoutScroll({
           pageSizeOptions: [20, 50, 100, 500, 1000],
         }}
         theme={theme}
-        onRow={onRow ? handleRowClicked : null}
+        onRow={rowClickable ? handleRowClicked : null}
         {...rest}
       />
     </DefaultScrollbar>

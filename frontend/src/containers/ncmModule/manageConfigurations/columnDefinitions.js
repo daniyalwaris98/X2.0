@@ -2,11 +2,10 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
-import { Link } from "react-router-dom";
 
 export function useIndexTableColumnDefinitions({
-  handleEdit,
   handleIpAddressClick,
+  handleRcsClick,
 }) {
   const theme = useTheme();
 
@@ -16,10 +15,8 @@ export function useIndexTableColumnDefinitions({
       data_key: indexColumnNameConstants.IP_ADDRESS,
       render: (text, record) => (
         <a onClick={() => handleIpAddressClick(record)}>{text}</a>
-        // <Link to="manage_configurations_landing">{text}</Link>
       ),
     },
-    // indexColumnNameConstants.IP_ADDRESS,
     indexColumnNameConstants.RCS,
     indexColumnNameConstants.DEVICE_TYPE,
     indexColumnNameConstants.VENDOR,
@@ -41,8 +38,8 @@ export function useIndexTableColumnDefinitions({
         >
           <Icon
             fontSize={"15px"}
-            onClick={() => handleEdit(record)}
-            icon="bx:edit"
+            onClick={() => handleRcsClick(record)}
+            icon="clarity:command-line"
             style={{ cursor: "pointer" }}
           />
         </div>
@@ -58,7 +55,7 @@ export function useIndexTableColumnDefinitions({
         return item;
       }
     })
-    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
+    .filter((item) => true);
 
   return {
     columnDefinitions,

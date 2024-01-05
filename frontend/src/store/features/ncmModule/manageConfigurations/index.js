@@ -7,6 +7,7 @@ import {
 
 const initialState = {
   all_data: [],
+  atoms_to_add_in_ncm_devices: [],
 };
 
 const defaultSlice = createSlice({
@@ -16,13 +17,19 @@ const defaultSlice = createSlice({
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.getAllNcmConfigurations.matchFulfilled,
+        extendedApi.endpoints.getAllNcmDevices.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addNcmConfigurations.matchFulfilled,
+        extendedApi.endpoints.getAtomsToAddInNcmDevices.matchFulfilled,
+        (state, action) => {
+          state.atoms_to_add_in_ncm_devices = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.addAtomsInNcmDevices.matchFulfilled,
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
             const indexToUpdate = state.all_data.findIndex((tableItem) => {
@@ -40,7 +47,7 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteNcmConfigurations.matchFulfilled,
+        extendedApi.endpoints.deleteNcmDevices.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -54,23 +61,19 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addNcmConfiguration.matchFulfilled,
+        extendedApi.endpoints.getAllCompletedBackups.matchFulfilled,
         (state, action) => {
-          state.all_data = [action.payload.data, ...state.all_data];
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.updateNcmConfiguration.matchFulfilled,
-        (state, action) => {
-          let objectToReplace = action.payload.data;
-          state.all_data = state.all_data.map((item) => {
-            if (
-              item[TABLE_DATA_UNIQUE_ID] ===
-              objectToReplace[TABLE_DATA_UNIQUE_ID]
-            ) {
-              return { ...item, ...objectToReplace };
+          action.payload.data.forEach((responseItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
+              return (
+                tableItem[TABLE_DATA_UNIQUE_ID] ===
+                responseItem[TABLE_DATA_UNIQUE_ID]
+              );
+            });
+            if (indexToUpdate !== -1) {
+              state.all_data[indexToUpdate] = responseItem;
             } else {
-              return item;
+              state.all_data = [responseItem, ...state.all_data];
             }
           });
         }

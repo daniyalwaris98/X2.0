@@ -1,14 +1,14 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultDialog from "../../../components/dialogs";
 import { CancelDialogFooter } from "../../../components/dialogFooters";
 import Grid from "@mui/material/Grid";
 import {
-  useGetAtomsToAddInIpamDevicesQuery,
-  useAddAtomsInIpamDevicesMutation,
-} from "../../../store/features/ipamModule/devices/apis";
+  useGetAtomsToAddInNcmDevicesQuery,
+  useAddAtomsInNcmDevicesMutation,
+} from "../../../store/features/ncmModule/manageConfigurations/apis";
 import { useSelector } from "react-redux";
-import { selectAtomsToAddInIpamDevicesData } from "../../../store/features/ipamModule/devices/selectors";
+import { selectAtomsToAddInNcmDevicesData } from "../../../store/features/ncmModule/manageConfigurations/selectors";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -27,7 +27,7 @@ const Index = ({ handleClose, open }) => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { columnDefinitionsForIpamDevices: columnDefinitions } =
+  const { columnDefinitionsForNcmDevices: columnDefinitions } =
     useIndexTableColumnDefinitions({});
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
@@ -47,44 +47,44 @@ const Index = ({ handleClose, open }) => {
 
   // apis
   const {
-    data: getAtomsToAddInIpamDevicesData,
-    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
-    isLoading: isGetAtomsToAddInIpamDevicesLoading,
-    isError: isGetAtomsToAddInIpamDevicesError,
-    error: getAtomsToAddInIpamDevicesError,
-  } = useGetAtomsToAddInIpamDevicesQuery();
+    data: getAtomsToAddInNcmDevicesData,
+    isSuccess: isGetAtomsToAddInNcmDevicesSuccess,
+    isLoading: isGetAtomsToAddInNcmDevicesLoading,
+    isError: isGetAtomsToAddInNcmDevicesError,
+    error: getAtomsToAddInNcmDevicesError,
+  } = useGetAtomsToAddInNcmDevicesQuery();
 
   const [
-    addAtomsInIpam,
+    addAtomsInNcm,
     {
-      data: addAtomsInIpamDevicesData,
-      isSuccess: isAddAtomsInIpamDevicesSuccess,
-      isLoading: isAddAtomsInIpamDevicesLoading,
-      isError: isAddAtomsInIpamDevicesError,
-      error: addAtomsInIpamDevicesError,
+      data: addAtomsInNcmDevicesData,
+      isSuccess: isAddAtomsInNcmDevicesSuccess,
+      isLoading: isAddAtomsInNcmDevicesLoading,
+      isError: isAddAtomsInNcmDevicesError,
+      error: addAtomsInNcmDevicesError,
     },
-  ] = useAddAtomsInIpamDevicesMutation();
+  ] = useAddAtomsInNcmDevicesMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: getAtomsToAddInIpamDevicesData,
-    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
-    isError: isGetAtomsToAddInIpamDevicesError,
-    error: getAtomsToAddInIpamDevicesError,
+    data: getAtomsToAddInNcmDevicesData,
+    isSuccess: isGetAtomsToAddInNcmDevicesSuccess,
+    isError: isGetAtomsToAddInNcmDevicesError,
+    error: getAtomsToAddInNcmDevicesError,
     type: TYPE_FETCH,
   });
 
   useErrorHandling({
-    data: addAtomsInIpamDevicesData,
-    isSuccess: isAddAtomsInIpamDevicesSuccess,
-    isError: isAddAtomsInIpamDevicesError,
-    error: addAtomsInIpamDevicesError,
+    data: addAtomsInNcmDevicesData,
+    isSuccess: isAddAtomsInNcmDevicesSuccess,
+    isError: isAddAtomsInNcmDevicesError,
+    error: addAtomsInNcmDevicesError,
     type: TYPE_BULK,
     callback: handleClose,
   });
 
   // getting dropdowns data from the store
-  const dataSource = useSelector(selectAtomsToAddInIpamDevicesData);
+  const dataSource = useSelector(selectAtomsToAddInNcmDevicesData);
 
   // handlers
   function handleTableConfigurationsOpen() {
@@ -92,21 +92,17 @@ const Index = ({ handleClose, open }) => {
   }
 
   function handleAdd() {
-    addAtomsInIpam(selectedRowKeys);
+    addAtomsInNcm(selectedRowKeys);
   }
 
   return (
-    <DefaultDialog
-      //   sx={{ paddingTop: "10px" }}
-      title={`${"Add"} ${ELEMENT_NAME_BULK}`}
-      open={open}
-    >
+    <DefaultDialog title={`${"Add"} ${ELEMENT_NAME_BULK}`} open={open}>
       <Grid container style={{ marginTop: "15px" }}>
         <Grid item xs={12}>
           <Spin
             spinning={
-              isGetAtomsToAddInIpamDevicesLoading ||
-              isAddAtomsInIpamDevicesLoading
+              isGetAtomsToAddInNcmDevicesLoading ||
+              isAddAtomsInNcmDevicesLoading
             }
           >
             {tableConfigurationsOpen ? (

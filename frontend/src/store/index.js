@@ -46,6 +46,11 @@ import ipamDnsZonesReducer from "./features/ipamModule/dnsServerDropDown/dnsZone
 import ipamFirewalls from "./features/ipamModule/vipDropDown/firewalls";
 import ipamLoadBalancers from "./features/ipamModule/vipDropDown/loadBalancers";
 
+// ncm module
+import ncmManageConfigurationsReducer from "./features/ncmModule/manageConfigurations";
+import ncmConfigurationBackupsReducer from "./features/ncmModule/manageConfigurations/configurationBackups";
+import ncmRemoteCommandSenderReducer from "./features/ncmModule/manageConfigurations/remoteCommandSender";
+
 import dropDownsReducer from "./features/dropDowns";
 
 export const store = configureStore({
@@ -94,6 +99,11 @@ export const store = configureStore({
 
     ipam_firewalls: ipamFirewalls,
     ipam_load_balancers: ipamLoadBalancers,
+
+    // ncm module
+    ncm_manage_configurations: ncmManageConfigurationsReducer,
+    ncm_configuration_backups: ncmConfigurationBackupsReducer,
+    ncm_remote_command_sender: ncmRemoteCommandSenderReducer,
 
     // dropdowns
     drop_downs: dropDownsReducer,

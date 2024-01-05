@@ -72,7 +72,9 @@ export function PageTableSectionWithoutScrollAndWidth({
   selectedRowKeys = null,
   setSelectedRowKeys = null,
   getCheckboxProps = null,
-  onRow = false,
+  rowClickable = false,
+  selectedRowKey = null,
+  setSelectedRowKey = null,
 }) {
   return (
     <DefaultCard>
@@ -87,7 +89,9 @@ export function PageTableSectionWithoutScrollAndWidth({
         getCheckboxProps={getCheckboxProps}
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
-        onRow={onRow}
+        rowClickable={rowClickable}
+        selectedRowKey={selectedRowKey}
+        setSelectedRowKey={setSelectedRowKey}
       />
     </DefaultCard>
   );

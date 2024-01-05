@@ -2,45 +2,38 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllNcmConfigurations: builder.query({
-      query: () => "/api/v1/atom/password_group/get_password_groups",
+    getAllNcmDevices: builder.query({
+      query: () => "/api/v1/ncm/ncm_device/get_all_ncm_devices",
     }),
 
-    addNcmConfigurations: builder.mutation({
+    getAtomsToAddInNcmDevices: builder.query({
+      query: () => "/api/v1/ncm/ncm_device/get_atom_in_ncm",
+    }),
+
+    addAtomsInNcmDevices: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_groups",
+        url: "/api/v1/ncm/ncm_device/add_ncm_from_atom",
         method: "POST",
         body: data,
       }),
     }),
 
-    deleteNcmConfigurations: builder.mutation({
+    deleteNcmDevices: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/delete_password_group",
+        url: "/api/v1/ncm/ncm_device/delete_ncm_devices",
         method: "POST",
         body: data,
       }),
     }),
 
-    addNcmConfiguration: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_group",
-        method: "POST",
-        body: data,
-      }),
-    }),
-
-    updateNcmConfiguration: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/atom/password_group/edit_password_group",
-        method: "POST",
-        body: data,
-      }),
+    // call this api on loop when bulk backup starts, end the loop when this api returns empty array
+    getAllCompletedBackups: builder.query({
+      query: () => "/api/v1/ncm/ncm_device/get_all_ncm_devices",
     }),
 
     bulkBackupNcmConfigurationsByDeviceIds: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/edit_password_group",
+        url: "/api/v1/ncm/ncm_device/bulk_backup_configuration",
         method: "POST",
         body: data,
       }),
@@ -49,10 +42,10 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useGetAllNcmConfigurationsQuery: useFetchRecordsQuery,
-  useAddNcmConfigurationsMutation: useAddRecordsMutation,
-  useDeleteNcmConfigurationsMutation: useDeleteRecordsMutation,
-  useAddNcmConfigurationMutation: useAddRecordMutation,
-  useUpdateNcmConfigurationMutation: useUpdateRecordMutation,
+  useGetAllNcmDevicesQuery: useFetchRecordsQuery,
+  useGetAtomsToAddInNcmDevicesQuery,
+  useAddAtomsInNcmDevicesMutation,
+  useDeleteNcmDevicesMutation: useDeleteRecordsMutation,
+  useGetAllCompletedBackupsQuery,
   useBulkBackupNcmConfigurationsByDeviceIdsMutation,
 } = extendedApi;

@@ -4,49 +4,57 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllNcmConfigurationBackupsByNcmDeviceId: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_groups",
+        url: "/api/v1/ncm/ncm_device/get_all_device_configurations_by_id",
         method: "POST",
-        body: { ncm_device_id: 1 },
+        body: data,
       }),
     }),
 
     deleteSingleNcmConfigurationBackupByNcmHistoryId: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/delete_password_group",
+        url: "/api/v1/ncm/ncm_device/delete_configuration",
         method: "POST",
-        body: { ncm_history_id: 1 },
+        body: data,
       }),
     }),
 
     getNcmConfigurationBackupDetailsByNcmHistoryId: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_groups",
+        url: "/api/v1/ncm/ncm_device/get_device_configuration",
         method: "POST",
-        body: { ncm_history_id: 1 },
+        body: data,
       }),
     }),
 
     getAllDeletedNcmConfigurationBackupsByNcmDeviceId: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_groups",
+        url: "/api/v1/ncm/ncm_device/get_configuration_to_restore",
         method: "POST",
-        body: { ncm_device_id: 1 },
+        body: data,
       }),
     }),
 
     restoreNcmConfigurationBackupsByNcmHistoryIds: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_groups",
+        url: "/api/v1/ncm/ncm_device/restore_configuration",
         method: "POST",
-        body: [0, 1, 2, 3],
+        body: data,
       }),
     }),
 
     backupSingleNcmConfigurationByNcmDeviceId: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_groups",
+        url: "/api/v1/ncm/ncm_device/get_configuration_backup",
         method: "POST",
-        body: { ncm_device_id: 1 },
+        body: data,
+      }),
+    }),
+
+    compareNcmConfigurationBackups: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/ncm/ncm_device/configuration_comparison",
+        method: "POST",
+        body: data,
       }),
     }),
   }),
@@ -61,4 +69,5 @@ export const {
   useGetAllDeletedNcmConfigurationBackupsByNcmDeviceIdMutation,
   useRestoreNcmConfigurationBackupsByNcmHistoryIdsMutation,
   useBackupSingleNcmConfigurationByNcmDeviceIdMutation,
+  useCompareNcmConfigurationBackupsMutation,
 } = extendedApi;

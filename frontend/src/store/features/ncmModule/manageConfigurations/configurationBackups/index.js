@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../containers/atomModule/passwordGroups/constants";
+} from "../../../../../containers/ncmModule/manageConfigurationsLanding/configurationBackups/constants";
 
 const initialState = {
   all_data: [],
@@ -24,15 +24,29 @@ const defaultSlice = createSlice({
           state.all_data = action.payload;
         }
       )
-
+      .addMatcher(
+        extendedApi.endpoints.deleteSingleNcmConfigurationBackupByNcmHistoryId
+          .matchFulfilled,
+        (state, action) => {
+          const deletedIds = action.payload?.data || [];
+          if (deletedIds.length > 0) {
+            state.all_data = state.all_data.filter((item) => {
+              const shouldKeepItem = deletedIds.some((deletedId) => {
+                return deletedId === item[TABLE_DATA_UNIQUE_ID];
+              });
+              return !shouldKeepItem;
+            });
+            state.configuration_backup_details = null;
+          }
+        }
+      )
       .addMatcher(
         extendedApi.endpoints.getNcmConfigurationBackupDetailsByNcmHistoryId
           .matchFulfilled,
         (state, action) => {
-          state.configuration_backup_details = action.payload;
+          state.configuration_backup_details = action.payload.data;
         }
       )
-
       .addMatcher(
         extendedApi.endpoints.getAllDeletedNcmConfigurationBackupsByNcmDeviceId
           .matchFulfilled,
@@ -40,7 +54,6 @@ const defaultSlice = createSlice({
           state.deleted_configuration_backups = action.payload;
         }
       )
-
       .addMatcher(
         extendedApi.endpoints.restoreNcmConfigurationBackupsByNcmHistoryIds
           .matchFulfilled,
@@ -76,21 +89,6 @@ const defaultSlice = createSlice({
               return item;
             }
           });
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.deleteSingleNcmConfigurationBackupByNcmHistoryId
-          .matchFulfilled,
-        (state, action) => {
-          const deletedIds = action.payload?.data || [];
-          if (deletedIds.length > 0) {
-            state.all_data = state.all_data.filter((item) => {
-              const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item[TABLE_DATA_UNIQUE_ID];
-              });
-              return !shouldKeepItem;
-            });
-          }
         }
       );
   },

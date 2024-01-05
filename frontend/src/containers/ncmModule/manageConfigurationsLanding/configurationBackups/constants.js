@@ -1,12 +1,11 @@
 export const PAGE_NAME = "Configuration Backups";
 export const ELEMENT_NAME = "Configuration Backup";
 export const PAGE_PATH = "configuration_backups";
-export const FILE_NAME_EXPORT_ALL_DATA = "all_configs";
-export const FILE_NAME_EXPORT_TEMPLATE = "configs_template";
-export const TABLE_DATA_UNIQUE_ID = "backup_id";
-export const RESTORE_TABLE_DATA_UNIQUE_ID = "restore_id";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_configurations_information";
+export const FILE_NAME_EXPORT_TEMPLATE = "configurations_information_template";
+export const TABLE_DATA_UNIQUE_ID = "ncm_history_id";
 export const indexColumnNameConstants = {
-  BACKUP_ID: TABLE_DATA_UNIQUE_ID,
+  NCM_HISTORY_ID: TABLE_DATA_UNIQUE_ID,
   IP_ADDRESS: "ip_address",
   DATE: "date",
   ACTIONS: "actions",
@@ -18,7 +17,7 @@ export const compareModalConstants = {
 };
 
 export const restoreColumnNameConstants = {
-  RESTORE_ID: RESTORE_TABLE_DATA_UNIQUE_ID,
+  NCM_HISTORY_ID: TABLE_DATA_UNIQUE_ID,
   IP_ADDRESS: "ip_address",
   DATE: "date",
   ACTIONS: "actions",
