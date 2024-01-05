@@ -78,6 +78,7 @@ export function SelectFormUnit({
   dataKey,
   options,
   required = false,
+  label = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -89,9 +90,11 @@ export function SelectFormUnit({
       render={({ field, fieldState }) => {
         return (
           <DefaultWrapper sx={{ marginBottom: "10px" }}>
-            <DefaultLabel htmlFor={dataKey} required={required}>
-              {title}:
-            </DefaultLabel>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
             <InputWrapper>
               <DefaultSelect
                 field={field}
@@ -132,6 +135,7 @@ export function SelectFormUnitWithHiddenValues({
   dataKey,
   options,
   required = false,
+  label = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -143,9 +147,11 @@ export function SelectFormUnitWithHiddenValues({
       render={({ field, fieldState }) => {
         return (
           <DefaultWrapper sx={{ marginBottom: "10px" }}>
-            <DefaultLabel htmlFor={dataKey} required={required}>
-              {title}:
-            </DefaultLabel>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
             <InputWrapper>
               <DefaultSelect
                 field={field}
@@ -186,6 +192,7 @@ export function AddableSelectFormUnit({
   dataKey,
   options,
   required = false,
+  label = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -197,9 +204,11 @@ export function AddableSelectFormUnit({
       render={({ field, fieldState }) => {
         return (
           <DefaultWrapper sx={{ marginBottom: "10px" }}>
-            <DefaultLabel htmlFor={dataKey} required={required}>
-              {title}:
-            </DefaultLabel>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
             <InputWrapper>
               <AddableSelect
                 field={field}
@@ -240,6 +249,7 @@ export function DateFormUnit({
   dataKey,
   options,
   required = false,
+  label = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -251,9 +261,11 @@ export function DateFormUnit({
       render={({ field, fieldState }) => {
         return (
           <DefaultWrapper sx={{ marginBottom: "10px" }}>
-            <DefaultLabel htmlFor={dataKey} required={required}>
-              {title}:
-            </DefaultLabel>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
             <InputWrapper>
               <DefaultDate
                 field={field}

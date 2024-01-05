@@ -249,7 +249,6 @@ export default function DefaultTable({
   }
 
   return (
-    // <DefaultScrollbar>
     <DefaultStyledAntDesignTable
       onChange={handleChange}
       rowSelection={selectedRowKeys ? rowSelection : null}
@@ -265,6 +264,5 @@ export default function DefaultTable({
       theme={theme}
       {...rest}
     />
-    // </DefaultScrollbar>
   );
 }
