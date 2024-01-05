@@ -91,3 +91,6 @@ class GetDeviceConfigurationById(BaseSchema):
 
 class GetDeviceConfigurationByHistory(BaseSchema):
     ncm_history_id:int
+
+class NcmDeletedConfigurationSchema(BaseSchema):
+    ncm_device_id:int
