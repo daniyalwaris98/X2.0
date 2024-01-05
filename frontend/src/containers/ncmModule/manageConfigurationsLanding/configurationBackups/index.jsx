@@ -16,7 +16,7 @@ import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import { PAGE_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { TABLE_DATA_UNIQUE_ID as MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID } from "../../manageConfigurations/constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
-import { PageTableSectionWithoutScrollAndWidth } from "../../../../components/pageSections";
+import DefaultPageTableSection from "../../../../components/pageSections";
 import { Grid } from "@mui/material";
 import BackupDetails from "./backupDetails";
 import { Spin } from "antd";
@@ -165,7 +165,7 @@ const Index = () => {
 
       <Grid container spacing={1}>
         <Grid item xs={12}>
-          <PageTableSectionWithoutScrollAndWidth
+          <DefaultPageTableSection
             PAGE_NAME={PAGE_NAME}
             TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
             buttonsConfigurationList={buttonsConfigurationList}
@@ -174,6 +174,8 @@ const Index = () => {
             rowClickable={true}
             selectedRowKey={selectedRowKey}
             setSelectedRowKey={setSelectedRowKey}
+            dynamicWidth={false}
+            scroll={false}
           />
         </Grid>
         <Grid item xs={12}>

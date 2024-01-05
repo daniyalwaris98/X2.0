@@ -17,7 +17,7 @@ import DefaultTableConfigurations from "../../../../../components/tableConfigura
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../../../atomModule/atoms/constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../../hooks/useErrorHandling";
-import { PageTableSectionWithoutWidth } from "../../../../../components/pageSections";
+import DefaultPageTableSection from "../../../../../components/pageSections";
 import { PAGE_NAME } from "../../../../atomModule/atoms/constants";
 
 const Index = ({ handleClose, open }) => {
@@ -122,7 +122,7 @@ const Index = ({ handleClose, open }) => {
               />
             ) : null}
 
-            <PageTableSectionWithoutWidth
+            <DefaultPageTableSection
               PAGE_NAME={PAGE_NAME}
               TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
               buttonsConfigurationList={buttonsConfigurationList}
@@ -130,6 +130,7 @@ const Index = ({ handleClose, open }) => {
               dataSource={dataSource}
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
+              dynamicWidth={false}
             />
           </Spin>
         </Grid>

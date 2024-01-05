@@ -17,7 +17,7 @@ import DefaultTableConfigurations from "../../../../components/tableConfiguratio
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import { TABLE_DATA_UNIQUE_ID } from "../configurationBackups/constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
-import { PageTableSectionWithoutScrollAndWidth } from "../../../../components/pageSections";
+import DefaultPageTableSection from "../../../../components/pageSections";
 import { PAGE_NAME } from "./constants";
 
 const Index = ({ handleClose, open, ncmDeviceId }) => {
@@ -122,7 +122,7 @@ const Index = ({ handleClose, open, ncmDeviceId }) => {
               />
             ) : null}
 
-            <PageTableSectionWithoutScrollAndWidth
+            <DefaultPageTableSection
               PAGE_NAME={PAGE_NAME}
               TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
               buttonsConfigurationList={buttonsConfigurationList}
@@ -130,6 +130,8 @@ const Index = ({ handleClose, open, ncmDeviceId }) => {
               dataSource={dataSource}
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
+              dynamicWidth={false}
+              scroll={false}
             />
           </Spin>
         </Grid>

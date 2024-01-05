@@ -1,23 +1,23 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
+import { Spin } from "antd";
+import Grid from "@mui/material/Grid";
+import { useSelector } from "react-redux";
+import useErrorHandling from "../../../hooks/useErrorHandling";
+import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import DefaultDialog from "../../../components/dialogs";
 import { CancelDialogFooter } from "../../../components/dialogFooters";
-import Grid from "@mui/material/Grid";
 import {
   useGetAtomsToAddInNcmDevicesQuery,
   useAddAtomsInNcmDevicesMutation,
 } from "../../../store/features/ncmModule/manageConfigurations/apis";
-import { useSelector } from "react-redux";
 import { selectAtomsToAddInNcmDevicesData } from "../../../store/features/ncmModule/manageConfigurations/selectors";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "../../atomModule/atoms/columnDefinitions";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import { PageTableSectionWithoutWidth } from "../../../components/pageSections";
+import DefaultPageTableSection from "../../../components/pageSections";
 import { ELEMENT_NAME_BULK } from "./constants";
 
 const Index = ({ handleClose, open }) => {
@@ -118,7 +118,7 @@ const Index = ({ handleClose, open }) => {
               />
             ) : null}
 
-            <PageTableSectionWithoutWidth
+            <DefaultPageTableSection
               PAGE_NAME={ELEMENT_NAME_BULK}
               TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
               buttonsConfigurationList={buttonsConfigurationList}
@@ -126,6 +126,7 @@ const Index = ({ handleClose, open }) => {
               dataSource={dataSource}
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
+              dynamicWidth={false}
             />
           </Spin>
         </Grid>

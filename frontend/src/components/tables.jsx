@@ -228,6 +228,7 @@ export default function DefaultTable({
   selectedRowKeys = null,
   setSelectedRowKeys = null,
   getCheckboxProps = null,
+  scroll = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -248,92 +249,22 @@ export default function DefaultTable({
   }
 
   return (
-    <DefaultScrollbar>
-      <DefaultStyledAntDesignTable
-        onChange={handleChange}
-        rowSelection={selectedRowKeys ? rowSelection : null}
-        columns={displayColumns}
-        scroll={{ x: getTableScrollWidth(displayColumns) }}
-        style={{ whiteSpace: "pre" }}
-        rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
-        size="small"
-        pagination={{
-          defaultPageSize: 10,
-          pageSizeOptions: [20, 50, 100, 500, 1000],
-        }}
-        theme={theme}
-        {...rest}
-      />
-    </DefaultScrollbar>
-  );
-}
-
-export function TableWithoutScroll({
-  displayColumns = [],
-  selectedRowKeys = null,
-  setSelectedRowKeys = null,
-  getCheckboxProps = null,
-  rowClickable = false,
-  selectedRowKey = null,
-  setSelectedRowKey = null,
-  ...rest
-}) {
-  const theme = useTheme();
-
-  const rowSelection = {
-    getCheckboxProps,
-    selectedRowKeys,
-    onChange: onSelectChange,
-    selection: Table.SELECTION_ALL,
-  };
-
-  function onSelectChange(selectedRowKeys) {
-    setSelectedRowKeys(selectedRowKeys);
-  }
-
-  function handleChange(pagination, filters, sorter, extra) {
-    console.log("Various parameters", pagination, filters, sorter, extra);
-  }
-
-  function handleRowClick(record) {
-    const newSelectedRowKey =
-      selectedRowKey == record[rest.rowKey] ? null : record[rest.rowKey];
-    setSelectedRowKey(newSelectedRowKey);
-  }
-
-  function handleRowClicked(record) {
-    return { onClick: () => handleRowClick(record) };
-  }
-
-  function getRowClassName(record, index) {
-    let classNames = index % 2 === 0 ? "even" : "odd";
-    if (record[rest.rowKey] === selectedRowKey) {
-      classNames += " selected-row";
-    }
-    if (rowClickable) {
-      classNames += " clickable-row";
-    }
-
-    return classNames;
-  }
-
-  return (
-    <DefaultScrollbar>
-      <DefaultStyledAntDesignTable
-        onChange={handleChange}
-        rowSelection={selectedRowKeys ? rowSelection : null}
-        columns={displayColumns}
-        style={{ whiteSpace: "pre" }}
-        rowClassName={getRowClassName}
-        size="small"
-        pagination={{
-          defaultPageSize: 10,
-          pageSizeOptions: [20, 50, 100, 500, 1000],
-        }}
-        theme={theme}
-        onRow={rowClickable ? handleRowClicked : null}
-        {...rest}
-      />
-    </DefaultScrollbar>
+    // <DefaultScrollbar>
+    <DefaultStyledAntDesignTable
+      onChange={handleChange}
+      rowSelection={selectedRowKeys ? rowSelection : null}
+      columns={displayColumns}
+      scroll={{ x: scroll ? getTableScrollWidth(displayColumns) : 0 }}
+      style={{ whiteSpace: "pre" }}
+      rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
+      size="small"
+      pagination={{
+        defaultPageSize: 10,
+        pageSizeOptions: [20, 50, 100, 500, 1000],
+      }}
+      theme={theme}
+      {...rest}
+    />
+    // </DefaultScrollbar>
   );
 }
