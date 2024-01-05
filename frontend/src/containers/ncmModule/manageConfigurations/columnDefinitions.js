@@ -15,7 +15,12 @@ export function useIndexTableColumnDefinitions({
     {
       data_key: indexColumnNameConstants.IP_ADDRESS,
       render: (text, record) => (
-        <a onClick={() => handleIpAddressClick(record)}>{text}</a>
+        <a
+          style={{ color: "green" }}
+          onClick={() => handleIpAddressClick(record)}
+        >
+          {text}
+        </a>
       ),
     },
     indexColumnNameConstants.DEVICE_TYPE,
