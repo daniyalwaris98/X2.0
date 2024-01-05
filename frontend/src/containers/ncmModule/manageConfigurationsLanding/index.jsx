@@ -11,7 +11,8 @@ import {
   PAGE_NAME as PAGE_NAME_REMOTE_COMMAND_SENDER,
   PAGE_PATH as PAGE_PATH_REMOTE_COMMAND_SENDER,
 } from "./remoteCommandSender/constants";
-import { useLocation } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations/selectors";
 
 export const LANDING_PAGE_NAME = "Manage Configurations";
 export const LANDING_PAGE_PATH =
@@ -31,8 +32,7 @@ const menuItems = [
 ];
 
 function Index(props) {
-  const location = useLocation();
-  const receivedData = location.state ? location.state : {};
+  const selectedDevice = useSelector(selectSelectedDevice);
 
   let pagePath = getPathAllSegments();
   if (pagePath.length === 4 && pagePath[3] === LANDING_PAGE_PATH) {
@@ -45,7 +45,6 @@ function Index(props) {
         sx={{
           // borderTopLeftRadius: 0,
           // borderTopRightRadius: 0,
-          border: "1px solid black",
           marginBottom: "10px",
         }}
       >
@@ -64,7 +63,7 @@ function Index(props) {
               backgroundColor: "#DBDBDB",
             }}
           >
-            IP Address:
+            IP Address: {selectedDevice?.ip_address}
           </div>
           &nbsp; &nbsp;
           <div
@@ -74,7 +73,7 @@ function Index(props) {
               backgroundColor: "#DBDBDB",
             }}
           >
-            Device Name:
+            Device Name: {selectedDevice?.device_name}
           </div>
           &nbsp; &nbsp;
           <div
@@ -84,7 +83,7 @@ function Index(props) {
               backgroundColor: "#DBDBDB",
             }}
           >
-            Device Type:
+            Device Type:{selectedDevice?.device_type}
           </div>
           &nbsp; &nbsp;
           <div
@@ -94,7 +93,7 @@ function Index(props) {
               backgroundColor: "#DBDBDB",
             }}
           >
-            Function:
+            Function:{selectedDevice?.function}
           </div>
           &nbsp; &nbsp;
           <div
@@ -104,7 +103,7 @@ function Index(props) {
               backgroundColor: "#DBDBDB",
             }}
           >
-            Vendor:
+            Vendor:{selectedDevice?.vendor}
           </div>
         </div>
       </Card>

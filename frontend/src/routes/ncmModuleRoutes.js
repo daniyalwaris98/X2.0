@@ -27,10 +27,10 @@ const routes = {
       path: LANDING_PAGE_PATH_MANAGE_CONFIGURATIONS,
       element: <ManageConfigurationsLanding />,
       children: [
-        {
-          path: `/${MODULE_PATH}/${LANDING_PAGE_PATH_MANAGE_CONFIGURATIONS}`,
-          element: <Navigate to={PAGE_PATH_CONFIGURATION_BACKUPS} replace />,
-        },
+        // {
+        //   path: `/${MODULE_PATH}/${LANDING_PAGE_PATH_MANAGE_CONFIGURATIONS}`,
+        //   element: <Navigate to={PAGE_PATH_CONFIGURATION_BACKUPS} replace />,
+        // },
         {
           path: PAGE_PATH_CONFIGURATION_BACKUPS,
           element: <ConfigurationBackups />,

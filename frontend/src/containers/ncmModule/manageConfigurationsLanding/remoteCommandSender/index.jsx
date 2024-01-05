@@ -8,9 +8,9 @@ import useErrorHandling, {
 } from "../../../../hooks/useErrorHandling";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import { Spin } from "antd";
-import { useLocation } from "react-router-dom";
 import DefaultCard from "../../../../components/cards";
 import useButtonGenerator from "../../../../hooks/useButtonGenerator";
+import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
 //
 import { useForm } from "react-hook-form";
 import DefaultFormUnit from "../../../../components/formUnits";
@@ -28,8 +28,8 @@ const schema = yup.object().shape({
 const Index = () => {
   // theme
   const theme = useTheme();
-  const location = useLocation();
-  const receivedData = location.state;
+  const selectedDevice = useSelector(selectSelectedDevice);
+
   const generateButton = useButtonGenerator();
 
   const { handleSubmit, control, setValue } = useForm({
@@ -68,7 +68,7 @@ const Index = () => {
   // on form submit
   const onSubmit = (data) => {
     sendCommand({
-      ncm_device_id: receivedData?.ncm_device_id,
+      ncm_device_id: selectedDevice?.ncm_device_id,
       cmd: data[REMOTE_COMMAND],
     });
   };

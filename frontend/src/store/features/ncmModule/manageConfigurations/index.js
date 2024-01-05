@@ -8,12 +8,17 @@ import {
 const initialState = {
   all_data: [],
   atoms_to_add_in_ncm_devices: [],
+  selected_device: null,
 };
 
 const defaultSlice = createSlice({
   name: ELEMENT_NAME,
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedDevice: (state, action) => {
+      state.selected_device = action.payload;
+    },
+  },
   extraReducers(builder) {
     builder
       .addMatcher(
@@ -100,4 +105,5 @@ const defaultSlice = createSlice({
   },
 });
 
+export const { setSelectedDevice } = defaultSlice.actions;
 export default defaultSlice.reducer;

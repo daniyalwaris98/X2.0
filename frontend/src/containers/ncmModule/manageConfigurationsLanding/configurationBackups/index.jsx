@@ -20,15 +20,13 @@ import { PageTableSectionWithoutScrollAndWidth } from "../../../../components/pa
 import { Grid } from "@mui/material";
 import BackupDetails from "./backupDetails";
 import { Spin } from "antd";
-import { useLocation } from "react-router-dom";
+import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
 
 const Index = () => {
   // theme
   const theme = useTheme();
-  const location = useLocation();
-  const receivedData = location.state ? location.state : {};
+  const selectedDevice = useSelector(selectSelectedDevice);
 
-  console.log("receivedData", receivedData);
   // hooks
   const { columnDefinitions } = useIndexTableColumnDefinitions({});
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
@@ -97,17 +95,19 @@ const Index = () => {
 
   // effects
   useEffect(() => {
-    fetchRecords({
-      [MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID]:
-        receivedData[MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID],
-    });
+    if (selectedDevice) {
+      fetchRecords({
+        [MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID]:
+          selectedDevice[MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID],
+      });
+    }
   }, []);
 
   // handlers
   function handleSingleBackup() {
     singleBackup({
       [MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID]:
-        receivedData[MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID],
+        selectedDevice[MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID],
     });
   }
 
@@ -151,7 +151,7 @@ const Index = () => {
         <CompareModal
           handleClose={handleCompareModalClose}
           open={compareModalOpen}
-          ncmDeviceId={receivedData?.ncm_device_id}
+          ncmDeviceId={selectedDevice?.ncm_device_id}
         />
       ) : null}
 
@@ -159,7 +159,7 @@ const Index = () => {
         <RestoreModal
           handleClose={handleRestoreModalClose}
           open={restoreModalOpen}
-          ncmDeviceId={receivedData?.ncm_device_id}
+          ncmDeviceId={selectedDevice?.ncm_device_id}
         />
       ) : null}
 

@@ -2,6 +2,7 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import { Link } from "react-router-dom";
 
 export function useIndexTableColumnDefinitions({
   handleIpAddressClick,
@@ -17,7 +18,6 @@ export function useIndexTableColumnDefinitions({
         <a onClick={() => handleIpAddressClick(record)}>{text}</a>
       ),
     },
-    indexColumnNameConstants.RCS,
     indexColumnNameConstants.DEVICE_TYPE,
     indexColumnNameConstants.VENDOR,
     indexColumnNameConstants.FUNCTION,

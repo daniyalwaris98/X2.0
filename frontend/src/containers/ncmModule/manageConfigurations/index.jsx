@@ -25,11 +25,14 @@ import {
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
 import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations";
 
 const Index = () => {
   // theme
   const theme = useTheme();
   const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -128,15 +131,13 @@ const Index = () => {
 
   // handlers
   function handleIpAddressClick(record) {
-    navigate("manage_configurations_landing/configuration_backups", {
-      state: record,
-    });
+    dispatch(setSelectedDevice(record));
+    navigate("manage_configurations_landing/configuration_backups");
   }
 
   function handleRcsClick(record) {
-    navigate("manage_configurations_landing/remote_command_sender", {
-      state: record,
-    });
+    dispatch(setSelectedDevice(record));
+    navigate("manage_configurations_landing/remote_command_sender");
   }
 
   function handleEmptySelectedRowKeys() {
