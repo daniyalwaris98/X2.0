@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from "react";
+import React, { useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import {
   useDeleteRecordsMutation,
@@ -14,9 +14,9 @@ import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import { FILE_NAME_EXPORT_ALL_DATA, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { TYPE_SINGLE, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import DefaultCard from "../../../../components/cards";
-import useButtonGenerator from "../../../../hooks/useButtonGenerator";
-import { CaretRightOutlined, CaretLeftOutlined } from "@ant-design/icons";
 import Highlighter from "react-highlight-words";
+import DefaultPageHeader from "../../../../components/pageHeaders";
+import { FloatingHighlighterSearch } from "../../../../components/search";
 
 const Index = ({ ncmHistoryId }) => {
   // theme
@@ -27,11 +27,9 @@ const Index = ({ ncmHistoryId }) => {
 
   // states required in hooks
   const targetRef = useRef(null);
-  const findInput = useRef(null);
 
   // hooks
   const { handleSuccessAlert, handleCallbackAlert } = useSweetAlert();
-  const generateButton = useButtonGenerator();
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_export: { handleClick: handleDefaultExport },
     default_delete: { handleClick: handleDelete },
@@ -103,34 +101,14 @@ const Index = ({ ncmHistoryId }) => {
     handleSuccessAlert("File exported successfully.");
   }
 
-  function handleFindNext() {
-    const searchTerm = findInput.current.value;
-    window.find(searchTerm, false, false, false, false, true, true);
-  }
-
-  function handleFindPrevious() {
-    const searchTerm = findInput.current.value;
-    window.find(searchTerm, false, true, false, false, true, true);
-  }
-
   return (
     <Spin spinning={isGetBackupDetailsLoading || isDeleteRecordsLoading}>
       {dataSource ? (
         <DefaultCard>
-          <div
-            style={{
-              display: "flex",
-              justifyContent: "space-between",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "-12px", fontSize: "17px" }}>
-              Backup Details
-            </div>
-            <div style={{ display: "flex", alignItems: "center", gap: "10px" }}>
-              {buttonsConfigurationList.map((item) => generateButton(item))}
-            </div>
-          </div>
+          <DefaultPageHeader
+            pageName="Backup Details"
+            buttons={buttonsConfigurationList}
+          />
 
           <div
             style={{
@@ -138,55 +116,7 @@ const Index = ({ ncmHistoryId }) => {
               padding: "10px",
             }}
           >
-            <div style={{ position: "fixed", right: "30px" }}>
-              <div>
-                <button
-                  onClick={handleFindPrevious}
-                  style={{
-                    backgroundColor: "#3D9E47",
-                    color: "white",
-                    borderRadius: "100px 0 0 100px",
-                    height: "30px",
-                    outline: "none",
-                    border: "none",
-                    width: "35px",
-                  }}
-                >
-                  <CaretLeftOutlined />
-                </button>
-
-                <input
-                  style={{
-                    border: "1px solid silver",
-                    paddingLeft: "10px",
-                    height: "26px",
-                    outline: "none",
-                  }}
-                  type="text"
-                  ref={findInput}
-                  placeholder="Search"
-                  onKeyDown={(e) => {
-                    if (e.keyCode === 13) {
-                      handleFindNext();
-                    }
-                  }}
-                />
-                <button
-                  onClick={handleFindNext}
-                  style={{
-                    backgroundColor: "#3D9E47",
-                    color: "white",
-                    borderRadius: "0 100px 100px 0",
-                    height: "30px",
-                    outline: "none",
-                    border: "none",
-                    width: "35px",
-                  }}
-                >
-                  <CaretRightOutlined />
-                </button>
-              </div>
-            </div>
+            <FloatingHighlighterSearch />
 
             <span style={{ color: "grey" }}>Output:</span>
 
