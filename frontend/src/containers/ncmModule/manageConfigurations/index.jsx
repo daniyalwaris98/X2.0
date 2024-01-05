@@ -64,10 +64,10 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = [
-    { ip_address: "1.2.3.4.5.6.7", device_name: "router_abc" },
-  ];
-  // const dataSource = useSelector(selectTableData);
+  // const dataSource = [
+  //   { ip_address: "1.2.3.4.5.6.7", device_name: "router_abc" },
+  // ];
+  const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -186,8 +186,8 @@ const Index = () => {
   return (
     <Spin
       spinning={
-        false
-        // isFetchRecordsLoading || isDeleteRecordsLoading || isBulkBackupLoading
+        // false
+        isFetchRecordsLoading || isDeleteRecordsLoading || isBulkBackupLoading
       }
     >
       {addModalOpen ? (

@@ -6,7 +6,7 @@ export const FILE_NAME_EXPORT_TEMPLATE = "configurations_information_template";
 export const TABLE_DATA_UNIQUE_ID = "ncm_history_id";
 export const indexColumnNameConstants = {
   NCM_HISTORY_ID: TABLE_DATA_UNIQUE_ID,
-  IP_ADDRESS: "ip_address",
+  FILE_NAME: "file_name",
   DATE: "date",
   ACTIONS: "actions",
 };
@@ -18,7 +18,7 @@ export const compareModalConstants = {
 
 export const restoreColumnNameConstants = {
   NCM_HISTORY_ID: TABLE_DATA_UNIQUE_ID,
-  IP_ADDRESS: "ip_address",
+  FILE_NAME: "file_name",
   DATE: "date",
   ACTIONS: "actions",
 };

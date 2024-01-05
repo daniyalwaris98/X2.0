@@ -7,12 +7,12 @@ export function useIndexTableColumnDefinitions({}) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.FILE_NAME,
     indexColumnNameConstants.DATE,
   ];
 
   const restoreColumnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.FILE_NAME,
     indexColumnNameConstants.DATE,
   ];
 

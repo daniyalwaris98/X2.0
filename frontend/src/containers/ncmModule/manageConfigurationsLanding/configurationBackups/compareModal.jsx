@@ -63,7 +63,7 @@ const Index = ({ handleClose, open }) => {
   // getting data from the store
   const dataSource = useSelector(selectTableData);
   const derivedOptions = dataSource.map((item) => ({
-    name: `${item.ip_address}-${item.date}`,
+    name: `${item.file_name}-${item.date}`,
     value: item.ncm_history_id,
   }));
 
@@ -102,27 +102,27 @@ const Index = ({ handleClose, open }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              {compareBackupsData ? (
+              {/* {compareBackupsData ? ( */}
+              <div
+                style={{
+                  margin: "8px",
+
+                  borderRadius: "12px",
+                  backgroundColor: "#fcfcfc",
+                  boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
+                }}
+              >
                 <div
                   style={{
-                    margin: "8px",
-
-                    borderRadius: "12px",
-                    backgroundColor: "#fcfcfc",
-                    boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
+                    width: "100%",
+                    overflowX: "auto",
+                    scrollBehavior: "smooth",
                   }}
                 >
-                  <div
-                    style={{
-                      width: "100%",
-                      overflowX: "auto",
-                      scrollBehavior: "smooth",
-                    }}
-                  >
-                    {ReactHtmlParser(compareBackupsData)}
-                  </div>
+                  {ReactHtmlParser(compareBackupsData)}
                 </div>
-              ) : null}
+              </div>
+              {/* ) : null} */}
             </Grid>
             <Grid item xs={12}>
               <CompareDialogFooter handleClose={handleClose} />

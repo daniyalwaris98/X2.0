@@ -79,8 +79,10 @@ const Index = ({ ncmHistoryId }) => {
 
   // effects
   useEffect(() => {
-    getBackupDetails({ [TABLE_DATA_UNIQUE_ID]: ncmHistoryId });
-  }, []);
+    if (ncmHistoryId) {
+      getBackupDetails({ [TABLE_DATA_UNIQUE_ID]: ncmHistoryId });
+    }
+  }, [ncmHistoryId]);
 
   // handlers
   function deleteData(allowed) {

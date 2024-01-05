@@ -61,7 +61,7 @@ function Index(props) {
             style={{
               border: "1px solid grey",
               width: "20%",
-              backgroundColor: "red",
+              backgroundColor: "#DBDBDB",
             }}
           >
             IP Address:
@@ -71,40 +71,40 @@ function Index(props) {
             style={{
               border: "1px solid grey",
               width: "20%",
-              backgroundColor: "red",
+              backgroundColor: "#DBDBDB",
             }}
           >
-            IP Address:
+            Device Name:
           </div>
           &nbsp; &nbsp;
           <div
             style={{
               border: "1px solid grey",
               width: "20%",
-              backgroundColor: "red",
+              backgroundColor: "#DBDBDB",
             }}
           >
-            IP Address:
+            Device Type:
           </div>
           &nbsp; &nbsp;
           <div
             style={{
               border: "1px solid grey",
               width: "20%",
-              backgroundColor: "red",
+              backgroundColor: "#DBDBDB",
             }}
           >
-            IP Address:
+            Function:
           </div>
           &nbsp; &nbsp;
           <div
             style={{
               border: "1px solid grey",
               width: "20%",
-              backgroundColor: "red",
+              backgroundColor: "#DBDBDB",
             }}
           >
-            IP Address:
+            Vendor:
           </div>
         </div>
       </Card>
