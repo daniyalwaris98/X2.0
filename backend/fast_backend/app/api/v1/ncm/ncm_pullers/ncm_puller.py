@@ -291,7 +291,11 @@ class NCMPuller(object):
             ncm_history.file_name = file_name
 
             InsertDBData(ncm_history)
-
+            data = {
+                "ncm_history_id":ncm_history.ncm_history_id,
+                "date":ncm_history.configuration_date,
+                "ncm_history":ncm_history.file_name
+            }
             print(
                 f"{file_name} INSERTED SUCCESSFULLY TO THE NCM HISTORY TABLE AT {current_time}",
                 file=sys.stderr,
@@ -300,7 +304,7 @@ class NCMPuller(object):
             self.ncm.config_change_date = current_time
             UpdateDBData(self.ncm)
 
-            self.response = "Configuration Backup Successful"
+            self.response = data
 
     def update_status(self):
         try:

@@ -224,6 +224,7 @@ async def get_all_ncm_devices():
         return ncm_list
 
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching NCM Devices", status_code=500)
 
@@ -440,7 +441,7 @@ async def get_device_configuration(ncm_history_id:GetDeviceConfigurationByHistor
             print("f file is:::::::::",file=sys.stderr)
             configuration = f.read()
             print("configuration is:::::::::::",configuration,file=sys.stderr)
-            data['configuration'] = configuration
+            data['data'] = configuration
             data['message'] = f"{history.file_name} : Retrieved Successfully"
             return JSONResponse(content=data, status_code=200)
         else:
@@ -452,7 +453,7 @@ async def get_device_configuration(ncm_history_id:GetDeviceConfigurationByHistor
         return "Server Error While Fetching Backup", 500
 
 
-@router.post("/send-command", responses={
+@router.post("/send_command", responses={
     200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
@@ -475,7 +476,7 @@ async def send_command(ncm_obj: SendCommandRequestSchema):
             return JSONResponse(content="Command Is Empty", status_code=400)
 
         ncmPuller.send_remote_command(ncm_obj["cmd"])
-        data['response'] = ncmPuller.response
+        data['data'] = ncmPuller.response
         data['message'] = f"{ncm_obj['cmd'] : Executed Successfully}"
         return JSONResponse(content=data, status_code=ncmPuller.status)
 
@@ -495,8 +496,9 @@ description="Use this API to get the configuration based on the ncm_device_id"
 )
 async def get_configuration_backup(ncm_obj: NcmDeviceId):
     try:
-        data = {}
+
         ncmPuller = NCMPuller()
+        ncm_device = configs.db.query(NcmDeviceTable).filter_by()
         print("ncm puller is::::::::::::::",ncmPuller,file=sys.stderr)
         print("ncm obj is:::",ncm_obj,file=sys.stderr)
         ncmPuller.setup_puller(ncm_obj)
@@ -506,9 +508,15 @@ async def get_configuration_backup(ncm_obj: NcmDeviceId):
             return JSONResponse(content=ncmPuller.response, status_code=ncmPuller.status)
 
         ncmPuller.backup_config()
-        data['response'] = ncmPuller.response
-        data['message'] = f"Configuration Backup Is Successfull"
-        return JSONResponse(content=data, status_code=ncmPuller.status)
+        data = {
+            'data':ncmPuller.response,
+            'message':f"Configuration Backup Is Successfull"
+        }
+        print("NCM puller resposne is::::::::::",ncmPuller.response)
+        # data['data'] = ncmPuller.response
+
+        # data['message'] = f"Configuration Backup Is Successfull"
+        return data
 
     except Exception:
         traceback.print_exc()
@@ -692,20 +700,21 @@ def get_true_backup():
             description="API to delete configuration"
 
              )
-def delete_configuration(ncm_history_id:int):
+def delete_configuration(ncm_history_id:list[int]):
     try:
         deleted_ids = []
         success_list = []
         error_list = []
-        ncm_history = configs.db.query(NCM_History_Table).filter_by(ncm_history_id = ncm_history_id).first()
-        if ncm_history:
-            ncm_history.deleted_state = True
-            configs.db.merge(ncm_history)
-            configs.db.commit()
-            deleted_ids.append(ncm_history_id)
-            success_list.append(f"{ncm_history_id} has been deleted")
-        else:
-            error_list.append(f"{ncm_history_id} : Not Found")
+        for id in ncm_history_id:
+            ncm_history = configs.db.query(NCM_History_Table).filter_by(ncm_history_id = id).first()
+            if ncm_history:
+                ncm_history.deleted_state = True
+                configs.db.merge(ncm_history)
+                configs.db.commit()
+                deleted_ids.append(id)
+                success_list.append(f"{ncm_history_id} has been deleted")
+            else:
+                error_list.append(f"{ncm_history_id} : Not Found")
         responses = {
             "data":deleted_ids,
             "success_list":success_list,
@@ -719,33 +728,37 @@ def delete_configuration(ncm_history_id:int):
         return JSONResponse(content="Error Occured While Deleting the configuration",status_code=500)
 
 
-@router.get('/get_configuration_to_restore',
+@router.post('/get_configuration_to_restore',
             responses={
-                200:{"model":list[NcmConfigHistorySchema]},
-                500:{"model":str}
+                200: {"model": list[NcmConfigHistorySchema]},
+                500: {"model": str}
             },
             summary="API to Get the deleted configurations",
             description="API to get the deleted configurations"
             )
-def get_deleted_configuration():
+def get_deleted_configuration(ncm_device_id: NcmDeletedConfigurationSchema):
     try:
-        config_list = []
-        configurations = configs.db.query(NCM_History_Table).filter_by(deleted_state=True).all()
-        for configuration in configurations:
-            ncm_device = configs.db.query(NcmDeviceTable).filter_by(ncm_device_id = configuration.ncm_device_id).first()
-            config_dict = {
-                "ncm_history_id":configuration.ncm_history_id,
-                "date":configuration.configuration_date,
-                "file_name":configuration.file_name
-            }
-            config_list.append(config_dict)
+        ncm_dev = ncm_device_id.ncm_device_id
+        print("ncm dev is::::::", ncm_dev, file=sys.stderr)
+
+        # Only fetch necessary fields
+        configurations = configs.db.query(
+            NCM_History_Table.ncm_history_id,
+            NCM_History_Table.configuration_date,
+            NCM_History_Table.file_name)\
+            .filter_by(ncm_device_id=ncm_dev, deleted_state=True)\
+            .all()
+
+        config_list = [
+            {"ncm_history_id": cfg.ncm_history_id, "date": cfg.configuration_date, "file_name": cfg.file_name}
+            for cfg in configurations
+        ]
+
         return config_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
-        return JSONResponse(content="Error Occured while Getting the configuration")
-
-
-
+        return JSONResponse(content="Error Occurred while Getting the configuration")
 @router.post('/restore_configuration',
              responses={
                  200:{"model":SummeryResponseSchema},
@@ -754,26 +767,25 @@ def get_deleted_configuration():
              })
 def restore_configuration(ncm_history_id:list[int]):
     try:
-        connfig_data = {}
+        config_list =[]
         success_list = []
         error_list = []
         for id in ncm_history_id:
             ncm_history =configs.db.query(NCM_History_Table).filter_by(ncm_history_id = id).first()
             if ncm_history.deleted_state == True:
+                connfig_data = {}
                 ncm_history.deleted_state = False
                 configs.db.merge(ncm_history)
                 configs.db.commit()
-
-                data = {"ncm_history_id":ncm_history.ncm_history_id,
-                          "date":ncm_history.configuration_date,
-                            "file_name":ncm_history.file_name},
-
-                connfig_data['data'] = data
+                connfig_data['ncm_history_id'] =ncm_history.ncm_history_id
+                connfig_data['date'] = ncm_history.configuration_date
+                connfig_data['file_name'] = ncm_history.file_name
+                config_list.append(connfig_data)
                 success_list.append(f"{ncm_history.configuration_date} : has been restored")
             else:
                 error_list.append(f"{id} : Not Found ")
         response = {
-                    "data":connfig_data,
+                    "data":config_list,
                     "success_list": success_list,
                     "error_list":error_list,
                     "success": len(success_list),
