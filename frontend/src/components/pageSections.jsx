@@ -39,6 +39,7 @@ export default function DefaultPageTableSection({
         rowClickable={rowClickable}
         selectedRowKey={selectedRowKey}
         setSelectedRowKey={setSelectedRowKey}
+        dynamicWidth={dynamicWidth}
         scroll={scroll}
       />
     </DefaultCard>

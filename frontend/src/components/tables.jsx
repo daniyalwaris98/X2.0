@@ -236,7 +236,7 @@ export default function DefaultTable({
       onChange={handleChange}
       rowSelection={selectedRowKeys ? rowSelection : null}
       columns={displayColumns}
-      scroll={{ x: scroll ? getTableScrollWidth(displayColumns) : 0 }}
+      scroll={{ x: scroll ? getTableScrollWidth(displayColumns) : null }}
       style={{ whiteSpace: "pre" }}
       size="small"
       pagination={{
@@ -248,75 +248,5 @@ export default function DefaultTable({
       theme={theme}
       {...rest}
     />
-  );
-}
-
-export function TableWithoutScroll({
-  displayColumns = [],
-  selectedRowKeys = null,
-  setSelectedRowKeys = null,
-  getCheckboxProps = null,
-  rowClickable = false,
-  selectedRowKey = null,
-  setSelectedRowKey = null,
-  ...rest
-}) {
-  const theme = useTheme();
-
-  const rowSelection = {
-    getCheckboxProps,
-    selectedRowKeys,
-    onChange: onSelectChange,
-    selection: Table.SELECTION_ALL,
-  };
-
-  function onSelectChange(selectedRowKeys) {
-    setSelectedRowKeys(selectedRowKeys);
-  }
-
-  function handleChange(pagination, filters, sorter, extra) {
-    console.log("Various parameters", pagination, filters, sorter, extra);
-  }
-
-  function handleRowClick(record) {
-    const newSelectedRowKey =
-      selectedRowKey == record[rest.rowKey] ? null : record[rest.rowKey];
-    setSelectedRowKey(newSelectedRowKey);
-  }
-
-  function handleRowClicked(record) {
-    return { onClick: () => handleRowClick(record) };
-  }
-
-  function getRowClassName(record, index) {
-    let classNames = index % 2 === 0 ? "even" : "odd";
-    if (record[rest.rowKey] === selectedRowKey) {
-      classNames += " selected-row";
-    }
-    if (rowClickable) {
-      classNames += " clickable-row";
-    }
-
-    return classNames;
-  }
-
-  return (
-    <DefaultScrollbar>
-      <DefaultStyledAntDesignTable
-        onChange={handleChange}
-        rowSelection={selectedRowKeys ? rowSelection : null}
-        columns={displayColumns}
-        style={{ whiteSpace: "pre" }}
-        size="small"
-        pagination={{
-          defaultPageSize: 10,
-          pageSizeOptions: [20, 50, 100, 500, 1000],
-        }}
-        theme={theme}
-        rowClassName={getRowClassName}
-        onRow={rowClickable ? handleRowClicked : null}
-        {...rest}
-      />
-    </DefaultScrollbar>
   );
 }
