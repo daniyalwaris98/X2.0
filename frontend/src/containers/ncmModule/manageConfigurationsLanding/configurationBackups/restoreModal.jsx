@@ -15,7 +15,7 @@ import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
-import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../../atomModule/atoms/constants";
+import { TABLE_DATA_UNIQUE_ID } from "../configurationBackups/constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import { PageTableSectionWithoutScrollAndWidth } from "../../../../components/pageSections";
 import { PAGE_NAME } from "./constants";
