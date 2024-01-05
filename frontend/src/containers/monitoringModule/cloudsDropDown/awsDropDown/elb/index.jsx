@@ -1,45 +1,55 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import Modal from "./model";
+import Modal from "./modal";
 import {
   useFetchRecordsQuery,
-  useFetchMonitoringDevicesLazyQuery,
-} from "../../../store/features/monitoringModule/devices/apis";    
+  useDeleteRecordsMutation,
+} from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmpCredentials/v1V2Credentials/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/monitoringModule/devices/selectors";
-import { jsonToExcel } from "../../../utils/helpers";
+import { selectTableData } from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmpCredentials/v1V2Credentials/selectors";
+import { jsonToExcel } from "../../../../../utils/helpers";
 import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import useSweetAlert from "../../../hooks/useSweetAlert";
-import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
+import useErrorHandling from "../../../../../hooks/useErrorHandling";
+import useSweetAlert from "../../../../../hooks/useSweetAlert";
+import useColumnsGenerator from "../../../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
-import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
+import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { TYPE_FETCH, TYPE_BULK } from "../../../../../hooks/useErrorHandling";
+import DefaultPageTableSection from "../../../../../components/pageSections";
 
 const Index = () => {
   // theme
   const theme = useTheme();
 
+  // states required in hooks
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
   // hooks
-  const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
+    useSweetAlert();
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleEdit,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    default_fetch: { handleClick: handleFetch },
+    default_delete: {
+      handleClick: handleDelete,
+      visible: selectedRowKeys.length > 0,
+    },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
   });
 
   // states
+  const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
@@ -59,15 +69,15 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   const [
-    fetchMonitoringDevices,
+    deleteRecords,
     {
-      data: ipamFetchMonitoringDevicesData,
-      isSuccess: isFetchMonitoringDevicesSuccess,
-      isLoading: isFetchMonitoringDevicesLoading,
-      isError: isFetchMonitoringDevicesError,
-      error: fetchMonitoringDevicesError,
+      data: deleteRecordsData,
+      isSuccess: isDeleteRecordsSuccess,
+      isLoading: isDeleteRecordsLoading,
+      isError: isDeleteRecordsError,
+      error: deleteRecordsError,
     },
-  ] = useFetchMonitoringDevicesLazyQuery();
+  ] = useDeleteRecordsMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -79,16 +89,41 @@ const Index = () => {
   });
 
   useErrorHandling({
-    data: ipamFetchMonitoringDevicesData,
-    isSuccess: isFetchMonitoringDevicesSuccess,
-    isError: isFetchMonitoringDevicesError,
-    error: fetchMonitoringDevicesError,
+    data: deleteRecordsData,
+    isSuccess: isDeleteRecordsSuccess,
+    isError: isDeleteRecordsError,
+    error: deleteRecordsError,
     type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   // handlers
-  function handleFetch() {
-    fetchMonitoringDevices();
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
+  }
+
+  function deleteData(allowed) {
+    if (allowed) {
+      deleteRecords(selectedRowKeys);
+    } else {
+      setSelectedRowKeys([]);
+    }
+  }
+
+  function handleDelete() {
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(
+        "Are you sure you want delete these records?",
+        deleteData
+      );
+    } else {
+      handleInfoAlert("No record has been selected to delete!");
+    }
+  }
+
+  function handleEdit(record) {
+    setRecordToEdit(record);
+    setOpen(true);
   }
 
   function handleAdd() {
@@ -96,6 +131,7 @@ const Index = () => {
   }
 
   function handleClose() {
+    setRecordToEdit(null);
     setOpen(false);
   }
 
@@ -109,8 +145,14 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isFetchMonitoringDevicesLoading}>
-      {open ? <Modal handleClose={handleClose} open={open} /> : null}
+    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+      {open ? (
+        <Modal
+          handleClose={handleClose}
+          open={open}
+          recordToEdit={recordToEdit}
+        />
+      ) : null}
 
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
@@ -131,6 +173,8 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
       />
     </Spin>
   );

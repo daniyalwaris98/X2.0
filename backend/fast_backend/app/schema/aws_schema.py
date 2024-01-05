@@ -50,3 +50,12 @@ class DeleteResponseSchema(BaseSchema):
     error: int
     success_list: list[str]
     error_list: list[str]
+
+class GetAllELBSchema(BaseSchema):
+    id:int
+    load_balancer_name:str
+    load_balancer_type:str
+    load_balancer_scheme:str
+    load_balancer_arn:str
+    monitoring_status:str
+    acccess_key :str |None = None

@@ -53,8 +53,8 @@ def test_aws_connection(testObj:AwsCredentialScehma):
              responses={
                  200:{"model":AwsCredentialScehma}
              },
-             summary = "Add aws credentials",
-             description="Add aws credentials"
+             summary = "Use This API in the monitoring cloud page to add the AWS.This is of POST Requesst",
+             description="Use This API in the monitoring cloud page to add the AWS.This is of POST Requesst"
              )
 def add_aws_credentials(addAws:AwsCredentialScehma):
     try:
@@ -92,8 +92,8 @@ def add_aws_credentials(addAws:AwsCredentialScehma):
                 200:{"model":list[GetAwsSchema]},
                 500:{"model":str}
             },
-            summary="get all aws credentials",
-            description="get all aws credentials"
+            summary="Use This API in the clod page to list down all the credentials in a table.This is of GET METHOD",
+            description="Use This API in the clod page to list down all the credentials in a table.This is of GET METHOD"
             )
 def get_all_aws_credentials():
     try:
@@ -119,11 +119,11 @@ def get_all_aws_credentials():
 
 @router.get('/get_all_ec2',
             responses={
-                200:{"model":str},
+                200:{"model":list[GetEC2Schema]},
                 500:{"model":str}
             },
-            summary="API to get all EC2",
-            description="Get all EC2"
+            summary="Use this API in monitoring cloud in EC2 page to list down all the EC2 in a table.This is of GET method",
+            description="Use this API in monitoring cloud in EC2 page to list down all the EC2 in a table.This is of GET method"
             )
 def get_all_ec2():
     try:
@@ -214,8 +214,8 @@ def change_ec2_status(ec2_status:str):
                  400:{"model":str},
                  500:{"model":str}
              },
-             summary="api to reload ec2",
-             description="api to reload ec2"
+             summary="Use this API in the monitoring cloud page to reload the ec2 and this is of post method and acees aws_access_key to reload",
+             description="Use this API in the monitoring cloud page to reload the ec2 and this is of post method and acees aws_access_key to reload"
              )
 def reload_ec2(ec2_obj:AWSReloadScehma):
     try:
@@ -264,8 +264,8 @@ def reload_ec2(ec2_obj:AWSReloadScehma):
                 200:{"model":list[GetEc3Schema]},
                 500:{"model":str}
             },
-            summary="api to get all s3",
-            description="api to get all s3"
+            summary="Use this API in the monitoring clod page to list down the s3 in a table.This is of get method",
+            description="Use this API in the monitoring clod page to list down the s3 in a table.This is of get method"
             )
 def get_all_s3():
     try:
@@ -294,8 +294,8 @@ def get_all_s3():
                  400:{"model":str},
                  500:{"model":str}
              },
-             summary="API to reload the S3",
-             description="API to reload the S3"
+             summary="Use this API in the se page to relaod the s3 this is of psot method and accepts the  aws_access_key in a payload",
+             description="Use this API in the se page to relaod the s3 this is of psot method and accepts the  aws_access_key in a payload"
              )
 def reload_s3(s3_obj:AWSReloadScehma):
     try:
@@ -405,7 +405,7 @@ def reload_elb(credentials:AWSReloadScehma):
 
 @router.get('/get_all_elb',
              responses = {
-                 200:{"model":str},
+                 200:{"model":list[GetAllELBSchema]},
                  500:{"model":str}
              },
              summary = "Get ALL ELB Data",
@@ -418,10 +418,10 @@ def get_all_elb():
         for data in elb_data:
             elb_dict = {
                 "id":data.id,
-                "lb_name":data.lb_name,
-                "lb_type":data.lb_type,
-                "lb_scheme":data.lb_scheme,
-                "lb_arn":data.lb_arn,
+                "load_balancer_name":data.lb_name,
+                "load_balancer_type":data.lb_type,
+                "load_balancer_scheme":data.lb_scheme,
+                "load_balancer_arn":data.lb_arn,
                 "monitoring_status":data.monitoring_status,
                 "access_key":data.access_key
             }

@@ -3,11 +3,11 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../containers/monitoringModule/devices/constants";
+} from "../../../../containers/ipamModule/devices/constants";
 
 const initialState = {
   all_data: [],
-  atoms_to_add_in_monitoring_devices: [],
+  atoms_to_add_in_ipam_devices: [],
 };
 
 const defaultSlice = createSlice({
@@ -17,13 +17,13 @@ const defaultSlice = createSlice({
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.getAllMonitoringDevices.matchFulfilled,
+        extendedApi.endpoints.getAllIpamDevices.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.fetchMonitoringDevices.matchFulfilled,
+        extendedApi.endpoints.fetchIpamDevices.matchFulfilled,
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
             const indexToUpdate = state.all_data.findIndex((tableItem) => {
@@ -41,7 +41,7 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.deleteMonitoringDevices.matchFulfilled,
+        extendedApi.endpoints.deleteIpamDevices.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -55,13 +55,13 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.getAtomsToAddInMonitoringDevices.matchFulfilled,
+        extendedApi.endpoints.getAtomsToAddInIpamDevices.matchFulfilled,
         (state, action) => {
-          state.atoms_to_add_in_monitoring_devices = action.payload;
+          state.atoms_to_add_in_ipam_devices = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addAtomsInMonitoringDevices.matchFulfilled,
+        extendedApi.endpoints.addAtomsInIpamDevices.matchFulfilled,
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
             const indexToUpdate = state.all_data.findIndex((tableItem) => {
