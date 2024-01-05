@@ -52,58 +52,73 @@ function Index(props) {
           style={{
             display: "flex",
             justifyContent: "space-between",
-            padding: "10px",
-            height: "100px",
+            padding: "14px",
+            height: "90px",
           }}
         >
           <div
             style={{
-              border: "1px solid grey",
+              border: "1px solid #DBDBDB",
+              borderRadius: "7px",
               width: "20%",
-              backgroundColor: "#DBDBDB",
+              backgroundColor: "#FAFAFA",
+              padding: "10px",
             }}
           >
-            IP Address: {selectedDevice?.ip_address}
+            <div style={{ marginBottom: "15px" }}>IP Address: </div>
+            <div style={{ color: "green" }}>{selectedDevice?.ip_address}</div>
           </div>
           &nbsp; &nbsp;
           <div
             style={{
-              border: "1px solid grey",
+              border: "1px solid #DBDBDB",
+              borderRadius: "7px",
               width: "20%",
-              backgroundColor: "#DBDBDB",
+              backgroundColor: "#FAFAFA",
+              padding: "10px",
             }}
           >
-            Device Name: {selectedDevice?.device_name}
+            <div style={{ marginBottom: "15px" }}>Device Name: </div>
+            <div style={{ color: "green" }}>{selectedDevice?.device_name}</div>
+          </div>
+          &nbsp; &nbsp; &nbsp; &nbsp;
+          <div
+            style={{
+              border: "1px solid #DBDBDB",
+              borderRadius: "7px",
+              width: "20%",
+              backgroundColor: "#FAFAFA",
+              padding: "10px",
+            }}
+          >
+            <div style={{ marginBottom: "15px" }}>Device Type: </div>
+            <div style={{ color: "green" }}>{selectedDevice?.device_type}</div>
           </div>
           &nbsp; &nbsp;
           <div
             style={{
-              border: "1px solid grey",
+              border: "1px solid #DBDBDB",
+              borderRadius: "7px",
               width: "20%",
-              backgroundColor: "#DBDBDB",
+              backgroundColor: "#FAFAFA",
+              padding: "10px",
             }}
           >
-            Device Type:{selectedDevice?.device_type}
+            <div style={{ marginBottom: "15px" }}>Function: </div>
+            <div style={{ color: "green" }}>{selectedDevice?.function}</div>
           </div>
           &nbsp; &nbsp;
           <div
             style={{
-              border: "1px solid grey",
+              border: "1px solid #DBDBDB",
+              borderRadius: "7px",
               width: "20%",
-              backgroundColor: "#DBDBDB",
+              backgroundColor: "#FAFAFA",
+              padding: "10px",
             }}
           >
-            Function:{selectedDevice?.function}
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid grey",
-              width: "20%",
-              backgroundColor: "#DBDBDB",
-            }}
-          >
-            Vendor:{selectedDevice?.vendor}
+            <div style={{ marginBottom: "15px" }}>Vendor: </div>
+            <div style={{ color: "green" }}>{selectedDevice?.vendor}</div>
           </div>
         </div>
       </Card>
