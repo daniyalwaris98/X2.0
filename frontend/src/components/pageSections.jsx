@@ -13,6 +13,9 @@ export default function DefaultPageTableSection({
   selectedRowKeys = null,
   setSelectedRowKeys = null,
   getCheckboxProps = null,
+  rowClickable = false,
+  selectedRowKey = null,
+  setSelectedRowKey = null,
   dynamicWidth = true,
   scroll = true,
 }) {
@@ -33,6 +36,9 @@ export default function DefaultPageTableSection({
         getCheckboxProps={getCheckboxProps}
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
+        rowClickable={rowClickable}
+        selectedRowKey={selectedRowKey}
+        setSelectedRowKey={setSelectedRowKey}
         scroll={scroll}
       />
     </DefaultCard>

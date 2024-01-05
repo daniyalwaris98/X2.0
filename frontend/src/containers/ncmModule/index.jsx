@@ -7,10 +7,6 @@ import {
   PAGE_NAME as PAGE_NAME_MANAGE_CONFIGURATIONS,
   PAGE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS,
 } from "./manageConfigurations/constants";
-import {
-  LANDING_PAGE_NAME as LANDING_PAGE_NAME_MANAGE_CONFIGURATIONS,
-  LANDING_PAGE_PATH as LANDING_PAGE_PATH_MANAGE_CONFIGURATIONS,
-} from "./manageConfigurationsLanding";
 export const MODULE_PATH = "ncm_module";
 
 const menuItems = [
@@ -19,11 +15,6 @@ const menuItems = [
     name: PAGE_NAME_MANAGE_CONFIGURATIONS,
     path: PAGE_PATH_MANAGE_CONFIGURATIONS,
   },
-  // {
-  //   id: LANDING_PAGE_PATH_MANAGE_CONFIGURATIONS,
-  //   name: LANDING_PAGE_NAME_MANAGE_CONFIGURATIONS,
-  //   path: LANDING_PAGE_PATH_MANAGE_CONFIGURATIONS,
-  // },
 ];
 
 function Index(props) {

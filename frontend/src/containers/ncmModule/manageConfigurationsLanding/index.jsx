@@ -81,7 +81,7 @@ function Index(props) {
             <div style={{ marginBottom: "15px" }}>Device Name: </div>
             <div style={{ color: "green" }}>{selectedDevice?.device_name}</div>
           </div>
-          &nbsp; &nbsp; &nbsp; &nbsp;
+          &nbsp; &nbsp;
           <div
             style={{
               border: "1px solid #DBDBDB",
@@ -123,12 +123,7 @@ function Index(props) {
         </div>
       </Card>
 
-      <Card
-      // sx={{
-      //   borderTopLeftRadius: 0,
-      //   borderTopRightRadius: 0,
-      // }}
-      >
+      <Card>
         <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>
       <Outlet />
