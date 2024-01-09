@@ -212,3 +212,13 @@ class GetWMIMonitoringCredentialSchema(BaseSchema):
     profile_name:str
     password:str
     category:str
+
+
+class MonitoringCredentialsResponseSchema(BaseSchema):
+    monitoring_credentials_id:int
+    category:str
+    profile_name:str
+
+class InterfaceBandScema(BaseSchema):
+    ip_address:str
+    interface_name:str

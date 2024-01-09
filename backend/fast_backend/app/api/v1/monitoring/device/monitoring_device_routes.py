@@ -568,3 +568,78 @@ def testing_influx():
     except Exception as e:
         traceback.print_exc()
         return {"error": str(e)}
+
+@router.post('/get_interface_band',responses = {
+    200:{"model":str},
+    500:{"model":str}
+},
+description="API to get the interface band on the IP address click",
+summary="API to get the interface band on the IP address"
+)
+def get_interface_band(ips:InterfaceBandScema):
+    try:
+        ip_address = ips['ip_address']
+        org = 'monetx'
+        query_api = configs.client.query_api()
+        print("query api is:::::::::::;",query_api,file=sys.stderr)
+        query = f'import "strings"\
+                import "influxdata/influxdb/schema"\
+                from(bucket: "monitoring")\
+                |> range(start: -1d)\
+                |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
+                |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip_address}")\
+                |> schema.fieldsAsCols()'
+        result = query_api.query(org='monetx', query=query)
+        print("result is:::::::::::::::::::::::::",result,file=sys.stderr)
+        result = []
+        objectDict = {}
+        upload = []
+        download = []
+        all =[]
+        final = []
+        try:
+            for table in result:
+                for record in table:
+                    if record['Interface_Name'] == ips['interface_name']:
+                        print(f"Record Against the Interface Name is::{ips['interface_name']}",file=sys.stderr)
+                        obj2 = {}
+                        try:
+                            obj2['date'] = datetime.strptime(record['Date'], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S')
+                            print("obj 2 dict is::::::",obj2['date'],file=sys.stderr)
+                        except Exception as e:
+                            traceback.print_exc()
+                            obj2['date'] =""
+
+                        if record['Download']:
+                            download.append(round(float(record['Download']),2))
+                            obj2['name'] = record['Interface_Name']
+                            obj2['download'] = round(float(record['Download']),2)
+
+                        if record['Upload']:
+                            upload.append(round(float(
+                                record['Upload']
+                            ),2))
+                            obj2['upload'] = round(float(record['Uplaod']),2)
+                            obj2['total'] = round(
+                                float(record['Upload'])+float(record['Download']),2
+                            )
+                            all.append(obj2['total'])
+                        result.append(obj2)
+            objectDict['All'] = result[1:]
+            print(f"Download is:::::::{download},upload is:::::::{upload},all is::::::::::::{all}",file=sys.stderr)
+            if len(download)>0 and len(upload)>0:
+                final.append({"bandwidth":"Download","min":min(download),"max":max(download),"avg":round(sum(download)/len(download),2)})
+                final.append({"bandwidth": "Upload", "min": min(upload), "max": max(upload),
+                              "avg": round(sum(upload) / len(upload), 2)})
+                final.append(
+                    {"bandwidth": "Average", "min": min(all), "max": max(all), "avg": round(sum(all) / len(all), 2)})
+                objectDict['table'] = final
+            elif len(download) == 0 or len(upload) == 0:
+                final.append({"bandwidth": "Download", "min": 0, "max": 0, "avg": 0})
+                final.append({"bandwidth": "Upload", "min": 0, "max": 0, "avg": 0})
+                final.append({"bandwidth": "Average", "min": 0, "max": 0, "avg": 0})
+            return objectDict
+        except Exception as e:
+            traceback.print_exc()
+    except Exception as e:
+        traceback.print_exc()
