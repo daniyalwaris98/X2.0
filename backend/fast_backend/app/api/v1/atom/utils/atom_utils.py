@@ -1,6 +1,12 @@
-from app.api.v1.atom.utils.atom_import import *
-import ipaddress
-from sqlalchemy import and_
+from app.api.v1.ipam.routes.device_routes import *
+from app.models.ipam_models import *
+from app.models.atom_models import *
+from app.models.uam_models import *
+from app.models.site_rack_models import *
+from sqlalchemy import and_, inspect
+from app.utils.static_list import *
+from app.schema.atom_schema import PasswordGroupTypeEnum
+
 
 def validate_site(device):
     # Site Check
@@ -492,116 +498,83 @@ def fill_transition_data(device, trans_obj):
 
 def edit_atom_util(device):
     try:
-        print("atom utils is:::::::::::::::::::::::::::::",device,file=sys.stderr)
+        print("Received device data:", device, file=sys.stderr)
         atom = None
         trans_atom = None
         data = {}
         attributes_dict = {}
+
         if "atom_id" not in device and "atom_transition_id" not in device:
             return "Atom ID Or Atom Transition ID is Missing", 400
 
-        if "atom_id" in device:
-            if device["atom_id"] is not None:
-                atom = configs.db.query(AtomTable).filter(
-                    AtomTable.atom_id == device["atom_id"]).first()
+        # Retrieve atom or trans_atom from the database
+        if "atom_id" in device and device["atom_id"] is not None:
+            atom = configs.db.query(AtomTable).filter(
+                AtomTable.atom_id == device["atom_id"]).first()
 
-        if "atom_transition_id" in device:
-            print("atom tranistion id in devices is::::::::",file=sys.stderr)
-            if device["atom_transition_id"] is not None:
-                trans_atom = configs.db.query(AtomTransitionTable).filter(
-                    AtomTransitionTable.atom_transition_id == device["atom_transition_id"]).first()
-                print("trans atom is:::::::::::::testing:::::::::",trans_atom,file=sys.stderr)
+        if "atom_transition_id" in device and device["atom_transition_id"] is not None:
+            trans_atom = configs.db.query(AtomTransitionTable).filter(
+                AtomTransitionTable.atom_transition_id == device["atom_transition_id"]).first()
 
-        device["ip_address"] = device["ip_address"].strip()
-        if device["ip_address"] == "":
-            return f"Ip Address Can Not be Empty", 400
+        if device["ip_address"].strip() == "":
+            return "IP Address Cannot be Empty", 400
 
-        if atom is not None:
+        # Process the atom or trans_atom
+        if atom:
             atom, status = edit_complete_atom(device, atom)
-
             if status != 200:
                 return atom, status
-
             status = UpdateDBData(atom)
+            object_to_inspect = atom
 
-        elif trans_atom is not None:
+        elif trans_atom:
+            # Check for IP address conflicts
             if configs.db.query(AtomTransitionTable).filter(
                     AtomTransitionTable.ip_address == device["ip_address"],
-                    AtomTransitionTable.atom_transition_id != device["atom_transition_id"]
-            ).first() is not None:
-                return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
-
-            if configs.db.query(AtomTable).filter(
-                    AtomTable.ip_address == device["ip_address"]).first() is not None:
-                return f"{device['ip_address']} : IP Address Is Already Assigned To An Other Device", 400
+                    AtomTransitionTable.atom_transition_id != device["atom_transition_id"]).first() or \
+               configs.db.query(AtomTable).filter(
+                    AtomTable.ip_address == device["ip_address"]).first():
+                return f"{device['ip_address']} : IP Address Is Already Assigned To Another Device", 400
 
             trans_atom.ip_address = device['ip_address']
             trans_atom = fill_transition_data(device, trans_atom)
-
             status = UpdateDBData(trans_atom)
-            try:
-                # attributes_dict = {}
-
-                # Check if trans_obj exists
-                if trans_atom:
-                    inspector = inspect(trans_atom.__class__)
-                    columns = inspector.columns
-                    
-                    # Iterate through columns and fetch values
-                    for column in columns:
-                        column_name = column.key
-                        if column_name not in ['creation_date', 'modification_date']:
-                            value = getattr(trans_atom, column_name, None)
-                            attributes_dict[column_name] = value
-                    print("attribute dict is:::::::::::::::::::::::::::::111111111111",attributes_dict,file=sys.stderr)
-
-                elif atom:
-                    print("atom exsist is::::::::::::::::::::::",atom,file=sys.stderr)
-                    inspector = inspect(atom.__class__)
-                    columns = inspector.columns
-                    print("inspector is:::::::::::::::::::::::::::::;",inspector,file=sys.stderr)
-                    print("columns is:::::::::::::::::::::::;",columns,file = sys.stderr)
-                    for column in columns:
-                        column_name = column.key
-                        if column_name not in ['creation_date', 'modification_date']:
-                            value = getattr(trans_atom, column_name, None)
-                            attributes_dict[column_name] = value
-            except Exception as e:
-                            traceback.print_exc()
-                            print("error occured while getting the attribute of trans atom::::::::::::",file=sys.stderr)
+            object_to_inspect = trans_atom
 
         else:
             return "Device Not Found", 400
 
+        # Populate attributes_dict from the object
+        if object_to_inspect:
+            inspector = inspect(object_to_inspect.__class__)
+            columns = inspector.columns
+            for column in columns:
+                column_name = column.key
+                if column_name not in ['creation_date', 'modification_date']:
+                    value = getattr(object_to_inspect, column_name, None)
+                    attributes_dict[column_name] = value
+
+        print("Attributes dict:", attributes_dict, file=sys.stderr)
+
         if status == 200:
-
-            devices_data =dict(device)
-
-            if trans_atom:
-                print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
-                data = {"transition id":trans_atom.atom_transition_id}
-                devices_data['atom_transition_id'] = trans_atom.atom_transition_id
-                msg = f"{device['ip_address']} : Transition Atom Updated Successfully"
-                data = {
-                        "data":attributes_dict,
-                        "message":msg
-                }
-            elif atom:
+            if object_to_inspect is atom:
                 msg = f"{device['ip_address']} : Atom Updated Successfully"
-                data = {
-                    "data": attributes_dict,
-                    "message": msg
-                }
+            else:
+                msg = f"{device['ip_address']} : Transition Atom Updated Successfully"
+
+            data = {
+                "data": attributes_dict,
+                "message": msg
+            }
         else:
             msg = f"{device['ip_address']} : Error While Updating Atom"
 
         return data, status
 
-    except Exception:
-        error = f"Error : Exception Occurred"
-        # print(error, file=sys.stderr)
+    except Exception as e:
+        print(f"Error occurred: {e}", file=sys.stderr)
         traceback.print_exc()
-        return error, 500
+        return "Error: Exception Occurred", 500
 
 
 def edit_complete_atom(device, atom):
