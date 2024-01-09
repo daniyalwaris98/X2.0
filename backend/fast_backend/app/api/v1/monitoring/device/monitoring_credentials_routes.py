@@ -324,3 +324,28 @@ async def delete_snmp_credentials(id_list: list[int]):
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
+
+
+@router.get('/get_all_monitoring_credentials',responses={
+    200:{"model":list[MonitoringCredentialsResponseSchema]},
+    500:{"model":500}
+},
+description="API to get all the SNMP credentials",
+summary="API to get all the snmp cerdentials"
+)
+def get_all_snmp_credentials():
+    try:
+        credentials_list = []
+        credentials = configs.db.query(Monitoring_Credentails_Table).all()
+        for credential in credentials:
+            print("credentials are:::::::::::::::",credential,file=sys.stderr)
+            credentials_dict = {
+                "monitoring_credentials_id":credential.monitoring_credentials_id,
+                "category":credential.category,
+                "profile_name":credential.profile_name
+            }
+            credentials_list.append(credentials_dict)
+        return JSONResponse(content=credentials_list,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Getting the Monitoring credentials",status_code=500)
