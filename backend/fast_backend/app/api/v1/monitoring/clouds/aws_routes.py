@@ -53,8 +53,8 @@ def test_aws_connection(testObj:AwsCredentialScehma):
              responses={
                  200:{"model":AwsCredentialScehma}
              },
-             summary = "Add aws credentials",
-             description="Add aws credentials"
+             summary = "Use This API in the monitoring cloud page to add the AWS.This is of POST Requesst",
+             description="Use This API in the monitoring cloud page to add the AWS.This is of POST Requesst"
              )
 def add_aws_credentials(addAws:AwsCredentialScehma):
     try:
@@ -67,8 +67,12 @@ def add_aws_credentials(addAws:AwsCredentialScehma):
             return  f"{aws_query.access_key} : Access Key already exsist",400
 
         aws = AWS(access_key,secret_key,account_label)
-        if aws.TestConnection() == False:
-            return f"{aws.access_key} : Invalid Credentials"
+        try:
+            if aws.TestConnection() == False:
+                return JSONResponse(content=f"{aws.access_key} : Invalid Credentials",status_code=400)
+        except Exception as e:
+            traceback.print_exc()
+            print("error occured While testing AWS credentials",str(e))
 
         try:
             aws_model = AWS_CREDENTIALS()
@@ -88,8 +92,8 @@ def add_aws_credentials(addAws:AwsCredentialScehma):
                 200:{"model":list[GetAwsSchema]},
                 500:{"model":str}
             },
-            summary="get all aws credentials",
-            description="get all aws credentials"
+            summary="Use This API in the clod page to list down all the credentials in a table.This is of GET METHOD",
+            description="Use This API in the clod page to list down all the credentials in a table.This is of GET METHOD"
             )
 def get_all_aws_credentials():
     try:
@@ -115,11 +119,11 @@ def get_all_aws_credentials():
 
 @router.get('/get_all_ec2',
             responses={
-                200:{"model":str},
+                200:{"model":list[GetEC2Schema]},
                 500:{"model":str}
             },
-            summary="API to get all EC2",
-            description="Get all EC2"
+            summary="Use this API in monitoring cloud in EC2 page to list down all the EC2 in a table.This is of GET method",
+            description="Use this API in monitoring cloud in EC2 page to list down all the EC2 in a table.This is of GET method"
             )
 def get_all_ec2():
     try:
@@ -145,25 +149,36 @@ def get_all_ec2():
 
 @router.post('/add_ec2',
              responses= {
-                 200:{"model":AddEc2Schema},
+                 200:{"model":Response200},
                  400:{"model":str},
                  500:{"model":str}
              },
              summary="Use this api to add ec2",
              description="use this api to add ec2"
              )
-def add_ec2(ec2Obj:str):
+def add_ec2(ec2Obj:AddEc2Schema):
     try:
-        aws_credentials = configs.db.query(AWS_CREDENTIALS).filter_by(access_key = ec2Obj['access_key']).all()
+        data_dict = {}
+        aws_credentials = configs.db.query(AWS_CREDENTIALS).filter_by(access_key = ec2Obj['access_key']).first()
         if aws_credentials is None:
                 return f"{ec2Obj['access_key']} : Is invalid",400
         ec2 = AWS_EC2()
         ec2.instance_id = ec2Obj['instance_id']
         ec2.instance_name = ec2Obj['instance_name']
-        ec2.region_id = ec2Obj['']
+        ec2.region_id = ec2Obj['region_id']
         ec2.access_key = ec2Obj['access_key']
         InsertDBData(ec2)
         print("data inserted to the db:::::::",file=sys.stderr)
+        data = {
+            "id":ec2.id,
+            "isntance_id":ec2.instance_id,
+            "instance_name":ec2.instance_name,
+            "region_id":ec2.region_id,
+            "monitoring_status":ec2.monitoring_status,
+            "access_key":ec2.access_key
+        }
+        data_dict['data'] = data
+        data['message'] = f"{ec2Obj['instance_name']} : Inserted Successfully"
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content = "Error Occured while adding aws EC2",status_code=500)
@@ -199,11 +214,12 @@ def change_ec2_status(ec2_status:str):
                  400:{"model":str},
                  500:{"model":str}
              },
-             summary="api to reload ec2",
-             description="api to reload ec2"
+             summary="Use this API in the monitoring cloud page to reload the ec2 and this is of post method and acees aws_access_key to reload",
+             description="Use this API in the monitoring cloud page to reload the ec2 and this is of post method and acees aws_access_key to reload"
              )
-def reload_ec2(ec2_obj:str):
+def reload_ec2(ec2_obj:AWSReloadScehma):
     try:
+        data_dict = {}
         ec2_obj = AWS_EC2()
         access_key = ec2_obj['aws_access_key']
         aws_query = configs.db.query(AWS_EC2).filter_by(access_key = access_key).first()
@@ -224,10 +240,20 @@ def reload_ec2(ec2_obj:str):
                ec2_obj.region_id = ec2['region_id']
                UpdateDBData(ec2_obj)
                print(f"{ec2['instance_name']} : {ec2['region_id']} : Is updated")
+               data = {
+                   "id":result.id,
+                   "instance_id":result.instance_id,
+                   "instance_name":result.instance_name,
+                   "region_id":result.region_id,
+                   "monitoring_status":result.monitoring_status,
+                   "access_key":result.access_key
+               }
+               data_dict['data'] = data
+               data_dict['message'] = f"{ec2['instance_name']} : {ec2['region_id']} : Is updated"
             else:
                 ec2_lst.append(ec2)
                 print("vallues appended to the ec2 lst:::::",file=sys.stderr)
-        return JSONResponse(content = ec2_lst,status_code=200)
+        return JSONResponse(content = data_dict,status_code=200)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content = "Error Occured While reloading ec2",status_code=500)
@@ -238,8 +264,8 @@ def reload_ec2(ec2_obj:str):
                 200:{"model":list[GetEc3Schema]},
                 500:{"model":str}
             },
-            summary="api to get all s3",
-            description="api to get all s3"
+            summary="Use this API in the monitoring clod page to list down the s3 in a table.This is of get method",
+            description="Use this API in the monitoring clod page to list down the s3 in a table.This is of get method"
             )
 def get_all_s3():
     try:
@@ -264,15 +290,16 @@ def get_all_s3():
 
 @router.post('/reload_s3',
              responses = {
-                 200:{"model":str},
+                 200:{"model":Response200},
                  400:{"model":str},
                  500:{"model":str}
              },
-             summary="API to reload the S3",
-             description="API to reload the S3"
+             summary="Use this API in the se page to relaod the s3 this is of psot method and accepts the  aws_access_key in a payload",
+             description="Use this API in the se page to relaod the s3 this is of psot method and accepts the  aws_access_key in a payload"
              )
-def reload_s3(s3_obj:str):
+def reload_s3(s3_obj:AWSReloadScehma):
     try:
+        data_dict = {}
         s3_lst = []
         aws_s3 = AWS_S3()
         access_key = s3_obj['aws_access_key']
@@ -293,8 +320,18 @@ def reload_s3(s3_obj:str):
             else:
                 aws_s3_table.region_id = s3['region_id']
                 UpdateDBData(aws_s3_table)
-                print("SW3 table updated and reload successful",file=sys.stderr)
+                data ={
+                    "id":aws_s3_table.id,
+                    "bucket_name":aws_s3_table.bucket_name,
+                    "region_id":aws_s3_table.region_id,
+                    "monitoring_status":aws_s3_table.monitoring_status,
+                    "access_key":aws_s3_table.access_key
+                }
+                data_dict['data'] = data
+                data_dict['message'] = f"{aws_s3_table.region_id} : Updated"
 
+                print("SW3 table updated and reload successful",file=sys.stderr)
+        return JSONResponse(content=data_dict,status_code=200)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content = "Error Occured while reloading the S3",status_code=500)
@@ -306,3 +343,142 @@ print("changes",file=sys.stderr)
 # @app.route("/get")
 # def get_Test():
 #     return "error"
+
+@router.post("/reload_elb",
+             responses={
+                 200:{"model":Response200},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="API to reload the AWS ELB",
+             description="API to reload AWS ELB"
+             )
+def reload_elb(credentials:AWSReloadScehma):
+    try:
+        data_dict = {}
+        credentials = dict(credentials)
+        aws_access_key = credentials['aws_access_key']
+        access_key = configs.db.query(AWS_CREDENTIALS).filter_by(access_key = aws_access_key).first()
+        if access_key:
+            credentials_row = dict(access_key)
+            print("credentials row are:::::::::::::::",credentials_row,file=sys.stderr)
+            aws = AWS(
+                 access_key,
+                 credentials_row['secret_access_key'],
+                credentials_row['account_label']
+             )
+            if aws.TestConnection() == False:
+                return JSONResponse(content="Error : Invalid Credentials", status_code=401)
+            all_elb = aws.GetAllELB()
+            print("elb is::::::::::::::",all_elb,file=sys.stderr)
+            elb_list = []
+            for elb in all_elb:
+                elb_exsist = configs.db.query(AWS_ELB).filter_by(lb_arn=elb['lb_arn']).first()
+                if elb_exsist:
+                    elb_list.append(elb)
+                else:
+                    elb_name_exsist = configs.db.query(AWS_ELB).filter_by(lb_name = elb['lb_name']).first()
+                    if elb_name_exsist:
+                        elb_name_exsist.lb_name = elb['lb_name']
+                        elb_name_exsist.lb_scheme = elb['lb_scheme']
+                        elb_name_exsist.lb_type = elb['lb_type']
+                        elb_name_exsist.region_id = elb['region_id']
+                        configs.db.merge(elb_name_exsist)
+                        configs.db.commit()
+                        data = {
+                            "load_balancer_name":elb_name_exsist.lb_name,
+                            "load_balancer_scheme":elb_name_exsist.lb_scheme,
+                            "load_balancer_type":elb_name_exsist.lb_type,
+                            "region_id":elb_name_exsist.region_id,
+                            "id":elb_name_exsist.id
+                        }
+                        data_dict['data'] = data
+                        data_dict['message'] = f"{elb_name_exsist.lb_name} : Updated"
+                        print("ELB Already Exsist and updated",file=sys.stderr)
+                    return JSONResponse(content=data_dict,status_code=200)
+        else:
+            return JSONResponse(content=f"{aws_access_key} : Not Found",status_code=400)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Reloading the Elb",status_code=500)
+
+
+@router.get('/get_all_elb',
+             responses = {
+                 200:{"model":list[GetAllELBSchema]},
+                 500:{"model":str}
+             },
+             summary = "Get ALL ELB Data",
+             description = "Get ALL ELB"
+             )
+def get_all_elb():
+    try:
+        elb_list= []
+        elb_data = configs.db.query(AWS_ELB).all()
+        for data in elb_data:
+            elb_dict = {
+                "id":data.id,
+                "load_balancer_name":data.lb_name,
+                "load_balancer_type":data.lb_type,
+                "load_balancer_scheme":data.lb_scheme,
+                "load_balancer_arn":data.lb_arn,
+                "monitoring_status":data.monitoring_status,
+                "access_key":data.access_key
+            }
+            elb_list.append(elb_dict)
+        return elb_list
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Fetching the ELB data",status_code=500)
+
+
+@router.post('/add_elb',responses = {
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to add elb",
+description="API to add elb"
+)
+def add_elb(credentials:str):
+    try:
+        credential = dict(credentials)
+        credential_exsist = configs.db.query(AWS_CREDENTIALS).filter_by(access_key=credential['access_key']).first()
+        if credential_exsist is None:
+            return JSONResponse(content="Invalid Access Key",status_code=400)
+        elb = AWS_ELB()
+        elb.lb_name = credential['lb_name']
+        elb.lb_type = credential['lb_type']
+        elb.lb_scheme = credential['lb_scheme']
+        elb.lb_arn = credential['lb_arn']
+        elb.region_id = credential['region_id']
+        elb.access_key = credential['access_key']
+        InsertDBData(elb)
+        return JSONResponse(content="ELB Inserted Successfully",status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Adding ELB",status_code=500)
+
+
+
+@router.post('change_elb_status',
+             responses = {
+                 200:{"model":str},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="API to Change ELB Status",
+             description="api TO CHANGE THE ELB STATUS"
+             )
+def change_elb_status(status:str):
+    try:
+        status = dict(status)
+        if status['monitoring_status'] == "Enabled" or status['monitoring_status']=="Disabled":
+            elb_exsist = configs.db.query(AWS_ELB).filter_by(lb_arn = status['lb_arn']).first()
+            if elb_exsist:
+                elb_exsist.status =status['monitoring_status']
+                UpdateDBData(elb_exsist)
+            else:
+                return JSONResponse(content="AWS ELB does not exsist",status_code=400)
+    except Exception as e:
+        traceback.print_exc()

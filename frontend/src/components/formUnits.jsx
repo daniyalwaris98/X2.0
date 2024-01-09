@@ -15,6 +15,7 @@ export default function DefaultFormUnit({
   dataKey,
   type = "text",
   required = false,
+  label = true,
   sx,
   ...rest
 }) {
@@ -27,9 +28,11 @@ export default function DefaultFormUnit({
       render={({ field, fieldState }) => {
         return (
           <DefaultWrapper sx={{ marginBottom: "10px" }}>
-            <DefaultLabel htmlFor={dataKey} required={required}>
-              {title}:
-            </DefaultLabel>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
             <InputWrapper>
               {type === "text" ? (
                 <DefaultInput
@@ -75,6 +78,7 @@ export function SelectFormUnit({
   dataKey,
   options,
   required = false,
+  label = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -86,9 +90,11 @@ export function SelectFormUnit({
       render={({ field, fieldState }) => {
         return (
           <DefaultWrapper sx={{ marginBottom: "10px" }}>
-            <DefaultLabel htmlFor={dataKey} required={required}>
-              {title}:
-            </DefaultLabel>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
             <InputWrapper>
               <DefaultSelect
                 field={field}
@@ -124,11 +130,12 @@ export function SelectFormUnit({
   );
 }
 
-export function AddableSelectFormUnit({
+export function SelectFormUnitWithHiddenValues({
   control,
   dataKey,
   options,
   required = false,
+  label = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -140,9 +147,68 @@ export function AddableSelectFormUnit({
       render={({ field, fieldState }) => {
         return (
           <DefaultWrapper sx={{ marginBottom: "10px" }}>
-            <DefaultLabel htmlFor={dataKey} required={required}>
-              {title}:
-            </DefaultLabel>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
+            <InputWrapper>
+              <DefaultSelect
+                field={field}
+                sx={{ outline: "none" }}
+                id={dataKey}
+                {...rest}
+              >
+                <DefaultOption
+                  value=""
+                  sx={{
+                    color: theme.palette.default_select.place_holder,
+                  }}
+                >
+                  Select a {title}
+                </DefaultOption>
+                {options?.map((item) => (
+                  <DefaultOption value={item.value}>{item.name}</DefaultOption>
+                ))}
+              </DefaultSelect>
+            </InputWrapper>
+            <div
+              style={{
+                color: theme?.palette?.form_unit?.error_text,
+                fontSize: "12px",
+              }}
+            >
+              {fieldState.error && fieldState.error.message}
+            </div>
+          </DefaultWrapper>
+        );
+      }}
+    />
+  );
+}
+
+export function AddableSelectFormUnit({
+  control,
+  dataKey,
+  options,
+  required = false,
+  label = true,
+  ...rest
+}) {
+  const theme = useTheme();
+  const title = getTitle(dataKey);
+  return (
+    <Controller
+      name={dataKey}
+      control={control}
+      render={({ field, fieldState }) => {
+        return (
+          <DefaultWrapper sx={{ marginBottom: "10px" }}>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
             <InputWrapper>
               <AddableSelect
                 field={field}
@@ -183,6 +249,7 @@ export function DateFormUnit({
   dataKey,
   options,
   required = false,
+  label = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -194,9 +261,11 @@ export function DateFormUnit({
       render={({ field, fieldState }) => {
         return (
           <DefaultWrapper sx={{ marginBottom: "10px" }}>
-            <DefaultLabel htmlFor={dataKey} required={required}>
-              {title}:
-            </DefaultLabel>
+            {label ? (
+              <DefaultLabel htmlFor={dataKey} required={required}>
+                {title}:
+              </DefaultLabel>
+            ) : null}
             <InputWrapper>
               <DefaultDate
                 field={field}

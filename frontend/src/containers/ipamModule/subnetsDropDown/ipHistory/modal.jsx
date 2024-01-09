@@ -14,7 +14,7 @@ import DefaultTableConfigurations from "../../../../components/tableConfiguratio
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import { PAGE_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import { PageTableSectionWithoutWidth } from "../../../../components/pageSections";
+import DefaultPageTableSection from "../../../../components/pageSections";
 import { indexColumnNameConstants } from "../ipDetails/constants";
 import { getTitle } from "../../../../utils/helpers";
 
@@ -86,12 +86,13 @@ const Index = ({ handleClose, open, ipAddress }) => {
               />
             ) : null}
 
-            <PageTableSectionWithoutWidth
+            <DefaultPageTableSection
               PAGE_NAME={PAGE_NAME}
               TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
               buttonsConfigurationList={buttonsConfigurationList}
               displayColumns={displayColumns}
               dataSource={dataSource}
+              dynamicWidth={false}
             />
           </Spin>
         </Grid>

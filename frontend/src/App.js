@@ -2,12 +2,13 @@ import * as React from "react";
 import { useContext } from "react";
 import { ThemeProvider } from "@mui/material/styles";
 import { RouterProvider } from "react-router-dom";
-import { store } from "./store";
+import { store, persistor } from "./store";
 import { Provider } from "react-redux";
 import { lightTheme, darkTheme } from "./themes";
 import router from "./routes";
 import { AppContext } from "./context/appContext";
 import "./index.css";
+import { PersistGate } from "redux-persist/integration/react";
 
 const App = () => {
   const { isDarkMode } = useContext(AppContext);
@@ -23,9 +24,11 @@ const App = () => {
       }}
     >
       <Provider store={store}>
-        <ThemeProvider theme={theme}>
-          <RouterProvider router={router} />
-        </ThemeProvider>
+        <PersistGate loading={null} persistor={persistor}>
+          <ThemeProvider theme={theme}>
+            <RouterProvider router={router} />
+          </ThemeProvider>
+        </PersistGate>
       </Provider>
     </div>
   );

@@ -29,9 +29,11 @@ const schema = yup.object().shape({
   [indexColumnNameConstants.SUBNET_MASK]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.SUBNET_MASK)} is required`),
-  [indexColumnNameConstants.LOCATION]: yup
+  [indexColumnNameConstants.SUBNET_LOCATION]: yup
     .string()
-    .required(`${getTitle(indexColumnNameConstants.LOCATION)} is required`),
+    .required(
+      `${getTitle(indexColumnNameConstants.SUBNET_LOCATION)} is required`
+    ),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -126,7 +128,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             />
             <DefaultFormUnit
               control={control}
-              dataKey={indexColumnNameConstants.LOCATION}
+              dataKey={indexColumnNameConstants.SUBNET_LOCATION}
               required
             />
           </Grid>

@@ -82,7 +82,7 @@ header {
 .desktop-nav .menu-item > a,
 .desktop-nav .menu-item button {
   text-align: left;
-  padding: 0rem 1rem;
+  padding: 0 10px;
 }
 
 .desktop-nav .arrow::after {

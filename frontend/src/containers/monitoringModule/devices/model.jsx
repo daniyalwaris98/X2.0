@@ -1,175 +1,144 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
-import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
-import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
+import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
+import DefaultDialog from "../../../components/dialogs";
+import { CancelDialogFooter } from "../../../components/dialogFooters";
+import Grid from "@mui/material/Grid";
 import {
-  useUpdateRecordMutation,
-  useAddRecordMutation,
+  useGetAtomsToAddInMonitoringDevicesQuery,
+  useAddAtomsInMonitoringDevicesMutation,
 } from "../../../store/features/monitoringModule/devices/apis";
-import {
-  useFetchDeviceNamesQuery,
-  useFetchStatusNamesQuery,
-} from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
-import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
+import { selectAtomsToAddInMonitoringDevicesData } from "../../../store/features/monitoringModule/devices/selectors";
+import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter } from "../../../utils/helpers";
-import DefaultSelect from "../../../components/selects";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
-import { indexColumnNameConstants } from "./constants";
-import { PAGE_NAME } from "./constants";
+import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
+import { useIndexTableColumnDefinitions } from "../../atomModule/atoms/columnDefinitions";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constants";
+import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import DefaultPageTableSection from "../../../components/pageSections";
+import { PAGE_NAME } from "../../atomModule/atoms/constants";
 
-const schema = yup.object().shape({
-  [indexColumnNameConstants.DEVICE_NAME]: yup
-    .string()
-    .required("Device name is required")
-    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters in device name"),
-  [indexColumnNameConstants.STATUS]: yup
-    .string()
-    .required("Status is required"),
-  [indexColumnNameConstants.CITY]: yup
-    .string()
-    .matches(/^[A-Za-z]+$/, "City must contain only alphabets"),
-});
-
-const Index = ({ handleClose, open, recordToEdit }) => {
+const Index = ({ handleClose, open }) => {
   const theme = useTheme();
 
+  // states required in hooks
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+  // hooks
+  const { columnDefinitionsForMonitoringDevices: columnDefinitions } =
+    useIndexTableColumnDefinitions({});
+  const generatedColumns = useColumnsGenerator({ columnDefinitions });
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    default_add: {
+      handleClick: handleAdd,
+      namePostfix: PAGE_NAME,
+      visible: selectedRowKeys.length > 0,
+    },
+  });
+
   // states
+  const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
+  const [columns, setColumns] = useState(generatedColumns);
+  const [availableColumns, setAvailableColumns] = useState([]);
+  const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
-  // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
-    resolver: yupResolver(schema),
-  });
-
-  // effects
-  useEffect(() => {
-    formSetter(recordToEdit, setValue);
-  }, []);
-
-  // post api for the form
-  const [
-    addRecord,
-    {
-      data: addRecordData,
-      isSuccess: isAddRecordSuccess,
-      isLoading: isAddRecordLoading,
-      isError: isAddRecordError,
-      error: addRecordError,
-    },
-  ] = useAddRecordMutation();
+  // apis
+  const {
+    data: getAtomsToAddInMonitoringDevicesData,
+    isSuccess: isGetAtomsToAddInMonitoringDevicesSuccess,
+    isLoading: isGetAtomsToAddInMonitoringDevicesLoading,
+    isError: isGetAtomsToAddInMonitoringDevicesError,
+    error: getAtomsToAddInMonitoringDevicesError,
+  } = useGetAtomsToAddInMonitoringDevicesQuery();
 
   const [
-    updateRecord,
+    addAtomsInMonitoring,
     {
-      data: updateRecordData,
-      isSuccess: isUpdateRecordSuccess,
-      isLoading: isUpdateRecordLoading,
-      isError: isUpdateRecordError,
-      error: updateRecordError,
+      data: addAtomsInMonitoringDevicesData,
+      isSuccess: isAddAtomsInMonitoringDevicesSuccess,
+      isLoading: isAddAtomsInMonitoringDevicesLoading,
+      isError: isAddAtomsInMonitoringDevicesError,
+      error: addAtomsInMonitoringDevicesError,
     },
-  ] = useUpdateRecordMutation();
-
-  // fetching dropdowns data from backend using apis
-  const { refetch: refetchDeviceNames } = useFetchDeviceNamesQuery(undefined, {
-    skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
-  });
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
+  ] = useAddAtomsInMonitoringDevicesMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: addRecordData,
-    isSuccess: isAddRecordSuccess,
-    isError: isAddRecordError,
-    error: addRecordError,
-    type: TYPE_SINGLE,
-    callback: handleClose,
+    data: getAtomsToAddInMonitoringDevicesData,
+    isSuccess: isGetAtomsToAddInMonitoringDevicesSuccess,
+    isError: isGetAtomsToAddInMonitoringDevicesError,
+    error: getAtomsToAddInMonitoringDevicesError,
+    type: TYPE_FETCH,
   });
 
   useErrorHandling({
-    data: updateRecordData,
-    isSuccess: isUpdateRecordSuccess,
-    isError: isUpdateRecordError,
-    error: updateRecordError,
-    type: TYPE_SINGLE,
+    data: addAtomsInMonitoringDevicesData,
+    isSuccess: isAddAtomsInMonitoringDevicesSuccess,
+    isError: isAddAtomsInMonitoringDevicesError,
+    error: addAtomsInMonitoringDevicesError,
+    type: TYPE_BULK,
     callback: handleClose,
   });
 
   // getting dropdowns data from the store
-  const statusNames = useSelector(selectStatusNames);
+  const dataSource = useSelector(selectAtomsToAddInMonitoringDevicesData);
 
-  // effects
-  useEffect(() => {
-    if (isAddRecordSuccess || isUpdateRecordSuccess) {
-      refetchDeviceNames();
-    }
-  }, [isAddRecordSuccess, isUpdateRecordSuccess]);
+  // handlers
+  function handleTableConfigurationsOpen() {
+    setTableConfigurationsOpen(true);
+  }
 
-  // on form submit
-  const onSubmit = (data) => {
-    // console.log("site data", data);
-    if (recordToEdit) {
-      data.device_id = recordToEdit.device_id;
-      updateRecord(data);
-    } else {
-      addRecord(data);
-    }
-  };
+  function handleAdd() {
+    addAtomsInMonitoring(selectedRowKeys);
+  }
 
   return (
-    <FormModal
-      sx={{ zIndex: "999" }}
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+    <DefaultDialog
+      sx={{ content: { padding: 0 } }}
+      title={`${"Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEVICE_NAME}
-              disabled={recordToEdit !== null}
-              required
+      <Grid container>
+        <Grid item xs={12}>
+          <Spin
+            spinning={
+              isGetAtomsToAddInMonitoringDevicesLoading ||
+              isAddAtomsInMonitoringDevicesLoading
+            }
+          >
+            {tableConfigurationsOpen ? (
+              <DefaultTableConfigurations
+                columns={columns}
+                availableColumns={availableColumns}
+                setAvailableColumns={setAvailableColumns}
+                displayColumns={displayColumns}
+                setDisplayColumns={setDisplayColumns}
+                setColumns={setColumns}
+                open={tableConfigurationsOpen}
+                setOpen={setTableConfigurationsOpen}
+              />
+            ) : null}
+
+            <DefaultPageTableSection
+              PAGE_NAME={PAGE_NAME}
+              TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+              buttonsConfigurationList={buttonsConfigurationList}
+              displayColumns={displayColumns}
+              dataSource={dataSource}
+              selectedRowKeys={selectedRowKeys}
+              setSelectedRowKeys={setSelectedRowKeys}
+              dynamicWidth={false}
             />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.REGION_NAME}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.CITY}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.STATUS}
-              options={statusNames}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.LATITUDE}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.LONGITUDE}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
+          </Spin>
         </Grid>
-      </form>
-    </FormModal>
+        <Grid item xs={12}>
+          <CancelDialogFooter handleClose={handleClose} />
+        </Grid>
+      </Grid>
+    </DefaultDialog>
   );
 };
 

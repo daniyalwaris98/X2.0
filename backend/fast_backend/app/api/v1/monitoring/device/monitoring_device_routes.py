@@ -1,8 +1,10 @@
 import sys
+import traceback
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
+from influxdb_client.client.write_api import SYNCHRONOUS, ASYNCHRONOUS
+import influxdb_client
 from app.api.v1.monitoring.device.utils.monitoring_utils import *
 from app.models.monitoring_models import *
 from app.schema.monitoring_schema import *
@@ -150,9 +152,10 @@ async def get_all_monitoring_devices():
                     UpdateDBData(MonitoringObj)
                 else:
                     snmp_cred = credentials.profile_name
-
+            atom_exsist = configs.db.query(AtomTable).filter_by(atom_id=MonitoringObj.atom_id).first()
+            print("atom exsist is:::::::::::::::;",atom_exsist,file=sys.stderr)
             monitoring_data_dict = {"monitoring_id": MonitoringObj.monitoring_device_id,
-                                    "ip_address": atom.ip_address, "device_type": atom.device_type,
+                                    "ip_address": atom_exsist.ip_address, "device_type": atom.device_type,
                                     "device_name": atom.device_name, "vendor": atom.vendor,
                                     "function": atom.function, "source": MonitoringObj.source,
                                     "credentials": snmp_cred, "active": MonitoringObj.active,
@@ -163,6 +166,7 @@ async def get_all_monitoring_devices():
                                         MonitoringObj.modification_date
                                     )}
             monitoring_obj_list.append(monitoring_data_dict)
+        print("monitoring obj list is:::",monitoring_obj_list,file=sys.stderr)
 
         return JSONResponse(content=monitoring_obj_list, status_code=200)
 
@@ -519,3 +523,123 @@ async def get_interface_filter_date(data_list: list[GetFunctionDataSchema]):
 #     else:
 #         print("Authentication Failed", file=sys.stderr)
 #         return jsonify({"message": "Authentication Failed"}), 401
+
+@router.get('/testin_influx_db')
+def testing_influx():
+    try:
+        query_api = configs.client.query_api()
+        print("query api is::::::::::::::::", query_api, file=sys.stderr)
+
+        # Add the organization parameter to the write_api initialization
+        write_api = configs.client.write_api(org="monetx", write_options=SYNCHRONOUS)
+        print("write api is:::", write_api, file=sys.stderr)
+
+        dictionary = {
+            "measurement": "Monitoring Devices testing",
+            "tags": {
+                "DEVICE_NAME": "output['device_name']",
+                "STATUS": "output['status']",
+                "IP_ADDRESS": "host[1]",
+                "FUNCTION": "host[2]",
+                "VENDOR": "host[6]",
+            },
+            "time": datetime.utcnow().isoformat(),
+            "fields": {
+                "INTERFACES": 22,
+                "DISCOVERED_TIME": datetime.utcnow().isoformat(),
+                "DEVICE_DESCRIPTION": "output['device_description']",
+                "CPU": "output['cpu']",
+                "Memory": "output['memory']",
+                "PACKETS_LOSS": "output['packets']",
+                "Response": "output['response']"
+            }
+        }
+        print("dictorinary is:::::::::::",dictionary,file=sys.stderr)
+        try:
+            print("writing to the disk is in process")
+            write_api.write(org='monetx',bucket='monitoring', record=dictionary)
+            print("Data written to disk", file=sys.stderr)
+            return dictionary
+        except Exception as e:
+            traceback.print_exc()
+            print("Error writing to disk:", str(e), file=sys.stderr)
+            return {"error": str(e)}
+
+    except Exception as e:
+        traceback.print_exc()
+        return {"error": str(e)}
+
+@router.post('/get_interface_band',responses = {
+    200:{"model":str},
+    500:{"model":str}
+},
+description="API to get the interface band on the IP address click",
+summary="API to get the interface band on the IP address"
+)
+def get_interface_band(ips:InterfaceBandScema):
+    try:
+        ip_address = ips['ip_address']
+        org = 'monetx'
+        query_api = configs.client.query_api()
+        print("query api is:::::::::::;",query_api,file=sys.stderr)
+        query = f'import "strings"\
+                import "influxdata/influxdb/schema"\
+                from(bucket: "monitoring")\
+                |> range(start: -1d)\
+                |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
+                |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip_address}")\
+                |> schema.fieldsAsCols()'
+        result = query_api.query(org='monetx', query=query)
+        print("result is:::::::::::::::::::::::::",result,file=sys.stderr)
+        result = []
+        objectDict = {}
+        upload = []
+        download = []
+        all =[]
+        final = []
+        try:
+            for table in result:
+                for record in table:
+                    if record['Interface_Name'] == ips['interface_name']:
+                        print(f"Record Against the Interface Name is::{ips['interface_name']}",file=sys.stderr)
+                        obj2 = {}
+                        try:
+                            obj2['date'] = datetime.strptime(record['Date'], '%Y-%m-%d %H:%M:%S.%f').strftime('%Y-%m-%d %H:%M:%S')
+                            print("obj 2 dict is::::::",obj2['date'],file=sys.stderr)
+                        except Exception as e:
+                            traceback.print_exc()
+                            obj2['date'] =""
+
+                        if record['Download']:
+                            download.append(round(float(record['Download']),2))
+                            obj2['name'] = record['Interface_Name']
+                            obj2['download'] = round(float(record['Download']),2)
+
+                        if record['Upload']:
+                            upload.append(round(float(
+                                record['Upload']
+                            ),2))
+                            obj2['upload'] = round(float(record['Uplaod']),2)
+                            obj2['total'] = round(
+                                float(record['Upload'])+float(record['Download']),2
+                            )
+                            all.append(obj2['total'])
+                        result.append(obj2)
+            objectDict['All'] = result[1:]
+            print(f"Download is:::::::{download},upload is:::::::{upload},all is::::::::::::{all}",file=sys.stderr)
+            if len(download)>0 and len(upload)>0:
+                final.append({"bandwidth":"Download","min":min(download),"max":max(download),"avg":round(sum(download)/len(download),2)})
+                final.append({"bandwidth": "Upload", "min": min(upload), "max": max(upload),
+                              "avg": round(sum(upload) / len(upload), 2)})
+                final.append(
+                    {"bandwidth": "Average", "min": min(all), "max": max(all), "avg": round(sum(all) / len(all), 2)})
+                objectDict['table'] = final
+            elif len(download) == 0 or len(upload) == 0:
+                final.append({"bandwidth": "Download", "min": 0, "max": 0, "avg": 0})
+                final.append({"bandwidth": "Upload", "min": 0, "max": 0, "avg": 0})
+                final.append({"bandwidth": "Average", "min": 0, "max": 0, "avg": 0})
+            return objectDict
+        except Exception as e:
+            traceback.print_exc()
+    except Exception as e:
+        traceback.print_exc()

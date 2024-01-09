@@ -3,6 +3,7 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { DEFAULT_PASSWORD, indexColumnNameConstants } from "./constants";
 import { convertToAsterisks } from "../../../utils/helpers";
+import useTableActions from "../../../hooks/useTableActions";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();

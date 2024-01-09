@@ -1,6 +1,6 @@
 from app.models.ncm_models import *
 from app.api.v1.atom.utils.atom_utils import *
-
+from app.core.config import *
 
 
 

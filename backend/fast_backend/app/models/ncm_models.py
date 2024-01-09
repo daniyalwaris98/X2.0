@@ -44,7 +44,7 @@ class NCM_History_Table(Base):
 
     file_name = Column(String(500), nullable=False)
     configuration_date = Column(DateTime, default=datetime.now(), nullable=False)
-
+    deleted_state = Column(Boolean,nullable=True,default = False)
     creation_date = Column(DateTime, default=datetime.now())
     modification_date = Column(
         DateTime, default=datetime.now(), onupdate=datetime.now()

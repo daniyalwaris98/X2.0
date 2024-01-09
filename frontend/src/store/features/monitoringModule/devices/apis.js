@@ -2,41 +2,42 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    //table apis
-    fetchDevices: builder.query({
+    getAllMonitoringDevices: builder.query({
       query: () => "/api/v1/monitoring/devices/get_all_monitoring_devices",
     }),
 
-    deleteDevices: builder.mutation({
+    fetchMonitoringDevices: builder.query({
+      query: () => "/api/v1/ipam/ipam_device/fetch_ipam_devices",
+    }),
+
+    deleteMonitoringDevices: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/site/delete_sites",
+        url: "/api/v1/atom/password_group/delete_password_group",
         method: "POST",
         body: data,
       }),
     }),
 
-    // form apis
-    addDevice: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/uam/site/add_site",
-        method: "POST",
-        body: data,
-      }),
+    getAtomsToAddInMonitoringDevices: builder.query({
+      query: () => "/api/v1/monitoring/devices/get_atom_in_monitoring",
     }),
 
-    updateDevice: builder.mutation({
+    addAtomsInMonitoringDevices: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/uam/site/edit_site",
+        url: "/api/v1/monitoring/devices/add_atom_in_monitoring",
         method: "POST",
         body: data,
       }),
     }),
-  }), 
+  }),
 });
+
 export const {
-  useFetchDevicesQuery: useFetchRecordsQuery,
-  useDeleteDevicesMutation: useDeleteRecordsMutation,
-  // form apis
-  useAddDeviceMutation: useAddRecordMutation,
-  useUpdateDeviceMutation: useUpdateRecordMutation,
+  useGetAllMonitoringDevicesQuery: useFetchRecordsQuery,
+  useDeleteMonitoringDevicesMutation: useDeleteRecordsMutation,
+  useGetAtomsToAddInMonitoringDevicesQuery,
+  useAddAtomsInMonitoringDevicesMutation,
 } = extendedApi;
+
+export const useFetchMonitoringDevicesLazyQuery =
+  extendedApi.endpoints.fetchMonitoringDevices.useLazyQuery;

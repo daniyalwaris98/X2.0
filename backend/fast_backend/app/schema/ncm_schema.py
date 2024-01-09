@@ -71,3 +71,26 @@ class DeleteResponseSchema(BaseSchema):
     error: int
     success_list: list[str]
     error_list: list[str]
+
+class RestoreConfigurationSchema(BaseSchema):
+    ip_address: str
+    date:str
+
+class GetTrueBackup(BaseSchema):
+    ncm_device_id:int
+    status:str | None = None
+    confg_change_date:str | None = None
+    ip_adderss:str |None = None
+
+class CompareBackupSchema(BaseSchema):
+    ncm_history_id_1:int
+    ncm_history_id_2:int
+
+class GetDeviceConfigurationById(BaseSchema):
+    ncm_device_id:int
+
+class GetDeviceConfigurationByHistory(BaseSchema):
+    ncm_history_id:int
+
+class NcmDeletedConfigurationSchema(BaseSchema):
+    ncm_device_id:int

@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useState } from "react";
 import { Table } from "antd";
 import styled from "styled-components";
 import { useTheme } from "@mui/material/styles";
@@ -83,50 +83,20 @@ const DefaultStyledAntDesignTable = styled(Table)`
         background-color: ${({ theme }) =>
           theme?.palette?.default_table?.even_row};
       }
+
+      tr.selected-row > td {
+        background-color: #e5ffda;
+      }
+
+      tr.selected-row:hover > td {
+        background-color: #e5ffda;
+      }
+
+      tr.clickable-row:hover > td {
+        cursor: pointer;
+      }
     }
   }
-
-  /* .ant-pagination-item a {
-    display: block;
-    padding: 0 6px;
-    color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
-    transition: none;
-  }
-
-  .ant-pagination-jump-prev
-    .ant-pagination-item-container
-    .ant-pagination-item-ellipsis,
-  .ant-pagination-jump-next
-    .ant-pagination-item-container
-    .ant-pagination-item-ellipsis {
-    color: ${({ theme }) => theme?.palette?.default_table?.pagination_border};
-  }
-
-  .ant-pagination-item,
-  .ant-pagination-item-active a {
-    border-radius: 20px;
-    background-color: ${({ theme }) =>
-    theme?.palette?.default_table?.pagination_background};
-    border: none;
-    color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
-  }
-
-  .ant-pagination-prev button,
-  .ant-pagination-next button {
-    color: ${({ theme }) => theme?.palette?.default_table?.pagination_border};
-  }
-
-  .ant-select:not(.ant-select-customize-input) .ant-select-selector {
-    border: none;
-    border-radius: 5px;
-    color: ${({ theme }) => theme?.palette?.default_table?.pagination_text};
-    background-color: ${({ theme }) =>
-    theme?.palette?.default_table?.pagination_background};
-  }
-
-  .ant-select-arrow {
-    color: ${({ theme }) => theme?.palette?.default_table?.pagination_border};
-  } */
 
   .ant-pagination-prev {
     margin-right: 5px !important;
@@ -216,6 +186,10 @@ export default function DefaultTable({
   selectedRowKeys = null,
   setSelectedRowKeys = null,
   getCheckboxProps = null,
+  rowClickable = false,
+  selectedRowKey = null,
+  setSelectedRowKey = null,
+  scroll = true,
   ...rest
 }) {
   const theme = useTheme();
@@ -235,23 +209,44 @@ export default function DefaultTable({
     console.log("Various parameters", pagination, filters, sorter, extra);
   }
 
+  function handleRowClick(record) {
+    const newSelectedRowKey =
+      selectedRowKey == record[rest.rowKey] ? null : record[rest.rowKey];
+    setSelectedRowKey(newSelectedRowKey);
+  }
+
+  function handleRowClicked(record) {
+    return { onClick: () => handleRowClick(record) };
+  }
+
+  function getRowClassName(record, index) {
+    let classNames = index % 2 === 0 ? "even" : "odd";
+    if (record[rest.rowKey] === selectedRowKey) {
+      classNames += " selected-row";
+    }
+    if (rowClickable) {
+      classNames += " clickable-row";
+    }
+
+    return classNames;
+  }
+
   return (
-    <DefaultScrollbar>
-      <DefaultStyledAntDesignTable
-        onChange={handleChange}
-        rowSelection={selectedRowKeys ? rowSelection : null}
-        columns={displayColumns}
-        scroll={{ x: getTableScrollWidth(displayColumns) }}
-        style={{ whiteSpace: "pre" }}
-        rowClassName={(record, index) => (index % 2 === 0 ? "even" : "odd")}
-        size="small"
-        pagination={{
-          defaultPageSize: 10,
-          pageSizeOptions: [20, 50, 100, 500, 1000],
-        }}
-        theme={theme}
-        {...rest}
-      />
-    </DefaultScrollbar>
+    <DefaultStyledAntDesignTable
+      onChange={handleChange}
+      rowSelection={selectedRowKeys ? rowSelection : null}
+      columns={displayColumns}
+      scroll={{ x: scroll ? getTableScrollWidth(displayColumns) : null }}
+      style={{ whiteSpace: "pre" }}
+      size="small"
+      pagination={{
+        defaultPageSize: 10,
+        pageSizeOptions: [20, 50, 100, 500, 1000],
+      }}
+      rowClassName={getRowClassName}
+      onRow={rowClickable ? handleRowClicked : null}
+      theme={theme}
+      {...rest}
+    />
   );
 }
