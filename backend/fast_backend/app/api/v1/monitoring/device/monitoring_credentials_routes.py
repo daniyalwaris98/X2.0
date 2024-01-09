@@ -328,7 +328,7 @@ async def delete_snmp_credentials(id_list: list[int]):
 
 @router.get('/get_all_monitoring_credentials',responses={
     200:{"model":list[MonitoringCredentialsResponseSchema]},
-    500:{"model":500}
+    500:{"model":str}
 },
 description="API to get all the SNMP credentials",
 summary="API to get all the snmp cerdentials"

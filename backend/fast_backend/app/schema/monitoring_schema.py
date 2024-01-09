@@ -218,3 +218,7 @@ class MonitoringCredentialsResponseSchema(BaseSchema):
     monitoring_credentials_id:int
     category:str
     profile_name:str
+
+class InterfaceBandScema(BaseSchema):
+    ip_address:str
+    interface_name:str
