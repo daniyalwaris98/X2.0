@@ -6,13 +6,9 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/monitoring/devices/get_all_monitoring_devices",
     }),
 
-    fetchMonitoringDevices: builder.query({
-      query: () => "/api/v1/ipam/ipam_device/fetch_ipam_devices",
-    }),
-
     deleteMonitoringDevices: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/delete_password_group",
+        url: "/api/v1/monitoring/devices/delete_monitoring_devices",
         method: "POST",
         body: data,
       }),
@@ -26,7 +22,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: (data) => ({
         url: "/api/v1/monitoring/devices/add_atom_in_monitoring",
         method: "POST",
-        body: data,
+        body: { atom_id: 0, monitoring_credentials_id: 0 },
       }),
     }),
   }),

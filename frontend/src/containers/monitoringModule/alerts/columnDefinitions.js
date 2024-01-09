@@ -3,33 +3,12 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions() {
+export function useIndexTableColumnDefinitions({}) {
   const columnDefinitions = [
-    indexColumnNameConstants.BOARD_NAME,
-    indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.SERIAL_NUMBER,
-    indexColumnNameConstants.PN_CODE,
-    indexColumnNameConstants.STATUS,
-    indexColumnNameConstants.DEVICE_SLOT_ID,
-    indexColumnNameConstants.SOFTWARE_VERSION,
-    indexColumnNameConstants.HARDWARE_VERSION,
-    indexColumnNameConstants.MANUFACTURE_DATE,
-    indexColumnNameConstants.EOS_DATE,
-    indexColumnNameConstants.EOL_DATE,
-  ];
-
-  const plainColumnDefinitions = [
-    indexColumnNameConstants.BOARD_NAME,
-    indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.SERIAL_NUMBER,
-    indexColumnNameConstants.PN_CODE,
-    indexColumnNameConstants.STATUS,
-    indexColumnNameConstants.DEVICE_SLOT_ID,
-    indexColumnNameConstants.SOFTWARE_VERSION,
-    indexColumnNameConstants.HARDWARE_VERSION,
-    indexColumnNameConstants.MANUFACTURE_DATE,
-    indexColumnNameConstants.EOS_DATE,
-    indexColumnNameConstants.EOL_DATE,
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.DESCRIPTION,
+    indexColumnNameConstants.ALERT_TYPE,
+    indexColumnNameConstants.DATE,
   ];
 
   const dataKeys = columnDefinitions
@@ -43,7 +22,6 @@ export function useIndexTableColumnDefinitions() {
     .filter((item) => true);
 
   return {
-    plainColumnDefinitions,
     columnDefinitions,
     dataKeys,
   };

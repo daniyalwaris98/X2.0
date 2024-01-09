@@ -19,7 +19,6 @@ import uamHWLifeCyclesReducer from "./features/uamModule/hwLifeCycles";
 // monitoring module
 import monitoringDevicesReducer from "./features/monitoringModule/devices";
 import monitoringAlertsReducer from "./features/monitoringModule/alerts";
-import monitoringCredentialsReducer from "./features/monitoringModule/credentials";
 
 // auto discovery module
 import autoDiscoveryManageNetworksReducer from "./features/autoDiscoveryModule/manageNetworks";
@@ -82,7 +81,6 @@ const rootReducer = combineReducers({
   // monitoring module
   monitoring_devices: monitoringDevicesReducer,
   monitoring_alerts: monitoringAlertsReducer,
-  monitoring_credentials: monitoringCredentialsReducer,
 
   // auto discovery module
   auto_discovery_manage_networks: autoDiscoveryManageNetworksReducer,

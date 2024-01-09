@@ -7,11 +7,11 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.DESCRIPTION,
-    indexColumnNameConstants.PORT,
     indexColumnNameConstants.CATEGORY,
-    indexColumnNameConstants.PROFILE_NAME,
-    indexColumnNameConstants.COMMUNITY,
+    indexColumnNameConstants.PROFILE_NAME, //
+    indexColumnNameConstants.COMMUNITY, //
+    indexColumnNameConstants.DESCRIPTION, //
+    indexColumnNameConstants.PORT, //
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,

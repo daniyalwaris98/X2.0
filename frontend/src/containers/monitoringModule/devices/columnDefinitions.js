@@ -7,20 +7,41 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS,
-    indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.SUBNET_ADDRESS,
-    indexColumnNameConstants.SUBNET_MASK,
-    indexColumnNameConstants.SUBNET_NAME,
-    indexColumnNameConstants.INTERFACE,
-    indexColumnNameConstants.INTERFACE_IP,
-    indexColumnNameConstants.INTERFACE_LOCATION,
-    indexColumnNameConstants.INTERFACE_DESCRIPTION,
-    indexColumnNameConstants.INTERFACE_STATUS,
-    indexColumnNameConstants.VIRTUAL_IP,
-    indexColumnNameConstants.VLAN,
-    indexColumnNameConstants.VLAN_NUMBER,
-    indexColumnNameConstants.FETCH_DATE,
+    indexColumnNameConstants.IP_ADDRESS, //
+    indexColumnNameConstants.DEVICE_TYPE, //
+    indexColumnNameConstants.DEVICE_NAME, //
+    indexColumnNameConstants.VENDOR, //
+    indexColumnNameConstants.FUNCTION, //
+    indexColumnNameConstants.SOURCE, //
+    indexColumnNameConstants.CREDENTIALS, //
+    indexColumnNameConstants.ACTIVE,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.SNMP_STATUS,
+    indexColumnNameConstants.PING_STATUS, //
+    indexColumnNameConstants.MONITORING_STATUS, //
+    {
+      data_key: indexColumnNameConstants.ACTIONS,
+      search: false,
+      fixed: "right",
+      align: "center",
+      width: 100,
+      render: (text, record) => (
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            justifyContent: "center",
+          }}
+        >
+          <Icon
+            fontSize={"15px"}
+            onClick={() => handleEdit(record)}
+            icon="bx:edit"
+            style={{ cursor: "pointer" }}
+          />
+        </div>
+      ),
+    },
   ];
 
   const dataKeys = columnDefinitions

@@ -1,13 +1,15 @@
-export const PAGE_NAME = "interfaces";
-export const ELEMENT_NAME = "interfaces";
+export const PAGE_NAME = "Interfaces";
+export const ELEMENT_NAME = "Interface";
 export const PAGE_PATH = "interfaces";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_interfaces_credentials";
-export const TABLE_DATA_UNIQUE_ID = "credentials_id";
+export const TABLE_DATA_UNIQUE_ID = "interface_id";
 export const indexColumnNameConstants = {
-  MANAGE_NETWORK_ID: TABLE_DATA_UNIQUE_ID,
-  DESCRIPTION: "description",
-  VERSION: "version",
-  PROFILE_NAME: "profile_name",
-  COMMUNITY: "community",
-  ACTIONS: "actions",
+  INTERFACE_ID: TABLE_DATA_UNIQUE_ID,
+  IP_ADDRESS: "ip_address",
+  DEVICE_NAME: "device_name",
+  INTERFACE_NAME: "interface_name",
+  INTERFACE_STATUS: "interface_status",
+  UPLOAD_SPEED: "upload_speed",
+  DOWNLOAD_SPEED: "download_speed",
+  INTERFACE_DESCRIPTION: "interface_description",
 };
