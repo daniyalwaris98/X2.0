@@ -8,9 +8,10 @@ export function useIndexTableColumnDefinitions({}) {
 
   const columnDefinitions = [
     indexColumnNameConstants.LOAD_BALANCER_NAME,
-    indexColumnNameConstants.TYPE,
-    indexColumnNameConstants.SCHEME,
-    indexColumnNameConstants.REGION,
+    indexColumnNameConstants.LOAD_BALANCER_TYPE,
+    indexColumnNameConstants.LOAD_BALANCER_SCHEME,
+    indexColumnNameConstants.LOAD_BALANCER_ARN,
+    indexColumnNameConstants.ACCESS_KEY,
     indexColumnNameConstants.MONITORING_STATUS,
   ];
 

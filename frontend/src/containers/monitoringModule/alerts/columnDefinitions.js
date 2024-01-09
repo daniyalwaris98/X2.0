@@ -8,6 +8,8 @@ export function useIndexTableColumnDefinitions({}) {
     indexColumnNameConstants.IP_ADDRESS,
     indexColumnNameConstants.DESCRIPTION,
     indexColumnNameConstants.ALERT_TYPE,
+    indexColumnNameConstants.ALERT_STATUS,
+    indexColumnNameConstants.CATEGORY,
     indexColumnNameConstants.DATE,
   ];
 

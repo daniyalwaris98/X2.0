@@ -10,6 +10,7 @@ export function useIndexTableColumnDefinitions({}) {
     indexColumnNameConstants.INSTANCE_ID,
     indexColumnNameConstants.INSTANCE_NAME,
     indexColumnNameConstants.ACCOUNT_LABEL,
+    indexColumnNameConstants.ACCESS_KEY,
     indexColumnNameConstants.REGION_ID,
     indexColumnNameConstants.MONITORING_STATUS,
   ];

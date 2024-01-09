@@ -16,5 +16,7 @@ export const indexColumnNameConstants = {
   ACTIVE: "active",
   STATUS: "status",
   SNMP_STATUS: "snmp_status",
+  PING_STATUS: "ping_status",
+  MONITORING_STATUS: "monitoring_status",
   ACTIONS: "actions",
 };

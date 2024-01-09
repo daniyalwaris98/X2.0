@@ -13,7 +13,6 @@ export function useIndexTableColumnDefinitions({}) {
     indexColumnNameConstants.VENDOR,
     indexColumnNameConstants.TOTAL_INTERFACES,
     indexColumnNameConstants.FUNCTION,
-    indexColumnNameConstants.CREDENTIALS,
     indexColumnNameConstants.STATUS,
     indexColumnNameConstants.DISCOVERED_TIME,
     indexColumnNameConstants.DEVICE_DESCRIPTION,

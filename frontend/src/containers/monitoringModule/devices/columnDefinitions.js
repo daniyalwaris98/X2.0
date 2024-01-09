@@ -5,20 +5,19 @@ import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
-
   const columnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS, //
-    indexColumnNameConstants.DEVICE_TYPE, //
-    indexColumnNameConstants.DEVICE_NAME, //
-    indexColumnNameConstants.VENDOR, //
-    indexColumnNameConstants.FUNCTION, //
-    indexColumnNameConstants.SOURCE, //
-    indexColumnNameConstants.CREDENTIALS, //
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.DEVICE_TYPE,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.VENDOR,
+    indexColumnNameConstants.FUNCTION,
+    indexColumnNameConstants.SOURCE,
+    indexColumnNameConstants.CREDENTIALS,
     indexColumnNameConstants.ACTIVE,
     indexColumnNameConstants.STATUS,
     indexColumnNameConstants.SNMP_STATUS,
-    indexColumnNameConstants.PING_STATUS, //
-    indexColumnNameConstants.MONITORING_STATUS, //
+    indexColumnNameConstants.PING_STATUS,
+    indexColumnNameConstants.MONITORING_STATUS,
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,
