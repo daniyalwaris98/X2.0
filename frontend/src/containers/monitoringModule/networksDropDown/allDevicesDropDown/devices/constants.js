@@ -1,7 +1,7 @@
 export const PAGE_NAME = "Devices";
 export const ELEMENT_NAME = "Device";
-export const PAGE_PATH = "network_all_devices";
-export const FILE_NAME_EXPORT_ALL_DATA = "network_all_devices";
+export const PAGE_PATH = "networks_all_devices";
+export const FILE_NAME_EXPORT_ALL_DATA = "networks_all_devices";
 export const TABLE_DATA_UNIQUE_ID = "device_id";
 export const indexColumnNameConstants = {
   DEVICE_ID: TABLE_DATA_UNIQUE_ID,
