@@ -17,11 +17,6 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useGetAllIpamDevicesQuery: useFetchRecordsQuery,
-  useDeleteIpamDevicesMutation: useDeleteRecordsMutation,
-  useGetAtomsToAddInIpamDevicesQuery,
-  useAddAtomsInIpamDevicesMutation,
+  useGetAllELBsQuery: useFetchRecordsQuery,
+  useChangeELBStatusMutation,
 } = extendedApi;
-
-export const useFetchIpamDevicesLazyQuery =
-  extendedApi.endpoints.fetchIpamDevices.useLazyQuery;

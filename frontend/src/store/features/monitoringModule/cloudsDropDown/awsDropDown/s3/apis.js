@@ -16,5 +16,7 @@ export const extendedApi = monetxApi.injectEndpoints({
   }),
 });
 
-export const { useGetAllmonitoringe3RecordsQuery: useFetchRecordsQuery } =
-  extendedApi;
+export const {
+  useGetAllS3sQuery: useFetchRecordsQuery,
+  useChangeS3StatusMutation,
+} = extendedApi;

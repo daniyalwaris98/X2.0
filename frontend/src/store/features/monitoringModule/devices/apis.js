@@ -34,6 +34,3 @@ export const {
   useGetAtomsToAddInMonitoringDevicesQuery,
   useAddAtomsInMonitoringDevicesMutation,
 } = extendedApi;
-
-export const useFetchMonitoringDevicesLazyQuery =
-  extendedApi.endpoints.fetchMonitoringDevices.useLazyQuery;

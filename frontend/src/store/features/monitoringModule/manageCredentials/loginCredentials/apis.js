@@ -1,4 +1,4 @@
-import { monetxApi } from "../../../../apiSlice";
+import { monetxApi } from "../../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({

@@ -7,4 +7,4 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
   }),
 });
-export const { useFetchAlertsQuery: useFetchRecordsQuery } = extendedApi;
+export const { useGetAllAlertsQuery: useFetchRecordsQuery } = extendedApi;

@@ -1,2 +1,2 @@
 export const selectTableData = (state) =>
-  state.auto_discovery_v1_v2_credentials.all_data;
+  state.monitoring_switches_devices.all_data;

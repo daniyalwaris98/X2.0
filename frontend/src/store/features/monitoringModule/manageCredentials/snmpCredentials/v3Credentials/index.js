@@ -16,13 +16,13 @@ const defaultSlice = createSlice({
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.autoDiscoveryFetchV1V2Credentials.matchFulfilled,
+        extendedApi.endpoints.monitoringFetchV3Credentials.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.autoDiscoveryDeleteV1V2Credentials.matchFulfilled,
+        extendedApi.endpoints.monitoringDeleteV3Credentials.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -36,13 +36,13 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.autoDiscoveryAddV1V2Credential.matchFulfilled,
+        extendedApi.endpoints.monitoringAddV3Credential.matchFulfilled,
         (state, action) => {
           state.all_data = [action.payload.data, ...state.all_data];
         }
       )
       .addMatcher(
-        extendedApi.endpoints.autoDiscoveryUpdateV1V2Credential.matchFulfilled,
+        extendedApi.endpoints.monitoringUpdateV3Credential.matchFulfilled,
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {
