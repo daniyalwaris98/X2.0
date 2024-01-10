@@ -158,9 +158,10 @@ async def get_all_monitoring_devices():
                                     "ip_address": atom_exsist.ip_address, "device_type": atom.device_type,
                                     "device_name": atom.device_name, "vendor": atom.vendor,
                                     "function": atom.function, "source": MonitoringObj.source,
-                                    "credentials": snmp_cred, "active": MonitoringObj.active,
+                                    "credentials": snmp_cred, "active": MonitoringObj.active,#Active is a monitoring status
                                     "status": MonitoringObj.ping_status,
                                     "snmp_status": MonitoringObj.snmp_status,
+                                    "ping_status":MonitoringObj.ping_status,
                                     "creation_date": str(MonitoringObj.creation_date),
                                     "modification_date": str(
                                         MonitoringObj.modification_date

@@ -28,10 +28,11 @@ summary="Use this API in Monitoring module ALerts Page to list down all alerts i
 description="Use this API in Monitoring module ALerts Page to list down all alerts in table.This API is of get method"
 
 )
-async def low_alerts(alert_level: str =  Query(..., description="alert level of the device of the device")):
+async def low_alerts():
     try:
-        alert_level = str(alert_level).lower()
-        return JSONResponse(content=get_level_alert(alert_level), status_code=200)
+        # alert_level: str = Query(..., description="alert level of the device of the device")
+        # alert_level = str(alert_level).lower()
+        return JSONResponse(content=get_level_alert(), status_code=200)
 
     except Exception:
         traceback.print_exc()
