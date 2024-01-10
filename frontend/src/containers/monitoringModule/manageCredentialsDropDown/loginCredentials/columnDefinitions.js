@@ -7,9 +7,10 @@ export function useIndexTableColumnDefinitions({}) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.PASSWORD_GROUP,
     indexColumnNameConstants.USER_NAME,
+    indexColumnNameConstants.PROFILE_NAME,
     indexColumnNameConstants.PASSWORD,
+    indexColumnNameConstants.CATEGORY,
   ];
 
   const dataKeys = columnDefinitions

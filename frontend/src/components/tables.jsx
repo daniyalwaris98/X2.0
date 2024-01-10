@@ -190,6 +190,7 @@ export default function DefaultTable({
   selectedRowKey = null,
   setSelectedRowKey = null,
   scroll = true,
+  defaultPageSize = 10,
   ...rest
 }) {
   const theme = useTheme();
@@ -240,7 +241,7 @@ export default function DefaultTable({
       style={{ whiteSpace: "pre" }}
       size="small"
       pagination={{
-        defaultPageSize: 10,
+        defaultPageSize,
         pageSizeOptions: [20, 50, 100, 500, 1000],
       }}
       rowClassName={getRowClassName}

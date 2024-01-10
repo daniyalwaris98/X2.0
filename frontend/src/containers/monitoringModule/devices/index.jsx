@@ -1,10 +1,8 @@
 import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
-import Modal from "./model";
-import {
-  useFetchRecordsQuery,
-  useFetchMonitoringDevicesLazyQuery,
-} from "../../../store/features/monitoringModule/devices/apis";    
+import AddModal from "./addModal";
+import UpdateModal from "./updateModal";
+import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/devices/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/monitoringModule/devices/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
@@ -30,17 +28,18 @@ const Index = () => {
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    default_fetch: { handleClick: handleFetch },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
   });
 
   // states
-  const [open, setOpen] = useState(false);
+  const [recordToEdit, setRecordToEdit] = useState(null);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -58,17 +57,6 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
-  const [
-    fetchMonitoringDevices,
-    {
-      data: ipamFetchMonitoringDevicesData,
-      isSuccess: isFetchMonitoringDevicesSuccess,
-      isLoading: isFetchMonitoringDevicesLoading,
-      isError: isFetchMonitoringDevicesError,
-      error: fetchMonitoringDevicesError,
-    },
-  ] = useFetchMonitoringDevicesLazyQuery();
-
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -78,25 +66,22 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
-  useErrorHandling({
-    data: ipamFetchMonitoringDevicesData,
-    isSuccess: isFetchMonitoringDevicesSuccess,
-    isError: isFetchMonitoringDevicesError,
-    error: fetchMonitoringDevicesError,
-    type: TYPE_BULK,
-  });
-
   // handlers
-  function handleFetch() {
-    fetchMonitoringDevices();
+  function handleEdit(record) {
+    setRecordToEdit(record);
+    setOpenUpdateModal(true);
   }
 
   function handleAdd() {
-    setOpen(true);
+    setOpenAddModal(true);
   }
 
-  function handleClose() {
-    setOpen(false);
+  function handleCloseAdd() {
+    setOpenAddModal(false);
+  }
+
+  function handleCloseUpdate() {
+    setOpenUpdateModal(false);
   }
 
   function handleDefaultExport() {
@@ -109,8 +94,18 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isFetchMonitoringDevicesLoading}>
-      {open ? <Modal handleClose={handleClose} open={open} /> : null}
+    <Spin spinning={isFetchRecordsLoading}>
+      {openAddModal ? (
+        <AddModal handleClose={handleCloseAdd} open={openAddModal} />
+      ) : null}
+
+      {openUpdateModal ? (
+        <UpdateModal
+          handleClose={handleCloseUpdate}
+          open={openUpdateModal}
+          recordToEdit={recordToEdit}
+        />
+      ) : null}
 
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
