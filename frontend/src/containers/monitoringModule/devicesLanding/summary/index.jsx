@@ -1,8 +1,6 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/atomModule/passwordGroups/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/atomModule/passwordGroups/selectors";
+import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/summary/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
@@ -18,6 +16,10 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../../store/features/monitoringModule/devicesLanding/summary/selectors";
+import { selectSelectedDevice } from "../../../../store/features/monitoringModule/devices/selectors";
+import { IP_ADDRESS as DEVICE_IP_ADDRESS } from "../../devices/constants";
 
 const Index = () => {
   // theme
@@ -39,16 +41,20 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
+  const selectedDevice = useSelector(selectSelectedDevice);
   const dataSource = useSelector(selectTableData);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchRecords,
+    {
+      data: fetchRecordsData,
+      isSuccess: isFetchRecordsSuccess,
+      isLoading: isFetchRecordsLoading,
+      isError: isFetchRecordsError,
+      error: fetchRecordsError,
+    },
+  ] = useFetchRecordsMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -58,6 +64,15 @@ const Index = () => {
     error: fetchRecordsError,
     type: TYPE_FETCH,
   });
+
+  // effects
+  useEffect(() => {
+    if (selectedDevice) {
+      fetchRecords({
+        [DEVICE_IP_ADDRESS]: selectedDevice[DEVICE_IP_ADDRESS],
+      });
+    }
+  }, []);
 
   // handlers
   function handleDefaultExport() {

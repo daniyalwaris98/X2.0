@@ -4,31 +4,30 @@ import Card from "../../../components/cards";
 import HorizontalMenu from "../../../components/horizontalMenu/index";
 import { getPathAllSegments } from "../../../utils/helpers";
 import {
-  PAGE_NAME as PAGE_NAME_CONFIGURATION_BACKUPS,
-  PAGE_PATH as PAGE_PATH_CONFIGURATION_BACKUPS,
-} from "./configurationBackups/constants";
+  PAGE_NAME as PAGE_NAME_DEVICES_SUMMARY,
+  PAGE_PATH as PAGE_PATH_DEVICES_SUMMARY,
+} from "./summary/constants";
 import {
-  PAGE_NAME as PAGE_NAME_REMOTE_COMMAND_SENDER,
-  PAGE_PATH as PAGE_PATH_REMOTE_COMMAND_SENDER,
-} from "./remoteCommandSender/constants";
+  PAGE_NAME as PAGE_NAME_DEVICES_INTERFACES,
+  PAGE_PATH as PAGE_PATH_DEVICES_INTERFACES,
+} from "./interfaces/constants";
 import { useSelector } from "react-redux";
-import { selectSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations/selectors";
-import { PAGE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS } from "../manageConfigurations/constants";
+import { selectSelectedDevice } from "../../../store/features/monitoringModule/devices/selectors";
+import { PAGE_PATH as PAGE_PATH_DEVICES } from "../devices/constants";
 
-export const LANDING_PAGE_NAME = "Manage Configurations";
-export const LANDING_PAGE_RELATIVE_PATH = "manage_configurations_landing";
-export const LANDING_PAGE_PATH = `${PAGE_PATH_MANAGE_CONFIGURATIONS}/${LANDING_PAGE_RELATIVE_PATH}`;
+export const LANDING_PAGE_NAME = "Device Details";
+export const LANDING_PAGE_PATH = "devices_landing";
 
 const menuItems = [
   {
-    id: PAGE_PATH_CONFIGURATION_BACKUPS,
-    name: PAGE_NAME_CONFIGURATION_BACKUPS,
-    path: PAGE_PATH_CONFIGURATION_BACKUPS,
+    id: PAGE_PATH_DEVICES_SUMMARY,
+    name: PAGE_NAME_DEVICES_SUMMARY,
+    path: PAGE_PATH_DEVICES_SUMMARY,
   },
   {
-    id: PAGE_PATH_REMOTE_COMMAND_SENDER,
-    name: PAGE_NAME_REMOTE_COMMAND_SENDER,
-    path: PAGE_PATH_REMOTE_COMMAND_SENDER,
+    id: PAGE_PATH_DEVICES_INTERFACES,
+    name: PAGE_NAME_DEVICES_INTERFACES,
+    path: PAGE_PATH_DEVICES_INTERFACES,
   },
 ];
 
@@ -37,15 +36,13 @@ function Index(props) {
 
   let pagePath = getPathAllSegments();
   if (pagePath.length === 4 && pagePath[3] === LANDING_PAGE_PATH) {
-    pagePath = [PAGE_PATH_CONFIGURATION_BACKUPS];
+    pagePath = [PAGE_PATH_DEVICES_SUMMARY];
   } else pagePath = pagePath.splice(4);
 
   return (
     <>
       <Card
         sx={{
-          // borderTopLeftRadius: 0,
-          // borderTopRightRadius: 0,
           marginBottom: "10px",
         }}
       >
@@ -123,7 +120,6 @@ function Index(props) {
           </div>
         </div>
       </Card>
-
       <Card>
         <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>

@@ -27,6 +27,9 @@ import DefaultPageTableSection from "../../../components/pageSections";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { setSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations";
+import { PAGE_PATH as PAGE_PATH_CONFIGURATION_BACKUPS } from "../manageConfigurationsLanding/configurationBackups/constants";
+import { PAGE_PATH as PAGE_PATH_REMOTE_COMMAND_SENDER } from "../manageConfigurationsLanding/remoteCommandSender/constants";
+import { LANDING_PAGE_RELATIVE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS_LANDING } from "../manageConfigurationsLanding";
 
 const Index = () => {
   // theme
@@ -129,12 +132,16 @@ const Index = () => {
   // handlers
   function handleIpAddressClick(record) {
     dispatch(setSelectedDevice(record));
-    navigate("manage_configurations_landing/configuration_backups");
+    navigate(
+      `${PAGE_PATH_MANAGE_CONFIGURATIONS_LANDING}/${PAGE_PATH_CONFIGURATION_BACKUPS}`
+    );
   }
 
   function handleRcsClick(record) {
     dispatch(setSelectedDevice(record));
-    navigate("manage_configurations_landing/remote_command_sender");
+    navigate(
+      `${PAGE_PATH_MANAGE_CONFIGURATIONS_LANDING}/${PAGE_PATH_REMOTE_COMMAND_SENDER}`
+    );
   }
 
   function handleEmptySelectedRowKeys() {

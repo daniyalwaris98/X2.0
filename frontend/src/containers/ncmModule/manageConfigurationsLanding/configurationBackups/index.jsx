@@ -8,6 +8,7 @@ import {
 } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
+import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
@@ -20,7 +21,6 @@ import DefaultPageTableSection from "../../../../components/pageSections";
 import { Grid } from "@mui/material";
 import BackupDetails from "./backupDetails";
 import { Spin } from "antd";
-import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
 
 const Index = () => {
   // theme
