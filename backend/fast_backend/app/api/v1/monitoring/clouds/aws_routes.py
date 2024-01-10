@@ -461,7 +461,7 @@ def add_elb(credentials:str):
 
 
 
-@router.post('change_elb_status',
+@router.post('/change_elb_status',
              responses = {
                  200:{"model":str},
                  400:{"model":str},
@@ -482,3 +482,30 @@ def change_elb_status(status:str):
                 return JSONResponse(content="AWS ELB does not exsist",status_code=400)
     except Exception as e:
         traceback.print_exc()
+
+
+
+
+@router.post('/change_s3_status',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to change the status of the s3",
+description="API to change the status of the s3"
+)
+def change_s3_status(status:str):
+    try:
+        status_data = dict(status)
+        print("status data is::::::::::::::::::",status_data,file=sys.stderr)
+        if status_data['monitoring_status'] == "Enabled" or status_data['monitoring_data'] == "Disabled":
+            s3_exsist = configs.db.query(AWS_S3).filter_by(bucket_name = status_data['bucket_name']).first()
+            if s3_exsist:
+                s3_exsist.monitoring_status = status_data['monitoring_status']
+                configs.db.merge(s3_exsist)
+                configs.db.commit()
+            else:
+                return JSONResponse(content=f"{status_data['monitoring_status'] : Not Found}")
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Changing the s3 status",status_code=500)

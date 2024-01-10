@@ -78,7 +78,13 @@ def DecodeLicense(license_key):
 def LicenseTenure(end_date):
     try:
         from dateutil.relativedelta import relativedelta
-        months = int(end_date)
+        print("end date is::::::::::",end_date,file=sys.stderr)
+        str_end_date = str(end_date).split(' ')[0]
+        print("str end date is::::::::::::::",str_end_date,file=sys.stderr)
+        format_end_date = datetime.strptime(str_end_date, '%Y-%m-%d')
+        print("formatted end date is:::::::::::",format_end_date,file=sys.stderr)
+        months = float(str_end_date)
+        print("months are:::::::::::::::::::",months,file=sys.stderr)
         today = datetime.now()
         date_after_months = today + relativedelta(months=months)
         print("License start date is:::::::::::::::::::::::::::",today,file=sys.stderr)
@@ -87,6 +93,9 @@ def LicenseTenure(end_date):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Calculating license tenure",status_code=500)
+
+
+
 def LicenseDaysLeft(date_string):
     try:
         parsed_date = datetime.strptime(str(date_string),"%Y-%m-%d %H:%M:%S")
@@ -128,6 +137,7 @@ def generate_license(license_data:GenerateLicenseResponseScehma) :
             company_exsist = configs.db.query(EndUserTable).filter_by(company_name = license_data['company_name']).first()
             if company_exsist:
                 end_user_id = company_exsist.end_user_id
+                print("end user id is::::::::::",end_user_id,file=sys.stderr)
             else:
                 return JSONResponse(content="Company Not Found",status_code=400)
         else:
@@ -167,6 +177,7 @@ def generate_license(license_data:GenerateLicenseResponseScehma) :
             license_tab.end_date = license_data['end_date']
             license_tab.license_generate_key = encoded_data
             license_tab.license_verfification_key = encoded_data
+            license_tab.device_onboard_limit = license_data['device_onboard_limit']
             license_tab.verification = 'Verified'
             InsertDBData(license_tab)
             print("Data Inserted to the DB for the license verification",file=sys.stderr)

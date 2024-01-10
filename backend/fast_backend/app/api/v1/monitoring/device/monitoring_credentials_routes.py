@@ -134,7 +134,7 @@ async def get_dev_credentials():
         return JSONResponse(content="Error in getting credentials", status_code=500)
 
 
-@router.get("/get_snmp_v2_credentials", responses={
+@router.get("/get_snmp_v1_v2_credentials", responses={
     200: {"model": list[SnmpV2CredentialsResponseSchema]},
     500: {"model": str}
 })
@@ -151,6 +151,7 @@ def get_snmp_v2_credentials():
                               "description": monitoring_obj.description,
                               "community": monitoring_obj.snmp_read_community,
                               "port": monitoring_obj.snmp_port,
+                              "category":monitoring_obj.category,
                               "credentials_id": monitoring_obj.monitoring_credentials_id}
 
             credentials_list.append(credential_obj)
@@ -259,7 +260,7 @@ def get_wmi_credentials():
     200: {"model": list[SnmpV3CredentialsResponseSchema]},
     500: {"model": str}
 })
-def get_snmp_v2_credentials():
+def get_snmp_v3_credentials():
     try:
         credentials_list = []
 

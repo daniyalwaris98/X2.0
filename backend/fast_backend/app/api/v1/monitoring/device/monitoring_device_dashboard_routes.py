@@ -16,8 +16,8 @@ router = APIRouter(
     200: {"model": GetMonitoringDevicesCardsResponseSchema},
     500: {"model": str}
 },
-summary= "Integrate the specified API into the monitoring device page to fetch and showcase data in card formats upon clicking the IP address ",
-description = "Integrate the specified API into the monitoring device page to fetch and showcase data in card formats upon clicking the IP address"
+summary= "Integrate the specified API into the monitoring device page to fetch and showcase data in summary and interfaces",
+description = "Integrate the specified API into the monitoring device page to fetch and showcase data sumary and interfaces"
 
 
 )
