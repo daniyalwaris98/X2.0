@@ -7,14 +7,13 @@ export function useIndexTableColumnDefinitions({}) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.PROFILE_NAME,
-    indexColumnNameConstants.USER_NAME,
-    indexColumnNameConstants.DESCRIPTION,
-    indexColumnNameConstants.PORT,
-    indexColumnNameConstants.AUTHENTICATION_PROTOCOL,
-    indexColumnNameConstants.AUTHENTICATION_PASSWORD,
-    indexColumnNameConstants.ENCRYPTION_PROTOCOL,
-    indexColumnNameConstants.ENCRYPTION_PASSWORD,
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.INTERFACE_NAME,
+    indexColumnNameConstants.INTERFACE_STATUS,
+    indexColumnNameConstants.UPLOAD_SPEED,
+    indexColumnNameConstants.DOWNLOAD_SPEED,
+    indexColumnNameConstants.INTERFACE_DESCRIPTION,
   ];
 
   const dataKeys = columnDefinitions

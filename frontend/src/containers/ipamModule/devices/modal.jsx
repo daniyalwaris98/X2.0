@@ -131,6 +131,7 @@ const Index = ({ handleClose, open }) => {
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
               dynamicWidth={false}
+              defaultPageSize={7}
             />
           </Spin>
         </Grid>

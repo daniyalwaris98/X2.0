@@ -73,6 +73,7 @@ const Index = () => {
       default_onboard: {
         handleClick: handleOnBoard,
         visible: shouldOnboardBeVisible(),
+        sx: {},
       },
       atom_add: {
         handleClick: handleAdd,

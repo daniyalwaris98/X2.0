@@ -18,6 +18,7 @@ export default function DefaultPageTableSection({
   setSelectedRowKey = null,
   dynamicWidth = true,
   scroll = true,
+  defaultPageSize = 10,
 }) {
   const { height, width } = useWindowDimensions();
   const sx = dynamicWidth ? { width: `${width - 105}px` } : {};
@@ -41,6 +42,7 @@ export default function DefaultPageTableSection({
         setSelectedRowKey={setSelectedRowKey}
         dynamicWidth={dynamicWidth}
         scroll={scroll}
+        defaultPageSize={defaultPageSize}
       />
     </DefaultCard>
   );

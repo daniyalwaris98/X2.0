@@ -14,13 +14,49 @@ const defaultSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    builder.addMatcher(
-      extendedApi.endpoints.fetchAutoDiscoverySSHLoginCredentials
-        .matchFulfilled,
-      (state, action) => {
-        state.all_data = action.payload;
-      }
-    );
+    builder
+      .addMatcher(
+        extendedApi.endpoints.monitoringFetchWMICredentials.matchFulfilled,
+        (state, action) => {
+          state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.monitoringDeleteWMICredentials.matchFulfilled,
+        (state, action) => {
+          const deletedIds = action.payload?.data || [];
+          if (deletedIds.length > 0) {
+            state.all_data = state.all_data.filter((item) => {
+              const shouldKeepItem = deletedIds.some((deletedId) => {
+                return deletedId === item[TABLE_DATA_UNIQUE_ID];
+              });
+              return !shouldKeepItem;
+            });
+          }
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.monitoringAddWMICredential.matchFulfilled,
+        (state, action) => {
+          state.all_data = [action.payload.data, ...state.all_data];
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.monitoringUpdateWMICredential.matchFulfilled,
+        (state, action) => {
+          let objectToReplace = action.payload.data;
+          state.all_data = state.all_data.map((item) => {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
+              return { ...item, ...objectToReplace };
+            } else {
+              return item;
+            }
+          });
+        }
+      );
   },
 });
 
