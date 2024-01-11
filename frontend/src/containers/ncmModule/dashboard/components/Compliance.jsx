@@ -1,5 +1,5 @@
 import React from 'react'
-import ComplianceChart from '../../../components/charts/ComplianceChart'
+import ComplianceChart from '../../../../components/charts/ComplianceChart'
 
 function Compliance() {
   return (

@@ -1,10 +1,12 @@
 import React from 'react';
 import { Row, Col } from 'antd';
-import ConfigurationBackupSummary from "./ConfigurationBackupSummary";
+import ConfigurationBackupSummary from "./components/ConfigurationBackupSummary";
 // import ConfigurationByTimeLineChart from './ConfigurationByTimeLineChart';
-import Compliance from './Compliance';
-import ChangeByTimeChart from './ChangeByTimeChart';
-import RecentRcmAlarmsChart from './RecentRcmAlarmsChart';
+import Compliance from './components/Compliance';
+import ChangeByTimeChart from './components/ChangeByTimeChart';
+import RecentRcmAlarmsChart from './components/RecentRcmAlarmsChart';
+import NcmDeviceSummaryTable from './components/NcmDeviceSummaryTable';
+import ConfigurationChangeByVendor from '../../../components/charts/ConfigurationChangeByVendor';
 
 function Index() {
   return (
@@ -29,7 +31,7 @@ function Index() {
         </Col>
       </Row>
       <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "15px" }}>
-        <Col span={13}>
+        <Col span={14}>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
             <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Recent RCM Alarms </h5>
                         {/* <ConfigurationBackupSummary /> */}
@@ -46,6 +48,32 @@ function Index() {
           {/* <ChangeByTimeChart/> */}
             <Compliance/>
 
+          </div>
+        </Col>
+      </Row>
+
+
+
+
+
+
+
+
+      <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "140px" }}>
+        <Col span={12}>
+          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
+            <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Configuration Change by Vendor</h5>
+                       
+  <ConfigurationChangeByVendor/>
+
+          </div>
+        </Col>
+
+        <Col span={12}>
+          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
+            <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>NCM Device Summary </h5>
+         
+<NcmDeviceSummaryTable/>
           </div>
         </Col>
       </Row>
