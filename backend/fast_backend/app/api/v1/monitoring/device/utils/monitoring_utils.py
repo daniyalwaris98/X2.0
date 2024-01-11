@@ -1,7 +1,7 @@
 import sys
 
 from app.api.v1.monitoring.device.utils.common_puller import *
-
+from ping3 import ping,verbose_ping
 
 def UpdateMonitoringDevice(MonitoringObj, row, update):
     try:
@@ -452,3 +452,16 @@ def get_interface_influx_data(query):
         traceback.print_exc()
 
     return finalList
+
+
+
+def ping(ip):
+    try:
+        response_time = ping3.ping(str(ip))
+        if response_time is not None:
+            return "Up", str(int(response_time*1000)), "0"
+        else:
+            return "Down", "NA", "100"
+    except Exception as e:
+        traceback.print_exc()
+        return "Down", "NA", "100"

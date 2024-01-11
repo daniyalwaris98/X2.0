@@ -8,6 +8,7 @@ class IOSPullerOpr(object):
     def __init__(self):
         self.inv_data = {}
     
+
     def get_operational_data(self, hosts):
         for host in hosts:
             print(f"Connecting to {host['host']}")

@@ -15,8 +15,8 @@ from app.api.v1.monitoring.device.utils.scheduler import *
 
 
 router = APIRouter(
-    prefix="/start_monitoring_scheduler",
-    tags=["statr_monitoring_scheduler"]
+    prefix="/monitoring_scheduler",
+    tags=["monitoring_scheduler"]
 )
 
 scheduler = Scheduler()
@@ -119,7 +119,7 @@ def running_active_devices():
             description="Use this api to start monitoring",
             summary="Use this api to start the monitoring"
 )
-def run_active_devices():
+async def run_active_devices():
     try:
         print("\n\nMonitoring Started\n\n",file=sys.stderr)
         running_active_devices()
@@ -176,14 +176,14 @@ host = [
 
 
 @router.post('/test_puller',
-             resposnes = {
+             responses = {
                  200:{"model":str},
                  500:{"model":str}
              },
              description="Test puller API",
              summary="Test puller api"
 )
-def test_puller():
+async def test_puller():
     try:
         puller = CommonPuller()
         puller.poll(host)
@@ -223,7 +223,7 @@ def test_puller():
     200:{"model":str},
     500:{"model":str}
 })
-def ping_testing():
+async def ping_testing():
     try:
         monitoringDevice = configs.db.query(Monitoring_Devices_Table).all()
         for devices in monitoringDevice:

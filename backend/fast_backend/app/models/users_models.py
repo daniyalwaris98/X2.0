@@ -78,6 +78,8 @@ class UserTableModel(Base):
     email = Column(String(500),nullable=True)
     password = Column(String(500),nullable=True)
     status = Column(String(500),nullable=True)
+    teams = Column(String(500),nullable=True)
+    user_name = Column(String(500),nullable=True)
     account_type = Column(String(100),nullable=True)
     last_login = Column(DateTime,default=datetime.now(),nullable=True)
 

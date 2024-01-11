@@ -222,3 +222,8 @@ class MonitoringCredentialsResponseSchema(BaseSchema):
 class InterfaceBandScema(BaseSchema):
     ip_address:str
     interface_name:str
+
+
+class AddAtomInMonitoringSchema(BaseSchema):
+    ip_address:str
+    monitoring_credentials_id:int
