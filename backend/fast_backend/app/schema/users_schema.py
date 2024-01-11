@@ -38,4 +38,22 @@ class GenerateLicenseResponseScehma(BaseSchema):
 
 class AddUserRoleScehma(BaseSchema):
     role:str
-    configuration:dict
+    configuration:str
+
+class AddUserSchema(BaseSchema):
+    name:str
+    email:str
+    password:str
+    status:str
+    user_name:str
+    teams:str
+    account_type:str
+    role:str
+    company_name:str
+
+class GetUserResponseScehma(BaseSchema):
+    user_id:int
+    user_name:str
+    email:str
+    status:str
+    account_type:str

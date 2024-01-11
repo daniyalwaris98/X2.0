@@ -225,3 +225,6 @@ class H3CPuller(object):
         except Exception:
             print("License not found",  file=sys.stderr)
             self.inv_data[host['ip_address']].update({"license":[]})
+
+
+

@@ -59,3 +59,16 @@ class GetAllELBSchema(BaseSchema):
     load_balancer_arn:str
     monitoring_status:str
     acccess_key :str |None = None
+
+
+class ChangeS3StatusSchema(BaseSchema):
+    monitoring_status:str
+    bucket_name:str
+
+class ChangeELBStatusSchema(BaseSchema):
+    monitoring_status:str
+    lb_arn:str
+
+class ChangeEc2StatusSchema(BaseSchema):
+    monitoring_status:str
+    instanace_id:int

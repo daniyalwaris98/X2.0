@@ -219,16 +219,14 @@ async def get_atom_in_monitoring():
 summary="Use this API in monitoring module in device page to add device from atom",
 description="Use this API in monitoring module in device page to add device from atom"
 )
-async def add_atom_in_monitoring(ip_list: list[str]):
+async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
     try:
         data = []
         success_list = []
         error_list = []
         for ip in ip_list:
-            atom = configs.db.query(AtomTable).filter_by(ip_address=ip).first()
+            atom = configs.db.query(AtomTable).filter_by(ip_address=ip['ip_address']).first()
             print("atom is::::::::::::::::::::::::::::::::::::;",atom,file=sys.stderr)
-            atom = configs.db.query(AtomTable).filter_by(ip_address=ip).first()
-            print("atom is:::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
             if atom is None:
                 error_list.append(f"{ip} : Device Not Found In Atom")
                 continue
@@ -236,13 +234,18 @@ async def add_atom_in_monitoring(ip_list: list[str]):
             monitoringDevice = configs.db.query(Monitoring_Devices_Table).filter_by(
                 atom_id=atom.atom_id
             ).first()
+            ping_response = ping(ip['ip_address'])
+            snmp_credentials_id = ip['monitoring_credentials_id']
+            print("snmp credentials id is::::::::::::::::::::::::",snmp_credentials_id,file=sys.stderr)
+            print("ping response is::::::::::::::::::",ping_response,file=sys.stderr)
             print("monitoring device is:::::::::::::::::::::::::::",file=sys.stderr)
             if monitoringDevice is None:
                 monitoringDevice = Monitoring_Devices_Table()
                 monitoringDevice.atom_id = atom.atom_id
-                monitoringDevice.ping_status = "NA"
-                monitoringDevice.snmp_status = "NA"
-                monitoringDevice.active = "Inactive"
+                monitoringDevice.ping_status = ping_response
+                monitoringDevice.monitoring_credentials_id = snmp_credentials_id
+                monitoringDevice.snmp_status = "Active"
+                monitoringDevice.active = "Active"
 
                 if InsertDBData(monitoringDevice) == 200:
                     monitoring_device_dict = {
@@ -572,11 +575,11 @@ def testing_influx():
         return {"error": str(e)}
 
 @router.post('/get_interface_band',responses = {
-    200:{"model":str},
+    200:{"model":Response200},
     500:{"model":str}
 },
-description="API to get the interface band on the IP address click",
-summary="API to get the interface band on the IP address"
+description="API to get the interface band on the IP address click Interface Band on the IP address click",
+summary="API to get the interface band on the IP address.Getting Interface Band on the IP address click"
 )
 def get_interface_band(ips:InterfaceBandScema):
     try:
@@ -594,6 +597,7 @@ def get_interface_band(ips:InterfaceBandScema):
         result = query_api.query(org='monetx', query=query)
         print("result is:::::::::::::::::::::::::",result,file=sys.stderr)
         result = []
+        data = {}
         objectDict = {}
         upload = []
         download = []
@@ -602,6 +606,8 @@ def get_interface_band(ips:InterfaceBandScema):
         try:
             for table in result:
                 for record in table:
+                    print("table  in result is:::::::::::::::",table,file=sys.stderr)
+                    print("record in tbale is:::::::::::::::::",record,file=sys.stderr)
                     if record['Interface_Name'] == ips['interface_name']:
                         print(f"Record Against the Interface Name is::{ips['interface_name']}",file=sys.stderr)
                         obj2 = {}
@@ -640,7 +646,10 @@ def get_interface_band(ips:InterfaceBandScema):
                 final.append({"bandwidth": "Download", "min": 0, "max": 0, "avg": 0})
                 final.append({"bandwidth": "Upload", "min": 0, "max": 0, "avg": 0})
                 final.append({"bandwidth": "Average", "min": 0, "max": 0, "avg": 0})
-            return objectDict
+            message = f"Interface Band Executed Successfully"
+            data['data'] = objectDict
+            data['message'] = message
+            return JSONResponse(content=data,status_code=200)
         except Exception as e:
             traceback.print_exc()
     except Exception as e:

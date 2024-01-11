@@ -356,6 +356,7 @@ class IOSPuller(object):
                         "usage": None,
                         "pn_code": None
                     })
+            print("all liscences are::::::::;;;;;;;;",all_license,file=sys.stderr)
             self.inv_data[host['ip_address']].update({"license": all_license})
         except Exception:
             print("License not found")

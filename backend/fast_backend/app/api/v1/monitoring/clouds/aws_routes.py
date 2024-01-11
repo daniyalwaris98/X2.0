@@ -192,7 +192,7 @@ def add_ec2(ec2Obj:AddEc2Schema):
              summary="change status of ec2",
              description="Change Status of EC2"
              )
-def change_ec2_status(ec2_status:str):
+def change_ec2_status(ec2_status:ChangeEc2StatusSchema):
     try:
         if ec2_status['monitoring_status'] == "Enabled" or ec2_status['monitoring_status'] == "Disabled":
             ec2_object = configs.db.query(AWS_EC2).filter(instance_id = ec2_status['instance_id']).first()
@@ -470,7 +470,7 @@ def add_elb(credentials:str):
              summary="API to Change ELB Status",
              description="api TO CHANGE THE ELB STATUS"
              )
-def change_elb_status(status:str):
+def change_elb_status(status:ChangeELBStatusSchema):
     try:
         status = dict(status)
         if status['monitoring_status'] == "Enabled" or status['monitoring_status']=="Disabled":
@@ -494,7 +494,7 @@ def change_elb_status(status:str):
 summary="API to change the status of the s3",
 description="API to change the status of the s3"
 )
-def change_s3_status(status:str):
+def change_s3_status(status:ChangeS3StatusSchema):
     try:
         status_data = dict(status)
         print("status data is::::::::::::::::::",status_data,file=sys.stderr)
