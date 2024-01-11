@@ -1,6 +1,7 @@
 import sys
 import traceback
 
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from influxdb_client.client.write_api import SYNCHRONOUS, ASYNCHRONOUS
@@ -8,7 +9,7 @@ import influxdb_client
 from app.api.v1.monitoring.device.utils.monitoring_utils import *
 from app.models.monitoring_models import *
 from app.schema.monitoring_schema import *
-
+from influxdb_client.client.util.date_utils import *
 router = APIRouter(
     prefix="/devices",
     tags=["monitoring_devices"],
@@ -644,3 +645,67 @@ def get_interface_band(ips:InterfaceBandScema):
             traceback.print_exc()
     except Exception as e:
         traceback.print_exc()
+
+@router.post('/delete_monitoring_devices',responses={
+    200:{"model":DeleteResponseSchema},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to delete monitoring devices",
+description="API to delete monitoring devices"
+)
+def delete_monitoring_devices(device_ids:list[int]):
+    try:
+        deleted_ids = []
+        success_list = []
+        error_list = []
+
+        org = "monetx"
+        bucket = "monitoring"
+        delete_api = configs.client.delete_api()
+        """
+            Delete Data
+        """
+
+        data_helper = get_date_helper()
+        start = "1970-01-01T00:00:00Z"
+        stop = data_helper.to_utc(datetime.now())
+
+        for device_id in device_ids:
+            device_exsist = configs.db.query(Monitoring_Devices_Table).filter_by(monitoring_device_id = device_id).first()
+            if device_exsist:
+                print("device exsist is:::::::::::::::",device_exsist,file=sys.stderr)
+                atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = device_exsist.atom_id).first()
+                print("atom exsist is::::::::::::::::::::",atom_exsist,file=sys.stderr)
+                if atom_exsist:
+                    ip_address = atom_exsist.ip_address
+                    predicatereq1 = f"_measurement=\"Devices\" AND IP_ADDRESS =\"{ip_address}\""
+                    predicatereq2 = f"_measurement=\"Interfaces\" AND IP_ADDRESS =\"{ip_address}\""
+                    delete_api.delete(
+                        start,stop,bucket=f'{bucket}',org=f'{org}',predicate=predicatereq1
+                    )
+                    delete_api.delete(
+                        start, stop, bucket=f'{bucket}', org=f'{org}', predicate=predicatereq2
+                    )
+                    deleted_ids.append(device_id)
+                    DeleteDBData(device_id)
+                    print("Monitoring devices from sql and influx deleted successfully",file=sys.stderr)
+                    success_list.append(f"{device_id} : Deleted Successfully")
+                else:
+                    error_list.append(f"{device_exsist.atom_id} : Not Found ")
+            else:
+                error_list.append(f"{device_id} : Not Found")
+        print("Data is:::::::::::::::::",deleted_ids,file=sys.stderr)
+        print("success list is::::::::::::::",success_list,file=sys.stderr)
+        print("error list is:::::::::::::::::::;",error_list,file=sys.stderr)
+        responses = {
+            "data":deleted_ids,
+            "success_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Deleting Monitoring devvices",status_code=500)

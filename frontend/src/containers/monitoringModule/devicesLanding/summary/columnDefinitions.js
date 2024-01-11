@@ -3,17 +3,14 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({}) {
   const columnDefinitions = [
     indexColumnNameConstants.IP_ADDRESS,
-    indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.INTERNAL_IP,
-    indexColumnNameConstants.VIP,
-    indexColumnNameConstants.SOURCE_PORT,
-    indexColumnNameConstants.DESTINATION_PORT,
-    indexColumnNameConstants.EXTERNAL_INTERFACE,
+    indexColumnNameConstants.DESCRIPTION,
+    indexColumnNameConstants.ALERT_TYPE,
+    indexColumnNameConstants.ALERT_STATUS,
+    indexColumnNameConstants.CATEGORY,
+    indexColumnNameConstants.DATE,
   ];
 
   const dataKeys = columnDefinitions

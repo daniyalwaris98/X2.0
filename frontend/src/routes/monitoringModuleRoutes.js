@@ -129,6 +129,16 @@ import V3Credentials from "../containers/autoDiscoveryModule/manageCredentialsDr
 import { PAGE_PATH as PAGE_PATH_V3_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
 ////////////////////////////////////////
+import DevicesLanding from "../containers/monitoringModule/devicesLanding";
+import { LANDING_PAGE_PATH as LANDING_PAGE_PATH_DEVICES } from "../containers/monitoringModule/devicesLanding";
+
+import DevicesSummary from "../containers/monitoringModule/devicesLanding/summary";
+import { PAGE_PATH as PAGE_PATH_DEVICES_SUMMARY } from "../containers/monitoringModule/devicesLanding/summary/constants";
+
+import DevicesInterfaces from "../containers/monitoringModule/devicesLanding/interfaces";
+import { PAGE_PATH as PAGE_PATH_DEVICES_INTERFACES } from "../containers/monitoringModule/devicesLanding/interfaces/constants";
+
+/////////////////////////////////////////
 const routes = {
   path: MODULE_PATH,
   element: <MonitoringModule />,
@@ -318,6 +328,20 @@ const routes = {
               element: <V3Credentials />,
             },
           ],
+        },
+      ],
+    },
+    {
+      path: LANDING_PAGE_PATH_DEVICES,
+      element: <DevicesLanding />,
+      children: [
+        {
+          path: PAGE_PATH_DEVICES_SUMMARY,
+          element: <DevicesSummary />,
+        },
+        {
+          path: PAGE_PATH_DEVICES_INTERFACES,
+          element: <DevicesInterfaces />,
         },
       ],
     },

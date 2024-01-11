@@ -358,12 +358,12 @@ def memory_alert(ip_address, monitoring_device, memory_util):
         print(f"{ip_address}: Error While Updating Heatmap", file=sys.stderr)
 
 
-def get_level_alert(alert_type):
+def get_level_alert():
     try:
         monitoring_obj_list = []
 
-        if alert_type == 'all':
-            results = (
+        # if alert_type == 'all':
+        results = (
                 configs.db.query(
                     Monitoring_Alerts_Table, Monitoring_Devices_Table, AtomTable
                 )
@@ -375,22 +375,22 @@ def get_level_alert(alert_type):
                 .join(AtomTable, AtomTable.atom_id == Monitoring_Devices_Table.atom_id)
                 .order_by(Monitoring_Alerts_Table.modification_date.desc())
                 .all()
-            )
-        else:
-            results = (
-                configs.db.query(
-                    Monitoring_Alerts_Table, Monitoring_Devices_Table, AtomTable
-                )
-                .join(
-                    Monitoring_Devices_Table,
-                    Monitoring_Devices_Table.monitoring_device_id
-                    == Monitoring_Alerts_Table.monitoring_device_id,
-                )
-                .join(AtomTable, AtomTable.atom_id == Monitoring_Devices_Table.atom_id)
-                .filter(Monitoring_Alerts_Table.alert_type == alert_type)
-                .order_by(Monitoring_Alerts_Table.modification_date.desc())
-                .all()
-            )
+        )
+        # else:
+        #     results = (
+        #         configs.db.query(
+        #             Monitoring_Alerts_Table, Monitoring_Devices_Table, AtomTable
+        #         )
+        #         .join(
+        #             Monitoring_Devices_Table,
+        #             Monitoring_Devices_Table.monitoring_device_id
+        #             == Monitoring_Alerts_Table.monitoring_device_id,
+        #         )
+        #         .join(AtomTable, AtomTable.atom_id == Monitoring_Devices_Table.atom_id)
+        #         .filter(Monitoring_Alerts_Table.alert_type == alert_type)
+        #         .order_by(Monitoring_Alerts_Table.modification_date.desc())
+        #         .all()
+        #     )
 
         for alert, monitoring, atom in results:
             monitoring_data_dict = {"alarm_id": alert.monitoring_alert_id,
@@ -403,7 +403,7 @@ def get_level_alert(alert_type):
                                     "date": alert.modification_date}
 
             monitoring_obj_list.append(monitoring_data_dict)
-
+        return monitoring_obj_list
     except Exception:
         traceback.print_exc()
         return []
