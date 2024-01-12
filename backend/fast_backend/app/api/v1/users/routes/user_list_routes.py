@@ -13,8 +13,8 @@ router = APIRouter(
 
 
 @router.get('/get_user_status',responses={
-    200:{"model":200},
-    500:{"model":200}
+    200:{"model":str},
+    500:{"model":str}
 },
 description="API to list down the user status in the add user dropdown",
 summary="API to list down the user status in the add user dropdown"
