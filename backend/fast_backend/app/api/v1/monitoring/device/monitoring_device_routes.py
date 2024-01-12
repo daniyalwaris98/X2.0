@@ -142,6 +142,8 @@ async def get_all_monitoring_devices():
 
         for MonitoringObj, atom in results:
             snmp_cred = ""
+            category = ""
+            monitoring_credentials_id =0
 
             if MonitoringObj.monitoring_credentials_id is not None:
                 credentials = Monitoring_Credentails_Table.query.filter_by(
@@ -153,16 +155,20 @@ async def get_all_monitoring_devices():
                     UpdateDBData(MonitoringObj)
                 else:
                     snmp_cred = credentials.profile_name
+                    category = credentials.category
+                    monitoring_credentials_id = credentials.monitoring_credentials_id
             atom_exsist = configs.db.query(AtomTable).filter_by(atom_id=MonitoringObj.atom_id).first()
             print("atom exsist is:::::::::::::::;",atom_exsist,file=sys.stderr)
             monitoring_data_dict = {"monitoring_id": MonitoringObj.monitoring_device_id,
                                     "ip_address": atom_exsist.ip_address, "device_type": atom.device_type,
                                     "device_name": atom.device_name, "vendor": atom.vendor,
                                     "function": atom.function, "source": MonitoringObj.source,
-                                    "credentials": snmp_cred, "active": MonitoringObj.active,#Active is a monitoring status
+                                    "profile_name": snmp_cred, "active": MonitoringObj.active,#Active is a monitoring status
                                     "status": MonitoringObj.ping_status,
                                     "snmp_status": MonitoringObj.snmp_status,
                                     "ping_status":MonitoringObj.ping_status,
+                                    "category":category,
+                                    "monitoring_credentials_id":monitoring_credentials_id,
                                     "creation_date": str(MonitoringObj.creation_date),
                                     "modification_date": str(
                                         MonitoringObj.modification_date
@@ -225,7 +231,7 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
         success_list = []
         error_list = []
         for ip in ip_list:
-            atom = configs.db.query(AtomTable).filter_by(ip_address=ip['ip_address']).first()
+            atom = configs.db.query(AtomTable).filter_by(atom_id=ip['atom_id']).first()
             print("atom is::::::::::::::::::::::::::::::::::::;",atom,file=sys.stderr)
             if atom is None:
                 error_list.append(f"{ip} : Device Not Found In Atom")
@@ -244,7 +250,7 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
                 monitoringDevice.atom_id = atom.atom_id
                 monitoringDevice.ping_status = ping_response
                 monitoringDevice.monitoring_credentials_id = snmp_credentials_id
-                monitoringDevice.snmp_status = "Active"
+                monitoringDevice.snmp_status = ip['snmp_status']
                 monitoringDevice.active = "Active"
 
                 if InsertDBData(monitoringDevice) == 200:

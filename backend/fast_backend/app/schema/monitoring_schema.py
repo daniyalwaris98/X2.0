@@ -138,6 +138,8 @@ class MonitoringDeviceSchema(BaseSchema):
     active: str | None
     status: str | None
     snmp_status: str | None
+    profile_name:str | None
+    ping_status: str | None
     # creation_date: datetime
     # modification_date: datetime
 class UpdateMonitoringDeviceSchema(BaseSchema):
@@ -225,5 +227,6 @@ class InterfaceBandScema(BaseSchema):
 
 
 class AddAtomInMonitoringSchema(BaseSchema):
-    ip_address:str
+    atom_id:int
     monitoring_credentials_id:int
+    snmp_status:str

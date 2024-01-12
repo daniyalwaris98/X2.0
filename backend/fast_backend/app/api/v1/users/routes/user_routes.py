@@ -155,3 +155,97 @@ def get_all_users():
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting All the Users",status_code=500)
+
+@router.post('/edit_user_role',responses = {
+    200:{"model":Response200},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to edit the end user role",
+description="API to edit the end user role"
+)
+def edit_user_role(user_data:EditUserRoleScehma):
+    try:
+        user_data ={}
+        user_data = dict(user_data)
+        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(user_id = user_data['user_id']).first()
+        if user_role_exsist:
+            user_role_exsist.role = user_data['role']
+            user_role_exsist.configuration = user_data['configuration']
+            data = {
+                "role_id":user_role_exsist.role_id,
+                "role":user_role_exsist.role,
+                "configuration":user_role_exsist.configuration
+            }
+            message = f"{user_role_exsist.role} : Updated Successfully"
+            user_data['data'] = data
+            user_data['message'] = message
+            return JSONResponse(content=user_data,status_code=200)
+        else:
+            return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Editing the user",status_code=500)
+
+
+@router.post('/delete_role',responses = {
+    200:{"model":DeleteResponseSchema},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to delete the user role",
+description="API to delete the user role"
+)
+def user_role(role_data : list[int]):
+    try:
+        data_list = []
+        success_list = []
+        error_list = []
+        for role in role_data:
+            print("role is::::::::::::::::::::::",role,file=sys.stderr)
+            role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id=role).first()
+            if role_exsist:
+                data_list.append(role)
+                DeleteDBData(role_exsist)
+                success_list.append(f"{role_exsist.role} : Deleted Successfully")
+            else:
+                error_list.append(f"Role {role} does not Exists")
+        responses = {
+            "data":data_list,
+            "success_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return JSONResponse(content=responses,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Deleting the user role",status_code=500)
+
+
+
+@router.post('delete_user',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to delete the user based on the ID",
+description="API to Delete the user based on the ID"
+)
+def delete_user(user_id :list[int]):
+    try:
+        deleted_ids = []
+        success_list = []
+        error_list = []
+        for data in user_id:
+            print("data is ::::::::::::::::::;",data,file=sys.stderr)
+            user_exsist = configs.db.query(UserTableModel).filter_by(user_id=data).first()
+            if user_exsist:
+                deleted_ids.append(data)
+                DeleteDBData(user_exsist)
+                success_list.append(f"{data} : Is deleted")
+            else:
+                error_list.append(f"{data} : Not Found")
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Deleting the User",status_code=500)
