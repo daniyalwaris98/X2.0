@@ -19,16 +19,50 @@ import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constant
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
 import { PAGE_NAME } from "../../atomModule/atoms/constants";
+import { ATOM_ID } from "../../atomModule/atoms/constants";
+import {
+  useFetchStatusNamesQuery,
+  useFetchMonitoringCredentialsNamesQuery,
+} from "../../../store/features/dropDowns/apis";
+import {
+  selectStatusNames,
+  selectMonitoringCredentialsNames,
+} from "../../../store/features/dropDowns/selectors";
+import { MONITORING_CREDENTIALS_ID, SNMP_STATUS } from "./constants";
 
 const Index = ({ handleClose, open }) => {
   const theme = useTheme();
 
+  // dropdown apis
+  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
+    useFetchStatusNamesQuery();
+  const {
+    error: monitoringCredentialsNamesError,
+    isLoading: isMonitoringCredentialsNamesLoading,
+  } = useFetchMonitoringCredentialsNamesQuery();
+
+  // selectors
+  const statusNames = useSelector(selectStatusNames);
+  const monitoringCredentialsNames = useSelector(
+    selectMonitoringCredentialsNames
+  );
+
   // states required in hooks
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [dropdownValues, setDropdownValues] = useState({});
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { columnDefinitionsForIpamDevices: columnDefinitions } =
-    useIndexTableColumnDefinitions({});
+  const { columnDefinitionsForMonitoringDevices: columnDefinitions } =
+    useIndexTableColumnDefinitions({
+      dropDowns: {
+        handler: handleSelectsChange,
+        data: {
+          [MONITORING_CREDENTIALS_ID]: monitoringCredentialsNames,
+          [SNMP_STATUS]: statusNames,
+        },
+      },
+    });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -86,13 +120,51 @@ const Index = ({ handleClose, open }) => {
   // getting dropdowns data from the store
   const dataSource = useSelector(selectAtomsToAddInIpamDevicesData);
 
+  // row selection
+
+  function customOnSelectChange(selectedRowKeys, selectedRows) {
+    setSelectedRowKeys(selectedRowKeys);
+    const defaultMonitoringCredentialId =
+      monitoringCredentialsNames.length > 0
+        ? monitoringCredentialsNames[0][MONITORING_CREDENTIALS_ID]
+        : "";
+    const defaultSnmpStatus = statusNames.length > 0 ? statusNames[0] : "";
+    setSelectedRows(
+      selectedRows.map((row) => ({
+        ...row,
+        [MONITORING_CREDENTIALS_ID]:
+          dropdownValues[MONITORING_CREDENTIALS_ID][row.id] ||
+          defaultMonitoringCredentialId,
+        [SNMP_STATUS]: dropdownValues[SNMP_STATUS][row.id] || defaultSnmpStatus,
+      }))
+    );
+  }
+
   // handlers
+  function handleSelectsChange(selectName, recordId, value) {
+    setDropdownValues((prevValues) => {
+      return {
+        ...prevValues,
+        [selectName]: {
+          ...(prevValues[selectName] || {}),
+          [recordId]: value,
+        },
+      };
+    });
+  }
+
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
 
   function handleAdd() {
-    addAtomsInIpam(selectedRowKeys);
+    addAtomsInIpam(
+      selectedRows.map((item) => ({
+        [ATOM_ID]: item[ATOM_ID],
+        [MONITORING_CREDENTIALS_ID]: item[MONITORING_CREDENTIALS_ID],
+        [SNMP_STATUS]: item[SNMP_STATUS],
+      }))
+    );
   }
 
   return (
@@ -126,8 +198,11 @@ const Index = ({ handleClose, open }) => {
               dataSource={dataSource}
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
               dynamicWidth={false}
               defaultPageSize={7}
+              customOnSelectChange={customOnSelectChange}
             />
           </Spin>
         </Grid>

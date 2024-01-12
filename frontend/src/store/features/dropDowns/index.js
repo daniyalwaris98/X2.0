@@ -11,6 +11,7 @@ const initialState = {
   password_group_type_names: [],
   status_names: [],
   subnets_names: [],
+  monitoring_credentials_names: [],
 };
 
 const dropDownsSlice = createSlice({
@@ -68,7 +69,7 @@ const dropDownsSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.fetchSubnetsNames.matchFulfilled,
+        extendedApi.endpoints.fetchMonitoringCredentialsNames.matchFulfilled,
         (state, action) => {
           state.subnets_names = action.payload;
         }

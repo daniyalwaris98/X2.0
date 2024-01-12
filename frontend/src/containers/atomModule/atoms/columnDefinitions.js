@@ -2,8 +2,19 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import {
+  CATEGORY,
+  MONITORING_CREDENTIALS_ID,
+  PROFILE_NAME,
+  SNMP_STATUS,
+} from "../../monitoringModule/devices/constants";
+import DefaultSelect from "../../../components/selects";
+import DefaultOption from "../../../components/options";
 
-export function useIndexTableColumnDefinitions({ handleEdit = null }) {
+export function useIndexTableColumnDefinitions({
+  handleEdit = null,
+  dropDowns = null,
+}) {
   const theme = useTheme();
 
   const columnDefinitions = [
@@ -203,6 +214,90 @@ export function useIndexTableColumnDefinitions({ handleEdit = null }) {
     },
   ];
 
+  const columnDefinitionsForMonitoringDevices = [
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.FUNCTION,
+    indexColumnNameConstants.VENDOR,
+    {
+      data_key: MONITORING_CREDENTIALS_ID,
+      title: "Credentials",
+      search: false,
+      fixed: "right",
+      align: "center",
+      width: 150,
+      render: (text, record) => (
+        <DefaultSelect
+          onChange={(value) =>
+            dropDowns.handler(MONITORING_CREDENTIALS_ID, record.id, value)
+          }
+        >
+          {dropDowns.data[MONITORING_CREDENTIALS_ID].map((item) => (
+            <DefaultOption value={item[MONITORING_CREDENTIALS_ID]}>
+              {item[CATEGORY]}-{item[PROFILE_NAME]}
+            </DefaultOption>
+          ))}
+        </DefaultSelect>
+      ),
+    },
+    {
+      data_key: SNMP_STATUS,
+      title: "Active",
+      search: false,
+      fixed: "right",
+      align: "center",
+      width: 120,
+      render: (text, record) => (
+        <DefaultSelect
+          onChange={(value) => dropDowns.handler(SNMP_STATUS, record.id, value)}
+        >
+          {dropDowns.data[SNMP_STATUS].map((item) => (
+            <DefaultOption value={item}>{item}</DefaultOption>
+          ))}
+        </DefaultSelect>
+      ),
+    },
+    {
+      data_key: indexColumnNameConstants.ONBOARD_STATUS,
+      title: "Board",
+      fixed: "right",
+      align: "center",
+      width: 80,
+      render: (text, record) => (
+        <div
+          style={{
+            textAlign: "center",
+          }}
+        >
+          {record.on_board_status === true ? (
+            <span
+              style={{
+                display: "inline-block",
+                borderRadius: "10px",
+                backgroundColor: "#c2dfbf",
+                color: "#3D9E47",
+                padding: "1px 15px",
+              }}
+            >
+              True
+            </span>
+          ) : record.on_board_status === false ? (
+            <div
+              style={{
+                display: "inline-block",
+                borderRadius: "10px",
+                backgroundColor: "#ffe2dd",
+                color: "#E34444",
+                padding: "1px 15px",
+              }}
+            >
+              False
+            </div>
+          ) : null}
+        </div>
+      ),
+    },
+  ];
   const dataKeys = columnDefinitions
     .map((item) => {
       if (typeof item === "object") {
@@ -222,6 +317,7 @@ export function useIndexTableColumnDefinitions({ handleEdit = null }) {
     columnDefinitions,
     columnDefinitionsForIpamDevices,
     columnDefinitionsForNcmDevices,
+    columnDefinitionsForMonitoringDevices,
     dataKeys,
   };
 }

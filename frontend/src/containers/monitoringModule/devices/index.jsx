@@ -57,8 +57,8 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  // const dataSource = [{ ip_address: "123" }];
-  const dataSource = useSelector(selectTableData);
+  const dataSource = [{ ip_address: "123" }];
+  // const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -111,7 +111,8 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <Spin spinning={false}>
+      {/* <Spin spinning={isFetchRecordsLoading}> */}
       {openAddModal ? (
         <AddModal handleClose={handleCloseAdd} open={openAddModal} />
       ) : null}

@@ -185,12 +185,15 @@ export default function DefaultTable({
   displayColumns = [],
   selectedRowKeys = null,
   setSelectedRowKeys = null,
+  selectedRows = null,
+  setSelectedRows = null,
   getCheckboxProps = null,
   rowClickable = false,
   selectedRowKey = null,
   setSelectedRowKey = null,
   scroll = true,
   defaultPageSize = 10,
+  customOnSelectChange = null,
   ...rest
 }) {
   const theme = useTheme();
@@ -198,12 +201,13 @@ export default function DefaultTable({
   const rowSelection = {
     getCheckboxProps,
     selectedRowKeys,
-    onChange: onSelectChange,
+    onChange: customOnSelectChange ? customOnSelectChange : onSelectChange,
     selection: Table.SELECTION_ALL,
   };
 
-  function onSelectChange(selectedRowKeys) {
+  function onSelectChange(selectedRowKeys, selectedRows) {
     setSelectedRowKeys(selectedRowKeys);
+    setSelectedRows(selectedRows);
   }
 
   function handleChange(pagination, filters, sorter, extra) {
