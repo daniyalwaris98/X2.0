@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/elb/apis";
+import {
+  useFetchRecordsQuery,
+  useChangeELBStatusMutation,
+} from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/elb/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/elb/selectors";
 import { jsonToExcel } from "../../../../../utils/helpers";
@@ -15,6 +18,7 @@ import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  ELB_STATUS,
 } from "./constants";
 import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../../components/pageSections";
@@ -25,7 +29,9 @@ const Index = () => {
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleMonitoringSwitchChange,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -50,6 +56,17 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
+  const [
+    changeELBStatus,
+    {
+      data: changeELBStatusData,
+      isSuccess: isChangeELBStatusSuccess,
+      isLoading: isChangeELBStatusLoading,
+      isError: isChangeELBStatusError,
+      error: changeELBStatusError,
+    },
+  ] = useChangeELBStatusMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -59,7 +76,22 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: changeELBStatusData,
+    isSuccess: isChangeELBStatusSuccess,
+    isError: isChangeELBStatusError,
+    error: changeELBStatusError,
+    type: TYPE_FETCH,
+  });
+
   // handlers
+  function handleMonitoringSwitchChange(checked, record) {
+    changeELBStatus({
+      [TABLE_DATA_UNIQUE_ID]: record[TABLE_DATA_UNIQUE_ID],
+      [ELB_STATUS]: checked,
+    });
+  }
+
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     handleSuccessAlert("File exported successfully.");

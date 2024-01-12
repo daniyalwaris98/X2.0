@@ -30,7 +30,6 @@ export function useIndexTableColumnDefinitions({
     indexColumnNameConstants.ACTIVE,
     indexColumnNameConstants.STATUS,
     indexColumnNameConstants.PING_STATUS,
-    indexColumnNameConstants.MONITORING_STATUS,
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,
