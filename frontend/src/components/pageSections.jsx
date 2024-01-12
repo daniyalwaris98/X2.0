@@ -12,6 +12,8 @@ export default function DefaultPageTableSection({
   dataSource,
   selectedRowKeys = null,
   setSelectedRowKeys = null,
+  selectedRows = null,
+  setSelectedRows = null,
   getCheckboxProps = null,
   rowClickable = false,
   selectedRowKey = null,
@@ -19,6 +21,7 @@ export default function DefaultPageTableSection({
   dynamicWidth = true,
   scroll = true,
   defaultPageSize = 10,
+  customOnSelectChange = null,
 }) {
   const { height, width } = useWindowDimensions();
   const sx = dynamicWidth ? { width: `${width - 105}px` } : {};
@@ -37,12 +40,15 @@ export default function DefaultPageTableSection({
         getCheckboxProps={getCheckboxProps}
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
+        selectedRows={selectedRows}
+        setSelectedRows={setSelectedRows}
         rowClickable={rowClickable}
         selectedRowKey={selectedRowKey}
         setSelectedRowKey={setSelectedRowKey}
         dynamicWidth={dynamicWidth}
         scroll={scroll}
         defaultPageSize={defaultPageSize}
+        customOnSelectChange={customOnSelectChange}
       />
     </DefaultCard>
   );

@@ -24,13 +24,13 @@ function Index() {
         <Col span={16}>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
             <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Configuration Change by Time </h5>
-          {/* <ChangeByTimeChart/> */}
-            {/* <Compliance/> */}
+          <ChangeByTimeChart/>
+        
 
           </div>
         </Col>
       </Row>
-      <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "15px" }}>
+      <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "140px" }}>
         <Col span={14}>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
             <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Recent RCM Alarms </h5>
@@ -59,7 +59,7 @@ function Index() {
 
 
 
-      <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "140px" }}>
+      <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "280px" }}>
         <Col span={12}>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
             <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Configuration Change by Vendor</h5>

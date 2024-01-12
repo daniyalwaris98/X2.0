@@ -22,7 +22,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: (data) => ({
         url: "/api/v1/monitoring/devices/add_atom_in_monitoring",
         method: "POST",
-        body: { atom_id: 0, monitoring_credentials_id: 0 },
+        body: data,
       }),
     }),
   }),
