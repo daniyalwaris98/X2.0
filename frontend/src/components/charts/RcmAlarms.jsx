@@ -1,66 +1,145 @@
-import React, { useEffect } from 'react';
+// import React, { useEffect, useRef } from 'react';
+// import * as echarts from 'echarts';
+
+// const RcmAlarms = () => {
+//   const chartRef = useRef(null);
+
+//   useEffect(() => {
+//     const myChart = echarts.init(chartRef.current);
+
+//     const option = {
+//       tooltip: {
+//         trigger: 'item',
+//       },
+//       legend: {
+//         top: '5%',
+//         left: 'center',
+//       },
+//       series: [
+//         {
+//           name: 'Access From',
+//           type: 'pie',
+//           radius: ['40%', '70%'],
+//           avoidLabelOverlap: false,
+//           label: {
+//             show: false,
+//             position: 'center',
+//           },
+//           emphasis: {
+//             label: {
+//               show: true,
+//               fontSize: 40,
+//               fontWeight: 'bold',
+//             },
+//           },
+//           labelLine: {
+//             show: false,
+//           },
+//           data: [
+//             { value: 1048, name: 'Alarm 1' },
+//             { value: 735, name: 'Alarm 2' },
+//             { value: 580, name: 'Alarm 3' },
+//             { value: 484, name: 'Alarm 4' },
+//             { value: 300, name: 'Alarm 5' },
+//           ],
+//         },
+//       ],
+//     };
+
+//     myChart.setOption(option);
+
+//     // Handle chart resizing for responsiveness
+//     const resizeHandler = () => {
+//       myChart.resize();
+//     };
+
+//     window.addEventListener('resize', resizeHandler);
+
+//     // Cleanup event listener and chart instance on unmount
+//     return () => {
+//       window.removeEventListener('resize', resizeHandler);
+//       myChart.dispose();
+//     };
+//   }, []); // Empty dependency array to run the effect only once
+
+//   return (
+//       <div ref={chartRef} className="chart-container" style={{ width: '100%', height: '400px' }} />
+
+  
+//   );
+// };
+
+// export default RcmAlarms;
+
+
+import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
 const RcmAlarms = () => {
-  useEffect(() => {
-    // Initialize ECharts chart
-    const chartDom = document.getElementById('main');
-    const myChart = echarts.init(chartDom);
+  const chartRef = useRef(null);
 
-    // ECharts options
+  useEffect(() => {
+    const myChart = echarts.init(chartRef.current);
+
     const option = {
       tooltip: {
-        trigger: 'item'
+        trigger: 'item',
       },
       legend: {
         top: '5%',
-        left: 'center'
+        left: 'center',
       },
       series: [
         {
           name: 'Access From',
           type: 'pie',
-          radius: ['40%', '70%'],
+          radius: ['50%', '70%'],
           avoidLabelOverlap: false,
           label: {
             show: false,
-            position: 'center'
+            position: 'center',
           },
           emphasis: {
             label: {
               show: true,
               fontSize: 40,
-              fontWeight: 'bold'
-            }
+              fontWeight: 'bold',
+            },
           },
           labelLine: {
-            show: false
+            show: false,
           },
+          color: ['#E34444'], // Set the color for all slices
           data: [
-            { value: 1048, name: 'Search Engine' },
-            { value: 735, name: 'Direct' },
-            { value: 580, name: 'Email' },
-            { value: 484, name: 'Union Ads' },
-            { value: 300, name: 'Video Ads' }
-          ]
-        }
-      ]
+            { value: 1048, name: 'Alarm 1' },
+            { value: 735, name: 'Alarm 2' },
+            { value: 580, name: 'Alarm 3' },
+           
+          ],
+        },
+      ],
     };
 
-    // Set ECharts options
     myChart.setOption(option);
 
-    // Cleanup function to dispose of the chart when the component unmounts
+    // Handle chart resizing for responsiveness
+    const resizeHandler = () => {
+      myChart.resize();
+    };
+
+    window.addEventListener('resize', resizeHandler);
+
+    // Cleanup event listener and chart instance on unmount
     return () => {
+      window.removeEventListener('resize', resizeHandler);
       myChart.dispose();
     };
-  }, []); // Empty dependency array ensures that the effect runs once after initial render
+  }, []); // Empty dependency array to run the effect only once
 
   return (
-    <div id="main" style={{ width: '100%', height: '400px' }}>
-      {/* The chart will be rendered here */}
-    </div>
+    <div ref={chartRef} className="chart-container" style={{ width: '100%', height: '400px' }} />
   );
 };
 
 export default RcmAlarms;
+

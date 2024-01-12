@@ -165,3 +165,15 @@ onboard_dict = {
     "symantec": SymantecPuller(),
     "wire_filter": WirefilterPuller()
 }
+
+
+
+user_status_list =[
+    "Active",
+    "In Active"
+]
+
+user_account_type_list = [
+    "Permanent",
+    "Not Permanent"
+]

@@ -205,8 +205,9 @@ class NCMPuller(object):
             command_output = ""
             for command in command_set:
                 command_output += self.connection.send_command(f"{command}")
+                print("command is:::::::::::::::::::::",command_output,file=sys.stderr)
                 command_output += "\n\n\n"
-            self.connection.disconnect()
+            # self.connection.disconnect()
         except Exception:
             traceback.print_exc()
             self.status = 500

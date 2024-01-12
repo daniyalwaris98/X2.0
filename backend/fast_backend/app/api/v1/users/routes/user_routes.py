@@ -43,15 +43,20 @@ def add_end_user(Userobj:EndUserResponseScehma):
 
 
 @router.post('/add_user_role',responses = {
-    200:{"model":str},
+    200:{"model":Response200},
     400:{"model":str},
     500:{"model":str}
 })
 def add_user_role(role:AddUserRoleScehma):
     try:
-        role = dict(role)
-        response,status = add_user_role(role)
-        return JSONResponse(content=response,status_code=200)
+        print("user role with its configuration is:::::::::::::::::",role,file=sys.stderr)
+        response,status = add_user_role_to_db(role)
+        if status == 200:
+            return JSONResponse(content=response,status_code=200)
+            print("respinse of the add user is:::::::::::::;",response,file=sys.stderr)
+            print("response of the add user role is::::::::::::::::;;",status,file=sys.stderr)
+        elif status ==400:
+            return JSONResponse(content=response,status_code=400)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Adding role in DB",status_code=500)
@@ -81,3 +86,72 @@ def get_all_users_role():
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting user role",status_code=500)
+
+
+
+@router.get('/get_all_end_users',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to get all the end users",
+description="API to get all the end users"
+)
+def get_all_end_users():
+    try:
+        end_user_list = []
+        end_users = configs.db.query(EndUserTable).all()
+        for users in end_users:
+            end_user_dict = {
+                "end_user_id":users.end_user_id,
+                "company_name":users.company_name,
+
+            }
+            end_user_list.append(end_user_dict)
+        return JSONResponse(content=end_user_list,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Getting end users",status_code=500)
+
+
+@router.post('/add_user',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to add the user and updated the user",
+description="API to add the user and updated the user"
+)
+def add_user_db(user_data:AddUserSchema):
+    try:
+        data,status = AddUserInDB(user_data)
+        return JSONResponse(content=data,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
+
+@router.get('/get_all_users',responses={
+    200:{"model":list[GetUserResponseScehma]},
+    500:{"model":str}
+},
+summary="API to Get all the users",
+description="API to Get all the users"
+)
+def get_all_users():
+    try:
+        user_list = []
+        users = configs.db.query(UserTableModel).all()
+        for user in users:
+            print("user is::::::::::::::::::",user,file=sys.stderr)
+            user_dict = {
+                "user_id":user.user_id,
+                "user_name":user.name,
+                "email":user.email,
+                "status":user.status,
+                "account_type":user.account_type
+            }
+            user_list.append(user_dict)
+        return JSONResponse(content=user_list,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Getting All the Users",status_code=500)
