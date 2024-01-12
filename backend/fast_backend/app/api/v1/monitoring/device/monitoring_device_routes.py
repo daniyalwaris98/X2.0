@@ -165,6 +165,7 @@ async def get_all_monitoring_devices():
                                     "function": atom.function, "source": MonitoringObj.source,
                                     "profile_name": snmp_cred, "active": MonitoringObj.active,#Active is a monitoring status
                                     "status": MonitoringObj.ping_status,
+                                    "credentials":category+"-"+snmp_cred,
                                     "snmp_status": MonitoringObj.snmp_status,
                                     "ping_status":MonitoringObj.ping_status,
                                     "category":category,

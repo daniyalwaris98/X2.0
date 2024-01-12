@@ -343,7 +343,8 @@ def get_all_snmp_credentials():
             credentials_dict = {
                 "monitoring_credentials_id":credential.monitoring_credentials_id,
                 "category":credential.category,
-                "profile_name":credential.profile_name
+                "profile_name":credential.profile_name,
+                "credentials":credential.category+"-"+credential.profile_name
             }
             credentials_list.append(credentials_dict)
         return JSONResponse(content=credentials_list,status_code=200)
