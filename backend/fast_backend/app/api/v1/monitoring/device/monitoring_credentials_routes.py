@@ -12,8 +12,8 @@ router = APIRouter(
 )
 
 
-@router.post("/add_snmp-v2_credentials", responses={
-    200: {"model": str},
+@router.post("/add_snmp_v1_v2_credentials", responses={
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
@@ -51,6 +51,8 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
                     f"Inserted {credential.monitoring_credentials_id} Credentials Successfully",
                     file=sys.stderr,
                 )
+                print("v1_v2 credential data",v1_2_dict,file=sys.stderr)
+                print("data is:::::::::::::::::::::::::::::",data,file=sys.stderr)
                 return JSONResponse(content=data, status_code=200)
             else:
                 return JSONResponse(content="Error While Adding Credentials", status_code=500)
