@@ -1,3 +1,4 @@
+export const DESCRIPTIVE_PAGE_NAME = "Wireless Devices";
 export const PAGE_NAME = "Devices";
 export const ELEMENT_NAME = "Device";
 export const PAGE_PATH = "wireless_devices";

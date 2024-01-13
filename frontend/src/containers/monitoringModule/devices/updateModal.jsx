@@ -17,31 +17,24 @@ import {
   useFetchVendorNamesQuery,
   useFetchFunctionNamesQuery,
   useFetchDeviceTypeNamesQuery,
+  useFetchMonitoringCredentialsNamesQuery,
 } from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
 import {
   selectVendorNames,
   selectFunctionNames,
   selectDeviceTypeNames,
+  selectMonitoringCredentialsNames,
 } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import {
-  CATEGORY,
   ELEMENT_NAME,
   MONITORING_CREDENTIALS_ID,
-  PROFILE_NAME,
+  CREDENTIALS,
 } from "./constants";
 import { indexColumnNameConstants } from "./constants";
-import {
-  useFetchStatusNamesQuery,
-  useFetchMonitoringCredentialsNamesQuery,
-} from "../../../store/features/dropDowns/apis";
-import {
-  selectStatusNames,
-  selectMonitoringCredentialsNames,
-} from "../../../store/features/dropDowns/selectors";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.IP_ADDRESS]: yup
@@ -67,8 +60,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     useFetchFunctionNamesQuery();
   const { error: deviceTypeNamesError, isLoading: isDeviceTypeNamesLoading } =
     useFetchDeviceTypeNamesQuery();
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
   const {
     error: monitoringCredentialsNamesError,
     isLoading: isMonitoringCredentialsNamesLoading,
@@ -120,7 +111,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   const vendorNames = useSelector(selectVendorNames);
   const functionNames = useSelector(selectFunctionNames);
   const deviceTypeNames = useSelector(selectDeviceTypeNames);
-  const statusNames = useSelector(selectStatusNames);
   const monitoringCredentialsNames = useSelector(
     selectMonitoringCredentialsNames
   );
@@ -171,14 +161,9 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               control={control}
               dataKey={indexColumnNameConstants.CREDENTIALS}
               options={monitoringCredentialsNames.map((item) => ({
-                name: `${item[CATEGORY]}-${item[PROFILE_NAME]}`,
+                name: item[CREDENTIALS],
                 value: item[MONITORING_CREDENTIALS_ID],
               }))}
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SNMP_STATUS}
-              options={statusNames}
             />
           </Grid>
           <Grid item xs={12}>

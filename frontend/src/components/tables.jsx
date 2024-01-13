@@ -202,12 +202,13 @@ export default function DefaultTable({
     getCheckboxProps,
     selectedRowKeys,
     onChange: customOnSelectChange ? customOnSelectChange : onSelectChange,
+    // onChange: onSelectChange,
     selection: Table.SELECTION_ALL,
   };
 
   function onSelectChange(selectedRowKeys, selectedRows) {
     setSelectedRowKeys(selectedRowKeys);
-    setSelectedRows(selectedRows);
+    if (setSelectedRows) setSelectedRows(selectedRows);
   }
 
   function handleChange(pagination, filters, sorter, extra) {

@@ -3,10 +3,8 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 import {
-  CATEGORY,
   MONITORING_CREDENTIALS_ID,
-  PROFILE_NAME,
-  SNMP_STATUS,
+  CREDENTIALS,
 } from "../../monitoringModule/devices/constants";
 import DefaultSelect from "../../../components/selects";
 import DefaultOption from "../../../components/options";
@@ -16,6 +14,9 @@ export function useIndexTableColumnDefinitions({
   dropDowns = null,
 }) {
   const theme = useTheme();
+  const monitoringCredentialsOptions =
+    dropDowns?.data[MONITORING_CREDENTIALS_ID];
+  console.log("dropDowns", monitoringCredentialsOptions);
 
   const columnDefinitions = [
     {
@@ -232,27 +233,10 @@ export function useIndexTableColumnDefinitions({
             dropDowns.handler(MONITORING_CREDENTIALS_ID, record.id, value)
           }
         >
-          {dropDowns.data[MONITORING_CREDENTIALS_ID].map((item) => (
-            <DefaultOption value={item[MONITORING_CREDENTIALS_ID]}>
-              {item[CATEGORY]}-{item[PROFILE_NAME]}
+          {monitoringCredentialsOptions.map((item) => (
+            <DefaultOption key={item.value} value={item.value}>
+              {item.name}
             </DefaultOption>
-          ))}
-        </DefaultSelect>
-      ),
-    },
-    {
-      data_key: SNMP_STATUS,
-      title: "Active",
-      search: false,
-      fixed: "right",
-      align: "center",
-      width: 120,
-      render: (text, record) => (
-        <DefaultSelect
-          onChange={(value) => dropDowns.handler(SNMP_STATUS, record.id, value)}
-        >
-          {dropDowns.data[SNMP_STATUS].map((item) => (
-            <DefaultOption value={item}>{item}</DefaultOption>
           ))}
         </DefaultSelect>
       ),

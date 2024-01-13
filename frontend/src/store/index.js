@@ -34,8 +34,8 @@ import monitoringSwitchesInterfacesReducer from "./features/monitoringModule/net
 import monitoringWirelessDevicesReducer from "./features/monitoringModule/networksDropDown/wireless/devices";
 import monitoringWirelessInterfacesReducer from "./features/monitoringModule/networksDropDown/wireless/interfaces";
 
-import monitoringAllServersDevicesReducer from "./features/monitoringModule/serversDropDown/allServers/devices";
-import monitoringAllServersInterfacesReducer from "./features/monitoringModule/serversDropDown/allServers/interfaces";
+import monitoringAllServersDevicesReducer from "./features/monitoringModule/serversDropDown/allDevices/devices";
+import monitoringAllServersInterfacesReducer from "./features/monitoringModule/serversDropDown/allDevices/interfaces";
 
 import monitoringLinuxDevicesReducer from "./features/monitoringModule/serversDropDown/linux/devices";
 import monitoringLinuxInterfacesReducer from "./features/monitoringModule/serversDropDown/linux/interfaces";

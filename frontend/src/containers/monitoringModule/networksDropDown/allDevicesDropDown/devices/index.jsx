@@ -12,7 +12,7 @@ import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import {
-  PAGE_NAME,
+  DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
@@ -86,8 +86,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={false}>
-      {/* <Spin spinning={isFetchRecordsLoading}> */}
+    <Spin spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -102,7 +101,7 @@ const Index = () => {
       ) : null}
 
       <DefaultPageTableSection
-        PAGE_NAME={PAGE_NAME}
+        PAGE_NAME={DESCRIPTIVE_PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}

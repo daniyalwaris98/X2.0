@@ -1,3 +1,4 @@
+export const DESCRIPTIVE_PAGE_NAME = "Networks All Interfaces";
 export const PAGE_NAME = "Interfaces";
 export const ELEMENT_NAME = "Interface";
 export const PAGE_PATH = "network_all_devices_interfaces";

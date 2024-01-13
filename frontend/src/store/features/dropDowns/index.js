@@ -11,6 +11,7 @@ const initialState = {
   password_group_type_names: [],
   status_names: [],
   subnets_names: [],
+  active_status_names: [],
   monitoring_credentials_names: [],
 };
 
@@ -69,9 +70,15 @@ const dropDownsSlice = createSlice({
         }
       )
       .addMatcher(
+        extendedApi.endpoints.fetchActiveStatusNames.matchFulfilled,
+        (state, action) => {
+          state.active_status_names = action.payload;
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.fetchMonitoringCredentialsNames.matchFulfilled,
         (state, action) => {
-          state.subnets_names = action.payload;
+          state.monitoring_credentials_names = action.payload;
         }
       );
   },

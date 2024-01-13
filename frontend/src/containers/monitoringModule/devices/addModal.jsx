@@ -4,11 +4,11 @@ import DefaultDialog from "../../../components/dialogs";
 import { CancelDialogFooter } from "../../../components/dialogFooters";
 import Grid from "@mui/material/Grid";
 import {
-  useGetAtomsToAddInIpamDevicesQuery,
-  useAddAtomsInIpamDevicesMutation,
-} from "../../../store/features/ipamModule/devices/apis";
+  useGetAtomsToAddInMonitoringDevicesQuery,
+  useAddAtomsInMonitoringDevicesMutation,
+} from "../../../store/features/monitoringModule/devices/apis";
 import { useSelector } from "react-redux";
-import { selectAtomsToAddInIpamDevicesData } from "../../../store/features/ipamModule/devices/selectors";
+import { selectAtomsToAddInMonitoringDevicesData } from "../../../store/features/monitoringModule/devices/selectors";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -20,33 +20,32 @@ import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
 import { PAGE_NAME } from "../../atomModule/atoms/constants";
 import { ATOM_ID } from "../../atomModule/atoms/constants";
-import {
-  useFetchStatusNamesQuery,
-  useFetchMonitoringCredentialsNamesQuery,
-} from "../../../store/features/dropDowns/apis";
-import {
-  selectStatusNames,
-  selectMonitoringCredentialsNames,
-} from "../../../store/features/dropDowns/selectors";
-import { MONITORING_CREDENTIALS_ID, SNMP_STATUS } from "./constants";
+import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features/dropDowns/apis";
+import { selectMonitoringCredentialsNames } from "../../../store/features/dropDowns/selectors";
+import { MONITORING_CREDENTIALS_ID, CREDENTIALS } from "./constants";
 
 const Index = ({ handleClose, open }) => {
   const theme = useTheme();
 
   // dropdown apis
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
   const {
     error: monitoringCredentialsNamesError,
     isLoading: isMonitoringCredentialsNamesLoading,
   } = useFetchMonitoringCredentialsNamesQuery();
 
   // selectors
-  const statusNames = useSelector(selectStatusNames);
   const monitoringCredentialsNames = useSelector(
     selectMonitoringCredentialsNames
   );
 
+  const monitoringCredentialsOptions = monitoringCredentialsNames.map(
+    (item) => ({
+      name: item[CREDENTIALS],
+      value: item[MONITORING_CREDENTIALS_ID],
+    })
+  );
+
+  console.log("monitoringCredentialsNames", monitoringCredentialsNames);
   // states required in hooks
   const [selectedRows, setSelectedRows] = useState([]);
   const [dropdownValues, setDropdownValues] = useState({});
@@ -58,8 +57,7 @@ const Index = ({ handleClose, open }) => {
       dropDowns: {
         handler: handleSelectsChange,
         data: {
-          [MONITORING_CREDENTIALS_ID]: monitoringCredentialsNames,
-          [SNMP_STATUS]: statusNames,
+          [MONITORING_CREDENTIALS_ID]: monitoringCredentialsOptions,
         },
       },
     });
@@ -81,44 +79,44 @@ const Index = ({ handleClose, open }) => {
 
   // apis
   const {
-    data: getAtomsToAddInIpamDevicesData,
-    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
-    isLoading: isGetAtomsToAddInIpamDevicesLoading,
-    isError: isGetAtomsToAddInIpamDevicesError,
-    error: getAtomsToAddInIpamDevicesError,
-  } = useGetAtomsToAddInIpamDevicesQuery();
+    data: getAtomsToAddInMonitoringDevicesData,
+    isSuccess: isGetAtomsToAddInMonitoringDevicesSuccess,
+    isLoading: isGetAtomsToAddInMonitoringDevicesLoading,
+    isError: isGetAtomsToAddInMonitoringDevicesError,
+    error: getAtomsToAddInMonitoringDevicesError,
+  } = useGetAtomsToAddInMonitoringDevicesQuery();
 
   const [
-    addAtomsInIpam,
+    addAtomsInMonitoring,
     {
-      data: addAtomsInIpamDevicesData,
-      isSuccess: isAddAtomsInIpamDevicesSuccess,
-      isLoading: isAddAtomsInIpamDevicesLoading,
-      isError: isAddAtomsInIpamDevicesError,
-      error: addAtomsInIpamDevicesError,
+      data: addAtomsInMonitoringDevicesData,
+      isSuccess: isAddAtomsInMonitoringDevicesSuccess,
+      isLoading: isAddAtomsInMonitoringDevicesLoading,
+      isError: isAddAtomsInMonitoringDevicesError,
+      error: addAtomsInMonitoringDevicesError,
     },
-  ] = useAddAtomsInIpamDevicesMutation();
+  ] = useAddAtomsInMonitoringDevicesMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: getAtomsToAddInIpamDevicesData,
-    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
-    isError: isGetAtomsToAddInIpamDevicesError,
-    error: getAtomsToAddInIpamDevicesError,
+    data: getAtomsToAddInMonitoringDevicesData,
+    isSuccess: isGetAtomsToAddInMonitoringDevicesSuccess,
+    isError: isGetAtomsToAddInMonitoringDevicesError,
+    error: getAtomsToAddInMonitoringDevicesError,
     type: TYPE_FETCH,
   });
 
   useErrorHandling({
-    data: addAtomsInIpamDevicesData,
-    isSuccess: isAddAtomsInIpamDevicesSuccess,
-    isError: isAddAtomsInIpamDevicesError,
-    error: addAtomsInIpamDevicesError,
+    data: addAtomsInMonitoringDevicesData,
+    isSuccess: isAddAtomsInMonitoringDevicesSuccess,
+    isError: isAddAtomsInMonitoringDevicesError,
+    error: addAtomsInMonitoringDevicesError,
     type: TYPE_BULK,
     callback: handleClose,
   });
 
   // getting dropdowns data from the store
-  const dataSource = useSelector(selectAtomsToAddInIpamDevicesData);
+  const dataSource = useSelector(selectAtomsToAddInMonitoringDevicesData);
 
   // row selection
 
@@ -128,14 +126,12 @@ const Index = ({ handleClose, open }) => {
       monitoringCredentialsNames.length > 0
         ? monitoringCredentialsNames[0][MONITORING_CREDENTIALS_ID]
         : "";
-    const defaultSnmpStatus = statusNames.length > 0 ? statusNames[0] : "";
     setSelectedRows(
       selectedRows.map((row) => ({
         ...row,
         [MONITORING_CREDENTIALS_ID]:
           dropdownValues[MONITORING_CREDENTIALS_ID][row.id] ||
           defaultMonitoringCredentialId,
-        [SNMP_STATUS]: dropdownValues[SNMP_STATUS][row.id] || defaultSnmpStatus,
       }))
     );
   }
@@ -158,11 +154,10 @@ const Index = ({ handleClose, open }) => {
   }
 
   function handleAdd() {
-    addAtomsInIpam(
+    addAtomsInMonitoring(
       selectedRows.map((item) => ({
         [ATOM_ID]: item[ATOM_ID],
         [MONITORING_CREDENTIALS_ID]: item[MONITORING_CREDENTIALS_ID],
-        [SNMP_STATUS]: item[SNMP_STATUS],
       }))
     );
   }
@@ -173,8 +168,8 @@ const Index = ({ handleClose, open }) => {
         <Grid item xs={12}>
           <Spin
             spinning={
-              isGetAtomsToAddInIpamDevicesLoading ||
-              isAddAtomsInIpamDevicesLoading
+              isGetAtomsToAddInMonitoringDevicesLoading ||
+              isAddAtomsInMonitoringDevicesLoading
             }
           >
             {tableConfigurationsOpen ? (
