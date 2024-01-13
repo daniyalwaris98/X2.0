@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultDialog from "../../../components/dialogs";
 import { CancelDialogFooter } from "../../../components/dialogFooters";
@@ -20,18 +20,11 @@ import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
 import { PAGE_NAME } from "../../atomModule/atoms/constants";
 import { ATOM_ID } from "../../atomModule/atoms/constants";
-import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features/dropDowns/apis";
 import { selectMonitoringCredentialsNames } from "../../../store/features/dropDowns/selectors";
 import { MONITORING_CREDENTIALS_ID, CREDENTIALS } from "./constants";
 
 const Index = ({ handleClose, open }) => {
   const theme = useTheme();
-
-  // dropdown apis
-  const {
-    error: monitoringCredentialsNamesError,
-    isLoading: isMonitoringCredentialsNamesLoading,
-  } = useFetchMonitoringCredentialsNamesQuery();
 
   // selectors
   const monitoringCredentialsNames = useSelector(
@@ -45,7 +38,6 @@ const Index = ({ handleClose, open }) => {
     })
   );
 
-  console.log("monitoringCredentialsNames", monitoringCredentialsNames);
   // states required in hooks
   const [selectedRows, setSelectedRows] = useState([]);
   const [dropdownValues, setDropdownValues] = useState({});
@@ -120,21 +112,21 @@ const Index = ({ handleClose, open }) => {
 
   // row selection
 
-  function customOnSelectChange(selectedRowKeys, selectedRows) {
-    setSelectedRowKeys(selectedRowKeys);
-    const defaultMonitoringCredentialId =
-      monitoringCredentialsNames.length > 0
-        ? monitoringCredentialsNames[0][MONITORING_CREDENTIALS_ID]
-        : "";
-    setSelectedRows(
-      selectedRows.map((row) => ({
-        ...row,
-        [MONITORING_CREDENTIALS_ID]:
-          dropdownValues[MONITORING_CREDENTIALS_ID][row.id] ||
-          defaultMonitoringCredentialId,
-      }))
-    );
-  }
+  // function customOnSelectChange(selectedRowKeys, selectedRows) {
+  //   setSelectedRowKeys(selectedRowKeys);
+  //   const defaultMonitoringCredentialId =
+  //     monitoringCredentialsNames.length > 0
+  //       ? monitoringCredentialsNames[0][MONITORING_CREDENTIALS_ID]
+  //       : "";
+  //   setSelectedRows(
+  //     selectedRows?.map((row) => ({
+  //       ...row,
+  //       [MONITORING_CREDENTIALS_ID]:
+  //         dropdownValues[MONITORING_CREDENTIALS_ID][row[ATOM_ID]] ||
+  //         defaultMonitoringCredentialId,
+  //     }))
+  //   );
+  // }
 
   // handlers
   function handleSelectsChange(selectName, recordId, value) {
@@ -149,15 +141,25 @@ const Index = ({ handleClose, open }) => {
     });
   }
 
+  useEffect(() => {
+    console.log("dropdownValues", dropdownValues);
+  }, [dropdownValues]);
+
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
 
   function handleAdd() {
+    const defaultMonitoringCredentialId =
+      monitoringCredentialsNames.length > 0
+        ? monitoringCredentialsNames[0][MONITORING_CREDENTIALS_ID]
+        : "";
     addAtomsInMonitoring(
-      selectedRows.map((item) => ({
-        [ATOM_ID]: item[ATOM_ID],
-        [MONITORING_CREDENTIALS_ID]: item[MONITORING_CREDENTIALS_ID],
+      selectedRowKeys.map((rowKey) => ({
+        [ATOM_ID]: rowKey,
+        [MONITORING_CREDENTIALS_ID]:
+          dropdownValues[MONITORING_CREDENTIALS_ID][rowKey] ||
+          defaultMonitoringCredentialId,
       }))
     );
   }
@@ -197,7 +199,7 @@ const Index = ({ handleClose, open }) => {
               setSelectedRows={setSelectedRows}
               dynamicWidth={false}
               defaultPageSize={7}
-              customOnSelectChange={customOnSelectChange}
+              // customOnSelectChange={customOnSelectChange}
             />
           </Spin>
         </Grid>

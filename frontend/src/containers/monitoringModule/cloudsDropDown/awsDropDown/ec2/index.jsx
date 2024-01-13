@@ -45,8 +45,8 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = [{}];
-  // const dataSource = useSelector(selectTableData);
+  // const dataSource = [{}];
+  const dataSource = useSelector(selectTableData);
 
   // apis
   const {

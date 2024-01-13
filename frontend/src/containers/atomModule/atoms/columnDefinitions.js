@@ -1,7 +1,7 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
-import { indexColumnNameConstants } from "./constants";
+import { ATOM_ID, indexColumnNameConstants } from "./constants";
 import {
   MONITORING_CREDENTIALS_ID,
   CREDENTIALS,
@@ -16,7 +16,6 @@ export function useIndexTableColumnDefinitions({
   const theme = useTheme();
   const monitoringCredentialsOptions =
     dropDowns?.data[MONITORING_CREDENTIALS_ID];
-  console.log("dropDowns", monitoringCredentialsOptions);
 
   const columnDefinitions = [
     {
@@ -218,7 +217,7 @@ export function useIndexTableColumnDefinitions({
   const columnDefinitionsForMonitoringDevices = [
     indexColumnNameConstants.IP_ADDRESS,
     indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.FUNCTION,
+    indexColumnNameConstants.DEVICE_TYPE,
     indexColumnNameConstants.VENDOR,
     {
       data_key: MONITORING_CREDENTIALS_ID,
@@ -226,11 +225,11 @@ export function useIndexTableColumnDefinitions({
       search: false,
       fixed: "right",
       align: "center",
-      width: 150,
+      width: 200,
       render: (text, record) => (
         <DefaultSelect
           onChange={(value) =>
-            dropDowns.handler(MONITORING_CREDENTIALS_ID, record.id, value)
+            dropDowns.handler(MONITORING_CREDENTIALS_ID, record[ATOM_ID], value)
           }
         >
           {monitoringCredentialsOptions.map((item) => (
@@ -239,46 +238,6 @@ export function useIndexTableColumnDefinitions({
             </DefaultOption>
           ))}
         </DefaultSelect>
-      ),
-    },
-    {
-      data_key: indexColumnNameConstants.ONBOARD_STATUS,
-      title: "Board",
-      fixed: "right",
-      align: "center",
-      width: 80,
-      render: (text, record) => (
-        <div
-          style={{
-            textAlign: "center",
-          }}
-        >
-          {record.on_board_status === true ? (
-            <span
-              style={{
-                display: "inline-block",
-                borderRadius: "10px",
-                backgroundColor: "#c2dfbf",
-                color: "#3D9E47",
-                padding: "1px 15px",
-              }}
-            >
-              True
-            </span>
-          ) : record.on_board_status === false ? (
-            <div
-              style={{
-                display: "inline-block",
-                borderRadius: "10px",
-                backgroundColor: "#ffe2dd",
-                color: "#E34444",
-                padding: "1px 15px",
-              }}
-            >
-              False
-            </div>
-          ) : null}
-        </div>
       ),
     },
   ];
