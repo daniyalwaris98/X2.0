@@ -19,12 +19,14 @@ router = APIRouter(
 })
 async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema):
     try:
+        print("monitoring credentials obj is:::::::::",credential_obj,file=sys.stderr)
         data = {}
         if (configs.db.query(Monitoring_Credentails_Table).filter(
                 Monitoring_Credentails_Table.profile_name == credential_obj["profile_name"])
                 .first() is not None):
-            return JSONResponse(content="Profile Name Is Already Assigned", status_code=400)
+            return "Profile already Assigned",400
         else:
+            print("Insertion in progress::::::::",file=sys.stderr)
             credential = Monitoring_Credentails_Table()
 
             credential.category = "v1/v2"
@@ -33,29 +35,28 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
             credential.snmp_read_community = credential_obj["community"]
             if "description" in credential_obj:
                 credential_obj.description = credential_obj["description"]
-
-            if InsertDBData(credential) == 200:
-                v1_2_dict = {
+            print("Insertion is being executed:::::::",file=sys.stderr)
+            InsertDBData(credential)
+            print("Data inserted into the DB:::::::::::",file=sys.stderr)
+            v1_2_dict = {
                     "monitoring_credentials_id": credential.monitoring_credentials_id,
                     "profile_name": credential.profile_name,
                     "port": credential.snmp_port,
                     "username": credential.username,
                     "password": credential.password,
-                    "encryption_password": credential.encryption_password,
-                    "authentication_method": credential.authentication_method,
-                    "encryption_method": credential.encryption_method
-                }
-                data['data'] = v1_2_dict
-                data['message'] =  f"Inserted {credential.monitoring_credentials_id} Credentials Successfully"
-                print(
+                    "description":credential.description,
+                    "community":credential.snmp_read_community,
+                    "category":credential.category
+            }
+            data['data'] = v1_2_dict
+            data['message'] =  f"Inserted {credential.monitoring_credentials_id} Credentials Successfully"
+            print(
                     f"Inserted {credential.monitoring_credentials_id} Credentials Successfully",
                     file=sys.stderr,
-                )
-                print("v1_v2 credential data",v1_2_dict,file=sys.stderr)
-                print("data is:::::::::::::::::::::::::::::",data,file=sys.stderr)
-                return JSONResponse(content=data, status_code=200)
-            else:
-                return JSONResponse(content="Error While Adding Credentials", status_code=500)
+            )
+            print("v1_v2 credential data",v1_2_dict,file=sys.stderr)
+            print("data is:::::::::::::::::::::::::::::",data,file=sys.stderr)
+            return JSONResponse(content=data, status_code=200)
 
     except Exception:
         traceback.print_exc()
@@ -149,14 +150,16 @@ def get_snmp_v2_credentials():
         ).all()
 
         for monitoring_obj in results:
+            print("monitoring obj is::::::::::::::",monitoring_obj,file=sys.stderr)
             credential_obj = {"profile_name": monitoring_obj.profile_name,
                               "description": monitoring_obj.description,
                               "community": monitoring_obj.snmp_read_community,
                               "port": monitoring_obj.snmp_port,
                               "category":monitoring_obj.category,
-                              "credentials_id": monitoring_obj.monitoring_credentials_id}
+                              "monitoring_credentials_id": monitoring_obj.monitoring_credentials_id}
 
             credentials_list.append(credential_obj)
+        print("credential_list is:::::::::::",credentials_list,file=sys.stderr)
 
         return JSONResponse(credentials_list, status_code=200)
 
