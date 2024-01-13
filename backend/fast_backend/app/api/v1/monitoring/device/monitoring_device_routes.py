@@ -149,14 +149,14 @@ async def get_all_monitoring_devices():
                 credentials = Monitoring_Credentails_Table.query.filter_by(
                     monitoring_credentials_id=MonitoringObj.monitoring_credentials_id
                 ).first()
-
+                #credentials
                 if credentials is None:
                     MonitoringObj.monitoring_credentials_id = None
                     UpdateDBData(MonitoringObj)
                 else:
-                    snmp_cred = credentials.profile_name
-                    category = credentials.category
-                    monitoring_credentials_id = credentials.monitoring_credentials_id
+                    snmp_cred = credentials.profile_name if snmp_cred else None
+                    category = credentials.category if category else None
+                    monitoring_credentials_id = credentials.monitoring_credentials_id if monitoring_credentials_id else None
             atom_exsist = configs.db.query(AtomTable).filter_by(atom_id=MonitoringObj.atom_id).first()
             print("atom exsist is:::::::::::::::;",atom_exsist,file=sys.stderr)
             monitoring_data_dict = {"monitoring_id": MonitoringObj.monitoring_device_id,
@@ -180,6 +180,7 @@ async def get_all_monitoring_devices():
         return JSONResponse(content=monitoring_obj_list, status_code=200)
 
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching Monitoring Devices",
                             status_code=500)
