@@ -349,5 +349,6 @@ def get_all_snmp_credentials():
             credentials_list.append(credentials_dict)
         return JSONResponse(content=credentials_list,status_code=200)
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting the Monitoring credentials",status_code=500)
