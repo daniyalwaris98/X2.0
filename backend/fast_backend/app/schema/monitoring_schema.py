@@ -229,4 +229,4 @@ class InterfaceBandScema(BaseSchema):
 class AddAtomInMonitoringSchema(BaseSchema):
     atom_id:int
     monitoring_credentials_id:int
-    snmp_status:str
+    snmp_status:str |None = None
