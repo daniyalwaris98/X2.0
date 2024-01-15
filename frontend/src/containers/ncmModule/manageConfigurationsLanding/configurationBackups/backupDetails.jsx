@@ -109,6 +109,7 @@ const Index = ({ ncmHistoryId }) => {
             pageName="Backup Details"
             buttons={buttonsConfigurationList}
           />
+
           <FloatingHighlighterSearch />
 
           <div
