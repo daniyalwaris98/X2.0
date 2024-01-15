@@ -9,7 +9,9 @@ import {
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
 import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_SINGLE,
+} from "../../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
@@ -90,7 +92,7 @@ const Index = () => {
     isSuccess: isSingleBackupSuccess,
     isError: isSingleBackupError,
     error: singleBackupError,
-    type: TYPE_BULK,
+    type: TYPE_SINGLE,
   });
 
   // effects

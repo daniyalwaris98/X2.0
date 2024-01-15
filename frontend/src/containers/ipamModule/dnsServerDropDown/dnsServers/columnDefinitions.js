@@ -12,6 +12,8 @@ export function useIndexTableColumnDefinitions({ handleEdit, handleScan }) {
     indexColumnNameConstants.SERVER_NAME,
     indexColumnNameConstants.TYPE,
     indexColumnNameConstants.NUMBER_OF_ZONES,
+    indexColumnNameConstants.USER_NAME,
+    indexColumnNameConstants.PASSWORD,
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,
