@@ -59,13 +59,13 @@ const Index = ({ ncmHistoryId }) => {
   ] = useDeleteRecordsMutation();
 
   // error handling custom hooks
-  useErrorHandling({
-    data: getBackupDetailsData,
-    isSuccess: isGetBackupDetailsSuccess,
-    isError: isGetBackupDetailsError,
-    error: getBackupDetailsError,
-    type: TYPE_SINGLE,
-  });
+  // useErrorHandling({
+  //   data: getBackupDetailsData,
+  //   isSuccess: isGetBackupDetailsSuccess,
+  //   isError: isGetBackupDetailsError,
+  //   error: getBackupDetailsError,
+  //   type: TYPE_SINGLE,
+  // });
 
   useErrorHandling({
     data: deleteRecordsData,
@@ -104,11 +104,12 @@ const Index = ({ ncmHistoryId }) => {
   return (
     <Spin spinning={isGetBackupDetailsLoading || isDeleteRecordsLoading}>
       {dataSource ? (
-        <DefaultCard>
+        <DefaultCard sx={{ paddingBottom: "50px" }}>
           <DefaultPageHeader
             pageName="Backup Details"
             buttons={buttonsConfigurationList}
           />
+          <FloatingHighlighterSearch />
 
           <div
             style={{
@@ -116,8 +117,6 @@ const Index = ({ ncmHistoryId }) => {
               padding: "10px",
             }}
           >
-            <FloatingHighlighterSearch />
-
             <span style={{ color: "grey" }}>Output:</span>
 
             <code class="line-numbers">

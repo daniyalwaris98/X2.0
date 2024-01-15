@@ -1,11 +1,11 @@
-import React, { useRef } from "react";
+import React, { useRef, useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { CaretRightOutlined, CaretLeftOutlined } from "@ant-design/icons";
 
 export function FloatingHighlighterSearch({ sx, ...rest }) {
   const theme = useTheme();
-
   const findInput = useRef(null);
+  const [isFixed, setIsFixed] = useState(false);
 
   function handleFindNext() {
     const searchTerm = findInput.current.value;
@@ -17,8 +17,34 @@ export function FloatingHighlighterSearch({ sx, ...rest }) {
     window.find(searchTerm, false, true, false, false, true, true);
   }
 
+  useEffect(() => {
+    const handleScroll = () => {
+      const scrollY = window.scrollY || document.documentElement.scrollTop;
+      const windowHeight = window.innerHeight * 1;
+      const findInputRect = findInput.current.getBoundingClientRect();
+      const findInputCenter = findInputRect.top + findInputRect.height / 2;
+
+      setIsFixed(findInputCenter < windowHeight / 1.5);
+      console.log("Top:", findInputCenter);
+      console.log("Height:", windowHeight / 2);
+    };
+
+    window.addEventListener("scroll", handleScroll);
+
+    return () => {
+      window.removeEventListener("scroll", handleScroll);
+    };
+  }, []);
+
   return (
-    <div style={{ position: "fixed", right: "30px" }}>
+    <div
+      style={{
+        position: isFixed ? "fixed" : "absolute",
+        top: isFixed ? "40%" : "auto",
+        transform: isFixed ? "translateY(-40%)" : "none",
+        right: isFixed ? "30px" : "10px",
+      }}
+    >
       <div>
         <button
           onClick={handleFindPrevious}
