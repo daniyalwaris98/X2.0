@@ -12,7 +12,7 @@ function Index() {
   return (
     <>
       <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "5px" }}>
-        <Col span={7}>
+        <Col span={8}>
           <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
             <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Configuration Backup Summary</h5>
                         <ConfigurationBackupSummary />
