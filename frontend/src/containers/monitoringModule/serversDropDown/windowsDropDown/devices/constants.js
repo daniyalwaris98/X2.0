@@ -1,3 +1,4 @@
+export const DESCRIPTIVE_PAGE_NAME = "Windows Devices";
 export const PAGE_NAME = "Devices";
 export const ELEMENT_NAME = "Device";
 export const PAGE_PATH = "windows_devices";

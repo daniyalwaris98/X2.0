@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/networksDropDown/allDevices/devices/apis";
+import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/serversDropDown/windows/interfaces/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../../store/features/monitoringModule/networksDropDown/allDevices/devices/selectors";
+import { selectTableData } from "../../../../../store/features/monitoringModule/serversDropDown/windows/interfaces/selectors";
 import { jsonToExcel } from "../../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
@@ -12,7 +12,7 @@ import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import {
-  PAGE_NAME,
+  DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
@@ -85,7 +85,7 @@ const Index = () => {
       ) : null}
 
       <DefaultPageTableSection
-        PAGE_NAME={PAGE_NAME}
+        PAGE_NAME={DESCRIPTIVE_PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}

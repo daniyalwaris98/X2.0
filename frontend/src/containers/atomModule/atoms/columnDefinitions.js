@@ -1,10 +1,21 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
-import { indexColumnNameConstants } from "./constants";
+import { ATOM_ID, indexColumnNameConstants } from "./constants";
+import {
+  MONITORING_CREDENTIALS_ID,
+  CREDENTIALS,
+} from "../../monitoringModule/devices/constants";
+import DefaultSelect from "../../../components/selects";
+import DefaultOption from "../../../components/options";
 
-export function useIndexTableColumnDefinitions({ handleEdit = null }) {
+export function useIndexTableColumnDefinitions({
+  handleEdit = null,
+  dropDowns = null,
+}) {
   const theme = useTheme();
+  const monitoringCredentialsOptions =
+    dropDowns?.data[MONITORING_CREDENTIALS_ID];
 
   const columnDefinitions = [
     {
@@ -203,6 +214,37 @@ export function useIndexTableColumnDefinitions({ handleEdit = null }) {
     },
   ];
 
+  const columnDefinitionsForMonitoringDevices = [
+    indexColumnNameConstants.IP_ADDRESS,
+    indexColumnNameConstants.DEVICE_NAME,
+    indexColumnNameConstants.DEVICE_TYPE,
+    indexColumnNameConstants.VENDOR,
+    {
+      data_key: MONITORING_CREDENTIALS_ID,
+      title: "Credentials",
+      search: false,
+      fixed: "right",
+      align: "center",
+      width: 200,
+      render: (text, record) => (
+        <DefaultSelect
+          onChange={(event) =>
+            dropDowns.handler(
+              MONITORING_CREDENTIALS_ID,
+              record[ATOM_ID],
+              event.target.value
+            )
+          }
+        >
+          {monitoringCredentialsOptions.map((item) => (
+            <DefaultOption key={item.value} value={item.value}>
+              {item.name}
+            </DefaultOption>
+          ))}
+        </DefaultSelect>
+      ),
+    },
+  ];
   const dataKeys = columnDefinitions
     .map((item) => {
       if (typeof item === "object") {
@@ -222,6 +264,7 @@ export function useIndexTableColumnDefinitions({ handleEdit = null }) {
     columnDefinitions,
     columnDefinitionsForIpamDevices,
     columnDefinitionsForNcmDevices,
+    columnDefinitionsForMonitoringDevices,
     dataKeys,
   };
 }

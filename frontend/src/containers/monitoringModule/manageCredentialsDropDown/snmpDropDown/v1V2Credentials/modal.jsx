@@ -10,7 +10,7 @@ import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmpCredentials/v1V2Credentials/apis";
+} from "../../../../../store/features/monitoringModule/manageCredentials/snmpCredentials/v1V2Credentials/apis";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
 import { formSetter } from "../../../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../../../hooks/useErrorHandling";

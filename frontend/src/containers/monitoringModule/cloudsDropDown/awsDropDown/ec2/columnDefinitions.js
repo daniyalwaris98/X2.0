@@ -2,8 +2,11 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import { Switch } from "antd";
 
-export function useIndexTableColumnDefinitions({}) {
+export function useIndexTableColumnDefinitions({
+  handleMonitoringSwitchChange = null,
+}) {
   const theme = useTheme();
 
   const columnDefinitions = [
@@ -12,7 +15,20 @@ export function useIndexTableColumnDefinitions({}) {
     indexColumnNameConstants.ACCOUNT_LABEL,
     indexColumnNameConstants.ACCESS_KEY,
     indexColumnNameConstants.REGION_ID,
-    indexColumnNameConstants.MONITORING_STATUS,
+    {
+      data_key: indexColumnNameConstants.MONITORING_STATUS,
+      search: false,
+      title: "Monitoring",
+      fixed: "right",
+      align: "center",
+      width: 120,
+      render: (text, record) => (
+        <Switch
+          style={{ backgroundColor: "green" }}
+          onChange={(checked) => handleMonitoringSwitchChange(checked, record)}
+        />
+      ),
+    },
   ];
 
   const dataKeys = columnDefinitions

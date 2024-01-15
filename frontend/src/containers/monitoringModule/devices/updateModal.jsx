@@ -2,7 +2,9 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
+import DefaultFormUnit, {
+  SelectFormUnitWithHiddenValues,
+} from "../../../components/formUnits";
 import { SelectFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -15,17 +17,23 @@ import {
   useFetchVendorNamesQuery,
   useFetchFunctionNamesQuery,
   useFetchDeviceTypeNamesQuery,
+  useFetchMonitoringCredentialsNamesQuery,
 } from "../../../store/features/dropDowns/apis";
 import { useSelector } from "react-redux";
 import {
   selectVendorNames,
   selectFunctionNames,
   selectDeviceTypeNames,
+  selectMonitoringCredentialsNames,
 } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { ELEMENT_NAME } from "./constants";
+import {
+  ELEMENT_NAME,
+  MONITORING_CREDENTIALS_ID,
+  CREDENTIALS,
+} from "./constants";
 import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
@@ -52,6 +60,10 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     useFetchFunctionNamesQuery();
   const { error: deviceTypeNamesError, isLoading: isDeviceTypeNamesLoading } =
     useFetchDeviceTypeNamesQuery();
+  const {
+    error: monitoringCredentialsNamesError,
+    isLoading: isMonitoringCredentialsNamesLoading,
+  } = useFetchMonitoringCredentialsNamesQuery();
 
   // post api for the form
   const [
@@ -99,6 +111,9 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   const vendorNames = useSelector(selectVendorNames);
   const functionNames = useSelector(selectFunctionNames);
   const deviceTypeNames = useSelector(selectDeviceTypeNames);
+  const monitoringCredentialsNames = useSelector(
+    selectMonitoringCredentialsNames
+  );
 
   // on form submit
   const onSubmit = (data) => {
@@ -141,6 +156,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               control={control}
               dataKey={indexColumnNameConstants.FUNCTION}
               options={functionNames}
+            />
+            <SelectFormUnitWithHiddenValues
+              control={control}
+              dataKey={indexColumnNameConstants.CREDENTIALS}
+              options={monitoringCredentialsNames.map((item) => ({
+                name: item[CREDENTIALS],
+                value: item[MONITORING_CREDENTIALS_ID],
+              }))}
             />
           </Grid>
           <Grid item xs={12}>

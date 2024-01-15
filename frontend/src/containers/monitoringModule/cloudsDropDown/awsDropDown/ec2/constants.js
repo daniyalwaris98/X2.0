@@ -3,6 +3,7 @@ export const ELEMENT_NAME = "EC2";
 export const PAGE_PATH = "ec2";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_ec2";
 export const TABLE_DATA_UNIQUE_ID = "id";
+export const EC2_STATUS = "ec2_status";
 export const indexColumnNameConstants = {
   ID: TABLE_DATA_UNIQUE_ID,
   INSTANCE_ID: "instance_id",

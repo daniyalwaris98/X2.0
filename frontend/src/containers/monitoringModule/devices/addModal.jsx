@@ -1,14 +1,14 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultDialog from "../../../components/dialogs";
 import { CancelDialogFooter } from "../../../components/dialogFooters";
 import Grid from "@mui/material/Grid";
 import {
-  useGetAtomsToAddInIpamDevicesQuery,
-  useAddAtomsInIpamDevicesMutation,
-} from "../../../store/features/ipamModule/devices/apis";
+  useGetAtomsToAddInMonitoringDevicesQuery,
+  useAddAtomsInMonitoringDevicesMutation,
+} from "../../../store/features/monitoringModule/devices/apis";
 import { useSelector } from "react-redux";
-import { selectAtomsToAddInIpamDevicesData } from "../../../store/features/ipamModule/devices/selectors";
+import { selectAtomsToAddInMonitoringDevicesData } from "../../../store/features/monitoringModule/devices/selectors";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -19,16 +19,40 @@ import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constant
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
 import { PAGE_NAME } from "../../atomModule/atoms/constants";
+import { ATOM_ID } from "../../atomModule/atoms/constants";
+import { selectMonitoringCredentialsNames } from "../../../store/features/dropDowns/selectors";
+import { MONITORING_CREDENTIALS_ID, CREDENTIALS } from "./constants";
 
 const Index = ({ handleClose, open }) => {
   const theme = useTheme();
 
+  // selectors
+  const monitoringCredentialsNames = useSelector(
+    selectMonitoringCredentialsNames
+  );
+
+  const monitoringCredentialsOptions = monitoringCredentialsNames.map(
+    (item) => ({
+      name: item[CREDENTIALS],
+      value: item[MONITORING_CREDENTIALS_ID],
+    })
+  );
+
   // states required in hooks
+  const [selectedRows, setSelectedRows] = useState([]);
+  const [dropdownValues, setDropdownValues] = useState({});
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { columnDefinitionsForIpamDevices: columnDefinitions } =
-    useIndexTableColumnDefinitions({});
+  const { columnDefinitionsForMonitoringDevices: columnDefinitions } =
+    useIndexTableColumnDefinitions({
+      dropDowns: {
+        handler: handleSelectsChange,
+        data: {
+          [MONITORING_CREDENTIALS_ID]: monitoringCredentialsOptions,
+        },
+      },
+    });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -47,52 +71,80 @@ const Index = ({ handleClose, open }) => {
 
   // apis
   const {
-    data: getAtomsToAddInIpamDevicesData,
-    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
-    isLoading: isGetAtomsToAddInIpamDevicesLoading,
-    isError: isGetAtomsToAddInIpamDevicesError,
-    error: getAtomsToAddInIpamDevicesError,
-  } = useGetAtomsToAddInIpamDevicesQuery();
+    data: getAtomsToAddInMonitoringDevicesData,
+    isSuccess: isGetAtomsToAddInMonitoringDevicesSuccess,
+    isLoading: isGetAtomsToAddInMonitoringDevicesLoading,
+    isError: isGetAtomsToAddInMonitoringDevicesError,
+    error: getAtomsToAddInMonitoringDevicesError,
+  } = useGetAtomsToAddInMonitoringDevicesQuery();
 
   const [
-    addAtomsInIpam,
+    addAtomsInMonitoring,
     {
-      data: addAtomsInIpamDevicesData,
-      isSuccess: isAddAtomsInIpamDevicesSuccess,
-      isLoading: isAddAtomsInIpamDevicesLoading,
-      isError: isAddAtomsInIpamDevicesError,
-      error: addAtomsInIpamDevicesError,
+      data: addAtomsInMonitoringDevicesData,
+      isSuccess: isAddAtomsInMonitoringDevicesSuccess,
+      isLoading: isAddAtomsInMonitoringDevicesLoading,
+      isError: isAddAtomsInMonitoringDevicesError,
+      error: addAtomsInMonitoringDevicesError,
     },
-  ] = useAddAtomsInIpamDevicesMutation();
+  ] = useAddAtomsInMonitoringDevicesMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: getAtomsToAddInIpamDevicesData,
-    isSuccess: isGetAtomsToAddInIpamDevicesSuccess,
-    isError: isGetAtomsToAddInIpamDevicesError,
-    error: getAtomsToAddInIpamDevicesError,
+    data: getAtomsToAddInMonitoringDevicesData,
+    isSuccess: isGetAtomsToAddInMonitoringDevicesSuccess,
+    isError: isGetAtomsToAddInMonitoringDevicesError,
+    error: getAtomsToAddInMonitoringDevicesError,
     type: TYPE_FETCH,
   });
 
   useErrorHandling({
-    data: addAtomsInIpamDevicesData,
-    isSuccess: isAddAtomsInIpamDevicesSuccess,
-    isError: isAddAtomsInIpamDevicesError,
-    error: addAtomsInIpamDevicesError,
+    data: addAtomsInMonitoringDevicesData,
+    isSuccess: isAddAtomsInMonitoringDevicesSuccess,
+    isError: isAddAtomsInMonitoringDevicesError,
+    error: addAtomsInMonitoringDevicesError,
     type: TYPE_BULK,
     callback: handleClose,
   });
 
   // getting dropdowns data from the store
-  const dataSource = useSelector(selectAtomsToAddInIpamDevicesData);
+  const dataSource = useSelector(selectAtomsToAddInMonitoringDevicesData);
 
   // handlers
+  function handleSelectsChange(selectName, recordId, value) {
+    setDropdownValues((prevValues) => {
+      return {
+        ...prevValues,
+        [selectName]: {
+          ...(prevValues[selectName] || {}),
+          [recordId]: value,
+        },
+      };
+    });
+  }
+
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
 
   function handleAdd() {
-    addAtomsInIpam(selectedRowKeys);
+    const defaultMonitoringCredentialId =
+      monitoringCredentialsNames?.length > 0
+        ? monitoringCredentialsNames[0][MONITORING_CREDENTIALS_ID]
+        : "";
+
+    const data = selectedRowKeys?.map((rowKey) => {
+      const selectedCredentialId =
+        dropdownValues[MONITORING_CREDENTIALS_ID]?.[rowKey] ||
+        defaultMonitoringCredentialId;
+
+      return {
+        [ATOM_ID]: rowKey,
+        [MONITORING_CREDENTIALS_ID]: selectedCredentialId,
+      };
+    });
+
+    addAtomsInMonitoring(data);
   }
 
   return (
@@ -101,8 +153,8 @@ const Index = ({ handleClose, open }) => {
         <Grid item xs={12}>
           <Spin
             spinning={
-              isGetAtomsToAddInIpamDevicesLoading ||
-              isAddAtomsInIpamDevicesLoading
+              isGetAtomsToAddInMonitoringDevicesLoading ||
+              isAddAtomsInMonitoringDevicesLoading
             }
           >
             {tableConfigurationsOpen ? (
@@ -126,6 +178,8 @@ const Index = ({ handleClose, open }) => {
               dataSource={dataSource}
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
+              selectedRows={selectedRows}
+              setSelectedRows={setSelectedRows}
               dynamicWidth={false}
               defaultPageSize={7}
             />

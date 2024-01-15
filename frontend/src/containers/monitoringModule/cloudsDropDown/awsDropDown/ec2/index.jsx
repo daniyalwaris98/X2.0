@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/ec2/apis";
+import {
+  useFetchRecordsQuery,
+  useChangeEC2StatusMutation,
+} from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/ec2/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/ec2/selectors";
 import { jsonToExcel } from "../../../../../utils/helpers";
@@ -15,6 +18,7 @@ import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  EC2_STATUS,
 } from "./constants";
 import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../../components/pageSections";
@@ -25,7 +29,9 @@ const Index = () => {
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleMonitoringSwitchChange,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -39,6 +45,7 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
+  // const dataSource = [{}];
   const dataSource = useSelector(selectTableData);
 
   // apis
@@ -50,6 +57,17 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
+  const [
+    changeEC2Status,
+    {
+      data: changeEC2StatusData,
+      isSuccess: isChangeEC2StatusSuccess,
+      isLoading: isChangeEC2StatusLoading,
+      isError: isChangeEC2StatusError,
+      error: changeEC2StatusError,
+    },
+  ] = useChangeEC2StatusMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -59,7 +77,22 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: changeEC2StatusData,
+    isSuccess: isChangeEC2StatusSuccess,
+    isError: isChangeEC2StatusError,
+    error: changeEC2StatusError,
+    type: TYPE_FETCH,
+  });
+
   // handlers
+  function handleMonitoringSwitchChange(checked, record) {
+    changeEC2Status({
+      [TABLE_DATA_UNIQUE_ID]: record[TABLE_DATA_UNIQUE_ID],
+      [EC2_STATUS]: checked,
+    });
+  }
+
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     handleSuccessAlert("File exported successfully.");

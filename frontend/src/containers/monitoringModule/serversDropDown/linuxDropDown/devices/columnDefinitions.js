@@ -3,11 +3,21 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({}) {
+export function useIndexTableColumnDefinitions({ handleIpAddressClick }) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS,
+    {
+      data_key: indexColumnNameConstants.IP_ADDRESS,
+      render: (text, record) => (
+        <a
+          style={{ color: "green" }}
+          onClick={() => handleIpAddressClick(record)}
+        >
+          {text}
+        </a>
+      ),
+    },
     indexColumnNameConstants.DEVICE_TYPE,
     indexColumnNameConstants.DEVICE_NAME,
     indexColumnNameConstants.VENDOR,

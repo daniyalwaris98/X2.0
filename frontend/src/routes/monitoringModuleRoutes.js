@@ -113,19 +113,19 @@ import ELB from "../containers/monitoringModule/cloudsDropDown/awsDropDown/elb";
 import { PAGE_PATH as PAGE_PATH_ELB } from "../containers/monitoringModule/cloudsDropDown/awsDropDown/elb/constants";
 
 ////////////////////////////////////////////
-import ManageCredentialsDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown";
+import ManageCredentialsDropDown from "../containers/monitoringModule/manageCredentialsDropDown";
 import { DROPDOWN_PATH as DROPDOWN_PATH_MANAGE_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown";
 
-import LoginCredentials from "../containers/autoDiscoveryModule//manageCredentialsDropDown/loginCredentials";
+import LoginCredentials from "../containers/monitoringModule//manageCredentialsDropDown/loginCredentials";
 import { PAGE_PATH as PAGE_PATH_LOGIN_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/loginCredentials/constants";
 
-import SNMPDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown";
+import SNMPDropDown from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown";
 import { DROPDOWN_PATH as DROPDOWN_PATH_SNMP } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown";
 
-import V1V2Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials";
+import V1V2Credentials from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials";
 import { PAGE_PATH as PAGE_PATH_V1_V2_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
 
-import V3Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v3Credentials";
+import V3Credentials from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v3Credentials";
 import { PAGE_PATH as PAGE_PATH_V3_CREDENTIALS } from "../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
 ////////////////////////////////////////

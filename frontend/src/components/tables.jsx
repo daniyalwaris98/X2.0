@@ -185,6 +185,8 @@ export default function DefaultTable({
   displayColumns = [],
   selectedRowKeys = null,
   setSelectedRowKeys = null,
+  selectedRows = null,
+  setSelectedRows = null,
   getCheckboxProps = null,
   rowClickable = false,
   selectedRowKey = null,
@@ -202,8 +204,9 @@ export default function DefaultTable({
     selection: Table.SELECTION_ALL,
   };
 
-  function onSelectChange(selectedRowKeys) {
+  function onSelectChange(selectedRowKeys, selectedRows) {
     setSelectedRowKeys(selectedRowKeys);
+    if (setSelectedRows) setSelectedRows(selectedRows);
   }
 
   function handleChange(pagination, filters, sorter, extra) {

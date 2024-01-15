@@ -4,9 +4,9 @@ import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmpCredentials/v3Credentials/apis";
+} from "../../../../../store/features/monitoringModule/manageCredentials/snmpCredentials/v3Credentials/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../../store/features/autoDiscoveryModule/manageCredentials/snmpCredentials/v3Credentials/selectors";
+import { selectTableData } from "../../../../../store/features/monitoringModule/manageCredentials/snmpCredentials/v3Credentials/selectors";
 import { jsonToExcel } from "../../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";

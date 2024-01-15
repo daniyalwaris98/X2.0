@@ -1,8 +1,8 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/networksDropDown/allDevices/devices/apis";
+import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/serversDropDown/windows/devices/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../../store/features/monitoringModule/networksDropDown/allDevices/devices/selectors";
+import { selectTableData } from "../../../../../store/features/monitoringModule/serversDropDown/windows/devices/selectors";
 import { jsonToExcel } from "../../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
@@ -12,20 +12,30 @@ import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import {
-  PAGE_NAME,
+  DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../../components/pageSections";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setSelectedDevice } from "../../../../../store/features/monitoringModule/devices";
+import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../../../devicesLanding/summary/constants";
+import { LANDING_PAGE_PATH } from "../../../devicesLanding";
+import { MODULE_PATH } from "../../../index";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleIpAddressClick,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -60,6 +70,11 @@ const Index = () => {
   });
 
   // handlers
+  function handleIpAddressClick(record) {
+    dispatch(setSelectedDevice(record));
+    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`);
+  }
+
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     handleSuccessAlert("File exported successfully.");
@@ -85,7 +100,7 @@ const Index = () => {
       ) : null}
 
       <DefaultPageTableSection
-        PAGE_NAME={PAGE_NAME}
+        PAGE_NAME={DESCRIPTIVE_PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}

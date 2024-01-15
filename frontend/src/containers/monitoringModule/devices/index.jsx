@@ -27,6 +27,7 @@ import { setSelectedDevice } from "../../../store/features/monitoringModule/devi
 import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../devicesLanding/summary/constants";
 import { LANDING_PAGE_PATH } from "../devicesLanding";
 import { MODULE_PATH } from "../index";
+import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features/dropDowns/apis";
 
 const Index = () => {
   // theme
@@ -68,6 +69,11 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
+
+  const {
+    error: monitoringCredentialsNamesError,
+    isLoading: isMonitoringCredentialsNamesLoading,
+  } = useFetchMonitoringCredentialsNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -111,7 +117,10 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    // <Spin spinning={false}>
+    <Spin
+      spinning={isFetchRecordsLoading || isMonitoringCredentialsNamesLoading}
+    >
       {openAddModal ? (
         <AddModal handleClose={handleCloseAdd} open={openAddModal} />
       ) : null}

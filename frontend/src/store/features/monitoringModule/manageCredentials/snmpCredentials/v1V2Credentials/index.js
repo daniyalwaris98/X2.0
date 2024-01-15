@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../../../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
+} from "../../../../../../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
 
 const initialState = {
   all_data: [],

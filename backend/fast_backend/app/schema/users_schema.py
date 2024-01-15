@@ -17,6 +17,15 @@ class SummeryResponseSchema(BaseSchema):
 class Response200(BaseSchema):
     data: dict
     message: str
+
+
+class DeleteResponseSchema(BaseSchema):
+    data: dict
+    success: int
+    error: int
+    success_list: list[str]
+    error_list: list[str]
+
 class EndUserResponseScehma(BaseSchema):
     company_name:str
     po_box:str
@@ -57,3 +66,16 @@ class GetUserResponseScehma(BaseSchema):
     email:str
     status:str
     account_type:str
+class EditUserRoleScehma(BaseSchema):
+    role_id:int
+    role:str
+    configuration:str
+
+
+class FailedDevicesResponseSchema(BaseSchema):
+    failure_id:int
+    ip_address:str
+    device_type:str
+    date:datetime
+    failure_reason:str
+    module:str
