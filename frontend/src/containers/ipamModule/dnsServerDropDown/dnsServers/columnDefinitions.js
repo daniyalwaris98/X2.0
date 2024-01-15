@@ -3,6 +3,7 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 import Tooltip from "@mui/material/Tooltip";
+import { convertToAsterisks } from "../../../../utils/helpers";
 
 export function useIndexTableColumnDefinitions({ handleEdit, handleScan }) {
   const theme = useTheme();
@@ -13,7 +14,10 @@ export function useIndexTableColumnDefinitions({ handleEdit, handleScan }) {
     indexColumnNameConstants.TYPE,
     indexColumnNameConstants.NUMBER_OF_ZONES,
     indexColumnNameConstants.USER_NAME,
-    indexColumnNameConstants.PASSWORD,
+    {
+      data_key: indexColumnNameConstants.PASSWORD,
+      render: (text, record) => convertToAsterisks(text),
+    },
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,
