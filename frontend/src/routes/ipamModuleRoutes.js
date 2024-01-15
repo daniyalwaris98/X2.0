@@ -1,9 +1,11 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 import IPAMModule from "../containers/ipamModule";
-import { MODULE_PATH } from "../containers/ipamModule";
 
+import { MODULE_PATH } from "../containers/ipamModule";
+import Dashboard from "../containers/ipamModule/dashboard";
 import Devices from "../containers/ipamModule/devices";
+
 
 import SubnetsDropDown from "../containers/ipamModule/subnetsDropDown";
 import Subnets from "../containers/ipamModule/subnetsDropDown/subnets";
@@ -20,6 +22,7 @@ import VIPDropDown from "../containers/ipamModule/vipDropDown";
 import Firewalls from "../containers/ipamModule/vipDropDown/firewalls";
 import LoadBalancers from "../containers/ipamModule/vipDropDown/loadBalancers";
 
+import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../containers/ipamModule/dashboard/constants";
 import { PAGE_PATH as PAGE_PATH_DEVICES } from "../containers/ipamModule/devices/constants";
 
 import { DROPDOWN_PATH as DROPDOWN_PATH_SUBNETS } from "../containers/ipamModule/subnetsDropDown";
@@ -41,9 +44,13 @@ const routes = {
   path: MODULE_PATH,
   element: <IPAMModule />,
   children: [
+      {
+        path: `/${MODULE_PATH}`,
+        element: <Navigate to={PAGE_PATH_DASHBOARD} replace />,
+      },
     {
-      path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_DEVICES} replace />,
+      path: PAGE_PATH_DASHBOARD,
+      element: <Dashboard />,
     },
     {
       path: PAGE_PATH_DEVICES,
