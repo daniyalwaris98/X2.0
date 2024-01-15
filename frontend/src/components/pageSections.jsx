@@ -21,7 +21,6 @@ export default function DefaultPageTableSection({
   dynamicWidth = true,
   scroll = true,
   defaultPageSize = 10,
-  customOnSelectChange = null,
 }) {
   const { height, width } = useWindowDimensions();
   const sx = dynamicWidth ? { width: `${width - 105}px` } : {};
@@ -48,7 +47,6 @@ export default function DefaultPageTableSection({
         dynamicWidth={dynamicWidth}
         scroll={scroll}
         defaultPageSize={defaultPageSize}
-        customOnSelectChange={customOnSelectChange}
       />
     </DefaultCard>
   );

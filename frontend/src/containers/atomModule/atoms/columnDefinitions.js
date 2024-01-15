@@ -228,8 +228,12 @@ export function useIndexTableColumnDefinitions({
       width: 200,
       render: (text, record) => (
         <DefaultSelect
-          onChange={(value) =>
-            dropDowns.handler(MONITORING_CREDENTIALS_ID, record[ATOM_ID], value)
+          onChange={(event) =>
+            dropDowns.handler(
+              MONITORING_CREDENTIALS_ID,
+              record[ATOM_ID],
+              event.target.value
+            )
           }
         >
           {monitoringCredentialsOptions.map((item) => (

@@ -1,4 +1,4 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultDialog from "../../../components/dialogs";
 import { CancelDialogFooter } from "../../../components/dialogFooters";
@@ -110,24 +110,6 @@ const Index = ({ handleClose, open }) => {
   // getting dropdowns data from the store
   const dataSource = useSelector(selectAtomsToAddInMonitoringDevicesData);
 
-  // row selection
-
-  // function customOnSelectChange(selectedRowKeys, selectedRows) {
-  //   setSelectedRowKeys(selectedRowKeys);
-  //   const defaultMonitoringCredentialId =
-  //     monitoringCredentialsNames.length > 0
-  //       ? monitoringCredentialsNames[0][MONITORING_CREDENTIALS_ID]
-  //       : "";
-  //   setSelectedRows(
-  //     selectedRows?.map((row) => ({
-  //       ...row,
-  //       [MONITORING_CREDENTIALS_ID]:
-  //         dropdownValues[MONITORING_CREDENTIALS_ID][row[ATOM_ID]] ||
-  //         defaultMonitoringCredentialId,
-  //     }))
-  //   );
-  // }
-
   // handlers
   function handleSelectsChange(selectName, recordId, value) {
     setDropdownValues((prevValues) => {
@@ -141,27 +123,28 @@ const Index = ({ handleClose, open }) => {
     });
   }
 
-  useEffect(() => {
-    console.log("dropdownValues", dropdownValues);
-  }, [dropdownValues]);
-
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
 
   function handleAdd() {
     const defaultMonitoringCredentialId =
-      monitoringCredentialsNames.length > 0
+      monitoringCredentialsNames?.length > 0
         ? monitoringCredentialsNames[0][MONITORING_CREDENTIALS_ID]
         : "";
-    addAtomsInMonitoring(
-      selectedRowKeys.map((rowKey) => ({
+
+    const data = selectedRowKeys?.map((rowKey) => {
+      const selectedCredentialId =
+        dropdownValues[MONITORING_CREDENTIALS_ID]?.[rowKey] ||
+        defaultMonitoringCredentialId;
+
+      return {
         [ATOM_ID]: rowKey,
-        [MONITORING_CREDENTIALS_ID]:
-          dropdownValues[MONITORING_CREDENTIALS_ID][rowKey] ||
-          defaultMonitoringCredentialId,
-      }))
-    );
+        [MONITORING_CREDENTIALS_ID]: selectedCredentialId,
+      };
+    });
+
+    addAtomsInMonitoring(data);
   }
 
   return (
@@ -199,7 +182,6 @@ const Index = ({ handleClose, open }) => {
               setSelectedRows={setSelectedRows}
               dynamicWidth={false}
               defaultPageSize={7}
-              // customOnSelectChange={customOnSelectChange}
             />
           </Spin>
         </Grid>

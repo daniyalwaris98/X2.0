@@ -193,7 +193,6 @@ export default function DefaultTable({
   setSelectedRowKey = null,
   scroll = true,
   defaultPageSize = 10,
-  customOnSelectChange = null,
   ...rest
 }) {
   const theme = useTheme();
@@ -201,8 +200,7 @@ export default function DefaultTable({
   const rowSelection = {
     getCheckboxProps,
     selectedRowKeys,
-    onChange: customOnSelectChange ? customOnSelectChange : onSelectChange,
-    // onChange: onSelectChange,
+    onChange: onSelectChange,
     selection: Table.SELECTION_ALL,
   };
 
