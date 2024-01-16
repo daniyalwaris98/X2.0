@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const DNSChart = () => {
+const DNSChart = ({ color, data }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -31,13 +31,13 @@ const DNSChart = () => {
       series: [
         {
           type: 'bar',
-          data: [0.50], // Sample data representing 75%
+          data: data || [0.50], // Use the provided data or default to [0.50]
           coordinateSystem: 'polar',
           name: 'Circular Line',
           roundCap: true,
           radius: ['10%', '50%'],
           itemStyle: {
-            color: 'green',
+            color: color || 'green', // Use the provided color or default to 'green'
             opacity: 0.8,
             barMaxWidth: 50,
             label: {
@@ -54,7 +54,7 @@ const DNSChart = () => {
     option && myChart.setOption(option);
 
     return () => myChart.dispose();
-  }, []);
+  }, [color, data]);
 
   return <div ref={chartRef} style={{ width: '50%', height: '400px' }} />;
 };
