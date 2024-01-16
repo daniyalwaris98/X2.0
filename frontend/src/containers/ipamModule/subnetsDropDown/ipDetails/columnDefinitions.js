@@ -2,15 +2,18 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import DefaultAnchor from "../../../../components/anchor";
 
-export function useIndexTableColumnDefinitions({ handleIpHistoryModalOpen }) {
+export function useIndexTableColumnDefinitions({ handleIpAddressClick }) {
   const theme = useTheme();
 
   const columnDefinitions = [
     {
       data_key: indexColumnNameConstants.IP_ADDRESS,
       render: (text, record) => (
-        <a onClick={() => handleIpHistoryModalOpen(text)}>{text}</a>
+        <DefaultAnchor onClick={() => handleIpAddressClick(record)}>
+          {text}
+        </DefaultAnchor>
       ),
     },
     indexColumnNameConstants.SUBNET_ADDRESS,

@@ -2,24 +2,18 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import DefaultAnchor from "../../../components/anchor";
 
-export function useIndexTableColumnDefinitions({ handleIPAddressClick }) {
+export function useIndexTableColumnDefinitions({ handleIpAddressClick }) {
   const theme = useTheme();
 
   const columnDefinitions = [
     {
       data_key: indexColumnNameConstants.IP_ADDRESS,
       render: (text, record) => (
-        <span
-          style={{
-            color: theme?.palette?.default_table?.secondary_text,
-            textDecoration: "underline",
-            cursor: "pointer",
-          }}
-          onClick={() => handleIPAddressClick(record)}
-        >
+        <DefaultAnchor onClick={() => handleIpAddressClick(record)}>
           {text}
-        </span>
+        </DefaultAnchor>
       ),
     },
     indexColumnNameConstants.STATUS,

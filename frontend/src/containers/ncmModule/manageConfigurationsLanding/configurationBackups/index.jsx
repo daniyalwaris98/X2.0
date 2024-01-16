@@ -184,6 +184,7 @@ const Index = () => {
           <BackupDetails ncmHistoryId={selectedRowKey} />
         </Grid>
       </Grid>
+      <br />
     </Spin>
   );
 };

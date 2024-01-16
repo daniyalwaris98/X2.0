@@ -16,6 +16,7 @@ import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
 } from "./constants";
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
@@ -27,7 +28,7 @@ const Index = () => {
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
-    handleIpHistoryModalOpen,
+    handleIpAddressClick,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
@@ -75,8 +76,8 @@ const Index = () => {
     setOpenIpHistoryModal(false);
   }
 
-  function handleIpHistoryModalOpen(ipAddress) {
-    setIpAddressForIpHistory(ipAddress);
+  function handleIpAddressClick(record) {
+    setIpAddressForIpHistory(record[indexColumnNameConstants.IP_ADDRESS]);
     setOpenIpHistoryModal(true);
   }
 

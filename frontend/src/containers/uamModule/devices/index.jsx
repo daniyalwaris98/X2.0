@@ -34,7 +34,7 @@ const Index = () => {
   const { handleCallbackAlert, handleSuccessAlert, handleInfoAlert } =
     useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
-    handleIPAddressClick,
+    handleIpAddressClick,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
@@ -98,7 +98,7 @@ const Index = () => {
   });
 
   // handlers
-  function handleIPAddressClick(record) {
+  function handleIpAddressClick(record) {
     setSelectedRecord(record);
     setOpenDetailsByIPAddressModal(true);
   }
