@@ -1,10 +1,11 @@
-import React, { useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import AddModal from "./addModal";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
   useBulkBackupNcmConfigurationsByDeviceIdsMutation,
+  useGetAllCompletedBackupsLazyQuery,
 } from "../../../store/features/ncmModule/manageConfigurations/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/ncmModule/manageConfigurations/selectors";
@@ -37,6 +38,9 @@ const Index = () => {
   const navigate = useNavigate();
   const dispatch = useDispatch();
 
+  // refs
+  const intervalIdRef = useRef(null);
+
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -58,6 +62,8 @@ const Index = () => {
     default_backup: {
       handleClick: handleBulkBackup,
       visible: selectedRowKeys.length > 0,
+      // loader: true,
+      loader: getAllCompletedBackupsData?.length > 0,
     },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME_BULK },
   });
@@ -103,6 +109,17 @@ const Index = () => {
     },
   ] = useBulkBackupNcmConfigurationsByDeviceIdsMutation();
 
+  const [
+    getAllCompletedBackups,
+    {
+      data: getAllCompletedBackupsData,
+      isSuccess: isGetAllCompletedBackupsSuccess,
+      isLoading: isGetAllCompletedBackupsLoading,
+      isError: isGetAllCompletedBackupsError,
+      error: getAllCompletedBackupsError,
+    },
+  ] = useGetAllCompletedBackupsLazyQuery();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -128,6 +145,26 @@ const Index = () => {
     error: bulkBackupError,
     type: TYPE_BULK,
   });
+
+  // effects
+  useEffect(() => {
+    getAllCompletedBackups();
+
+    intervalIdRef.current = setInterval(() => {
+      getAllCompletedBackups();
+    }, 60000); // 1 minute in milliseconds
+
+    return () => {
+      clearInterval(intervalIdRef.current);
+    };
+  }, []);
+
+  // Check if getAllCompletedBackupsData is an empty array and clear the interval
+  useEffect(() => {
+    if (getAllCompletedBackupsData?.length === 0) {
+      clearInterval(intervalIdRef.current);
+    }
+  }, [getAllCompletedBackupsData]);
 
   // handlers
   function handleIpAddressClick(record) {

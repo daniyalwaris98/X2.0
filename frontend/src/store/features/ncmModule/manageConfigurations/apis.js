@@ -46,6 +46,9 @@ export const {
   useGetAtomsToAddInNcmDevicesQuery,
   useAddAtomsInNcmDevicesMutation,
   useDeleteNcmDevicesMutation: useDeleteRecordsMutation,
-  useGetAllCompletedBackupsQuery,
+  // useGetAllCompletedBackupsQuery,
   useBulkBackupNcmConfigurationsByDeviceIdsMutation,
 } = extendedApi;
+
+export const useGetAllCompletedBackupsLazyQuery =
+  extendedApi.endpoints.getAllCompletedBackups.useLazyQuery;
