@@ -43,6 +43,7 @@ const Index = () => {
 
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const [isBackupButtonLoading, setIsBackupButtonLoading] = useState(false);
 
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
@@ -63,7 +64,7 @@ const Index = () => {
       handleClick: handleBulkBackup,
       visible: selectedRowKeys.length > 0,
       // loader: true,
-      loader: getAllCompletedBackupsData?.length > 0,
+      loader: isBackupButtonLoading,
     },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME_BULK },
   });
@@ -149,21 +150,32 @@ const Index = () => {
   // effects
   useEffect(() => {
     getAllCompletedBackups();
-
-    intervalIdRef.current = setInterval(() => {
-      getAllCompletedBackups();
-    }, 60000); // 1 minute in milliseconds
-
-    return () => {
-      clearInterval(intervalIdRef.current);
-    };
   }, []);
 
   // Check if getAllCompletedBackupsData is an empty array and clear the interval
   useEffect(() => {
-    if (getAllCompletedBackupsData?.length === 0) {
+    setIsBackupButtonLoading(
+      getAllCompletedBackupsData !== undefined
+        ? getAllCompletedBackupsData.length > 0
+          ? true
+          : false
+        : true
+    );
+
+    if (getAllCompletedBackupsData?.length === 0 && intervalIdRef.current) {
       clearInterval(intervalIdRef.current);
     }
+
+    if (getAllCompletedBackupsData?.length > 0 && !intervalIdRef.current) {
+      intervalIdRef.current = setInterval(() => {
+        getAllCompletedBackups();
+      }, 5000); // in milliseconds
+    }
+    return () => {
+      if (intervalIdRef.current) {
+        clearInterval(intervalIdRef.current);
+      }
+    };
   }, [getAllCompletedBackupsData]);
 
   // handlers
