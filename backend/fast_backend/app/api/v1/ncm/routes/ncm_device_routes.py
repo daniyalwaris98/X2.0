@@ -19,67 +19,8 @@ router = APIRouter(
 )
 
 
-@router.get("/ncm_backup_summery_dashboard", responses={
-    200: {"model": list[NcmAlarmSchema]},
-    500: {"model": str}
-})
-async def ncm_backup_summery_dashboard():
-    try:
-        results = NcmDeviceTable.query.all()
 
-        not_backup = 0
-        fail = 0
-        success = 0
 
-        for ncm in results:
-            if ncm.backup_status is None:
-                not_backup += 1
-            elif ncm.backup_status is False:
-                fail += 1
-            elif ncm.backup_status is True:
-                success += 1
-
-        objList = [
-            {"name": "Backup Successful", "value": success},
-            {"name": "Backup Failure", "value": fail},
-            {"name": "Not Backup", "value": not_backup},
-        ]
-
-        return JSONResponse(content=objList, status_code=200)
-    except Exception:
-        traceback.print_exc()
-        return JSONResponse(content="Server Error While Fetching Data", status_code=500)
-@router.get("/get_vendors_in_ncm", responses={
-    200:{"model":GetNcmVendorSchema},
-    500:{"model":str}
-},
-
-)
-async def ncm_vendor_count():
-    try:
-        queryString = (f"select atom_table.vendor, count(*) from ncm_device_table inner join "
-                       f"atom_table on ncm_device_table.atom_id = atom_table.atom_id  "
-                       f"group by vendor;")
-        print("query string is::::::::::::::::::::::::",queryString,file=sys.stderr)
-        result = configs.db.execute(queryString)
-        print("reuslt is:::::::::::",result,file=sys.stderr)
-        obj_list = []
-
-        for row in result:
-            print("row is::::::::::::::::::::::",row,file=sys.stderr)
-            print("row [0] is:::::::::::::::",row[0],file=sys.stderr)
-            print("row[1] is:::::::::::::::::::",row[1],file=sys.stderr)
-            obj_dict = {"name": row[0], "value": row[1]}
-            print("obj dict is::::::::::::::::::::",obj_dict,file=sys.stderr)
-            if row[0] is None:
-                obj_dict["name"] = "Other"
-
-            obj_list.append(obj_dict)
-        print("objlist is:::::::::::::::::",obj_list,file=sys.stderr)
-        return JSONResponse(content=obj_list, status_code=200)
-    except Exception:
-        traceback.print_exc()
-        return JSONResponse("Server Error While Fetching Data", status_code=500)
 
 
 @router.post("/add_ncm_device", responses={
@@ -477,7 +418,7 @@ async def send_command(ncm_obj: SendCommandRequestSchema):
 
         ncmPuller.send_remote_command(ncm_obj["cmd"])
         data['data'] = ncmPuller.response
-        data['message'] = f"{ncm_obj['cmd'] : Executed Successfully}"
+        data['message'] = f"{ncm_obj['cmd']} : Executed Successfully"
         return JSONResponse(content=data, status_code=ncmPuller.status)
 
     except Exception as e:
@@ -1519,8 +1460,3 @@ def restore_configuration(ncm_history_id:list[int]):
 #
 
 
-import os
-print("Template directory path:", os.path.abspath("templates"),file=sys.stderr)
-
-template_path = os.path.join(os.path.dirname(__file__), 'templates', 'html_diff_output.html')
-print("Full path to the template:", template_path,file=sys.stderr)

@@ -72,10 +72,10 @@ def get_all_devices_in_servers():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return JSONResponse(content=final_list,status_code=200)
+        return final_list
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting the serever devices")
+        return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_servers',
@@ -129,7 +129,7 @@ async def get_all_interfaces_in_servers():
         final_interfaces = list(interface_dict.values())
 
         print(final_interfaces, file=sys.stderr)
-        return JSONResponse(content = final_interfaces,status_code=200)
+        return final_interfaces
 
     except Exception as e:
         print("Error ",str(e),file=sys.stderr)
@@ -192,10 +192,10 @@ def get_all_devices_in_windows():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return JSONResponse(content=final_list,status_code=200)
+        return final_list
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting the windows devices")
+        return JSONResponse(content="Error Occured While Getting windows Devices",status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_windows',
@@ -250,7 +250,7 @@ async def get_all_interfaces_in_windows():
         final_interfaces = list(interface_dict.values())
 
         print(final_interfaces, file=sys.stderr)
-        return JSONResponse(content = final_interfaces,status_code=200)
+        return final_interfaces
 
     except Exception as e:
         print("Error ",str(e),file=sys.stderr)
@@ -313,10 +313,10 @@ def get_all_devices_in_linux():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return JSONResponse(content=final_list,status_code=200)
+        return final_list
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting th linux devices")
+        return JSONResponse(content="Error Occured While Getting server Devices",status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_linux',
@@ -371,7 +371,7 @@ async def get_all_interfaces_in_linux():
         final_interfaces = list(interface_dict.values())
 
         print(final_interfaces, file=sys.stderr)
-        return JSONResponse(content = final_interfaces,status_code=200)
+        return final_interfaces
 
     except Exception as e:
         print("Error ",str(e),file=sys.stderr)

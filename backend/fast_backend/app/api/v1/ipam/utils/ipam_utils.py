@@ -921,6 +921,7 @@ else:
 
 def scan_dns(ip_address):
     try:
+        data = {}
         user_name=passsword=server_name = ""
         dns_server = configs.db.query(DnsServerTable).filter_by(ip_address = ip_address).all()
         dns_server_id =''
@@ -945,6 +946,19 @@ def scan_dns(ip_address):
                     dns_server_obj.number_of_zones = len(dns_zones)
                     dns_server_obj.zone_type='Windows'
                     UpdateDBData(dns_server_obj)
+                    updated_dict = {
+                        "dns_server_id":dns_server_obj.dns_server_id,
+                        "ip_address":dns_server_obj.ip_address,
+                        "user_name":dns_server_obj.user_name,
+                        "password":dns_server_obj.password,
+                        "server_name":dns_server_obj.server_name,
+                        "type":dns_server_obj.type,
+                        "status":dns_server_obj.status,
+                        "number_of_zones":dns_server_obj.number_of_zones
+                    }
+                    message  =f"{dns_server_obj.server_name} : Updated Sucessfully"
+                    data['data'] = updated_dict
+                    data['messgae'] = message
                 for zone in dns_zones:
                     try:
                         lookup = zone.get('IsReverseLookupZone')
@@ -976,14 +990,28 @@ def scan_dns(ip_address):
                                     dns_record_model.server_name = server_name
                                     dns_record_model.dns_zone_id = dns_zone_model.dns_zone_id
                                     InsertDBData(dns_record_model)
+                                    updated_dict = {
+                                        "dns_server_id": dns_server_obj.dns_server_id,
+                                        "ip_address": dns_server_obj.ip_address,
+                                        "user_name": dns_server_obj.user_name,
+                                        "password": dns_server_obj.password,
+                                        "server_name": dns_server_obj.server_name,
+                                        "type": dns_server_obj.type,
+                                        "status": dns_server_obj.status,
+                                        "number_of_zones": dns_server_obj.number_of_zones
+                                    }
+                                    message = f"{dns_server_obj.server_name} : Updated Sucessfully"
+                                    data['data'] = updated_dict
+                                    data['messgae'] = message
                                 except Exception as e:
-                                    traceback.print_exc(())
+                                    traceback.print_exc()
                         except Exception as e:
                             traceback.print_exc()
                     except Exception as e:
                         traceback.print_exc()
             except Exception as e:
                 traceback.print_exc()
+        return data
     except Exception as e:
         traceback.print_exc()
 

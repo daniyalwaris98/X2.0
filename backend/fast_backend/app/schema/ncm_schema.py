@@ -94,3 +94,16 @@ class GetDeviceConfigurationByHistory(BaseSchema):
 
 class NcmDeletedConfigurationSchema(BaseSchema):
     ncm_device_id:int
+
+
+class NCMBackupSummaryConfiguration(BaseSchema):
+    backup_successful:int
+    backup_failure:int
+    not_backup:int
+
+
+class GetNcmDecivesCountByFucntionSchema(BaseSchema):
+    device_type:str
+    function:str
+    vendor:str
+    device_count:int
