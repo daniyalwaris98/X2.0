@@ -68,7 +68,7 @@ const defaultSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.getAllCompletedBackups.matchFulfilled,
         (state, action) => {
-          action.payload.data.forEach((responseItem) => {
+          const data = action.payload.data?.forEach((responseItem) => {
             const indexToUpdate = state.all_data.findIndex((tableItem) => {
               return (
                 tableItem[TABLE_DATA_UNIQUE_ID] ===
@@ -87,7 +87,7 @@ const defaultSlice = createSlice({
         extendedApi.endpoints.bulkBackupNcmConfigurationsByDeviceIds
           .matchFulfilled,
         (state, action) => {
-          action.payload.data.forEach((responseItem) => {
+          const data = action.payload.data?.forEach((responseItem) => {
             const indexToUpdate = state.all_data.findIndex((tableItem) => {
               return (
                 tableItem[TABLE_DATA_UNIQUE_ID] ===

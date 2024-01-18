@@ -24,7 +24,7 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
         if (configs.db.query(Monitoring_Credentails_Table).filter(
                 Monitoring_Credentails_Table.profile_name == credential_obj["profile_name"])
                 .first() is not None):
-            return "Profile already Assigned",400
+            return JSONResponse(content="Profile Name is Already Assigned",status_code=400)
         else:
             print("Insertion in progress::::::::",file=sys.stderr)
             credential = Monitoring_Credentails_Table()
@@ -33,8 +33,7 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
             credential.profile_name = credential_obj["profile_name"]
             credential.snmp_port = credential_obj["port"]
             credential.snmp_read_community = credential_obj["community"]
-            if "description" in credential_obj:
-                credential_obj.description = credential_obj["description"]
+            credential_obj.description = credential_obj["description"]
             print("Insertion is being executed:::::::",file=sys.stderr)
             InsertDBData(credential)
             print("Data inserted into the DB:::::::::::",file=sys.stderr)
@@ -357,3 +356,77 @@ def get_all_snmp_credentials():
         configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting the Monitoring credentials",status_code=500)
+
+
+@router.post('/edit_snmp_v1_v2_credentials',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+description="API to edit the  snmp v1_v2 credentials",
+summary="API to edit the  snmp v1_v2 credentials"
+)
+def edit_snmp_v1_v2_credentials(v2_data:EditSnmpV2Credentials):
+    try:
+        data_dict = {}
+        v2_data = dict(v2_data)
+        v2_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = v2_data['credentials_id']).first()
+        if v2_exsists:
+            v2_exsists.profile_name = v2_data['profile_name']
+            v2_exsists.description = v2_data['description']
+            v2_exsists.port = v2_exsists.port
+            v2_exsists.snmp_read_community = v2_data['community']
+            data ={
+                "credentials_id":v2_exsists.monitoring_credentials_id,
+                "profile_name":v2_exsists.profile_name,
+                "description":v2_exsists.description,
+                "port":v2_exsists.port,
+                "community":v2_exsists.snmp_read_community,
+                "monitoring_credentials_id":v2_exsists.monitoring_credentials_id
+            }
+            message = f"{v2_exsists.profile_name} : Updated Successfully"
+            data_dict['data'] = data
+        else:
+            return JSONResponse(content=f"{v2_data['credentials_id']} : Not Found",status_code=400)
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Updting the SNMP v1_v2 credentials",status_code=500)
+
+
+@router.post('/edit_snmp_v3_credentials',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+description="API to edit the  snmp v1_v2 credentials",
+summary="API to edit the  snmp v1_v2 credentials"
+)
+def edit_snmp_v3_credentials(v3_data:EditSnmpV3CredentialsResponseSchema):
+    try:
+        data_dict = {}
+        v3_data = dict(v3_data)
+        v3_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = v3_data['credentials_id']).first()
+        if v3_exsists:
+            v3_exsists.username = v3_data['username']
+            v3_exsists.authentication_password = v3_data['authentication_password']
+            v3_exsists.encryption_password = v3_data['encryption_password']
+            v3_exsists.authentication_protocol = v3_data['authentication_protocol']
+            v3_exsists.encryption_protocol = v3_data['encryption_protocol']
+            data ={
+                "credentials_id":v3_exsists.monitoring_credentials_id,
+                "username":v3_exsists.username,
+                "authentication_password":v3_exsists.authentication_password,
+                "encryption_password":v3_exsists.encryption_password,
+                "authentication_protocol":v3_exsists.authentication_protocol,
+                "encryption_protocol":v3_exsists.encryption_protocol
+            }
+            message = f"{v3_exsists.profile_name} : Updated Successfully"
+            data_dict['data'] = data
+            data_dict['messgae'] = message
+        else:
+            return JSONResponse(content=f"{v3_exsists['credentials_id']} : Not Found",status_code=400)
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Updting the SNMP v1_v2 credentials",status_code=500)

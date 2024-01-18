@@ -5,7 +5,7 @@ import traceback
 
 import nmap
 from pysnmp.entity.rfc3413.oneliner import cmdgen
-from pysnmp.hlapi import *
+from pysnmp.entity.rfc3413.cmdgen import CommandGenerator
 
 
 def discover_ip_list(ip_list, results):
@@ -262,7 +262,8 @@ def test_snmp_v2_credentials(ip_address, credentials):
 
         # Create an SNMP session
         cmd_generator = cmdgen.CommandGenerator()
-
+        # print("cmd :::::::::::::::::: gen :::::::::::::::::::",cmd_generator,file=sys.stderr)
+        print("command generator is:::::::::",cmd_generator,file=sys.stderr)
         # Retrieve the SNMP version from the Microsoft server
         error_indication, error_status, error_index, var_binds = cmd_generator.getCmd(
             cmdgen.CommunityData(credential),

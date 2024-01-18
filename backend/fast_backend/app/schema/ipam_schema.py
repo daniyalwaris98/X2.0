@@ -1,5 +1,8 @@
 from datetime import datetime
 from app.schema.base_schema import *
+from typing import List
+
+
 
 class Response200(BaseSchema):
     data: dict
@@ -23,17 +26,17 @@ class AddAtomInIpamSchema(BaseSchema):
     atom_id:int
 
 class AddSubnetManually(BaseSchema):
-    subnet:str
+    subnet_address:str
     subnet_mask:str
     subnet_name:str | None = None
-    location:str | None = None
+    subnet_location:str | None = None
 
 
 class EditSubnetSchema(BaseSchema):
     subnet_id:int
     subnet_mask:str
     subnet_name:str | None = None
-    location:str | None = None
+    subnet_location:str | None = None
 
 class AddSubnetInSubnetSchema(BaseSchema):
     subnet:str
@@ -71,7 +74,7 @@ class DiscoveredSubnetSchema(BaseSchema):
 class AddDnsSchema(BaseSchema):
     ip_address:str
     server_name:str
-    username:str
+    user_name:str
     password:str
 
 class GetallDnsServers(BaseSchema):
@@ -167,10 +170,10 @@ class IPDetailScehma(BaseSchema):
     modification_date:datetime
     ip_address:str
 
-class ScanSubnetSchema(BaseSchema):
-    subnet:int
-    port_scan:bool
-    dns_scan:bool
+class ScanSubnetSchema(BaseModel):
+    subnet: List[int]
+    port_scan: bool
+    dns_scan: bool
 
 class ScanAllSubnetSchema(BaseSchema):
     port_scan:bool
@@ -182,7 +185,7 @@ class TestDnsSchema(BaseSchema):
     ip_address:str
 
 class ScanDNSSchema(BaseSchema):
-    ip_addresss:str
+    ip_address:str
 
 class DeleteSubnetScehma(BaseSchema):
     subnet_id:int
@@ -193,3 +196,11 @@ class IPhistorySchema(BaseSchema):
     mac_address:str
     asset_tag:str
     date:datetime
+
+
+class EditDnsSchema(BaseSchema):
+    dns_server_id:int
+    ip_address:str
+    server_name:str
+    user_name:str
+    password:str
