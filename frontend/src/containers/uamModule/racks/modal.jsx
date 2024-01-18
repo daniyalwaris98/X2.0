@@ -32,7 +32,7 @@ import {
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
-import { ELEMENT_NAME } from "./constants";
+import { ELEMENT_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
@@ -153,7 +153,7 @@ const Index = ({
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.rack_id = recordToEdit.rack_id;
+      data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
       addRecord(data);

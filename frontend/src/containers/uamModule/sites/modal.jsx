@@ -20,10 +20,9 @@ import { useSelector } from "react-redux";
 import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../utils/helpers";
-import DefaultSelect from "../../../components/selects";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
-import { indexColumnNameConstants } from "./constants";
+import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { ELEMENT_NAME } from "./constants";
 
 const schema = yup.object().shape({
@@ -123,9 +122,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // on form submit
   const onSubmit = (data) => {
-    // console.log("site data", data);
     if (recordToEdit) {
-      data.site_id = recordToEdit.site_id;
+      data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
       addRecord(data);

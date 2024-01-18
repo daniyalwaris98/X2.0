@@ -38,7 +38,7 @@ import {
   getTitle,
 } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { PAGE_NAME } from "./constants";
+import { ATOM_ID, ATOM_TRANSITION_ID, PAGE_NAME } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
@@ -156,16 +156,16 @@ const Index = ({
   const onSubmit = (data) => {
     console.log(data);
     if (recordToEdit) {
-      if (recordToEdit.atom_id) {
-        data.atom_id = recordToEdit.atom_id;
-      } else if (recordToEdit.atom_transition_id) {
-        data.atom_transition_id = recordToEdit.atom_transition_id;
+      if (recordToEdit[ATOM_ID]) {
+        data[ATOM_ID] = recordToEdit[ATOM_ID];
+      } else if (recordToEdit[ATOM_TRANSITION_ID]) {
+        data[ATOM_TRANSITION_ID] = recordToEdit[ATOM_TRANSITION_ID];
       }
     }
 
     if (
       recordToEdit &&
-      (recordToEdit.atom_id || recordToEdit.atom_transition_id)
+      (recordToEdit[ATOM_ID] || recordToEdit[ATOM_TRANSITION_ID])
     ) {
       updateRecord(data);
     } else {

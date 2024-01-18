@@ -1,6 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { monetxApi } from "./features/apiSlice";
 
+// admin module
+import adminAutoDiscoveryFailedDevicesReducer from "./features/adminModule/failedDevices/autoDiscovery";
+import adminRolesReducer from "./features/adminModule/roles";
+
 // atom module
 import atomAtomsReducer from "./features/atomModule/atoms";
 import atomPasswordGroupsReducer from "./features/atomModule/passwordGroups";
@@ -100,6 +104,11 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  // admin module
+  admin_auto_discovery_failed_devices: adminAutoDiscoveryFailedDevicesReducer,
+  admin_roles_reducer: adminRolesReducer,
+
+  // atom module
   atom_atoms: atomAtomsReducer,
   atom_password_groups: atomPasswordGroupsReducer,
 

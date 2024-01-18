@@ -33,6 +33,7 @@ import {
   ELEMENT_NAME,
   MONITORING_CREDENTIALS_ID,
   CREDENTIALS,
+  TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 
@@ -118,7 +119,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.password_group_id = recordToEdit.password_group_id;
+      data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
       addRecord(data);
