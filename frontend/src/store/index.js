@@ -82,6 +82,7 @@ import ipamFirewalls from "./features/ipamModule/vipDropDown/firewalls";
 import ipamLoadBalancers from "./features/ipamModule/vipDropDown/loadBalancers";
 
 // ncm module
+import ncmDashboardReducer from "./features/ncmModule/dashboard";
 import ncmManageConfigurationsReducer from "./features/ncmModule/manageConfigurations";
 import ncmConfigurationBackupsReducer from "./features/ncmModule/manageConfigurations/configurationBackups";
 import ncmRemoteCommandSenderReducer from "./features/ncmModule/manageConfigurations/remoteCommandSender";
@@ -180,6 +181,7 @@ const rootReducer = combineReducers({
   ipam_load_balancers: ipamLoadBalancers,
 
   // ncm module
+  ncm_dashboard:ncmDashboardReducer,
   ncm_manage_configurations: ncmManageConfigurationsReducer,
   ncm_configuration_backups: ncmConfigurationBackupsReducer,
   ncm_remote_command_sender: ncmRemoteCommandSenderReducer,
