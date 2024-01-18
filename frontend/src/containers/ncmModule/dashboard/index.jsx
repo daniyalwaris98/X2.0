@@ -1,87 +1,110 @@
-import React from 'react';
-import { Row, Col } from 'antd';
+import React, { useEffect } from "react";
+import { Row, Col } from "antd";
 import ConfigurationBackupSummary from "./components/ConfigurationBackupSummary";
 // import ConfigurationByTimeLineChart from './ConfigurationByTimeLineChart';
-import Compliance from './components/Compliance';
-import ChangeByTimeChart from './components/ChangeByTimeChart';
-import RecentRcmAlarmsChart from './components/RecentRcmAlarmsChart';
-import NcmDeviceSummaryTable from './components/NcmDeviceSummaryTable';
-import ConfigurationChangeByVendor from '../../../components/charts/ConfigurationChangeByVendor';
+import Compliance from "./components/Compliance";
+import ChangeByTimeChart from "./components/ChangeByTimeChart";
+import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
+import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
+import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
+import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
+import { useSelector } from "react-redux";
+
+import {
+  useGetConfigurationChangeByDeviceQuery,
+  useDeleteRecordsMutation,
+  useBulkBackupNcmConfigurationsByDeviceIdsMutation,
+} from "../../../store/features/ncmModule/dashboard/apis";
+import "./index.css";
+import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
+
 
 function Index() {
+  const {
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isLoading: isFetchRecordsLoading,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+  } = useGetConfigurationChangeByDeviceQuery();
+
+  // console.log("data", fetchRecordsData)
+
+  const dataSource = useSelector(selectTableData);
+
+  console.log("dataaaaaaaaa", dataSource);
+  const companyData = {
+    Cisco: 50,
+    Fortinet: 10,
+    PaloAlto: 5,
+    Huawai: 3,
+    Linux: 50,
+    Citrix: 10,
+    Hp: 20,
+    Juniper: 10,
+  };
   return (
     <>
-      <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "5px" }}>
-        <Col span={8}>
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
-            <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Configuration Backup Summary</h5>
-                        <ConfigurationBackupSummary />
+   <Row gutter={[32, 32]} justify="space-between">
+  <Col span={8}>
+    <div className="container">
+      <h6 className="heading">
+        Configuration Backup Summary
+      </h6>
+      <ConfigurationBackupSummary />
+    </div>
+  </Col>
 
+  <Col span={16}>
+    <div className="container">
+      <h6 className="heading">
+        Configuration Change by Device
+      </h6>
+      {/* <ChangeByTimeChart /> */}
+      <ConfigurationByTimeLineChart  companyData={dataSource}/>
+    </div>
+  </Col>
+</Row>
 
-          </div>
-        </Col>
+<Row gutter={[24, 24]} justify="space-between" className="page_row">
+  <Col span={14}>
+    <div className="container">
+      <h6 className="heading">
+        Recent RCM Alarms
+      </h6>
+      <RecentRcmAlarmsChart />
+    </div>
+  </Col>
 
-        <Col span={16}>
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
-            <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Configuration Change by Time </h5>
-          <ChangeByTimeChart/>
-        
+  <Col span={10}>
+    <div className="container">
+      <h6 className="heading">
+        Compliance
+      </h6>
+      <Compliance />
+    </div>
+  </Col>
+</Row>
 
-          </div>
-        </Col>
-      </Row>
-      <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "140px" }}>
-        <Col span={14}>
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
-            <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Recent RCM Alarms </h5>
-                        {/* <ConfigurationBackupSummary /> */}
+<Row gutter={[24, 24]} justify="space-between" className="page_row">
+  <Col span={12}>
+    <div className="container">
+      <h6 className="heading">
+        Configuration Change by Vendor
+      </h6>
+      <ConfigurationChangeByVendor />
+    </div>
+  </Col>
 
-                        <RecentRcmAlarmsChart/>
-
-
-          </div>
-        </Col>
-
-        <Col span={10}>
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
-            <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Compliance </h5>
-          {/* <ChangeByTimeChart/> */}
-            <Compliance/>
-
-          </div>
-        </Col>
-      </Row>
-
-
-
-
-
-
-
-
-      <Row gutter={[16, 16]} justify="space-between" style={{ height: '332px', paddingTop: "280px" }}>
-        <Col span={12}>
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
-            <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>Configuration Change by Vendor</h5>
-                       
-  <ConfigurationChangeByVendor/>
-
-          </div>
-        </Col>
-
-        <Col span={12}>
-          <div style={{ backgroundColor: '#FFFFFF', borderRadius: '8px', height: '100%' }}>
-            <h5 style={{ padding: '10px', margin: '0px', fontSize: '16px' }}>NCM Device Summary </h5>
-         
-<NcmDeviceSummaryTable/>
-          </div>
-        </Col>
-      </Row>
-
-
-
-  
-
+  <Col span={12}>
+    <div className="container">
+      <h6 className="heading">
+        NCM Device Summary
+      </h6>
+      <NcmDeviceSummaryTable />
+    </div>
+  </Col>
+</Row>
 
     </>
   );

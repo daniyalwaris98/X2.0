@@ -459,9 +459,11 @@ def ping(ip):
     try:
         response_time = ping3.ping(str(ip))
         if response_time is not None:
-            return "Up", str(int(response_time*1000)), "0"
+            # , str(int(response_time * 1000)), "0"
+            return "Up"
         else:
-            return "Down", "NA", "100"
+            # , "NA", "100"
+            return "Down"
     except Exception as e:
         traceback.print_exc()
         return "Down", "NA", "100"

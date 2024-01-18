@@ -528,7 +528,7 @@ async def get_manage_devices():
         for row in results:
             obj_list.append(row.as_dict())
 
-        return JSONResponse(content=obj_list, status_code=200)
+        return obj_list
 
     except Exception:
         traceback.print_exc()
@@ -543,7 +543,7 @@ async def get_manage_devices():
             summary="Use this API in Auto Discovery Manage devices page on fetch button.This API is of GET method",
             description="Use this API in Auto Discovery Manage devices page on fetch button.This API is of GET method"
             )
-def check_credential_status():
+async def check_credential_status():
     try:
         ssh_threading = threading.Thread(target=CheckSSHStatus)
         print("snmp threading is::::::::::::::::::::::",ssh_threading,file=sys.stderr)
@@ -620,9 +620,10 @@ def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
         data = {}
         credentials = SNMP_CREDENTIALS_TABLE()
         v3_credentials = dict(credentialObj)
+        print("v3 credentials are::::::::::::::::::::::",v3_credentials,file=sys.stderr)
         username = v3_credentials['username']
         if configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(username=username).first():
-            return JSONResponse(content={"message": "Duplicate Entry"}, status_code=400)
+            return JSONResponse(content="Duplicate entry", status_code=400)
 
         description = v3_credentials['description']
         username = v3_credentials['username']
@@ -722,7 +723,7 @@ def get_snmp_v1_v2_credentials():
         snmpObj = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(category = 'v1/v2').all()
         for cred in snmpObj:
             credentials = {
-                "credential_id":cred.credentials_id,
+                "credentials_id":cred.credentials_id,
                 "category":cred.category,
                 "profile_name":cred.profile_name,
                 "description":cred.description,
@@ -744,13 +745,13 @@ def get_snmp_v1_v2_credentials():
             summary="Use This API in Auto Discovery Manage credentials page to list down snmp v3 in tables",
             description="Use This API in Auto Discovery Manage credentials page to list down snmp v3 in tables"
             )
-def get_snmp_v1_v2_credentials():
+def get_snmp_v3_credentials():
     try:
         snmp_lst = []
         snmpObj = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(category = 'v3').all()
         for cred in snmpObj:
             credentials = {
-                "credential_id":cred.credentials_id,
+                "credentials_id":cred.credentials_id,
                 "category":cred.category,
                 "profile_name":cred.profile_name,
                 "description":cred.description,
@@ -1131,3 +1132,76 @@ def ssh_login_credentials():
 #         traceback.print_exc()
 #         return "Server Error While Fetching Discovery Data", 500
 #
+
+@router.post('/edit_snmp_v1_v2_credentials',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+description="API to edit the  snmp v1_v2 credentials",
+summary="API to edit the  snmp v1_v2 credentials"
+)
+def edit_snmp_v1_v2_credentials(v2_data:EditSnmpV2RequestSchema):
+    try:
+        data_dict = {}
+        v2_data = dict(v2_data)
+        v2_exsists = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(credentials_id = v2_data['credentials_id']).first()
+        if v2_exsists:
+            v2_exsists.profile_name = v2_data['profile_name']
+            v2_exsists.description = v2_data['description']
+            v2_exsists.port = v2_exsists['port']
+            v2_exsists.snmp_read_community = v2_data['community']
+            data ={
+                "credentials_id":v2_exsists.monitoring_credentials_id,
+                "profile_name":v2_exsists.profile_name,
+                "description":v2_exsists.description,
+                "port":v2_exsists.port,
+                "community":v2_exsists.snmp_read_community,
+                "monitoring_credentials_id":v2_exsists.monitoring_credentials_id
+            }
+            message = f"{v2_exsists.profile_name} : Updated Successfully"
+            data_dict['data'] = data
+        else:
+            return JSONResponse(content=f"{v2_data['credentials_id']} : Not Found",status_code=400)
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Updting the SNMP v1_v2 credentials",status_code=500)
+
+
+@router.post('/edit_snmp_v3_credentials',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+description="API to edit the  snmp v1_v2 credentials",
+summary="API to edit the  snmp v1_v2 credentials"
+)
+def edit_snmp_v3_credentials(v3_data:EditSnmpV3RequestSchema):
+    try:
+        data_dict = {}
+        v3_data = dict(v3_data)
+        v3_exsists = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(monitoring_credentials_id = v3_data['credentials_id']).first()
+        if v3_exsists:
+            v3_exsists.username = v3_data['username']
+            v3_exsists.authentication_password = v3_data['authentication_password']
+            v3_exsists.encryption_password = v3_data['encryption_password']
+            v3_exsists.authentication_protocol = v3_data['authentication_protocol']
+            v3_exsists.encryption_protocol = v3_data['encryption_protocol']
+            data ={
+                "credentials_id":v3_exsists.monitoring_credentials_id,
+                "username":v3_exsists.username,
+                "authentication_password":v3_exsists.authentication_password,
+                "encryption_password":v3_exsists.encryption_password,
+                "authentication_protocol":v3_exsists.authentication_protocol,
+                "encryption_protocol":v3_exsists.encryption_protocol
+            }
+            message = f"{v3_exsists.profile_name} : Updated Successfully"
+            data_dict['data'] = data
+            data_dict['messgae'] = message
+        else:
+            return JSONResponse(content=f"{v3_exsists['credentials_id']} : Not Found",status_code=400)
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Updting the SNMP v1_v2 credentials",status_code=500)

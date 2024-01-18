@@ -143,47 +143,50 @@ async def get_all_monitoring_devices():
         for MonitoringObj, atom in results:
             snmp_cred = ""
             category = ""
-            monitoring_credentials_id =0
+            credentials_str = ""
 
             if MonitoringObj.monitoring_credentials_id is not None:
-                credentials = Monitoring_Credentails_Table.query.filter_by(
+                credentials = configs.db.query(Monitoring_Credentails_Table).filter_by(
                     monitoring_credentials_id=MonitoringObj.monitoring_credentials_id
                 ).first()
-                #credentials
-                if credentials is None:
-                    MonitoringObj.monitoring_credentials_id = None
-                    # UpdateDBData(MonitoringObj)
-                else:
-                    snmp_cred = credentials.profile_name if snmp_cred else None
-                    category = credentials.category if category else None
-                    monitoring_credentials_id = credentials.monitoring_credentials_id if monitoring_credentials_id else None
-            atom_exsist = configs.db.query(AtomTable).filter_by(atom_id=MonitoringObj.atom_id).first()
-            print("atom exsist is:::::::::::::::;",atom_exsist,file=sys.stderr)
-            monitoring_data_dict = {"monitoring_id": MonitoringObj.monitoring_device_id,
-                                    "ip_address": atom_exsist.ip_address, "device_type": atom.device_type,
-                                    "device_name": atom.device_name, "vendor": atom.vendor,
-                                    "function": atom.function, "source": MonitoringObj.source,
-                                    "profile_name": snmp_cred, "active": MonitoringObj.active,#Active is a monitoring status
-                                    "status": MonitoringObj.ping_status,
-                                    "credentials":category+"-"+snmp_cred,
-                                    "snmp_status": MonitoringObj.snmp_status,
-                                    "ping_status":MonitoringObj.ping_status,
-                                    "category":category,
-                                    "monitoring_credentials_id":monitoring_credentials_id,
-                                    "creation_date": str(MonitoringObj.creation_date),
-                                    "modification_date": str(
-                                        MonitoringObj.modification_date
-                                    )}
+
+                if credentials:
+                    snmp_cred = credentials.profile_name if credentials.profile_name else ""
+                    category = credentials.category if credentials.category else ""
+
+                    if category and snmp_cred:
+                        credentials_str = category + "-" + snmp_cred
+                    elif category:
+                        credentials_str = category
+                    elif snmp_cred:
+                        credentials_str = snmp_cred
+
+            monitoring_data_dict = {
+                "monitoring_id": MonitoringObj.monitoring_device_id,
+                "ip_address": atom.ip_address,
+                "device_type": atom.device_type,
+                "device_name": atom.device_name,
+                "vendor": atom.vendor,
+                "function": atom.function,
+                "source": MonitoringObj.source,
+                "profile_name": snmp_cred,
+                "active": MonitoringObj.active,
+                "status": MonitoringObj.ping_status,
+                "credentials": credentials_str,
+                "snmp_status": MonitoringObj.snmp_status,
+                "ping_status": MonitoringObj.ping_status,
+                "category": category,
+                "monitoring_credentials_id": MonitoringObj.monitoring_credentials_id,
+                "creation_date": str(MonitoringObj.creation_date),
+                "modification_date": str(MonitoringObj.modification_date),
+            }
             monitoring_obj_list.append(monitoring_data_dict)
-        print("monitoring obj list is:::",monitoring_obj_list,file=sys.stderr)
 
         return JSONResponse(content=monitoring_obj_list, status_code=200)
 
-    except Exception:
-        configs.db.rollback()
-        traceback.print_exc()
-        return JSONResponse(content="Server Error While Fetching Monitoring Devices",
-                            status_code=500)
+    except Exception as e:
+        print(traceback.format_exc())
+        return JSONResponse(content={"error": "Server Error While Fetching Monitoring Devices"}, status_code=500)
 
 
 @router.get("/get_atom_in_monitoring", responses={
@@ -221,6 +224,9 @@ async def get_atom_in_monitoring():
                             status_code=500)
 
 
+
+
+
 @router.post("/add_atom_in_monitoring", responses={
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
@@ -230,53 +236,65 @@ description="Use this API in monitoring module in device page to add device from
 )
 async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
     try:
+        print("type for the add atom in monitoring is:::::::", type(ip_list), file=sys.stderr)
+
         data = []
         success_list = []
         error_list = []
+
         for ip in ip_list:
-            atom = configs.db.query(AtomTable).filter_by(atom_id=ip['atom_id']).first()
-            print("atom is::::::::::::::::::::::::::::::::::::;",atom,file=sys.stderr)
+            atom_id = ip.atom_id
+            credentials_id = ip.monitoring_credentials_id
+
+            print(f"Processing atom_id: {atom_id}, credentials_id: {credentials_id}", file=sys.stderr)
+
+            atom = configs.db.query(AtomTable).filter_by(atom_id=atom_id).first()
+
             if atom is None:
-                error_list.append(f"{ip} : Device Not Found In Atom")
+                error_msg = f"{atom_id} : Device Not Found In Atom"
+                error_list.append(error_msg)
+                print(error_msg, file=sys.stderr)
                 continue
 
-            monitoringDevice = configs.db.query(Monitoring_Devices_Table).filter_by(
-                atom_id=atom.atom_id
-            ).first()
-            ping_response = ping(ip['ip_address'])
-            snmp_credentials_id = ip['monitoring_credentials_id']
-            print("snmp credentials id is::::::::::::::::::::::::",snmp_credentials_id,file=sys.stderr)
-            print("ping response is::::::::::::::::::",ping_response,file=sys.stderr)
-            print("monitoring device is:::::::::::::::::::::::::::",file=sys.stderr)
+            monitoringDevice = configs.db.query(Monitoring_Devices_Table).filter_by(atom_id=atom.atom_id).first()
+            ping_response = ping(atom.ip_address)
+            ping_status = ' '.join(map(str, ping_response))
+            print("ping response is:::::::::::::::",ping_status,file=sys.stderr)
             if monitoringDevice is None:
                 monitoringDevice = Monitoring_Devices_Table()
                 monitoringDevice.atom_id = atom.atom_id
-                monitoringDevice.ping_status = ping_response
-                monitoringDevice.monitoring_credentials_id = snmp_credentials_id
+                monitoringDevice.ping_status = ping_status
+                monitoringDevice.monitoring_credentials_id = credentials_id
                 monitoringDevice.snmp_status = "Active"
                 monitoringDevice.active = "Active"
 
                 if InsertDBData(monitoringDevice) == 200:
+                    print("Data Inserted to the DB", file=sys.stderr)
                     monitoring_device_dict = {
-                        "monitoring_device_id":monitoringDevice.monitoring_device_id,
-                        "source":monitoringDevice.source,
-                        "active":monitoringDevice.active,
-                        "ping_status":monitoringDevice.ping_status,
-                        "active_id":monitoringDevice.active_id,
-                        "device_heatmap":monitoringDevice.device_heatmap,
-                        "monitoring_credentials_id":monitoringDevice.monitoring_credentials_id
+                        "monitoring_device_id": monitoringDevice.monitoring_device_id,
+                        "source": monitoringDevice.source,
+                        "active": monitoringDevice.active,
+                        "ping_status": monitoringDevice.ping_status,
+                        "active_id": monitoringDevice.active_id,
+                        "device_heatmap": monitoringDevice.device_heatmap,
+                        "monitoring_credentials_id": monitoringDevice.monitoring_credentials_id
                     }
                     data.append(monitoring_device_dict)
-                    success_list.append(f"{ip} : Device Added Successfully")
-                    print("devices added from atom:::::::::::::::::::::::::::::",file=sys.stderr)
+                    success_msg = f"{atom_id} : Device Added Successfully"
+                    success_list.append(success_msg)
+                    print(success_msg, file=sys.stderr)
                 else:
-                    error_list.append(f"{ip} : Error While Inserting Device")
+                    error_msg = f"{atom_id} : Error While Inserting Device"
+                    error_list.append(error_msg)
+                    print(error_msg, file=sys.stderr)
 
             else:
-                error_list.append(f"{ip} : Device Already Exist In Monitoring")
+                error_msg = f"{atom_id} : Device Already Exist In Monitoring"
+                error_list.append(error_msg)
+                print(error_msg, file=sys.stderr)
 
         response_dict = {
-            "data":data,
+            "data": data,
             "success": len(success_list),
             "error": len(error_list),
             "error_list": error_list,
@@ -284,6 +302,11 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
         }
 
         return JSONResponse(content=response_dict, status_code=200)
+
+    except Exception as e:
+        error_msg = f"An error occurred: {e}"
+        print(error_msg, file=sys.stderr)
+
 
     except Exception:
         traceback.print_exc()

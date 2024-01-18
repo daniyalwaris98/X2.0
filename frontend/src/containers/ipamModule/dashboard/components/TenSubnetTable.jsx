@@ -7,7 +7,7 @@ const columns = [
     dataIndex: 'col1',
     key: 'col1',
     align: 'center',
-    render: text => <span style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</span>,
+    render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
   },
   {
     title: 'IP % Space Used',
