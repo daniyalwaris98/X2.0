@@ -107,3 +107,8 @@ class GetNcmDecivesCountByFucntionSchema(BaseSchema):
     function:str
     vendor:str
     device_count:int
+
+class GetNcmAlarmCategoryGraph(BaseSchema):
+    name:str
+    vlaue: int
+    total_count:int | None = None
