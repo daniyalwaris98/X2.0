@@ -98,7 +98,8 @@ async def ncm_change_summery_by_device():
             name_list = ["Cisco", "Huawei", "Juniper", "Fortinet", "Other"]
             value_list = [0, 0, 0, 0, 0]
 
-        obj_dict = {"name": name_list, "value": value_list}
+        obj_dict = dict(zip(name_list, value_list))
+        print("obj dict is:::::::::::::::::::::::::",obj_dict,file=sys.stderr)
 
         return JSONResponse(content=obj_dict, status_code=200)
     except Exception:
@@ -352,7 +353,7 @@ async def ncm_vendor_count():
 
 
 @router.get('/get_ncm_alarm_by_category_graph',responses={
-    200:{"model":str},
+    200:{"model":list[GetNcmAlarmCategoryGraph]},
     500:{"model":str}
 },
 summary="API for getting NCM Alarm category",
@@ -360,7 +361,53 @@ description="API to get the ncm alarm category by graph"
 )
 def ncm_alarm_by_category():
     try:
+
+
         configuratoin_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_category='Configuration';"
         configuration_result = configs.db.execute(configuratoin_query).scalar()
+
+        login_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_category='Login';"
+        login_result = configs.db.execute(login_query).scalar()
+
+        open_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_status='Open';"
+        open_result = configs.db.execute(open_query)
+
+        close_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_status='Close';"
+        close_result = configs.db.execute(close_query)
+
+        print("configuration query result is::::::::::::::::::::",configuration_result,file=sys.stderr)
+        print("login query result is::::::::::::::::::::::::::::",login_result,file=sys.stderr)
+        print("open query result is::::::::::::::::::::::::::::::",open_query,file=sys.stderr)
+        print("close query result is::::::::::::::::::::::::::::::",close_result,file=sys.stderr)
+
+        total_count = configuration_result + login_result + open_result + close_result
+
+        print("toal count of all result is:::::::::::::::::::",total_count,file=sys.stderr)
+
+        alarm_category_list = [
+            {
+                "name":"Configuration",
+                "value":configuration_result
+            },
+            {
+                "name":"Login",
+                "result":login_result
+            },
+            {
+                "name":"Open",
+                "value":open_result
+            },
+            {
+                "name":"Close",
+                "value":close_result
+            },
+            {
+                "name":total_count,
+            }
+        ]
+
+        return alarm_category_list
+
+
     except Exception as e:
         traceback.print_exc()
