@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 import sys
@@ -173,9 +175,10 @@ description="API to edit the end user role"
 )
 def edit_user_role(user_data:EditUserRoleScehma):
     try:
+        users_role_data = {}
         print("user data is::::::::::",user_data,file=sys.stderr)
-        user_data ={}
         user_dat = dict(user_data)
+        print("user_dat is::::::::::::::::::::",user_dat,file=sys.stderr)
         user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id = user_dat['role_id']).first()
         if user_role_exsist:
             user_role_exsist.role = user_dat['role']
@@ -187,9 +190,9 @@ def edit_user_role(user_data:EditUserRoleScehma):
                 "configuration":user_role_exsist.configuration
             }
             message = f"{user_role_exsist.role} : Updated Successfully"
-            user_data['data'] = data
-            user_data['message'] = message
-            return JSONResponse(content=user_data,status_code=200)
+            users_role_data['data'] = data
+            users_role_data['message'] = message
+            return JSONResponse(content=users_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
     except Exception as e:
@@ -206,7 +209,7 @@ description="API to edit the end user role"
 )
 def edit_user_role(user_data:EditConfigurationRoleScehma):
     try:
-        user_data ={}
+        user_role_data ={}
         user_data = dict(user_data)
         user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id = user_data['role_id']).first()
         if user_role_exsist:
@@ -219,9 +222,9 @@ def edit_user_role(user_data:EditConfigurationRoleScehma):
                 "configuration":user_role_exsist.configuration
             }
             message = f"{user_role_exsist.role} : Updated Successfully"
-            user_data['data'] = data
-            user_data['message'] = message
-            return JSONResponse(content=user_data,status_code=200)
+            user_role_data['data'] = data
+            user_role_data['message'] = message
+            return JSONResponse(content=user_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
     except Exception as e:
