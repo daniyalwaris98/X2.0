@@ -245,7 +245,7 @@ const Index = () => {
           />
         </div>
       ) : null}
-      <DefaultCard sx={{ padding: "20px 15px" }}>
+      <DefaultCard sx={{ padding: "20px 15px", marginBottom: "20px" }}>
         <Row gutter={16}>
           <Col span={9}>
             {open ? (
