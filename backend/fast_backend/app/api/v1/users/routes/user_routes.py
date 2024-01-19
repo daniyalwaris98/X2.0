@@ -173,11 +173,12 @@ description="API to edit the end user role"
 )
 def edit_user_role(user_data:EditUserRoleScehma):
     try:
+        print("user data is::::::::::",user_data,file=sys.stderr)
         user_data ={}
-        user_data = dict(user_data)
-        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id = user_data['role_id']).first()
+        user_dat = dict(user_data)
+        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id = user_dat['role_id']).first()
         if user_role_exsist:
-            user_role_exsist.role = user_data['role']
+            user_role_exsist.role = user_dat['role']
             UpdateDBData(user_role_exsist)
             # user_role_exsist.configuration = user_data['configuration']
             data = {
