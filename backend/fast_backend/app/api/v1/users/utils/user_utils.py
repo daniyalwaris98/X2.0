@@ -37,7 +37,7 @@ def add_user_role_to_db(role):
             data = {
                 "role_id":roleData.role_id,
                 "configuration":roleData.configuration,
-                "role":role
+                "role":roleData.role
             }
             print("data is:::::::::::::::::::::::",data,file=sys.stderr)
             role_data['data']=data
