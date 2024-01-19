@@ -175,10 +175,11 @@ def edit_user_role(user_data:EditUserRoleScehma):
     try:
         user_data ={}
         user_data = dict(user_data)
-        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(user_id = user_data['user_id']).first()
+        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id = user_data['role_id']).first()
         if user_role_exsist:
             user_role_exsist.role = user_data['role']
-            user_role_exsist.configuration = user_data['configuration']
+            UpdateDBData(user_role_exsist)
+            # user_role_exsist.configuration = user_data['configuration']
             data = {
                 "role_id":user_role_exsist.role_id,
                 "role":user_role_exsist.role,
