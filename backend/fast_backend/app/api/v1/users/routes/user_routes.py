@@ -51,6 +51,10 @@ def add_user_role(role:AddUserRoleScehma):
     try:
         print("user role with its configuration is:::::::::::::::::",role,file=sys.stderr)
         response,status = add_user_role_to_db(role)
+        print("response of the user role is:::",response,file=sys.stderr)
+        print("status is::::::",status,file=sys.stderr)
+        print("type of user role is::",type(response),file=sys.stderr)
+        print("status is :::::::::",type(status),file=sys.stderr)
         if status == 200:
             return JSONResponse(content=response,status_code=200)
             print("respinse of the add user is:::::::::::::;",response,file=sys.stderr)
@@ -84,6 +88,7 @@ def get_all_users_role():
             role_list.append(role_dict)
         return role_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting user role",status_code=500)
 
@@ -110,6 +115,7 @@ def get_all_end_users():
             end_user_list.append(end_user_dict)
         return JSONResponse(content=end_user_list,status_code=200)
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting end users",status_code=500)
 
@@ -153,6 +159,7 @@ def get_all_users():
             user_list.append(user_dict)
         return JSONResponse(content=user_list,status_code=200)
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting All the Users",status_code=500)
 
@@ -224,7 +231,7 @@ def user_role(role_data : list[int]):
 
 
 
-@router.post('delete_user',responses={
+@router.post('/delete_user',responses={
     200:{"model":str},
     400:{"model":str},
     500:{"model":str}
