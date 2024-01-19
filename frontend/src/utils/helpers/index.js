@@ -123,74 +123,40 @@ export function transformDateTimeToDate(originalValue, originalObject) {
         .split("T")[0]
     : originalValue;
 }
-// const menuItems = [
-//   { id: "Atom", name: "Atom", path: "/" },
-//   {
-//     id: "password",
-//     name: "Password Group",
-//     children: [
-//       {
-//         id: "web-development",
-//         name: "Web Development",
-//         path: "atom",
-//       },
-//       {
-//         id: "mobile-app-development",
-//         name: "Mobile App Development",
-//         path: "/mobile-app-development",
-//       },
-//       {
-//         id: "design",
-//         name: "Design",
-//         children: [
-//           { id: "ui-ux-design", name: "UI/UX Design", path: "/ui-ux-design" },
-//           {
-//             id: "graphic-design",
-//             name: "Graphic Design",
-//             path: "atom",
-//           },
-//         ],
-//       },
-//     ],
-//   },
-//   { id: "about-us", name: "About Us", path: "atom" },
-// ];
 
-//   {
-//     title: "Board",
-//     dataIndex: "board",
-//     key: "board",
-//     render: (text, record) => {
-//       const icon =
-//         record.board === "true" ? (
-//           <div
-//             style={{
-//               color: "#3D9E47",
-//               background: "#F1F6EE",
-//               width: "80%",
-//               margin: "0 auto",
-//               padding: "3px 2px",
-//               borderRadius: "15px",
-//               textAlign: "center",
-//             }}
-//           >
-//             true
-//           </div>
-//         ) : (
-//           <div
-//             style={{
-//               color: "#E34444",
-//               background: "#FFECE9",
-//               width: "80%",
-//               margin: "0 auto",
-//               padding: "3px 2px",
-//               borderRadius: "15px",
-//               textAlign: "center",
-//             }}
-//           >
-//             false
-//           </div>
-//         );
-//       return <span>{icon}</span>;
-//     },
-//   },
+export function deepEqual(obj1, obj2) {
+  // Check if both objects are objects
+  if (typeof obj1 !== "object" || typeof obj2 !== "object") {
+    return false;
+  }
+
+  // Check if both objects have the same keys
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+
+  if (
+    keys1.length !== keys2.length ||
+    !keys1.every((key) => keys2.includes(key))
+  ) {
+    return false;
+  }
+
+  // Check the values of each property
+  for (const key of keys1) {
+    const val1 = obj1[key];
+    const val2 = obj2[key];
+
+    if (typeof val1 === "object" && typeof val2 === "object") {
+      // Recursively check nested objects
+      if (!deepEqual(val1, val2)) {
+        return false;
+      }
+    } else if (val1 !== val2) {
+      // Check primitive values
+      return false;
+    }
+  }
+
+  // If all checks pass, the objects are deeply equal
+  return true;
+}

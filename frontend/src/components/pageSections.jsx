@@ -30,7 +30,6 @@ export default function DefaultPageTableSection({
       <DefaultPageHeader
         pageName={PAGE_NAME}
         buttons={buttonsConfigurationList}
-        selectedRowKeys={selectedRowKeys}
       />
       <DefaultTable
         rowKey={TABLE_DATA_UNIQUE_ID}

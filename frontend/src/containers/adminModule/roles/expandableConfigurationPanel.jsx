@@ -5,7 +5,11 @@ import dcm from "./assets/dcm.svg";
 import { Row, Col, Input, Button, Checkbox } from "antd";
 import { getTitle } from "../../../utils/helpers";
 import DefaultCard from "../../../components/cards";
-import { toggleModuleView } from "../../../store/features/adminModule/roles";
+import {
+  toggleModuleView,
+  togglePageView,
+  togglePageReadOnly,
+} from "../../../store/features/adminModule/roles";
 import { useDispatch } from "react-redux";
 
 function Index({ moduleKey, moduleConfigurations }) {
@@ -93,7 +97,7 @@ function Index({ moduleKey, moduleConfigurations }) {
                     <Checkbox
                       checked={pageData.view}
                       onChange={(e) => {
-                        pageData.view = e.target.checked;
+                        dispatch(togglePageView({ moduleKey, pageKey }));
                       }}
                     />
                     &nbsp; &nbsp; View
@@ -108,7 +112,7 @@ function Index({ moduleKey, moduleConfigurations }) {
                       checked={pageData.read_only}
                       disabled={!pageData.view}
                       onChange={(e) => {
-                        pageData.read_only = e.target.checked;
+                        dispatch(togglePageReadOnly({ moduleKey, pageKey }));
                       }}
                     />
                     &nbsp; &nbsp; Read Only
@@ -137,7 +141,6 @@ function Index({ moduleKey, moduleConfigurations }) {
             checked={moduleConfigurations.view}
             onChange={(e) => {
               dispatch(toggleModuleView(moduleKey));
-              console.log("e.target.checked", e.target.checked);
             }}
           />
           &nbsp; &nbsp; View Module

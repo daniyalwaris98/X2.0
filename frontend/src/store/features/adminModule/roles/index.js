@@ -3,22 +3,51 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-  defaultConfigurations,
+  indexColumnNameConstants,
 } from "../../../../containers/adminModule/roles/constants";
 
 const initialState = {
   all_data: [],
-  default_configurations: defaultConfigurations,
+  selected_role: null,
+  selected_role_for_comparison: null,
 };
 
 const defaultSlice = createSlice({
   name: ELEMENT_NAME,
   initialState,
   reducers: {
+    setSelectedRole: (state, action) => {
+      state.selected_role = action.payload;
+      state.selected_role_for_comparison = action.payload;
+    },
+
     toggleModuleView: (state, action) => {
-      console.log("action.payload", action.payload);
-      state.default_configurations[action.payload].view =
-        !state.default_configurations[action.payload].view;
+      state.selected_role[indexColumnNameConstants.CONFIGURATION][
+        action.payload
+      ].view =
+        !state.selected_role[indexColumnNameConstants.CONFIGURATION][
+          action.payload
+        ].view;
+    },
+
+    togglePageView: (state, action) => {
+      const moduleKey = action.payload.moduleKey;
+      const pageKey = action.payload.pageKey;
+
+      state.selected_role[indexColumnNameConstants.CONFIGURATION][
+        moduleKey
+      ].pages[pageKey].view =
+        !state.selected_role[indexColumnNameConstants.CONFIGURATION][moduleKey]
+          .pages[pageKey].view;
+    },
+
+    togglePageReadOnly: (state, action) => {
+      const moduleKey = action.payload.moduleKey;
+      const pageKey = action.payload.pageKey;
+
+      state.default_configurations[moduleKey].pages[pageKey].read_only =
+        !state.selected_role[indexColumnNameConstants.CONFIGURATION][moduleKey]
+          .pages[pageKey].read_only;
     },
   },
   extraReducers(builder) {
@@ -68,5 +97,10 @@ const defaultSlice = createSlice({
   },
 });
 
-export const { toggleModuleView } = defaultSlice.actions;
+export const {
+  setSelectedRole,
+  toggleModuleView,
+  togglePageView,
+  togglePageReadOnly,
+} = defaultSlice.actions;
 export default defaultSlice.reducer;

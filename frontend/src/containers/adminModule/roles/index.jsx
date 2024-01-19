@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
@@ -9,10 +9,12 @@ import {
 } from "../../../store/features/adminModule/roles/apis";
 import { useSelector } from "react-redux";
 import {
-  selectDefaultConfigurations,
   selectTableData,
+  selectSelectedRole,
+  selectSelectedRoleForComparison,
 } from "../../../store/features/adminModule/roles/selectors";
-import { jsonToExcel } from "../../../utils/helpers";
+import { setSelectedRole } from "../../../store/features/adminModule/roles";
+import { deepEqual, jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
@@ -24,6 +26,8 @@ import {
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+  defaultConfigurations,
 } from "./constants";
 import {
   TYPE_FETCH,
@@ -34,10 +38,13 @@ import DefaultPageTableSection from "../../../components/pageSections";
 import { Row, Col } from "antd";
 import ExpandableConfigurationPanel from "./expandableConfigurationPanel";
 import DefaultCard from "../../../components/cards";
+import { useDispatch } from "react-redux";
+import { UpdateDialogFooter } from "../../../components/dialogFooters";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -56,14 +63,21 @@ const Index = () => {
     default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
   });
 
+  // selectors
+  const dataSource = useSelector(selectTableData);
+  const selectedRole = useSelector(selectSelectedRole);
+  const selectedRoleForComparison = useSelector(
+    selectSelectedRoleForComparison
+  );
+
   // states
+  const [selectedRowKey, setSelectedRowKey] = useState(
+    selectedRole ? selectedRole[indexColumnNameConstants.ROLE_ID] || null : null
+  );
+  const [selectedRow, setSelectedRow] = useState(null);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
-
-  // selectors
-  const dataSource = useSelector(selectTableData);
-  const defaultConfigurations = useSelector(selectDefaultConfigurations);
 
   // apis
   const {
@@ -73,17 +87,6 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
-
-  const [
-    addRecord,
-    {
-      data: addRecordData,
-      isSuccess: isAddRecordSuccess,
-      isLoading: isAddRecordLoading,
-      isError: isAddRecordError,
-      error: addRecordError,
-    },
-  ] = useAddRecordMutation();
 
   const [
     updateRecord,
@@ -117,14 +120,6 @@ const Index = () => {
   });
 
   useErrorHandling({
-    data: addRecordData,
-    isSuccess: isAddRecordSuccess,
-    isError: isAddRecordError,
-    error: addRecordError,
-    type: TYPE_SINGLE,
-  });
-
-  useErrorHandling({
     data: updateRecordData,
     isSuccess: isUpdateRecordSuccess,
     isError: isUpdateRecordError,
@@ -139,6 +134,27 @@ const Index = () => {
     error: deleteRecordsError,
     type: TYPE_BULK,
   });
+
+  // effects
+  useEffect(() => {
+    const data = fetchRecordsData ? fetchRecordsData[0] || null : null;
+    if (data) {
+      data[indexColumnNameConstants.CONFIGURATION] = JSON.parse(
+        data[indexColumnNameConstants.CONFIGURATION]
+      );
+      dispatch(setSelectedRole(data));
+    }
+  }, []);
+
+  useEffect(() => {
+    const data = selectedRow || null;
+    if (data) {
+      data[indexColumnNameConstants.CONFIGURATION] = JSON.parse(
+        data[indexColumnNameConstants.CONFIGURATION]
+      );
+      dispatch(setSelectedRole(data));
+    }
+  }, [selectedRow]);
 
   // handlers
   function handleEmptySelectedRowKeys() {
@@ -183,46 +199,96 @@ const Index = () => {
     handleSuccessAlert("File exported successfully.");
   }
 
+  function handleCancel() {
+    if (selectSelectedRoleForComparison)
+      dispatch(setSelectedRole(selectSelectedRoleForComparison));
+  }
+
+  function handleUpdate() {
+    const data = selectedRole;
+    data[indexColumnNameConstants.CONFIGURATION] = JSON.stringify(
+      data[indexColumnNameConstants.CONFIGURATION]
+    );
+    updateRecord(data);
+  }
+
   return (
     // <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
-    <DefaultCard sx={{ padding: "20px 15px" }}>
-      <Row gutter={16}>
-        <Col span={9}>
-          {open ? (
-            <Modal
-              handleClose={handleClose}
-              open={open}
-              recordToEdit={recordToEdit}
-            />
-          ) : null}
-
-          <DefaultPageTableSection
-            PAGE_NAME={PAGE_NAME}
-            TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
-            buttonsConfigurationList={buttonsConfigurationList}
-            displayColumns={displayColumns}
-            dataSource={dataSource}
-            selectedRowKeys={selectedRowKeys}
-            setSelectedRowKeys={setSelectedRowKeys}
-            dynamicWidth={false}
-            scroll={false}
+    <Spin spinning={false}>
+      {deepEqual(selectSelectedRole, selectSelectedRoleForComparison) ? (
+        <div
+          style={{
+            position: "fixed",
+            zIndex: "9999",
+            bottom: 0,
+            left: "50%", // Center horizontally
+            transform: "translateX(-50%)", // Center horizontally
+            width: "50%",
+            // glass
+            background: "rgba(255, 255, 255, 0.1)", // Glass color with transparency
+            padding: "20px",
+            borderRadius: "10px 10px 0 0",
+            backdropFilter: "blur(10px)", // Blur effect for glass
+            boxShadow: "0 4px 6px rgba(0, 0, 0, 0.1)", // Shadow for depth
+            textAlign: "center",
+          }}
+        >
+          <UpdateDialogFooter
+            handleClose={handleCancel}
+            handleUpdate={handleUpdate}
           />
-        </Col>
-
-        <Col span={15}>
-          {Object.keys(defaultConfigurations).map((moduleKey) => {
-            const moduleConfigurations = defaultConfigurations[moduleKey];
-            return (
-              <ExpandableConfigurationPanel
-                moduleKey={moduleKey}
-                moduleConfigurations={moduleConfigurations}
+        </div>
+      ) : null}
+      <DefaultCard sx={{ padding: "20px 15px" }}>
+        <Row gutter={16}>
+          <Col span={9}>
+            {open ? (
+              <Modal
+                handleClose={handleClose}
+                open={open}
+                recordToEdit={recordToEdit}
               />
-            );
-          })}
-        </Col>
-      </Row>
-    </DefaultCard>
-    // </Spin>
+            ) : null}
+
+            <DefaultPageTableSection
+              PAGE_NAME={PAGE_NAME}
+              TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+              buttonsConfigurationList={buttonsConfigurationList}
+              displayColumns={displayColumns}
+              dataSource={dataSource}
+              selectedRowKeys={selectedRowKeys}
+              setSelectedRowKeys={setSelectedRowKeys}
+              selectedRow={selectedRow}
+              setSelectedRow={setSelectedRow}
+              dynamicWidth={false}
+              scroll={false}
+              rowClickable={true}
+              selectedRowKey={selectedRowKey}
+              setSelectedRowKey={setSelectedRowKey}
+            />
+          </Col>
+
+          <Col span={15}>
+            {selectedRole
+              ? Object.keys(
+                  selectedRole[indexColumnNameConstants.CONFIGURATION]
+                ).map((moduleKey) => {
+                  const moduleConfigurations =
+                    selectedRole[indexColumnNameConstants.CONFIGURATION][
+                      moduleKey
+                    ];
+                  return (
+                    <ExpandableConfigurationPanel
+                      moduleKey={moduleKey}
+                      moduleConfigurations={moduleConfigurations}
+                    />
+                  );
+                })
+              : null}
+          </Col>
+        </Row>
+      </DefaultCard>
+    </Spin>
   );
 };
 
