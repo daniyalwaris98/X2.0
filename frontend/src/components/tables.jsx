@@ -191,6 +191,8 @@ export default function DefaultTable({
   rowClickable = false,
   selectedRowKey = null,
   setSelectedRowKey = null,
+  selectedRow = null,
+  setSelectedRow = null,
   scroll = true,
   defaultPageSize = 10,
   ...rest
@@ -217,6 +219,7 @@ export default function DefaultTable({
     const newSelectedRowKey =
       selectedRowKey == record[rest.rowKey] ? null : record[rest.rowKey];
     setSelectedRowKey(newSelectedRowKey);
+    setSelectedRow(record);
   }
 
   function handleRowClicked(record) {

@@ -128,10 +128,15 @@ export function CompareDialogFooter({ handleClose, sx, ...rest }) {
   );
 }
 
-export function UpdateDialogFooter({ handleClose, handleUpdate, sx, ...rest }) {
+export function UpdateDialogFooter({
+  handleCancel,
+  handleUpdate,
+  sx,
+  ...rest
+}) {
   const theme = useTheme();
   const { buttonsConfigurationList } = useButtonsConfiguration({
-    default_cancel: { handleClick: handleClose },
+    default_cancel: { handleClick: handleCancel },
     default_update: { handleClick: handleUpdate },
   });
   const buttonGenerator = useButtonGenerator();

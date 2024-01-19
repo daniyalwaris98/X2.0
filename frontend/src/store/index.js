@@ -107,7 +107,7 @@ const persistConfig = {
 const rootReducer = combineReducers({
   // admin module
   admin_auto_discovery_failed_devices: adminAutoDiscoveryFailedDevicesReducer,
-  admin_roles_reducer: adminRolesReducer,
+  admin_roles: adminRolesReducer,
 
   // atom module
   atom_atoms: atomAtomsReducer,
@@ -190,7 +190,7 @@ const rootReducer = combineReducers({
   ipam_load_balancers: ipamLoadBalancers,
 
   // ncm module
-  ncm_dashboard:ncmDashboardReducer,
+  ncm_dashboard: ncmDashboardReducer,
   ncm_manage_configurations: ncmManageConfigurationsReducer,
   ncm_configuration_backups: ncmConfigurationBackupsReducer,
   ncm_remote_command_sender: ncmRemoteCommandSenderReducer,

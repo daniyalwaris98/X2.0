@@ -18,6 +18,8 @@ export default function DefaultPageTableSection({
   rowClickable = false,
   selectedRowKey = null,
   setSelectedRowKey = null,
+  selectedRow = null,
+  setSelectedRow = null,
   dynamicWidth = true,
   scroll = true,
   defaultPageSize = 10,
@@ -43,6 +45,8 @@ export default function DefaultPageTableSection({
         rowClickable={rowClickable}
         selectedRowKey={selectedRowKey}
         setSelectedRowKey={setSelectedRowKey}
+        selectedRow={selectedRow}
+        setSelectedRow={setSelectedRow}
         dynamicWidth={dynamicWidth}
         scroll={scroll}
         defaultPageSize={defaultPageSize}

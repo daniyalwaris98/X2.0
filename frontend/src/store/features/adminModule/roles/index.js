@@ -45,7 +45,9 @@ const defaultSlice = createSlice({
       const moduleKey = action.payload.moduleKey;
       const pageKey = action.payload.pageKey;
 
-      state.default_configurations[moduleKey].pages[pageKey].read_only =
+      state.selected_role[indexColumnNameConstants.CONFIGURATION][
+        moduleKey
+      ].pages[pageKey].read_only =
         !state.selected_role[indexColumnNameConstants.CONFIGURATION][moduleKey]
           .pages[pageKey].read_only;
     },
@@ -56,12 +58,28 @@ const defaultSlice = createSlice({
         extendedApi.endpoints.getAdminAllUserRoles.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
+          let data = action.payload.length > 0 ? action.payload[0] : null;
+          if (data) {
+            data[indexColumnNameConstants.CONFIGURATION] = JSON.parse(
+              data[indexColumnNameConstants.CONFIGURATION]
+            );
+            state.selected_role = data;
+            state.selected_role_for_comparison = data;
+          }
         }
       )
       .addMatcher(
         extendedApi.endpoints.addAdminUserRole.matchFulfilled,
         (state, action) => {
           state.all_data = [action.payload.data, ...state.all_data];
+          let data = action.payload.data || null;
+          if (data) {
+            data[indexColumnNameConstants.CONFIGURATION] = JSON.parse(
+              data[indexColumnNameConstants.CONFIGURATION]
+            );
+            state.selected_role = data;
+            state.selected_role_for_comparison = data;
+          }
         }
       )
       .addMatcher(
@@ -94,6 +112,15 @@ const defaultSlice = createSlice({
               return item;
             }
           });
+
+          let data = action.payload.data || null;
+          if (data) {
+            data[indexColumnNameConstants.CONFIGURATION] = JSON.parse(
+              data[indexColumnNameConstants.CONFIGURATION]
+            );
+            state.selected_role = data;
+            state.selected_role_for_comparison = data;
+          }
         }
       )
       .addMatcher(
@@ -107,6 +134,19 @@ const defaultSlice = createSlice({
               });
               return !shouldKeepItem;
             });
+          }
+
+          let data = state.all_data.length > 0 ? state.all_data[0] : null;
+          if (data) {
+            data[indexColumnNameConstants.CONFIGURATION] =
+              typeof data[indexColumnNameConstants.CONFIGURATION] === "string"
+                ? JSON.parse(data[indexColumnNameConstants.CONFIGURATION])
+                : data[indexColumnNameConstants.CONFIGURATION];
+            state.selected_role = data;
+            state.selected_role_for_comparison = data;
+          } else {
+            state.selected_role = null;
+            state.selected_role_for_comparison = null;
           }
         }
       );

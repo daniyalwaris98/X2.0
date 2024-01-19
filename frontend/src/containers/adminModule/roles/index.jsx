@@ -69,9 +69,7 @@ const Index = () => {
   );
 
   // states
-  const [selectedRowKey, setSelectedRowKey] = useState(
-    selectedRole ? selectedRole[indexColumnNameConstants.ROLE_ID] || null : null
-  );
+  const [selectedRowKey, setSelectedRowKey] = useState(null);
   const [selectedRow, setSelectedRow] = useState(null);
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
@@ -131,25 +129,27 @@ const Index = () => {
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
     type: TYPE_BULK,
+    callback: handleEmptySelectedRowKeys,
   });
 
   // effects
   useEffect(() => {
-    const data = fetchRecordsData ? fetchRecordsData[0] || null : null;
-    if (data) {
-      data[indexColumnNameConstants.CONFIGURATION] = JSON.parse(
-        data[indexColumnNameConstants.CONFIGURATION]
-      );
-      dispatch(setSelectedRole(data));
+    if (selectedRole) {
+      setSelectedRowKey(selectedRole[indexColumnNameConstants.ROLE_ID]);
     }
-  }, []);
+  }, [selectedRole]);
 
   useEffect(() => {
-    const data = selectedRow || null;
-    if (data) {
-      data[indexColumnNameConstants.CONFIGURATION] = JSON.parse(
-        data[indexColumnNameConstants.CONFIGURATION]
-      );
+    if (selectedRow) {
+      let data = {
+        ...selectedRow,
+        [indexColumnNameConstants.CONFIGURATION]:
+          typeof selectedRow[indexColumnNameConstants.CONFIGURATION] ===
+          "string"
+            ? JSON.parse(selectedRow[indexColumnNameConstants.CONFIGURATION])
+            : selectedRow[indexColumnNameConstants.CONFIGURATION],
+      };
+
       dispatch(setSelectedRole(data));
     }
   }, [selectedRow]);
@@ -198,22 +198,28 @@ const Index = () => {
   }
 
   function handleCancel() {
-    if (selectSelectedRoleForComparison)
-      dispatch(setSelectedRole(selectSelectedRoleForComparison));
+    if (selectedRoleForComparison)
+      dispatch(setSelectedRole(selectedRoleForComparison));
   }
 
   function handleUpdate() {
-    const data = selectedRole;
-    data[indexColumnNameConstants.CONFIGURATION] = JSON.stringify(
-      data[indexColumnNameConstants.CONFIGURATION]
-    );
+    let data = {
+      [indexColumnNameConstants.ROLE_ID]:
+        selectedRole[indexColumnNameConstants.ROLE_ID],
+      [indexColumnNameConstants.CONFIGURATION]: JSON.stringify(
+        selectedRole[indexColumnNameConstants.CONFIGURATION]
+      ),
+    };
     updateRecord(data);
   }
 
   return (
-    // <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
-    <Spin spinning={false}>
-      {/* {deepEqual(selectedRole, selectedRoleForComparison) ? (
+    <Spin
+      spinning={
+        isFetchRecordsLoading || isUpdateRecordLoading || isDeleteRecordsLoading
+      }
+    >
+      {!deepEqual(selectedRole, selectedRoleForComparison) ? (
         <div
           style={{
             position: "fixed",
@@ -232,11 +238,11 @@ const Index = () => {
           }}
         >
           <UpdateDialogFooter
-            handleClose={handleCancel}
+            handleCancel={handleCancel}
             handleUpdate={handleUpdate}
           />
         </div>
-      ) : null} */}
+      ) : null}
       <DefaultCard sx={{ padding: "20px 15px" }}>
         <Row gutter={16}>
           <Col span={9}>
@@ -256,13 +262,13 @@ const Index = () => {
               dataSource={dataSource}
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
+              rowClickable={true}
+              selectedRowKey={selectedRowKey}
+              setSelectedRowKey={setSelectedRowKey}
               selectedRow={selectedRow}
               setSelectedRow={setSelectedRow}
               dynamicWidth={false}
               scroll={false}
-              rowClickable={true}
-              selectedRowKey={selectedRowKey}
-              setSelectedRowKey={setSelectedRowKey}
             />
           </Col>
 

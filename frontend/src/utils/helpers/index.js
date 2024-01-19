@@ -125,38 +125,43 @@ export function transformDateTimeToDate(originalValue, originalObject) {
 }
 
 export function deepEqual(obj1, obj2) {
+  // console.log("obj1", obj1);
+  // console.log("obj2", obj2);
   // Check if both objects are objects
-  if (typeof obj1 !== "object" || typeof obj2 !== "object") {
-    return false;
-  }
-
-  // Check if both objects have the same keys
-  const keys1 = Object.keys(obj1);
-  const keys2 = Object.keys(obj2);
-
-  if (
-    keys1.length !== keys2.length ||
-    !keys1.every((key) => keys2.includes(key))
-  ) {
-    return false;
-  }
-
-  // Check the values of each property
-  for (const key of keys1) {
-    const val1 = obj1[key];
-    const val2 = obj2[key];
-
-    if (typeof val1 === "object" && typeof val2 === "object") {
-      // Recursively check nested objects
-      if (!deepEqual(val1, val2)) {
-        return false;
-      }
-    } else if (val1 !== val2) {
-      // Check primitive values
+  if (obj1 !== null && obj2 !== null) {
+    if (typeof obj1 !== "object" || typeof obj2 !== "object") {
       return false;
     }
-  }
 
-  // If all checks pass, the objects are deeply equal
-  return true;
+    // Check if both objects have the same keys
+    const keys1 = Object.keys(obj1);
+    const keys2 = Object.keys(obj2);
+
+    if (
+      keys1.length !== keys2.length ||
+      !keys1.every((key) => keys2.includes(key))
+    ) {
+      return false;
+    }
+
+    // Check the values of each property
+    for (const key of keys1) {
+      const val1 = obj1[key];
+      const val2 = obj2[key];
+
+      if (typeof val1 === "object" && typeof val2 === "object") {
+        // Recursively check nested objects
+        if (!deepEqual(val1, val2)) {
+          return false;
+        }
+      } else if (val1 !== val2) {
+        // Check primitive values
+        return false;
+      }
+    }
+    // If all checks pass, the objects are deeply equal
+    return true;
+  } else {
+    return true;
+  }
 }
