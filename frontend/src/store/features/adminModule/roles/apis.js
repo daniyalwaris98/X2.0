@@ -22,6 +22,14 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
+    updateAdminUserRoleConfiguration: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/users/user/edit_role_configuration",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
     deleteAdminUserRoles: builder.mutation({
       query: (data) => ({
         url: "/api/v1/users/user/delete_role",
@@ -36,5 +44,6 @@ export const {
   useGetAdminAllUserRolesQuery: useFetchRecordsQuery,
   useAddAdminUserRoleMutation: useAddRecordMutation,
   useUpdateAdminUserRoleMutation: useUpdateRecordMutation,
+  useUpdateAdminUserRoleConfigurationMutation,
   useDeleteAdminUserRolesMutation: useDeleteRecordsMutation,
 } = extendedApi;

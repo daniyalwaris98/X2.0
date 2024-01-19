@@ -81,6 +81,22 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
+        extendedApi.endpoints.updateAdminUserRoleConfiguration.matchFulfilled,
+        (state, action) => {
+          let objectToReplace = action.payload.data;
+          state.all_data = state.all_data.map((item) => {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
+              return { ...item, ...objectToReplace };
+            } else {
+              return item;
+            }
+          });
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.deleteAdminUserRoles.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];

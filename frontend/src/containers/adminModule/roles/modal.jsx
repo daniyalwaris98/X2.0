@@ -7,11 +7,14 @@ import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
-import { useAddRecordMutation } from "../../../store/features/adminModule/roles/apis";
+import {
+  useAddRecordMutation,
+  useUpdateRecordMutation,
+} from "../../../store/features/adminModule/roles/apis";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { ELEMENT_NAME } from "./constants";
+import { ELEMENT_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 import { defaultConfiguration } from "./defaultConfiguration";
 
@@ -46,6 +49,17 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useAddRecordMutation();
 
+  const [
+    updateRecord,
+    {
+      data: updateRecordData,
+      isSuccess: isUpdateRecordSuccess,
+      isLoading: isUpdateRecordLoading,
+      isError: isUpdateRecordError,
+      error: updateRecordError,
+    },
+  ] = useUpdateRecordMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -56,9 +70,20 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: updateRecordData,
+    isSuccess: isUpdateRecordSuccess,
+    isError: isUpdateRecordError,
+    error: updateRecordError,
+    type: TYPE_SINGLE,
+  });
+
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
+      data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
+      delete data[indexColumnNameConstants.CONFIGURATION];
+      updateRecord(data);
     } else {
       data[indexColumnNameConstants.CONFIGURATION] =
         JSON.stringify(defaultConfiguration);

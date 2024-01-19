@@ -3,8 +3,7 @@ import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
-  useAddRecordMutation,
-  useUpdateRecordMutation,
+  useUpdateAdminUserRoleConfigurationMutation,
   useDeleteRecordsMutation,
 } from "../../../store/features/adminModule/roles/apis";
 import { useSelector } from "react-redux";
@@ -27,7 +26,6 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
-  defaultConfigurations,
 } from "./constants";
 import {
   TYPE_FETCH,
@@ -97,7 +95,7 @@ const Index = () => {
       isError: isUpdateRecordError,
       error: updateRecordError,
     },
-  ] = useUpdateRecordMutation();
+  ] = useUpdateAdminUserRoleConfigurationMutation();
 
   const [
     deleteRecords,
@@ -215,7 +213,7 @@ const Index = () => {
   return (
     // <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
     <Spin spinning={false}>
-      {deepEqual(selectSelectedRole, selectSelectedRoleForComparison) ? (
+      {/* {deepEqual(selectedRole, selectedRoleForComparison) ? (
         <div
           style={{
             position: "fixed",
@@ -238,7 +236,7 @@ const Index = () => {
             handleUpdate={handleUpdate}
           />
         </div>
-      ) : null}
+      ) : null} */}
       <DefaultCard sx={{ padding: "20px 15px" }}>
         <Row gutter={16}>
           <Col span={9}>
