@@ -151,6 +151,8 @@ const Index = () => {
       };
 
       dispatch(setSelectedRole(data));
+    } else {
+      dispatch(setSelectedRole(selectedRow));
     }
   }, [selectedRow]);
 

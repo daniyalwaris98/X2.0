@@ -207,7 +207,7 @@ export default function DefaultTable({
   };
 
   function onSelectChange(selectedRowKeys, selectedRows) {
-    setSelectedRowKeys(selectedRowKeys);
+    if (setSelectedRowKeys) setSelectedRowKeys(selectedRowKeys);
     if (setSelectedRows) setSelectedRows(selectedRows);
   }
 
@@ -218,8 +218,11 @@ export default function DefaultTable({
   function handleRowClick(record) {
     const newSelectedRowKey =
       selectedRowKey == record[rest.rowKey] ? null : record[rest.rowKey];
-    setSelectedRowKey(newSelectedRowKey);
-    setSelectedRow(record);
+    const newSelectedRow =
+      selectedRowKey == record[rest.rowKey] ? null : record;
+
+    if (setSelectedRowKey) setSelectedRowKey(record[rest.rowKey]);
+    if (setSelectedRow) setSelectedRow(record);
   }
 
   function handleRowClicked(record) {
