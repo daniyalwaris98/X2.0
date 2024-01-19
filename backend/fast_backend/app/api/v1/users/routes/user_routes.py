@@ -195,6 +195,38 @@ def edit_user_role(user_data:EditUserRoleScehma):
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Editing the user",status_code=500)
 
+@router.post('/edit_role_configuration',responses = {
+    200:{"model":Response200},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to edit the end user role",
+description="API to edit the end user role"
+)
+def edit_user_role(user_data:EditConfigurationRoleScehma):
+    try:
+        user_data ={}
+        user_data = dict(user_data)
+        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id = user_data['role_id']).first()
+        if user_role_exsist:
+            user_role_exsist.configuration = user_data['configuration']
+            UpdateDBData(user_role_exsist)
+            # user_role_exsist.configuration = user_data['configuration']
+            data = {
+                "role_id":user_role_exsist.role_id,
+                "role":user_role_exsist.role,
+                "configuration":user_role_exsist.configuration
+            }
+            message = f"{user_role_exsist.role} : Updated Successfully"
+            user_data['data'] = data
+            user_data['message'] = message
+            return JSONResponse(content=user_data,status_code=200)
+        else:
+            return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Editing the user",status_code=500)
+
 
 @router.post('/delete_role',responses = {
     200:{"model":DeleteResponseSchema},
