@@ -6,7 +6,7 @@ import {
   useFetchIpamDevicesLazyQuery,
 } from "../../../store/features/ipamModule/devices/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
+import { selectTableData } from "../../../store/features/ipamModule/devices/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
