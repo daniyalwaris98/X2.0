@@ -14,12 +14,32 @@ const defaultSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    builder.addMatcher(
-      extendedApi.endpoints.autoDiscoveryFetchManageDevices.matchFulfilled,
-      (state, action) => {
-        state.all_data = action.payload;
-      }
-    );
+    builder
+      .addMatcher(
+        extendedApi.endpoints.autoDiscoveryFetchManageDevices.matchFulfilled,
+        (state, action) => {
+          state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.autoDiscoveryCheckCredentialsStatus
+          .matchFulfilled,
+        (state, action) => {
+          action.payload.data.forEach((responseItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
+              return (
+                tableItem[TABLE_DATA_UNIQUE_ID] ===
+                responseItem[TABLE_DATA_UNIQUE_ID]
+              );
+            });
+            if (indexToUpdate !== -1) {
+              state.all_data[indexToUpdate] = responseItem;
+            } else {
+              state.all_data = [responseItem, ...state.all_data];
+            }
+          });
+        }
+      );
   },
 });
 

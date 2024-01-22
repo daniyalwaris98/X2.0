@@ -24,7 +24,7 @@ import {
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
 import { formSetter } from "../../../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../../../hooks/useErrorHandling";
-import { ELEMENT_NAME } from "./constants";
+import { ELEMENT_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 import { getTitle } from "../../../../../utils/helpers";
 
@@ -134,8 +134,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data[indexColumnNameConstants.CREDENTIALS_ID] =
-        recordToEdit[indexColumnNameConstants.CREDENTIALS_ID];
+      data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
       addRecord(data);

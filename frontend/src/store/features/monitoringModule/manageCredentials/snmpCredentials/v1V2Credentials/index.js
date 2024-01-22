@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../../../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
+} from "../../../../../../containers/monitoringModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials/constants";
 
 const initialState = {
   all_data: [],
@@ -16,13 +16,13 @@ const defaultSlice = createSlice({
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.autoDiscoveryFetchV1V2Credentials.matchFulfilled,
+        extendedApi.endpoints.monitoringFetchV1V2Credentials.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.autoDiscoveryDeleteV1V2Credentials.matchFulfilled,
+        extendedApi.endpoints.monitoringDeleteV1V2Credentials.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -36,13 +36,13 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.autoDiscoveryAddV1V2Credential.matchFulfilled,
+        extendedApi.endpoints.monitoringAddV1V2Credential.matchFulfilled,
         (state, action) => {
           state.all_data = [action.payload.data, ...state.all_data];
         }
       )
       .addMatcher(
-        extendedApi.endpoints.autoDiscoveryUpdateV1V2Credential.matchFulfilled,
+        extendedApi.endpoints.monitoringUpdateV1V2Credential.matchFulfilled,
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {

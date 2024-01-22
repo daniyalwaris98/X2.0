@@ -185,11 +185,16 @@ export default function DefaultTable({
   displayColumns = [],
   selectedRowKeys = null,
   setSelectedRowKeys = null,
+  selectedRows = null,
+  setSelectedRows = null,
   getCheckboxProps = null,
   rowClickable = false,
   selectedRowKey = null,
   setSelectedRowKey = null,
+  selectedRow = null,
+  setSelectedRow = null,
   scroll = true,
+  defaultPageSize = 10,
   ...rest
 }) {
   const theme = useTheme();
@@ -201,8 +206,9 @@ export default function DefaultTable({
     selection: Table.SELECTION_ALL,
   };
 
-  function onSelectChange(selectedRowKeys) {
-    setSelectedRowKeys(selectedRowKeys);
+  function onSelectChange(selectedRowKeys, selectedRows) {
+    if (setSelectedRowKeys) setSelectedRowKeys(selectedRowKeys);
+    if (setSelectedRows) setSelectedRows(selectedRows);
   }
 
   function handleChange(pagination, filters, sorter, extra) {
@@ -212,7 +218,11 @@ export default function DefaultTable({
   function handleRowClick(record) {
     const newSelectedRowKey =
       selectedRowKey == record[rest.rowKey] ? null : record[rest.rowKey];
-    setSelectedRowKey(newSelectedRowKey);
+    const newSelectedRow =
+      selectedRowKey == record[rest.rowKey] ? null : record;
+
+    if (setSelectedRowKey) setSelectedRowKey(record[rest.rowKey]);
+    if (setSelectedRow) setSelectedRow(record);
   }
 
   function handleRowClicked(record) {
@@ -240,7 +250,7 @@ export default function DefaultTable({
       style={{ whiteSpace: "pre" }}
       size="small"
       pagination={{
-        defaultPageSize: 10,
+        defaultPageSize,
         pageSizeOptions: [20, 50, 100, 500, 1000],
       }}
       rowClassName={getRowClassName}

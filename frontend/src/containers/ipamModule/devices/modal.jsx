@@ -96,12 +96,8 @@ const Index = ({ handleClose, open }) => {
   }
 
   return (
-    <DefaultDialog
-      sx={{ content: { padding: 0 } }}
-      title={`${"Add"} ${PAGE_NAME}`}
-      open={open}
-    >
-      <Grid container>
+    <DefaultDialog title={`${"Add"} ${PAGE_NAME}`} open={open}>
+      <Grid container style={{ marginTop: "15px" }}>
         <Grid item xs={12}>
           <Spin
             spinning={
@@ -131,6 +127,7 @@ const Index = ({ handleClose, open }) => {
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
               dynamicWidth={false}
+              defaultPageSize={7}
             />
           </Spin>
         </Grid>

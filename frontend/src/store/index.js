@@ -1,6 +1,10 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { monetxApi } from "./features/apiSlice";
 
+// admin module
+import adminAutoDiscoveryFailedDevicesReducer from "./features/adminModule/failedDevices/autoDiscovery";
+import adminRolesReducer from "./features/adminModule/roles";
+
 // atom module
 import atomAtomsReducer from "./features/atomModule/atoms";
 import atomPasswordGroupsReducer from "./features/atomModule/passwordGroups";
@@ -18,8 +22,43 @@ import uamHWLifeCyclesReducer from "./features/uamModule/hwLifeCycles";
 
 // monitoring module
 import monitoringDevicesReducer from "./features/monitoringModule/devices";
+
+import monitoringAllNetworksDevicesReducer from "./features/monitoringModule/networksDropDown/allDevices/devices";
+import monitoringAllNetworksInterfacesReducer from "./features/monitoringModule/networksDropDown/allDevices/interfaces";
+
+import monitoringFirewallsDevicesReducer from "./features/monitoringModule/networksDropDown/firewalls/devices";
+import monitoringFirewallsInterfacesReducer from "./features/monitoringModule/networksDropDown/firewalls/interfaces";
+
+import monitoringRoutersDevicesReducer from "./features/monitoringModule/networksDropDown/routers/devices";
+import monitoringRoutersInterfacesReducer from "./features/monitoringModule/networksDropDown/routers/interfaces";
+
+import monitoringSwitchesDevicesReducer from "./features/monitoringModule/networksDropDown/switches/devices";
+import monitoringSwitchesInterfacesReducer from "./features/monitoringModule/networksDropDown/switches/interfaces";
+
+import monitoringWirelessDevicesReducer from "./features/monitoringModule/networksDropDown/wireless/devices";
+import monitoringWirelessInterfacesReducer from "./features/monitoringModule/networksDropDown/wireless/interfaces";
+
+import monitoringAllServersDevicesReducer from "./features/monitoringModule/serversDropDown/allDevices/devices";
+import monitoringAllServersInterfacesReducer from "./features/monitoringModule/serversDropDown/allDevices/interfaces";
+
+import monitoringLinuxDevicesReducer from "./features/monitoringModule/serversDropDown/linux/devices";
+import monitoringLinuxInterfacesReducer from "./features/monitoringModule/serversDropDown/linux/interfaces";
+
+import monitoringWindowsDevicesReducer from "./features/monitoringModule/serversDropDown/windows/devices";
+import monitoringWindowsInterfacesReducer from "./features/monitoringModule/serversDropDown/windows/interfaces";
+
 import monitoringAlertsReducer from "./features/monitoringModule/alerts";
-import monitoringCredentialsReducer from "./features/monitoringModule/credentials";
+
+import monitoringInterfacesReducer from "./features/monitoringModule/devicesLanding/interfaces";
+import monitoringSummaryReducer from "./features/monitoringModule/devicesLanding/summary";
+
+import monitoringEC2Reducer from "./features/monitoringModule/cloudsDropDown/awsDropDown/ec2";
+import monitoringS3Reducer from "./features/monitoringModule/cloudsDropDown/awsDropDown/s3";
+import monitoringELBReducer from "./features/monitoringModule/cloudsDropDown/awsDropDown/elb";
+
+import monitoringLoginCredentialsReducer from "./features/monitoringModule/manageCredentials/loginCredentials";
+import monitoringV1V2CredentialsReducer from "./features/monitoringModule/manageCredentials/snmpCredentials/v1V2Credentials";
+import monitoringV3CredentialsReducer from "./features/monitoringModule/manageCredentials/snmpCredentials/v3Credentials";
 
 // auto discovery module
 import autoDiscoveryManageNetworksReducer from "./features/autoDiscoveryModule/manageNetworks";
@@ -47,6 +86,7 @@ import ipamFirewalls from "./features/ipamModule/vipDropDown/firewalls";
 import ipamLoadBalancers from "./features/ipamModule/vipDropDown/loadBalancers";
 
 // ncm module
+import ncmDashboardReducer from "./features/ncmModule/dashboard";
 import ncmManageConfigurationsReducer from "./features/ncmModule/manageConfigurations";
 import ncmConfigurationBackupsReducer from "./features/ncmModule/manageConfigurations/configurationBackups";
 import ncmRemoteCommandSenderReducer from "./features/ncmModule/manageConfigurations/remoteCommandSender";
@@ -61,10 +101,15 @@ import { combineReducers } from "redux";
 const persistConfig = {
   key: "root", // key for the localStorage object
   storage, // define which storage to use
-  whitelist: ["ncm_manage_configurations"], // only persist specified reducers
+  whitelist: ["ncm_manage_configurations", "monitoring_devices"], // only persist specified reducers
 };
 
 const rootReducer = combineReducers({
+  // admin module
+  admin_auto_discovery_failed_devices: adminAutoDiscoveryFailedDevicesReducer,
+  admin_roles: adminRolesReducer,
+
+  // atom module
   atom_atoms: atomAtomsReducer,
   atom_password_groups: atomPasswordGroupsReducer,
 
@@ -81,8 +126,43 @@ const rootReducer = combineReducers({
 
   // monitoring module
   monitoring_devices: monitoringDevicesReducer,
+
+  monitoring_all_networks_devices: monitoringAllNetworksDevicesReducer,
+  monitoring_all_networks_interfaces: monitoringAllNetworksInterfacesReducer,
+
+  monitoring_firewalls_devices: monitoringFirewallsDevicesReducer,
+  monitoring_firewalls_interfaces: monitoringFirewallsInterfacesReducer,
+
+  monitoring_routers_devices: monitoringRoutersDevicesReducer,
+  monitoring_routers_interfaces: monitoringRoutersInterfacesReducer,
+
+  monitoring_switches_devices: monitoringSwitchesDevicesReducer,
+  monitoring_switches_interfaces: monitoringSwitchesInterfacesReducer,
+
+  monitoring_wireless_devices: monitoringWirelessDevicesReducer,
+  monitoring_wireless_interfaces: monitoringWirelessInterfacesReducer,
+
+  monitoring_all_servers_devices: monitoringAllServersDevicesReducer,
+  monitoring_all_servers_interfaces: monitoringAllServersInterfacesReducer,
+
+  monitoring_linux_devices: monitoringLinuxDevicesReducer,
+  monitoring_linux_interfaces: monitoringLinuxInterfacesReducer,
+
+  monitoring_windows_devices: monitoringWindowsDevicesReducer,
+  monitoring_windows_interfaces: monitoringWindowsInterfacesReducer,
+
   monitoring_alerts: monitoringAlertsReducer,
-  monitoring_credentials: monitoringCredentialsReducer,
+
+  monitoring_interfaces: monitoringInterfacesReducer,
+  monitoring_summary: monitoringSummaryReducer,
+
+  monitoring_ec2: monitoringEC2Reducer,
+  monitoring_s3: monitoringS3Reducer,
+  monitoring_elb: monitoringELBReducer,
+
+  monitoring_login_credentials: monitoringLoginCredentialsReducer,
+  monitoring_v1_v2_credentials: monitoringV1V2CredentialsReducer,
+  monitoring_v3_credentials: monitoringV3CredentialsReducer,
 
   // auto discovery module
   auto_discovery_manage_networks: autoDiscoveryManageNetworksReducer,
@@ -110,6 +190,7 @@ const rootReducer = combineReducers({
   ipam_load_balancers: ipamLoadBalancers,
 
   // ncm module
+  ncm_dashboard: ncmDashboardReducer,
   ncm_manage_configurations: ncmManageConfigurationsReducer,
   ncm_configuration_backups: ncmConfigurationBackupsReducer,
   ncm_remote_command_sender: ncmRemoteCommandSenderReducer,

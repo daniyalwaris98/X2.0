@@ -1,10 +1,8 @@
 import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
-import Modal from "./model";
-import {
-  useFetchRecordsQuery,
-  useFetchMonitoringDevicesLazyQuery,
-} from "../../../store/features/monitoringModule/devices/apis";    
+import AddModal from "./addModal";
+import UpdateModal from "./updateModal";
+import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/devices/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/monitoringModule/devices/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
@@ -21,32 +19,46 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setSelectedDevice } from "../../../store/features/monitoringModule/devices";
+import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../devicesLanding/summary/constants";
+import { LANDING_PAGE_PATH } from "../devicesLanding";
+import { MODULE_PATH } from "../index";
+import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features/dropDowns/apis";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleEdit,
+    handleIpAddressClick,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    default_fetch: { handleClick: handleFetch },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
   });
 
   // states
-  const [open, setOpen] = useState(false);
+  const [recordToEdit, setRecordToEdit] = useState(null);
+  const [openAddModal, setOpenAddModal] = useState(false);
+  const [openUpdateModal, setOpenUpdateModal] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
+  // const dataSource = [{ ip_address: "123" }];
   const dataSource = useSelector(selectTableData);
 
   // apis
@@ -58,16 +70,10 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
-  const [
-    fetchMonitoringDevices,
-    {
-      data: ipamFetchMonitoringDevicesData,
-      isSuccess: isFetchMonitoringDevicesSuccess,
-      isLoading: isFetchMonitoringDevicesLoading,
-      isError: isFetchMonitoringDevicesError,
-      error: fetchMonitoringDevicesError,
-    },
-  ] = useFetchMonitoringDevicesLazyQuery();
+  const {
+    error: monitoringCredentialsNamesError,
+    isLoading: isMonitoringCredentialsNamesLoading,
+  } = useFetchMonitoringCredentialsNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -78,25 +84,27 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
-  useErrorHandling({
-    data: ipamFetchMonitoringDevicesData,
-    isSuccess: isFetchMonitoringDevicesSuccess,
-    isError: isFetchMonitoringDevicesError,
-    error: fetchMonitoringDevicesError,
-    type: TYPE_BULK,
-  });
-
   // handlers
-  function handleFetch() {
-    fetchMonitoringDevices();
+  function handleIpAddressClick(record) {
+    dispatch(setSelectedDevice(record));
+    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`);
+  }
+
+  function handleEdit(record) {
+    setRecordToEdit(record);
+    setOpenUpdateModal(true);
   }
 
   function handleAdd() {
-    setOpen(true);
+    setOpenAddModal(true);
   }
 
-  function handleClose() {
-    setOpen(false);
+  function handleCloseAdd() {
+    setOpenAddModal(false);
+  }
+
+  function handleCloseUpdate() {
+    setOpenUpdateModal(false);
   }
 
   function handleDefaultExport() {
@@ -109,8 +117,21 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isFetchMonitoringDevicesLoading}>
-      {open ? <Modal handleClose={handleClose} open={open} /> : null}
+    // <Spin spinning={false}>
+    <Spin
+      spinning={isFetchRecordsLoading || isMonitoringCredentialsNamesLoading}
+    >
+      {openAddModal ? (
+        <AddModal handleClose={handleCloseAdd} open={openAddModal} />
+      ) : null}
+
+      {openUpdateModal ? (
+        <UpdateModal
+          handleClose={handleCloseUpdate}
+          open={openUpdateModal}
+          recordToEdit={recordToEdit}
+        />
+      ) : null}
 
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations

@@ -13,10 +13,11 @@ import {
 } from "./remoteCommandSender/constants";
 import { useSelector } from "react-redux";
 import { selectSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations/selectors";
+import { PAGE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS } from "../manageConfigurations/constants";
 
 export const LANDING_PAGE_NAME = "Manage Configurations";
-export const LANDING_PAGE_PATH =
-  "manage_configurations/manage_configurations_landing";
+export const LANDING_PAGE_RELATIVE_PATH = "manage_configurations_landing";
+export const LANDING_PAGE_PATH = `${PAGE_PATH_MANAGE_CONFIGURATIONS}/${LANDING_PAGE_RELATIVE_PATH}`;
 
 const menuItems = [
   {

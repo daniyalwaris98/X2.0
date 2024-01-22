@@ -6,6 +6,7 @@ import paramiko
 from app.models.auto_discovery_models import *
 from app.utils.db_utils import *
 from app.api.v1.auto_discovery import auto_discover
+from app.models.atom_models import *
 
 def validate_subnet(subnet):
     subnet_pattern = r'^\d{1,3}\.\d{1,3}\.\d{1,3}\.\d{1,3}/\d{1,2}$'
@@ -275,18 +276,26 @@ def CheckSSHStatus():
         result = configs.db.execute(query_string)
         print("result for query string on ip address is::::::",result,file=sys.stderr)
         for row in result:
-            print("row is::::::::",row,file=sys.stderr)
+            print("row is::::::::",row[0],file=sys.stderr)
             ipList.append(row[0])
-        query_string = f"select username,password from password_group_table;"
-        result = configs.db.execute(query_string)
+        for ip in ipList:
+            print("ip is:::::::::::",ip,file=sys.stderr)
+        # query_string = f"select username,password from password_group_table;"
+        # result = configs.db.execute(query_string)
+        username = ''
+        password = ''
+        passwords = configs.db.query(PasswordGroupTable).all()
+        for password in passwords:
+            username = password.username
+            password = password.password
         print("Result is:::::::::::::::::",result,file=sys.stderr)
 
 
         objList = []
         for row in result:
             objDict = {}
-            username = row[0]
-            password = row[1]
+            username = username
+            password = password
             objDict['username'] = username
             objDict['password'] = password
             objList.append(objDict)
@@ -302,6 +311,7 @@ def CheckSSHStatus():
                 print(f"SSH STATUS SUCCESSFULLY UPDATED FOR {ip}", file=sys.stderr)
 
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
 
 
@@ -309,7 +319,7 @@ def CheckSNMPCredentials():
     try:
         # Fetch enabled SNMP statuses using ORM
         enabled_snmp_devices = configs.db.query(AutoDiscoveryTable).filter_by(snmp_status='Enabled').all()
-
+        print("Enabled SNMP devices are:::::::::::::")
         # Fetch SNMP v1/v2 credentials using ORM
         v1_v2_credentials = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(category='v1/v2').all()
 
@@ -330,10 +340,10 @@ def CheckSNMPCredentials():
             v3_list.append(snmp_obj)
 
         for device in enabled_snmp_devices:
-            test_result = auto_discover.test_snmp_v2_credentials(device.IP_ADDRESS, v2_list)
+            test_result = auto_discover.test_snmp_v2_credentials(device.ip_address, v2_list)
             if test_result is None:
                 # No v2 credentials matched, try v3
-                test_result = auto_discover.test_snmp_v3_credentials(device.IP_ADDRESS, v3_list)
+                test_result = auto_discover.TestSNMPV3Credentials(device.ip_address, v3_list)
 
             if test_result is not None:
                 # Credentials matched, update the device entry
@@ -342,7 +352,7 @@ def CheckSNMPCredentials():
                 configs.db.session.commit()
 
     except Exception as e:
-        configs.db.session.rollback()
+        configs.db.rollback()
         traceback.print_exc()
         print("Error in SNMP credentials:", str(e), file=sys.stderr)
 

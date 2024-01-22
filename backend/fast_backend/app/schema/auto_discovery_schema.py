@@ -160,3 +160,11 @@ class GetSSHLoginSchema(BaseSchema):
 
 class RequestSubnetSchema(BaseSchema):
     subnet : str
+
+
+class EditSnmpV2RequestSchema(AddSnmpV1_V2Schema):
+    credentials_id:int
+
+
+class EditSnmpV3RequestSchema(AddSnmpV3Schema):
+    credentials_id:int

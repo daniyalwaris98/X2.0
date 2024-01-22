@@ -25,7 +25,7 @@ import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { PAGE_NAME, TELNET } from "./constants";
-import { indexColumnNameConstants } from "./constants";
+import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.PASSWORD_GROUP]: yup
@@ -150,7 +150,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
-      data.password_group_id = recordToEdit.password_group_id;
+      data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
       addRecord(data);

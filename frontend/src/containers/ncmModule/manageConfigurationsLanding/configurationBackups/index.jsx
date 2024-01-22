@@ -8,7 +8,10 @@ import {
 } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
+import useErrorHandling, {
+  TYPE_SINGLE,
+} from "../../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
@@ -20,7 +23,6 @@ import DefaultPageTableSection from "../../../../components/pageSections";
 import { Grid } from "@mui/material";
 import BackupDetails from "./backupDetails";
 import { Spin } from "antd";
-import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
 
 const Index = () => {
   // theme
@@ -90,7 +92,7 @@ const Index = () => {
     isSuccess: isSingleBackupSuccess,
     isError: isSingleBackupError,
     error: singleBackupError,
-    type: TYPE_BULK,
+    type: TYPE_SINGLE,
   });
 
   // effects
@@ -182,6 +184,7 @@ const Index = () => {
           <BackupDetails ncmHistoryId={selectedRowKey} />
         </Grid>
       </Grid>
+      <br />
     </Spin>
   );
 };

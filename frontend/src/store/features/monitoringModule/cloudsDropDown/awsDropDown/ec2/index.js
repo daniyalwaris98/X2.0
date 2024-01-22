@@ -3,8 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../../../../src/containers/monitoringModule/cloudsDropDown/awsDropDown/e3/constants";
-//  /ipamModule/dnsServerDropDown/dnsRecords/constants
+} from "../../../../../../containers/monitoringModule/cloudsDropDown/awsDropDown/ec2/constants";
 
 const initialState = {
   all_data: [],
@@ -15,12 +14,29 @@ const defaultSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    builder.addMatcher(
-      extendedApi.endpoints.getAllMonitoringE3Records.matchFulfilled,
-      (state, action) => {
-        state.all_data = action.payload;
-      }
-    );
+    builder
+      .addMatcher(
+        extendedApi.endpoints.getAllEC2s.matchFulfilled,
+        (state, action) => {
+          state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.changeEC2Status.matchFulfilled,
+        (state, action) => {
+          let objectToReplace = action.payload.data;
+          state.all_data = state.all_data.map((item) => {
+            if (
+              item[TABLE_DATA_UNIQUE_ID] ===
+              objectToReplace[TABLE_DATA_UNIQUE_ID]
+            ) {
+              return { ...item, ...objectToReplace };
+            } else {
+              return item;
+            }
+          });
+        }
+      );
   },
 });
 

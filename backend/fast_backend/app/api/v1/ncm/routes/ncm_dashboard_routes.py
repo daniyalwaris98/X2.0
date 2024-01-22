@@ -3,7 +3,7 @@ from datetime import timedelta
 
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
+import sys
 from app.core.config import configs
 from app.models.atom_models import *
 from app.models.ncm_models import *
@@ -11,8 +11,8 @@ from app.schema.base_schema import *
 from app.schema.ncm_schema import *
 
 router = APIRouter(
-    prefix="/ncm-dashboard",
-    tags=["ncm-dashboard"]
+    prefix="/ncm_dashboard",
+    tags=["ncm_dashboard"]
 )
 
 
@@ -23,6 +23,7 @@ router = APIRouter(
 async def ncm_change_summery_by_time():
     current_time = datetime.now()
     pre_time = datetime.now() - timedelta(days=1)
+    print("pre time is:::::::::::::::::::::::::::", pre_time, file=sys.stderr)
     try:
         query = (f"SELECT COUNT(*) AS backup_count, "
                  f"DATE_FORMAT(config_change_date, '%Y-%m-%d %H:00:00') "
@@ -31,6 +32,7 @@ async def ncm_change_summery_by_time():
                  f"GROUP BY hour_interval ORDER BY backup_count DESC LIMIT 5;")
 
         result = configs.db.execute(query)
+        print("result")
 
         name_list = []
         value_list = []
@@ -50,29 +52,37 @@ async def ncm_change_summery_by_time():
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-            "Error While Fetching The Data\nFor Configuration Change Count By Timw Garph",
+            "Error While Fetching The Data\nFor Configuration Change Count By Time Graph",
             500,
         )
 
 
-@router.get("/ncm-change-summery-by-device", responses={
+@router.get("/ncm_change_summery_by_device", responses={
     200: {"model": NameValueDictResponseSchema},
     500: {"model": str}
-})
+},
+summary="API to get the ncm change summary by device",
+description="API to get the ncm change summary by device"
+)
 async def ncm_change_summery_by_device():
     pre_time = datetime.now() - timedelta(days=1)
+    print("pre time", pre_time,file=sys.stderr)
+
     try:
-        query = (f"SELECT count(*) AS backup_count, AtomTable.vendor "
-                 f"FROM NcmDeviceTable INNER JOIN AtomTable "
-                 f"ON NcmDeviceTable.atom_id = AtomTable.atom_id "
-                 f"WHERE config_change_date >'{pre_time}' "
-                 f"GROUP BY AtomTable.vendor ORDER BY backup_count DESC LIMIT 5;")
-
-        result = configs.db.execute(query)
-
         name_list = []
         value_list = []
+        query = ("SELECT count(*) AS backup_count, atom_table.vendor "
+                 "FROM ncm_device_table INNER JOIN atom_table "
+                 "ON ncm_device_table.atom_id = atom_table.atom_id "
+                 "GROUP BY atom_table.vendor")
+
+        print("Executing query:", query, file=sys.stderr)
+        result = configs.db.execute(query)
+        print("results is::::::::::::::::::::::::",result,file=sys.stderr)
+        restls = result
+        print("rets are:::::::::::::::::::::::::::::::::::::",restls,file=sys.stderr)
         for row in result:
+            print("row in result is::::::::::::::::::", row, file=sys.stderr)
             if row[1] is None:
                 name_list.append("Undefined")
 
@@ -82,26 +92,31 @@ async def ncm_change_summery_by_device():
                 name_list.append(row[1])
 
             value_list.append(int(row[0]))
-
+        print("name list is::::::::::::::::::::::::::::", name_list, file=sys.stderr)
+        print("value list is::::::::::::::::::::::::::::", value_list, file=sys.stderr)
         if len(name_list) <= 0:
             name_list = ["Cisco", "Huawei", "Juniper", "Fortinet", "Other"]
             value_list = [0, 0, 0, 0, 0]
 
-        obj_dict = {"name": name_list, "value": value_list}
+        obj_dict = dict(zip(name_list, value_list))
+        print("obj dict is:::::::::::::::::::::::::",obj_dict,file=sys.stderr)
 
         return JSONResponse(content=obj_dict, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-            "Error While Fetching The Data\nFor Configuration Change Count By Timw Garph",
+            "Error While Fetching The Data\nFor Configuration Change Count By Device Garph",
             500,
         )
 
 
-@router.get("/ncm-alarm-summery", responses={
+@router.get("/ncm_alarm_summery", responses={
     200: {"model": list[NcmAlarmSchema]},
     500: {"model": str}
-})
+},
+summary="API to show the NCM alarm summary",
+description="API to show the NCM alarm summary"
+)
 async def ncm_alarm_summery():
     try:
         results = (
@@ -112,12 +127,14 @@ async def ncm_alarm_summery():
             )
             .join(AtomTable, AtomTable.atom_id == NcmDeviceTable.atom_id)
             .filter(NCM_Alarm_Table.alarm_status == "Open")
-            .limit(5)
             .all()
         )
-
+        print("results are::::::::::::::::::::::::::::",results,file=sys.stderr)
         objList = []
         for alarm, ncm, atom in results:
+            print("ALarm is::::::::::::::::::::::::;",alarm,file=sys.stderr)
+            print("ncm is::::::::::::::::::::::::::::",ncm,file=sys.stderr)
+            print("atom is:::::::::::::::::::::::::::",atom,file=sys.stderr)
             obj_dict = {"ip_address": atom.ip_address, "device_name": atom.device_name,
                         "alarm_category": alarm.alarm_category, "alarm_title": alarm.alarm_title,
                         "alarm_description": alarm.alarm_description,
@@ -126,7 +143,7 @@ async def ncm_alarm_summery():
                         "resolve_remarks": alarm.resolve_remarks, "mail_status": alarm.mail_status}
 
             objList.append(obj_dict)
-
+        print("obj list is::::::::::::::::::::::::::: ",objList,file=sys.stderr)
         return JSONResponse(content=objList, status_code=200)
     except Exception:
         traceback.print_exc()
@@ -134,6 +151,39 @@ async def ncm_alarm_summery():
             "Error While Fetching The Data\nFor Configuration Change Count By Time Graph",
             500,
         )
+
+
+
+
+
+
+@router.get('/ncm_device_summary_by_fucntion',responses={
+    200:{"model":list[GetNcmDecivesCountByFucntionSchema]},
+    500:{"model":str}
+},
+summary="API to show the device summary on ncm by function in table",
+description="API to show the device summary on ncm by in table"
+)
+def ncm_device_summary_by_fucntion():
+    try:
+        query = f"SELECT atom_table.device_type, atom_table.`function`, atom_table.`vendor`,COUNT(*) AS device_count FROM ncm_device_table INNER JOIN atom_table ON ncm_device_table.atom_id = atom_table.atom_id GROUP BY atom_table.device_type, atom_table.`function`;"
+        result = configs.db.execute(query)
+        print("result is::::::::::::::::",result,file=sys.stderr)
+        objList = []
+        for row in result:
+            print("row is::::::::::::::::::::::::::::",row,file=sys.stderr)
+            objDict = {}
+            objDict["device_type"] = row[0]
+            objDict["function"] = row[1]
+            objDict['vendor'] = row[2]
+            objDict["device_count"] = row[3]
+            objList.append(objDict)
+        print("obj list is:::::::::::::::::::::::",objList,file=sys.stderr)
+        return objList
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured WHile adding ncm device",status_code=500)
+
 
 
 
@@ -232,3 +282,132 @@ async def ncm_alarm_summery():
 #
 #
 
+
+@router.get("/ncm_backup_summery_dashboard", responses={
+    200: {"model": list[NCMBackupSummaryConfiguration]},
+    500: {"model": str}
+},
+summary="API to show the ncm backup summary",
+description="API to show the ncm backup summary"
+)
+async def ncm_backup_summery_dashboard():
+    try:
+        results = configs.db.query(NcmDeviceTable).all()
+        print("result is:::::::::::::::::::::::",results,file=sys.stderr)
+        not_backup = 0
+        fail = 0
+        success = 0
+
+        for ncm in results:
+            if ncm.backup_status is None:
+                not_backup += 1
+            elif ncm.backup_status is False:
+                fail += 1
+            elif ncm.backup_status is True:
+                success += 1
+
+        objList = [
+            {"backup_successful": success},
+            {"backup_failure": fail},
+            {"not_backup": not_backup},
+        ]
+        print("obj list is::::::::::::::::::::::",objList,file=sys.stderr)
+        return JSONResponse(content=objList, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Data", status_code=500)
+
+
+@router.get("/get_vendors_in_ncm", responses={
+    200:{"model":GetNcmVendorSchema},
+    500:{"model":str}
+},
+summary="API to get the vendor  in ncm",
+description="API to get the vendor in ncm"
+)
+async def ncm_vendor_count():
+    try:
+        queryString = (f"select atom_table.vendor, count(*) from ncm_device_table inner join "
+                       f"atom_table on ncm_device_table.atom_id = atom_table.atom_id  "
+                       f"group by vendor;")
+        print("query string is::::::::::::::::::::::::",queryString,file=sys.stderr)
+        result = configs.db.execute(queryString)
+        print("reuslt is:::::::::::",result,file=sys.stderr)
+        obj_list = []
+
+        for row in result:
+            print("row is::::::::::::::::::::::",row,file=sys.stderr)
+            print("row [0] is:::::::::::::::",row[0],file=sys.stderr)
+            print("row[1] is:::::::::::::::::::",row[1],file=sys.stderr)
+            obj_dict = {"name": row[0], "value": row[1]}
+            print("obj dict is::::::::::::::::::::",obj_dict,file=sys.stderr)
+            if row[0] is None:
+                obj_dict["name"] = "Other"
+
+            obj_list.append(obj_dict)
+        print("objlist is:::::::::::::::::",obj_list,file=sys.stderr)
+        return JSONResponse(content=obj_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse("Server Error While Fetching Data", status_code=500)
+
+
+@router.get('/get_ncm_alarm_by_category_graph',responses={
+    200:{"model":list[GetNcmAlarmCategoryGraph]},
+    500:{"model":str}
+},
+summary="API for getting NCM Alarm category",
+description="API to get the ncm alarm category by graph"
+)
+def ncm_alarm_by_category():
+    try:
+
+
+        configuratoin_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_category='Configuration';"
+        configuration_result = configs.db.execute(configuratoin_query).scalar()
+
+        login_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_category='Login';"
+        login_result = configs.db.execute(login_query).scalar()
+
+        open_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_status='Open';"
+        open_result = configs.db.execute(open_query)
+
+        close_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_status='Close';"
+        close_result = configs.db.execute(close_query)
+
+        print("configuration query result is::::::::::::::::::::",configuration_result,file=sys.stderr)
+        print("login query result is::::::::::::::::::::::::::::",login_result,file=sys.stderr)
+        print("open query result is::::::::::::::::::::::::::::::",open_query,file=sys.stderr)
+        print("close query result is::::::::::::::::::::::::::::::",close_result,file=sys.stderr)
+
+        total_count = configuration_result + login_result + open_result + close_result
+
+        print("toal count of all result is:::::::::::::::::::",total_count,file=sys.stderr)
+
+        alarm_category_list = [
+            {
+                "name":"Configuration",
+                "value":configuration_result
+            },
+            {
+                "name":"Login",
+                "result":login_result
+            },
+            {
+                "name":"Open",
+                "value":open_result
+            },
+            {
+                "name":"Close",
+                "value":close_result
+            },
+            {
+                "name":total_count,
+            }
+        ]
+
+        return alarm_category_list
+
+
+    except Exception as e:
+        traceback.print_exc()

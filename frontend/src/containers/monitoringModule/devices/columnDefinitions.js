@@ -2,25 +2,55 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import DefaultAnchor from "../../../components/anchor";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
+export function useIndexTableColumnDefinitions({
+  handleEdit,
+  handleIpAddressClick,
+}) {
   const theme = useTheme();
-
   const columnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS,
+    {
+      data_key: indexColumnNameConstants.IP_ADDRESS,
+      render: (text, record) => (
+        <DefaultAnchor onClick={() => handleIpAddressClick(record)}>
+          {text}
+        </DefaultAnchor>
+      ),
+    },
+    indexColumnNameConstants.DEVICE_TYPE,
     indexColumnNameConstants.DEVICE_NAME,
-    indexColumnNameConstants.SUBNET_ADDRESS,
-    indexColumnNameConstants.SUBNET_MASK,
-    indexColumnNameConstants.SUBNET_NAME,
-    indexColumnNameConstants.INTERFACE,
-    indexColumnNameConstants.INTERFACE_IP,
-    indexColumnNameConstants.INTERFACE_LOCATION,
-    indexColumnNameConstants.INTERFACE_DESCRIPTION,
-    indexColumnNameConstants.INTERFACE_STATUS,
-    indexColumnNameConstants.VIRTUAL_IP,
-    indexColumnNameConstants.VLAN,
-    indexColumnNameConstants.VLAN_NUMBER,
-    indexColumnNameConstants.FETCH_DATE,
+    indexColumnNameConstants.VENDOR,
+    indexColumnNameConstants.FUNCTION,
+    indexColumnNameConstants.SOURCE,
+    indexColumnNameConstants.CREDENTIALS,
+    indexColumnNameConstants.SNMP_STATUS,
+    indexColumnNameConstants.ACTIVE,
+    indexColumnNameConstants.STATUS,
+    indexColumnNameConstants.PING_STATUS,
+    {
+      data_key: indexColumnNameConstants.ACTIONS,
+      search: false,
+      fixed: "right",
+      align: "center",
+      width: 100,
+      render: (text, record) => (
+        <div
+          style={{
+            display: "flex",
+            gap: "10px",
+            justifyContent: "center",
+          }}
+        >
+          <Icon
+            fontSize={"15px"}
+            onClick={() => handleEdit(record)}
+            icon="bx:edit"
+            style={{ cursor: "pointer" }}
+          />
+        </div>
+      ),
+    },
   ];
 
   const dataKeys = columnDefinitions

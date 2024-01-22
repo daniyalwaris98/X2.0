@@ -11,7 +11,7 @@ Login Model
 End User Models
 """
 
-class EndUserTabl(Base):
+class EndUserTable(Base):
     __tablename__ = 'end_user_table'
     end_user_id = Column(Integer,primary_key=True,autoincrement=True)
     company_name = Column(String(500),nullable=False)
@@ -53,7 +53,7 @@ class DevicesLiscenceTableModel(Base):
     device_license_id = Column(Integer,primary_key=True,autoincrement=True)
     rfs_date = Column(DateTime)
     serial_number = Column(String(500),nullable=True)
-    license_verfification_id = Column(Integer,ForeignKey('license_verification_table.license_verfification_id'),onupdate='CASCADE',ondelete='CASCADE')
+    license_verfification_id = Column(Integer,ForeignKey('license_verification_table.license_verfification_id',onupdate='CASCADE',ondelete='CASCADE'),nullable=False)
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
@@ -69,6 +69,7 @@ class UserRoleTableModel(Base):
 
 
 class UserTableModel(Base):
+    __tablename__ = 'user_table'
     user_id = Column(Integer,primary_key=True,autoincrement=True)
     role_id = Column(Integer,ForeignKey('user_role_table.role_id',onupdate='CASCADE',ondelete='CASCADE'),nullable=False,)
     end_user_id = Column(Integer,ForeignKey('end_user_table.end_user_id',onupdate='CASCADE',ondelete='CASCADE'),nullable=False)
@@ -77,6 +78,8 @@ class UserTableModel(Base):
     email = Column(String(500),nullable=True)
     password = Column(String(500),nullable=True)
     status = Column(String(500),nullable=True)
+    teams = Column(String(500),nullable=True)
+    user_name = Column(String(500),nullable=True)
     account_type = Column(String(100),nullable=True)
     last_login = Column(DateTime,default=datetime.now(),nullable=True)
 

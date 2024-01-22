@@ -2,13 +2,39 @@ import { monetxApi } from "../../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    //table apis
-    fetchAutoDiscoverySSHLoginCredentials: builder.query({
-      query: () => "/api/v1/auto_discovery/get_ssh_login_credentials",
+    monitoringFetchWMICredentials: builder.query({
+      query: () => "/api/v1/monitoring/credentials/get_WMI_credentials",
+    }),
+
+    monitoringDeleteWMICredentials: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/monitoring/credentials/delete_WMI_credentials",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    monitoringAddWMICredential: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/monitoring/credentials/add_WMI_credentials",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
+    monitoringUpdateWMICredential: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/monitoring/credentials/edit_WMI_credentials",
+        method: "POST",
+        body: data,
+      }),
     }),
   }),
 });
 
 export const {
-  useFetchAutoDiscoverySSHLoginCredentialsQuery: useFetchRecordsQuery,
+  useMonitoringFetchWMICredentialsQuery: useFetchRecordsQuery,
+  useMonitoringDeleteWMICredentialsMutation: useDeleteRecordsMutation,
+  useMonitoringAddWMICredentialMutation: useAddRecordMutation,
+  useMonitoringUpdateWMICredentialMutation: useUpdateRecordMutation,
 } = extendedApi;

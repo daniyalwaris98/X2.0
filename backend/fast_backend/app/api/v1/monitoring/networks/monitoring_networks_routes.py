@@ -75,9 +75,10 @@ async def get_all_devices_in_networks():
         if final:
             final_list = list({v['ip_address']: v for v in final}.values())
             print("final list is not none:::::::",final_list,file=sys.stderr)
-        return JSONResponse(content=final_list,status_code=200)
+        return final_list
     except Exception as e:
         traceback.print_exc()
+        return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_networks',
@@ -195,10 +196,10 @@ def get_all_devices_in_router():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return JSONResponse(content=final_list,status_code=200)
+        return final_list
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting th router devices")
+        return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_routers',
@@ -314,10 +315,10 @@ def get_all_devices_in_switch():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return JSONResponse(content=final_list,status_code=200)
+        return final_list
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting th switch devices")
+        return JSONResponse(content="Error Occured While Getting Network switch Devices",status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_switch',
@@ -433,10 +434,10 @@ def get_all_devices_in_firewall():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return JSONResponse(content=final_list,status_code=200)
+        return final_list
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting the firewall devices")
+        return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_firewall',
@@ -554,10 +555,10 @@ def get_all_devices_in_wireless():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return JSONResponse(content=final_list,status_code=200)
+        return final_list
     except Exception as e:
         traceback.print_exc()
-        return ("Error Occured While Getting the Wireless devices")
+        return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_wireless',

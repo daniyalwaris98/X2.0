@@ -16,7 +16,12 @@ export function useIndexTableColumnDefinitions({
     {
       data_key: indexColumnNameConstants.SUBNET_ADDRESS,
       render: (text, record) => (
-        <a onClick={() => handleIpDetailsModalOpen(text)}>{text}</a>
+        <a
+          style={{ color: "green" }}
+          onClick={() => handleIpDetailsModalOpen(text)}
+        >
+          {text}
+        </a>
       ),
     },
     indexColumnNameConstants.SUBNET_NAME,

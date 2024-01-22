@@ -8,36 +8,23 @@ import {
 const initialState = {
   all_data: [],
   atoms_to_add_in_monitoring_devices: [],
+  selected_device: null,
 };
 
 const defaultSlice = createSlice({
   name: ELEMENT_NAME,
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedDevice: (state, action) => {
+      state.selected_device = action.payload;
+    },
+  },
   extraReducers(builder) {
     builder
       .addMatcher(
         extendedApi.endpoints.getAllMonitoringDevices.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.fetchMonitoringDevices.matchFulfilled,
-        (state, action) => {
-          action.payload.data.forEach((responseItem) => {
-            const indexToUpdate = state.all_data.findIndex((tableItem) => {
-              return (
-                tableItem[TABLE_DATA_UNIQUE_ID] ===
-                responseItem[TABLE_DATA_UNIQUE_ID]
-              );
-            });
-            if (indexToUpdate !== -1) {
-              state.all_data[indexToUpdate] = responseItem;
-            } else {
-              state.all_data = [responseItem, ...state.all_data];
-            }
-          });
         }
       )
       .addMatcher(
@@ -81,4 +68,5 @@ const defaultSlice = createSlice({
   },
 });
 
+export const { setSelectedDevice } = defaultSlice.actions;
 export default defaultSlice.reducer;

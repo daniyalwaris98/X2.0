@@ -2,14 +2,19 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import { convertToAsterisks } from "../../../../utils/helpers";
 
 export function useIndexTableColumnDefinitions({}) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.PASSWORD_GROUP,
     indexColumnNameConstants.USER_NAME,
-    indexColumnNameConstants.PASSWORD,
+    indexColumnNameConstants.PROFILE_NAME,
+    {
+      data_key: indexColumnNameConstants.PASSWORD,
+      render: (text, record) => convertToAsterisks(text),
+    },
+    indexColumnNameConstants.CATEGORY,
   ];
 
   const dataKeys = columnDefinitions

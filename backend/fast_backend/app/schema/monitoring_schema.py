@@ -138,6 +138,8 @@ class MonitoringDeviceSchema(BaseSchema):
     active: str | None
     status: str | None
     snmp_status: str | None
+    profile_name:str | None
+    ping_status: str | None
     # creation_date: datetime
     # modification_date: datetime
 class UpdateMonitoringDeviceSchema(BaseSchema):
@@ -222,3 +224,15 @@ class MonitoringCredentialsResponseSchema(BaseSchema):
 class InterfaceBandScema(BaseSchema):
     ip_address:str
     interface_name:str
+
+
+class AddAtomInMonitoringSchema(BaseSchema):
+    atom_id:int
+    monitoring_credentials_id:int
+
+
+class EditSnmpV2Credentials(SnmpV2CredentialsResponseSchema):
+    credentials_id : int
+
+class EditSnmpV3CredentialsResponseSchema(SnmpV3CredentialsRequestSchema):
+    credentials_id:int

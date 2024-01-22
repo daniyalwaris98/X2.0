@@ -4,6 +4,10 @@ import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
 import { getPathAllSegments } from "../../utils/helpers";
 import {
+  PAGE_NAME as PAGE_NAME_DASHBOARD,
+  PAGE_PATH as PAGE_PATH_DASHBOARD,
+} from "./dashboard/constants";
+import {
   PAGE_NAME as PAGE_NAME_DEVICES,
   PAGE_PATH as PAGE_PATH_DEVICES,
 } from "./devices/constants";
@@ -59,6 +63,11 @@ import {
 export const MODULE_PATH = "ipam_module";
 
 const menuItems = [
+  {
+    id: PAGE_PATH_DASHBOARD,
+    name: PAGE_NAME_DASHBOARD,
+    path: PAGE_PATH_DASHBOARD,
+  },
   {
     id: PAGE_PATH_DEVICES,
     name: PAGE_NAME_DEVICES,

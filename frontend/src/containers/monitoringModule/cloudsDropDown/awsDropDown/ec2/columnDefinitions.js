@@ -2,37 +2,31 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
+import { Switch } from "antd";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
+export function useIndexTableColumnDefinitions({
+  handleMonitoringSwitchChange = null,
+}) {
   const theme = useTheme();
 
   const columnDefinitions = [
-    indexColumnNameConstants.DESCRIPTION,
-    indexColumnNameConstants.PORT,
-    indexColumnNameConstants.CATEGORY,
-    indexColumnNameConstants.PROFILE_NAME,
-    indexColumnNameConstants.COMMUNITY,
+    indexColumnNameConstants.INSTANCE_ID,
+    indexColumnNameConstants.INSTANCE_NAME,
+    indexColumnNameConstants.ACCOUNT_LABEL,
+    indexColumnNameConstants.ACCESS_KEY,
+    indexColumnNameConstants.REGION_ID,
     {
-      data_key: indexColumnNameConstants.ACTIONS,
+      data_key: indexColumnNameConstants.MONITORING_STATUS,
       search: false,
+      title: "Monitoring",
       fixed: "right",
       align: "center",
-      width: 100,
+      width: 120,
       render: (text, record) => (
-        <div
-          style={{
-            display: "flex",
-            gap: "10px",
-            justifyContent: "center",
-          }}
-        >
-          <Icon
-            fontSize={"15px"}
-            onClick={() => handleEdit(record)}
-            icon="bx:edit"
-            style={{ cursor: "pointer" }}
-          />
-        </div>
+        <Switch
+          style={{ backgroundColor: "green" }}
+          onChange={(checked) => handleMonitoringSwitchChange(checked, record)}
+        />
       ),
     },
   ];
@@ -45,7 +39,7 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         return item;
       }
     })
-    .filter((item) => item !== indexColumnNameConstants.ACTIONS);
+    .filter((item) => true);
 
   return {
     columnDefinitions,

@@ -11,7 +11,7 @@ const alertSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addMatcher(
-      extendedApi.endpoints.fetchAlerts.matchFulfilled,
+      extendedApi.endpoints.getAllAlerts.matchFulfilled,
       (state, action) => {
         state.all_data = action.payload;
       }

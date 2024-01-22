@@ -1,4 +1,4 @@
-import React from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../../components/dialogs";
 import Grid from "@mui/material/Grid";
@@ -76,6 +76,12 @@ const Index = ({ handleClose, open }) => {
     });
   };
 
+  useEffect(() => {
+    console.log("compareBackupsData", compareBackupsData);
+  }, [compareBackupsData]);
+
+  const sampleHTML = "<div><p>Hello, World!</p></div>";
+
   return (
     <FormModal
       sx={{ zIndex: "999" }}
@@ -102,27 +108,32 @@ const Index = ({ handleClose, open }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              {/* {compareBackupsData ? ( */}
-              <div
-                style={{
-                  margin: "8px",
-
-                  borderRadius: "12px",
-                  backgroundColor: "#fcfcfc",
-                  boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
-                }}
-              >
+              {compareBackupsData ? (
                 <div
                   style={{
-                    width: "100%",
-                    overflowX: "auto",
-                    scrollBehavior: "smooth",
+                    margin: "8px",
+
+                    borderRadius: "12px",
+                    backgroundColor: "#fcfcfc",
+                    boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",
                   }}
                 >
-                  {ReactHtmlParser(compareBackupsData)}
+                  <div
+                    style={{
+                      width: "100%",
+                      overflowX: "auto",
+                      scrollBehavior: "smooth",
+                    }}
+                  >
+                    <div
+                      dangerouslySetInnerHTML={{
+                        __html: compareBackupsData.data,
+                      }}
+                    />
+                    {/* {ReactHtmlParser(compareBackupsData)} */}
+                  </div>
                 </div>
-              </div>
-              {/* ) : null} */}
+              ) : null}
             </Grid>
             <Grid item xs={12}>
               <CompareDialogFooter handleClose={handleClose} />

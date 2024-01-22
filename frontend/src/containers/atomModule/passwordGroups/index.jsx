@@ -1,7 +1,5 @@
-import React, { useState, useRef, useEffect } from "react";
+import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
-import DefaultCard from "../../../components/cards";
-import DefaultTable from "../../../components/tables";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
@@ -10,13 +8,11 @@ import {
 } from "../../../store/features/atomModule/passwordGroups/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
-import useWindowDimensions from "../../../hooks/useWindowDimensions";
 import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
   generateObject,
-  getTableScrollWidth,
 } from "../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
@@ -45,7 +41,6 @@ const Index = () => {
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { height, width } = useWindowDimensions();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
@@ -176,7 +171,7 @@ const Index = () => {
     }
   }
 
-  function handleAdd(optionType) {
+  function handleAdd() {
     setOpen(true);
   }
 
@@ -220,6 +215,7 @@ const Index = () => {
           style={{ display: "none" }}
           onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
         />
+
         {open ? (
           <Modal
             handleClose={handleClose}

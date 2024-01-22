@@ -2,10 +2,9 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    //table apis
-    fetchAlerts: builder.query({
-      query: () => "/api/v1/monitoring/alerts/alert_status",
+    getAllAlerts: builder.query({
+      query: () => "/api/v1/monitoring/alerts/get_monitoring_alerts",
     }),
   }),
 });
-export const { useFetchAlertsQuery: useFetchRecordsQuery } = extendedApi;
+export const { useGetAllAlertsQuery: useFetchRecordsQuery } = extendedApi;

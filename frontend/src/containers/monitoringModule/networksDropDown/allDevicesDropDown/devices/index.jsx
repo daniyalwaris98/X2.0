@@ -1,51 +1,45 @@
 import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import {
-  useFetchRecordsQuery,
-  useDeleteRecordsMutation,
-} from "../../../../../store/features/atomModule/passwordGroups/apis";
+import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/networksDropDown/allDevices/devices/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../../store/features/atomModule/passwordGroups/selectors";
+import { selectTableData } from "../../../../../store/features/monitoringModule/networksDropDown/allDevices/devices/selectors";
 import { jsonToExcel } from "../../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./colmnDefinition";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
 import {
-  ELEMENT_NAME,
-  PAGE_NAME,
+  DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../../../hooks/useErrorHandling";
+import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../../components/pageSections";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { setSelectedDevice } from "../../../../../store/features/monitoringModule/devices";
+import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../../../devicesLanding/summary/constants";
+import { LANDING_PAGE_PATH } from "../../../devicesLanding";
+import { MODULE_PATH } from "../../../index";
 
 const Index = () => {
   // theme
   const theme = useTheme();
-
-  // states required in hooksss
-  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // hooks
-  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
-    useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { handleSuccessAlert } = useSweetAlert();
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleIpAddressClick,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    default_delete: {
-      handleClick: handleDelete,
-      visible: selectedRowKeys.length > 0,
-    },
-    default_add: {
-      handleClick: handleDefaultExport,
-      namePostfix: ELEMENT_NAME,
-    },
   });
 
   // states
@@ -55,7 +49,8 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = useSelector(selectTableData);
+  const dataSource = [{ ip_address: "123" }];
+  // const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -66,17 +61,6 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
-  const [
-    deleteRecords,
-    {
-      data: deleteRecordsData,
-      isSuccess: isDeleteRecordsSuccess,
-      isLoading: isDeleteRecordsLoading,
-      isError: isDeleteRecordsError,
-      error: deleteRecordsError,
-    },
-  ] = useDeleteRecordsMutation();
-
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -86,37 +70,10 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
-  useErrorHandling({
-    data: deleteRecordsData,
-    isSuccess: isDeleteRecordsSuccess,
-    isError: isDeleteRecordsError,
-    error: deleteRecordsError,
-    type: TYPE_BULK,
-    callback: handleEmptySelectedRowKeys,
-  });
-
   // handlers
-  function handleEmptySelectedRowKeys() {
-    setSelectedRowKeys([]);
-  }
-
-  function deleteData(allowed) {
-    if (allowed) {
-      deleteRecords(selectedRowKeys);
-    } else {
-      setSelectedRowKeys([]);
-    }
-  }
-
-  function handleDelete() {
-    if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
-    } else {
-      handleInfoAlert("No record has been selected to delete!");
-    }
+  function handleIpAddressClick(record) {
+    dispatch(setSelectedDevice(record));
+    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`);
   }
 
   function handleDefaultExport() {
@@ -129,7 +86,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+    <Spin spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -144,13 +101,11 @@ const Index = () => {
       ) : null}
 
       <DefaultPageTableSection
-        PAGE_NAME={PAGE_NAME}
+        PAGE_NAME={DESCRIPTIVE_PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        selectedRowKeys={selectedRowKeys}
-        setSelectedRowKeys={setSelectedRowKeys}
       />
     </Spin>
   );
