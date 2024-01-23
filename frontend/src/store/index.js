@@ -49,6 +49,7 @@ import monitoringWindowsInterfacesReducer from "./features/monitoringModule/serv
 
 import monitoringAlertsReducer from "./features/monitoringModule/alerts";
 
+import monitoringBandwidthsReducer from "./features/monitoringModule/devicesLanding/bandwidths";
 import monitoringInterfacesReducer from "./features/monitoringModule/devicesLanding/interfaces";
 import monitoringSummaryReducer from "./features/monitoringModule/devicesLanding/summary";
 
@@ -101,7 +102,8 @@ import { combineReducers } from "redux";
 const persistConfig = {
   key: "root", // key for the localStorage object
   storage, // define which storage to use
-  whitelist: ["ncm_manage_configurations", "monitoring_devices"], // only persist specified reducers
+  // whitelist: ["ncm_manage_configurations", "monitoring_devices"], // only persist specified reducers
+  whitelist: [], // only persist specified reducers
 };
 
 const rootReducer = combineReducers({
@@ -153,6 +155,7 @@ const rootReducer = combineReducers({
 
   monitoring_alerts: monitoringAlertsReducer,
 
+  monitoring_bandwidths: monitoringBandwidthsReducer,
   monitoring_interfaces: monitoringInterfacesReducer,
   monitoring_summary: monitoringSummaryReducer,
 

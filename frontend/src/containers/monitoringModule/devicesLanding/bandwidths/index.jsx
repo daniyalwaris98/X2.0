@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsRecords/apis";
+import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/bandwidths/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsRecords/selectors";
+import { selectTableData } from "../../../../store/features/monitoringModule/devicesLanding/bandwidths/selectors";
+import { selectSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/selectors";
+import { setSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
@@ -18,9 +20,7 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
-import { setSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones";
-import { selectSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/selectors";
-import DnsZoneDetails from "./dnsZoneDetails";
+import InterfaceDetails from "./interfaceDetails";
 import { useDispatch } from "react-redux";
 
 const Index = () => {
@@ -45,17 +45,19 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
-  const selectedDnsZone = useSelector(selectSelectedDnsZone);
-  console.log("selectedDnsZone", selectedDnsZone);
+  const selectedInterface = useSelector(selectSelectedInterface);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchRecords,
+    {
+      data: fetchRecordsData,
+      isSuccess: isFetchRecordsSuccess,
+      isLoading: isFetchRecordsLoading,
+      isError: isFetchRecordsError,
+      error: fetchRecordsError,
+    },
+  ] = useFetchRecordsMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -68,8 +70,13 @@ const Index = () => {
 
   // effects
   useEffect(() => {
+    if (selectedInterface) {
+      fetchRecords({
+        // [DEVICE_IP_ADDRESS]: selectedInterface[DEVICE_IP_ADDRESS],
+      });
+    }
     return () => {
-      dispatch(setSelectedDnsZone(null));
+      dispatch(setSelectedInterface(null));
     };
   }, []);
 
@@ -98,7 +105,7 @@ const Index = () => {
         />
       ) : null}
 
-      {selectedDnsZone ? <DnsZoneDetails /> : null}
+      {selectedInterface ? <InterfaceDetails /> : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}

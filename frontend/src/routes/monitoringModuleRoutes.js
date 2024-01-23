@@ -138,6 +138,9 @@ import { PAGE_PATH as PAGE_PATH_DEVICES_SUMMARY } from "../containers/monitoring
 import DevicesInterfaces from "../containers/monitoringModule/devicesLanding/interfaces";
 import { PAGE_PATH as PAGE_PATH_DEVICES_INTERFACES } from "../containers/monitoringModule/devicesLanding/interfaces/constants";
 
+import InterfacesBandwidths from "../containers/monitoringModule/devicesLanding/bandwidths";
+import { PAGE_PATH as PAGE_PATH_INTERFACES_BANDWIDTHS } from "../containers/monitoringModule/devicesLanding/bandwidths/constants";
+
 /////////////////////////////////////////
 const routes = {
   path: MODULE_PATH,
@@ -342,6 +345,10 @@ const routes = {
         {
           path: PAGE_PATH_DEVICES_INTERFACES,
           element: <DevicesInterfaces />,
+        },
+        {
+          path: PAGE_PATH_INTERFACES_BANDWIDTHS,
+          element: <InterfacesBandwidths />,
         },
       ],
     },

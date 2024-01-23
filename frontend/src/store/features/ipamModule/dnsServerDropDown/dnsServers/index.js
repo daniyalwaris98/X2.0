@@ -4,6 +4,8 @@ import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
 } from "../../../../../containers/ipamModule/subnetsDropDown/subnets/constants";
+import { persistReducer } from "redux-persist";
+import persistConfig from "./persistConfig";
 
 const initialState = {
   all_data: [],
@@ -82,4 +84,6 @@ const defaultSlice = createSlice({
 });
 
 export const { setSelectedDnsServer } = defaultSlice.actions;
-export default defaultSlice.reducer;
+
+const persistedReducer = persistReducer(persistConfig, defaultSlice.reducer);
+export default persistedReducer;

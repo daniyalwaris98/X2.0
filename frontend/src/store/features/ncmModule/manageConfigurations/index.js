@@ -3,7 +3,9 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../containers/atomModule/passwordGroups/constants";
+} from "../../../../containers/ncmModule/manageConfigurations/constants";
+import { persistReducer } from "redux-persist";
+import persistConfig from "./persistConfig";
 
 const initialState = {
   all_data: [],
@@ -106,4 +108,6 @@ const defaultSlice = createSlice({
 });
 
 export const { setSelectedDevice } = defaultSlice.actions;
-export default defaultSlice.reducer;
+
+const persistedReducer = persistReducer(persistConfig, defaultSlice.reducer);
+export default persistedReducer;

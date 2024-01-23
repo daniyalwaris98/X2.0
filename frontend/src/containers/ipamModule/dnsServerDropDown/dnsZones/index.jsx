@@ -3,6 +3,8 @@ import { useTheme } from "@mui/material/styles";
 import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/selectors";
+import { setSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones";
+import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
 import { selectSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { Spin } from "antd";
@@ -20,7 +22,6 @@ import {
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
 import DnsServerDetails from "./dnsServerDetails";
-import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { PAGE_PATH as PAGE_PATH_DNS_Records } from "../dnsRecords/constants";
@@ -51,7 +52,8 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = useSelector(selectTableData);
+  // const dataSource = useSelector(selectTableData);
+  const dataSource = [{ ip_address: "123" }];
   const selectedDnsServer = useSelector(selectSelectedDnsServer);
 
   // apis
@@ -90,7 +92,7 @@ const Index = () => {
   }
 
   function handleIpAddressClick(record) {
-    dispatch(setSelectedDnsServer(record));
+    dispatch(setSelectedDnsZone(record));
     navigate(`/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_DNS_Records}`);
   }
 
