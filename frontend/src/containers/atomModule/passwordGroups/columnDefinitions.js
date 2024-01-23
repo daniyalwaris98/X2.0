@@ -2,8 +2,7 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { DEFAULT_PASSWORD, indexColumnNameConstants } from "./constants";
-import { convertToAsterisks } from "../../../utils/helpers";
-import useTableActions from "../../../hooks/useTableActions";
+import { DefaultTextWithSwitch } from "../../../components/textWithSwitch";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
   const theme = useTheme();
@@ -14,11 +13,11 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
     indexColumnNameConstants.USER_NAME,
     {
       data_key: indexColumnNameConstants.PASSWORD,
-      render: (text, record) => convertToAsterisks(text),
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
     },
     {
       data_key: indexColumnNameConstants.SECRET_PASSWORD,
-      render: (text, record) => convertToAsterisks(text),
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
     },
     {
       data_key: indexColumnNameConstants.ACTIONS,

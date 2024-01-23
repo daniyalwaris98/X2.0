@@ -1,9 +1,11 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
   useFetchRecordsQuery,
   useFetchIpamDevicesLazyQuery,
+  useGetIpamDevicesFetchDatesQuery,
+  useGetIpamDevicesByFetchDateMutation,
 } from "../../../store/features/ipamModule/devices/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/ipamModule/devices/selectors";
@@ -22,7 +24,8 @@ import {
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { PageTableSectionWithCustomPageHeader } from "../../../components/pageSections";
+import CustomPageHeader from "./customPageHeader";
 
 const Index = () => {
   // theme
@@ -61,13 +64,33 @@ const Index = () => {
   const [
     fetchIpamDevices,
     {
-      data: ipamFetchIpamDevicesData,
+      data: fetchIpamDevicesData,
       isSuccess: isFetchIpamDevicesSuccess,
       isLoading: isFetchIpamDevicesLoading,
       isError: isFetchIpamDevicesError,
       error: fetchIpamDevicesError,
     },
   ] = useFetchIpamDevicesLazyQuery();
+
+  // apis
+  const {
+    data: getIpamDevicesFetchDatesData,
+    isSuccess: isGetIpamDevicesFetchDatesSuccess,
+    isLoading: isGetIpamDevicesFetchDatesLoading,
+    isError: isGetIpamDevicesFetchDatesError,
+    error: getIpamDevicesFetchDatesError,
+  } = useGetIpamDevicesFetchDatesQuery();
+
+  const [
+    getIpamDevicesByFetchDate,
+    {
+      data: getIpamDevicesByFetchDateData,
+      isSuccess: isGetIpamDevicesByFetchDateSuccess,
+      isLoading: isGetIpamDevicesByFetchDateLoading,
+      isError: isGetIpamDevicesByFetchDateError,
+      error: getIpamDevicesByFetchDateError,
+    },
+  ] = useGetIpamDevicesByFetchDateMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -79,10 +102,26 @@ const Index = () => {
   });
 
   useErrorHandling({
-    data: ipamFetchIpamDevicesData,
+    data: fetchIpamDevicesData,
     isSuccess: isFetchIpamDevicesSuccess,
     isError: isFetchIpamDevicesError,
     error: fetchIpamDevicesError,
+    type: TYPE_BULK,
+  });
+
+  useErrorHandling({
+    data: getIpamDevicesFetchDatesData,
+    isSuccess: isGetIpamDevicesFetchDatesSuccess,
+    isError: isGetIpamDevicesFetchDatesError,
+    error: getIpamDevicesFetchDatesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: getIpamDevicesByFetchDateData,
+    isSuccess: isGetIpamDevicesByFetchDateSuccess,
+    isError: isGetIpamDevicesByFetchDateError,
+    error: getIpamDevicesByFetchDateError,
     type: TYPE_BULK,
   });
 
@@ -108,8 +147,19 @@ const Index = () => {
     setTableConfigurationsOpen(true);
   }
 
+  function handleDateChange(date) {
+    getIpamDevicesByFetchDate({ date });
+  }
+
   return (
-    <Spin spinning={isFetchRecordsLoading || isFetchIpamDevicesLoading}>
+    <Spin
+      spinning={
+        isFetchRecordsLoading ||
+        isFetchIpamDevicesLoading ||
+        isGetIpamDevicesFetchDatesLoading ||
+        isGetIpamDevicesByFetchDateLoading
+      }
+    >
       {open ? <Modal handleClose={handleClose} open={open} /> : null}
 
       {tableConfigurationsOpen ? (
@@ -125,10 +175,15 @@ const Index = () => {
         />
       ) : null}
 
-      <DefaultPageTableSection
-        PAGE_NAME={PAGE_NAME}
+      <PageTableSectionWithCustomPageHeader
+        customPageHeader={
+          <CustomPageHeader
+            pageName={PAGE_NAME}
+            buttonsConfigurationList={buttonsConfigurationList}
+            handleDateChange={handleDateChange}
+          />
+        }
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
-        buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
       />

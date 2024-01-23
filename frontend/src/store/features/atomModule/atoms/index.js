@@ -10,6 +10,7 @@ import {
 
 const initialState = {
   all_data: [],
+  atom_devices_from_discovery: [],
 };
 
 const defaultSlice = createSlice({
@@ -22,6 +23,12 @@ const defaultSlice = createSlice({
         extendedApi.endpoints.fetchAtoms.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getAtomsDevicesFromDiscovery.matchFulfilled,
+        (state, action) => {
+          state.atom_devices_from_discovery = action.payload;
         }
       )
       .addMatcher(
@@ -52,6 +59,35 @@ const defaultSlice = createSlice({
           });
         }
       )
+      .addMatcher(
+        extendedApi.endpoints.addAtomsDevicesFromDiscovery.matchFulfilled,
+        (state, action) => {
+          action.payload.data.forEach((responseItem) => {
+            const indexToUpdate = state.all_data.findIndex((tableItem) => {
+              let atomId = responseItem[ATOM_ID];
+              let atomTransitionId = responseItem[ATOM_TRANSITION_ID];
+
+              if (atomId) {
+                return tableItem[ATOM_ID] === atomId;
+              } else {
+                return tableItem[ATOM_TRANSITION_ID] === atomTransitionId;
+              }
+            });
+
+            // Generate a unique identifier using uuid
+            const uniqueId = uuidv4();
+
+            if (indexToUpdate !== -1) {
+              responseItem[TABLE_DATA_UNIQUE_ID] = uniqueId;
+              state.all_data[indexToUpdate] = responseItem;
+            } else {
+              responseItem[TABLE_DATA_UNIQUE_ID] = uniqueId;
+              state.all_data = [responseItem, ...state.all_data];
+            }
+          });
+        }
+      )
+
       .addMatcher(
         extendedApi.endpoints.deleteAtoms.matchFulfilled,
         (state, action) => {

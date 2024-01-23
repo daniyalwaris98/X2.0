@@ -7,12 +7,17 @@ import {
 
 const initialState = {
   all_data: [],
+  selected_dns_server: {},
 };
 
 const defaultSlice = createSlice({
   name: ELEMENT_NAME,
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedDnsServer: (state, action) => {
+      state.selected_dns_server = action.payload;
+    },
+  },
   extraReducers(builder) {
     builder
       .addMatcher(
@@ -76,4 +81,5 @@ const defaultSlice = createSlice({
   },
 });
 
+export const { setSelectedDnsServer } = defaultSlice.actions;
 export default defaultSlice.reducer;

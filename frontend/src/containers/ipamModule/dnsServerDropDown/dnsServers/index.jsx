@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
 import {
@@ -27,10 +27,18 @@ import {
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
 import { indexColumnNameConstants } from "./constants";
+import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
+import { PAGE_PATH as PAGE_PATH_DNS_ZONES } from "../dnsZones/constants";
+import { DROPDOWN_PATH } from "../../dnsServerDropDown";
+import { MODULE_PATH } from "../../index";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -41,18 +49,18 @@ const Index = () => {
   const { columnDefinitions } = useIndexTableColumnDefinitions({
     handleEdit,
     handleScan,
+    handleIpAddressClick,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
-  const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
-    useButtonsConfiguration({
-      configure_table: { handleClick: handleTableConfigurationsOpen },
-      default_export: { handleClick: handleDefaultExport },
-      default_delete: {
-        handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
-      },
-      default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
-    });
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    configure_table: { handleClick: handleTableConfigurationsOpen },
+    default_export: { handleClick: handleDefaultExport },
+    default_delete: {
+      handleClick: handleDelete,
+      visible: selectedRowKeys.length > 0,
+    },
+    default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
+  });
 
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -174,6 +182,11 @@ const Index = () => {
 
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
+  }
+
+  function handleIpAddressClick(record) {
+    dispatch(setSelectedDnsServer(record));
+    navigate(`/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_DNS_ZONES}`);
   }
 
   return (
