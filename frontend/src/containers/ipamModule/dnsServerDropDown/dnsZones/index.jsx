@@ -96,7 +96,6 @@ const Index = () => {
 
   return (
     <Spin spinning={isFetchRecordsLoading}>
-      s
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -109,7 +108,9 @@ const Index = () => {
           setOpen={setTableConfigurationsOpen}
         />
       ) : null}
+
       {selectedDnsServer ? <DnsServerDetails /> : null}
+
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
