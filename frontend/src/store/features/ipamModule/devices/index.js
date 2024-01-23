@@ -8,6 +8,7 @@ import {
 const initialState = {
   all_data: [],
   atoms_to_add_in_ipam_devices: [],
+  ipam_devices_fetch_dates: [],
 };
 
 const defaultSlice = createSlice({
@@ -20,6 +21,18 @@ const defaultSlice = createSlice({
         extendedApi.endpoints.getAllIpamDevices.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getIpamDevicesFetchDates.matchFulfilled,
+        (state, action) => {
+          // state.ipam_devices_fetch_dates = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getIpamDevicesByFetchDate.matchFulfilled,
+        (state, action) => {
+          // state.all_data = action.payload;
         }
       )
       .addMatcher(

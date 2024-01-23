@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
 import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsRecords/apis";
 import { useSelector } from "react-redux";
@@ -18,10 +18,17 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
+import { setSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones";
+import { selectSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/selectors";
+import DnsZoneDetails from "./dnsZoneDetails";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
@@ -40,6 +47,7 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
+  const selectedDnsZone = useSelector(selectSelectedDnsZone);
 
   // apis
   const {
@@ -58,6 +66,13 @@ const Index = () => {
     error: fetchRecordsError,
     type: TYPE_FETCH,
   });
+
+  // effects
+  useEffect(() => {
+    return () => {
+      dispatch(setSelectedDnsZone(null));
+    };
+  }, []);
 
   // handlers
   function handleDefaultExport() {
@@ -83,6 +98,8 @@ const Index = () => {
           setOpen={setTableConfigurationsOpen}
         />
       ) : null}
+
+      {selectedDnsZone ? <DnsZoneDetails /> : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}

@@ -1,6 +1,7 @@
 import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
+import AddFromAutoDiscoveryModal from "./addFromAutoDiscoveryModal";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
@@ -88,6 +89,8 @@ const Index = () => {
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
+  const [openAddFromAutoDiscoveryModal, setOpenAddFromAutoDiscoveryModal] =
+    useState(false);
   const [siteModalOpen, setSiteModalOpen] = useState(false);
   const [rackModalOpen, setRackModalOpen] = useState(false);
   const [passwordGroupModalOpen, setPasswordGroupModalOpen] = useState(false);
@@ -276,6 +279,7 @@ const Index = () => {
     if (optionType === ADD_MANUALLY) {
       setOpen(true);
     } else if (optionType === FROM_DISCOVERY) {
+      setOpenAddFromAutoDiscoveryModal(true);
     }
   }
 
@@ -338,6 +342,10 @@ const Index = () => {
     setOpen(true);
   }
 
+  function handleCloseAddFromAutoDiscoveryModal() {
+    setOpenAddFromAutoDiscoveryModal(false);
+  }
+
   return (
     <Spin
       spinning={
@@ -365,6 +373,12 @@ const Index = () => {
         />
       ) : null}
 
+      {openAddFromAutoDiscoveryModal ? (
+        <AddFromAutoDiscoveryModal
+          handleClose={handleCloseAddFromAutoDiscoveryModal}
+          open={openAddFromAutoDiscoveryModal}
+        />
+      ) : null}
       {siteModalOpen ? (
         <SiteModal
           handleClose={handleCloseSiteModal}

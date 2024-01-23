@@ -44,25 +44,25 @@ const schema = yup.object().shape({
     .required(
       `${getTitle(indexColumnNameConstants.PASSWORD_GROUP_TYPE)} is required`
     ),
-  secret_password: yup
-    .string()
-    .when(
-      indexColumnNameConstants.PASSWORD_GROUP_TYPE,
-      (passwordGroupType, schema) => {
-        if (passwordGroupType == TELNET)
-          return schema.required(
-            `${getTitle(indexColumnNameConstants.SECRET_PASSWORD)} is required`
-          );
-        return schema;
-      }
-    ),
+  // secret_password: yup
+  //   .string()
+  //   .when(
+  //     indexColumnNameConstants.PASSWORD_GROUP_TYPE,
+  //     (passwordGroupType, schema) => {
+  //       if (passwordGroupType == TELNET)
+  //         return schema.required(
+  //           `${getTitle(indexColumnNameConstants.SECRET_PASSWORD)} is required`
+  //         );
+  //       return schema;
+  //     }
+  //   ),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   const theme = useTheme();
 
   // states
-  const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
+  // const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
 
   // useForm hook
   const { handleSubmit, control, setValue, watch, trigger } = useForm({
@@ -74,15 +74,15 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     formSetter(recordToEdit, setValue);
   }, []);
 
-  useEffect(() => {
-    if (watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE) === "SSH") {
-      setValue(indexColumnNameConstants.SECRET_PASSWORD, "");
-      setIsSecretPasswordDisable(true);
-    } else {
-      setIsSecretPasswordDisable(false);
-    }
-    trigger(indexColumnNameConstants.SECRET_PASSWORD);
-  }, [watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE)]);
+  // useEffect(() => {
+  //   if (watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE) === "SSH") {
+  //     setValue(indexColumnNameConstants.SECRET_PASSWORD, "");
+  //     setIsSecretPasswordDisable(true);
+  //   } else {
+  //     setIsSecretPasswordDisable(false);
+  //   }
+  //   trigger(indexColumnNameConstants.SECRET_PASSWORD);
+  // }, [watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE)]);
 
   // post api for the form
   const [
@@ -189,15 +189,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               options={passwordGroupTypeNames}
               required
             />
-            {watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE) == TELNET ? (
-              <DefaultFormUnit
-                type="password"
-                control={control}
-                dataKey={indexColumnNameConstants.SECRET_PASSWORD}
-                disabled={isSecretPasswordDisable}
-                required
-              />
-            ) : null}
+            {/* {watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE) == TELNET ? ( */}
+            <DefaultFormUnit
+              type="password"
+              control={control}
+              dataKey={indexColumnNameConstants.SECRET_PASSWORD}
+              // disabled={isSecretPasswordDisable}
+            />
+            {/* ) : null} */}
           </Grid>
           <Grid item xs={12}>
             <DefaultDialogFooter handleClose={handleClose} />

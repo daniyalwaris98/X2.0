@@ -251,7 +251,7 @@ def add_subnet(subnetObj:AddSubnetManually):
             subnet_tab.subnet_address = subnet_obj['subnet_address']
             subnet_tab.subnet_mask = subnet_obj['subnet_mask']
             subnet_tab.subnet_name = subnet_obj['subnet_name']
-            subnet_tab.location = subnet_obj['location']
+            subnet_tab.location = subnet_obj['subnet_location']
             subnet_tab.discovered = 'Not Discovered'
             InsertDBData(subnet_tab)
             subnet_dict = {
@@ -259,7 +259,7 @@ def add_subnet(subnetObj:AddSubnetManually):
                 "subnet_mask":subnet_tab.subnet_mask,
                 "subnet_address": subnet_tab.subnet_address,
                 "subnet_name":subnet_tab.subnet_name,
-                "location":subnet_tab.location,
+                "subnet_location":subnet_tab.location,
                 "discovered":subnet_tab.discovered
             }
             subnet_data_dict['data'] = subnet_dict
@@ -1043,6 +1043,7 @@ description="Use this API in the subnet page to add the subent from the execel"
 )
 def add_subnets(subnetObj: list[AddSubnetManually]):
     try:
+        print("subnet obj is::::::::",subnetObj,file=sys.stderr)
         success_list = []
         error_list = []
         subnet_data_dict = {"data": []}  # Initialize subnet_data_dict as a list

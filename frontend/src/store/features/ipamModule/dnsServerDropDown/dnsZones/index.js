@@ -7,12 +7,17 @@ import {
 
 const initialState = {
   all_data: [],
+  selected_dns_zone: {},
 };
 
 const defaultSlice = createSlice({
   name: ELEMENT_NAME,
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedDnsZone: (state, action) => {
+      state.selected_dns_zone = action.payload;
+    },
+  },
   extraReducers(builder) {
     builder.addMatcher(
       extendedApi.endpoints.getAllIpamDnsZones.matchFulfilled,
@@ -23,4 +28,5 @@ const defaultSlice = createSlice({
   },
 });
 
+export const { setSelectedDnsZone } = defaultSlice.actions;
 export default defaultSlice.reducer;

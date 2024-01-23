@@ -9,7 +9,7 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
         print("MOnitoring object is::::::::::::::::::::::::::;",MonitoringObj,file=sys.stderr)
         monitoring_id_exsist = configs.db.query(Monitoring_Devices_Table).filter_by(monitoring_device_id = MonitoringObj['monitoring_id']).first()
         if monitoring_id_exsist:
-            print("MOnitoring device id exsist:::::::::::::::::::")
+            print("Monitoring device id exsist:::::::::::::::::::")
             print("procedding to next step")
             atom_id_in_monitoring = monitoring_id_exsist.atom_id
             atom_id_exsist = configs.db.query(AtomTable).filter_by(atom_id = atom_id_in_monitoring).first()

@@ -122,6 +122,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               required
             />
             <DefaultFormUnit
+              type="password"
               control={control}
               dataKey={indexColumnNameConstants.PASSWORD}
               required
