@@ -3,6 +3,7 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 import { convertToAsterisks } from "../../../../utils/helpers";
+import { DefaultTextWithSwitch } from "../../../../components/textWithSwitch";
 
 export function useIndexTableColumnDefinitions({}) {
   const theme = useTheme();
@@ -12,7 +13,7 @@ export function useIndexTableColumnDefinitions({}) {
     indexColumnNameConstants.USER_NAME,
     {
       data_key: indexColumnNameConstants.PASSWORD,
-      render: (text, record) => convertToAsterisks(text),
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
     },
   ];
 

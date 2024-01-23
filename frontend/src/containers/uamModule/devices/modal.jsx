@@ -1,7 +1,6 @@
 import React, { useState } from "react";
 import DetailsModal from "../../../components/dialogs";
 import { useTheme } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
 import { Spin } from "antd";
 import {
   useFetchSitesByIPAddressQuery,
@@ -23,7 +22,6 @@ import {
 import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import { indexColumnNameConstants } from "./constants";
 import { PAGE_NAME } from "./constants";
-import DefaultTable from "../../../components/tables";
 import { TABLE_DATA_UNIQUE_ID as SITE_ID } from "../sites/constants";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions as useSitesTableColumnDefinitions } from "../sites/columnDefinitions";
@@ -34,8 +32,9 @@ import { useIndexTableColumnDefinitions as useSFPsTableColumnDefinitions } from 
 import { useIndexTableColumnDefinitions as useLicensesTableColumnDefinitions } from "../licenses/columnDefinitions";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { DeviceDetailsPageHeader } from "../../../components/pageHeaders";
 import { DeviceDetailsDialogFooter } from "../../../components/dialogFooters";
+import { PageTableSectionWithCustomPageHeader } from "../../../components/pageSections";
+import { CustomPageHeader } from "./customPageHeader";
 
 const Index = ({ handleClose, open, record }) => {
   const theme = useTheme();
@@ -230,9 +229,9 @@ const Index = ({ handleClose, open, record }) => {
           />
         ) : null}
 
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <DeviceDetailsPageHeader
+        <PageTableSectionWithCustomPageHeader
+          customPageHeader={
+            <CustomPageHeader
               selectedTableId={selectedTableId}
               setSelectedTableId={setSelectedTableId}
               setSelectedTableData={setSelectedTableData}
@@ -253,18 +252,13 @@ const Index = ({ handleClose, open, record }) => {
               licensesByIPAddressData={licensesByIPAddressData}
               generatedLicensesColumns={generatedLicensesColumns}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultTable
-              rowKey={selectedTableId}
-              dataSource={selectedTableData}
-              displayColumns={displayColumns}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DeviceDetailsDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
+          }
+          TABLE_DATA_UNIQUE_ID={selectedTableId}
+          displayColumns={displayColumns}
+          dataSource={selectedTableData}
+        />
+        <br />
+        <DeviceDetailsDialogFooter handleClose={handleClose} />
       </Spin>
     </DetailsModal>
   );
