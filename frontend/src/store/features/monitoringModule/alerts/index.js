@@ -3,6 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 
 const initialState = {
   all_data: [],
+  alert_history_details: [],
 };
 
 const alertSlice = createSlice({
@@ -10,12 +11,19 @@ const alertSlice = createSlice({
   initialState,
   reducers: {},
   extraReducers(builder) {
-    builder.addMatcher(
-      extendedApi.endpoints.getAllAlerts.matchFulfilled,
-      (state, action) => {
-        state.all_data = action.payload;
-      }
-    );
+    builder
+      .addMatcher(
+        extendedApi.endpoints.getAllAlerts.matchFulfilled,
+        (state, action) => {
+          state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getAlertsHistoryByIpAddress.matchFulfilled,
+        (state, action) => {
+          state.alert_history_details = action.payload;
+        }
+      );
   },
 });
 

@@ -154,14 +154,14 @@ import {
 } from "./cloudsDropDown";
 
 import {
-  PAGE_NAME as PAGE_NAME_CLOUDS,
-  PAGE_PATH as PAGE_PATH_CLOUDS,
-} from "./cloudsDropDown/clouds/constants";
-
-import {
   DROPDOWN_NAME as DROPDOWN_NAME_AWS,
   DROPDOWN_PATH as DROPDOWN_PATH_AWS,
 } from "./cloudsDropDown/awsDropDown";
+
+import {
+  PAGE_NAME as PAGE_NAME_ACCOUNTS,
+  PAGE_PATH as PAGE_PATH_ACCOUNTS,
+} from "./cloudsDropDown/awsDropDown/accounts/constants";
 
 import {
   PAGE_NAME as PAGE_NAME_S3,
@@ -355,14 +355,14 @@ const menuItems = [
     name: DROPDOWN_NAME_CLOUDS,
     children: [
       {
-        id: PAGE_PATH_CLOUDS,
-        name: PAGE_NAME_CLOUDS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${PAGE_PATH_CLOUDS}`,
-      },
-      {
         id: DROPDOWN_PATH_AWS,
         name: DROPDOWN_NAME_AWS,
         children: [
+          {
+            id: PAGE_PATH_ACCOUNTS,
+            name: PAGE_NAME_ACCOUNTS,
+            path: `/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ACCOUNTS}`,
+          },
           {
             id: PAGE_PATH_S3,
             name: PAGE_NAME_S3,
