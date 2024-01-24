@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
@@ -16,13 +13,13 @@ import {
   useFetchPasswordGroupNamesQuery,
   useFetchPasswordGroupTypeNamesQuery,
 } from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
-} from "../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import { selectPasswordGroupTypeNames } from "../../../store/features/dropDowns/selectors";
 import { formSetter, getTitle } from "../../../utils/helpers";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit from "../../../components/formUnits";
+import { SelectFormUnit } from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import useErrorHandling from "../../../hooks/useErrorHandling";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { PAGE_NAME, TELNET } from "./constants";
 import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";

@@ -18,6 +18,7 @@ export default function DefaultFormUnit({
   required = false,
   label = true,
   sx,
+  spinning = false,
   ...rest
 }) {
   const theme = useTheme();
@@ -34,31 +35,34 @@ export default function DefaultFormUnit({
                 {title}:
               </DefaultLabel>
             ) : null}
-            <InputWrapper>
-              {type === "text" ? (
-                <DefaultInput
-                  field={field}
-                  name={dataKey}
-                  id={dataKey}
-                  placeholder={title}
-                  type={type}
-                  sx={sx}
-                  {...rest}
-                />
-              ) : null}
+            <DefaultSpinner spinning={spinning}>
+              <InputWrapper>
+                {type === "text" ? (
+                  <DefaultInput
+                    field={field}
+                    name={dataKey}
+                    id={dataKey}
+                    placeholder={title}
+                    type={type}
+                    sx={sx}
+                    {...rest}
+                  />
+                ) : null}
 
-              {type === "password" ? (
-                <PasswordInput
-                  field={field}
-                  name={dataKey}
-                  id={dataKey}
-                  placeholder={title}
-                  type={type}
-                  sx={sx}
-                  {...rest}
-                />
-              ) : null}
-            </InputWrapper>
+                {type === "password" ? (
+                  <PasswordInput
+                    field={field}
+                    name={dataKey}
+                    id={dataKey}
+                    placeholder={title}
+                    type={type}
+                    sx={sx}
+                    {...rest}
+                  />
+                ) : null}
+              </InputWrapper>
+            </DefaultSpinner>
+
             <div
               style={{
                 color: theme?.palette?.form_unit?.error_text,
@@ -140,6 +144,7 @@ export function SelectFormUnitWithHiddenValues({
   options,
   required = false,
   label = true,
+  spinning = false,
   ...rest
 }) {
   const theme = useTheme();
@@ -156,26 +161,31 @@ export function SelectFormUnitWithHiddenValues({
                 {title}:
               </DefaultLabel>
             ) : null}
-            <InputWrapper>
-              <DefaultSelect
-                field={field}
-                sx={{ outline: "none" }}
-                id={dataKey}
-                {...rest}
-              >
-                <DefaultOption
-                  value=""
-                  sx={{
-                    color: theme.palette.default_select.place_holder,
-                  }}
+            <DefaultSpinner spinning={spinning}>
+              <InputWrapper>
+                <DefaultSelect
+                  field={field}
+                  sx={{ outline: "none" }}
+                  id={dataKey}
+                  {...rest}
                 >
-                  Select a {title}
-                </DefaultOption>
-                {options?.map((item) => (
-                  <DefaultOption value={item.value}>{item.name}</DefaultOption>
-                ))}
-              </DefaultSelect>
-            </InputWrapper>
+                  <DefaultOption
+                    value=""
+                    sx={{
+                      color: theme.palette.default_select.place_holder,
+                    }}
+                  >
+                    Select a {title}
+                  </DefaultOption>
+                  {options?.map((item) => (
+                    <DefaultOption value={item.value}>
+                      {item.name}
+                    </DefaultOption>
+                  ))}
+                </DefaultSelect>
+              </InputWrapper>
+            </DefaultSpinner>
+
             <div
               style={{
                 color: theme?.palette?.form_unit?.error_text,
@@ -197,6 +207,7 @@ export function AddableSelectFormUnit({
   options,
   required = false,
   label = true,
+  spinning = false,
   ...rest
 }) {
   const theme = useTheme();
@@ -213,26 +224,29 @@ export function AddableSelectFormUnit({
                 {title}:
               </DefaultLabel>
             ) : null}
-            <InputWrapper>
-              <AddableSelect
-                field={field}
-                sx={{ outline: "none" }}
-                id={dataKey}
-                {...rest}
-              >
-                <DefaultOption
-                  value=""
-                  sx={{
-                    color: theme.palette.default_select.place_holder,
-                  }}
+            <DefaultSpinner spinning={spinning}>
+              <InputWrapper>
+                <AddableSelect
+                  field={field}
+                  sx={{ outline: "none" }}
+                  id={dataKey}
+                  {...rest}
                 >
-                  Select a {title}
-                </DefaultOption>
-                {options?.map((value) => (
-                  <DefaultOption value={value}>{value}</DefaultOption>
-                ))}
-              </AddableSelect>
-            </InputWrapper>
+                  <DefaultOption
+                    value=""
+                    sx={{
+                      color: theme.palette.default_select.place_holder,
+                    }}
+                  >
+                    Select a {title}
+                  </DefaultOption>
+                  {options?.map((value) => (
+                    <DefaultOption value={value}>{value}</DefaultOption>
+                  ))}
+                </AddableSelect>
+              </InputWrapper>
+            </DefaultSpinner>
+
             <div
               style={{
                 color: theme?.palette?.form_unit?.error_text,
@@ -254,6 +268,7 @@ export function DateFormUnit({
   options,
   required = false,
   label = true,
+  spinning = false,
   ...rest
 }) {
   const theme = useTheme();
@@ -270,14 +285,17 @@ export function DateFormUnit({
                 {title}:
               </DefaultLabel>
             ) : null}
-            <InputWrapper>
-              <DefaultDate
-                field={field}
-                sx={{ outline: "none" }}
-                id={dataKey}
-                {...rest}
-              />
-            </InputWrapper>
+            <DefaultSpinner spinning={spinning}>
+              <InputWrapper>
+                <DefaultDate
+                  field={field}
+                  sx={{ outline: "none" }}
+                  id={dataKey}
+                  {...rest}
+                />
+              </InputWrapper>
+            </DefaultSpinner>
+
             <div
               style={{
                 color: theme?.palette?.form_unit?.error_text,

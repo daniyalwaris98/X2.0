@@ -2,7 +2,7 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
+export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.ROLE,
 

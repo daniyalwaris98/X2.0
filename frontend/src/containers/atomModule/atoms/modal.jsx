@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
+import React, { useEffect } from "react";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import {
-  SelectFormUnit,
-  AddableSelectFormUnit,
-} from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useSelector } from "react-redux";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
@@ -22,7 +16,6 @@ import {
   useFetchDeviceTypeNamesQuery,
   useFetchPasswordGroupNamesQuery,
 } from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
 import {
   selectSiteNames,
   selectRackNames,
@@ -31,15 +24,26 @@ import {
   selectDeviceTypeNames,
   selectPasswordGroupNames,
 } from "../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../hooks/useErrorHandling";
 import {
   formSetter,
   generateNumbersArray,
   getTitle,
 } from "../../../utils/helpers";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit from "../../../components/formUnits";
+import {
+  SelectFormUnit,
+  AddableSelectFormUnit,
+} from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { ATOM_ID, ATOM_TRANSITION_ID, PAGE_NAME } from "./constants";
-import { indexColumnNameConstants } from "./constants";
+import {
+  ATOM_ID,
+  ATOM_TRANSITION_ID,
+  PAGE_NAME,
+  indexColumnNameConstants,
+} from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.IP_ADDRESS]: yup
@@ -55,11 +59,8 @@ const Index = ({
   handleOpenRackModal,
   handleOpenPasswordGroupModal,
 }) => {
-  // states
-  const [initialRender, setInitialRender] = useState(true);
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue, watch } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -68,38 +69,58 @@ const Index = ({
     formSetter(recordToEdit, setValue);
   }, []);
 
-  useEffect(() => {
-    // skip the first render
-    // if (initialRender) {
-    //   setInitialRender(false);
-    //   return;
-    // }
-    // (async () => {
-    //   // setValue("rack_name", "");
-    //   await trigger("rack_name");
-    // })();
-  }, [watch(indexColumnNameConstants.SITE_NAME)]);
-
   // fetching dropdowns data from backend using apis
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
-  const { error: rackNamesError, isLoading: isRackNamesLoading } =
-    useFetchRackNamesQuery(
-      {
-        site_name: watch(indexColumnNameConstants.SITE_NAME, ""),
-      },
-      { skip: watch(indexColumnNameConstants.SITE_NAME) === undefined }
-    );
-
-  const { error: vendorNamesError, isLoading: isVendorNamesLoading } =
-    useFetchVendorNamesQuery();
-  const { error: functionNamesError, isLoading: isFunctionNamesLoading } =
-    useFetchFunctionNamesQuery();
-  const { error: deviceTypeNamesError, isLoading: isDeviceTypeNamesLoading } =
-    useFetchDeviceTypeNamesQuery();
   const {
-    error: passwordGroupNamesError,
-    isLoading: isPasswordGroupNamesLoading,
+    data: fetchSiteNamesData,
+    isSuccess: isFetchSiteNamesSuccess,
+    isLoading: isFetchSiteNamesLoading,
+    isError: isFetchSiteNamesError,
+    error: fetchSiteNamesError,
+  } = useFetchSiteNamesQuery();
+
+  const {
+    data: fetchRackNamesData,
+    isSuccess: isFetchRackNamesSuccess,
+    isLoading: isFetchRackNamesLoading,
+    isError: isFetchRackNamesError,
+    error: fetchRackNamesError,
+  } = useFetchRackNamesQuery(
+    {
+      site_name: watch(indexColumnNameConstants.SITE_NAME, ""),
+    },
+    { skip: watch(indexColumnNameConstants.SITE_NAME) === undefined }
+  );
+
+  const {
+    data: fetchVendorNamesData,
+    isSuccess: isFetchVendorNamesSuccess,
+    isLoading: isFetchVendorNamesLoading,
+    isError: isFetchVendorNamesError,
+    error: fetchVendorNamesError,
+  } = useFetchVendorNamesQuery();
+
+  const {
+    data: fetchFunctionNamesData,
+    isSuccess: isFetchFunctionNamesSuccess,
+    isLoading: isFetchFunctionNamesLoading,
+    isError: isFetchFunctionNamesError,
+    error: fetchFunctionNamesError,
+  } = useFetchFunctionNamesQuery();
+
+  const {
+    data: fetchDeviceTypeNamesData,
+    isSuccess: isFetchDeviceTypeNamesSuccess,
+    isLoading: isFetchDeviceTypeNamesLoading,
+    isError: isFetchDeviceTypeNamesError,
+    error: fetchDeviceTypeNamesError,
+  } = useFetchDeviceTypeNamesQuery();
+
+  const {
+    data: fetchPasswordGroupNamesData,
+    isSuccess: isFetchPasswordGroupNamesSuccess,
+    isLoading: isFetchPasswordGroupNamesLoading,
+    isError: isFetchPasswordGroupNamesError,
+    error: fetchPasswordGroupNamesError,
   } = useFetchPasswordGroupNamesQuery();
 
   // post api for the form
@@ -144,6 +165,54 @@ const Index = ({
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: fetchSiteNamesData,
+    isSuccess: isFetchSiteNamesSuccess,
+    isError: isFetchSiteNamesError,
+    error: fetchSiteNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchRackNamesData,
+    isSuccess: isFetchRackNamesSuccess,
+    isError: isFetchRackNamesError,
+    error: fetchRackNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchVendorNamesData,
+    isSuccess: isFetchVendorNamesSuccess,
+    isError: isFetchVendorNamesError,
+    error: fetchVendorNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchFunctionNamesData,
+    isSuccess: isFetchFunctionNamesSuccess,
+    isError: isFetchFunctionNamesError,
+    error: fetchFunctionNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchDeviceTypeNamesData,
+    isSuccess: isFetchDeviceTypeNamesSuccess,
+    isError: isFetchDeviceTypeNamesError,
+    error: fetchDeviceTypeNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchPasswordGroupNamesData,
+    isSuccess: isFetchPasswordGroupNamesSuccess,
+    isError: isFetchPasswordGroupNamesError,
+    error: fetchPasswordGroupNamesError,
+    type: TYPE_FETCH,
+  });
+
   // getting dropdowns data from the store
   const siteNames = useSelector(selectSiteNames);
   const rackNames = useSelector(selectRackNames);
@@ -178,7 +247,7 @@ const Index = ({
       title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={5}>
           <Grid item xs={12} sm={4}>
             <DefaultFormUnit
@@ -191,12 +260,14 @@ const Index = ({
               dataKey={indexColumnNameConstants.SITE_NAME}
               options={siteNames}
               onAddClick={handleOpenSiteModal}
+              spinning={isFetchSiteNamesLoading}
             />
             <AddableSelectFormUnit
               control={control}
               dataKey={indexColumnNameConstants.RACK_NAME}
               options={rackNames}
               onAddClick={handleOpenRackModal}
+              spinning={isFetchRackNamesLoading}
             />
             <DefaultFormUnit
               control={control}
@@ -217,11 +288,13 @@ const Index = ({
               control={control}
               dataKey={indexColumnNameConstants.FUNCTION}
               options={functionNames}
+              spinning={isFetchFunctionNamesLoading}
             />
             <SelectFormUnit
               control={control}
               dataKey={indexColumnNameConstants.DEVICE_TYPE}
               options={deviceTypeNames}
+              spinning={isFetchDeviceTypeNamesLoading}
             />
             <DefaultFormUnit
               control={control}
@@ -233,12 +306,14 @@ const Index = ({
               control={control}
               dataKey={indexColumnNameConstants.VENDOR}
               options={vendorNames}
+              spinning={isFetchVendorNamesLoading}
             />
             <AddableSelectFormUnit
               control={control}
               dataKey={indexColumnNameConstants.PASSWORD_GROUP}
               options={passwordGroupNames}
               onAddClick={handleOpenPasswordGroupModal}
+              spinning={isFetchPasswordGroupNamesLoading}
             />
             <DefaultFormUnit
               control={control}
