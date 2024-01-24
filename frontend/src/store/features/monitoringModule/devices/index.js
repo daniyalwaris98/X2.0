@@ -4,6 +4,8 @@ import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
 } from "../../../../containers/monitoringModule/devices/constants";
+import { persistReducer } from "redux-persist";
+import persistConfig from "./persistConfig";
 
 const initialState = {
   all_data: [],
@@ -68,5 +70,7 @@ const defaultSlice = createSlice({
   },
 });
 
+const persistedReducer = persistReducer(persistConfig, defaultSlice.reducer);
+
 export const { setSelectedDevice } = defaultSlice.actions;
-export default defaultSlice.reducer;
+export default persistedReducer;
