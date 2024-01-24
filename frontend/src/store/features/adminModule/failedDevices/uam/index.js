@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../containers/autoDiscoveryModule/discovery/constants";
+} from "../../../../../containers/adminModule/failedDevicesLanding/uam/constants";
 
 const initialState = {
   all_data: [],
@@ -15,8 +15,7 @@ const defaultSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addMatcher(
-      extendedApi.endpoints.getAllAutoDiscoveryDiscoveredDevicesBySubnet
-        .matchFulfilled,
+      extendedApi.endpoints.getAllAdminUamFailedDevices.matchFulfilled,
       (state, action) => {
         state.all_data = action.payload;
       }

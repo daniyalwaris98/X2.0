@@ -2,19 +2,23 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    fetchAutoDiscoveryDiscoveredDevicesBySubnet: builder.mutation({
+    getAllAutoDiscoveryDiscoveredDevices: builder.query({
+      query: () => "/api/v1/ipam/ipam_device/get_all_discovery_data",
+    }),
+
+    getAllAutoDiscoveryDiscoveredDevicesBySubnet: builder.mutation({
       query: (data) => ({
         url: "/api/v1/auto_discovery/get_discovery_data",
         method: "POST",
-        body: data,
+        body: data, //{subnet:""}
       }),
     }),
 
-    fetchAutoDiscoveryDiscoveryFunctionCountsBySubnet: builder.mutation({
+    getAutoDiscoveryDiscoveryFunctionCountsBySubnet: builder.mutation({
       query: (data) => ({
         url: "/api/v1/auto_discovery/get_discovery_function_count",
         method: "POST",
-        body: data,
+        body: data, //{subnet:""}
       }),
     }),
 
@@ -22,15 +26,15 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: (data) => ({
         url: "/api/v1/auto_discovery/auto_discover",
         method: "POST",
-        body: data,
+        body: data, //{subnet:""}
       }),
     }),
   }),
 });
 
 export const {
-  useFetchAutoDiscoveryDiscoveredDevicesBySubnetMutation:
+  useGetAllAutoDiscoveryDiscoveredDevicesBySubnetMutation:
     useFetchRecordsMutation,
-  useFetchAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation,
+  useGetAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation,
   useAutoDiscoveryAutoDiscoverDevicesBySubnetMutation,
 } = extendedApi;

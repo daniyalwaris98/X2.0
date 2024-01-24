@@ -1,28 +1,28 @@
 import React, { useState } from "react";
+import { Spin } from "antd";
 import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import { useSelector } from "react-redux";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
-} from "../../../store/features/uamModule/racks/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/racks/selectors";
+} from "../../../store/features/adminModule/members/apis";
+import { selectTableData } from "../../../store/features/adminModule/members/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
 import useErrorHandling from "../../../hooks/useErrorHandling";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../components/pageSections";
+import Modal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
   // theme

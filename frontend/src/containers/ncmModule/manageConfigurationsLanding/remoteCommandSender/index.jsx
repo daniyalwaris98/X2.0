@@ -11,7 +11,6 @@ import { Spin } from "antd";
 import DefaultCard from "../../../../components/cards";
 import useButtonGenerator from "../../../../hooks/useButtonGenerator";
 import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
-//
 import { useForm } from "react-hook-form";
 import DefaultFormUnit from "../../../../components/formUnits";
 import { yupResolver } from "@hookform/resolvers/yup";

@@ -18,6 +18,8 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DeviceCounts from "./deviceCounts";
+import StartScanningBar from "./startScanningBar";
 
 const Index = () => {
   // theme
@@ -90,6 +92,10 @@ const Index = () => {
           setOpen={setTableConfigurationsOpen}
         />
       ) : null}
+
+      <DeviceCounts />
+
+      <StartScanningBar />
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}

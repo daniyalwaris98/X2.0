@@ -1,23 +1,23 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/adminModule/failedDevices/autoDiscovery/apis";
-import { jsonToExcel } from "../../../../utils/helpers";
 import { Spin } from "antd";
+import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import { useFetchRecordsQuery } from "../../../../store/features/adminModule/failedDevices/ncm/apis";
+import { selectTableData } from "../../../../store/features/adminModule/failedDevices/ncm/selectors";
+import { jsonToExcel } from "../../../../utils/helpers";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/adminModule/failedDevices/autoDiscovery/selectors";
 
 const Index = () => {
   // theme

@@ -8,7 +8,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 
     monitoringDeleteWMICredentials: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/monitoring/credentials/delete_WMI_credentials",
+        url: "/api/v1/monitoring/credentials/delete_snmp_credentials",
         method: "POST",
         body: data,
       }),

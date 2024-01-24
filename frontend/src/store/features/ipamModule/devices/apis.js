@@ -7,27 +7,19 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     getIpamDevicesFetchDates: builder.query({
-      query: () => "/api/v1/ipam/ipam_device/get_all_ipam_devices",
+      query: () => "/api/v1/ipam/ipam_device/get_ipam_devices_fetch_dates",
     }),
 
     getIpamDevicesByFetchDate: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/delete_password_group",
+        url: "/api/v1/ipam/ipam_device/get_ipam_devices_by_fetch_dates",
         method: "POST",
-        body: data,
+        body: data, //{date:""}
       }),
     }),
 
     fetchIpamDevices: builder.query({
       query: () => "/api/v1/ipam/ipam_device/fetch_ipam_devices",
-    }),
-
-    deleteIpamDevices: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/atom/password_group/delete_password_group",
-        method: "POST",
-        body: data,
-      }),
     }),
 
     getAtomsToAddInIpamDevices: builder.query({
@@ -46,7 +38,6 @@ export const extendedApi = monetxApi.injectEndpoints({
 
 export const {
   useGetAllIpamDevicesQuery: useFetchRecordsQuery,
-  useDeleteIpamDevicesMutation: useDeleteRecordsMutation,
   useGetAtomsToAddInIpamDevicesQuery,
   useAddAtomsInIpamDevicesMutation,
   useGetIpamDevicesFetchDatesQuery,

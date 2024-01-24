@@ -15,7 +15,8 @@ const defaultSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addMatcher(
-      extendedApi.endpoints.getAllAdminFailedDevices.matchFulfilled,
+      extendedApi.endpoints.getAllAdminAutoDiscoveryFailedDevices
+        .matchFulfilled,
       (state, action) => {
         state.all_data = action.payload;
       }
