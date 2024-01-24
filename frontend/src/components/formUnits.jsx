@@ -9,6 +9,7 @@ import { Controller } from "react-hook-form";
 import { getTitle } from "../utils/helpers";
 import { useTheme } from "@mui/material/styles";
 import DefaultDate from "./dates";
+import DefaultSpinner from "./spinners";
 
 export default function DefaultFormUnit({
   control,
@@ -79,6 +80,7 @@ export function SelectFormUnit({
   options,
   required = false,
   label = true,
+  spinning = false,
   ...rest
 }) {
   const theme = useTheme();
@@ -95,26 +97,28 @@ export function SelectFormUnit({
                 {title}:
               </DefaultLabel>
             ) : null}
-            <InputWrapper>
-              <DefaultSelect
-                field={field}
-                sx={{ outline: "none" }}
-                id={dataKey}
-                {...rest}
-              >
-                <DefaultOption
-                  value=""
-                  sx={{
-                    color: theme.palette.default_select.place_holder,
-                  }}
+            <DefaultSpinner spinning={spinning}>
+              <InputWrapper>
+                <DefaultSelect
+                  field={field}
+                  sx={{ outline: "none" }}
+                  id={dataKey}
+                  {...rest}
                 >
-                  Select a {title}
-                </DefaultOption>
-                {options?.map((value) => (
-                  <DefaultOption value={value}>{value}</DefaultOption>
-                ))}
-              </DefaultSelect>
-            </InputWrapper>
+                  <DefaultOption
+                    value=""
+                    sx={{
+                      color: theme.palette.default_select.place_holder,
+                    }}
+                  >
+                    Select a {title}
+                  </DefaultOption>
+                  {options?.map((value) => (
+                    <DefaultOption value={value}>{value}</DefaultOption>
+                  ))}
+                </DefaultSelect>
+              </InputWrapper>
+            </DefaultSpinner>
             <div
               style={{
                 color: theme?.palette?.form_unit?.error_text,

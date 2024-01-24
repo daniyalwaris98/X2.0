@@ -15,8 +15,8 @@ import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import DefaultPageTableSection from "../../../components/pageSections";
-import Modal from "./modal";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import Modal from "./modal";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
