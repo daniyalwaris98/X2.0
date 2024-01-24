@@ -110,7 +110,6 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
             print("ip address is::::",ip_address,file=sys.stderr)
             atom_exists = configs.db.query(IpamDevicesFetchTable).filter_by(atom_id=atom_id).first()
             if atom_exists:
-                pass
                 return JSONResponse(status_code=400, content="Atom Already Exists")
             else:
                 new_atom = IpamDevicesFetchTable(atom_id=atom_id)  # Create a new atom object
@@ -122,7 +121,7 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
             failed_ip = configs.db.query(FailedDevicesTable).filter_by(ip_address=ip_address).first()
             print("failed ip is::::::::::::::::::", failed_ip, file=sys.stderr)
             if failed_ip:
-                error_list.append(f"{failed_ip.ip_address} : failed due to {failed_ip.failure_reason}")
+                error_list.append(f"{failed_ip.ip_address} : failed due to login")
             else:
                 ipam_devices = configs.db.query(IpamDevicesFetchTable).filter_by(atom_id = atom_id).all()
                 for device in ipam_devices:
@@ -148,7 +147,7 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
                             devices_data['subnet_usage'] = usage.subnet_usage
                             devices_data['subnet_size'] = usage.subnet_size
                     data.append(devices_data)
-            success_lst.append(f"{atom_id} : Inserted Successfully")
+                    success_lst.append(f"{atom_id} : Inserted Successfully")
         print("data is::::::",data,file=sys.stderr)
         responses = {
             'data':data,
@@ -897,7 +896,7 @@ def scan_subnets(subnets: List[ScanSubnetSchema]):
              )
 def scan_all_subnets(subnet: ScanAllSubnetSchema):
     try:
-        data = {}
+        data_dict = {}
         success_list = []
         error_list = []
 
@@ -945,22 +944,31 @@ def scan_all_subnets(subnet: ScanAllSubnetSchema):
                     "subnet_usage":subnet_usage.subnet_usage,
                     "subnet_size":subnet_usage.subnet_size
                 }
-                data = {"data":subnet_data_dict}
+                data_dict['data'] = subnet_data_dict
                 success_list.append(f"{obj.subnet_address} : Scanned Successfully")
             except Exception as e:
                 configs.db.rollback()  # Rollback changes if an exception occurs
                 traceback.print_exc()
 
 
-        Thread(target=MultiPurpose, args=(option_dict.get('options'),)).start()
+        stat = Thread(target=MultiPurpose, args=(option_dict.get('options'),)).start()
         print("threading is being executed::", file=sys.stderr)
-        responses = {
-            "data":data,
-            "success_list":success_list,
-            "error_list":error_list,
-            "success":len(success_list),
-            "errror":len(error_list)
-        }
+        if stat == "success":
+            responses = {
+                "data":data_dict,
+                "success_list":success_list,
+                "error_list":error_list,
+                "success":len(success_list),
+                "errror":len(error_list)
+            }
+        else:
+            responses = {
+                "data": [],
+                "success_list": [],
+                "error_list": ["Bulk Scanning Failed Due To Exception"],
+                "success": 0,
+                "error": 1
+            }
         return responses
     except Exception as e:
         traceback.print_exc()
@@ -1204,7 +1212,7 @@ def fetch_ipam_devices():
                         data.append(devices_data)
                         success_list.append(f"{atom_exsist.ip_address} : Fetched Successfully")
         respones = {
-            "dict":data,
+            "data":data,
             "suucess_list":success_list,
             "error_list": error_list,
             "success":len(success_list),
