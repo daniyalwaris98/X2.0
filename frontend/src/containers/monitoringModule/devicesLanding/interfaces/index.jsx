@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import { useTheme } from "@mui/material/styles";
 import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/apis";
+import { setSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
@@ -20,14 +21,23 @@ import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/selectors";
 import { selectSelectedDevice } from "../../../../store/features/monitoringModule/devices/selectors";
 import { IP_ADDRESS as DEVICE_IP_ADDRESS } from "../../devices/constants";
+import { PAGE_PATH as PAGE_PATH_BANDWIDTHS } from "../bandwidths/constants";
+import { LANDING_PAGE_PATH } from "../../devicesLanding";
+import { MODULE_PATH } from "../../index";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleIpAddressClick,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -41,8 +51,9 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
+  // const dataSource = useSelector(selectTableData);
+  const dataSource = [{ ip_address: "1234567" }];
   const selectedDevice = useSelector(selectSelectedDevice);
-  const dataSource = useSelector(selectTableData);
 
   // apis
   const [
@@ -82,6 +93,11 @@ const Index = () => {
 
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
+  }
+
+  function handleIpAddressClick(record) {
+    dispatch(setSelectedInterface(record));
+    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_BANDWIDTHS}`);
   }
 
   return (

@@ -3,7 +3,6 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 import Tooltip from "@mui/material/Tooltip";
-import { convertToAsterisks } from "../../../../utils/helpers";
 import DefaultAnchor from "../../../../components/anchor";
 import { DefaultTextWithSwitch } from "../../../../components/textWithSwitch";
 

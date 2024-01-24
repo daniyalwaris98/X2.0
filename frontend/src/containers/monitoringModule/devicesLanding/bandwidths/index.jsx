@@ -1,8 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/atomModule/passwordGroups/apis";
+import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/bandwidths/apis";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/atomModule/passwordGroups/selectors";
+import { selectTableData } from "../../../../store/features/monitoringModule/devicesLanding/bandwidths/selectors";
+import { selectSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/selectors";
+import { setSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { Spin } from "antd";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
@@ -18,10 +20,13 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
+import InterfaceDetails from "./interfaceDetails";
+import { useDispatch } from "react-redux";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
@@ -40,15 +45,19 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
+  const selectedInterface = useSelector(selectSelectedInterface);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchRecords,
+    {
+      data: fetchRecordsData,
+      isSuccess: isFetchRecordsSuccess,
+      isLoading: isFetchRecordsLoading,
+      isError: isFetchRecordsError,
+      error: fetchRecordsError,
+    },
+  ] = useFetchRecordsMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -58,6 +67,18 @@ const Index = () => {
     error: fetchRecordsError,
     type: TYPE_FETCH,
   });
+
+  // effects
+  useEffect(() => {
+    if (selectedInterface) {
+      fetchRecords({
+        // [DEVICE_IP_ADDRESS]: selectedInterface[DEVICE_IP_ADDRESS],
+      });
+    }
+    return () => {
+      dispatch(setSelectedInterface(null));
+    };
+  }, []);
 
   // handlers
   function handleDefaultExport() {
@@ -83,6 +104,8 @@ const Index = () => {
           setOpen={setTableConfigurationsOpen}
         />
       ) : null}
+
+      {selectedInterface ? <InterfaceDetails /> : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}

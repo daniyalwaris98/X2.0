@@ -18,6 +18,7 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
+import AlertHistoryModal from "./alertHistoryModal";
 
 const Index = () => {
   // theme
@@ -25,7 +26,9 @@ const Index = () => {
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleIpAddressClick,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -33,13 +36,16 @@ const Index = () => {
   });
 
   // states
+  const [openAlertHistoryModal, setOpenAlertHistoryModal] = useState(false);
+  const [selectedAlert, setSelectedAlert] = useState(null);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = useSelector(selectTableData);
+  const dataSource = [{ ip_address: "123" }];
+  // const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -69,8 +75,25 @@ const Index = () => {
     setTableConfigurationsOpen(true);
   }
 
+  function handleIpAddressClick(record) {
+    setSelectedAlert(record);
+    setOpenAlertHistoryModal(true);
+  }
+
+  function handleCloseAlertHistoryModal() {
+    setOpenAlertHistoryModal(false);
+  }
+
   return (
     <Spin spinning={isFetchRecordsLoading}>
+      {openAlertHistoryModal ? (
+        <AlertHistoryModal
+          handleClose={handleCloseAlertHistoryModal}
+          open={openAlertHistoryModal}
+          record={selectedAlert}
+        />
+      ) : null}
+
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
