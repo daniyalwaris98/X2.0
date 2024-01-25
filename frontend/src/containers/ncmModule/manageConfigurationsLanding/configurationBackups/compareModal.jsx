@@ -83,13 +83,9 @@ const Index = ({ handleClose, open }) => {
   const sampleHTML = "<div><p>Hello, World!</p></div>";
 
   return (
-    <FormModal
-      sx={{ zIndex: "999" }}
-      title={`${"Compare"} ${ELEMENT_NAME}`}
-      open={open}
-    >
+    <FormModal title={`${"Compare"} ${ELEMENT_NAME}`} open={open}>
       <Spin spinning={isCompareBackupsLoading}>
-        <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
+        <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
               <SelectFormUnitWithHiddenValues
