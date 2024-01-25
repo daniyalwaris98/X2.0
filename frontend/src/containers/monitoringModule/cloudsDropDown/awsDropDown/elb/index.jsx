@@ -19,6 +19,8 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   ELB_STATUS,
+  ENABLED,
+  DISABLED,
 } from "./constants";
 import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../../components/pageSections";
@@ -88,7 +90,7 @@ const Index = () => {
   function handleMonitoringSwitchChange(checked, record) {
     changeELBStatus({
       [TABLE_DATA_UNIQUE_ID]: record[TABLE_DATA_UNIQUE_ID],
-      [ELB_STATUS]: checked,
+      [ELB_STATUS]: checked ? ENABLED : DISABLED,
     });
   }
 

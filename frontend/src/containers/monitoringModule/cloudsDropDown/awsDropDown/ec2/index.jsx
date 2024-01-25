@@ -19,6 +19,8 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   EC2_STATUS,
+  ENABLED,
+  DISABLED,
 } from "./constants";
 import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../../components/pageSections";
@@ -89,7 +91,7 @@ const Index = () => {
   function handleMonitoringSwitchChange(checked, record) {
     changeEC2Status({
       [TABLE_DATA_UNIQUE_ID]: record[TABLE_DATA_UNIQUE_ID],
-      [EC2_STATUS]: checked,
+      [EC2_STATUS]: checked ? ENABLED : DISABLED,
     });
   }
 
