@@ -4,7 +4,10 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/selectors";
 import { selectSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
-import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/apis";
+import {
+  useFetchZonesLazyQuery,
+  useGetIpamDnsZonesByServerIdMutation,
+} from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/apis";
 import { setSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones";
 import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
 import { jsonToExcel } from "../../../../utils/helpers";
@@ -22,6 +25,7 @@ import { MODULE_PATH } from "../../index";
 import { DROPDOWN_PATH } from "../../dnsServerDropDown";
 import DnsServerDetails from "./dnsServerDetails";
 import { PAGE_PATH as PAGE_PATH_DNS_Records } from "../dnsRecords/constants";
+import { TABLE_DATA_UNIQUE_ID as DNS_SERVER_ID } from "../dnsServers/constants";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
@@ -54,25 +58,55 @@ const Index = () => {
   const selectedDnsServer = useSelector(selectSelectedDnsServer);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchZones,
+    {
+      data: fetchZonesData,
+      isSuccess: isFetchZonesSuccess,
+      isLoading: isFetchZonesLoading,
+      isError: isFetchZonesError,
+      error: fetchZonesError,
+    },
+  ] = useFetchZonesLazyQuery();
+
+  const [
+    getDnsZonesByServerId,
+    {
+      data: getDnsZonesByServerIdData,
+      isSuccess: isGetDnsZonesByServerIdSuccess,
+      isLoading: isGetDnsZonesByServerIdLoading,
+      isError: isGetDnsZonesByServerIdError,
+      error: getDnsZonesByServerIdError,
+    },
+  ] = useGetIpamDnsZonesByServerIdMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
+    data: fetchZonesData,
+    isSuccess: isFetchZonesSuccess,
+    isError: isFetchZonesError,
+    error: fetchZonesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: getDnsZonesByServerIdData,
+    isSuccess: isGetDnsZonesByServerIdSuccess,
+    isError: isGetDnsZonesByServerIdError,
+    error: getDnsZonesByServerIdError,
     type: TYPE_FETCH,
   });
 
   // effects
   useEffect(() => {
+    if (selectedDnsServer) {
+      getDnsZonesByServerId({
+        [DNS_SERVER_ID]: selectedDnsServer[DNS_SERVER_ID],
+      });
+    } else {
+      fetchZones();
+    }
+
     return () => {
       dispatch(setSelectedDnsServer(null));
     };
@@ -94,7 +128,9 @@ const Index = () => {
   }
 
   return (
-    <DefaultSpinner spinning={isFetchRecordsLoading}>
+    <DefaultSpinner
+      spinning={isFetchZonesLoading || isGetDnsZonesByServerIdLoading}
+    >
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}

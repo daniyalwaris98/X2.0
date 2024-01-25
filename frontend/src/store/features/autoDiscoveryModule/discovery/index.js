@@ -7,6 +7,7 @@ import {
 
 const initialState = {
   all_data: [],
+  device_counts: null,
 };
 
 const defaultSlice = createSlice({
@@ -27,6 +28,13 @@ const defaultSlice = createSlice({
           .matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getAutoDiscoveryDiscoveryFunctionCountsBySubnet
+          .matchFulfilled,
+        (state, action) => {
+          state.device_counts = action.payload;
         }
       )
       .addMatcher(

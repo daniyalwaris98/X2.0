@@ -105,7 +105,7 @@ const dropDownsSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.getIpamDevicesFetchDates.matchFulfilled,
+        extendedApi.endpoints.fetchIpamDevicesFetchDates.matchFulfilled,
         (state, action) => {
           state.ipam_devices_fetch_dates = action.payload;
         }

@@ -10,7 +10,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: (data) => ({
         url: "/api/v1/auto_discovery/get_discovery_data",
         method: "POST",
-        body: data, //{subnet:""}
+        body: data,
       }),
     }),
 
@@ -18,7 +18,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: (data) => ({
         url: "/api/v1/auto_discovery/get_discovery_function_count",
         method: "POST",
-        body: data, //{subnet:""}
+        body: data,
       }),
     }),
 
@@ -26,7 +26,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: (data) => ({
         url: "/api/v1/auto_discovery/auto_discover",
         method: "POST",
-        body: data, //{subnet:""}
+        body: data,
       }),
     }),
   }),

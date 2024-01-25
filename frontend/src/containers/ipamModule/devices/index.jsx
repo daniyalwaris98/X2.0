@@ -1,10 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/ipamModule/devices/selectors";
+import { useFetchIpamDevicesFetchDatesLazyQuery } from "../../../store/features/dropDowns/apis";
 import {
   useFetchRecordsQuery,
   useFetchIpamDevicesLazyQuery,
-  useGetIpamDevicesFetchDatesQuery,
   useGetIpamDevicesByFetchDateMutation,
 } from "../../../store/features/ipamModule/devices/apis";
 import { jsonToExcel } from "../../../utils/helpers";
@@ -71,13 +71,16 @@ const Index = () => {
     },
   ] = useFetchIpamDevicesLazyQuery();
 
-  const {
-    data: getIpamDevicesFetchDatesData,
-    isSuccess: isGetIpamDevicesFetchDatesSuccess,
-    isLoading: isGetIpamDevicesFetchDatesLoading,
-    isError: isGetIpamDevicesFetchDatesError,
-    error: getIpamDevicesFetchDatesError,
-  } = useGetIpamDevicesFetchDatesQuery();
+  const [
+    getIpamDevicesFetchDates,
+    {
+      data: getIpamDevicesFetchDatesData,
+      isSuccess: isGetIpamDevicesFetchDatesSuccess,
+      isLoading: isGetIpamDevicesFetchDatesLoading,
+      isError: isGetIpamDevicesFetchDatesError,
+      error: getIpamDevicesFetchDatesError,
+    },
+  ] = useFetchIpamDevicesFetchDatesLazyQuery();
 
   const [
     getIpamDevicesByFetchDate,
@@ -122,6 +125,11 @@ const Index = () => {
     error: getIpamDevicesByFetchDateError,
     type: TYPE_BULK,
   });
+
+  // effects
+  useEffect(() => {
+    getIpamDevicesFetchDates();
+  }, [isFetchIpamDevicesSuccess]);
 
   // handlers
   function handleFetch() {

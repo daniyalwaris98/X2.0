@@ -2,19 +2,21 @@ import { monetxApi } from "../../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    getIpamDnsRecordsByDnsZoneId: builder.mutation({
+    getAllIpamDnsRecords: builder.query({
+      query: () => "/api/v1/ipam/ipam_device/get_dns_records",
+    }),
+
+    getIpamDnsRecordsByZoneId: builder.mutation({
       query: (data) => ({
         url: "/api/v1/ipam/ipam_device/get_dns_record_by_zone_id",
         method: "POST",
-        body: data, // {dns_zone_id:""}
+        body: data,
       }),
-    }),
-
-    getAllIpamDnsRecords: builder.query({
-      query: () => "/api/v1/ipam/ipam_device/get_dns_records",
     }),
   }),
 });
 
-export const { useGetAllIpamDnsRecordsQuery: useFetchRecordsQuery } =
-  extendedApi;
+export const { useGetIpamDnsRecordsByZoneIdMutation } = extendedApi;
+
+export const useFetchRecordsLazyQuery =
+  extendedApi.endpoints.getAllIpamDnsRecords.useLazyQuery;

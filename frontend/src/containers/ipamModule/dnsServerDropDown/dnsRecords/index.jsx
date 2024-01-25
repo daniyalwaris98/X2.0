@@ -3,7 +3,10 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsRecords/selectors";
 import { selectSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/selectors";
-import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsRecords/apis";
+import {
+  useFetchRecordsLazyQuery,
+  useGetIpamDnsRecordsByZoneIdMutation,
+} from "../../../../store/features/ipamModule/dnsServerDropDown/dnsRecords/apis";
 import { setSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
@@ -16,6 +19,7 @@ import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import DefaultPageTableSection from "../../../../components/pageSections";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import DefaultSpinner from "../../../../components/spinners";
+import { TABLE_DATA_UNIQUE_ID as DNS_ZONE_ID } from "../dnsZones/constants";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DnsZoneDetails from "./dnsZoneDetails";
 import {
@@ -46,13 +50,27 @@ const Index = () => {
   const selectedDnsZone = useSelector(selectSelectedDnsZone);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchRecords,
+    {
+      data: fetchRecordsData,
+      isSuccess: isFetchRecordsSuccess,
+      isLoading: isFetchRecordsLoading,
+      isError: isFetchRecordsError,
+      error: fetchRecordsError,
+    },
+  ] = useFetchRecordsLazyQuery();
+
+  const [
+    getDnsRecordsByZoneId,
+    {
+      data: getDnsRecordsByZoneIdData,
+      isSuccess: isGetDnsRecordsByZoneIdSuccess,
+      isLoading: isGetDnsRecordsByZoneIdLoading,
+      isError: isGetDnsRecordsByZoneIdError,
+      error: getDnsRecordsByZoneIdError,
+    },
+  ] = useGetIpamDnsRecordsByZoneIdMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -63,8 +81,24 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: getDnsRecordsByZoneIdData,
+    isSuccess: isGetDnsRecordsByZoneIdSuccess,
+    isError: isGetDnsRecordsByZoneIdError,
+    error: getDnsRecordsByZoneIdError,
+    type: TYPE_FETCH,
+  });
+
   // effects
   useEffect(() => {
+    if (selectedDnsZone) {
+      getDnsRecordsByZoneId({
+        [DNS_ZONE_ID]: selectSelectedDnsZone[DNS_ZONE_ID],
+      });
+    } else {
+      fetchRecords();
+    }
+
     return () => {
       dispatch(setSelectedDnsZone(null));
     };

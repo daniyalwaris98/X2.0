@@ -4,6 +4,7 @@ import { selectTableData } from "../../../store/features/autoDiscoveryModule/dis
 import {
   useGetAllAutoDiscoveryDiscoveredDevicesLazyQuery,
   useFetchRecordsMutation,
+  useGetAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation,
 } from "../../../store/features/autoDiscoveryModule/discovery/apis";
 import { jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
@@ -15,7 +16,7 @@ import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DeviceCounts from "./deviceCounts";
+import FunctionCounts from "./functionCounts";
 import StartScanningBar from "./startScanningBar";
 import {
   PAGE_NAME,
@@ -67,12 +68,31 @@ const Index = () => {
     },
   ] = useFetchRecordsMutation();
 
+  const [
+    fetchFunctionCounts,
+    {
+      data: fetchFunctionCountsData,
+      isSuccess: isFetchFunctionCountsSuccess,
+      isLoading: isFetchFunctionCountsLoading,
+      isError: isFetchFunctionCountsError,
+      error: fetchFunctionCountsError,
+    },
+  ] = useGetAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
     isSuccess: isFetchRecordsSuccess,
     isError: isFetchRecordsError,
     error: fetchRecordsError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchFunctionCountsData,
+    isSuccess: isFetchFunctionCountsSuccess,
+    isError: isFetchFunctionCountsError,
+    error: fetchFunctionCountsError,
     type: TYPE_FETCH,
   });
 
@@ -87,6 +107,7 @@ const Index = () => {
   // effects
   useEffect(() => {
     fetchRecords();
+    fetchFunctionCounts({ subnet: ALL });
   }, []);
 
   // handlers
@@ -102,13 +123,21 @@ const Index = () => {
   function handleSubnetChange(data) {
     if (data[indexColumnNameConstants.SUBNET] === ALL) {
       fetchRecords();
+      fetchFunctionCounts({ subnet: ALL });
     } else {
       fetchRecordsMutation(data);
+      fetchFunctionCounts(data);
     }
   }
 
   return (
-    <DefaultSpinner spinning={isFetchRecordsLoading}>
+    <DefaultSpinner
+      spinning={
+        isFetchRecordsLoading ||
+        isFetchRecordsMutationLoading ||
+        isFetchFunctionCountsLoading
+      }
+    >
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -122,7 +151,7 @@ const Index = () => {
         />
       ) : null}
 
-      <DeviceCounts />
+      <FunctionCounts />
 
       <StartScanningBar handleChange={handleSubnetChange} />
 

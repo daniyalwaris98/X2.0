@@ -60,7 +60,7 @@ export const extendedApi = monetxApi.injectEndpoints({
         "/api/v1/monitoring/monitoring_static_list/get_encryption_protocol",
     }),
 
-    getIpamDevicesFetchDates: builder.query({
+    fetchIpamDevicesFetchDates: builder.query({
       query: () => "/api/v1/ipam/ipam_device/get_ipam_devices_fetch_dates",
     }),
   }),
@@ -80,5 +80,7 @@ export const {
   useFetchMonitoringCredentialsNamesQuery,
   useFetchV3CredentialsAuthorizationProtocolNamesQuery,
   useFetchV3CredentialsEncryptionProtocolNamesQuery,
-  useGetIpamDevicesFetchDatesQuery,
 } = extendedApi;
+
+export const useFetchIpamDevicesFetchDatesLazyQuery =
+  extendedApi.endpoints.fetchIpamDevicesFetchDates.useLazyQuery;

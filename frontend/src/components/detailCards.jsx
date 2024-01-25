@@ -1,16 +1,9 @@
 import React from "react";
-import { useTheme, styled } from "@mui/material/styles";
+import { useTheme } from "@mui/material/styles";
 import DefaultCard from "./cards";
 import { getTitle } from "../utils/helpers";
-import { ListItemIcon } from "@mui/material";
 
-export default function DefaultDetailCards({
-  data,
-  icons = null,
-  sx,
-  children,
-  ...rest
-}) {
+export default function DefaultDetailCards({ data, icons = [], ...rest }) {
   const theme = useTheme();
 
   return (
@@ -18,6 +11,7 @@ export default function DefaultDetailCards({
       sx={{
         marginBottom: "10px",
       }}
+      {...rest}
     >
       <div
         style={{
@@ -74,7 +68,7 @@ export default function DefaultDetailCards({
                     justifyContent: "center",
                   }}
                 >
-                  <img src={icons[index]} />
+                  <img src={icons[index] ? icons[index] : null} />
                 </div>
               </div>
             </div>
