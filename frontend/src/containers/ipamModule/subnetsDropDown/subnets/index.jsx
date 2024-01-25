@@ -1,8 +1,8 @@
 import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
 import Modal from "./modal";
-import IpDetailsModal from "../ipDetails/modal";
-import IpHistoryModal from "../ipHistory/modal";
+// import IpDetailsModal from "../ipDetails/modal";
+// import IpHistoryModal from "../ipHistory/modal";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
@@ -12,6 +12,7 @@ import {
 } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/selectors";
+import { setSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets";
 import {
   jsonToExcel,
   convertToJson,
@@ -37,10 +38,17 @@ import {
 } from "./constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
+import { PAGE_PATH as PAGE_PATH_IP_DETAILS } from "../ipDetails/constants";
+import { DROPDOWN_PATH } from "../../subnetsDropDown";
+import { MODULE_PATH } from "../../index";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
 
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
@@ -48,16 +56,9 @@ const Index = () => {
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  // const { buttonsConfigurationObject } = useButtonsConfiguration({
-  //   default_scan: {
-  //     handleClick: handleScan,
-  //   },
-  // });
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
-    // buttonsConfigurationObject,
     handleEdit,
-    handleIpDetailsModalOpen,
-    handleIpHistoryModalOpen,
+    handleIpAddressClick,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
@@ -266,6 +267,11 @@ const Index = () => {
     setOpenIpDetailsModal(true);
   }
 
+  function handleIpAddressClick(record) {
+    dispatch(setSelectedSubnet(record));
+    navigate(`/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_IP_DETAILS}`);
+  }
+
   function handleCloseIpHistoryModal() {
     setIpAddressForIpHistory(null);
     setOpenIpHistoryModal(false);
@@ -317,7 +323,7 @@ const Index = () => {
           />
         ) : null}
 
-        {openIpDetailsModal ? (
+        {/* {openIpDetailsModal ? (
           <IpDetailsModal
             handleClose={handleCloseIpDetailsModal}
             handleIpHistoryModalOpen={handleIpHistoryModalOpen}
@@ -332,7 +338,7 @@ const Index = () => {
             open={openIpHistoryModal}
             ipAddress={ipAddressForIpHistory}
           />
-        ) : null}
+        ) : null} */}
 
         {tableConfigurationsOpen ? (
           <DefaultTableConfigurations

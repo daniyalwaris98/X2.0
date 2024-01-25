@@ -4,15 +4,22 @@ import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
 } from "../../../../../containers/ipamModule/subnetsDropDown/subnets/constants";
+import { persistReducer } from "redux-persist";
+import persistConfig from "./persistConfig";
 
 const initialState = {
   all_data: [],
+  selected_subnet: null,
 };
 
 const defaultSlice = createSlice({
   name: ELEMENT_NAME,
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedSubnet: (state, action) => {
+      state.selected_subnet = action.payload;
+    },
+  },
   extraReducers(builder) {
     builder
       .addMatcher(
@@ -112,4 +119,7 @@ const defaultSlice = createSlice({
   },
 });
 
-export default defaultSlice.reducer;
+export const { setSelectedSubnet } = defaultSlice.actions;
+
+const persistedReducer = persistReducer(persistConfig, defaultSlice.reducer);
+export default persistedReducer;

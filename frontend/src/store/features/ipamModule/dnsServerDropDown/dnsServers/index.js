@@ -9,7 +9,7 @@ import persistConfig from "./persistConfig";
 
 const initialState = {
   all_data: [],
-  selected_dns_server: {},
+  selected_dns_server: null,
 };
 
 const defaultSlice = createSlice({

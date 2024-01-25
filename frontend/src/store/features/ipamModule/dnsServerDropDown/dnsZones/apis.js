@@ -10,7 +10,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: (data) => ({
         url: "/api/v1/ipam/ipam_device/get_dns_zones_by_server_id",
         method: "POST",
-        body: data, // {dns_server_id:""}
+        body: data,
       }),
     }),
   }),

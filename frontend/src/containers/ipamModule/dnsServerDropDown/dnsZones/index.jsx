@@ -4,11 +4,11 @@ import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/selectors";
 import { selectSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
+import { setSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones";
 import {
   useFetchZonesLazyQuery,
   useGetIpamDnsZonesByServerIdMutation,
 } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/apis";
-import { setSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones";
 import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
@@ -23,8 +23,8 @@ import DefaultTableConfigurations from "../../../../components/tableConfiguratio
 import DefaultSpinner from "../../../../components/spinners";
 import { MODULE_PATH } from "../../index";
 import { DROPDOWN_PATH } from "../../dnsServerDropDown";
-import DnsServerDetails from "./dnsServerDetails";
 import { PAGE_PATH as PAGE_PATH_DNS_Records } from "../dnsRecords/constants";
+import DnsServerDetails from "./dnsServerDetails";
 import { TABLE_DATA_UNIQUE_ID as DNS_SERVER_ID } from "../dnsServers/constants";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {

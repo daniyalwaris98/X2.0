@@ -3,12 +3,12 @@ import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
+import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
   useScanIpamDnsServerMutation,
 } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/apis";
-import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
 import { jsonToExcel } from "../../../../utils/helpers";
 import {
   DELETE_PROMPT,
@@ -165,7 +165,7 @@ const Index = () => {
     });
   }
 
-  function handleAdd(optionType) {
+  function handleAdd() {
     setOpen(true);
   }
 

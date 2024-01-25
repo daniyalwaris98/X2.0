@@ -1,7 +1,10 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/selectors";
-import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/apis";
+import {
+  useFetchRecordsLazyQuery,
+  useGetIpDetailsBySubnetAddressMutation,
+} from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
 import useErrorHandling, {
@@ -21,8 +24,21 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
+import { MODULE_PATH } from "../../index";
+import { DROPDOWN_PATH } from "../../subnetsDropDown";
+import { PAGE_PATH as PAGE_PATH_IP_HISTORY } from "../ipHistory/constants";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { selectSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/selectors";
+import { setSelectedIpDetail } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails";
+import { setSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets";
+import { indexColumnNameConstants as subnetsColumnNameConstants } from "../subnets/constants";
+import SubnetDetails from "./subnetDetails";
 
 const Index = () => {
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
+
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
@@ -44,15 +60,30 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
+  const selectedSubnet = useSelector(selectSelectedSubnet);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchRecords,
+    {
+      data: fetchRecordsData,
+      isSuccess: isFetchRecordsSuccess,
+      isLoading: isFetchRecordsLoading,
+      isError: isFetchRecordsError,
+      error: fetchRecordsError,
+    },
+  ] = useFetchRecordsLazyQuery();
+
+  const [
+    getIpDetailsBySubnetAddress,
+    {
+      data: getIpDetailsBySubnetAddressData,
+      isSuccess: isGetIpDetailsBySubnetAddressSuccess,
+      isLoading: isGetIpDetailsBySubnetAddressLoading,
+      isError: isGetIpDetailsBySubnetAddressError,
+      error: getIpDetailsBySubnetAddressError,
+    },
+  ] = useGetIpDetailsBySubnetAddressMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -62,6 +93,30 @@ const Index = () => {
     error: fetchRecordsError,
     type: TYPE_FETCH,
   });
+
+  useErrorHandling({
+    data: getIpDetailsBySubnetAddressData,
+    isSuccess: isGetIpDetailsBySubnetAddressSuccess,
+    isError: isGetIpDetailsBySubnetAddressError,
+    error: getIpDetailsBySubnetAddressError,
+    type: TYPE_FETCH,
+  });
+
+  // effects
+  useEffect(() => {
+    if (selectedSubnet) {
+      getIpDetailsBySubnetAddress({
+        [subnetsColumnNameConstants.SUBNET_ADDRESS]:
+          selectedSubnet[subnetsColumnNameConstants.SUBNET_ADDRESS],
+      });
+    } else {
+      fetchRecords();
+    }
+
+    return () => {
+      dispatch(setSelectedSubnet(null));
+    };
+  }, []);
 
   // handlers
   function handleDefaultExport() {
@@ -74,9 +129,14 @@ const Index = () => {
     setOpenIpHistoryModal(false);
   }
 
+  // function handleIpAddressClick(record) {
+  //   setIpAddressForIpHistory(record[indexColumnNameConstants.IP_ADDRESS]);
+  //   setOpenIpHistoryModal(true);
+  // }
+
   function handleIpAddressClick(record) {
-    setIpAddressForIpHistory(record[indexColumnNameConstants.IP_ADDRESS]);
-    setOpenIpHistoryModal(true);
+    dispatch(setSelectedIpDetail(record));
+    navigate(`/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_IP_HISTORY}`);
   }
 
   function handleTableConfigurationsOpen() {
@@ -84,7 +144,9 @@ const Index = () => {
   }
 
   return (
-    <DefaultSpinner spinning={isFetchRecordsLoading}>
+    <DefaultSpinner
+      spinning={isFetchRecordsLoading || isGetIpDetailsBySubnetAddressLoading}
+    >
       {openIpHistoryModal ? (
         <IpHistoryModal
           handleClose={handleCloseIpHistoryModal}
@@ -105,6 +167,8 @@ const Index = () => {
           setOpen={setTableConfigurationsOpen}
         />
       ) : null}
+
+      {selectedSubnet ? <SubnetDetails /> : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}
