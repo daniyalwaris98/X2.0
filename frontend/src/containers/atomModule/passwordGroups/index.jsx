@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import { Spin } from "antd";
 import { useSelector } from "react-redux";
 import {
   useFetchRecordsQuery,
@@ -23,6 +22,7 @@ import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useErrorHandling, {
   TYPE_FETCH,
@@ -203,7 +203,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
       }
@@ -248,7 +248,7 @@ const Index = () => {
           setSelectedRowKeys={setSelectedRowKeys}
         />
       </div>
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

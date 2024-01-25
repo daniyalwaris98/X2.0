@@ -1,40 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/apis";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/selectors";
+import { selectSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
+import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones/apis";
 import { setSelectedDnsZone } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsZones";
 import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
-import { selectSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
 import { jsonToExcel } from "../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../components/spinners";
+import { MODULE_PATH } from "../../index";
+import { DROPDOWN_PATH } from "../../dnsServerDropDown";
+import DnsServerDetails from "./dnsServerDetails";
+import { PAGE_PATH as PAGE_PATH_DNS_Records } from "../dnsRecords/constants";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
-import DnsServerDetails from "./dnsServerDetails";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { PAGE_PATH as PAGE_PATH_DNS_Records } from "../dnsRecords/constants";
-import { DROPDOWN_PATH } from "../../dnsServerDropDown";
-import { MODULE_PATH } from "../../index";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
     handleIpAddressClick,
@@ -52,8 +50,7 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  // const dataSource = useSelector(selectTableData);
-  const dataSource = [{ ip_address: "123" }];
+  const dataSource = useSelector(selectTableData);
   const selectedDnsServer = useSelector(selectSelectedDnsServer);
 
   // apis
@@ -84,7 +81,7 @@ const Index = () => {
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -97,7 +94,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -120,7 +117,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

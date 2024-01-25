@@ -1,30 +1,28 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import IpHistoryModal from "../ipHistory/modal";
-import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/selectors";
+import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import DefaultSpinner from "../../../../components/spinners";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import IpHistoryModal from "../ipHistory/modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
@@ -68,7 +66,7 @@ const Index = () => {
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleCloseIpHistoryModal() {
@@ -86,7 +84,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {openIpHistoryModal ? (
         <IpHistoryModal
           handleClose={handleCloseIpHistoryModal}
@@ -115,7 +113,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

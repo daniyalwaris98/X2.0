@@ -70,7 +70,7 @@ const Index = ({ handleClose, open, ipAddress }) => {
       )} => ${ipAddress}`}
       open={open}
     >
-      <Grid container>
+      <Grid container spacing={5}>
         <Grid item xs={12}>
           <Spin spinning={isGetIpHistoryByIpAddressLoading}>
             {tableConfigurationsOpen ? (

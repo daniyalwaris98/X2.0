@@ -1,19 +1,19 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
 import {
   useAddRecordMutation,
   useUpdateRecordMutation,
 } from "../../../store/features/adminModule/roles/apis";
-import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../utils/helpers";
+import useErrorHandling from "../../../hooks/useErrorHandling";
 import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
 import { ELEMENT_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 import { defaultConfiguration } from "./defaultConfiguration";
@@ -25,8 +25,6 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
   // useForm hook
   const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
@@ -97,20 +95,22 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={5}>
-          <Grid item xs={12}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ROLE}
-              required
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={12}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ROLE}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

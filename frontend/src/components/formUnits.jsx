@@ -85,6 +85,8 @@ export function SelectFormUnit({
   required = false,
   label = true,
   spinning = false,
+  showErrorMessage = true,
+  showErrorBoundary = false,
   ...rest
 }) {
   const theme = useTheme();
@@ -105,7 +107,11 @@ export function SelectFormUnit({
               <InputWrapper>
                 <DefaultSelect
                   field={field}
-                  sx={{ outline: "none" }}
+                  sx={
+                    fieldState.error && showErrorBoundary
+                      ? { border: "2px solid #E34444" }
+                      : null
+                  }
                   id={dataKey}
                   {...rest}
                 >
@@ -123,14 +129,16 @@ export function SelectFormUnit({
                 </DefaultSelect>
               </InputWrapper>
             </DefaultSpinner>
-            <div
-              style={{
-                color: theme?.palette?.form_unit?.error_text,
-                fontSize: "12px",
-              }}
-            >
-              {fieldState.error && fieldState.error.message}
-            </div>
+            {showErrorMessage ? (
+              <div
+                style={{
+                  color: theme?.palette?.form_unit?.error_text,
+                  fontSize: "12px",
+                }}
+              >
+                {fieldState.error && fieldState.error.message}
+              </div>
+            ) : null}
           </DefaultWrapper>
         );
       }}

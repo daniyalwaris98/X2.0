@@ -2,7 +2,6 @@ export const PAGE_NAME = "IP Details";
 export const ELEMENT_NAME = "IP Detail";
 export const PAGE_PATH = "ip_details";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_ip_details";
-export const FILE_NAME_EXPORT_TEMPLATE = "ip_details_template";
 export const TABLE_DATA_UNIQUE_ID = "ip_id";
 export const indexColumnNameConstants = {
   IP_ID: TABLE_DATA_UNIQUE_ID,

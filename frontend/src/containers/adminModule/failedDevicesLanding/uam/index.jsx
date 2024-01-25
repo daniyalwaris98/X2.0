@@ -1,5 +1,4 @@
 import React, { useState } from "react";
-import { Spin } from "antd";
 import { useSelector } from "react-redux";
 import { useFetchRecordsQuery } from "../../../../store/features/adminModule/failedDevices/uam/apis";
 import { selectTableData } from "../../../../store/features/adminModule/failedDevices/uam/selectors";
@@ -12,6 +11,7 @@ import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultSpinner from "../../../../components/spinners";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   DESCRIPTIVE_PAGE_NAME,
@@ -67,7 +67,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -88,7 +88,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

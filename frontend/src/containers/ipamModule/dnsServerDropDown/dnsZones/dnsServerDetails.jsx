@@ -1,7 +1,7 @@
 import React from "react";
-import Card from "../../../../components/cards";
 import { useSelector } from "react-redux";
 import { selectSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
+import Card from "../../../../components/cards";
 
 function Index(props) {
   const selectedDnsServer = useSelector(selectSelectedDnsServer);

@@ -1,41 +1,60 @@
 import React from "react";
-import DefaultCard from "../../../components/cards";
-import DefaultFormUnit from "../../../components/formUnits";
-import useButtonGenerator from "../../../hooks/useButtonGenerator";
-import { useForm } from "react-hook-form";
-import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
 import { useSelector } from "react-redux";
-import { selectCommandOutput } from "../../../store/features/ncmModule/manageConfigurations/remoteCommandSender/selectors";
+import { selectSubnetNames } from "../../../store/features/dropDowns/selectors";
+import { useFetchSubnetNamesQuery } from "../../../store/features/dropDowns/apis";
+import { getTitle } from "../../../utils/helpers";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import useButtonGenerator from "../../../hooks/useButtonGenerator";
+import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultCard from "../../../components/cards";
+import { SelectFormUnit } from "../../../components/formUnits";
+import { ALL, indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
-  // [REMOTE_COMMAND]: yup
-  //   .string()
-  //   .required(`${getTitle(REMOTE_COMMAND)} is required`),
+  [indexColumnNameConstants.SUBNET]: yup
+    .string()
+    .required(`${getTitle(indexColumnNameConstants.SUBNET)} is required`),
 });
 
-function Index(props) {
+function Index({ handleChange }) {
   const generateButton = useButtonGenerator();
 
-  const { handleSubmit, control, setValue } = useForm({
+  const { handleSubmit, control } = useForm({
     resolver: yupResolver(schema),
   });
 
   // hooks
   const { buttonsConfigurationObject } = useButtonsConfiguration({
-    default_submit: null,
+    start_scanning_devices: null,
+  });
+
+  // apis
+  const {
+    data: fetchSubnetNamesData,
+    isSuccess: isFetchSubnetNamesSuccess,
+    isLoading: isFetchSubnetNamesLoading,
+    isError: isFetchSubnetNamesError,
+    error: fetchSubnetNamesError,
+  } = useFetchSubnetNamesQuery();
+
+  // error handling custom hooks
+  useErrorHandling({
+    data: fetchSubnetNamesData,
+    isSuccess: isFetchSubnetNamesSuccess,
+    isError: isFetchSubnetNamesError,
+    error: fetchSubnetNamesError,
+    type: TYPE_FETCH,
   });
 
   // selectors
-  const dataSource = useSelector(selectCommandOutput);
+  const subnetNames = useSelector(selectSubnetNames);
 
   // on form submit
   const onSubmit = (data) => {
-    // sendCommand({
-    //   ncm_device_id: selectedDevice?.ncm_device_id,
-    //   cmd: data[REMOTE_COMMAND],
-    // });
+    handleChange(data);
   };
 
   return (
@@ -47,15 +66,16 @@ function Index(props) {
           justifyContent: "space-between",
         }}
       >
-        <div style={{ width: "100%" }}>
-          <DefaultFormUnit
+        <div style={{ width: "100%", padding: "5px 0px 0 10px" }}>
+          <SelectFormUnit
             control={control}
-            dataKey={"subnets"}
-            required
+            dataKey={indexColumnNameConstants.SUBNET}
+            options={subnetNames ? [ALL, ...subnetNames] : []}
+            spinning={isFetchSubnetNamesLoading}
             label={false}
-            sx={{
-              margin: "5px 0px 0 10px",
-            }}
+            required
+            showErrorMessage={false}
+            showErrorBoundary={true}
           />
         </div>
         &nbsp; &nbsp;
@@ -67,7 +87,7 @@ function Index(props) {
             paddingRight: "10px",
           }}
         >
-          {generateButton(buttonsConfigurationObject.default_submit)}
+          {generateButton(buttonsConfigurationObject.start_scanning_devices)}
         </div>
       </form>
     </DefaultCard>

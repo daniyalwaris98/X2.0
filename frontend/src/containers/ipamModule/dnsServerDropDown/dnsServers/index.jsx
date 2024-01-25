@@ -1,49 +1,51 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
   useScanIpamDnsServerMutation,
 } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/selectors";
+import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
 import { jsonToExcel } from "../../../../utils/helpers";
-import { Spin } from "antd";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../../utils/constants";
 import useErrorHandling, {
+  TYPE_FETCH,
   TYPE_SINGLE,
+  TYPE_BULK,
 } from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultSpinner from "../../../../components/spinners";
+import { PAGE_PATH as PAGE_PATH_DNS_ZONES } from "../dnsZones/constants";
+import { DROPDOWN_PATH } from "../../dnsServerDropDown";
+import { MODULE_PATH } from "../../index";
+import Modal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
-import { indexColumnNameConstants } from "./constants";
-import { setSelectedDnsServer } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers";
-import { PAGE_PATH as PAGE_PATH_DNS_ZONES } from "../dnsZones/constants";
-import { DROPDOWN_PATH } from "../../dnsServerDropDown";
-import { MODULE_PATH } from "../../index";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
@@ -145,12 +147,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -177,7 +176,7 @@ const Index = () => {
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -190,7 +189,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading ||
         isDeleteRecordsLoading ||
@@ -227,7 +226,7 @@ const Index = () => {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

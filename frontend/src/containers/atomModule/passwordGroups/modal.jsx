@@ -3,24 +3,26 @@ import { useForm } from "react-hook-form";
 import Grid from "@mui/material/Grid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
-import {
-  useUpdateRecordMutation,
-  useAddRecordMutation,
-} from "../../../store/features/atomModule/passwordGroups/apis";
+import { selectPasswordGroupTypeNames } from "../../../store/features/dropDowns/selectors";
 import {
   useFetchPasswordGroupNamesQuery,
   useFetchPasswordGroupTypeNamesQuery,
 } from "../../../store/features/dropDowns/apis";
-import { selectPasswordGroupTypeNames } from "../../../store/features/dropDowns/selectors";
+import {
+  useUpdateRecordMutation,
+  useAddRecordMutation,
+} from "../../../store/features/atomModule/passwordGroups/apis";
 import { formSetter, getTitle } from "../../../utils/helpers";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
 import FormModal from "../../../components/dialogs";
 import DefaultFormUnit from "../../../components/formUnits";
 import { SelectFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import DefaultSpinner from "../../../components/spinners";
 import { PAGE_NAME, TELNET } from "./constants";
 import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
 
@@ -41,28 +43,11 @@ const schema = yup.object().shape({
     .required(
       `${getTitle(indexColumnNameConstants.PASSWORD_GROUP_TYPE)} is required`
     ),
-  // secret_password: yup
-  //   .string()
-  //   .when(
-  //     indexColumnNameConstants.PASSWORD_GROUP_TYPE,
-  //     (passwordGroupType, schema) => {
-  //       if (passwordGroupType == TELNET)
-  //         return schema.required(
-  //           `${getTitle(indexColumnNameConstants.SECRET_PASSWORD)} is required`
-  //         );
-  //       return schema;
-  //     }
-  //   ),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
-  // states
-  // const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -70,16 +55,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   useEffect(() => {
     formSetter(recordToEdit, setValue);
   }, []);
-
-  // useEffect(() => {
-  //   if (watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE) === "SSH") {
-  //     setValue(indexColumnNameConstants.SECRET_PASSWORD, "");
-  //     setIsSecretPasswordDisable(true);
-  //   } else {
-  //     setIsSecretPasswordDisable(false);
-  //   }
-  //   trigger(indexColumnNameConstants.SECRET_PASSWORD);
-  // }, [watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE)]);
 
   // post api for the form
   const [
@@ -111,8 +86,11 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     });
 
   const {
-    error: passwordGroupTypeNamesError,
+    data: passwordGroupTypeNamesData,
+    isSuccess: isPasswordGroupTypeNamesSuccess,
     isLoading: isPasswordGroupTypeNamesLoading,
+    isError: isPasswordGroupTypeNamesError,
+    error: passwordGroupTypeNamesError,
   } = useFetchPasswordGroupTypeNamesQuery();
 
   // error handling custom hooks
@@ -132,6 +110,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     error: updateRecordError,
     type: TYPE_SINGLE,
     callback: handleClose,
+  });
+
+  useErrorHandling({
+    data: passwordGroupTypeNamesData,
+    isSuccess: isPasswordGroupTypeNamesSuccess,
+    isError: isPasswordGroupTypeNamesError,
+    error: passwordGroupTypeNamesError,
+    type: TYPE_FETCH,
   });
 
   // getting dropdowns data from the store
@@ -156,50 +142,49 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container>
-          <Grid item xs={12}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PASSWORD_GROUP}
-              disabled={recordToEdit !== null}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.USER_NAME}
-              required
-            />
-            <DefaultFormUnit
-              type="password"
-              control={control}
-              dataKey={indexColumnNameConstants.PASSWORD}
-              required
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PASSWORD_GROUP_TYPE}
-              options={passwordGroupTypeNames}
-              required
-            />
-            {/* {watch(indexColumnNameConstants.PASSWORD_GROUP_TYPE) == TELNET ? ( */}
-            <DefaultFormUnit
-              type="password"
-              control={control}
-              dataKey={indexColumnNameConstants.SECRET_PASSWORD}
-              // disabled={isSecretPasswordDisable}
-            />
-            {/* ) : null} */}
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={12}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.PASSWORD_GROUP}
+                disabled={recordToEdit !== null}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.USER_NAME}
+                required
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.PASSWORD_GROUP_TYPE}
+                options={passwordGroupTypeNames}
+                spinning={isPasswordGroupTypeNamesLoading}
+                required
+              />
+              <DefaultFormUnit
+                type="password"
+                control={control}
+                dataKey={indexColumnNameConstants.PASSWORD}
+                required
+              />
+              <DefaultFormUnit
+                type="password"
+                control={control}
+                dataKey={indexColumnNameConstants.SECRET_PASSWORD}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

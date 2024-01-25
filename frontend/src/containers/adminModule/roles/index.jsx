@@ -1,5 +1,4 @@
 import React, { useEffect, useState } from "react";
-import { Spin } from "antd";
 import { Row, Col } from "antd";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -28,6 +27,7 @@ import {
 import DefaultPageTableSection from "../../../components/pageSections";
 import DefaultCard from "../../../components/cards";
 import { UpdateDialogFooter } from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
 import ExpandableConfigurationPanel from "./expandableConfigurationPanel";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import Modal from "./modal";
@@ -213,7 +213,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading || isUpdateRecordLoading || isDeleteRecordsLoading
       }
@@ -291,7 +291,7 @@ const Index = () => {
           </Col>
         </Row>
       </DefaultCard>
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

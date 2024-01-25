@@ -14,6 +14,7 @@ export default function DefaultSelect({ field, sx, children, ...rest }) {
         borderRadius: "5px",
         padding: "7px 10px",
         width: "100%",
+        outline: "none",
         ...sx,
       }}
       {...rest}

@@ -105,7 +105,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       open={open}
     >
       <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container>
+        <Grid container spacing={5}>
           <Grid item xs={12}>
             <DefaultFormUnit
               control={control}

@@ -10,9 +10,12 @@ const initialState = {
   password_group_names: [],
   password_group_type_names: [],
   status_names: [],
-  subnets_names: [],
+  subnet_names: [],
   active_status_names: [],
   monitoring_credentials_names: [],
+  v3_credentials_authorization_protocols: [],
+  v3_credentials_encryption_protocols: [],
+  ipam_devices_fetch_dates: [],
 };
 
 const dropDownsSlice = createSlice({
@@ -70,6 +73,12 @@ const dropDownsSlice = createSlice({
         }
       )
       .addMatcher(
+        extendedApi.endpoints.fetchSubnetNames.matchFulfilled,
+        (state, action) => {
+          state.subnet_names = action.payload;
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.fetchActiveStatusNames.matchFulfilled,
         (state, action) => {
           state.active_status_names = action.payload;
@@ -79,6 +88,26 @@ const dropDownsSlice = createSlice({
         extendedApi.endpoints.fetchMonitoringCredentialsNames.matchFulfilled,
         (state, action) => {
           state.monitoring_credentials_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchV3CredentialsAuthorizationProtocolNames
+          .matchFulfilled,
+        (state, action) => {
+          state.v3_credentials_authorization_protocols = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchV3CredentialsEncryptionProtocolNames
+          .matchFulfilled,
+        (state, action) => {
+          state.monitoring_credentials_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getIpamDevicesFetchDates.matchFulfilled,
+        (state, action) => {
+          state.ipam_devices_fetch_dates = action.payload;
         }
       );
   },

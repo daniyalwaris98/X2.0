@@ -10,14 +10,15 @@ import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../store/features/adminModule/members/apis";
-import FormModal from "../../../components/dialogs";
-import DefaultFormUnit, { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
+import { formSetter, getTitle } from "../../../utils/helpers";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_SINGLE,
 } from "../../../hooks/useErrorHandling";
-import { formSetter, getTitle } from "../../../utils/helpers";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit, { SelectFormUnit } from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
 import {
   PAGE_NAME,
   TABLE_DATA_UNIQUE_ID,
@@ -144,71 +145,73 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={5}>
-          <Grid item xs={4}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.USER_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.NAME}
-              spinning={isFetchPasswordGroupNamesLoading}
-              required
-            />
-          </Grid>
-          <Grid item xs={4}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.COMPANY_NAME}
-              options={["to be implemented"]}
-              spinning={isFetchPasswordGroupNamesLoading}
-              required
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.STATUS}
-              options={["to be implemented"]}
-              spinning={isFetchPasswordGroupNamesLoading}
-              required
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={4}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.USER_NAME}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.NAME}
+                spinning={isFetchPasswordGroupNamesLoading}
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.COMPANY_NAME}
+                options={["to be implemented"]}
+                spinning={isFetchPasswordGroupNamesLoading}
+                required
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.STATUS}
+                options={["to be implemented"]}
+                spinning={isFetchPasswordGroupNamesLoading}
+                required
+              />
 
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ROLE}
-              required
-            />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ROLE}
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ACCOUNT_TYPE}
+                options={["to be implemented"]}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.LAST_LOGIN}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.TEAM}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={4}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ACCOUNT_TYPE}
-              options={["to be implemented"]}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.LAST_LOGIN}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.TEAM}
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

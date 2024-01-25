@@ -29,6 +29,10 @@ import {
   generateNumbersArray,
   getTitle,
 } from "../../../utils/helpers";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
 import FormModal from "../../../components/dialogs";
 import DefaultFormUnit from "../../../components/formUnits";
 import {
@@ -36,8 +40,7 @@ import {
   AddableSelectFormUnit,
 } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
-import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import DefaultSpinner from "../../../components/spinners";
 import {
   ATOM_ID,
   ATOM_TRANSITION_ID,
@@ -247,92 +250,94 @@ const Index = ({
       title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={5}>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.IP_ADDRESS}
-              required
-            />
-            <AddableSelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SITE_NAME}
-              options={siteNames}
-              onAddClick={handleOpenSiteModal}
-              spinning={isFetchSiteNamesLoading}
-            />
-            <AddableSelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.RACK_NAME}
-              options={rackNames}
-              onAddClick={handleOpenRackModal}
-              spinning={isFetchRackNamesLoading}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SECTION}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEPARTMENT}
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={12} sm={4}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.IP_ADDRESS}
+                required
+              />
+              <AddableSelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SITE_NAME}
+                options={siteNames}
+                onAddClick={handleOpenSiteModal}
+                spinning={isFetchSiteNamesLoading}
+              />
+              <AddableSelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.RACK_NAME}
+                options={rackNames}
+                onAddClick={handleOpenRackModal}
+                spinning={isFetchRackNamesLoading}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SECTION}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEPARTMENT}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEVICE_RU}
+                options={generateNumbersArray(30)}
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.FUNCTION}
+                options={functionNames}
+                spinning={isFetchFunctionNamesLoading}
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEVICE_TYPE}
+                options={deviceTypeNames}
+                spinning={isFetchDeviceTypeNamesLoading}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEVICE_NAME}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.VENDOR}
+                options={vendorNames}
+                spinning={isFetchVendorNamesLoading}
+              />
+              <AddableSelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.PASSWORD_GROUP}
+                options={passwordGroupNames}
+                onAddClick={handleOpenPasswordGroupModal}
+                spinning={isFetchPasswordGroupNamesLoading}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.CRITICALITY}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.VIRTUAL}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DOMAIN}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEVICE_RU}
-              options={generateNumbersArray(30)}
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.FUNCTION}
-              options={functionNames}
-              spinning={isFetchFunctionNamesLoading}
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEVICE_TYPE}
-              options={deviceTypeNames}
-              spinning={isFetchDeviceTypeNamesLoading}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEVICE_NAME}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.VENDOR}
-              options={vendorNames}
-              spinning={isFetchVendorNamesLoading}
-            />
-            <AddableSelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PASSWORD_GROUP}
-              options={passwordGroupNames}
-              onAddClick={handleOpenPasswordGroupModal}
-              spinning={isFetchPasswordGroupNamesLoading}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.CRITICALITY}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.VIRTUAL}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DOMAIN}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

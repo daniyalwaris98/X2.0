@@ -1,6 +1,4 @@
 import React, { useState } from "react";
-import { Spin } from "antd";
-import { useTheme } from "@mui/material/styles";
 import { useSelector } from "react-redux";
 import {
   useFetchRecordsQuery,
@@ -15,6 +13,7 @@ import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import Modal from "./modal";
 import {
@@ -25,9 +24,6 @@ import {
 } from "./constants";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -143,7 +139,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
       {open ? (
         <Modal
           handleClose={handleClose}
@@ -174,7 +170,7 @@ const Index = () => {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

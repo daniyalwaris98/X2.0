@@ -1,9 +1,6 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  TABLE_DATA_UNIQUE_ID,
-  ELEMENT_NAME,
-} from "../../../../../containers/adminModule/failedDevicesLanding/ipam/constants";
+import { ELEMENT_NAME } from "../../../../../containers/adminModule/failedDevicesLanding/ipam/constants";
 
 const initialState = {
   all_data: [],

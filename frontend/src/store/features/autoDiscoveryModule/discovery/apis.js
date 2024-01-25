@@ -6,7 +6,7 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/ipam/ipam_device/get_all_discovery_data",
     }),
 
-    getAllAutoDiscoveryDiscoveredDevicesBySubnet: builder.mutation({
+    getAutoDiscoveryDiscoveredDevicesBySubnet: builder.mutation({
       query: (data) => ({
         url: "/api/v1/auto_discovery/get_discovery_data",
         method: "POST",
@@ -33,8 +33,10 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useGetAllAutoDiscoveryDiscoveredDevicesBySubnetMutation:
-    useFetchRecordsMutation,
+  useGetAutoDiscoveryDiscoveredDevicesBySubnetMutation: useFetchRecordsMutation,
   useGetAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation,
   useAutoDiscoveryAutoDiscoverDevicesBySubnetMutation,
 } = extendedApi;
+
+export const useGetAllAutoDiscoveryDiscoveredDevicesLazyQuery =
+  extendedApi.endpoints.getAllAutoDiscoveryDiscoveredDevices.useLazyQuery;

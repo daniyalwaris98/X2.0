@@ -1,30 +1,31 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsMutation } from "../../../store/features/autoDiscoveryModule/discovery/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/autoDiscoveryModule/discovery/selectors";
+import {
+  useGetAllAutoDiscoveryDiscoveredDevicesLazyQuery,
+  useFetchRecordsMutation,
+} from "../../../store/features/autoDiscoveryModule/discovery/apis";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import DeviceCounts from "./deviceCounts";
+import StartScanningBar from "./startScanningBar";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  ALL,
+  indexColumnNameConstants,
 } from "./constants";
-import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
-import DeviceCounts from "./deviceCounts";
-import StartScanningBar from "./startScanningBar";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({});
@@ -53,11 +54,18 @@ const Index = () => {
       isError: isFetchRecordsError,
       error: fetchRecordsError,
     },
-  ] = useFetchRecordsMutation();
+  ] = useGetAllAutoDiscoveryDiscoveredDevicesLazyQuery();
 
-  useEffect(() => {
-    fetchRecords({ subnet: "All" });
-  }, []);
+  const [
+    fetchRecordsMutation,
+    {
+      data: fetchRecordsMutationData,
+      isSuccess: isFetchRecordsMutationSuccess,
+      isLoading: isFetchRecordsMutationLoading,
+      isError: isFetchRecordsMutationError,
+      error: fetchRecordsMutationError,
+    },
+  ] = useFetchRecordsMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -68,18 +76,39 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: fetchRecordsMutationData,
+    isSuccess: isFetchRecordsMutationSuccess,
+    isError: isFetchRecordsMutationError,
+    error: fetchRecordsMutationError,
+    type: TYPE_FETCH,
+  });
+
+  // effects
+  useEffect(() => {
+    fetchRecords();
+  }, []);
+
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
 
+  function handleSubnetChange(data) {
+    if (data[indexColumnNameConstants.SUBNET] === ALL) {
+      fetchRecords();
+    } else {
+      fetchRecordsMutation(data);
+    }
+  }
+
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -95,7 +124,7 @@ const Index = () => {
 
       <DeviceCounts />
 
-      <StartScanningBar />
+      <StartScanningBar handleChange={handleSubnetChange} />
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}
@@ -104,7 +133,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 
