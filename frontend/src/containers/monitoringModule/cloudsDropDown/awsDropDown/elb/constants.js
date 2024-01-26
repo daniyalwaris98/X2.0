@@ -4,6 +4,8 @@ export const PAGE_PATH = "elb";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_elb";
 export const TABLE_DATA_UNIQUE_ID = "id";
 export const ELB_STATUS = "elb_status";
+export const ENABLED = "enabled";
+export const DISABLED = "disabled";
 export const indexColumnNameConstants = {
   ID: TABLE_DATA_UNIQUE_ID,
   LOAD_BALANCER_NAME: "load_balancer_name",

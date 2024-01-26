@@ -1,12 +1,12 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import { Row, Col } from "antd";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
 import {
   useFetchRecordsQuery,
   useUpdateAdminUserRoleConfigurationMutation,
   useDeleteRecordsMutation,
 } from "../../../store/features/adminModule/roles/apis";
-import { useSelector } from "react-redux";
 import {
   selectTableData,
   selectSelectedRole,
@@ -14,12 +14,23 @@ import {
 } from "../../../store/features/adminModule/roles/selectors";
 import { setSelectedRole } from "../../../store/features/adminModule/roles";
 import { deepEqual, jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultCard from "../../../components/cards";
+import { UpdateDialogFooter } from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
+import ExpandableConfigurationPanel from "./expandableConfigurationPanel";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import Modal from "./modal";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
@@ -27,27 +38,13 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-import {
-  TYPE_FETCH,
-  TYPE_SINGLE,
-  TYPE_BULK,
-} from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
-import { Row, Col } from "antd";
-import ExpandableConfigurationPanel from "./expandableConfigurationPanel";
-import DefaultCard from "../../../components/cards";
-import { useDispatch } from "react-redux";
-import { UpdateDialogFooter } from "../../../components/dialogFooters";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const dispatch = useDispatch();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
+  const dispatch = useDispatch();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
@@ -196,7 +193,7 @@ const Index = () => {
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleCancel() {
@@ -216,7 +213,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading || isUpdateRecordLoading || isDeleteRecordsLoading
       }
@@ -294,7 +291,7 @@ const Index = () => {
           </Col>
         </Row>
       </DefaultCard>
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

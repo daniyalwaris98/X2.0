@@ -1,1 +1,1 @@
-export const selectTableData = (state) => state.atom_password_groups.all_data;
+export const selectTableData = (state) => state.admin_members.all_data;

@@ -162,7 +162,6 @@ const Index = ({
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >

@@ -131,32 +131,33 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={5}>
           <Grid item xs={12}>
             <DefaultFormUnit
               control={control}
               dataKey={indexColumnNameConstants.IP_ADDRESS}
-              required
+              disabled={true}
             />
-            <SelectFormUnit
+            <DefaultFormUnit
               control={control}
               dataKey={indexColumnNameConstants.DEVICE_TYPE}
-              options={deviceTypeNames}
+              disabled={true}
             />
             <DefaultFormUnit
               control={control}
               dataKey={indexColumnNameConstants.DEVICE_NAME}
+              disabled={true}
             />
-            <SelectFormUnit
+            <DefaultFormUnit
               control={control}
               dataKey={indexColumnNameConstants.VENDOR}
-              options={vendorNames}
+              disabled={true}
             />
-            <SelectFormUnit
+            <DefaultFormUnit
               control={control}
               dataKey={indexColumnNameConstants.FUNCTION}
-              options={functionNames}
+              disabled={true}
             />
             <SelectFormUnitWithHiddenValues
               control={control}

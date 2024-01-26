@@ -1,12 +1,11 @@
 import React from "react";
 import { useTheme } from "@mui/material/styles";
 import { Typography } from "@mui/material";
+import { useSelector } from "react-redux";
+import { selectIpamDevicesFetchDatesNames } from "../../../store/features/dropDowns/selectors";
 import useButtonGenerator from "../../../hooks/useButtonGenerator";
 import DefaultSelect from "../../../components/selects";
 import DefaultOption from "../../../components/options";
-import {} from "../../../store/features/ipamModule/devices/apis";
-import { selectIpamDevicesFetchDates } from "../../../store/features/ipamModule/devices/selectors";
-import { useSelector } from "react-redux";
 
 export default function CustomPageHeader({
   pageName,
@@ -17,7 +16,7 @@ export default function CustomPageHeader({
   const buttonGenerator = useButtonGenerator();
 
   // selectors
-  const fetchDates = useSelector(selectIpamDevicesFetchDates);
+  const fetchDates = useSelector(selectIpamDevicesFetchDatesNames);
 
   return (
     <div style={{ padding: "10px" }}>

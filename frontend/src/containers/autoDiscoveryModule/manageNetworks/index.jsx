@@ -1,26 +1,34 @@
 import React, { useState, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/autoDiscoveryModule/manageNetworks/selectors";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
 } from "../../../store/features/autoDiscoveryModule/manageNetworks/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/autoDiscoveryModule/manageNetworks/selectors";
 import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
   generateObject,
 } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import Modal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
@@ -28,13 +36,8 @@ import {
   FILE_NAME_EXPORT_TEMPLATE,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -147,12 +150,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -167,7 +167,7 @@ const Index = () => {
     }
   }
 
-  function handleAdd(optionType) {
+  function handleAdd() {
     setOpen(true);
   }
 
@@ -184,7 +184,7 @@ const Index = () => {
     } else if (optionType === TEMPLATE) {
       jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
     }
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -192,51 +192,49 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
       }
     >
-      <div style={{ width: "196vh" }}>
-        <input
-          type="file"
-          ref={fileInputRef}
-          style={{ display: "none" }}
-          onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
+      <input
+        type="file"
+        ref={fileInputRef}
+        style={{ display: "none" }}
+        onChange={(e) => handleFileChange(e, convertToJson, handlePostSeed)}
+      />
+
+      {open ? (
+        <Modal
+          handleClose={handleClose}
+          open={open}
+          recordToEdit={recordToEdit}
         />
+      ) : null}
 
-        {open ? (
-          <Modal
-            handleClose={handleClose}
-            open={open}
-            recordToEdit={recordToEdit}
-          />
-        ) : null}
-
-        {tableConfigurationsOpen ? (
-          <DefaultTableConfigurations
-            columns={columns}
-            availableColumns={availableColumns}
-            setAvailableColumns={setAvailableColumns}
-            displayColumns={displayColumns}
-            setDisplayColumns={setDisplayColumns}
-            setColumns={setColumns}
-            open={tableConfigurationsOpen}
-            setOpen={setTableConfigurationsOpen}
-          />
-        ) : null}
-
-        <DefaultPageTableSection
-          PAGE_NAME={PAGE_NAME}
-          TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
-          buttonsConfigurationList={buttonsConfigurationList}
+      {tableConfigurationsOpen ? (
+        <DefaultTableConfigurations
+          columns={columns}
+          availableColumns={availableColumns}
+          setAvailableColumns={setAvailableColumns}
           displayColumns={displayColumns}
-          dataSource={dataSource}
-          selectedRowKeys={selectedRowKeys}
-          setSelectedRowKeys={setSelectedRowKeys}
+          setDisplayColumns={setDisplayColumns}
+          setColumns={setColumns}
+          open={tableConfigurationsOpen}
+          setOpen={setTableConfigurationsOpen}
         />
-      </div>
-    </Spin>
+      ) : null}
+
+      <DefaultPageTableSection
+        PAGE_NAME={PAGE_NAME}
+        TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
+        buttonsConfigurationList={buttonsConfigurationList}
+        displayColumns={displayColumns}
+        dataSource={dataSource}
+        selectedRowKeys={selectedRowKeys}
+        setSelectedRowKeys={setSelectedRowKeys}
+      />
+    </DefaultSpinner>
   );
 };
 

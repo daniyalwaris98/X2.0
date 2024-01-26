@@ -18,7 +18,9 @@ export default function DefaultInput({
       style={{
         borderStyle: "solid",
         color: theme?.palette?.default_input?.primary_text,
-        backgroundColor: theme?.palette?.default_input?.background,
+        backgroundColor: rest.disabled
+          ? "#F6F6F6"
+          : theme?.palette?.default_input?.background,
         borderColor: theme?.palette?.default_input?.border,
         borderRadius: "5px",
         padding: "7px 10px",

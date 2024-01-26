@@ -1,31 +1,28 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/adminModule/failedDevices/autoDiscovery/apis";
+import { useSelector } from "react-redux";
+import { useFetchRecordsQuery } from "../../../../store/features/adminModule/failedDevices/uam/apis";
+import { selectTableData } from "../../../../store/features/adminModule/failedDevices/uam/selectors";
 import { jsonToExcel } from "../../../../utils/helpers";
-import { Spin } from "antd";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultSpinner from "../../../../components/spinners";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/adminModule/failedDevices/autoDiscovery/selectors";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -62,7 +59,7 @@ const Index = () => {
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -70,7 +67,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -91,7 +88,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

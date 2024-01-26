@@ -3,12 +3,12 @@ import { monetxApi } from "../../../../apiSlice";
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllMonitoringAwsAccounts: builder.query({
-      query: () => "/api/v1/atom/password_group/get_password_groups",
+      query: () => "/api/v1/monitoring/monitoring_clouds/get_aws_credentials",
     }),
 
     deleteMonitoringAwsAccounts: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/delete_password_group",
+        url: "/api/v1/monitoring/monitoring_clouds/delete_aws_credentials",
         method: "POST",
         body: data,
       }),
@@ -16,7 +16,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 
     addMonitoringAwsAccount: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_group",
+        url: "/api/v1/monitoring/monitoring_clouds/add_aws_credentials",
         method: "POST",
         body: data,
       }),
@@ -24,7 +24,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 
     updateMonitoringAwsAccount: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/edit_password_group",
+        url: "/api/v1/monitoring/monitoring_clouds/edit_aws_credentials",
         method: "POST",
         body: data,
       }),

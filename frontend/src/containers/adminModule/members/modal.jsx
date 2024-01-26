@@ -1,31 +1,29 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
-import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Grid from "@mui/material/Grid";
+import { useSelector } from "react-redux";
+import { useFetchPasswordGroupNamesQuery } from "../../../store/features/dropDowns/apis";
+import { selectPasswordGroupNames } from "../../../store/features/dropDowns/selectors";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/atomModule/passwordGroups/apis";
-import {
-  useFetchPasswordGroupNamesQuery,
-  useFetchPasswordGroupTypeNamesQuery,
-} from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
-} from "../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+} from "../../../store/features/adminModule/members/apis";
 import { formSetter, getTitle } from "../../../utils/helpers";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { PAGE_NAME, TELNET } from "./constants";
-import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit, { SelectFormUnit } from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
+import {
+  PAGE_NAME,
+  TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+} from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.USER_NAME]: yup
@@ -60,13 +58,8 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
-  // states
-  const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -100,9 +93,12 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // fetching dropdowns data from backend using apis
   const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
+    data: fetchPasswordGroupNamesData,
+    isSuccess: isFetchPasswordGroupNamesSuccess,
+    isLoading: isFetchPasswordGroupNamesLoading,
+    isError: isFetchPasswordGroupNamesError,
+    error: fetchPasswordGroupNamesError,
+  } = useFetchPasswordGroupNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -123,8 +119,16 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: fetchPasswordGroupNamesData,
+    isSuccess: isFetchPasswordGroupNamesSuccess,
+    isError: isFetchPasswordGroupNamesError,
+    error: fetchPasswordGroupNamesError,
+    type: TYPE_FETCH,
+  });
+
   // getting dropdowns data from the store
-  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
+  const passwordGroupNames = useSelector(selectPasswordGroupNames);
 
   // on form submit
   const onSubmit = (data) => {
@@ -138,66 +142,76 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={5}>
-          <Grid item xs={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.USER_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ROLE}
-              required
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={4}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.USER_NAME}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.NAME}
+                spinning={isFetchPasswordGroupNamesLoading}
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.COMPANY_NAME}
+                options={["to be implemented"]}
+                spinning={isFetchPasswordGroupNamesLoading}
+                required
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.STATUS}
+                options={["to be implemented"]}
+                spinning={isFetchPasswordGroupNamesLoading}
+                required
+              />
+
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ROLE}
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ACCOUNT_TYPE}
+                options={["to be implemented"]}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.LAST_LOGIN}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.TEAM}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.STATUS}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.COMPANY_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ACCOUNT_TYPE}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.LAST_LOGIN}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.TEAM}
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

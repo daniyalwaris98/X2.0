@@ -1,14 +1,11 @@
 import React, { useState, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
-import AddFromAutoDiscoveryModal from "./addFromAutoDiscoveryModal";
+import { useSelector } from "react-redux";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
   useOnBoardRecordsMutation,
 } from "../../../store/features/atomModule/atoms/apis";
-import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
 import {
   jsonToExcel,
@@ -16,13 +13,27 @@ import {
   handleFileChange,
   generateObject,
 } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  ONBOARD_PROMPT,
+  ONBOARD_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import useErrorHandling from "../../../hooks/useErrorHandling";
+import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import SiteModal from "../../uamModule/sites/modal";
+import RackModal from "../../uamModule/racks/modal";
+import PasswordGroupModal from "../passwordGroups/modal";
+import Modal from "./modal";
+import AddFromAutoDiscoveryModal from "./addFromAutoDiscoveryModal";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
@@ -34,16 +45,8 @@ import {
   ATOM_ID,
   ATOM_TRANSITION_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import SiteModal from "../../uamModule/sites/modal";
-import RackModal from "../../uamModule/racks/modal";
-import PasswordGroupModal from "../passwordGroups/modal";
-import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -74,7 +77,6 @@ const Index = () => {
       default_onboard: {
         handleClick: handleOnBoard,
         visible: shouldOnboardBeVisible(),
-        sx: {},
       },
       atom_add: {
         handleClick: handleAdd,
@@ -221,12 +223,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want to delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -258,12 +257,9 @@ const Index = () => {
 
   function handleOnBoard() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Only the complete atoms will be onBoarded. Are you sure you want to proceed?",
-        onBoardData
-      );
+      handleCallbackAlert(ONBOARD_PROMPT, onBoardData);
     } else {
-      handleInfoAlert("No record has been selected to onBoard!");
+      handleInfoAlert(ONBOARD_SELECTION_PROMPT);
     }
   }
 
@@ -334,7 +330,7 @@ const Index = () => {
         FILE_NAME_EXPORT_INCOMPLETE_DATA
       );
     }
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleEdit(record) {
@@ -347,7 +343,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading ||
         isAddRecordsLoading ||
@@ -355,7 +351,6 @@ const Index = () => {
         isOnBoardRecordsLoading
       }
     >
-      {/* <div style={{ width: "196vh" }}> */}
       <input
         type="file"
         ref={fileInputRef}
@@ -426,8 +421,7 @@ const Index = () => {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-      {/* </div> */}
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

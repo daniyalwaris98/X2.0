@@ -123,11 +123,10 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
+      <form onSubmit={handleSubmit(onSubmit)}>
         <Grid container spacing={5}>
           <Grid item xs={6}>
             <DefaultFormUnit

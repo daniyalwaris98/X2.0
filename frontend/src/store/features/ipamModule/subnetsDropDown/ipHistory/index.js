@@ -1,13 +1,9 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  TABLE_DATA_UNIQUE_ID,
-  ELEMENT_NAME,
-} from "../../../../../containers/ipamModule/subnetsDropDown/ipHistory/constants";
+import { ELEMENT_NAME } from "../../../../../containers/ipamModule/subnetsDropDown/ipHistory/constants";
 
 const initialState = {
   all_data: [],
-  ip_history_by_ip_address: [],
 };
 
 const defaultSlice = createSlice({

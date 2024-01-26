@@ -2,7 +2,6 @@ export const PAGE_NAME = "Discovered Subnets";
 export const ELEMENT_NAME = "Discovered Subnet";
 export const PAGE_PATH = "discovered_subnets";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_discovered_subnets";
-export const FILE_NAME_EXPORT_TEMPLATE = "discovered_subnets_template";
 export const TABLE_DATA_UNIQUE_ID = "subnet_id";
 export const indexColumnNameConstants = {
   SUBNET_ID: TABLE_DATA_UNIQUE_ID,

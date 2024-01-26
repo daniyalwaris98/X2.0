@@ -1,12 +1,8 @@
 import React from "react";
-import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
-import { indexColumnNameConstants } from "./constants";
 import DefaultAnchor from "../../../../components/anchor";
+import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleIpAddressClick }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({ handleIpAddressClick } = {}) {
   const columnDefinitions = [
     {
       data_key: indexColumnNameConstants.IP_ADDRESS,

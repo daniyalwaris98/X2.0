@@ -3,7 +3,12 @@ import { monetxApi } from "./features/apiSlice";
 
 // admin module
 import adminAutoDiscoveryFailedDevicesReducer from "./features/adminModule/failedDevices/autoDiscovery";
+import adminIpamFailedDevicesReducer from "./features/adminModule/failedDevices/ipam";
+import adminMonitoringFailedDevicesReducer from "./features/adminModule/failedDevices/monitoring";
+import adminNcmFailedDevicesReducer from "./features/adminModule/failedDevices/ncm";
+import adminUamFailedDevicesReducer from "./features/adminModule/failedDevices/uam";
 import adminRolesReducer from "./features/adminModule/roles";
+import adminMembersReducer from "./features/adminModule/members";
 
 // atom module
 import atomAtomsReducer from "./features/atomModule/atoms";
@@ -110,7 +115,12 @@ const persistConfig = {
 const rootReducer = combineReducers({
   // admin module
   admin_auto_discovery_failed_devices: adminAutoDiscoveryFailedDevicesReducer,
+  admin_ipam_failed_devices: adminIpamFailedDevicesReducer,
+  admin_monitoring_failed_devices: adminMonitoringFailedDevicesReducer,
+  admin_ncm_failed_devices: adminNcmFailedDevicesReducer,
+  admin_uam_failed_devices: adminUamFailedDevicesReducer,
   admin_roles: adminRolesReducer,
+  admin_members: adminMembersReducer,
 
   // atom module
   atom_atoms: atomAtomsReducer,

@@ -63,7 +63,6 @@ const Index = () => {
     default_backup: {
       handleClick: handleBulkBackup,
       visible: selectedRowKeys.length > 0,
-      // loader: true,
       loader: isBackupButtonLoading,
     },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME_BULK },

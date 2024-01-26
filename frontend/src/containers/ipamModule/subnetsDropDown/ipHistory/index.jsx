@@ -1,6 +1,9 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/subnetsDropDown/ipHistory/apis";
+import {
+  useFetchRecordsLazyQuery,
+  useGetIpHistoryByIpAddressMutation,
+} from "../../../../store/features/ipamModule/subnetsDropDown/ipHistory/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/ipHistory/selectors";
 import { jsonToExcel } from "../../../../utils/helpers";
@@ -18,10 +21,16 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
+import { useDispatch } from "react-redux";
+import { selectSelectedIpDetail } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/selectors";
+import { setSelectedIpDetail } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails";
+import { indexColumnNameConstants as ipDetailsColumnNameConstants } from "../ipDetails/constants";
+import IpDetailDetails from "./ipDetailDetails";
 
 const Index = () => {
   // theme
   const theme = useTheme();
+  const dispatch = useDispatch();
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
@@ -40,15 +49,30 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
+  const selectedIpDetail = useSelector(selectSelectedIpDetail);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchRecords,
+    {
+      data: fetchRecordsData,
+      isSuccess: isFetchRecordsSuccess,
+      isLoading: isFetchRecordsLoading,
+      isError: isFetchRecordsError,
+      error: fetchRecordsError,
+    },
+  ] = useFetchRecordsLazyQuery();
+
+  const [
+    getIpHistoryByIpAddress,
+    {
+      data: getIpHistoryByIpAddressData,
+      isSuccess: isGetIpHistoryByIpAddressSuccess,
+      isLoading: isGetIpHistoryByIpAddressLoading,
+      isError: isGetIpHistoryByIpAddressError,
+      error: getIpHistoryByIpAddressError,
+    },
+  ] = useGetIpHistoryByIpAddressMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -58,6 +82,30 @@ const Index = () => {
     error: fetchRecordsError,
     type: TYPE_FETCH,
   });
+
+  useErrorHandling({
+    data: getIpHistoryByIpAddressData,
+    isSuccess: isGetIpHistoryByIpAddressSuccess,
+    isError: isGetIpHistoryByIpAddressError,
+    error: getIpHistoryByIpAddressError,
+    type: TYPE_FETCH,
+  });
+
+  // effects
+  useEffect(() => {
+    if (selectedIpDetail) {
+      getIpHistoryByIpAddress({
+        [ipDetailsColumnNameConstants.IP_ADDRESS]:
+          selectedIpDetail[ipDetailsColumnNameConstants.IP_ADDRESS],
+      });
+    } else {
+      fetchRecords();
+    }
+
+    return () => {
+      dispatch(setSelectedIpDetail(null));
+    };
+  }, []);
 
   // handlers
   function handleDefaultExport() {
@@ -83,6 +131,8 @@ const Index = () => {
           setOpen={setTableConfigurationsOpen}
         />
       ) : null}
+
+      {selectedIpDetail ? <IpDetailDetails /> : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}

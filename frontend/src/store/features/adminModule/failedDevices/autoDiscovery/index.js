@@ -1,9 +1,6 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  TABLE_DATA_UNIQUE_ID,
-  ELEMENT_NAME,
-} from "../../../../../containers/adminModule/failedDevicesLanding/autoDiscovery/constants";
+import { ELEMENT_NAME } from "../../../../../containers/adminModule/failedDevicesLanding/autoDiscovery/constants";
 
 const initialState = {
   all_data: [],
@@ -15,7 +12,8 @@ const defaultSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder.addMatcher(
-      extendedApi.endpoints.getAllAdminFailedDevices.matchFulfilled,
+      extendedApi.endpoints.getAllAdminAutoDiscoveryFailedDevices
+        .matchFulfilled,
       (state, action) => {
         state.all_data = action.payload;
       }

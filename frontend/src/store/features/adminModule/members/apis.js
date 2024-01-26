@@ -2,35 +2,29 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    //table apis
-    fetchAtomPasswordGroups: builder.query({
-      query: () => "/api/v1/atom/password_group/get_password_groups",
+    getAllAdminMembers: builder.query({
+      query: () => "/api/v1/users/user/get_all_users",
     }),
-    addAtomPasswordGroups: builder.mutation({
+
+    deleteAdminMembers: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_groups",
+        url: "/api/v1/users/user/delete_user",
         method: "POST",
         body: data,
       }),
     }),
-    deleteAtomPasswordGroups: builder.mutation({
+
+    addAdminMember: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/delete_password_group",
+        url: "/api/v1/users/user/add_user",
         method: "POST",
         body: data,
       }),
     }),
-    // form apis
-    addAtomPasswordGroup: builder.mutation({
+
+    updateAdminMember: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/password_group/add_password_group",
-        method: "POST",
-        body: data,
-      }),
-    }),
-    updateAtomPasswordGroup: builder.mutation({
-      query: (data) => ({
-        url: "/api/v1/atom/password_group/edit_password_group",
+        url: "/api/v1/users/user/edit_user",
         method: "POST",
         body: data,
       }),
@@ -39,10 +33,8 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useFetchAtomPasswordGroupsQuery: useFetchRecordsQuery,
-  useAddAtomPasswordGroupsMutation: useAddRecordsMutation,
-  useDeleteAtomPasswordGroupsMutation: useDeleteRecordsMutation,
-  // form apis
-  useAddAtomPasswordGroupMutation: useAddRecordMutation,
-  useUpdateAtomPasswordGroupMutation: useUpdateRecordMutation,
+  useGetAllAdminMembersQuery: useFetchRecordsQuery,
+  useDeleteAdminMembersMutation: useDeleteRecordsMutation,
+  useAddAdminMemberMutation: useAddRecordMutation,
+  useUpdateAdminMemberMutation: useUpdateRecordMutation,
 } = extendedApi;

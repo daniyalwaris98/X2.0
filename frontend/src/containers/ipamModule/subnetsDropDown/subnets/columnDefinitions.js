@@ -3,11 +3,11 @@ import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 import useButtonGenerator from "../../../../hooks/useButtonGenerator";
+import DefaultAnchor from "../../../../components/anchor";
 
 export function useIndexTableColumnDefinitions({
-  // buttonsConfigurationObject,
   handleEdit,
-  handleIpDetailsModalOpen,
+  handleIpAddressClick,
 }) {
   const theme = useTheme();
   const buttonGenerator = useButtonGenerator();
@@ -16,12 +16,9 @@ export function useIndexTableColumnDefinitions({
     {
       data_key: indexColumnNameConstants.SUBNET_ADDRESS,
       render: (text, record) => (
-        <a
-          style={{ color: "green" }}
-          onClick={() => handleIpDetailsModalOpen(text)}
-        >
+        <DefaultAnchor onClick={() => handleIpAddressClick(record)}>
           {text}
-        </a>
+        </DefaultAnchor>
       ),
     },
     indexColumnNameConstants.SUBNET_NAME,
