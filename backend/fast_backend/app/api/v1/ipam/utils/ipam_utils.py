@@ -572,6 +572,7 @@ def calculateDnsIp(subnet):
 
 def getPhysicalMapping(subnet_list):
     try:
+
         threads = []
         physical_mapping = IPAMPM()
         password=""
@@ -789,9 +790,10 @@ def MultiPurpose(options):
                     row.scan_date = datetime.now()
                 UpdateDBData(subnet_display)
                 traceback.print_exc()
+        return "success"
     except Exception as e:
-
         traceback.print_exc()
+        return "error"
 
 # def FetchIpamDevices():
 #     try:

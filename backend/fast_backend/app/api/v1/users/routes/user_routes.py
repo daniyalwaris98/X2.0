@@ -293,3 +293,21 @@ def delete_user(user_id :list[int]):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Deleting the User",status_code=500)
+
+
+@router.post('/edit_user',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to add the updated the user",
+description="API to add updated the user"
+)
+def edit_user_db(user_data:AddUserSchema):
+    try:
+        data,status = EditUserInDB(user_data)
+        return JSONResponse(content=data,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
+

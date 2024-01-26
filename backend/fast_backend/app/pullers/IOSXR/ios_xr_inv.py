@@ -102,6 +102,7 @@ class XRPuller(object):
                 try:
                     print("show inventory", file=sys.stderr)
                     inv = device.send_command('show inventory', use_textfsm=True, delay_factor=5)
+                    print("inv is:::::::::::::::::",inv,file=sys.stderr)
                     if isinstance(inv, str): 
                         print("Send show inventory all", file=sys.stderr)
                         inv = device.send_command('show inventory all', use_textfsm=True)
