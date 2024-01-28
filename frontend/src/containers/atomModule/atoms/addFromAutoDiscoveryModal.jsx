@@ -1,33 +1,32 @@
-import React, { useState, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
-import DefaultDialog from "../../../components/dialogs";
-import { CancelDialogFooter } from "../../../components/dialogFooters";
+import React, { useState } from "react";
 import Grid from "@mui/material/Grid";
+import { useSelector } from "react-redux";
+import { selectAtomDevicesFromDiscovery } from "../../../store/features/atomModule/atoms/selectors";
 import {
   useGetAtomsDevicesFromDiscoveryQuery,
   useAddAtomsDevicesFromDiscoveryMutation,
 } from "../../../store/features/atomModule/atoms/apis";
-import { useSelector } from "react-redux";
-import { selectAtomDevicesFromDiscovery } from "../../../store/features/atomModule/atoms/selectors";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "../../autoDiscoveryModule/discovery/columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { TABLE_DATA_UNIQUE_ID } from "../../autoDiscoveryModule/discovery/constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultDialog from "../../../components/dialogs";
+import { CancelDialogFooter } from "../../../components/dialogFooters";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import { useIndexTableColumnDefinitions } from "../../autoDiscoveryModule/discovery/columnDefinitions";
+import { TABLE_DATA_UNIQUE_ID } from "../../autoDiscoveryModule/discovery/constants";
 import { PAGE_NAME } from "../../autoDiscoveryModule/discovery/constants";
 
 const Index = ({ handleClose, open }) => {
-  const theme = useTheme();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -96,9 +95,9 @@ const Index = ({ handleClose, open }) => {
 
   return (
     <DefaultDialog title={`${"Add"} from ${PAGE_NAME}`} open={open}>
-      <Grid container style={{ marginTop: "15px" }}>
+      <Grid container>
         <Grid item xs={12}>
-          <Spin
+          <DefaultSpinner
             spinning={
               isGetAtomsDevicesFromDiscoveryLoading ||
               isAddAtomsDevicesFromDiscoveryLoading
@@ -128,7 +127,7 @@ const Index = ({ handleClose, open }) => {
               dynamicWidth={false}
               defaultPageSize={7}
             />
-          </Spin>
+          </DefaultSpinner>
         </Grid>
         <Grid item xs={12}>
           <CancelDialogFooter handleClose={handleClose} />

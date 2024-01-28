@@ -106,7 +106,7 @@ const Index = ({ handleClose, open, ncmDeviceId }) => {
 
   return (
     <DefaultDialog title={`${"Restore"} ${PAGE_NAME}`} open={open}>
-      <Grid container style={{ marginTop: "15px" }}>
+      <Grid container>
         <Grid item xs={12}>
           <DefaultSpinner
             spinning={isGetDeletedBackupsLoading || isRestoreBackupsLoading}

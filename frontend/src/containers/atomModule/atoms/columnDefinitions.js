@@ -1,10 +1,10 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
-import { ATOM_ID, indexColumnNameConstants } from "./constants";
-import { MONITORING_CREDENTIALS_ID } from "../../monitoringModule/devices/constants";
 import DefaultSelect from "../../../components/selects";
 import DefaultOption from "../../../components/options";
+import { ATOM_ID, indexColumnNameConstants } from "./constants";
+import { MONITORING_CREDENTIALS_ID } from "../../monitoringModule/devices/constants";
 
 export function useIndexTableColumnDefinitions({
   handleEdit = null,

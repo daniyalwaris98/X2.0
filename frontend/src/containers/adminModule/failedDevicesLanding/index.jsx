@@ -150,6 +150,9 @@ function Index(props) {
         <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>
       <Outlet />
+      <br />
+      <br />
+      <br />
     </>
   );
 }
