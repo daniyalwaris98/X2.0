@@ -14,6 +14,36 @@ router = APIRouter(
     tags=["monitoring_network"]
 )
 
+@router.get('/get_interfaces_by_ip_address',responses={
+    200:{"model":list[InterfaceCardDataSchema]},
+    500:{"model":str}
+},
+summary="API to get the interfaces based on ip address",
+description="API to get the interfaces based on ip address"
+)
+def get_interfaces_by_ip_address(ip: str = Query(..., description="IP address of the device")):
+    try:
+        interfaces_list = []
+        query = f'import "strings"\
+                       import "influxdata/influxdb/schema"\
+                       from(bucket: "monitoring")\
+                       |> range(start: -1d)\
+                       |> filter(fn: (r) => r["_measurement"] == "Interfaces")\
+                       |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip}")\
+                       |> schema.fieldsAsCols()\
+                       |> sort(columns: ["_time"], desc: true)\
+                       |> unique(column: "Interface_Name")\
+                       |> yield(name: "unique")'
+        interfaces_dict = {
+            "interfaces":get_interface_influx_data(query)
+        }
+        result = get_interface_influx_data(query)
+        print("interfaces dict is:::::::::::::::",result,file=sys.stderr)
+        interfaces_list.append(result)
+        return result
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error OCcured While Getting the interfaces by ip address",status_code=500)
 
 
 @router.get('/get_all_devices_in_networks',

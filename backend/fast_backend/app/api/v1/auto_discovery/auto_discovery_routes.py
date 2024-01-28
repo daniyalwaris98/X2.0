@@ -1,5 +1,5 @@
 import ipaddress
-
+from app.api.v1.atom.utils.atom_utils import *
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from app.schema.auto_discovery_schema import *
@@ -1205,3 +1205,169 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3RequestSchema):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Updting the SNMP v1_v2 credentials",status_code=500)
+
+
+@router.get('/get_discovery_data_in_atom',
+            responses={
+                200:{"model":list[GetDiscoveryDataSchema]},
+                400:{"model":str},
+                500:{"model":str}
+            },
+
+summary="APi to get the discovery data in atom",
+description="API to get the discovery data in atom"
+)
+def get_discovery_data_in_atom():
+    try:
+        discovery_list =[]
+        discovery_exsist = configs.db.quer(AutoDiscoveryTable).all()
+        for data in discovery_exsist:
+            transition_atom_exsist = configs.db.query(AtomTransitionTable).filter_by(ip_address = data.ip_address).first()
+            if not transition_atom_exsist:
+                discovery_dict = {
+                    "discovery_id":discovery_exsist.discovery_id,
+                    "ip_address":discovery_exsist.ip_address,
+                    "os_type":discovery_exsist.os_type,
+                    "subnet":discovery_exsist.subnet,
+                    "make_model":discovery_exsist.make_model,
+                    "vendor":discovery_exsist.vendor
+                }
+                discovery_list.append(discovery_dict)
+        return discovery_list
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error occured while getting the discovery data",status_code=500)
+
+
+@router.post("/add_discovery_devices", responses={
+    200: {"model": SummeryResponseSchema},
+    500: {"model": str}
+})
+async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
+    try:
+        print("atom objs is:::::::::::::::::::::::::::::::::::::::::::::::", atom_objs, file=sys.stderr)
+        row = 0
+        error_list = []
+        success_list = []
+        data_lst = []
+        data_filtered_lst = []
+        filtered_list = []
+        unique_success_list = []
+        for atomObj in atom_objs:
+            print("step1::::::::::::::::::::::", file=sys.stderr)
+            try:
+                row += 1
+                atomObj["ip_address"] = atomObj["ip_address"].strip()
+                if atomObj["ip_address"] == "":
+                    error_list.append(f"Row {row} : IP Address Can Not Be Empty")
+
+                atom = configs.db.query(AtomTable).filter(
+                    AtomTable.ip_address == atomObj["ip_address"]).first()
+                transit_atom = configs.db.query(AtomTransitionTable).filter(
+                    AtomTransitionTable.ip_address == atomObj["ip_address"]
+                ).first()
+
+                if atom is not None:
+                    msg, status = add_complete_atom(atomObj, True)
+                    print("msg in atom is ::::::::::::::::", msg, file=sys.stderr)
+                    if isinstance(msg, dict):
+                        for key, value in msg.items():
+                            print("key for msg ares for instance::::::::::::::::::::", key, file=sys.stderr)
+                            print("values are instance:::::::::::::::::::::::::::::", value, file=sys.stderr)
+
+                            if key == 'data':
+                                data_lst.append(value)
+                            if key == 'message':
+                                if value not in success_list:
+                                    success_list.append(value)
+                    else:
+                        print("atom msg ims not a dict and it is string", file=sys.stderr)
+                        error_list.append(msg)
+                elif transit_atom is not None:
+                    msg, status = add_transition_atom(atomObj, True)
+
+                    for key, value in msg.items():
+
+                        if key == 'data':
+                            data_lst.append(value)
+                        if key == 'message':
+                            if value not in success_list:
+                                # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
+                                success_list.append(value)
+                else:
+                    msg, status = add_complete_atom(atomObj, False)
+                    print("msg for add complete atom is34343434343434:::::::::::::::::::::", msg, file=sys.stderr)
+                    if isinstance(msg, dict):
+                        for key, value in msg.items():
+                            print("key for msg ares::::::::::::::::::::", key, file=sys.stderr)
+                            print("values are:::::::::::::::::::::::::::::", value, file=sys.stderr)
+
+                            if key == 'data':
+                                data_lst.append(value)
+                            if key == 'message':
+                                if value not in success_list:
+                                    print("values for the message is::::::::::::::::::::::", value, file=sys.stderr)
+                                    success_list.append(value)
+
+                    if status != 200:
+                        msg, status = add_transition_atom(atomObj, False)
+                        if isinstance(msg, dict):
+                            for key, value in msg.items():
+                                if key == 'data':
+                                    data_lst.append(value)
+                                if key == 'message':
+                                    if value not in success_list:
+                                        # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
+                                        success_list.append(value)
+                        else:
+                            error_list.append(msg)
+            except Exception:
+                traceback.print_exc()
+                status = 500
+                msg = f"{atomObj['ip_address']} : Exception Occurred"
+            seen_ids = set()
+            filtered_dict = {}
+            for item in data_lst:
+                print("step2 is:::::::::::::::::::::::::::::::::::::::::::")
+                atom_transition_id = item.get('atom_transition_id')
+                atom_id = item.get('atom_id')
+
+                # Case: atom_transition_id is present, but atom_id is missing
+                if atom_transition_id is not None and atom_id is None:
+                    if atom_transition_id not in filtered_dict:
+                        filtered_dict[atom_transition_id] = item
+
+                # Case: atom_id is present, but atom_transition_id is missing
+                elif atom_id is not None and atom_transition_id is None:
+                    if atom_id not in filtered_dict:
+                        filtered_dict[atom_id] = item
+
+                # Case: Both atom_transition_id and atom_id are present
+                elif atom_transition_id is not None and atom_id is not None:
+                    if atom_transition_id not in filtered_dict and atom_id not in filtered_dict:
+                        filtered_dict[atom_transition_id] = item
+                        filtered_dict[atom_id] = item
+            filtered_list.extend(filtered_dict.values())
+            unique_success_list.extend(success_list)
+            # filtered_list = list(filtered_dict.values())
+            # unique_success_list = list(success_list)
+        print("step 3 is::::::::::::::::::::::::::::::::::::::::", file=sys.stderr)
+        print("filtered data list is:::::::::::::::", filtered_list, file=sys.stderr)
+        print("unique success liset is:::::::::::::::::::::::::::", unique_success_list, file=sys.stderr)
+        if not filtered_list:
+            print("step4::::::::::::::::::::::::::::::::::Filtered list is None")
+            error_list.append("Empty Import")
+        print("filtered list is:::::::::::::::::::::::::::", filtered_list, file=sys.stderr)
+        response = SummeryResponseSchema(
+            data=filtered_list,
+            success=len(unique_success_list),
+            error=len(error_list),
+            success_list=unique_success_list,
+            error_list=error_list
+        )
+        return response
+
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred While Adding Atom Devices", status_code=500)

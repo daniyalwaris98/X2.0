@@ -509,3 +509,86 @@ def change_s3_status(status:ChangeS3StatusSchema):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Changing the s3 status",status_code=500)
+
+
+@router.post("/edit_aws_credentials",
+             responses={
+                 200:{"model":Response200}
+             },
+             summary = "Use This API in the monitoring cloud page to add the AWS.This is of POST Requesst",
+             description="Use This API in the monitoring cloud page to add the AWS.This is of POST Requesst"
+             )
+def add_aws_credentials(addAws:AwsCredentialScehma):
+    try:
+        data = {}
+        addAwsObj = dict(addAws)
+        access_key = addAwsObj['aws_access_key']
+        secret_key = addAwsObj['aws_secret_access_key']
+        account_label = addAwsObj['account_label']
+
+
+        aws = AWS(access_key,secret_key,account_label)
+        try:
+            if aws.TestConnection() == False:
+                return JSONResponse(content=f"{aws.access_key} : Invalid Credentials",status_code=400)
+        except Exception as e:
+            traceback.print_exc()
+            print("error occured While testing AWS credentials",str(e))
+
+        try:
+            aws_query = configs.db.query(AWS_CREDENTIALS).filter_by(access_key=access_key).first()
+            if aws_query is not None:
+                aws_query.access_key = access_key,
+                aws_query.secrete_access_key = secret_key
+                aws_query.account_label = account_label
+                UpdateDBData(aws_query)
+                aws_Data = {
+                    "access_key":aws_query.access_key,
+                    "secret_key":aws_query.secrete_access_key,
+                    "account_label":aws_query.account_label
+                }
+                data['data'] = aws_Data
+                data['message'] = f"{aws_query.access_key} Updated"
+            else:
+                return JSONResponse(content="AWS credentials not found",status_code=400)
+            return  data
+        except Exception as e:
+            traceback.print_exc()
+            print("Error Occured While DB insertion::::::::::::",file=sys.stderr)
+    except Exception as e:
+        traceback.print_exc()
+
+
+@router.post('/delete_aws_credentials',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to delete the AWS credentials",
+description="API to delte the AWS credentials"
+)
+def delete_aws_credentials(aws:str):
+    try:
+        data = []
+        success_list= []
+        error_list = []
+        aws_query =configs.db.query(AWS_CREDENTIALS).filter_by(access_key=aws).first()
+        if aws_query:
+            data.append(aws_query.access_key)
+            DeleteDBData(aws_query)
+            success_list.append(f"{aws_query.access_key} : Deleted Successfully")
+        else:
+            return  JSONResponse(content="Aws Credentials not found",status_code=400)
+
+        responses = {
+            "data":data,
+            "success_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Deleting the AWS credentials",status_code=500)
+

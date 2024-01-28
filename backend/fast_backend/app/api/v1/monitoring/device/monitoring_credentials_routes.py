@@ -430,3 +430,41 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3CredentialsResponseSchema):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Updting the SNMP v1_v2 credentials",status_code=500)
+
+
+
+
+@router.post('/edit_WMI_credentials',
+             responses={
+                 200:{"model":Response200},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="use this api to add the WMI credentials",
+             description="Use this api to add the WMI credentials"
+             )
+def add_wmi_credentials(wmiObj:WMIMonitoringCredentialSchema):
+    try:
+        data_dict_wmi = {}
+        wmiObj = dict(wmiObj)
+        credentials = configs.db.query(Monitoring_Credentails_Table).filter_by(profile_name=wmiObj['profile_name']).first()
+        if credentials:
+            credentials.username = wmiObj['username']
+            credentials.profile_name = wmiObj['profile_name']
+            credentials.password = wmiObj['password']
+            credentials.category = "wmi"
+            UpdateDBData(credentials)
+            data_dict = {
+                "monitoring_credentials_id":credentials.monitoring_credentials_id,
+                "username":credentials.username,
+                "password":credentials.password,
+                "profile_name":credentials.profile_name,
+                "category":credentials.category
+            }
+            data_dict_wmi['data'] = data_dict
+            data_dict_wmi['message'] = f"{credentials.profile_name} : Inserted Successfully"
+
+        return JSONResponse(content=data_dict_wmi,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while adding wmi credentials",status_code=500)

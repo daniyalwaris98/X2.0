@@ -1473,3 +1473,60 @@ def AddDNS(data: EditDnsSchema):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Updating The DNS",status_code=500)
+
+
+@router.get('/get_ipam_devices_fetch_dates',responses={
+    200:{"model":str},
+    500:{"model":str}
+},
+summary = "API to get the IPAM fetch dates",
+description="API to get the IPAM fetch dates"
+)
+def et_ipam_fetch_dates():
+    try:
+        query = f"select distinct(fetch_date) ipam_devices_fetch_table ORDER BY fetch_date DESC;"
+        result = configs.db.execute(query)
+        dates = []
+        for row in result:
+            dates.append(row)
+        return dates
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error occured while getting the ipam fetch dates",status_code=500)
+
+
+@router.post('/get_ipam_by_date',responses ={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to get ipam by dates",
+description="API to get the ipamby dates"
+)
+def get_ipam_by_date(date:str):
+    try:
+        date_data = dict(date)
+        utc = datetime.strptime(
+            date_data['date'],'%a, %d %b %Y %H:%M:%S GMT'
+        )
+        current_time = utc.strftime("%Y-%m-%d %H:%M:%S")
+        print('current_time is :', current_time, file=sys.stderr)
+        print(current_time, file=sys.stderr)
+        objList = []
+        fetch_date = configs.db.query(IpamDevicesFetchTable).filter_by(fetch_date = utc).first()
+        if fetch_date:
+            fetch_dict = {
+                "ipam_device_id":fetch_date.ipam_device_id,
+                "interface":fetch_date.interface,
+                "interface_ip":fetch_date.interface_ip,
+                "interface_description":fetch_date.interface_description,
+                "virtual_ip":fetch_date.virtual_ip,
+                "vlan":fetch_date.vlan,
+                "vlan_number":fetch_date.vlan_number,
+                "interface_status":fetch_date.interface_status,
+                "fetch_date":fetch_date.fetch_date
+            }
+            objList.append(fetch_dict)
+        return objList
+    except Exception as e:
+        traceback.print_exc()

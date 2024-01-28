@@ -105,6 +105,40 @@ def get_monitoring_devices_cards(ip: str = Query(..., description="IP address of
         return JSONResponse(content="Server Error While Fetching Monitoring Data", status_code=500)
 
 
+
+@router.get('/get_device_details_by_ip_address',responses={
+    200:{"model":list[DeviceCardDataSchema]},
+    500:{"model":str}
+},
+summary="API to get the interfaces based on ip address",
+description="API to get the interfaces based on ip address"
+)
+def get_device_by_ip_address(ip: str = Query(..., description="IP address of the device")):
+    try:
+        device_list = []
+        query = f'import "strings"\
+                    import "influxdata/influxdb/schema"\
+                    from(bucket: "monitoring")\
+                    |> range(start:-60d)\
+                    |> filter(fn: (r) => r["_measurement"] == "Devices")\
+                    |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip}")\
+                    |> last()\
+                    |> schema.fieldsAsCols()\
+                    |> highestMax(n:1,column: "_time")'
+
+        device_dict = {
+            "device":get_device_influx_data(query)
+        }
+
+        device_list.append(device_dict)
+        result = get_interface_influx_data(query)
+        return result
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error OCcured While Getting the interfaces by ip address",status_code=500)
+
+
+
 @router.get("/get_ip_alerts", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
