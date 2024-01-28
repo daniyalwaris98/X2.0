@@ -26,6 +26,7 @@ import {
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import withDefaultDelete from "../../../hoc/withDefaultDelete";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
 
 const Index = () => {
   // theme
@@ -156,7 +157,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
       {open ? (
         <Modal
           handleClose={handleClose}
@@ -188,33 +189,8 @@ const Index = () => {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 
-// function IndexWithHOC(props) {
-//   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
-//   // Wrap the Index component with the withDefaultDelete HOC
-//   const IndexWithDelete = withDefaultDelete({
-//     Component: Index,
-//     useDeleteRecordsMutation,
-//     selectedRowKeys,
-//     setSelectedRowKeys,
-//   });
-
-//   return IndexWithDelete;
-// }
-
-// export default IndexWithHOC;
-
-// Wrap the Index component with the withDefaultDelete HOC
-// const IndexWithDelete = withDefaultDelete({
-//   Component: Index,
-//   useDeleteRecordsMutation,
-//   selectedRowKeys,
-//   setSelectedRowKeys,
-// });
-
-// export default IndexWithDelete;
 export default Index;

@@ -18,6 +18,7 @@ import {
 } from "./constants";
 import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
 
 const Index = () => {
   // theme
@@ -70,7 +71,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -91,7 +92,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 
