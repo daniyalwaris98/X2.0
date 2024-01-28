@@ -1,22 +1,21 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import FormModal from "../../../../components/dialogs";
+import ReactHtmlParser from "react-html-parser";
 import Grid from "@mui/material/Grid";
-import { SelectFormUnitWithHiddenValues } from "../../../../components/formUnits";
-import { CompareDialogFooter } from "../../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
-import { useCompareNcmConfigurationBackupsMutation } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
-import { selectTableData } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
 import { useSelector } from "react-redux";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import { selectTableData } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
+import { useCompareNcmConfigurationBackupsMutation } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
 import { getTitle } from "../../../../utils/helpers";
-import { TYPE_SINGLE } from "../../../../hooks/useErrorHandling";
-import { ELEMENT_NAME } from "./constants";
-import { compareModalConstants } from "./constants";
-import { Spin } from "antd";
-import ReactHtmlParser from "react-html-parser";
+import useErrorHandling, {
+  TYPE_SINGLE,
+} from "../../../../hooks/useErrorHandling";
+import FormModal from "../../../../components/dialogs";
+import { SelectFormUnitWithHiddenValues } from "../../../../components/formUnits";
+import { CompareDialogFooter } from "../../../../components/dialogFooters";
+import DefaultSpinner from "../../../../components/spinners";
+import { ELEMENT_NAME, compareModalConstants } from "./constants";
 
 const schema = yup.object().shape({
   [compareModalConstants.CONFIGURATION_TO_BE_COMPARED]: yup
@@ -32,8 +31,6 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open }) => {
-  const theme = useTheme();
-
   // useForm hook
   const { handleSubmit, control } = useForm({
     resolver: yupResolver(schema),
@@ -84,7 +81,7 @@ const Index = ({ handleClose, open }) => {
 
   return (
     <FormModal title={`${"Compare"} ${ELEMENT_NAME}`} open={open}>
-      <Spin spinning={isCompareBackupsLoading}>
+      <DefaultSpinner spinning={isCompareBackupsLoading}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={2}>
             <Grid item xs={6}>
@@ -136,7 +133,7 @@ const Index = ({ handleClose, open }) => {
             </Grid>
           </Grid>
         </form>
-      </Spin>
+      </DefaultSpinner>
     </FormModal>
   );
 };
