@@ -1,37 +1,35 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/serversDropDown/linux/devices/apis";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../../store/features/monitoringModule/serversDropDown/linux/devices/selectors";
+import { setSelectedDevice } from "../../../../../store/features/monitoringModule/devices";
+import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/serversDropDown/linux/devices/apis";
 import { jsonToExcel } from "../../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../../components/spinners";
+import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../../../devicesLanding/summary/constants";
+import { LANDING_PAGE_PATH } from "../../../devicesLanding";
+import { MODULE_PATH } from "../../../index";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../../components/pageSections";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setSelectedDevice } from "../../../../../store/features/monitoringModule/devices";
-import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../../../devicesLanding/summary/constants";
-import { LANDING_PAGE_PATH } from "../../../devicesLanding";
-import { MODULE_PATH } from "../../../index";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
-
-  // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
     handleIpAddressClick,
@@ -77,7 +75,7 @@ const Index = () => {
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -85,7 +83,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -106,7 +104,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 
