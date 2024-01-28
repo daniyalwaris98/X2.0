@@ -1,7 +1,7 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { DEFAULT_PASSWORD, indexColumnNameConstants } from "./constants";
 import { DefaultTextWithSwitch } from "../../../components/textWithSwitch";
+import { DEFAULT_PASSWORD, indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
   const columnDefinitions = [

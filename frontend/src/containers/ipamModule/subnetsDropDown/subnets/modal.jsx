@@ -1,21 +1,24 @@
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import FormModal from "../../../../components/dialogs";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../../components/formUnits";
-import DefaultDialogFooter from "../../../../components/dialogFooters";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/apis";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../../utils/helpers";
+import useErrorHandling from "../../../../hooks/useErrorHandling";
 import { TYPE_SINGLE } from "../../../../hooks/useErrorHandling";
-import { ELEMENT_NAME } from "./constants";
-import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
+import DefaultFormUnit from "../../../../components/formUnits";
+import DefaultDialogFooter from "../../../../components/dialogFooters";
+import FormModal from "../../../../components/dialogs";
+import DefaultSpinner from "../../../../components/spinners";
+import {
+  ELEMENT_NAME,
+  TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+} from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.SUBNET_ADDRESS]: yup
@@ -37,8 +40,6 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
   // useForm hook
   const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
@@ -106,35 +107,37 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={5}>
-          <Grid item xs={12}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SUBNET_ADDRESS}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SUBNET_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SUBNET_MASK}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SUBNET_LOCATION}
-              required
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={12}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SUBNET_ADDRESS}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SUBNET_NAME}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SUBNET_MASK}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SUBNET_LOCATION}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

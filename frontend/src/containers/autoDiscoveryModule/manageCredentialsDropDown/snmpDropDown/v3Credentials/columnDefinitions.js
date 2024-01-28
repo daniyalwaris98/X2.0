@@ -1,5 +1,6 @@
 import React from "react";
 import { Icon } from "@iconify/react";
+import { DefaultTextWithSwitch } from "../../../../../components/textWithSwitch";
 import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
@@ -9,9 +10,15 @@ export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
     indexColumnNameConstants.DESCRIPTION,
     indexColumnNameConstants.PORT,
     indexColumnNameConstants.AUTHORIZATION_PROTOCOL,
-    indexColumnNameConstants.AUTHORIZATION_PASSWORD,
+    {
+      data_key: indexColumnNameConstants.AUTHORIZATION_PASSWORD,
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
+    },
     indexColumnNameConstants.ENCRYPTION_PROTOCOL,
-    indexColumnNameConstants.ENCRYPTION_PASSWORD,
+    {
+      data_key: indexColumnNameConstants.ENCRYPTION_PASSWORD,
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
+    },
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,

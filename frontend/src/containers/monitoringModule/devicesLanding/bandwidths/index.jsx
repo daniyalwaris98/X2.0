@@ -1,36 +1,38 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/bandwidths/apis";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/monitoringModule/devicesLanding/bandwidths/selectors";
 import { selectSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/selectors";
 import { setSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces";
+import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/bandwidths/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
-import { Spin } from "antd";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
 import useErrorHandling from "../../../../hooks/useErrorHandling";
+import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../components/spinners";
+import DefaultDetailCards from "../../../../components/detailCards";
+import firewallIcon from "../../../../resources/designRelatedSvgs/firewall.svg";
+import deviceIcon from "../../../../resources/designRelatedSvgs/otherDevices.svg";
+import switchIcon from "../../../../resources/designRelatedSvgs/switches.svg";
+import { indexColumnNameConstants as interfacesColumnNameConstants } from "../interfaces/constants";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
-import InterfaceDetails from "./interfaceDetails";
-import { useDispatch } from "react-redux";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const dispatch = useDispatch();
-
   // hooks
+  const dispatch = useDispatch();
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -72,7 +74,8 @@ const Index = () => {
   useEffect(() => {
     if (selectedInterface) {
       fetchRecords({
-        // [DEVICE_IP_ADDRESS]: selectedInterface[DEVICE_IP_ADDRESS],
+        [indexColumnNameConstants.IP_ADDRESS]:
+          selectedInterface[indexColumnNameConstants.IP_ADDRESS],
       });
     }
     return () => {
@@ -83,7 +86,7 @@ const Index = () => {
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -91,7 +94,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -105,7 +108,21 @@ const Index = () => {
         />
       ) : null}
 
-      {selectedInterface ? <InterfaceDetails /> : null}
+      {selectedInterface ? (
+        <DefaultDetailCards
+          data={{
+            [interfacesColumnNameConstants.IP_ADDRESS]:
+              selectedInterface[interfacesColumnNameConstants.IP_ADDRESS],
+            [interfacesColumnNameConstants.DEVICE_NAME]:
+              selectedInterface[interfacesColumnNameConstants.DEVICE_NAME],
+            [interfacesColumnNameConstants.INTERFACE_NAME]:
+              selectedInterface[interfacesColumnNameConstants.INTERFACE_NAME],
+            [interfacesColumnNameConstants.INTERFACE_STATUS]:
+              selectedInterface[interfacesColumnNameConstants.INTERFACE_STATUS],
+          }}
+          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+        />
+      ) : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}
@@ -114,7 +131,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

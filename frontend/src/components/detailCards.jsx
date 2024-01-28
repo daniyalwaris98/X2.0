@@ -37,9 +37,10 @@ export default function DefaultDetailCards({ data, icons = [], ...rest }) {
             >
               <div
                 style={{
-                  margin: "5%",
+                  margin: "16px",
                   display: "flex",
                   justifyContent: "space-between",
+                  height: "57px",
                 }}
               >
                 <div>
@@ -54,7 +55,7 @@ export default function DefaultDetailCards({ data, icons = [], ...rest }) {
                     style={{
                       color: "green",
                       fontWeight: "bolder",
-                      fontSize: "23px",
+                      fontSize: "17px",
                       marginTop: "10px",
                     }}
                   >

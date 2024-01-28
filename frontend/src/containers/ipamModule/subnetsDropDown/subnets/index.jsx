@@ -1,8 +1,10 @@
 import React, { useState, useRef } from "react";
 import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
-// import IpDetailsModal from "../ipDetails/modal";
-// import IpHistoryModal from "../ipHistory/modal";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/selectors";
+import { setSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
@@ -10,22 +12,32 @@ import {
   useScanAllIpamSubnetsMutation,
   useScanIpamSubnetMutation,
 } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/selectors";
-import { setSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets";
 import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
   generateObject,
 } from "../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../components/spinners";
+import { PAGE_PATH as PAGE_PATH_IP_DETAILS } from "../ipDetails/constants";
+import { DROPDOWN_PATH } from "../../subnetsDropDown";
+import { MODULE_PATH } from "../../index";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import Modal from "./modal";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
@@ -36,24 +48,14 @@ import {
   PORT_SCAN,
   DNS_SCAN,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
-import { PAGE_PATH as PAGE_PATH_IP_DETAILS } from "../ipDetails/constants";
-import { DROPDOWN_PATH } from "../../subnetsDropDown";
-import { MODULE_PATH } from "../../index";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
@@ -86,11 +88,6 @@ const Index = () => {
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
-  const [subnetAddressForIpDetails, setSubnetAddressForIpDetails] =
-    useState(null);
-  const [openIpDetailsModal, setOpenIpDetailsModal] = useState(false);
-  const [ipAddressForIpHistory, setIpAddressForIpHistory] = useState(null);
-  const [openIpHistoryModal, setOpenIpHistoryModal] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -215,12 +212,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -257,29 +251,9 @@ const Index = () => {
     setOpen(false);
   }
 
-  function handleCloseIpDetailsModal() {
-    setSubnetAddressForIpDetails(null);
-    setOpenIpDetailsModal(false);
-  }
-
-  function handleIpDetailsModalOpen(subnetAddress) {
-    setSubnetAddressForIpDetails(subnetAddress);
-    setOpenIpDetailsModal(true);
-  }
-
   function handleIpAddressClick(record) {
     dispatch(setSelectedSubnet(record));
     navigate(`/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_IP_DETAILS}`);
-  }
-
-  function handleCloseIpHistoryModal() {
-    setIpAddressForIpHistory(null);
-    setOpenIpHistoryModal(false);
-  }
-
-  function handleIpHistoryModalOpen(ipAddress) {
-    setIpAddressForIpHistory(ipAddress);
-    setOpenIpHistoryModal(true);
   }
 
   function handleExport(optionType) {
@@ -290,7 +264,7 @@ const Index = () => {
     } else if (optionType === TEMPLATE) {
       jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
     }
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -298,7 +272,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading ||
         isAddRecordsLoading ||
@@ -323,23 +297,6 @@ const Index = () => {
           />
         ) : null}
 
-        {/* {openIpDetailsModal ? (
-          <IpDetailsModal
-            handleClose={handleCloseIpDetailsModal}
-            handleIpHistoryModalOpen={handleIpHistoryModalOpen}
-            open={openIpDetailsModal}
-            subnetAddress={subnetAddressForIpDetails}
-          />
-        ) : null}
-
-        {openIpHistoryModal ? (
-          <IpHistoryModal
-            handleClose={handleCloseIpHistoryModal}
-            open={openIpHistoryModal}
-            ipAddress={ipAddressForIpHistory}
-          />
-        ) : null} */}
-
         {tableConfigurationsOpen ? (
           <DefaultTableConfigurations
             columns={columns}
@@ -363,7 +320,7 @@ const Index = () => {
           setSelectedRowKeys={setSelectedRowKeys}
         />
       </div>
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

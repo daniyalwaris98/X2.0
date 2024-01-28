@@ -1,14 +1,12 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 import DefaultAnchor from "../../../components/anchor";
 
 export function useIndexTableColumnDefinitions({
   handleEdit,
   handleIpAddressClick,
-}) {
-  const theme = useTheme();
+} = {}) {
   const columnDefinitions = [
     {
       data_key: indexColumnNameConstants.IP_ADDRESS,

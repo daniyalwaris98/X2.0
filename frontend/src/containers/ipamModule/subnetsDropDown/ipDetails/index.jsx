@@ -1,6 +1,11 @@
 import React, { useEffect, useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/selectors";
+import { selectSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/selectors";
+import { setSelectedIpDetail } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails";
+import { setSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets";
 import {
   useFetchRecordsLazyQuery,
   useGetIpDetailsBySubnetAddressMutation,
@@ -16,24 +21,20 @@ import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import DefaultSpinner from "../../../../components/spinners";
 import DefaultPageTableSection from "../../../../components/pageSections";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
-import IpHistoryModal from "../ipHistory/modal";
+import DefaultDetailCards from "../../../../components/detailCards";
+import firewallIcon from "../../../../resources/designRelatedSvgs/firewall.svg";
+import deviceIcon from "../../../../resources/designRelatedSvgs/otherDevices.svg";
+import switchIcon from "../../../../resources/designRelatedSvgs/switches.svg";
+import { MODULE_PATH } from "../../index";
+import { DROPDOWN_PATH } from "../../subnetsDropDown";
+import { PAGE_PATH as PAGE_PATH_IP_HISTORY } from "../ipHistory/constants";
+import { indexColumnNameConstants as subnetsColumnNameConstants } from "../subnets/constants";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
-  indexColumnNameConstants,
 } from "./constants";
-import { MODULE_PATH } from "../../index";
-import { DROPDOWN_PATH } from "../../subnetsDropDown";
-import { PAGE_PATH as PAGE_PATH_IP_HISTORY } from "../ipHistory/constants";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { selectSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets/selectors";
-import { setSelectedIpDetail } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails";
-import { setSelectedSubnet } from "../../../../store/features/ipamModule/subnetsDropDown/subnets";
-import { indexColumnNameConstants as subnetsColumnNameConstants } from "../subnets/constants";
-import SubnetDetails from "./subnetDetails";
 
 const Index = () => {
   const navigate = useNavigate();
@@ -51,8 +52,6 @@ const Index = () => {
   });
 
   // states
-  const [ipAddressForIpHistory, setIpAddressForIpHistory] = useState(null);
-  const [openIpHistoryModal, setOpenIpHistoryModal] = useState(false);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -124,16 +123,6 @@ const Index = () => {
     handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
-  function handleCloseIpHistoryModal() {
-    setIpAddressForIpHistory(null);
-    setOpenIpHistoryModal(false);
-  }
-
-  // function handleIpAddressClick(record) {
-  //   setIpAddressForIpHistory(record[indexColumnNameConstants.IP_ADDRESS]);
-  //   setOpenIpHistoryModal(true);
-  // }
-
   function handleIpAddressClick(record) {
     dispatch(setSelectedIpDetail(record));
     navigate(`/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_IP_HISTORY}`);
@@ -147,14 +136,6 @@ const Index = () => {
     <DefaultSpinner
       spinning={isFetchRecordsLoading || isGetIpDetailsBySubnetAddressLoading}
     >
-      {openIpHistoryModal ? (
-        <IpHistoryModal
-          handleClose={handleCloseIpHistoryModal}
-          open={openIpHistoryModal}
-          ipAddress={ipAddressForIpHistory}
-        />
-      ) : null}
-
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -168,7 +149,21 @@ const Index = () => {
         />
       ) : null}
 
-      {selectedSubnet ? <SubnetDetails /> : null}
+      {selectedSubnet ? (
+        <DefaultDetailCards
+          data={{
+            [subnetsColumnNameConstants.SUBNET_ADDRESS]:
+              selectedSubnet[subnetsColumnNameConstants.SUBNET_ADDRESS],
+            [subnetsColumnNameConstants.SUBNET_NAME]:
+              selectedSubnet[subnetsColumnNameConstants.SUBNET_NAME],
+            [subnetsColumnNameConstants.SUBNET_MASK]:
+              selectedSubnet[subnetsColumnNameConstants.SUBNET_MASK],
+            [subnetsColumnNameConstants.SUBNET_LOCATION]:
+              selectedSubnet[subnetsColumnNameConstants.SUBNET_LOCATION],
+          }}
+          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+        />
+      ) : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}

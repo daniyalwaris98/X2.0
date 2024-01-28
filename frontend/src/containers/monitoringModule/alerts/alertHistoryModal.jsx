@@ -1,31 +1,27 @@
-import React, { useState, useRef, useEffect } from "react";
-import { useTheme } from "@mui/material/styles";
-import DefaultDialog from "../../../components/dialogs";
-import { CancelDialogFooter } from "../../../components/dialogFooters";
+import React, { useState, useEffect } from "react";
 import Grid from "@mui/material/Grid";
-import { useGetAlertsHistoryByIpAddressMutation } from "../../../store/features/monitoringModule/alerts/apis";
 import { useSelector } from "react-redux";
 import { selectAlertHistoryDetails } from "../../../store/features/monitoringModule/alerts/selectors";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import { useGetAlertsHistoryByIpAddressMutation } from "../../../store/features/monitoringModule/alerts/apis";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { TABLE_DATA_UNIQUE_ID } from "./constants";
-import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultDialog from "../../../components/dialogs";
+import { CancelDialogFooter } from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import { TABLE_DATA_UNIQUE_ID } from "./constants";
 import { PAGE_NAME } from "./constants";
 
 const Index = ({ handleClose, open, record = null }) => {
-  const theme = useTheme();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const { alertHistoryColumnDefinitions: columnDefinitions } =
-    useIndexTableColumnDefinitions({});
+    useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -77,9 +73,9 @@ const Index = ({ handleClose, open, record = null }) => {
 
   return (
     <DefaultDialog title={`${PAGE_NAME} History Details`} open={open}>
-      <Grid container style={{ marginTop: "15px" }}>
+      <Grid container>
         <Grid item xs={12}>
-          <Spin spinning={isGetAlertsHistoryByIpAddressLoading}>
+          <DefaultSpinner spinning={isGetAlertsHistoryByIpAddressLoading}>
             {tableConfigurationsOpen ? (
               <DefaultTableConfigurations
                 columns={columns}
@@ -105,7 +101,7 @@ const Index = ({ handleClose, open, record = null }) => {
               defaultPageSize={7}
               scroll={false}
             />
-          </Spin>
+          </DefaultSpinner>
         </Grid>
         <Grid item xs={12}>
           <CancelDialogFooter handleClose={handleClose} />

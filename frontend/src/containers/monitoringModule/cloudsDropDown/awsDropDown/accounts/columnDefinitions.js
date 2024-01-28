@@ -1,16 +1,12 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
-import { Switch } from "antd";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.ACCOUNT_LABEL,
-    indexColumnNameConstants.AWS_ACCESS_KEY,
-    indexColumnNameConstants.AWS_SECRET_ACCESS_KEY,
+    indexColumnNameConstants.ACCESS_KEY,
+    indexColumnNameConstants.SECRET_ACCESS_KEY,
     indexColumnNameConstants.ACCESS_TYPE,
     indexColumnNameConstants.STATUS,
     {
