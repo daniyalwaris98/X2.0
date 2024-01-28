@@ -19,6 +19,8 @@ export default function DefaultFormUnit({
   label = true,
   sx,
   spinning = false,
+  showErrorMessage = true,
+  showErrorBoundary = false,
   ...rest
 }) {
   const theme = useTheme();
@@ -44,7 +46,11 @@ export default function DefaultFormUnit({
                     id={dataKey}
                     placeholder={title}
                     type={type}
-                    sx={sx}
+                    sx={
+                      fieldState.error && showErrorBoundary
+                        ? { border: "2px solid #E34444", ...sx }
+                        : { ...sx }
+                    }
                     {...rest}
                   />
                 ) : null}
@@ -62,15 +68,16 @@ export default function DefaultFormUnit({
                 ) : null}
               </InputWrapper>
             </DefaultSpinner>
-
-            <div
-              style={{
-                color: theme?.palette?.form_unit?.error_text,
-                fontSize: "12px",
-              }}
-            >
-              {fieldState.error && fieldState.error.message}
-            </div>
+            {showErrorMessage ? (
+              <div
+                style={{
+                  color: theme?.palette?.form_unit?.error_text,
+                  fontSize: "12px",
+                }}
+              >
+                {fieldState.error && fieldState.error.message}
+              </div>
+            ) : null}
           </DefaultWrapper>
         );
       }}

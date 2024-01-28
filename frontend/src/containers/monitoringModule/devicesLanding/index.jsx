@@ -54,10 +54,10 @@ function Index(props) {
               selectedDevice[indexColumnNameConstants.DEVICE_NAME],
             [indexColumnNameConstants.DEVICE_TYPE]:
               selectedDevice[indexColumnNameConstants.DEVICE_TYPE],
-            [indexColumnNameConstants.VENDOR]:
-              selectedDevice[indexColumnNameConstants.VENDOR],
             [indexColumnNameConstants.FUNCTION]:
               selectedDevice[indexColumnNameConstants.FUNCTION],
+            [indexColumnNameConstants.VENDOR]:
+              selectedDevice[indexColumnNameConstants.VENDOR],
           }}
           icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
         />
