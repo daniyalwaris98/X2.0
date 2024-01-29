@@ -1,0 +1,84 @@
+version: "3.8"
+services:
+  updated_atom_db_samin:
+    image: mysql_samin:latest
+    restart: always
+    container_name: Updated_Atom_Database_Container_samin
+    ports:
+      - "3309:3306"
+    environment:
+      MYSQL_ROOT_PASSWORD: As123456?
+      MYSQL_DATABASE: AtomDB
+    volumes:
+      - ./db/atom.sql:/docker-entrypoint-initdb.d/atom.sql
+      - mysql_db_samin:/var/lib/mysql
+
+  # updated_atom_flask:
+  #   container_name: Updated_Atom_Flask_Container
+  #   restart: always
+  #   build: backend/atom
+  #   # cap_add:
+  #   #   - NET_ADMIN
+  #   #   - SYS_ADMIN
+  #   ports:
+  #     - "5010:5000"
+  #   environment:
+  #     - NET_TEXTFSM=/app/app/pullers/ntc-templates/ntc_templates/templates/
+  #   volumes:
+  #     - ./backend/atom:/app
+  #   depends_on:
+  #     - updated_atom_db
+  #     - updated_influx_db
+
+  atom_fast_backend:
+    container_name: Atom_Fast_Backend_Container_samin
+    image: atom_fast_backend_samins:latest
+    restart: always
+    build: backend/fast_backend
+    # cap_add:
+    #   - NET_ADMIN
+    #   - SYS_ADMIN
+    ports:
+      - "8082:8080"
+    # environment:
+    #   - NET_TEXTFSM=/app/app/pullers/ntc-templates/ntc_templates/templates/
+    volumes:
+      - ./backend/fast_backend:/app
+    depends_on:
+      - updated_atom_db_samin
+      - updated_influx_db_samin
+
+  #updated_atom_react:
+    #container_name: Updated_Atom_React_Container
+    #restart: always
+    #build: ./frontend
+    #environment:
+      #- NODE_ENV=development
+    #command: [ "npm", "start" ]
+    #ports:
+      #- "3012:3000"
+    #volumes:
+      #- ./frontend/:/frontend-app
+      #- node-modules:/frontend-app/node_modules
+    #depends_on:
+      #- atom_fast_backend
+
+  updated_influx_db_samin:
+    image: influxdb_samin:latest
+    container_name: Updated_Monitoring_Container_samin
+    ports:
+      - "8088:8086"
+    volumes:
+      - influxdb-storage-samin:/var/lib/influxdb
+    environment:
+      DOCKER_INFLUXDB_INIT_MODE: setup
+      DOCKER_INFLUXDB_INIT_USERNAME: admin
+      DOCKER_INFLUXDB_INIT_PASSWORD: As123456?
+      DOCKER_INFLUXDB_INIT_ORG: monetx
+      DOCKER_INFLUXDB_INIT_DB: monitoring
+      DOCKER_INFLUXDB_INIT_BUCKET: monitoring
+      DOCKER_INFLUXDB_INIT_ADMIN_TOKEN: "nItzto4Hc22kXuLsawB76lhKPM-wbK1DAQc7uBiFpYUCntoHDE6TC-uGeezzx7S89fyClKv2YXLfDi15Ujhn5A=="
+volumes:
+  mysql_db_samin:
+  #node-modules:
+  influxdb-storage-samin:
