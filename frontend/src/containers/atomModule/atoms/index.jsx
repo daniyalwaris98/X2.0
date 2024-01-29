@@ -1,27 +1,39 @@
 import React, { useState, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
   useOnBoardRecordsMutation,
 } from "../../../store/features/atomModule/atoms/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
 import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
   generateObject,
 } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  ONBOARD_PROMPT,
+  ONBOARD_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import useErrorHandling from "../../../hooks/useErrorHandling";
+import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
+import SiteModal from "../../uamModule/sites/modal";
+import RackModal from "../../uamModule/racks/modal";
+import PasswordGroupModal from "../passwordGroups/modal";
+import Modal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import AddFromAutoDiscoveryModal from "./addFromAutoDiscoveryModal";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
@@ -33,16 +45,8 @@ import {
   ATOM_ID,
   ATOM_TRANSITION_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import SiteModal from "../../uamModule/sites/modal";
-import RackModal from "../../uamModule/racks/modal";
-import PasswordGroupModal from "../passwordGroups/modal";
-import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -73,7 +77,6 @@ const Index = () => {
       default_onboard: {
         handleClick: handleOnBoard,
         visible: shouldOnboardBeVisible(),
-        sx: {},
       },
       atom_add: {
         handleClick: handleAdd,
@@ -88,6 +91,8 @@ const Index = () => {
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
   const [open, setOpen] = useState(false);
+  const [openAddFromAutoDiscoveryModal, setOpenAddFromAutoDiscoveryModal] =
+    useState(false);
   const [siteModalOpen, setSiteModalOpen] = useState(false);
   const [rackModalOpen, setRackModalOpen] = useState(false);
   const [passwordGroupModalOpen, setPasswordGroupModalOpen] = useState(false);
@@ -218,12 +223,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want to delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -255,12 +257,9 @@ const Index = () => {
 
   function handleOnBoard() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Only the complete atoms will be onBoarded. Are you sure you want to proceed?",
-        onBoardData
-      );
+      handleCallbackAlert(ONBOARD_PROMPT, onBoardData);
     } else {
-      handleInfoAlert("No record has been selected to onBoard!");
+      handleInfoAlert(ONBOARD_SELECTION_PROMPT);
     }
   }
 
@@ -276,6 +275,7 @@ const Index = () => {
     if (optionType === ADD_MANUALLY) {
       setOpen(true);
     } else if (optionType === FROM_DISCOVERY) {
+      setOpenAddFromAutoDiscoveryModal(true);
     }
   }
 
@@ -330,7 +330,7 @@ const Index = () => {
         FILE_NAME_EXPORT_INCOMPLETE_DATA
       );
     }
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleEdit(record) {
@@ -338,8 +338,12 @@ const Index = () => {
     setOpen(true);
   }
 
+  function handleCloseAddFromAutoDiscoveryModal() {
+    setOpenAddFromAutoDiscoveryModal(false);
+  }
+
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading ||
         isAddRecordsLoading ||
@@ -347,7 +351,6 @@ const Index = () => {
         isOnBoardRecordsLoading
       }
     >
-      {/* <div style={{ width: "196vh" }}> */}
       <input
         type="file"
         ref={fileInputRef}
@@ -365,6 +368,12 @@ const Index = () => {
         />
       ) : null}
 
+      {openAddFromAutoDiscoveryModal ? (
+        <AddFromAutoDiscoveryModal
+          handleClose={handleCloseAddFromAutoDiscoveryModal}
+          open={openAddFromAutoDiscoveryModal}
+        />
+      ) : null}
       {siteModalOpen ? (
         <SiteModal
           handleClose={handleCloseSiteModal}
@@ -412,8 +421,7 @@ const Index = () => {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-      {/* </div> */}
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

@@ -1,31 +1,30 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/alerts/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/monitoringModule/alerts/selectors";
+import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/alerts/apis";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
+import AlertHistoryModal from "./alertHistoryModal";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    handleIpAddressClick,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -33,6 +32,8 @@ const Index = () => {
   });
 
   // states
+  const [openAlertHistoryModal, setOpenAlertHistoryModal] = useState(false);
+  const [selectedAlert, setSelectedAlert] = useState(null);
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
@@ -62,15 +63,32 @@ const Index = () => {
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
 
+  function handleIpAddressClick(record) {
+    setSelectedAlert(record);
+    setOpenAlertHistoryModal(true);
+  }
+
+  function handleCloseAlertHistoryModal() {
+    setOpenAlertHistoryModal(false);
+  }
+
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
+      {openAlertHistoryModal ? (
+        <AlertHistoryModal
+          handleClose={handleCloseAlertHistoryModal}
+          open={openAlertHistoryModal}
+          record={selectedAlert}
+        />
+      ) : null}
+
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -91,7 +109,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

@@ -1,31 +1,41 @@
-import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../store/features/ipamModule/subnetsDropDown/ipHistory/apis";
+import React, { useEffect, useState } from "react";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/ipamModule/subnetsDropDown/ipHistory/selectors";
+import { selectSelectedIpDetail } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/selectors";
+import { setSelectedIpDetail } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails";
+import {
+  useFetchRecordsLazyQuery,
+  useGetIpHistoryByIpAddressMutation,
+} from "../../../../store/features/ipamModule/subnetsDropDown/ipHistory/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../components/spinners";
+import DefaultDetailCards from "../../../../components/detailCards";
+import firewallIcon from "../../../../resources/designRelatedSvgs/firewall.svg";
+import deviceIcon from "../../../../resources/designRelatedSvgs/otherDevices.svg";
+import switchIcon from "../../../../resources/designRelatedSvgs/switches.svg";
+import { indexColumnNameConstants as ipDetailsColumnNameConstants } from "../ipDetails/constants";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // hooks
+  const dispatch = useDispatch();
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -40,15 +50,30 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
+  const selectedIpDetail = useSelector(selectSelectedIpDetail);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  const [
+    fetchRecords,
+    {
+      data: fetchRecordsData,
+      isSuccess: isFetchRecordsSuccess,
+      isLoading: isFetchRecordsLoading,
+      isError: isFetchRecordsError,
+      error: fetchRecordsError,
+    },
+  ] = useFetchRecordsLazyQuery();
+
+  const [
+    getIpHistoryByIpAddress,
+    {
+      data: getIpHistoryByIpAddressData,
+      isSuccess: isGetIpHistoryByIpAddressSuccess,
+      isLoading: isGetIpHistoryByIpAddressLoading,
+      isError: isGetIpHistoryByIpAddressError,
+      error: getIpHistoryByIpAddressError,
+    },
+  ] = useGetIpHistoryByIpAddressMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -59,10 +84,34 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: getIpHistoryByIpAddressData,
+    isSuccess: isGetIpHistoryByIpAddressSuccess,
+    isError: isGetIpHistoryByIpAddressError,
+    error: getIpHistoryByIpAddressError,
+    type: TYPE_FETCH,
+  });
+
+  // effects
+  useEffect(() => {
+    if (selectedIpDetail) {
+      getIpHistoryByIpAddress({
+        [ipDetailsColumnNameConstants.IP_ADDRESS]:
+          selectedIpDetail[ipDetailsColumnNameConstants.IP_ADDRESS],
+      });
+    } else {
+      fetchRecords();
+    }
+
+    return () => {
+      dispatch(setSelectedIpDetail(null));
+    };
+  }, []);
+
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -70,7 +119,9 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner
+      spinning={isFetchRecordsLoading || isGetIpHistoryByIpAddressLoading}
+    >
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -84,6 +135,20 @@ const Index = () => {
         />
       ) : null}
 
+      {selectedIpDetail ? (
+        <DefaultDetailCards
+          data={{
+            [ipDetailsColumnNameConstants.IP_ADDRESS]:
+              selectedIpDetail[ipDetailsColumnNameConstants.IP_ADDRESS],
+            [ipDetailsColumnNameConstants.SUBNET_ADDRESS]:
+              selectedIpDetail[ipDetailsColumnNameConstants.SUBNET_ADDRESS],
+            [ipDetailsColumnNameConstants.MAC_ADDRESS]:
+              selectedIpDetail[ipDetailsColumnNameConstants.MAC_ADDRESS],
+          }}
+          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+        />
+      ) : null}
+
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
@@ -91,7 +156,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

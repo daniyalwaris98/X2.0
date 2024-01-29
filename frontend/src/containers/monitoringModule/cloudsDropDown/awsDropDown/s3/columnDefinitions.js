@@ -1,14 +1,10 @@
 import React from "react";
-import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 import { Switch } from "antd";
 
 export function useIndexTableColumnDefinitions({
   handleMonitoringSwitchChange,
-}) {
-  const theme = useTheme();
-
+} = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.BUCKET_NAME,
     indexColumnNameConstants.ACCOUNT_LABEL,

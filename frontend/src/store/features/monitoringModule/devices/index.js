@@ -4,6 +4,8 @@ import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
 } from "../../../../containers/monitoringModule/devices/constants";
+import { persistReducer } from "redux-persist";
+import persistConfig from "./persistConfig";
 
 const initialState = {
   all_data: [],
@@ -25,20 +27,6 @@ const defaultSlice = createSlice({
         extendedApi.endpoints.getAllMonitoringDevices.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.deleteMonitoringDevices.matchFulfilled,
-        (state, action) => {
-          const deletedIds = action.payload?.data || [];
-          if (deletedIds.length > 0) {
-            state.all_data = state.all_data.filter((item) => {
-              const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item[TABLE_DATA_UNIQUE_ID];
-              });
-              return !shouldKeepItem;
-            });
-          }
         }
       )
       .addMatcher(
@@ -68,5 +56,7 @@ const defaultSlice = createSlice({
   },
 });
 
+const persistedReducer = persistReducer(persistConfig, defaultSlice.reducer);
+
 export const { setSelectedDevice } = defaultSlice.actions;
-export default defaultSlice.reducer;
+export default persistedReducer;

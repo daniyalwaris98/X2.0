@@ -1,11 +1,8 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
 import { DEFAULT_RACK, indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.RACK_NAME,
     indexColumnNameConstants.SITE_NAME,

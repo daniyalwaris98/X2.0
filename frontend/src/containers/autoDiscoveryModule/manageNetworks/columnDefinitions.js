@@ -1,18 +1,14 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.NETWORK_NAME,
     indexColumnNameConstants.SUBNET,
     indexColumnNameConstants.NO_OF_DEVICES,
     indexColumnNameConstants.SCAN_STATUS,
     indexColumnNameConstants.EXCLUDED_IP_RANGE,
-    ////////
     indexColumnNameConstants.NETWORK_NAME,
     indexColumnNameConstants.SUBNET,
     indexColumnNameConstants.NO_OF_DEVICES,

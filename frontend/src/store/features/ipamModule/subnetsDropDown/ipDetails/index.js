@@ -1,19 +1,22 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
-import {
-  TABLE_DATA_UNIQUE_ID,
-  ELEMENT_NAME,
-} from "../../../../../containers/ipamModule/subnetsDropDown/ipDetails/constants";
+import { ELEMENT_NAME } from "../../../../../containers/ipamModule/subnetsDropDown/ipDetails/constants";
+import { persistReducer } from "redux-persist";
+import persistConfig from "./persistConfig";
 
 const initialState = {
   all_data: [],
-  ip_details_by_subnet_address: [],
+  selected_ip_detail: null,
 };
 
 const defaultSlice = createSlice({
   name: ELEMENT_NAME,
   initialState,
-  reducers: {},
+  reducers: {
+    setSelectedIpDetail: (state, action) => {
+      state.selected_ip_detail = action.payload;
+    },
+  },
   extraReducers(builder) {
     builder
       .addMatcher(
@@ -25,10 +28,13 @@ const defaultSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.getIpDetailsBySubnetAddress.matchFulfilled,
         (state, action) => {
-          // state.ip_details_by_subnet_address = action.payload;
+          state.all_data = action.payload;
         }
       );
   },
 });
 
-export default defaultSlice.reducer;
+export const { setSelectedIpDetail } = defaultSlice.actions;
+
+const persistedReducer = persistReducer(persistConfig, defaultSlice.reducer);
+export default persistedReducer;

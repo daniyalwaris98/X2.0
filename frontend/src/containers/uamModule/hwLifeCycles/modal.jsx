@@ -1,26 +1,29 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
-import Grid from "@mui/material/Grid";
-import DefaultFormUnit, { DateFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
+import Grid from "@mui/material/Grid";
 import { useUpdateRecordMutation } from "../../../store/features/uamModule/hwLifeCycles/apis";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import { formSetter, transformDateTimeToDate } from "../../../utils/helpers";
+import {
+  formSetter,
+  getTitle,
+  transformDateTimeToDate,
+} from "../../../utils/helpers";
+import useErrorHandling, { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit, { DateFormUnit } from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
 import {
   PAGE_NAME,
   indexColumnNameConstants,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.PN_CODE]: yup
     .string()
-    .required("PN Code is required"),
+    .required(`${getTitle(indexColumnNameConstants.PN_CODE)} is required`),
   [indexColumnNameConstants.HW_EOS_DATE]: yup
     .string()
     .transform(transformDateTimeToDate),
@@ -39,8 +42,6 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
   // useForm hook
   const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
@@ -88,48 +89,49 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PN_CODE}
-              disabled={true}
-              required
-            />
-            <DateFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.HW_EOS_DATE}
-            />
-            <DateFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.HW_EOL_DATE}
-            />
-          </Grid>
-          <Grid item xs={12} sm={6}>
-            <DateFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SW_EOS_DATE}
-            />
-            <DateFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SW_EOL_DATE}
-            />
-            <DateFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.MANUFACTURE_DATE}
-            />
-          </Grid>
+      <DefaultSpinner spinning={isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={6}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.PN_CODE}
+                disabled={true}
+                required
+              />
+              <DateFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.HW_EOS_DATE}
+              />
+              <DateFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.HW_EOL_DATE}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <DateFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SW_EOS_DATE}
+              />
+              <DateFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SW_EOL_DATE}
+              />
+              <DateFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.MANUFACTURE_DATE}
+              />
+            </Grid>
 
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

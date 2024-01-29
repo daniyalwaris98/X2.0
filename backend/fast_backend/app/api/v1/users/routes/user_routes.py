@@ -1,3 +1,5 @@
+import json
+
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 import sys
@@ -51,6 +53,10 @@ def add_user_role(role:AddUserRoleScehma):
     try:
         print("user role with its configuration is:::::::::::::::::",role,file=sys.stderr)
         response,status = add_user_role_to_db(role)
+        print("response of the user role is:::",response,file=sys.stderr)
+        print("status is::::::",status,file=sys.stderr)
+        print("type of user role is::",type(response),file=sys.stderr)
+        print("status is :::::::::",type(status),file=sys.stderr)
         if status == 200:
             return JSONResponse(content=response,status_code=200)
             print("respinse of the add user is:::::::::::::;",response,file=sys.stderr)
@@ -84,6 +90,7 @@ def get_all_users_role():
             role_list.append(role_dict)
         return role_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting user role",status_code=500)
 
@@ -110,6 +117,7 @@ def get_all_end_users():
             end_user_list.append(end_user_dict)
         return JSONResponse(content=end_user_list,status_code=200)
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting end users",status_code=500)
 
@@ -153,6 +161,7 @@ def get_all_users():
             user_list.append(user_dict)
         return JSONResponse(content=user_list,status_code=200)
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting All the Users",status_code=500)
 
@@ -166,21 +175,56 @@ description="API to edit the end user role"
 )
 def edit_user_role(user_data:EditUserRoleScehma):
     try:
-        user_data ={}
-        user_data = dict(user_data)
-        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(user_id = user_data['user_id']).first()
+        users_role_data = {}
+        print("user data is::::::::::",user_data,file=sys.stderr)
+        user_dat = dict(user_data)
+        print("user_dat is::::::::::::::::::::",user_dat,file=sys.stderr)
+        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id = user_dat['role_id']).first()
         if user_role_exsist:
-            user_role_exsist.role = user_data['role']
-            user_role_exsist.configuration = user_data['configuration']
+            user_role_exsist.role = user_dat['role']
+            UpdateDBData(user_role_exsist)
+            # user_role_exsist.configuration = user_data['configuration']
             data = {
                 "role_id":user_role_exsist.role_id,
                 "role":user_role_exsist.role,
                 "configuration":user_role_exsist.configuration
             }
             message = f"{user_role_exsist.role} : Updated Successfully"
-            user_data['data'] = data
-            user_data['message'] = message
-            return JSONResponse(content=user_data,status_code=200)
+            users_role_data['data'] = data
+            users_role_data['message'] = message
+            return JSONResponse(content=users_role_data,status_code=200)
+        else:
+            return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Editing the user",status_code=500)
+
+@router.post('/edit_role_configuration',responses = {
+    200:{"model":Response200},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to edit the end user role",
+description="API to edit the end user role"
+)
+def edit_user_role(user_data:EditConfigurationRoleScehma):
+    try:
+        user_role_data ={}
+        user_data = dict(user_data)
+        user_role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id = user_data['role_id']).first()
+        if user_role_exsist:
+            user_role_exsist.configuration = user_data['configuration']
+            UpdateDBData(user_role_exsist)
+            # user_role_exsist.configuration = user_data['configuration']
+            data = {
+                "role_id":user_role_exsist.role_id,
+                "role":user_role_exsist.role,
+                "configuration":user_role_exsist.configuration
+            }
+            message = f"{user_role_exsist.role} : Updated Successfully"
+            user_role_data['data'] = data
+            user_role_data['message'] = message
+            return JSONResponse(content=user_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
     except Exception as e:
@@ -224,7 +268,7 @@ def user_role(role_data : list[int]):
 
 
 
-@router.post('delete_user',responses={
+@router.post('/delete_user',responses={
     200:{"model":str},
     400:{"model":str},
     500:{"model":str}
@@ -249,3 +293,21 @@ def delete_user(user_id :list[int]):
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Deleting the User",status_code=500)
+
+
+@router.post('/edit_user',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to add the updated the user",
+description="API to add updated the user"
+)
+def edit_user_db(user_data:AddUserSchema):
+    try:
+        data,status = EditUserInDB(user_data)
+        return JSONResponse(content=data,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
+

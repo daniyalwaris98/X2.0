@@ -2,9 +2,20 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    //table apis
     fetchAtoms: builder.query({
       query: () => "/api/v1/atom/atom/get_atoms",
+    }),
+
+    getAtomsDevicesFromDiscovery: builder.query({
+      query: () => "/api/v1/atom/atom/get_atoms_devices_from_discovery",
+    }),
+
+    addAtomsDevicesFromDiscovery: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/atom/atom/add_atom_devices_from_discovery",
+        method: "POST",
+        body: data,
+      }),
     }),
 
     addAtoms: builder.mutation({
@@ -32,7 +43,6 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
-    // form apis
     addAtom: builder.mutation({
       query: (data) => ({
         url: "/api/v1/atom/atom/add_atom_device",
@@ -57,7 +67,8 @@ export const {
   useAddAtomsMutation: useAddRecordsMutation,
   useDeleteAtomsMutation: useDeleteRecordsMutation,
   useOnBoardAtomsMutation: useOnBoardRecordsMutation,
-  // form apis
   useAddAtomMutation: useAddRecordMutation,
   useUpdateAtomMutation: useUpdateRecordMutation,
+  useGetAtomsDevicesFromDiscoveryQuery,
+  useAddAtomsDevicesFromDiscoveryMutation,
 } = extendedApi;

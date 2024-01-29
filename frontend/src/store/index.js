@@ -1,6 +1,15 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { monetxApi } from "./features/apiSlice";
 
+// admin module
+import adminAutoDiscoveryFailedDevicesReducer from "./features/adminModule/failedDevices/autoDiscovery";
+import adminIpamFailedDevicesReducer from "./features/adminModule/failedDevices/ipam";
+import adminMonitoringFailedDevicesReducer from "./features/adminModule/failedDevices/monitoring";
+import adminNcmFailedDevicesReducer from "./features/adminModule/failedDevices/ncm";
+import adminUamFailedDevicesReducer from "./features/adminModule/failedDevices/uam";
+import adminRolesReducer from "./features/adminModule/roles";
+import adminMembersReducer from "./features/adminModule/members";
+
 // atom module
 import atomAtomsReducer from "./features/atomModule/atoms";
 import atomPasswordGroupsReducer from "./features/atomModule/passwordGroups";
@@ -45,9 +54,11 @@ import monitoringWindowsInterfacesReducer from "./features/monitoringModule/serv
 
 import monitoringAlertsReducer from "./features/monitoringModule/alerts";
 
+import monitoringBandwidthsReducer from "./features/monitoringModule/devicesLanding/bandwidths";
 import monitoringInterfacesReducer from "./features/monitoringModule/devicesLanding/interfaces";
 import monitoringSummaryReducer from "./features/monitoringModule/devicesLanding/summary";
 
+import monitoringAwsAccountsReducer from "./features/monitoringModule/cloudsDropDown/awsDropDown/accounts";
 import monitoringEC2Reducer from "./features/monitoringModule/cloudsDropDown/awsDropDown/ec2";
 import monitoringS3Reducer from "./features/monitoringModule/cloudsDropDown/awsDropDown/s3";
 import monitoringELBReducer from "./features/monitoringModule/cloudsDropDown/awsDropDown/elb";
@@ -97,10 +108,21 @@ import { combineReducers } from "redux";
 const persistConfig = {
   key: "root", // key for the localStorage object
   storage, // define which storage to use
-  whitelist: ["ncm_manage_configurations", "monitoring_devices"], // only persist specified reducers
+  // whitelist: ["ncm_manage_configurations", "monitoring_devices"], // only persist specified reducers
+  whitelist: [], // only persist specified reducers
 };
 
 const rootReducer = combineReducers({
+  // admin module
+  admin_auto_discovery_failed_devices: adminAutoDiscoveryFailedDevicesReducer,
+  admin_ipam_failed_devices: adminIpamFailedDevicesReducer,
+  admin_monitoring_failed_devices: adminMonitoringFailedDevicesReducer,
+  admin_ncm_failed_devices: adminNcmFailedDevicesReducer,
+  admin_uam_failed_devices: adminUamFailedDevicesReducer,
+  admin_roles: adminRolesReducer,
+  admin_members: adminMembersReducer,
+
+  // atom module
   atom_atoms: atomAtomsReducer,
   atom_password_groups: atomPasswordGroupsReducer,
 
@@ -144,9 +166,11 @@ const rootReducer = combineReducers({
 
   monitoring_alerts: monitoringAlertsReducer,
 
+  monitoring_bandwidths: monitoringBandwidthsReducer,
   monitoring_interfaces: monitoringInterfacesReducer,
   monitoring_summary: monitoringSummaryReducer,
 
+  monitoring_aws_accounts: monitoringAwsAccountsReducer,
   monitoring_ec2: monitoringEC2Reducer,
   monitoring_s3: monitoringS3Reducer,
   monitoring_elb: monitoringELBReducer,
@@ -181,7 +205,7 @@ const rootReducer = combineReducers({
   ipam_load_balancers: ipamLoadBalancers,
 
   // ncm module
-  ncm_dashboard:ncmDashboardReducer,
+  ncm_dashboard: ncmDashboardReducer,
   ncm_manage_configurations: ncmManageConfigurationsReducer,
   ncm_configuration_backups: ncmConfigurationBackupsReducer,
   ncm_remote_command_sender: ncmRemoteCommandSenderReducer,

@@ -1,21 +1,24 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import FormModal from "../../../../components/dialogs";
-import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../../components/formUnits";
-import DefaultDialogFooter from "../../../../components/dialogFooters";
-import { yupResolver } from "@hookform/resolvers/yup";
+import React, { useEffect } from "react";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
+import Grid from "@mui/material/Grid";
 import {
   useAddRecordMutation,
   useUpdateRecordMutation,
 } from "../../../../store/features/ipamModule/dnsServerDropDown/dnsServers/apis";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../../utils/helpers";
+import useErrorHandling from "../../../../hooks/useErrorHandling";
 import { TYPE_SINGLE } from "../../../../hooks/useErrorHandling";
-import { ELEMENT_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
-import { indexColumnNameConstants } from "./constants";
+import FormModal from "../../../../components/dialogs";
+import DefaultFormUnit from "../../../../components/formUnits";
+import DefaultDialogFooter from "../../../../components/dialogFooters";
+import DefaultSpinner from "../../../../components/spinners";
+import {
+  ELEMENT_NAME,
+  TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+} from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.IP_ADDRESS]: yup
@@ -33,8 +36,6 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
   // useForm hook
   const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
@@ -99,39 +100,41 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container>
-          <Grid item xs={12}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.IP_ADDRESS}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SERVER_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.USER_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PASSWORD}
-              required
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={12}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.IP_ADDRESS}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SERVER_NAME}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.USER_NAME}
+                required
+              />
+              <DefaultFormUnit
+                type="password"
+                control={control}
+                dataKey={indexColumnNameConstants.PASSWORD}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

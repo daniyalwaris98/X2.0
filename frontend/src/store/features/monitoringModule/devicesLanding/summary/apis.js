@@ -8,7 +8,7 @@ export const extendedApi = monetxApi.injectEndpoints({
         method: "POST",
         body: data,
       }),
-    }),
+    }), // use api from alerts instead of this api
   }),
 });
 export const { useGetAllAlertsByIpAddressMutation: useFetchRecordsMutation } =

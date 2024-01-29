@@ -1,34 +1,31 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { Spin } from "antd";
 import Grid from "@mui/material/Grid";
 import { useSelector } from "react-redux";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import DefaultDialog from "../../../components/dialogs";
-import { CancelDialogFooter } from "../../../components/dialogFooters";
+import { selectAtomsToAddInNcmDevicesData } from "../../../store/features/ncmModule/manageConfigurations/selectors";
 import {
   useGetAtomsToAddInNcmDevicesQuery,
   useAddAtomsInNcmDevicesMutation,
 } from "../../../store/features/ncmModule/manageConfigurations/apis";
-import { selectAtomsToAddInNcmDevicesData } from "../../../store/features/ncmModule/manageConfigurations/selectors";
-import { useIndexTableColumnDefinitions } from "../../atomModule/atoms/columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import useErrorHandling from "../../../hooks/useErrorHandling";
+import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constants";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultDialog from "../../../components/dialogs";
+import { CancelDialogFooter } from "../../../components/dialogFooters";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constants";
+import { useIndexTableColumnDefinitions } from "../../atomModule/atoms/columnDefinitions";
 import { ELEMENT_NAME_BULK } from "./constants";
 
 const Index = ({ handleClose, open }) => {
-  const theme = useTheme();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const { columnDefinitionsForNcmDevices: columnDefinitions } =
-    useIndexTableColumnDefinitions({});
+    useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
@@ -97,9 +94,9 @@ const Index = ({ handleClose, open }) => {
 
   return (
     <DefaultDialog title={`${"Add"} ${ELEMENT_NAME_BULK}`} open={open}>
-      <Grid container style={{ marginTop: "15px" }}>
+      <Grid container>
         <Grid item xs={12}>
-          <Spin
+          <DefaultSpinner
             spinning={
               isGetAtomsToAddInNcmDevicesLoading ||
               isAddAtomsInNcmDevicesLoading
@@ -127,8 +124,9 @@ const Index = ({ handleClose, open }) => {
               selectedRowKeys={selectedRowKeys}
               setSelectedRowKeys={setSelectedRowKeys}
               dynamicWidth={false}
+              defaultPageSize={7}
             />
-          </Spin>
+          </DefaultSpinner>
         </Grid>
         <Grid item xs={12}>
           <CancelDialogFooter handleClose={handleClose} />

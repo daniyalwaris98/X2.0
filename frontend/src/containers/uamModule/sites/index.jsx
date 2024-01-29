@@ -1,20 +1,28 @@
-import React, { useState, useEffect } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/uamModule/sites/selectors";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
 } from "../../../store/features/uamModule/sites/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/sites/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import Modal from "./modal";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
@@ -23,14 +31,8 @@ import {
   indexColumnNameConstants,
   DEFAULT_SITE,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import withDefaultDelete from "../../../hoc/withDefaultDelete";
-import DefaultPageTableSection from "../../../components/pageSections";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -48,8 +50,6 @@ const Index = () => {
     },
     default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
   });
-
-  // refs
 
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -100,8 +100,6 @@ const Index = () => {
     callback: handleEmptySelectedRowKeys,
   });
 
-  // effects
-
   // handlers
   function handleEmptySelectedRowKeys() {
     setSelectedRowKeys([]);
@@ -117,12 +115,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -142,7 +137,7 @@ const Index = () => {
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -156,7 +151,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
       {open ? (
         <Modal
           handleClose={handleClose}
@@ -188,33 +183,8 @@ const Index = () => {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 
-// function IndexWithHOC(props) {
-//   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
-//   // Wrap the Index component with the withDefaultDelete HOC
-//   const IndexWithDelete = withDefaultDelete({
-//     Component: Index,
-//     useDeleteRecordsMutation,
-//     selectedRowKeys,
-//     setSelectedRowKeys,
-//   });
-
-//   return IndexWithDelete;
-// }
-
-// export default IndexWithHOC;
-
-// Wrap the Index component with the withDefaultDelete HOC
-// const IndexWithDelete = withDefaultDelete({
-//   Component: Index,
-//   useDeleteRecordsMutation,
-//   selectedRowKeys,
-//   setSelectedRowKeys,
-// });
-
-// export default IndexWithDelete;
 export default Index;

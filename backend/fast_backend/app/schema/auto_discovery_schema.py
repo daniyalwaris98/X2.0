@@ -82,7 +82,7 @@ class AddSnmpV1_V2Schema(BaseSchema):
     port:int | None = None
 
 class AddSnmpV3Schema(BaseSchema):
-    username:str
+    user_name:str
     encryption_protocol: str
     profile_name:str | None = None
     description: str | None = None
@@ -168,3 +168,15 @@ class EditSnmpV2RequestSchema(AddSnmpV1_V2Schema):
 
 class EditSnmpV3RequestSchema(AddSnmpV3Schema):
     credentials_id:int
+
+
+class DiscoveryDataSchema(BaseSchema):
+    ip_address:str
+    os_type:str | None = None
+    subnet:str | None = None
+    make_model:str | None = None
+    vendor:str | None = None
+
+
+class GetDiscoveryDataSchema(DiscoveryDataSchema):
+    discovery_id:int

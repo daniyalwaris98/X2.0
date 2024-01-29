@@ -2,6 +2,7 @@ import React from "react";
 import { createBrowserRouter } from "react-router-dom";
 import Login from "../containers/login";
 import MainLayout from "../layouts/mainLayout";
+import AdminModuleRoutes from "./adminModuleRoutes";
 import AtomModuleRoutes from "./atomModuleRoutes";
 import UamModuleRoutes from "./uamModuleRoutes";
 import MonitoringModuleRoutes from "./monitoringModuleRoutes";
@@ -16,6 +17,7 @@ const router = createBrowserRouter([
     // element: <Login />,
     element: <MainLayout />,
     children: [
+      AdminModuleRoutes,
       AtomModuleRoutes,
       UamModuleRoutes,
       MonitoringModuleRoutes,

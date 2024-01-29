@@ -9,6 +9,8 @@ const StyledPaper = styled(Paper)`
   & {
     border-radius: 10px;
     background-color: transparent;
+    padding: "15px";
+    border: "1px solid red";
   }
 `;
 
@@ -19,7 +21,7 @@ export default function DefaultDialog({ title, open, sx, children, ...rest }) {
     <Dialog
       open={open}
       maxWidth="xl"
-      sx={{ zIndex: "999", ...sx?.dialog }}
+      sx={{ zIndex: "999", ...sx?.dialog, border: "1px solid red" }}
       PaperComponent={StyledPaper}
       {...rest}
     >
@@ -37,6 +39,7 @@ export default function DefaultDialog({ title, open, sx, children, ...rest }) {
           ...sx?.content,
           color: theme?.palette?.dialog?.content_text,
           backgroundColor: theme?.palette?.dialog?.content_background,
+          padding: "25px !important",
         }}
       >
         {children}

@@ -1,8 +1,14 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations/selectors";
+import { getPathAllSegments } from "../../../utils/helpers";
 import Card from "../../../components/cards";
 import HorizontalMenu from "../../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../../utils/helpers";
+import DefaultDetailCards from "../../../components/detailCards";
+import firewallIcon from "../../../resources/designRelatedSvgs/firewall.svg";
+import deviceIcon from "../../../resources/designRelatedSvgs/otherDevices.svg";
+import switchIcon from "../../../resources/designRelatedSvgs/switches.svg";
 import {
   PAGE_NAME as PAGE_NAME_CONFIGURATION_BACKUPS,
   PAGE_PATH as PAGE_PATH_CONFIGURATION_BACKUPS,
@@ -11,9 +17,8 @@ import {
   PAGE_NAME as PAGE_NAME_REMOTE_COMMAND_SENDER,
   PAGE_PATH as PAGE_PATH_REMOTE_COMMAND_SENDER,
 } from "./remoteCommandSender/constants";
-import { useSelector } from "react-redux";
-import { selectSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations/selectors";
 import { PAGE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS } from "../manageConfigurations/constants";
+import { indexColumnNameConstants } from "../manageConfigurations/constants";
 
 export const LANDING_PAGE_NAME = "Manage Configurations";
 export const LANDING_PAGE_RELATIVE_PATH = "manage_configurations_landing";
@@ -42,87 +47,23 @@ function Index(props) {
 
   return (
     <>
-      <Card
-        sx={{
-          // borderTopLeftRadius: 0,
-          // borderTopRightRadius: 0,
-          marginBottom: "10px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "14px",
-            height: "90px",
+      {selectedDevice ? (
+        <DefaultDetailCards
+          data={{
+            [indexColumnNameConstants.IP_ADDRESS]:
+              selectedDevice[indexColumnNameConstants.IP_ADDRESS],
+            [indexColumnNameConstants.DEVICE_NAME]:
+              selectedDevice[indexColumnNameConstants.DEVICE_NAME],
+            [indexColumnNameConstants.DEVICE_TYPE]:
+              selectedDevice[indexColumnNameConstants.DEVICE_TYPE],
+            [indexColumnNameConstants.FUNCTION]:
+              selectedDevice[indexColumnNameConstants.FUNCTION],
+            [indexColumnNameConstants.VENDOR]:
+              selectedDevice[indexColumnNameConstants.VENDOR],
           }}
-        >
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>IP Address: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.ip_address}</div>
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>Device Name: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.device_name}</div>
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>Device Type: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.device_type}</div>
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>Function: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.function}</div>
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>Vendor: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.vendor}</div>
-          </div>
-        </div>
-      </Card>
+          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon, deviceIcon]}
+        />
+      ) : null}
 
       <Card>
         <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />

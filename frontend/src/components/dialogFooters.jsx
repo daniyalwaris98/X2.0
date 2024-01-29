@@ -127,3 +127,26 @@ export function CompareDialogFooter({ handleClose, sx, ...rest }) {
     </div>
   );
 }
+
+export function UpdateDialogFooter({
+  handleCancel,
+  handleUpdate,
+  sx,
+  ...rest
+}) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_cancel: { handleClick: handleCancel },
+    default_update: { handleClick: handleUpdate },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{ display: "flex", justifyContent: "center", gap: "10px", ...sx }}
+      {...rest}
+    >
+      {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}

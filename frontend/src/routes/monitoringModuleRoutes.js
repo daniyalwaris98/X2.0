@@ -102,11 +102,11 @@ import { PAGE_PATH as PAGE_PATH_ALERTS } from "../containers/monitoringModule/al
 import CloudsDropDown from "../containers/monitoringModule/cloudsDropDown";
 import { DROPDOWN_PATH as DROPDOWN_PATH_CLOUDS } from "../containers/monitoringModule/cloudsDropDown";
 
-import Clouds from "../containers/monitoringModule/cloudsDropDown/clouds";
-import { PAGE_PATH as PAGE_PATH_CLOUDS } from "../containers/monitoringModule/cloudsDropDown/clouds/constants";
-
 import AWSDropDown from "../containers/monitoringModule/cloudsDropDown/awsDropDown";
 import { DROPDOWN_PATH as DROPDOWN_PATH_AWS } from "../containers/monitoringModule/cloudsDropDown/awsDropDown";
+
+import AwsAccounts from "../containers/monitoringModule/cloudsDropDown/awsDropDown/accounts";
+import { PAGE_PATH as PAGE_PATH_AWS_ACCOUNTS } from "../containers/monitoringModule/cloudsDropDown/awsDropDown/accounts/constants";
 
 import EC2 from "../containers/monitoringModule/cloudsDropDown/awsDropDown/ec2";
 import { PAGE_PATH as PAGE_PATH_EC2 } from "../containers/monitoringModule/cloudsDropDown/awsDropDown/ec2/constants";
@@ -142,6 +142,9 @@ import { PAGE_PATH as PAGE_PATH_DEVICES_SUMMARY } from "../containers/monitoring
 
 import DevicesInterfaces from "../containers/monitoringModule/devicesLanding/interfaces";
 import { PAGE_PATH as PAGE_PATH_DEVICES_INTERFACES } from "../containers/monitoringModule/devicesLanding/interfaces/constants";
+
+import InterfacesBandwidths from "../containers/monitoringModule/devicesLanding/bandwidths";
+import { PAGE_PATH as PAGE_PATH_INTERFACES_BANDWIDTHS } from "../containers/monitoringModule/devicesLanding/bandwidths/constants";
 
 /////////////////////////////////////////
 
@@ -296,13 +299,13 @@ const routes = {
       element: <CloudsDropDown />,
       children: [
         {
-          path: PAGE_PATH_CLOUDS,
-          element: <Clouds />,
-        },
-        {
           path: DROPDOWN_PATH_AWS,
           element: <AWSDropDown />,
           children: [
+            {
+              path: PAGE_PATH_AWS_ACCOUNTS,
+              element: <AwsAccounts />,
+            },
             {
               path: PAGE_PATH_S3,
               element: <S3 />,
@@ -354,6 +357,10 @@ const routes = {
         {
           path: PAGE_PATH_DEVICES_INTERFACES,
           element: <DevicesInterfaces />,
+        },
+        {
+          path: PAGE_PATH_INTERFACES_BANDWIDTHS,
+          element: <InterfacesBandwidths />,
         },
       ],
     },

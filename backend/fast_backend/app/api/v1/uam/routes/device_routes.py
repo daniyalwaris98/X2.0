@@ -303,6 +303,7 @@ description = "Use this API in UAM device page when click on ip to ge the  site 
 )
 async def get_site_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
+        site_list = []
         result = (
             configs.db.query(AtomTable, RackTable, SiteTable)
             .join(RackTable, AtomTable.rack_id == RackTable.rack_id)
@@ -318,8 +319,8 @@ async def get_site_by_ip_address(ip_address: str = Query(..., description="IP ad
         site_data_dict = {"site_name": site.site_name, "region": site.region_name, "latitude": site.latitude,
                           "longitude": site.longitude, "city": site.city, "creation_date": str(site.creation_date),
                           "modification_date": str(site.modification_date), "status": site.status}
-
-        return JSONResponse(content=site_data_dict, status_code=200)
+        site_list.append(site_data_dict)
+        return JSONResponse(content=site_list, status_code=200)
 
     except Exception:
         traceback.print_exc()
@@ -337,7 +338,7 @@ description = "use this API In UAM device page to get the detail of the Rack bas
 async def get_rack_by_ip_address(ip_address: str = Query(..., description="IP address of the device")):
     try:
         obj_list = []
-
+        rack_list =[]
         result = (
             configs.db.query(AtomTable, RackTable, SiteTable)
             .join(RackTable, AtomTable.rack_id == RackTable.rack_id)
@@ -358,8 +359,8 @@ async def get_rack_by_ip_address(ip_address: str = Query(..., description="IP ad
                           "rfs_date": str(rack.rfs_date), "height": rack.height, "width": rack.width,
                           "depth": rack.depth, "ru": rack.ru, "pn_code": rack.pn_code,
                           "rack_model": rack.rack_model, "floor": rack.floor}
-
-        return JSONResponse(content=rack_data_dict, status_code=200)
+        rack_list.append(rack_data_dict)
+        return JSONResponse(content=rack_list, status_code=200)
 
     except Exception:
         traceback.print_exc()

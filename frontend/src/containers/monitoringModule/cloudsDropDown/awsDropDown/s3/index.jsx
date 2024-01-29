@@ -1,32 +1,32 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/s3/selectors";
 import {
   useFetchRecordsQuery,
   useChangeS3StatusMutation,
 } from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/s3/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/s3/selectors";
 import { jsonToExcel } from "../../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../../components/spinners";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   S3_STATUS,
+  ENABLED,
+  DISABLED,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../../components/pageSections";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
@@ -57,13 +57,13 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   const [
-    changeS3Status,
+    changeStatus,
     {
-      data: changeS3StatusData,
-      isSuccess: isChangeS3StatusSuccess,
-      isLoading: isChangeS3StatusLoading,
-      isError: isChangeS3StatusError,
-      error: changeS3StatusError,
+      data: changeStatusData,
+      isSuccess: isChangeStatusSuccess,
+      isLoading: isChangeStatusLoading,
+      isError: isChangeStatusError,
+      error: changeStatusError,
     },
   ] = useChangeS3StatusMutation();
 
@@ -77,24 +77,24 @@ const Index = () => {
   });
 
   useErrorHandling({
-    data: changeS3StatusData,
-    isSuccess: isChangeS3StatusSuccess,
-    isError: isChangeS3StatusError,
-    error: changeS3StatusError,
+    data: changeStatusData,
+    isSuccess: isChangeStatusSuccess,
+    isError: isChangeStatusError,
+    error: changeStatusError,
     type: TYPE_FETCH,
   });
 
   // handlers
   function handleMonitoringSwitchChange(checked, record) {
-    changeS3Status({
+    changeStatus({
       [TABLE_DATA_UNIQUE_ID]: record[TABLE_DATA_UNIQUE_ID],
-      [S3_STATUS]: checked,
+      [S3_STATUS]: checked ? ENABLED : DISABLED,
     });
   }
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -102,7 +102,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading || isChangeStatusLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -123,7 +123,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

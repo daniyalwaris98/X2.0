@@ -1,22 +1,31 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
-import { indexColumnNameConstants } from "./constants";
 import Tooltip from "@mui/material/Tooltip";
-import { convertToAsterisks } from "../../../../utils/helpers";
+import DefaultAnchor from "../../../../components/anchor";
+import { DefaultTextWithSwitch } from "../../../../components/textWithSwitch";
+import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit, handleScan }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({
+  handleEdit,
+  handleScan,
+  handleIpAddressClick,
+} = {}) {
   const columnDefinitions = [
-    indexColumnNameConstants.IP_ADDRESS,
+    {
+      data_key: indexColumnNameConstants.IP_ADDRESS,
+      render: (text, record) => (
+        <DefaultAnchor onClick={() => handleIpAddressClick(record)}>
+          {text}
+        </DefaultAnchor>
+      ),
+    },
     indexColumnNameConstants.SERVER_NAME,
     indexColumnNameConstants.TYPE,
     indexColumnNameConstants.NUMBER_OF_ZONES,
     indexColumnNameConstants.USER_NAME,
     {
       data_key: indexColumnNameConstants.PASSWORD,
-      render: (text, record) => convertToAsterisks(text),
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
     },
     {
       data_key: indexColumnNameConstants.ACTIONS,

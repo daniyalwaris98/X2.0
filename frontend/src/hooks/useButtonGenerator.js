@@ -42,6 +42,7 @@ export default function useButtonGenerator() {
                   fontSize: "13px",
                   textTransform: "capitalize",
                   gap: "5px",
+                  whiteSpace: "nowrap", // Add this line to prevent line breaks
                 }}
               >
                 {name} {namePostfix}
@@ -63,6 +64,7 @@ export default function useButtonGenerator() {
                   fontSize: "13px",
                   textTransform: "capitalize",
                   gap: "5px",
+                  whiteSpace: "nowrap", // Add this line to prevent line breaks
                 }}
               >
                 {name} {namePostfix}
@@ -88,6 +90,7 @@ export default function useButtonGenerator() {
                   fontSize: "13px",
                   textTransform: "capitalize",
                   gap: "5px",
+                  whiteSpace: "nowrap", // Add this line to prevent line breaks
                 }}
               >
                 {name} {namePostfix}

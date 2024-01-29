@@ -20,7 +20,7 @@ router = APIRouter(
 )
 
 
-def Hashing(string):
+async def Hashing(string):
     try:
         length = 20
         #conversion of string to bytes
@@ -41,7 +41,7 @@ def Hashing(string):
         print("Error Occurred While License Hashing",str(e),file=sys.stderr)
 
 
-def DecodeLicense(license_key):
+async def DecodeLicense(license_key):
     try:
         # Decode the base64 encoded data to bytes
         decode_data = base64.b64decode(license_key)
@@ -75,7 +75,7 @@ def DecodeLicense(license_key):
         return None
 
 
-def LicenseTenure(end_date):
+async def LicenseTenure(end_date):
     try:
         from dateutil.relativedelta import relativedelta
         print("end date is::::::::::",end_date,file=sys.stderr)
@@ -96,7 +96,7 @@ def LicenseTenure(end_date):
 
 
 
-def LicenseDaysLeft(date_string):
+async def LicenseDaysLeft(date_string):
     try:
         parsed_date = datetime.strptime(str(date_string),"%Y-%m-%d %H:%M:%S")
         print("parsed date is::::::::::::::::",parsed_date,file=sys.stderr)
@@ -126,7 +126,7 @@ def LicenseDaysLeft(date_string):
 summary="API to Generate the license",
 description="API to generate the license"
 )
-def generate_license(license_data:GenerateLicenseResponseScehma) :
+async def generate_license(license_data:GenerateLicenseResponseScehma) :
     try:
         hashDict = {}
         objDict = {}
@@ -190,7 +190,7 @@ def generate_license(license_data:GenerateLicenseResponseScehma) :
 
 
 @router.post('/decode_license')
-def decoded_license(key:str):
+async def decoded_license(key:str):
     try:
         objectDict = DecodeLicense(key)
         print("objct dict is::::::",objectDict,file=sys.stderr)
@@ -198,3 +198,20 @@ def decoded_license(key:str):
 
     except Exception as e:
         traceback.print_exc()
+
+
+async def liscence_expiry():
+    try:
+        liscences = configs.db.query(LicenseVerfificationModel).all()
+        print("liscences are::::::::::::::::::::::::::",liscences,file=sys.stderr)
+        for liscence in liscences:
+            liscnece_end_date = liscence.end_date
+            current_date = datetime.now()
+            if liscnece_end_date < current_date:
+                liscence.verfication ='Expired'
+                UpdateDBData(liscences)
+
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Liscence Expiry",status_code=500)

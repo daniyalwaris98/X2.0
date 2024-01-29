@@ -1,15 +1,9 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
+import React, { useEffect } from "react";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import {
-  SelectFormUnit,
-  AddableSelectFormUnit,
-} from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
-import { yupResolver } from "@hookform/resolvers/yup";
+import { useForm } from "react-hook-form";
 import * as yup from "yup";
+import { yupResolver } from "@hookform/resolvers/yup";
+import { useSelector } from "react-redux";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
@@ -22,7 +16,6 @@ import {
   useFetchDeviceTypeNamesQuery,
   useFetchPasswordGroupNamesQuery,
 } from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
 import {
   selectSiteNames,
   selectRackNames,
@@ -31,15 +24,29 @@ import {
   selectDeviceTypeNames,
   selectPasswordGroupNames,
 } from "../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../hooks/useErrorHandling";
 import {
   formSetter,
   generateNumbersArray,
   getTitle,
 } from "../../../utils/helpers";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { PAGE_NAME } from "./constants";
-import { indexColumnNameConstants } from "./constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit from "../../../components/formUnits";
+import {
+  SelectFormUnit,
+  AddableSelectFormUnit,
+} from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
+import {
+  ATOM_ID,
+  ATOM_TRANSITION_ID,
+  PAGE_NAME,
+  indexColumnNameConstants,
+} from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.IP_ADDRESS]: yup
@@ -55,11 +62,8 @@ const Index = ({
   handleOpenRackModal,
   handleOpenPasswordGroupModal,
 }) => {
-  // states
-  const [initialRender, setInitialRender] = useState(true);
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue, watch } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -68,38 +72,58 @@ const Index = ({
     formSetter(recordToEdit, setValue);
   }, []);
 
-  useEffect(() => {
-    // skip the first render
-    // if (initialRender) {
-    //   setInitialRender(false);
-    //   return;
-    // }
-    // (async () => {
-    //   // setValue("rack_name", "");
-    //   await trigger("rack_name");
-    // })();
-  }, [watch(indexColumnNameConstants.SITE_NAME)]);
-
   // fetching dropdowns data from backend using apis
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
-  const { error: rackNamesError, isLoading: isRackNamesLoading } =
-    useFetchRackNamesQuery(
-      {
-        site_name: watch(indexColumnNameConstants.SITE_NAME, ""),
-      },
-      { skip: watch(indexColumnNameConstants.SITE_NAME) === undefined }
-    );
-
-  const { error: vendorNamesError, isLoading: isVendorNamesLoading } =
-    useFetchVendorNamesQuery();
-  const { error: functionNamesError, isLoading: isFunctionNamesLoading } =
-    useFetchFunctionNamesQuery();
-  const { error: deviceTypeNamesError, isLoading: isDeviceTypeNamesLoading } =
-    useFetchDeviceTypeNamesQuery();
   const {
-    error: passwordGroupNamesError,
-    isLoading: isPasswordGroupNamesLoading,
+    data: fetchSiteNamesData,
+    isSuccess: isFetchSiteNamesSuccess,
+    isLoading: isFetchSiteNamesLoading,
+    isError: isFetchSiteNamesError,
+    error: fetchSiteNamesError,
+  } = useFetchSiteNamesQuery();
+
+  const {
+    data: fetchRackNamesData,
+    isSuccess: isFetchRackNamesSuccess,
+    isLoading: isFetchRackNamesLoading,
+    isError: isFetchRackNamesError,
+    error: fetchRackNamesError,
+  } = useFetchRackNamesQuery(
+    {
+      site_name: watch(indexColumnNameConstants.SITE_NAME, ""),
+    },
+    { skip: watch(indexColumnNameConstants.SITE_NAME) === undefined }
+  );
+
+  const {
+    data: fetchVendorNamesData,
+    isSuccess: isFetchVendorNamesSuccess,
+    isLoading: isFetchVendorNamesLoading,
+    isError: isFetchVendorNamesError,
+    error: fetchVendorNamesError,
+  } = useFetchVendorNamesQuery();
+
+  const {
+    data: fetchFunctionNamesData,
+    isSuccess: isFetchFunctionNamesSuccess,
+    isLoading: isFetchFunctionNamesLoading,
+    isError: isFetchFunctionNamesError,
+    error: fetchFunctionNamesError,
+  } = useFetchFunctionNamesQuery();
+
+  const {
+    data: fetchDeviceTypeNamesData,
+    isSuccess: isFetchDeviceTypeNamesSuccess,
+    isLoading: isFetchDeviceTypeNamesLoading,
+    isError: isFetchDeviceTypeNamesError,
+    error: fetchDeviceTypeNamesError,
+  } = useFetchDeviceTypeNamesQuery();
+
+  const {
+    data: fetchPasswordGroupNamesData,
+    isSuccess: isFetchPasswordGroupNamesSuccess,
+    isLoading: isFetchPasswordGroupNamesLoading,
+    isError: isFetchPasswordGroupNamesError,
+    error: fetchPasswordGroupNamesError,
   } = useFetchPasswordGroupNamesQuery();
 
   // post api for the form
@@ -144,6 +168,54 @@ const Index = ({
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: fetchSiteNamesData,
+    isSuccess: isFetchSiteNamesSuccess,
+    isError: isFetchSiteNamesError,
+    error: fetchSiteNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchRackNamesData,
+    isSuccess: isFetchRackNamesSuccess,
+    isError: isFetchRackNamesError,
+    error: fetchRackNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchVendorNamesData,
+    isSuccess: isFetchVendorNamesSuccess,
+    isError: isFetchVendorNamesError,
+    error: fetchVendorNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchFunctionNamesData,
+    isSuccess: isFetchFunctionNamesSuccess,
+    isError: isFetchFunctionNamesError,
+    error: fetchFunctionNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchDeviceTypeNamesData,
+    isSuccess: isFetchDeviceTypeNamesSuccess,
+    isError: isFetchDeviceTypeNamesError,
+    error: fetchDeviceTypeNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchPasswordGroupNamesData,
+    isSuccess: isFetchPasswordGroupNamesSuccess,
+    isError: isFetchPasswordGroupNamesError,
+    error: fetchPasswordGroupNamesError,
+    type: TYPE_FETCH,
+  });
+
   // getting dropdowns data from the store
   const siteNames = useSelector(selectSiteNames);
   const rackNames = useSelector(selectRackNames);
@@ -156,16 +228,16 @@ const Index = ({
   const onSubmit = (data) => {
     console.log(data);
     if (recordToEdit) {
-      if (recordToEdit.atom_id) {
-        data.atom_id = recordToEdit.atom_id;
-      } else if (recordToEdit.atom_transition_id) {
-        data.atom_transition_id = recordToEdit.atom_transition_id;
+      if (recordToEdit[ATOM_ID]) {
+        data[ATOM_ID] = recordToEdit[ATOM_ID];
+      } else if (recordToEdit[ATOM_TRANSITION_ID]) {
+        data[ATOM_TRANSITION_ID] = recordToEdit[ATOM_TRANSITION_ID];
       }
     }
 
     if (
       recordToEdit &&
-      (recordToEdit.atom_id || recordToEdit.atom_transition_id)
+      (recordToEdit[ATOM_ID] || recordToEdit[ATOM_TRANSITION_ID])
     ) {
       updateRecord(data);
     } else {
@@ -178,86 +250,94 @@ const Index = ({
       title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
-        <Grid container spacing={5}>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.IP_ADDRESS}
-              required
-            />
-            <AddableSelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SITE_NAME}
-              options={siteNames}
-              onAddClick={handleOpenSiteModal}
-            />
-            <AddableSelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.RACK_NAME}
-              options={rackNames}
-              onAddClick={handleOpenRackModal}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SECTION}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEPARTMENT}
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={12} sm={4}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.IP_ADDRESS}
+                required
+              />
+              <AddableSelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SITE_NAME}
+                options={siteNames}
+                onAddClick={handleOpenSiteModal}
+                spinning={isFetchSiteNamesLoading}
+              />
+              <AddableSelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.RACK_NAME}
+                options={rackNames}
+                onAddClick={handleOpenRackModal}
+                spinning={isFetchRackNamesLoading}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SECTION}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEPARTMENT}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEVICE_RU}
+                options={generateNumbersArray(30)}
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.FUNCTION}
+                options={functionNames}
+                spinning={isFetchFunctionNamesLoading}
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEVICE_TYPE}
+                options={deviceTypeNames}
+                spinning={isFetchDeviceTypeNamesLoading}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEVICE_NAME}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.VENDOR}
+                options={vendorNames}
+                spinning={isFetchVendorNamesLoading}
+              />
+              <AddableSelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.PASSWORD_GROUP}
+                options={passwordGroupNames}
+                onAddClick={handleOpenPasswordGroupModal}
+                spinning={isFetchPasswordGroupNamesLoading}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.CRITICALITY}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.VIRTUAL}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DOMAIN}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={4}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEVICE_RU}
-              options={generateNumbersArray(30)}
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.FUNCTION}
-              options={functionNames}
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEVICE_TYPE}
-              options={deviceTypeNames}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEVICE_NAME}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.VENDOR}
-              options={vendorNames}
-            />
-            <AddableSelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PASSWORD_GROUP}
-              options={passwordGroupNames}
-              onAddClick={handleOpenPasswordGroupModal}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.CRITICALITY}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.VIRTUAL}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DOMAIN}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

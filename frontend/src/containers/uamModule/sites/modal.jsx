@@ -1,13 +1,10 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
-import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
+import Grid from "@mui/material/Grid";
+import { useSelector } from "react-redux";
+import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
@@ -16,15 +13,20 @@ import {
   useFetchSiteNamesQuery,
   useFetchStatusNamesQuery,
 } from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../utils/helpers";
-import DefaultSelect from "../../../components/selects";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
-import { indexColumnNameConstants } from "./constants";
-import { ELEMENT_NAME } from "./constants";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit from "../../../components/formUnits";
+import { SelectFormUnit } from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
+import {
+  ELEMENT_NAME,
+  TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+} from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.SITE_NAME]: yup
@@ -48,12 +50,8 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
-  // states
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -89,8 +87,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   const { refetch: refetchSiteNames } = useFetchSiteNamesQuery(undefined, {
     skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
   });
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
+
+  const {
+    data: fetchStatusNamesData,
+    isSuccess: isFetchStatusNamesSuccess,
+    isLoading: isFetchStatusNamesLoading,
+    isError: isFetchStatusNamesError,
+    error: fetchStatusNamesError,
+  } = useFetchStatusNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -111,6 +115,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: fetchStatusNamesData,
+    isSuccess: isFetchStatusNamesSuccess,
+    isError: isFetchStatusNamesError,
+    error: fetchStatusNamesError,
+    type: TYPE_FETCH,
+  });
+
   // getting dropdowns data from the store
   const statusNames = useSelector(selectStatusNames);
 
@@ -123,9 +135,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // on form submit
   const onSubmit = (data) => {
-    // console.log("site data", data);
     if (recordToEdit) {
-      data.site_id = recordToEdit.site_id;
+      data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
       addRecord(data);
@@ -134,49 +145,51 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)} style={{ padding: "15px" }}>
-        <Grid container spacing={2}>
-          <Grid item xs={12} sm={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SITE_NAME}
-              disabled={recordToEdit !== null}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.REGION_NAME}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.CITY}
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={2}>
+            <Grid item xs={12} sm={6}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SITE_NAME}
+                disabled={recordToEdit !== null}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.REGION_NAME}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.CITY}
+              />
+            </Grid>
+            <Grid item xs={12} sm={6}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.STATUS}
+                options={statusNames}
+                spinning={isFetchStatusNamesLoading}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.LATITUDE}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.LONGITUDE}
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12} sm={6}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.STATUS}
-              options={statusNames}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.LATITUDE}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.LONGITUDE}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

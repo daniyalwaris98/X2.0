@@ -1,16 +1,12 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
-import { indexColumnNameConstants } from "./constants";
-import { Link } from "react-router-dom";
 import DefaultAnchor from "../../../components/anchor";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({
   handleIpAddressClick,
   handleRcsClick,
-}) {
-  const theme = useTheme();
-
+} = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.DEVICE_NAME,
     {

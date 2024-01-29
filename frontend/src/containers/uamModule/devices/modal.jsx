@@ -1,16 +1,4 @@
 import React, { useState } from "react";
-import DetailsModal from "../../../components/dialogs";
-import { useTheme } from "@mui/material/styles";
-import Grid from "@mui/material/Grid";
-import { Spin } from "antd";
-import {
-  useFetchSitesByIPAddressQuery,
-  useFetchRacksByIPAddressQuery,
-  useFetchBoardsByIPAddressQuery,
-  useFetchSubBoardsByIPAddressQuery,
-  useFetchSFPsByIPAddressQuery,
-  useFetchLicensesByIPAddressQuery,
-} from "../../../store/features/uamModule/devices/apis";
 import { useSelector } from "react-redux";
 import {
   selectSitesByIPAddressData,
@@ -20,25 +8,34 @@ import {
   selectSFPsByIPAddressData,
   selectLicensesByIPAddressData,
 } from "../../../store/features/uamModule/devices/selectors";
+import {
+  useFetchSitesByIPAddressQuery,
+  useFetchRacksByIPAddressQuery,
+  useFetchBoardsByIPAddressQuery,
+  useFetchSubBoardsByIPAddressQuery,
+  useFetchSFPsByIPAddressQuery,
+  useFetchLicensesByIPAddressQuery,
+} from "../../../store/features/uamModule/devices/apis";
 import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import { indexColumnNameConstants } from "./constants";
-import { PAGE_NAME } from "./constants";
-import DefaultTable from "../../../components/tables";
-import { TABLE_DATA_UNIQUE_ID as SITE_ID } from "../sites/constants";
+import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import { DeviceDetailsDialogFooter } from "../../../components/dialogFooters";
+import { PageTableSectionWithCustomPageHeader } from "../../../components/pageSections";
+import DetailsModal from "../../../components/dialogs";
+import DefaultSpinner from "../../../components/spinners";
 import { useIndexTableColumnDefinitions as useSitesTableColumnDefinitions } from "../sites/columnDefinitions";
 import { useIndexTableColumnDefinitions as useRacksTableColumnDefinitions } from "../racks/columnDefinitions";
 import { useIndexTableColumnDefinitions as useBoardsTableColumnDefinitions } from "../boards/columnDefinitions";
 import { useIndexTableColumnDefinitions as useSubBoardsTableColumnDefinitions } from "../subBoards/columnDefinitions";
 import { useIndexTableColumnDefinitions as useSFPsTableColumnDefinitions } from "../sfps/columnDefinitions";
 import { useIndexTableColumnDefinitions as useLicensesTableColumnDefinitions } from "../licenses/columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
-import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { DeviceDetailsPageHeader } from "../../../components/pageHeaders";
-import { DeviceDetailsDialogFooter } from "../../../components/dialogFooters";
+import { TABLE_DATA_UNIQUE_ID as SITE_ID } from "../sites/constants";
+import { CustomPageHeader } from "./customPageHeader";
+import { indexColumnNameConstants } from "./constants";
+import { PAGE_NAME } from "./constants";
 
 const Index = ({ handleClose, open, record }) => {
-  const theme = useTheme();
   const parameters = {
     [indexColumnNameConstants.IP_ADDRESS]:
       record[indexColumnNameConstants.IP_ADDRESS],
@@ -46,17 +43,17 @@ const Index = ({ handleClose, open, record }) => {
 
   // hooks
   const { plainColumnDefinitions: plainSitesColumnDefinitions } =
-    useSitesTableColumnDefinitions({});
+    useSitesTableColumnDefinitions();
   const { plainColumnDefinitions: plainRacksColumnDefinitions } =
-    useRacksTableColumnDefinitions({});
+    useRacksTableColumnDefinitions();
   const { plainColumnDefinitions: plainBoardsColumnDefinitions } =
-    useBoardsTableColumnDefinitions({});
+    useBoardsTableColumnDefinitions();
   const { plainColumnDefinitions: plainSubBoardsColumnDefinitions } =
-    useSubBoardsTableColumnDefinitions({});
+    useSubBoardsTableColumnDefinitions();
   const { plainColumnDefinitions: plainSFPsColumnDefinitions } =
-    useSFPsTableColumnDefinitions({});
+    useSFPsTableColumnDefinitions();
   const { plainColumnDefinitions: plainLicensesColumnDefinitions } =
-    useLicensesTableColumnDefinitions({});
+    useLicensesTableColumnDefinitions();
 
   const generatedSitesColumns = useColumnsGenerator({
     columnDefinitions: plainSitesColumnDefinitions,
@@ -202,12 +199,8 @@ const Index = ({ handleClose, open, record }) => {
   }
 
   return (
-    <DetailsModal
-      sx={{ zIndex: "999" }}
-      title={`${PAGE_NAME} Details`}
-      open={open}
-    >
-      <Spin
+    <DetailsModal title={`${PAGE_NAME} Details`} open={open}>
+      <DefaultSpinner
         spinning={
           isFetchSitesByIPAddressRecordsLoading ||
           isFetchRacksByIPAddressRecordsLoading ||
@@ -230,9 +223,9 @@ const Index = ({ handleClose, open, record }) => {
           />
         ) : null}
 
-        <Grid container spacing={2}>
-          <Grid item xs={12}>
-            <DeviceDetailsPageHeader
+        <PageTableSectionWithCustomPageHeader
+          customPageHeader={
+            <CustomPageHeader
               selectedTableId={selectedTableId}
               setSelectedTableId={setSelectedTableId}
               setSelectedTableData={setSelectedTableData}
@@ -253,19 +246,14 @@ const Index = ({ handleClose, open, record }) => {
               licensesByIPAddressData={licensesByIPAddressData}
               generatedLicensesColumns={generatedLicensesColumns}
             />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultTable
-              rowKey={selectedTableId}
-              dataSource={selectedTableData}
-              displayColumns={displayColumns}
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DeviceDetailsDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </Spin>
+          }
+          TABLE_DATA_UNIQUE_ID={selectedTableId}
+          displayColumns={displayColumns}
+          dataSource={selectedTableData}
+        />
+        <br />
+        <DeviceDetailsDialogFooter handleClose={handleClose} />
+      </DefaultSpinner>
     </DetailsModal>
   );
 };

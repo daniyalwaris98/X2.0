@@ -8,6 +8,8 @@ export const extendedApi = monetxApi.injectEndpoints({
 
     getAtomsToAddInNcmDevices: builder.query({
       query: () => "/api/v1/ncm/ncm_device/get_atom_in_ncm",
+      // Disable caching by providing a function that always returns a unique tag
+      providesTags: (result, error, id) => [{ type: "Data", id: "unique-id" }],
     }),
 
     addAtomsInNcmDevices: builder.mutation({

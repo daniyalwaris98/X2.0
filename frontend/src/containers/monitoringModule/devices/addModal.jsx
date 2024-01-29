@@ -1,31 +1,30 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import DefaultDialog from "../../../components/dialogs";
-import { CancelDialogFooter } from "../../../components/dialogFooters";
 import Grid from "@mui/material/Grid";
+import { useSelector } from "react-redux";
+import { selectAtomsToAddInMonitoringDevicesData } from "../../../store/features/monitoringModule/devices/selectors";
+import { selectMonitoringCredentialsNames } from "../../../store/features/dropDowns/selectors";
 import {
   useGetAtomsToAddInMonitoringDevicesQuery,
   useAddAtomsInMonitoringDevicesMutation,
 } from "../../../store/features/monitoringModule/devices/apis";
-import { useSelector } from "react-redux";
-import { selectAtomsToAddInMonitoringDevicesData } from "../../../store/features/monitoringModule/devices/selectors";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "../../atomModule/atoms/columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultDialog from "../../../components/dialogs";
+import { CancelDialogFooter } from "../../../components/dialogFooters";
 import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
+import { useIndexTableColumnDefinitions } from "../../atomModule/atoms/columnDefinitions";
+import { ATOM_ID as TABLE_DATA_UNIQUE_ID } from "../../atomModule/atoms/constants";
 import { PAGE_NAME } from "../../atomModule/atoms/constants";
 import { ATOM_ID } from "../../atomModule/atoms/constants";
-import { selectMonitoringCredentialsNames } from "../../../store/features/dropDowns/selectors";
 import { MONITORING_CREDENTIALS_ID, CREDENTIALS } from "./constants";
 
 const Index = ({ handleClose, open }) => {
-  const theme = useTheme();
-
   // selectors
   const monitoringCredentialsNames = useSelector(
     selectMonitoringCredentialsNames
@@ -149,9 +148,9 @@ const Index = ({ handleClose, open }) => {
 
   return (
     <DefaultDialog title={`${"Add"} ${PAGE_NAME}`} open={open}>
-      <Grid container style={{ marginTop: "15px" }}>
+      <Grid container>
         <Grid item xs={12}>
-          <Spin
+          <DefaultSpinner
             spinning={
               isGetAtomsToAddInMonitoringDevicesLoading ||
               isAddAtomsInMonitoringDevicesLoading
@@ -183,7 +182,7 @@ const Index = ({ handleClose, open }) => {
               dynamicWidth={false}
               defaultPageSize={7}
             />
-          </Spin>
+          </DefaultSpinner>
         </Grid>
         <Grid item xs={12}>
           <CancelDialogFooter handleClose={handleClose} />

@@ -23,6 +23,12 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
+        extendedApi.endpoints.getIpamDevicesByFetchDate.matchFulfilled,
+        (state, action) => {
+          state.all_data = action.payload;
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.fetchIpamDevices.matchFulfilled,
         (state, action) => {
           action.payload.data.forEach((responseItem) => {
@@ -38,20 +44,6 @@ const defaultSlice = createSlice({
               state.all_data = [responseItem, ...state.all_data];
             }
           });
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.deleteIpamDevices.matchFulfilled,
-        (state, action) => {
-          const deletedIds = action.payload?.data || [];
-          if (deletedIds.length > 0) {
-            state.all_data = state.all_data.filter((item) => {
-              const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item[TABLE_DATA_UNIQUE_ID];
-              });
-              return !shouldKeepItem;
-            });
-          }
         }
       )
       .addMatcher(

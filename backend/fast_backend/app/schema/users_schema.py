@@ -69,6 +69,10 @@ class GetUserResponseScehma(BaseSchema):
 class EditUserRoleScehma(BaseSchema):
     role_id:int
     role:str
+
+
+class EditConfigurationRoleScehma(BaseSchema):
+    role_id:int
     configuration:str
 
 

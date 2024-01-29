@@ -11,7 +11,6 @@ export const extendedApi = monetxApi.injectEndpoints({
         url: `/api/v1/uam/rack/get_racks_by_site_dropdown`,
         params: { site_name: params.site_name },
       }),
-      keepUnusedDataFor: 0,
     }),
 
     fetchVendorNames: builder.query({
@@ -38,8 +37,8 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/atom/static_list/get_status_dropdown",
     }),
 
-    fetchSubnetsNames: builder.query({
-      query: () => "/api/v1/atom/static_list/get_status_dropdown",
+    fetchSubnetNames: builder.query({
+      query: () => "/api/v1/auto_discovery/get_subnets_dropdown",
     }),
 
     fetchActiveStatusNames: builder.query({
@@ -49,6 +48,20 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchMonitoringCredentialsNames: builder.query({
       query: () =>
         "/api/v1/monitoring/credentials/get_all_monitoring_credentials",
+    }),
+
+    fetchV3CredentialsAuthorizationProtocolNames: builder.query({
+      query: () =>
+        "/api/v1/monitoring/monitoring_static_list/get_authorization_protocol",
+    }),
+
+    fetchV3CredentialsEncryptionProtocolNames: builder.query({
+      query: () =>
+        "/api/v1/monitoring/monitoring_static_list/get_encryption_protocol",
+    }),
+
+    fetchIpamDevicesFetchDates: builder.query({
+      query: () => "/api/v1/ipam/ipam_device/get_ipam_devices_fetch_dates",
     }),
   }),
 });
@@ -62,7 +75,12 @@ export const {
   useFetchPasswordGroupNamesQuery,
   useFetchPasswordGroupTypeNamesQuery,
   useFetchStatusNamesQuery,
-  useFetchSubnetsNamesQuery,
+  useFetchSubnetNamesQuery,
   useFetchActiveStatusNamesQuery,
   useFetchMonitoringCredentialsNamesQuery,
+  useFetchV3CredentialsAuthorizationProtocolNamesQuery,
+  useFetchV3CredentialsEncryptionProtocolNamesQuery,
 } = extendedApi;
+
+export const useFetchIpamDevicesFetchDatesLazyQuery =
+  extendedApi.endpoints.fetchIpamDevicesFetchDates.useLazyQuery;

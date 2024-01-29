@@ -213,6 +213,7 @@ def edit_network_util(network_obj):
 def get_discovery_data_util(subnet, function):
     obj_list = []
     try:
+        print("subnet in get discovery data util is:::::::::::",file=sys.stderr)
         if str(subnet).lower() != "all":
             if function is None:
                 results = configs.db.query(AutoDiscoveryTable).filter(

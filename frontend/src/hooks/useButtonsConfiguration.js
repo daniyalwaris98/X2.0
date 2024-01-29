@@ -45,9 +45,6 @@ export default function useButtonsConfiguration(buttonDetails) {
     configure_table: {
       icon: <Icon fontSize="20px" icon="fluent:stack-32-regular" />,
       sx: {
-        // backgroundColor:
-        //   theme?.palette?.default_button?.configure_table_background,
-        // color: theme?.palette?.default_button?.configure_table_text,
         backgroundColor: theme?.palette?.drop_down_button?.export_background,
         color: theme?.palette?.drop_down_button?.export_text,
         border: `1px solid ${theme?.palette?.drop_down_button?.border}`,
@@ -225,6 +222,16 @@ export default function useButtonsConfiguration(buttonDetails) {
       },
     },
 
+    start_scanning_devices: {
+      name: "Start Scanning Devices",
+      icon: <Icon fontSize="16px" icon="bx:scan" />,
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+
     default_compare_submit: {
       name: "Compare",
       type: "submit",
@@ -323,6 +330,21 @@ export default function useButtonsConfiguration(buttonDetails) {
       sx: {
         backgroundColor: theme?.palette?.drop_down_button?.export_background,
         color: theme?.palette?.drop_down_button?.export_text,
+      },
+    },
+    default_update: {
+      name: "Update",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    start_monitoring: {
+      name: "Start Monitoring",
+      icon: <Icon fontSize="16px" icon="eos-icons:monitoring" />,
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
       },
     },
   };

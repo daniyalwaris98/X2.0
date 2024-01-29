@@ -1,47 +1,50 @@
 import React, { useEffect, useState, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
-import AddModal from "./addModal";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/ncmModule/manageConfigurations/selectors";
+import { setSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
   useBulkBackupNcmConfigurationsByDeviceIdsMutation,
   useGetAllCompletedBackupsLazyQuery,
 } from "../../../store/features/ncmModule/manageConfigurations/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/ncmModule/manageConfigurations/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
-import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import { PAGE_PATH as PAGE_PATH_CONFIGURATION_BACKUPS } from "../manageConfigurationsLanding/configurationBackups/constants";
+import { PAGE_PATH as PAGE_PATH_REMOTE_COMMAND_SENDER } from "../manageConfigurationsLanding/remoteCommandSender/constants";
+import { LANDING_PAGE_RELATIVE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS_LANDING } from "../manageConfigurationsLanding";
+import AddModal from "./addModal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   ELEMENT_NAME_BULK,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setSelectedDevice } from "../../../store/features/ncmModule/manageConfigurations";
-import { PAGE_PATH as PAGE_PATH_CONFIGURATION_BACKUPS } from "../manageConfigurationsLanding/configurationBackups/constants";
-import { PAGE_PATH as PAGE_PATH_REMOTE_COMMAND_SENDER } from "../manageConfigurationsLanding/remoteCommandSender/constants";
-import { LANDING_PAGE_RELATIVE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS_LANDING } from "../manageConfigurationsLanding";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
-
   // refs
   const intervalIdRef = useRef(null);
 
   // states required in hooks
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
   const [isBackupButtonLoading, setIsBackupButtonLoading] = useState(false);
 
@@ -63,7 +66,6 @@ const Index = () => {
     default_backup: {
       handleClick: handleBulkBackup,
       visible: selectedRowKeys.length > 0,
-      // loader: true,
       loader: isBackupButtonLoading,
     },
     default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME_BULK },
@@ -207,12 +209,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -230,7 +229,7 @@ const Index = () => {
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -238,7 +237,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading || isDeleteRecordsLoading || isBulkBackupLoading
       }
@@ -269,7 +268,7 @@ const Index = () => {
         selectedRowKeys={selectedRowKeys}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

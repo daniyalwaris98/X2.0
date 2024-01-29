@@ -1,11 +1,8 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
   const columnDefinitions = [
     indexColumnNameConstants.PN_CODE,
     indexColumnNameConstants.HW_EOL_DATE,
