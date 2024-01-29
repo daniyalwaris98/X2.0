@@ -22,8 +22,10 @@ import {
   transformDateTimeToDate,
 } from "../../../utils/helpers";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
 import {
   SelectFormUnit,
   AddableSelectFormUnit,
@@ -111,10 +113,21 @@ const Index = ({
       skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
     }
   );
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
+  const {
+    data: fetchSiteNamesData,
+    isSuccess: isFetchSiteNamesSuccess,
+    isLoading: isFetchSiteNamesLoading,
+    isError: isFetchSiteNamesError,
+    error: fetchSiteNamesError,
+  } = useFetchSiteNamesQuery();
+
+  const {
+    data: fetchStatusNamesData,
+    isSuccess: isFetchStatusNamesSuccess,
+    isLoading: isFetchStatusNamesLoading,
+    isError: isFetchStatusNamesError,
+    error: fetchStatusNamesError,
+  } = useFetchStatusNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -133,6 +146,22 @@ const Index = ({
     error: updateRecordError,
     type: TYPE_SINGLE,
     callback: handleClose,
+  });
+
+  useErrorHandling({
+    data: fetchSiteNamesData,
+    isSuccess: isFetchSiteNamesSuccess,
+    isError: isFetchSiteNamesError,
+    error: fetchSiteNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchStatusNamesData,
+    isSuccess: isFetchStatusNamesSuccess,
+    isError: isFetchStatusNamesError,
+    error: fetchStatusNamesError,
+    type: TYPE_FETCH,
   });
 
   // ///getting dropdowns data from the store
@@ -202,6 +231,7 @@ const Index = ({
                   dataKey={indexColumnNameConstants.SITE_NAME}
                   options={siteNames}
                   onAddClick={handleOpenSiteModal}
+                  spinning={isFetchSiteNamesLoading}
                   required
                 />
               )}
@@ -223,6 +253,7 @@ const Index = ({
                 control={control}
                 dataKey={indexColumnNameConstants.STATUS}
                 options={statusNames}
+                spinning={isFetchStatusNamesLoading}
                 required
               />
               <DefaultFormUnit

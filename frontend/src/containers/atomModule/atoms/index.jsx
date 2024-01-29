@@ -1,12 +1,12 @@
 import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
   useOnBoardRecordsMutation,
 } from "../../../store/features/atomModule/atoms/apis";
-import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
 import {
   jsonToExcel,
   convertToJson,
@@ -20,19 +20,19 @@ import {
   ONBOARD_SELECTION_PROMPT,
   SUCCESSFUL_FILE_EXPORT_MESSAGE,
 } from "../../../utils/constants";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
-import DefaultPageTableSection from "../../../components/pageSections";
-import DefaultSpinner from "../../../components/spinners";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
 import SiteModal from "../../uamModule/sites/modal";
 import RackModal from "../../uamModule/racks/modal";
 import PasswordGroupModal from "../passwordGroups/modal";
 import Modal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import AddFromAutoDiscoveryModal from "./addFromAutoDiscoveryModal";
 import {
   PAGE_NAME,

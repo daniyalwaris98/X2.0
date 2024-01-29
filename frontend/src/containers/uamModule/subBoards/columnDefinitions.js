@@ -1,11 +1,6 @@
-import React from "react";
-import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({} = {}) {
-  const theme = useTheme();
-
   const columnDefinitions = [
     indexColumnNameConstants.SUB_BOARD_NAME,
     indexColumnNameConstants.DEVICE_NAME,
