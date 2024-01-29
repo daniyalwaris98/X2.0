@@ -116,47 +116,99 @@ class IPAM(object):
             for ipam in ipam_data:
                 print("ipam is::::::::::::::::::::::::::::::::::::::::", ipam, file=sys.stderr)
                 print("ipam with ip addres is::::::::::::::::::::::::::::::::::::::::", ipam['ip_address'], file=sys.stderr)
+                interfaces_in_interface = ipam.get('interfaces', [])
+                print("interfaces in IPAM is:::::::::::",interfaces_in_interface,file=sys.stderr)
                 if ipam.get('ip_address', ''):
 
                     ipamDb = IpamDevicesFetchTable()
                     print("ipam db is:::::::::::::::::::::::::::::::::::::::::::::::::", ipamDb, file=sys.stderr)
 
                     try:
-                        # ipamDb.region = host['region']
-                        # ipamDb.site_id = host['site_id']
-                        # ipamDb.site_type = host['site_type']
-                        ipamDb.interface_ip = ipam.get('ip_address', '')
-                        # ipamDb.subnet_mask = ipam.get('I', '')
-                        ipamDb.interface = ipam.get("interface", "")
-                        ipamDb.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
+                        ipam_ip_exsists = configs.db.query(IpamDevicesFetchTable).filter_by(interface_ip = ipam['ip_address']).first()
+                        try:
+                            if ipam_ip_exsists:
+                                # ipamDb.region = host['region']
+                                # ipamDb.site_id = host['site_id']
+                                # ipamDb.site_type = host['site_type']
+                                ipamDb.interface_ip = ipam.get('ip_address', '')
+                                # ipamDb.subnet_mask = ipam.get('I', '')
+                                ipamDb.interface = ipam.get("interface", "")
+                                ipamDb.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
 
-                        # if 'up' in ipam.get("protocol_status",""):
-                        #     ipamDb.admin_status = 'enable'
-                        # else:
-                        #     ipamDb.admin_status = 'enable' if ipam.get("admin_status","")== 'up'else 'disable'
+                                # if 'up' in ipam.get("protocol_status",""):
+                                #     ipamDb.admin_status = 'enable'
+                                # else:
+                                #     ipamDb.admin_status = 'enable' if ipam.get("admin_status","")== 'up'else 'disable'
 
-                        ipamDb.vlan_number = ipam.get("vlan_number", "")
-                        ipamDb.interface_description = ipam.get("description", "")
-                        ipamDb.vlan = ipam.get("vlan_name")
-                        # ipamDb.subnet = ipam.get("subnet", "")
-                        ipamDb.virtual_ip = ipam.get("virtual_ip", "")
-                        # ipamDb.creation_date = host['time']
-                        ipamDb.fetch_date = host['time']
-                        # ipamDb.size = self.sizeCalculator(str(ipam.get("subnet", "")))
-                        # ipamDb.discovered = 'Not Discovered'
-                        ipamDb.atom_id = atom_id
-                        print("INserting data to ipam fetched table:::::::::::::::::::::::::::::", file=sys.stderr)
+                                ipamDb.vlan_number = ipam.get("vlan_number", "")
+                                ipamDb.interface_description = ipam.get("description", "")
+                                ipamDb.vlan = ipam.get("vlan_name")
+                                # ipamDb.subnet = ipam.get("subnet", "")
+                                ipamDb.virtual_ip = ipam.get("virtual_ip", "")
+                                # ipamDb.creation_date = host['time']
+                                ipamDb.fetch_date = host['time']
+                                # ipamDb.size = self.sizeCalculator(str(ipam.get("subnet", "")))
+                                # ipamDb.discovered = 'Not Discovered'
+                                ipamDb.atom_id = atom_id
+                                UpdateDBData(ipam_ip_exsists)
+                                print("INserting data to ipam fetched table:::::::::::::::::::::::::::::", file=sys.stderr)
+                            else:
+                                # ipamDb.region = host['region']
+                                # ipamDb.site_id = host['site_id']
+                                # ipamDb.site_type = host['site_type']
+                                ipamDb.interface_ip = ipam.get('ip_address', '')
+                                # ipamDb.subnet_mask = ipam.get('I', '')
+                                ipamDb.interface = ipam.get("interface", "")
+                                ipamDb.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
 
-                        InsertDBData(ipamDb)
-                        print('Successfully added to the Database::::::::::::::::::::::::::::::::::::::', file=sys.stderr)
+                                # if 'up' in ipam.get("protocol_status",""):
+                                #     ipamDb.admin_status = 'enable'
+                                # else:
+                                #     ipamDb.admin_status = 'enable' if ipam.get("admin_status","")== 'up'else 'disable'
+
+                                ipamDb.vlan_number = ipam.get("vlan_number", "")
+                                ipamDb.interface_description = ipam.get("description", "")
+                                ipamDb.vlan = ipam.get("vlan_name")
+                                # ipamDb.subnet = ipam.get("subnet", "")
+                                ipamDb.virtual_ip = ipam.get("virtual_ip", "")
+                                # ipamDb.creation_date = host['time']
+                                ipamDb.fetch_date = host['time']
+                                # ipamDb.size = self.sizeCalculator(str(ipam.get("subnet", "")))
+                                # ipamDb.discovered = 'Not Discovered'
+                                ipamDb.atom_id = atom_id
+                                InsertDBData(ipamDb)
+                                print('Successfully added to the Database::::::::::::::::::::::::::::::::::::::', file=sys.stderr)
+                        except Exception as e:
+                            traceback.print_exc()
+                            print("error occured while inserting inserted in IPAM devices fetch table")
                         try:
                             interface_tab = ip_interface_table()
                             interface_tab.interface_ip = ipam['ip_address']
                             interface_tab.interface_location = ipam.get("description", "")
+                            interface_tab.interfaces = ','.join(interfaces_in_interface)
+                            interface_tab.mac_address = ipam.get('mac_address',"")
                             interface_tab.discovered_from = host['device_name']
                             interface_tab.interface_status = 'up' if 'up' in ipam.get("protocol_status", "") else 'down'
                             interface_tab.ipam_device_id = ipamDb.ipam_device_id
-                            InsertDBData(interface_tab)
+                            # InsertDBData(interface_tab)
+                            existing_interface = configs.db.query(ip_interface_table).filter_by(
+                                interface_ip=ipam['ip_address']).first()
+
+                            if existing_interface:
+                                # Update existing record
+                                existing_interface.interface_ip = ipam['ip_address']
+                                existing_interface.interface_location = ipam.get("description", "")
+                                existing_interface.interfaces = ','.join(interfaces_in_interface)
+                                existing_interface.mac_address = ipam.get('mac_address', "")
+                                existing_interface.discovered_from = host['device_name']
+                                existing_interface.interface_status = 'up' if 'up' in ipam.get("protocol_status",
+                                                                                          "") else 'down'
+                                existing_interface.ipam_device_id = ipamDb.ipam_device_id
+                                UpdateDBData(existing_interface)
+                            else:
+                                # Insert new record
+                                print("Inserting a new record in thhe interfaces table",file=sys.stderr)
+                                InsertDBData(interface_tab)
                         except Exception as e:
                             traceback.print_exc()
                             print("Error Occured While add interfaces for ipam",str(e),file=sys.stderr)
@@ -283,7 +335,6 @@ class IPAM(object):
             # self.add_to_failed_devices(host['ip_address'], "Failed to login to host")
             date = datetime.now()
             device_type = host['device_type']
-
             addFailedDevice(host['ip_address'], date, device_type, login_exception, 'IPAM')
 
         if is_login == True:
@@ -376,7 +427,7 @@ class IPAM(object):
                         print("No Valid Interface found", file=sys.stderr)
                         return
                     interfaces = self.parseInterfaceKeys(interfaces, host['ip_address'], host)
-                    print(" Valid Interface found:::::::::::::::",interfaces, file=sys.stderr)
+                    # print(" Valid Interface found:::::::::::::::",interfaces, file=sys.stderr)
 
                     # adding network detail
                     interfaces = self.getSubnetMask(interfaces, host)
@@ -433,7 +484,7 @@ class IPAM(object):
 
                     for interface in interfaces:
                         secondary_ip = {}
-                        print("interface in interfaces is:::::::::::::::::::::::::",interface,file=sys.stderr)
+                        # print("interface in interfaces is:::::::::::::::::::::::::",interface,file=sys.stderr)
                         try:
                             if "vlan" in interface['interface'].lower():
                                 vlan_id = interface['interface'][4:]

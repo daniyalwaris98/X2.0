@@ -1,4 +1,6 @@
 import ipaddress
+import traceback
+
 from app.api.v1.atom.utils.atom_utils import *
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
@@ -350,7 +352,9 @@ description="Use this API on Auto Discovery Discovery page to show the counts of
 def get_discovery_function_count(subnet: RequestSubnetSchema):
     try:
         function_count = {}
-        if str(subnet).lower() == "All":
+        print("subnet is::::::::::::::::::::::::::",subnet,file=sys.stderr)
+        subnet = subnet.subnet
+        if subnet == "All":
             query_string = f"select count(*) from auto_discovery_table;"
             row = configs.db.execute(query_string).fetchone()[0]
             function_count["devices"] = row
@@ -422,7 +426,10 @@ description="Use This API in Auto Discovery Discovery page to list down the disc
 )
 async def get_discovery_data(subnet: RequestSubnetSchema):
     try:
-        response, status = get_discovery_data_util(subnet, None)
+        print("subentis::::::::::::::::::::;",subnet,file=sys.stderr)
+        subnet_data = subnet.subnet
+        print("subent data is:::::::::::::::::::",subnet_data,file=sys.stderr)
+        response, status = get_discovery_data_util(subnet_data, None)
         print("response is:::::::::::::::::",response,file=sys.stderr)
         print("status is::::::::::::::::::::::::::",status,file=sys.stderr)
         return JSONResponse(content=response, status_code=status)
@@ -577,7 +584,7 @@ def add_v1_v2_snmp_credentials(credentialObj: AddSnmpV1_V2Schema):
         v1v2_credentials = dict(credentialObj)
         profile_name = v1v2_credentials['profile_name']
         if configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(profile_name=profile_name).first():
-                return JSONResponse(content={"message": "Duplicate Entry"}, status_code=400)
+                return JSONResponse(content="Duplicate Entry", status_code=400)
 
         community = v1v2_credentials['community']
         description = v1v2_credentials['description']
@@ -842,7 +849,34 @@ def ssh_login_credentials():
 
 
 
-
+@router.get('/get_all_discovery_data',responses = {
+    200:{"model":list[GetDiscoveryDataResponseSchema]},
+    500:{"model":str}
+},
+summary="API to get all discovery data",
+description="API to get all discovery data"
+)
+def get_all_discovery_data():
+    try:
+        discovery_list = []
+        discovery = configs.db.query(AutoDiscoveryTable).all()
+        for discover in discovery:
+            discovery_dict = {
+                "discovery_id":discover.discovery_id,
+                "ip_address":discover.ip_address,
+                "subnet":discover.subnet,
+                "make_model":discover.make_model,
+                "function":discover.function,
+                "vendor":discover.vendor,
+                "snmp_status":discover.snmp_status,
+                "snmp_version":discover.snmp_version,
+                "ssh_status":discover.ssh_status
+            }
+            discovery_list.append(discovery_dict)
+        return discovery_list
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while getting the discovery data",status_code=500)
 
 
 

@@ -119,3 +119,46 @@ async def get_ip_alerts(ip: str = Query(..., description="IP address of the devi
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
+
+
+@router.post("/get_monitoring_alerts_by_ip_address", responses={
+    200: {"model": list[MonitoringAlertSchema]},
+    500: {"model": str}
+},
+summary="Use this API to be used in monitoring alerts page to display the alert based on ip click.This API is of get method but requires ip_address as an query parameter",
+description="Use this API to be used in monitoring alerts page to display the alert based on ip click.This API is of get method but requires ip_address as an query parameter"
+)
+async def get_ips_alerts(ip: MonitoringAlertsByIpAddress):
+    try:
+        monitoring_alert_list = []
+
+        results = (
+            configs.db.query(
+                Monitoring_Alerts_Table, Monitoring_Devices_Table, AtomTable
+            )
+            .join(
+                Monitoring_Devices_Table,
+                Monitoring_Devices_Table.monitoring_device_id
+                == Monitoring_Alerts_Table.monitoring_device_id,
+            )
+            .join(AtomTable, AtomTable.atom_id == Monitoring_Devices_Table.atom_id)
+            .filter(AtomTable.ip_address == ip.ip_address)
+            .all()
+        )
+
+        for alert, device, atom in results:
+            monitoring_alert_dict = {"alarm_id": alert.monitoring_alert_id,
+                                     "ip_address": atom.ip_address,
+                                     "description": alert.description,
+                                     "alert_type": alert.alert_type,
+                                     "category": alert.category,
+                                     "alert_status": alert.alert_status,
+                                     "mail_status": alert.mail_status,
+                                     "date": alert.modification_date}
+
+            monitoring_alert_list.append(monitoring_alert_dict)
+
+        return JSONResponse(content=monitoring_alert_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error", status_code=500)
