@@ -1,84 +1,113 @@
-import React, { useEffect } from 'react';
-import * as echarts from 'echarts';
+import React, { useEffect } from "react";
+import * as echarts from "echarts";
 
 const ConfigurationBackupSummary = () => {
   useEffect(() => {
-    const chartDom = document.getElementById('main');
+    const chartDom = document.getElementById("backupSummaryChart");
     const myChart = echarts.init(chartDom);
-    let option;
-
-    option = {
-      polar: {
-        radius: [30, '80%']
+    const option = {
+      angleAxis: {
+        type: "category",
+        axisLine: {
+          show: false,
+        },
+        axisLabel: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
       },
       radiusAxis: {
-        max: 4,
+        max: 8,
+        axisLine: {
+          show: false,
+        },
         axisLabel: {
-          show: false, // Hide numeric labels
+          show: false,
+        },
+        axisTick: {
+          show: false,
         },
       },
-      angleAxis: {
-        type: 'category',
-        data: ['Backup Successful', 'Backup Failure', 'Not Backup'],
-        startAngle: 0, // Adjust the start angle to 0 degrees
-      },
-      tooltip: {},
+      polar: {},
       series: [
         {
-          type: 'bar',
+          type: "bar",
+          data: [4.2],
+          coordinateSystem: "polar",
+          name: "Linux",
+          emphasis: {
+            focus: "series",
+          },
+          color: "#63ABFD",
+        },
+        {
+          type: "bar",
           data: [2],
-          coordinateSystem: 'polar',
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: '{c}',
+          coordinateSystem: "polar",
+          name: "Cisco",
+          emphasis: {
+            focus: "series",
           },
-          itemStyle: {
-            color: '#63B871',
-            barWidth: 80,
-          },
+          color: "#3D9E47",
         },
         {
-          type: 'bar',
-          data: [12],
-          coordinateSystem: 'polar',
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: '{c}',
+          type: "bar",
+          data: [3],
+          coordinateSystem: "polar",
+          name: "MicroSoft",
+          emphasis: {
+            focus: "series",
           },
-          itemStyle: {
-            color: '#E89C42',
-            barWidth: 40,
-          },
+          color: "#9E00D5",
         },
         {
-          type: 'bar',
-          data: [24],
-          coordinateSystem: 'polar',
-          label: {
-            show: true,
-            position: 'inside',
-            formatter: '{c}',
+          type: "bar",
+          data: [4],
+          coordinateSystem: "polar",
+          name: "VMware",
+          emphasis: {
+            focus: "series",
           },
-          itemStyle: {
-            color: '#FF6363',
-            barWidth: 40,
+          color: "#84CC7D",
+        },
+        {
+          type: "bar",
+          data: [5],
+          coordinateSystem: "polar",
+          name: "OpenBSD",
+          emphasis: {
+            focus: "series",
           },
+          color: "#E69B43",
+        },
+        {
+          type: "bar",
+          data: [6],
+          coordinateSystem: "polar",
+          name: "FreeBSD",
+          emphasis: {
+            focus: "series",
+          },
+          color: "#5F83CA",
         },
       ],
-      animation: true
+      legend: {
+        show: true,
+        data: ["Linux", "Cisco", "MicroSoft", "VMware", "OpenBSD", "FreeBSD"],
+        y: "top",
+        padding: [10, 0],
+      },
     };
-
     option && myChart.setOption(option);
 
-    // Clean up the chart on component unmount
     return () => {
       myChart.dispose();
     };
-  }, []); // Empty dependency array ensures that the effect runs only once on component mount
+  }, []);
 
-  return <div id="main" style={{ width: '100%', height: '250px' }}></div>;
+  return <div id="backupSummaryChart" style={{ width: "100%", height: "400px" }}></div>;
 };
 
 export default ConfigurationBackupSummary;

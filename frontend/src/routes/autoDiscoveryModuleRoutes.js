@@ -10,6 +10,10 @@ import ManageDevices from "../containers/autoDiscoveryModule/manageDevices";
 import ManageCredentialsDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown";
 import LoginCredentials from "../containers/autoDiscoveryModule//manageCredentialsDropDown/loginCredentials";
 
+import Dashboard from "../containers/autoDiscoveryModule/dashboard";
+import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../containers/autoDiscoveryModule/dashboard/constants";
+
+
 import SNMPDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown";
 import V1V2Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials";
 import V3Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v3Credentials";
@@ -33,7 +37,11 @@ const routes = {
   children: [
     {
       path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_MANAGE_NETWORKS} replace />,
+      element: <Navigate to={PAGE_PATH_DASHBOARD} replace />,
+    },
+    {
+      path: PAGE_PATH_DASHBOARD,
+      element: <Dashboard />,
     },
     {
       path: PAGE_PATH_MANAGE_NETWORKS,

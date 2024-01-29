@@ -1,6 +1,11 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
+
+import Dashboard from "../containers/monitoringModule/dashboard";
+import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../containers/monitoringModule/dashboard/constants";
+
+
 ///////////////////////////////
 import MonitoringModule from "../containers/monitoringModule";
 import { MODULE_PATH } from "../containers/monitoringModule";
@@ -139,13 +144,20 @@ import DevicesInterfaces from "../containers/monitoringModule/devicesLanding/int
 import { PAGE_PATH as PAGE_PATH_DEVICES_INTERFACES } from "../containers/monitoringModule/devicesLanding/interfaces/constants";
 
 /////////////////////////////////////////
+
+
+
 const routes = {
   path: MODULE_PATH,
   element: <MonitoringModule />,
   children: [
     {
       path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_DEVICES} replace />,
+      element: <Navigate to={PAGE_PATH_DASHBOARD} replace />,
+    },
+    {
+      path: PAGE_PATH_DASHBOARD,
+      element: <Dashboard />,
     },
     {
       path: PAGE_PATH_DEVICES,
