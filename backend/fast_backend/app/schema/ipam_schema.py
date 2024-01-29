@@ -170,8 +170,8 @@ class IPDetailScehma(BaseSchema):
     modification_date:datetime
     ip_address:str
 
-class ScanSubnetSchema(BaseModel):
-    subnet: List[int]
+class ScanSubnetSchema(BaseSchema):
+    subnet_id: List[int]
     port_scan: bool
     dns_scan: bool
 
@@ -204,3 +204,11 @@ class EditDnsSchema(BaseSchema):
     server_name:str
     user_name:str
     password:str
+class IpDetailBySubnetResponseSchema(BaseSchema):
+    subnet_address:str
+
+class IpHistoryResponseSchema(BaseSchema):
+    ip_address:str
+
+class DnsZoneByServerID(BaseSchema):
+    dns_server_id:int

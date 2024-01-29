@@ -4,7 +4,7 @@ from netaddr import IPNetwork
 from ipaddress import ip_network, ip_address
 from ipaddress import ip_interface
 from app.ipam_scripts.ipam import *
-from app.ipam_scripts.f5 import *
+from app.ipam_scripts.f5 import F5 as load_balancer_f5
 from app.ipam_scripts.ipam_physical_mapping import *
 from app.ipam_scripts.fortigate_vip import *
 from app.api.v1.ipam.routes.device_routes import *
@@ -121,7 +121,7 @@ def FetchIpamDevices(atom):
         atom = AtomTable()
         f5_lst = []
         fortinet_lst = []
-
+        ipam_f5_dict={}
         # Iterate over IPAM devices for F5 Load Balancer
         for data in configs.db.query(AtomTable).filter_by(device_type='f5_ltm').all():
             print("data for f5 load balancer is:::::::::",data,file=sys.stderr)
@@ -145,13 +145,13 @@ def FetchIpamDevices(atom):
             #     ipam_f5_dict['password'] = pwd_grp_dev.password
 
             f5_lst.append(ipam_f5_dict)
-
+        fortinet_dict={}
         # Iterate over IPAM devices for Fortinet VIP
         for data in configs.db.query(AtomTable).filter_by(device_type='fortinet').all():
             print("data is in fortinet vip is::::::::::::::",data,file=sys.stderr)
             fortinet_dict = {
                 "ip_address": data.ip_address,
-                "device_type": data.device_type,
+                "sw_type": data.device_type,
                 "device_name": data.device_name,
                 "time": current_time
             }
@@ -185,22 +185,37 @@ def FetchIpamDevices(atom):
             return {"Response": "Error Occurred In IPAM"}
 
         try:
+            print("f5 list is::::::::::::::::::::::", ipam_f5_dict, file=sys.stderr)
+            print("f5 dict is::::::::::::::::::::::", f5_lst, file=sys.stderr)
+            # Check if f5_lst is not empty
+            if f5_lst:
+                print("F5 is being executed:::::::::", file=sys.stderr)
+                f5 = load_balancer_f5()
+                # Iterate over each item in f5_lst
+                for host in f5_lst:
+                    if 'device_type' in host and host['device_type'] == 'f5_ltm':
+                        print("Processing F5 host:", host, file=sys.stderr)
+                        f5.poll(host)
+                print("F5 execution ended:::::::::::::::::::::::::::", f5, file=sys.stderr)
 
-            # f5 = F5()
-            # host = ipam_dict
-            # f5Data = f5_lst
-            # f5.addInventoryToDB(host, f5Data)
-            # f5.poll(host)
-            print("f5 is ended executed:::::::::::::::::::::::::::", f5, file=sys.stderr)
         except Exception as e:
             traceback.print_exc()
-            print("Exception Occured in F5")
+            print("Exception Occurred in F5:", str(e), file=sys.stderr)
 
         try:
-            fortigate = FORTIGATEVIP()
+            print("fortinet list is::::::::::::::::::::::",fortinet_lst,file=sys.stderr)
+            print("fortinet dict is::::::::::::::::::::::", fortinet_dict, file=sys.stderr)
+            if fortinet_lst:
+                print("Fortigate is being executed::::::::::::", file=sys.stderr)
+                fortigate = FORTIGATEVIP()
+                # Iterate over each item in fortinet_lst
+                for host in fortinet_lst:
+                    if 'sw_type' in host and host['sw_type'] == 'fortinet':
+                        print("Processing Fortigate host:", host, file=sys.stderr)
+                        fortigate.poll(host)
         except Exception as e:
             traceback.print_exc()
-            print("Error Occured In Fortigate VIP")
+            print("Error Occurred in Fortigate VIP:", str(e), file=sys.stderr)
 
         return {
             "ipam_devices": ipam_lst,
@@ -236,6 +251,7 @@ def is_valid_ipv4_subnet(subnet):
 def GetIps(subnet_data):
     ips = []
     try:
+        print("get ips started execution is:::::::::::::::::::",file=sys.stderr)
         print("subnet data is:::::::::::::::::::::",subnet_data,file=sys.stderr)
         # Access the subnet information from the AddSubnetInSubnetSchema object
         subnet = subnet_data
@@ -249,7 +265,9 @@ def GetIps(subnet_data):
             if is_valid_ipv4_subnet(subnet):
                 network = ip_network(subnet)
                 for ip in network.hosts():
+                    print("ips is:::::::::::::::::",ips,file=sys.stderr)
                     ips.append(str(ip))
+                print("ips are::::::::::::::::",ips,file=sys.stderr)
                 return ips
             else:
                 print(f"{subnet} is not a valid IPv4 subnet")
@@ -572,7 +590,7 @@ def calculateDnsIp(subnet):
 
 def getPhysicalMapping(subnet_list):
     try:
-
+        print("physical mapping started execution::::::::::::",file=sys.stderr)
         threads = []
         physical_mapping = IPAMPM()
         password=""
@@ -617,6 +635,7 @@ def getPhysicalMapping(subnet_list):
 
 def MultiPurpose(options):
     try:
+        print("step0 is being executed:::::::::::::::::::::::::::::",file=sys.stderr)
         print("Multipurpose is being executed::::::::::",file=sys.stderr)
         size = 0
         total_up_ips = 0
@@ -646,6 +665,7 @@ def MultiPurpose(options):
                 try:
 
                     size = sizeCalculator(subnet)
+                    print("size caluclator step1 in multipurposse is:::::::::::::::::::::::",size,file=sys.stderr)
                     try:
                         for subnt in get_subnet:
                             if get_subnet:
@@ -670,6 +690,7 @@ def MultiPurpose(options):
                     try:
                         print("subnet is::::::::::::for get ip at 649",subnet,file=sys.stderr)
                         ips = GetIps(subnet)
+                        print("step2 get ips in multipurpose is::::::::::::::::::::::",ips,file=sys.stderr)
                         print("ips for the subnet id::::::::",subnet,file=sys.stderr)
                         date = datetime.now()
                         for ip in ips:
@@ -684,7 +705,7 @@ def MultiPurpose(options):
                                 for row in get_ip:
                                     row.ip_address = ip
                                     row.subnet_id = subnet1.subnet_id
-                            InsertDBData(row)
+                                InsertDBData(row)
                         print("data inserted to ip tabl::::::", file=sys.stderr)
                     except Exception as e:
                         for row in get_subnet_scan:
@@ -699,7 +720,9 @@ def MultiPurpose(options):
                         print("Calculating Usage::::::::::::::::::::", file=sys.stderr)
                         try:
                             upIpsList = CheckUpIps(subnet)
+                            print("step3 in multi purpose is::::upips_list is::::::",file=sys.stderr)
                             usage = UsageCalculator(len(upIpsList), sizeCalculator(subnet))
+                            print("step4 usgae are:::::::::::::::::::",usage,file=sys.stderr)
                             for row in get_subnet:
                                 subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).first()
                                 print("row in get subnet is:::::::", file=sys.stderr)
@@ -719,6 +742,7 @@ def MultiPurpose(options):
 
                     for subnet in subnet_lst:
                         try:
+                            print("step4 populating the f5 vip ",file=sys.stderr)
                             subnet_exsist2 = configs.db.query(subnet_table).filter_by(subnet_address = subnet).first()
                             ip_result = configs.db.query(IpTable).filter_by(subnet_id = subnet_exsist2.subnet_id).all()
                             for ips in ip_result:
@@ -740,6 +764,7 @@ def MultiPurpose(options):
 
                     for subnet in subnet_lst:
                         try:
+                            print("step5 populating the furewall VIP::::::::",file=sys.stderr)
                             subnet_exsist3 = configs.db.query(subnet_table).filter_by(subnet_address=subnet).first()
                             ip_result = configs.db.query(IpTable).filter_by(subnet_id=subnet_exsist3.subnet_id).all()
                             for ips in ip_result:
@@ -759,6 +784,7 @@ def MultiPurpose(options):
                             traceback.print_exc()
 
                     if "DNS Scan" in options:
+                        print("step6 DNS scan is beign processing:::::::",file=sys.stderr)
                         for subnet in subnet_lst:
                             print("Resolving Host IP::::::::::::::::", file=sys.stderr)
                             try:
@@ -770,6 +796,7 @@ def MultiPurpose(options):
                         print("Finished Resolving Host IP::::::::", file=sys.stderr)
                     try:
                         print("getting pyhsical maaping::::::::::", file=sys.stderr)
+                        print("step7   get physical mapping is::::::::::",file=sys.stderr)
                         getPhysicalMapping(subnet_lst)
                     except Exception as e:
                         traceback.print_exc()

@@ -413,6 +413,10 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3CredentialsResponseSchema):
             v3_exsists.encryption_password = v3_data['encryption_password']
             v3_exsists.authentication_protocol = v3_data['authentication_protocol']
             v3_exsists.encryption_protocol = v3_data['encryption_protocol']
+            v3_exsists.description = v3_data['description']
+            v3_exsists.profile_name = v3_data['profile_name']
+            v3_exsists.snmp_port = v3_data['port']
+            v3_exsists.username = v3_data['username']
             data ={
                 "credentials_id":v3_exsists.monitoring_credentials_id,
                 "username":v3_exsists.username,
@@ -424,6 +428,8 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3CredentialsResponseSchema):
             message = f"{v3_exsists.profile_name} : Updated Successfully"
             data_dict['data'] = data
             data_dict['messgae'] = message
+
+            return data_dict
         else:
             return JSONResponse(content=f"{v3_exsists['credentials_id']} : Not Found",status_code=400)
 
@@ -443,7 +449,7 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3CredentialsResponseSchema):
              summary="use this api to add the WMI credentials",
              description="Use this api to add the WMI credentials"
              )
-def add_wmi_credentials(wmiObj:WMIMonitoringCredentialSchema):
+def edit_wmi_credentials(wmiObj:WMIMonitoringCredentialSchema):
     try:
         data_dict_wmi = {}
         wmiObj = dict(wmiObj)

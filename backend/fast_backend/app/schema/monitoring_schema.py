@@ -236,3 +236,6 @@ class EditSnmpV2Credentials(SnmpV2CredentialsResponseSchema):
 
 class EditSnmpV3CredentialsResponseSchema(SnmpV3CredentialsRequestSchema):
     credentials_id:int
+
+class MonitoringAlertsByIpAddress(BaseSchema):
+    ip_address:str
