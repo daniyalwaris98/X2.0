@@ -2,17 +2,19 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    getConfigurationChangeByDevice: builder.query({    
-       
+
+    getConfigurationBackupSummary: builder.query({
       query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",
     }),
 
-    // getAllNcmDevices: builder.query({
-    //     query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",
-    //   }),
-    //   getAllNcmDevices: builder.query({
-    //     query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",
-    //   }),
+    getConfigurationChangeByDevice: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",
+    }),
+
+    
+      getRecentRCMAlarms: builder.query({
+        query: () => "/api/v1/ncm/ncm_dashboard/get_ncm_alarm_by_category_graph",
+      }),
 
 
     // deleteNcmDevices: builder.mutation({
@@ -40,4 +42,5 @@ export const extendedApi = monetxApi.injectEndpoints({
 
 export const {
 useGetConfigurationChangeByDeviceQuery
+
 } = extendedApi;

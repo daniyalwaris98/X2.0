@@ -1,52 +1,73 @@
 import React, { useEffect } from 'react';
 import * as echarts from 'echarts';
 
-const TopOpenPorts = () => {
-  useEffect(() => {
-    // Your ECharts code here
-    var chartDom = document.getElementById('main');
-    var myChart = echarts.init(chartDom);
 
-    var option = {
+const TopOpenPorts = ({ chartData }) => {
+  useEffect(() => {
+    if (!chartData || !chartData.ports || !chartData.values) {
+      console.error('Invalid chart data:', chartData);
+      return;
+    }
+
+    const option = {
       xAxis: {
         type: 'category',
-        data: ['Port 22', 'Port 22', 'Port 22', 'Port 22', 'Port 22', 'Port 22', 'Port 22'],
+        data: chartData.ports,
       },
       yAxis: {
         type: 'value',
       },
       series: [
         {
-          data: [120, 200, 150, 80, 70, 110, 130],
+          data: chartData.values,
           type: 'bar',
           showBackground: true,
           backgroundStyle: {
             color: '#F4F8F3',
-            borderRadius: [20, 20, 0, 0], // Set the radius of the bars
+            borderRadius: [20, 20, 0, 0],
           },
           itemStyle: {
-            color: '#66B127', // Set the color of the bars
-            borderRadius: [20, 20, 0, 0], // Set the border radius of color-filled inside the bar
+            color: '#66B127',
+            borderRadius: [20, 20, 0, 0],
           },
           emphasis: {
             itemStyle: {
-              color: 'red', // Set the inside filler color when highlighted
-              borderRadius: [20, 20, 0, 0], // Set the border radius of color-filled inside the highlighted bar
+              color: 'red',
+              borderRadius: [20, 20, 0, 0],
             },
           },
         },
       ],
     };
 
-    option && myChart.setOption(option);
+    const chartDom = document.getElementById('main');
+    if (!chartDom) {
+      console.error('Chart element with id "main" not found.');
+      return;
+    }
 
-    // Clean up ECharts instance on component unmount
+    const myChart = echarts.init(chartDom);
+    myChart.setOption(option);
+
     return () => {
       myChart.dispose();
     };
-  }, []); // Empty dependency array ensures that this effect runs once after initial render
+  }, [chartData]);
 
-  return <div id="main" style={{ width: '100%', height: '400px' }}></div>;
+  return <div id="main" style={{ width: '100%', height: '400px' }} />;
 };
 
-export default TopOpenPorts;
+// Example parent component
+const App = () => {
+  // Sample chart data
+  const chartData = {
+    ports: ['Port 1', 'Port 2', 'Port 3','Port 4', 'Port 5', 'Port 6'],
+    values: [10, 20, 15,10, 20, 15],
+  };
+
+  return (
+     <TopOpenPorts chartData={chartData} />
+   );
+};
+
+export default App;
