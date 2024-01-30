@@ -9,14 +9,9 @@ import {
   useDeleteRecordsMutation,
   useBulkBackupNcmConfigurationsByDeviceIdsMutation,
 } from "../../../store/features/ncmModule/dashboard/apis";
-// import "./index.css";
-// import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
-// import ConfigurationBackupSummary from "../../ncmModule/dashboard/components/ConfigurationBackupSummary";
-// import TopSubnet from "../../ipamModule/dashboard/components/TopSubnet";
-// import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
-// import CredentialSummary from "./components/CredentialSummary";
-// import SnmpStatus from "./components/SnmpStatus";
-// import TopOsAutoDiscovery from "./components/TopOsAutoDiscovery";
+import HeatMap from "./components/HeatMap";
+import TenSubnetTable from "../../ipamModule/dashboard/components/TenSubnetTable";
+
 
 function Index() {
   const {
@@ -46,9 +41,9 @@ function Index() {
     <>
       <Row gutter={[32, 32]} justify="space-between">
         <Col span={24}>
-          <div className="container">
+          <div className="container" style={{padding:"0 0 5px 0"}}>
             <h6 className="heading">Infrastructure HeatMap</h6>
-     
+     <HeatMap/>
           </div>
         </Col>
 
@@ -60,14 +55,15 @@ function Index() {
         <Col span={12}>
           <div className="container">
             <h6 className="heading">Devices By CPU Utilization</h6>
-      
+            <TenSubnetTable/>
+
           </div>
         </Col>
 
         <Col span={12}>
           <div className="container">
             <h6 className="heading">Devices By Memory Utilization</h6>
-
+<TenSubnetTable/>
           </div>
         </Col>
       </Row>
@@ -75,13 +71,15 @@ function Index() {
         <Col span={12}>
           <div className="container">
             <h6 className="heading">Interfaces By Bandwidth Utilization</h6>
-      
+            <TenSubnetTable/>
+
           </div>
         </Col>
 
         <Col span={12}>
           <div className="container">
             <h6 className="heading">Infrastructure Snapshot</h6>
+            <TenSubnetTable/>
 
           </div>
         </Col>
