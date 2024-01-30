@@ -69,6 +69,7 @@ export function PasswordInput({ field, type = "text", sx, children, ...rest }) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
+          backgroundColor: theme?.palette?.default_input?.background,
           border: `2px solid ${theme?.palette?.default_input?.border}`,
           borderRadius: "0px 5px 5px 0px",
           borderLeft: "none",

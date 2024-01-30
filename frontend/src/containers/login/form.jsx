@@ -1,16 +1,14 @@
-import React, { useEffect, useState } from "react";
+import React from "react";
 import { useForm } from "react-hook-form";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../components/formUnits";
-import { LoginDialogFooter } from "../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
-import { useAddRecordMutation } from "../../store/features/atomModule/passwordGroups/apis";
-import useErrorHandling from "../../hooks/useErrorHandling";
+import { useLoginMutation } from "../../store/features/login/apis";
 import { getTitle } from "../../utils/helpers";
-import { TYPE_SINGLE } from "../../hooks/useErrorHandling";
-import { PAGE_NAME, TELNET } from "./constants";
+import useErrorHandling, { TYPE_SINGLE } from "../../hooks/useErrorHandling";
+import DefaultFormUnit from "../../components/formUnits";
+import { LoginDialogFooter } from "../../components/dialogFooters";
+import DefaultSpinner from "../../components/spinners";
 import { indexColumnNameConstants } from "./constants";
 
 const schema = yup.object().shape({
@@ -23,62 +21,62 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose }) => {
-  const theme = useTheme();
-
   // states
 
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control } = useForm({
     resolver: yupResolver(schema),
   });
 
   // post api for the form
   const [
-    addRecord,
+    login,
     {
-      data: addRecordData,
-      isSuccess: isAddRecordSuccess,
-      isLoading: isAddRecordLoading,
-      isError: isAddRecordError,
-      error: addRecordError,
+      data: loginData,
+      isSuccess: isLoginSuccess,
+      isLoading: isLoginLoading,
+      isError: isLoginError,
+      error: addLoginError,
     },
-  ] = useAddRecordMutation();
+  ] = useLoginMutation();
 
   // error handling custom hooks
   useErrorHandling({
-    data: addRecordData,
-    isSuccess: isAddRecordSuccess,
-    isError: isAddRecordError,
-    error: addRecordError,
+    data: loginData,
+    isSuccess: isLoginSuccess,
+    isError: isLoginError,
+    error: addLoginError,
     type: TYPE_SINGLE,
   });
 
   // on form submit
   const onSubmit = (data) => {
-    addRecord(data);
+    login(data);
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
-      <Grid container spacing={5}>
-        <Grid item xs={12}>
-          <DefaultFormUnit
-            control={control}
-            dataKey={indexColumnNameConstants.USER_NAME}
-            required
-          />
-          <DefaultFormUnit
-            type="password"
-            control={control}
-            dataKey={indexColumnNameConstants.PASSWORD}
-            required
-          />
+    <DefaultSpinner spinning={isLoginLoading}>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Grid container spacing={5}>
+          <Grid item xs={12}>
+            <DefaultFormUnit
+              control={control}
+              dataKey={indexColumnNameConstants.USER_NAME}
+              required
+            />
+            <DefaultFormUnit
+              type="password"
+              control={control}
+              dataKey={indexColumnNameConstants.PASSWORD}
+              required
+            />
+          </Grid>
+          <Grid item xs={12}>
+            <LoginDialogFooter handleClose={handleClose} />
+          </Grid>
         </Grid>
-        <Grid item xs={12}>
-          <LoginDialogFooter handleClose={handleClose} />
-        </Grid>
-      </Grid>
-    </form>
+      </form>
+    </DefaultSpinner>
   );
 };
 

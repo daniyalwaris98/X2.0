@@ -36,6 +36,7 @@ import {
   PAGE_PATH as PAGE_PATH_V3_CREDENTIALS,
 } from "./manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
+export const MODULE_NAME = "Auto Discovery";
 export const MODULE_PATH = "auto_discovery_module";
 
 const menuItems = [

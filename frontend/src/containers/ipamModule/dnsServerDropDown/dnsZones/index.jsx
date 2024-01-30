@@ -21,10 +21,14 @@ import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import DefaultPageTableSection from "../../../../components/pageSections";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import DefaultSpinner from "../../../../components/spinners";
+import DefaultDetailCards from "../../../../components/detailCards";
+import firewallIcon from "../../../../resources/designRelatedSvgs/firewall.svg";
+import deviceIcon from "../../../../resources/designRelatedSvgs/otherDevices.svg";
+import switchIcon from "../../../../resources/designRelatedSvgs/switches.svg";
 import { MODULE_PATH } from "../../index";
 import { DROPDOWN_PATH } from "../../dnsServerDropDown";
+import { indexColumnNameConstants as serversColumnNameConstants } from "../dnsServers/constants";
 import { PAGE_PATH as PAGE_PATH_DNS_Records } from "../dnsRecords/constants";
-import DnsServerDetails from "./dnsServerDetails";
 import { TABLE_DATA_UNIQUE_ID as DNS_SERVER_ID } from "../dnsServers/constants";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
@@ -144,7 +148,19 @@ const Index = () => {
         />
       ) : null}
 
-      {selectedDnsServer ? <DnsServerDetails /> : null}
+      {selectedDnsServer ? (
+        <DefaultDetailCards
+          data={{
+            [serversColumnNameConstants.IP_ADDRESS]:
+              selectedDnsServer[serversColumnNameConstants.IP_ADDRESS],
+            [serversColumnNameConstants.SERVER_NAME]:
+              selectedDnsServer[serversColumnNameConstants.SERVER_NAME],
+            [serversColumnNameConstants.TYPE]:
+              selectedDnsServer[serversColumnNameConstants.TYPE],
+          }}
+          icons={[deviceIcon, firewallIcon, switchIcon]}
+        />
+      ) : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}

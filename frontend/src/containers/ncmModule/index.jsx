@@ -11,6 +11,8 @@ import {
   PAGE_NAME as PAGE_NAME_MANAGE_CONFIGURATIONS,
   PAGE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS,
 } from "./manageConfigurations/constants";
+
+export const MODULE_NAME = "NCM";
 export const MODULE_PATH = "ncm_module";
 
 const menuItems = [
