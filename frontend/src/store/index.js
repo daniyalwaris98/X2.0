@@ -1,6 +1,9 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { monetxApi } from "./features/apiSlice";
 
+// login
+import loginReducer from "./features/login";
+
 // admin module
 import adminAutoDiscoveryFailedDevicesReducer from "./features/adminModule/failedDevices/autoDiscovery";
 import adminIpamFailedDevicesReducer from "./features/adminModule/failedDevices/ipam";
@@ -104,6 +107,14 @@ import dropDownsReducer from "./features/dropDowns";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
 const persistConfig = {
   key: "root", // key for the localStorage object
@@ -113,6 +124,9 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  // login
+  login: loginReducer,
+
   // admin module
   admin_auto_discovery_failed_devices: adminAutoDiscoveryFailedDevicesReducer,
   admin_ipam_failed_devices: adminIpamFailedDevicesReducer,
@@ -221,7 +235,12 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(monetxApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(monetxApi.middleware),
 });
 
 export const persistor = persistStore(store);

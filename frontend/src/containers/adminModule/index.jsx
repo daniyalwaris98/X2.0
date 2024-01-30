@@ -16,6 +16,7 @@ import {
   PAGE_PATH as PAGE_PATH_ROLES,
 } from "./roles/constants";
 
+export const MODULE_NAME = "Admin";
 export const MODULE_PATH = "admin_module";
 
 const menuItems = [

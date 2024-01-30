@@ -311,3 +311,5 @@ def edit_user_db(user_data:AddUserSchema):
         traceback.print_exc()
         return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
 
+
+

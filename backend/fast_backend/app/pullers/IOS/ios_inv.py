@@ -148,6 +148,8 @@ class IOSPuller(object):
                         self.inv_data[host['ip_address']].update({'device':
                                                                       {'ip_addr': host['ip_address'],
                                                                        'serial_number': data['sn'],
+                                                                       'chasis_name': data['name'],
+                                                                       "desc": data['descr'],
                                                                        'pn_code': data['pid'],
                                                                        'hw_version': data['vid'],
                                                                        "software_version": version,
@@ -167,6 +169,8 @@ class IOSPuller(object):
                     self.inv_data[host['ip_address']].update({'device':
                                                                   {'ip_addr': host['ip_address'],
                                                                    'serial_number': data['sn'],
+                                                                   'chasis_name': data['name'],
+                                                                   "desc": data['descr'],
                                                                    'pn_code': data['pid'],
                                                                    'hw_version': data['vid'],
                                                                    "software_version": version,

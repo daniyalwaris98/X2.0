@@ -1,4 +1,8 @@
 from datetime import datetime
+from typing import List, Optional
+from pydantic import BaseModel
+from app.schema.base_schema import FindBase, ModelBaseInfo, SearchOptions
+from app.utils.schema import AllOptional
 
 from pydantic import validator
 
@@ -51,11 +55,11 @@ class AddUserRoleScehma(BaseSchema):
 
 class AddUserSchema(BaseSchema):
     name:str
-    email:str
-    password:str
+    email_address:str
+    password:str |None = None
     status:str
     user_name:str
-    teams:str
+    team:str
     account_type:str
     role:str
     company_name:str
@@ -83,3 +87,31 @@ class FailedDevicesResponseSchema(BaseSchema):
     date:datetime
     failure_reason:str
     module:str
+
+
+class BaseUser(BaseSchema):
+    email: str
+    user_token: str
+    name: str
+    is_active: bool
+    is_superuser: bool
+    class Config:
+        orm_mode = True
+
+class BaseUserWithPassword(BaseUser):
+    password: str
+
+class User(ModelBaseInfo, BaseUser, metaclass=AllOptional):
+    ...
+
+class FindUser(FindBase, BaseUser, metaclass=AllOptional):
+    email__eq: str
+    user_name: str
+    ...
+
+class UpsertUser(BaseUser, metaclass=AllOptional):
+    ...
+
+class FindUserResult(BaseModel):
+    founds: Optional[List[User]]
+    search_options: Optional[SearchOptions]

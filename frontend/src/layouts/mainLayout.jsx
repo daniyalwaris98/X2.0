@@ -31,7 +31,39 @@ import ncmActiveIcon from "../resources/svgs/ncmActiveIcon.svg";
 import logo from "../resources/svgs/logo.svg";
 import dayModeIcon from "../resources/svgs/dayModeIcon.svg";
 import nightModeIcon from "../resources/svgs/nightModeIcon.svg";
-import { getPathSecondSegment } from "../utils/helpers";
+import {
+  getPathSecondSegment,
+  getRoleConfigurationsFromToken,
+  isModuleAllowed,
+} from "../utils/helpers";
+import {
+  MODULE_PATH as MODULE_PATH_ADMIN,
+  MODULE_NAME as MODULE_NAME_ADMIN,
+} from "../containers/adminModule";
+import {
+  MODULE_PATH as MODULE_PATH_ATOM,
+  MODULE_NAME as MODULE_NAME_ATOM,
+} from "../containers/atomModule";
+import {
+  MODULE_PATH as MODULE_PATH_AUTO_DISCOVERY,
+  MODULE_NAME as MODULE_NAME_AUTO_DISCOVERY,
+} from "../containers/autoDiscoveryModule";
+import {
+  MODULE_PATH as MODULE_PATH_IPAM,
+  MODULE_NAME as MODULE_NAME_IPAM,
+} from "../containers/ipamModule";
+import {
+  MODULE_PATH as MODULE_PATH_MONITORING,
+  MODULE_NAME as MODULE_NAME_MONITORING,
+} from "../containers/monitoringModule";
+import {
+  MODULE_PATH as MODULE_PATH_NCM,
+  MODULE_NAME as MODULE_NAME_NCM,
+} from "../containers/ncmModule";
+import {
+  MODULE_PATH as MODULE_PATH_UAM,
+  MODULE_NAME as MODULE_NAME_UAM,
+} from "../containers/uamModule";
 
 const drawerWidth = 240;
 
@@ -90,8 +122,8 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Index() {
-  let modulePath = getPathSecondSegment();
-
+  const roleConfigurations = getRoleConfigurationsFromToken();
+  const modulePath = getPathSecondSegment();
   const theme = useTheme();
   const { isDarkMode, setDarkMode } = useContext(AppContext);
   const [open, setOpen] = useState(false);
@@ -102,48 +134,56 @@ export default function Index() {
 
   const drawerMenuItems = [
     {
-      name: "Admin",
-      inActiveIcon: <img src={dashboardInactiveIcon} alt="Admin" />,
-      activeIcon: <img src={dashboardActiveIcon} alt="Admin" />,
-      path: "admin_module",
+      name: MODULE_NAME_ADMIN,
+      inActiveIcon: <img src={dashboardInactiveIcon} alt={MODULE_NAME_ADMIN} />,
+      activeIcon: <img src={dashboardActiveIcon} alt={MODULE_NAME_ADMIN} />,
+      path: MODULE_PATH_ADMIN,
     },
     {
-      name: "Atom",
-      inActiveIcon: <img src={atomInactiveIcon} alt="Atom" />,
-      activeIcon: <img src={atomActiveIcon} alt="Atom" />,
-      path: "atom_module",
+      name: MODULE_NAME_ATOM,
+      inActiveIcon: <img src={atomInactiveIcon} alt={MODULE_NAME_ATOM} />,
+      activeIcon: <img src={atomActiveIcon} alt={MODULE_NAME_ATOM} />,
+      path: MODULE_PATH_ATOM,
     },
     {
-      name: "Auto Discovery",
-      inActiveIcon: <img src={autoDiscoveryInactiveIcon} alt="Atom" />,
-      activeIcon: <img src={autoDiscoveryActiveIcon} alt="Atom" />,
-      path: "auto_discovery_module",
+      name: MODULE_NAME_AUTO_DISCOVERY,
+      inActiveIcon: (
+        <img src={autoDiscoveryInactiveIcon} alt={MODULE_NAME_AUTO_DISCOVERY} />
+      ),
+      activeIcon: (
+        <img src={autoDiscoveryActiveIcon} alt={MODULE_NAME_AUTO_DISCOVERY} />
+      ),
+      path: MODULE_PATH_AUTO_DISCOVERY,
     },
     {
-      name: "IPAM",
-      inActiveIcon: <img src={ipamInactiveIcon} alt="Atom" />,
-      activeIcon: <img src={ipamActiveIcon} alt="Atom" />,
-      path: "ipam_module",
+      name: MODULE_NAME_IPAM,
+      inActiveIcon: <img src={ipamInactiveIcon} alt={MODULE_NAME_IPAM} />,
+      activeIcon: <img src={ipamActiveIcon} alt={MODULE_NAME_IPAM} />,
+      path: MODULE_PATH_IPAM,
     },
     {
-      name: "Monitoring",
-      inActiveIcon: <img src={monitoringInactiveIcon} alt="Atom" />,
-      activeIcon: <img src={monitoringActiveIcon} alt="Atom" />,
-      path: "monitoring_module",
+      name: MODULE_NAME_MONITORING,
+      inActiveIcon: (
+        <img src={monitoringInactiveIcon} alt={MODULE_NAME_MONITORING} />
+      ),
+      activeIcon: (
+        <img src={monitoringActiveIcon} alt={MODULE_NAME_MONITORING} />
+      ),
+      path: MODULE_PATH_MONITORING,
     },
     {
-      name: "NCM",
-      inActiveIcon: <img src={ncmInactiveIcon} alt="Atom" />,
-      activeIcon: <img src={ncmActiveIcon} alt="Atom" />,
-      path: "ncm_module",
+      name: MODULE_NAME_NCM,
+      inActiveIcon: <img src={ncmInactiveIcon} alt={MODULE_NAME_NCM} />,
+      activeIcon: <img src={ncmActiveIcon} alt={MODULE_NAME_NCM} />,
+      path: MODULE_PATH_NCM,
     },
     {
-      name: "UAM",
-      inActiveIcon: <img src={uamInactiveIcon} alt="Atom" />,
-      activeIcon: <img src={uamActiveIcon} alt="Atom" />,
-      path: "uam_module",
+      name: MODULE_NAME_UAM,
+      inActiveIcon: <img src={uamInactiveIcon} alt={MODULE_NAME_UAM} />,
+      activeIcon: <img src={uamActiveIcon} alt={MODULE_NAME_UAM} />,
+      path: MODULE_PATH_UAM,
     },
-  ];
+  ].filter((item) => isModuleAllowed(roleConfigurations, item.path));
 
   const [selectedModule, setSelectedModule] = useState(
     drawerMenuItems.find((item) => item.path === modulePath)
@@ -237,7 +277,7 @@ export default function Index() {
                   fontSize: theme.typography.textSize.medium,
                 }}
               >
-                Nadeem Khan
+                Hassaan Akbar
               </div>
               <div
                 style={{
@@ -245,7 +285,7 @@ export default function Index() {
                   fontSize: theme.typography.textSize.small,
                 }}
               >
-                Product Designer
+                Solution Architect
               </div>
             </div>
           </div>

@@ -60,6 +60,7 @@ import {
   PAGE_PATH as PAGE_PATH_LOAD_BALANCERS,
 } from "./vipDropDown/loadBalancers/constants";
 
+export const MODULE_NAME = "IPAM";
 export const MODULE_PATH = "ipam_module";
 
 const menuItems = [

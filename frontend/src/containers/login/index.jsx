@@ -1,8 +1,10 @@
 import React from "react";
 import loginPageLeftImage from "../../resources/svgs/loginPageLeftImage.svg";
 import Form from "./form";
+import { getRoleConfigurationsFromAccessToken } from "../../utils/helpers";
 
 function Index(props) {
+  getRoleConfigurationsFromAccessToken();
   return (
     <div style={{ height: "96vh", display: "flex", padding: "2vh" }}>
       <div style={{ position: "relative", width: "50%" }}>
@@ -19,10 +21,8 @@ function Index(props) {
             top: "14%",
             left: "40%",
             transform: "translate(-50%, -50%)",
-            color: "white", // Set text color
-            fontSize: "14px", // Set font size
-            // fontWeight: "bold", // Set font weight
-            // textAlign: "center", // Center text
+            color: "white",
+            fontSize: "14px",
           }}
         >
           <div>
@@ -48,7 +48,7 @@ function Index(props) {
             justifyContent: "center",
           }}
         >
-          <div style={{}}>
+          <div>
             <Form />
           </div>
         </div>
