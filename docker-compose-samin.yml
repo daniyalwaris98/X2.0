@@ -30,7 +30,7 @@ services:
   #     - updated_atom_db
   #     - updated_influx_db
 
-  atom_fast_backend:
+  atom_fast_backend_samin:
     container_name: Atom_Fast_Backend_Container_samin
     image: atom_fast_backend_samins:latest
     restart: always
