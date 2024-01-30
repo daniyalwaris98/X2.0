@@ -107,6 +107,7 @@ class F5(object):
 
     def poll(self, host):
         print("poll function is being executed::::::::::::::::::::::::::::::", file=sys.stderr)
+        print("host os:::::::::::",host,file=sys.stderr)
         print(f"Connecting to {host['ip_address']}", file=sys.stderr)
         login_tries = 10
         c = 0

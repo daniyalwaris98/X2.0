@@ -5,8 +5,8 @@ from app.api.v1.auto_discovery.auto_discovery_utils import *
 from app.schema.base_schema import NameValueListOfDictResponseSchema, NameValueDictResponseSchema
 
 router = APIRouter(
-    prefix="/auto_discovery",
-    tags=["auto_discovery"],
+    prefix="/auto_discovery_dashboard",
+    tags=["auto_discovery_dashboard"],
 )
 
 
