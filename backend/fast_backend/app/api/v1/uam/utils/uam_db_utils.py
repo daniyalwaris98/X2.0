@@ -1,5 +1,5 @@
 from app.api.v1.uam.utils.uam_utils import *
-
+from sqlalchemy.exc import SQLAlchemyError
 na = "N/A"
 tbf = "TBF"
 
@@ -111,107 +111,91 @@ def insert_uam_device_data(data, atom, ip_addr):
 
 
 def insert_uam_device_board_data(uam_id, data):
-    for board in data["board"]:
-        try:
-            if "board_name" not in board.keys():
+    try:
+        print("Data in insert_uam_device_board_data is:", data, file=sys.stderr)
+
+        # Extracting device data
+        device_data = data.get('device', {})
+        board_name = device_data.get('chasis_name', 'na')
+        serial_number = device_data.get('serial_number', 'na')
+        description = device_data.get('desc', 'na')
+        pn_code = device_data.get('pn_code', 'na')
+        slot_id = device_data.get('desc', 'na')
+        print("slot id is::::::::::::::::::::::::::",slot_id,file=sys.stderr)
+        print("description is::::::::::::::::::::::::",description,file=sys.stderr)
+        device_slot_id = slot_id
+        device_pn_code = pn_code
+        print("pn code is::::::::::::::::::::::::",device_pn_code,file=sys.stderr)
+        # Check and update or insert the main board information before handling individual boards
+        main_board_obj = configs.db.query(BoardTable).filter(
+            BoardTable.board_name == board_name, BoardTable.uam_id == uam_id
+        ).first()
+
+        if main_board_obj:
+            # Update main board info
+            main_board_obj.serial_number = serial_number
+            main_board_obj.description = description
+            main_board_obj.pn_code = device_pn_code
+            main_board_obj.device_slot_id = device_slot_id
+            print(f"{device_slot_id}updated the table for the main chasis board>>>>>>>>>>.",file=sys.stderr)
+        else:
+            # Insert new main board info
+            main_board_obj = BoardTable(
+                uam_id=uam_id,
+                board_name=board_name,
+                serial_number=serial_number,
+                description=description,
+                pn_code=device_pn_code,
+                device_slot_id=device_slot_id
+            )
+            configs.db.add(main_board_obj)
+            print(f"{device_slot_id}isnertion for the main chasis board >>>>>>>",file=sys.stderr)
+        configs.db.commit()
+
+
+        # Process each board in the provided data
+        for board in data.get("board", []):
+            # Skip entries without a board name
+            if not board.get("board_name"):
                 continue
 
-            if board["board_name"] is None:
-                continue
-
-            board["board_name"] = board["board_name"].strip()
-            if board["board_name"] == "":
+            board_name = board["board_name"].strip()
+            if board_name == "":
                 continue
 
             board_obj = configs.db.query(BoardTable).filter(
-                BoardTable.board_name == board["board_name"], uam_id == uam_id
+                BoardTable.board_name == board_name, BoardTable.uam_id == uam_id
             ).first()
 
             update = False
-            if board_obj is not None:
+            if board_obj:
                 update = True
             else:
-                board_obj = BoardTable()
-                board_obj.uam_id = uam_id
-                board_obj.board_name = board["board_name"]
+                board_obj = BoardTable(uam_id=uam_id, board_name=board_name)
 
-            if board["slot_id"] is not None:
-                board_obj.device_slot_id = board["slot_id"]
-            else:
-                board_obj.device_slot_id = na
+            # Assigning values with fallback to 'na'
+            board_obj.device_slot_id = board.get("slot_id", 'na')
+            board_obj.hardware_version = board.get("hw_version", 'na')
+            board_obj.software_version = board.get("software_version", 'na')
+            board_obj.serial_number = board.get("serial_number",
+                                                serial_number)  # Fallback to device's serial if not provided
+            board_obj.status = board.get("status", 'na')
+            board_obj.pn_code = board.get("pn_code", pn_code)  # Fallback to device's pn_code if not provided
 
-            if board["hw_version"] is not None:
-                board_obj.hardware_version = board["hw_version"]
-            else:
-                board_obj.hardware_version = na
-
-            if board["software_version"] is not None:
-                board_obj.software_version = board["software_version"]
-            else:
-                board_obj.software_version = na
-
-            if board["serial_number"] is not None:
-                board_obj.serial_number = board["serial_number"]
-            else:
-                board_obj.serial_number = na
-
-            if board["status"] is not None:
-                board_obj.status = board["status"]
-            else:
-                board_obj.status = na
-
-            if board["pn_code"] is not None:
-                board_obj.pn_code = board["pn_code"]
-            else:
-                board_obj.pn_code = na
-
-            if board_obj.pn_code is not None:
-                sntc_device = configs.db.query(SntcTable).filter(
-                    SntcTable.pn_code == board_obj.pn_code
-                ).first()
-                if sntc_device:
-                    if sntc_device.hw_eos_date is not None:
-                        board_obj.eos_date = sntc_device.hw_eos_date
-                    if sntc_device.hw_eol_date is not None:
-                        board_obj.eol_date = sntc_device.hw_eol_date
-                    if sntc_device.manufacturer_date is not None:
-                        board_obj.manufacturer_date = sntc_device.manufacturer_date
-
-            # if boardObj.serial_number:
-            #     boardName = (
-            #         Board_Table.query.with_entities(Board_Table.board_name)
-            #         .filter_by(serial_number=boardObj.serial_number)
-            #         .first()
-            #     )
-            # else:
-            #     boardName = (
-            #         Board_Table.query.with_entities(Board_Table.board_name)
-            #         .filter_by(board_name=boardObj.board_name)
-            #         .first()
-            #     )
+            # Insert or update logic as before
 
             if update:
-                print(
-                    "Updated board "
-                    + board_obj.board_name
-                    + " with serial number "
-                    + board_obj.serial_number,
-                    file=sys.stderr,
-                )
+                print(f"Updated board {board_obj.board_name} with serial number {board_obj.serial_number}",
+                      file=sys.stderr)
                 UpdateDBData(board_obj)
-
             else:
-                print(
-                    "Inserted board "
-                    + board_obj.board_name
-                    + " with serial number "
-                    + board_obj.serial_number,
-                    file=sys.stderr,
-                )
+                print(f"Inserted board {board_obj.board_name} with serial number {board_obj.serial_number}",
+                      file=sys.stderr)
                 InsertDBData(board_obj)
 
-        except Exception:
-            traceback.print_exc()
+    except Exception as e:
+        print(f"An error occurred: {e}", file=sys.stderr)
+        traceback.print_exc()
 
 
 def insert_uam_device_subboard_data(uam_id, data):

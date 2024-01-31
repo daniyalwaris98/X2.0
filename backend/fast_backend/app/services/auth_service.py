@@ -23,6 +23,11 @@ from app.schema.auth_schema import SignInNew
 from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 import os
+from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
+from cryptography.hazmat.backends import default_backend
+from base64 import urlsafe_b64encode, urlsafe_b64decode
+
+
 
 # Load environment variables
 load_dotenv()
@@ -37,29 +42,52 @@ if key is None:
 cipher_suite = Fernet(key)
 print("cypher suite is::::::::::::::::::::",cipher_suite,file=sys.stderr)
 
-def encrypt_data(data):
-    try:
-        # Convert Payload to a dictionary using to_dict method
-        if isinstance(data, Payload):
-            data = data.to_dict()
 
-        # Serialize the data to JSON
-        data_json = json.dumps(data)
 
-        # Encode the JSON string to bytes
-        data_bytes = data_json.encode()
-        encrypted_text = cipher_suite.encrypt(data_bytes)
-        return encrypted_text.decode()
-    except Exception as e:
-        traceback.print_exc()
-        print(f"Error occurred while encrypting data: {e}", file=sys.stderr)
-        return None
 
-def decrypt_data(encrypted_data):
-    if isinstance(encrypted_data, str):
-        encrypted_data = encrypted_data.encode()
-    decrypted_text = cipher_suite.decrypt(encrypted_data)
-    return decrypted_text.decode()
+def encrypt_data(data, key):
+    # Convert Payload to a JSON string if it's not already a string
+    if not isinstance(data, str):
+        data = json.dumps(data.to_dict())
+
+    block_size = 16
+    # Pad the data to be a multiple of 16 bytes
+    padded_data = data + (block_size - len(data) % block_size) * chr(block_size - len(data) % block_size)
+    # Generate a random IV
+    iv = os.urandom(block_size)
+    # Create an AES cipher object
+    cipher = Cipher(algorithms.AES(key), modes.CFB(iv), backend=default_backend())
+    # Encrypt the data
+    encryptor = cipher.encryptor()
+    encrypted_data = encryptor.update(padded_data.encode('utf-8')) + encryptor.finalize()
+    # Combine IV and encrypted data, and encode as URL-safe base64
+    result = urlsafe_b64encode(iv + encrypted_data).decode('utf-8')
+    return result
+
+encryption_key = b'Sixteen byte key'
+# def encrypt_data(data):
+#     try:
+#         # Convert Payload to a dictionary using to_dict method
+#         if isinstance(data, Payload):
+#             data = data.to_dict()
+#
+#         # Serialize the data to JSON
+#         data_json = json.dumps(data)
+#
+#         # Encode the JSON string to bytes
+#         data_bytes = data_json.encode()
+#         encrypted_text = cipher_suite.encrypt(data_bytes)
+#         return encrypted_text.decode()
+#     except Exception as e:
+#         traceback.print_exc()
+#         print(f"Error occurred while encrypting data: {e}", file=sys.stderr)
+#         return None
+
+# def decrypt_data(encrypted_data):
+#     if isinstance(encrypted_data, str):
+#         encrypted_data = encrypted_data.encode()
+#     decrypted_text = cipher_suite.decrypt(encrypted_data)
+#     return decrypted_text.decode()
 
 
 class AuthService(BaseService):
@@ -124,12 +152,13 @@ class AuthService(BaseService):
             role = role
         )
         print("payload is::::::::::::::",payload,file=sys.stderr)
-        encrypted_result = encrypt_data(payload)
-        print("encrypted result is:::::::::::::::::::::",encrypted_result,file=sys.stderr)
-        print("encrypted result type is:::::::::::::",type(encrypted_result),file=sys.stderr)
-        decrypted = decrypt_data(encrypted_result)
-        print("Decrypted::::::::::::::::::;", decrypted,file=sys.stderr)
-        subject_data = {"encrypted_data": encrypted_result}
+        # encrypted_result = encrypt_data(payload)
+        encrypted_data = encrypt_data(payload, encryption_key)
+        print("encrypted result is:::::::::::::::::::::",encrypted_data,file=sys.stderr)
+        print("encrypted result type is:::::::::::::",type(encrypted_data),file=sys.stderr)
+        # decrypted = decrypt_data(encrypted_data)
+        # print("Decrypted::::::::::::::::::;", decrypted,file=sys.stderr)
+        subject_data = {"encrypted_data": encrypted_data}
         token_lifespan = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
         access_token, expiration_datetime = create_access_token(subject_data, token_lifespan)
         print("access token is:::::::::::::::::::",file=sys.stderr)
@@ -140,7 +169,7 @@ class AuthService(BaseService):
         }
         message = f"Successfully logged in as {found_user.name}"
         sign_in_data['data'] = data
-        sign_in_data['messgae'] = message
+        sign_in_data['message'] = message
         # sign_in_result = {
         #     "access_token": access_token,
         #     "expiration": expiration_datetime,
