@@ -204,7 +204,7 @@ import {
   PAGE_PATH as PAGE_PATH_V3_CREDENTIALS,
 } from "./manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
-/////////////////////////////////////////////////////
+export const MODULE_NAME = "Monitoring";
 export const MODULE_PATH = "monitoring_module";
 
 const menuItems = [

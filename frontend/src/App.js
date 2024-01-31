@@ -1,16 +1,22 @@
 import * as React from "react";
 import { useContext } from "react";
-import { ThemeProvider } from "@mui/material/styles";
-import { RouterProvider } from "react-router-dom";
-import { store, persistor } from "./store";
 import { Provider } from "react-redux";
-import { lightTheme, darkTheme } from "./themes";
-import router from "./routes";
-import { AppContext } from "./context/appContext";
-import "./index.css";
+import { RouterProvider } from "react-router-dom";
+import { ThemeProvider } from "@mui/material/styles";
 import { PersistGate } from "redux-persist/integration/react";
+import { AppContext } from "./context/appContext";
+import { lightTheme, darkTheme } from "./themes";
+import { store, persistor } from "./store";
+import router from "./routes";
+import "./index.css";
+import { defaultConfiguration } from "./containers/adminModule/roles/defaultConfiguration";
 
 const App = () => {
+  localStorage.setItem(
+    "monetx_jwt_token",
+    JSON.stringify(defaultConfiguration)
+  );
+
   const { isDarkMode } = useContext(AppContext);
   const theme = isDarkMode ? darkTheme : lightTheme;
 

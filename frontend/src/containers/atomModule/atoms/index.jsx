@@ -1,5 +1,6 @@
 import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
+import { selectRoleConfigurations } from "../../../store/features/login/selectors";
 import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
 import {
   useFetchRecordsQuery,
@@ -12,6 +13,8 @@ import {
   convertToJson,
   handleFileChange,
   generateObject,
+  isPageEditable,
+  getRoleConfigurationsFromToken,
 } from "../../../utils/helpers";
 import {
   DELETE_PROMPT,
@@ -44,10 +47,19 @@ import {
   TABLE_DATA_UNIQUE_ID,
   ATOM_ID,
   ATOM_TRANSITION_ID,
+  PAGE_PATH,
 } from "./constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // states required in hooks
+  // selectors
+  const dataSource = useSelector(selectTableData);
+  const roleConfigurations = getRoleConfigurationsFromToken();
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // apis required in hooks
@@ -72,17 +84,21 @@ const Index = () => {
       atom_export: { handleClick: handleExport },
       default_delete: {
         handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
+        visible: selectedRowKeys.length > 0 && pageEditable,
       },
       default_onboard: {
         handleClick: handleOnBoard,
-        visible: shouldOnboardBeVisible(),
+        visible: shouldOnboardBeVisible() && pageEditable,
       },
       atom_add: {
         handleClick: handleAdd,
         namePostfix: ELEMENT_NAME,
+        visible: pageEditable,
       },
-      default_import: { handleClick: handleInputClick },
+      default_import: {
+        handleClick: handleInputClick,
+        visible: pageEditable,
+      },
     });
 
   // refs
@@ -100,9 +116,6 @@ const Index = () => {
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
-
-  // selectors
-  const dataSource = useSelector(selectTableData);
 
   // apis
   const [
@@ -181,7 +194,7 @@ const Index = () => {
   function shouldOnboardBeVisible() {
     if (selectedRowKeys.length > 0) {
       return selectedRowKeys.some((key) => {
-        let atom = fetchRecordsData.find((item) => item.atom_table_id === key);
+        let atom = fetchRecordsData?.find((item) => item.atom_table_id === key);
         return atom && atom.atom_id;
       });
     }
@@ -418,7 +431,7 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        selectedRowKeys={selectedRowKeys}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
     </DefaultSpinner>

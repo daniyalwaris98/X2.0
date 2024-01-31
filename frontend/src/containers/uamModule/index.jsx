@@ -40,6 +40,7 @@ import {
   PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLES,
 } from "./hwLifeCycles/constants";
 
+export const MODULE_NAME = "UAM";
 export const MODULE_PATH = "uam_module";
 
 const menuItems = [

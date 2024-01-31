@@ -1,5 +1,46 @@
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
+import CryptoJS from "crypto-js";
+import jwt from "jsonwebtoken";
+
+export function decryptData(encryptedData) {
+  const key = "OuNuZWPnt2zCrq_kIzbo23ip2RzRSdOiDzZF4jzOlU4=";
+  const bytes = CryptoJS.AES.decrypt(encryptedData, key);
+  const originalText = bytes.toString(CryptoJS.enc.Utf8);
+  return originalText;
+}
+
+export function getRoleConfigurationsFromToken() {
+  const roleConfigurations = JSON.parse(
+    localStorage.getItem("monetx_jwt_token")
+  );
+
+  return roleConfigurations;
+}
+
+export function getRoleConfigurationsFromAccessToken() {
+  const accessToken = localStorage.getItem("monetx_access_token");
+  const decodedToken = jwt.decode(accessToken);
+  // const encryptedData = decryptData(decodedToken?.encrypted_data);
+  console.log("encryptedData", decodedToken);
+  // return roleConfigurations;
+}
+
+export function isModuleAllowed(roleConfigurations, module) {
+  return roleConfigurations ? roleConfigurations[module]?.view : true;
+}
+
+export function isPageAllowed(roleConfigurations, module, page) {
+  return roleConfigurations
+    ? roleConfigurations[module]?.pages[page]?.view
+    : true;
+}
+
+export function isPageEditable(roleConfigurations, module, page) {
+  return roleConfigurations
+    ? !roleConfigurations[module]?.pages[page]?.read_only
+    : true;
+}
 
 export function getPathLastSegment() {
   const path = window.location.pathname;

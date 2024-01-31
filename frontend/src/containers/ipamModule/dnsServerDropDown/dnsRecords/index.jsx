@@ -19,9 +19,13 @@ import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
 import DefaultPageTableSection from "../../../../components/pageSections";
 import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import DefaultSpinner from "../../../../components/spinners";
+import DefaultDetailCards from "../../../../components/detailCards";
+import firewallIcon from "../../../../resources/designRelatedSvgs/firewall.svg";
+import deviceIcon from "../../../../resources/designRelatedSvgs/otherDevices.svg";
+import switchIcon from "../../../../resources/designRelatedSvgs/switches.svg";
+import { indexColumnNameConstants as zonesColumnNameConstants } from "../dnsZones/constants";
 import { TABLE_DATA_UNIQUE_ID as DNS_ZONE_ID } from "../dnsZones/constants";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DnsZoneDetails from "./dnsZoneDetails";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
@@ -129,7 +133,21 @@ const Index = () => {
         />
       ) : null}
 
-      {selectedDnsZone ? <DnsZoneDetails /> : null}
+      {selectedDnsZone ? (
+        <DefaultDetailCards
+          data={{
+            [zonesColumnNameConstants.IP_ADDRESS]:
+              selectedDnsZone[zonesColumnNameConstants.IP_ADDRESS],
+            [zonesColumnNameConstants.ZONE_NAME]:
+              selectedDnsZone[zonesColumnNameConstants.ZONE_NAME],
+            [zonesColumnNameConstants.ZONE_TYPE]:
+              selectedDnsZone[zonesColumnNameConstants.ZONE_TYPE],
+            [zonesColumnNameConstants.ZONE_STATUS]:
+              selectedDnsZone[zonesColumnNameConstants.ZONE_STATUS],
+          }}
+          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+        />
+      ) : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}
