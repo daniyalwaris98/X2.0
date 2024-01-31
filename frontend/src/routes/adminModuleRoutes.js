@@ -25,6 +25,11 @@ import { PAGE_PATH as PAGE_PATH_MONITORING } from "../containers/adminModule/fai
 import NCM from "../containers/adminModule/failedDevicesLanding/ncm";
 import { PAGE_PATH as PAGE_PATH_NCM } from "../containers/adminModule/failedDevicesLanding/ncm/constants";
 
+
+import Dashboard from "../containers/adminModule/dashboard";
+import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../containers/adminModule/dashboard/constants";
+
+
 import UAM from "../containers/adminModule/failedDevicesLanding/uam";
 import { PAGE_PATH as PAGE_PATH_UAM } from "../containers/adminModule/failedDevicesLanding/uam/constants";
 
@@ -34,7 +39,11 @@ const routes = {
   children: [
     {
       path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_MEMBERS} replace />,
+      element: <Navigate to={PAGE_PATH_DASHBOARD} replace />,
+    },
+    {
+      path: PAGE_PATH_DASHBOARD,
+      element: <Dashboard />,
     },
     {
       path: PAGE_PATH_MEMBERS,

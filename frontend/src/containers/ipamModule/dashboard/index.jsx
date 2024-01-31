@@ -109,8 +109,8 @@ function Index() {
               DNS{" "}
             </h5>
             <div style={{ display: "flex" }}>
-              <DNSChart color="#3D9E47" data={chartData} />
-              <DNSChart color={"#E36263"} data={chartDatab} />
+              <DNSChart/>
+              {/* <DNSChart/> */}
             </div>
           </div>
         </Col>
