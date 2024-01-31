@@ -51,7 +51,7 @@ def test_aws_connection(testObj:AwsCredentialScehma):
 
 @router.post("/add_aws_credentials",
              responses={
-                 200:{"model":AwsCredentialScehma}
+                 200:{"model":dict}
              },
              summary = "Use This API in the monitoring cloud page to add the AWS.This is of POST Requesst",
              description="Use This API in the monitoring cloud page to add the AWS.This is of POST Requesst"
@@ -59,8 +59,8 @@ def test_aws_connection(testObj:AwsCredentialScehma):
 def add_aws_credentials(addAws:AwsCredentialScehma):
     try:
         addAwsObj = dict(addAws)
-        access_key = addAwsObj['aws_access_key']
-        secret_key = addAwsObj['aws_secret_access_key']
+        access_key = addAwsObj['access_key']
+        secret_key = addAwsObj['secret_key']
         account_label = addAwsObj['account_label']
         aws_query = configs.db.query(AWS_CREDENTIALS).filter_by(access_key = access_key).first()
         if aws_query is not None:
@@ -79,10 +79,11 @@ def add_aws_credentials(addAws:AwsCredentialScehma):
             aws_model.access_key = access_key,
             aws_model.secrete_access_key = secret_key
             aws_model.account_label = account_label
+            #objdict = {"access_key":access_key, "secret_key": }
             InsertDBData(aws_model)
         except Exception as e:
             traceback.print_exc()
-            print("Error Occured While DB insertion::::::::::::",file=sys.stderr)
+            print("Error Occured While DB insertion::::::::::::",aws.access_key,file=sys.stderr)
     except Exception as e:
         traceback.print_exc()
 
@@ -522,8 +523,8 @@ def add_aws_credentials(addAws:AwsCredentialScehma):
     try:
         data = {}
         addAwsObj = dict(addAws)
-        access_key = addAwsObj['aws_access_key']
-        secret_key = addAwsObj['aws_secret_access_key']
+        access_key = addAwsObj['access_key']
+        secret_key = addAwsObj['secret_access_key']
         account_label = addAwsObj['account_label']
 
 
@@ -550,6 +551,18 @@ def add_aws_credentials(addAws:AwsCredentialScehma):
                 data['data'] = aws_Data
                 data['message'] = f"{aws_query.access_key} Updated"
             else:
+                aws_query = AWS_CREDENTIALS()
+                aws_query.access_key = access_key,
+                aws_query.secrete_access_key = secret_key
+                aws_query.account_label = account_label
+                InsertDBData(aws_query)
+                aws_Data = {
+                    "access_key":aws_query.access_key,
+                    "secret_key":aws_query.secrete_access_key,
+                    "account_label":aws_query.account_label
+                }
+                data['data'] = aws_Data
+                data['message'] = f"{aws_query.access_key} Updated"
                 return JSONResponse(content="AWS credentials not found",status_code=400)
             return  data
         except Exception as e:

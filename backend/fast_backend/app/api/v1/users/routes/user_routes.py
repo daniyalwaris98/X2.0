@@ -9,6 +9,7 @@ from app.models.users_models import *
 from app.schema.users_schema import *
 from app.utils.db_utils import *
 from app.api.v1.users.utils.user_utils import *
+#from app.models.users_models import *
 
 router = APIRouter(
     prefix="/user",
@@ -311,3 +312,50 @@ def edit_user_db(user_data:AddUserSchema):
         traceback.print_exc()
         return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
 
+@router.get('/get_user_role_dropdown',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to get_user_role_dropdown",
+description="API to get_user_role_dropdown "
+)
+def get_user_role():
+    try:
+        user_list = []
+        user_role_exsists = configs.db.query(UserRoleTableModel).all()
+        for data in user_role_exsists:
+            user_dict = {
+                "role_id":data.role_id,
+                "role":data.role
+            }
+            user_list.append(user_dict)
+        return JSONResponse(content=user_list,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While getting the user_role from  db",status_code=500)
+    
+
+
+@router.get('/get_user_company_dropdown',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to get_user_company_dropdown",
+description="API to get_user_company_dropdown"
+)
+def get_user_company():
+    try:
+        user_list = []
+        user_role_exsists = configs.db.query(EndUserTable).all()
+        for data in user_role_exsists:
+            user_dict = {
+                "end_user_id":data.end_user_id,
+                "company_name":data.company_name
+            }
+            user_list.append(user_dict)
+        return JSONResponse(content=user_list,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While extracting data from the user in db",status_code=500)

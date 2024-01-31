@@ -5,15 +5,19 @@ from app.api.v1.auto_discovery.auto_discovery_utils import *
 from app.schema.base_schema import NameValueListOfDictResponseSchema, NameValueDictResponseSchema
 
 router = APIRouter(
-    prefix="/auto_discovery",
-    tags=["auto_discovery"],
+    prefix="/auto_discovery_dashboard",
+    tags=["auto_discovery_dashbaord"],
 )
 
 
 @router.get("/get_top_os_for_discovery", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
-})
+},
+summary="API to get top os for discovery ",
+description=" API to get os for discovery"
+
+)
 async def get_top_os_for_discovery():
     try:
         query_string = (f"SELECT os_type,COUNT(os_type) AS count FROM "
@@ -35,7 +39,11 @@ async def get_top_os_for_discovery():
 @router.get("/get_top_vendors_for_discovery", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
-})
+}, 
+summary ="API to get top vendors for discovery",
+description = "API to get top vendors for discovery"
+)
+
 async def get_top_vendors_for_discovery():
     try:
         query_string = (f"SELECT vendor,COUNT(vendor) AS count FROM "
@@ -56,7 +64,10 @@ async def get_top_vendors_for_discovery():
 @router.get("/get_snmp_status_graph", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
-})
+},
+summary ="API to get snmp status graph",
+description = "API to snmp status graph"
+)
 async def get_snmp_status_graph():
     try:
         query_string = (f"SELECT snmp_status, COUNT(snmp_status) FROM "
@@ -87,7 +98,10 @@ async def get_snmp_status_graph():
 @router.get("/get_top_functions_for_discovery", responses={
     200: {"model": list[NameValueDictResponseSchema]},
     500: {"model": str}
-})
+},
+summary ="API to get get top functions for discovery ",
+description = "API to get get top functions for discovery "
+)
 async def get_top_functions_for_discovery():
     try:
         query_string = (f"SELECT `function`,COUNT(`function`) AS count FROM "
@@ -108,7 +122,10 @@ async def get_top_functions_for_discovery():
 @router.get("/get_credentials_graph", responses={
     200: {"model": list[NameValueDictResponseSchema]},
     500: {"model": str}
-})
+},
+summary ="API to get credentials graph ",
+description = "API to get credentials graph"
+)
 async def get_credentials_graph():
     try:
         obj_dict = {

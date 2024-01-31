@@ -1220,7 +1220,7 @@ description="API to get the discovery data in atom"
 def get_discovery_data_in_atom():
     try:
         discovery_list =[]
-        discovery_exsist = configs.db.quer(AutoDiscoveryTable).all()
+        discovery_exsist = configs.db.query(AutoDiscoveryTable).all()
         for data in discovery_exsist:
             transition_atom_exsist = configs.db.query(AtomTransitionTable).filter_by(ip_address = data.ip_address).first()
             if not transition_atom_exsist:

@@ -51,8 +51,8 @@ class AddUserRoleScehma(BaseSchema):
 
 class AddUserSchema(BaseSchema):
     name:str
-    email:str
-    password:str
+    email_address:str
+    password:str |None = None
     status:str
     user_name:str
     teams:str
@@ -83,3 +83,12 @@ class FailedDevicesResponseSchema(BaseSchema):
     date:datetime
     failure_reason:str
     module:str
+
+'''class GetUserRole(BaseSchema):
+    user_role : list[str]
+    user_id : list[int]
+
+
+class UseCompanyResponse(BaseSchema):
+    company : list[str]
+    end_user_id : list[str]''' 
