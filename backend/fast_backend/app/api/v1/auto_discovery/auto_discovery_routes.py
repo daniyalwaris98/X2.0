@@ -780,7 +780,7 @@ def get_snmp_v3_credentials():
 summary="Use this api in Auto Discovery Manage credentials page to show credentials count of SNMP V1,V2 and SSH login ",
 description="Use this api in Auto Discovery Manage credentials page to show credentials count of SNMP V1,V2 and SSH login "
 )
-def GetSNMPV2Count(user_data):
+def GetSNMPV2Count():
     try:
         queryString = f"select count(*) from snmp_credentials_table where category='v1/v2';"
         v2Count = configs.db.execute(queryString).fetchone()
