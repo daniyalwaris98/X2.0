@@ -61,7 +61,7 @@ const ComplianceChart = () => {
     };
   }, []); // Empty dependency array ensures that the effect runs only once on component mount
 
-  return <div id="complianceChart" style={{ width: '100%', height: '400px' }}></div>;
+  return <div id="complianceChart" style={{ width: '100%', height: '300px' }}></div>;
 };
 
 export default ComplianceChart;

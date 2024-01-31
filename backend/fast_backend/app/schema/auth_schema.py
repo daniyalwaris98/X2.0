@@ -48,4 +48,4 @@ class Payload(BaseModel):
 
 class SignInResponse(BaseModel):
     data:dict
-    messgae:str
+    message:str

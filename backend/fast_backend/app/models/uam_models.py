@@ -72,7 +72,7 @@ class BoardTable(Base):
     status = Column(String(50), nullable=False)
 
     hardware_version = Column(String(50), nullable=True)
-    device_slot_id = Column(String(50), nullable=True)
+    device_slot_id = Column(String(250), nullable=True)
     software_version = Column(String(50), nullable=True)
     serial_number = Column(String(50), nullable=True)
     manufacture_date = Column(Date, nullable=True)

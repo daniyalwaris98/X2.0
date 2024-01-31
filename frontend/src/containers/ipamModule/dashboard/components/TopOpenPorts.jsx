@@ -66,7 +66,7 @@ const App = () => {
   };
 
   return (
-     <TopOpenPorts chartData={chartData} />
+     <TopOpenPorts chartData={chartData} style={{width:"100%"}}/>
    );
 };
 
