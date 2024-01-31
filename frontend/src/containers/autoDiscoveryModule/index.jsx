@@ -35,56 +35,68 @@ import {
   PAGE_NAME as PAGE_NAME_V3_CREDENTIALS,
   PAGE_PATH as PAGE_PATH_V3_CREDENTIALS,
 } from "./manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
+import { useAuthorization } from "../../hooks/useAuth";
+import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 
 export const MODULE_NAME = "Auto Discovery";
 export const MODULE_PATH = "auto_discovery_module";
 
-const menuItems = [
-  {
-    id: PAGE_PATH_MANAGE_NETWORKS,
-    name: PAGE_NAME_MANAGE_NETWORKS,
-    path: PAGE_PATH_MANAGE_NETWORKS,
-  },
-  {
-    id: PAGE_PATH_DISCOVERY,
-    name: PAGE_NAME_DISCOVERY,
-    path: PAGE_PATH_DISCOVERY,
-  },
-  {
-    id: PAGE_PATH_MANAGE_DEVICES,
-    name: PAGE_NAME_MANAGE_DEVICES,
-    path: PAGE_PATH_MANAGE_DEVICES,
-  },
-  {
-    id: DROPDOWN_PATH_MANAGE_CREDENTIALS,
-    name: DROPDOWN_NAME_MANAGE_CREDENTIALS,
-    children: [
-      {
-        id: PAGE_PATH_LOGIN_CREDENTIALS,
-        name: PAGE_NAME_LOGIN_CREDENTIALS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
-      },
-      {
-        id: DROPDOWN_PATH_SNMP_CREDENTIALS,
-        name: DROPDOWN_NAME_SNMP_CREDENTIALS,
-        children: [
-          {
-            id: PAGE_PATH_V1_V2_CREDENTIALS,
-            name: PAGE_NAME_V1_V2_CREDENTIALS,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
-          },
-          {
-            id: PAGE_PATH_V3_CREDENTIALS,
-            name: PAGE_NAME_V3_CREDENTIALS,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
-          },
-        ],
-      },
-    ],
-  },
-];
-
 function Index(props) {
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus, isPageAllowed } =
+    useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  let menuItems = [
+    {
+      id: PAGE_PATH_MANAGE_NETWORKS,
+      name: PAGE_NAME_MANAGE_NETWORKS,
+      path: PAGE_PATH_MANAGE_NETWORKS,
+    },
+    {
+      id: PAGE_PATH_DISCOVERY,
+      name: PAGE_NAME_DISCOVERY,
+      path: PAGE_PATH_DISCOVERY,
+    },
+    {
+      id: PAGE_PATH_MANAGE_DEVICES,
+      name: PAGE_NAME_MANAGE_DEVICES,
+      path: PAGE_PATH_MANAGE_DEVICES,
+    },
+    {
+      id: DROPDOWN_PATH_MANAGE_CREDENTIALS,
+      name: DROPDOWN_NAME_MANAGE_CREDENTIALS,
+      children: [
+        {
+          id: PAGE_PATH_LOGIN_CREDENTIALS,
+          name: PAGE_NAME_LOGIN_CREDENTIALS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
+        },
+        {
+          id: DROPDOWN_PATH_SNMP_CREDENTIALS,
+          name: DROPDOWN_NAME_SNMP_CREDENTIALS,
+          children: [
+            {
+              id: PAGE_PATH_V1_V2_CREDENTIALS,
+              name: PAGE_NAME_V1_V2_CREDENTIALS,
+              path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
+            },
+            {
+              id: PAGE_PATH_V3_CREDENTIALS,
+              name: PAGE_NAME_V3_CREDENTIALS,
+              path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
     pagePath = [PAGE_PATH_MANAGE_NETWORKS];

@@ -2,7 +2,7 @@ import { configureStore } from "@reduxjs/toolkit";
 import { monetxApi } from "./features/apiSlice";
 
 // login
-import loginReducer from "./features/login";
+import loginReducer, { logout } from "./features/login";
 
 // admin module
 import adminAutoDiscoveryFailedDevicesReducer from "./features/adminModule/failedDevices/autoDiscovery";
@@ -244,3 +244,15 @@ export const store = configureStore({
 });
 
 export const persistor = persistStore(store);
+
+// Define the function to clear local storage on logout
+export const clearLocalStorageOnLogout = () => {
+  console.log("in clearLocalStorageOnLogout");
+  // Dispatch the logout action for the login slice
+  store.dispatch(logout());
+
+  // Repeat the above line for other slices if you have more
+
+  // Clear the local storage using persister.purge()
+  persistor.purge();
+};

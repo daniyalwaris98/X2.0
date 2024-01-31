@@ -1,23 +1,20 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {
-  access_token: null,
-};
+const initialState = {};
 
 const defaultSlice = createSlice({
   name: "login",
   initialState,
-  reducers: {},
+  reducers: {
+    logout: (state) => {
+      localStorage.removeItem("monetx_access_token");
+    },
+  },
   extraReducers(builder) {
     builder.addMatcher(
       extendedApi.endpoints.login.matchFulfilled,
       (state, action) => {
-        state.access_token = action.payload.data.access_token;
-        console.log(
-          "action.payload.data.access_token",
-          action.payload.data.access_token
-        );
         localStorage.setItem(
           "monetx_access_token",
           action.payload.data.access_token
@@ -27,4 +24,5 @@ const defaultSlice = createSlice({
   },
 });
 
+export const { logout } = defaultSlice.actions;
 export default defaultSlice.reducer;

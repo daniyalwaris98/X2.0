@@ -7,9 +7,10 @@ import { PersistGate } from "redux-persist/integration/react";
 import { AppContext } from "./context/appContext";
 import { lightTheme, darkTheme } from "./themes";
 import { store, persistor } from "./store";
-import router from "./routes";
+// import router from "./routes";
 import "./index.css";
 import { defaultConfiguration } from "./containers/adminModule/roles/defaultConfiguration";
+import useBrowserRouter from "./routes/useBrowserRouter";
 
 const App = () => {
   localStorage.setItem(
@@ -18,6 +19,7 @@ const App = () => {
   );
 
   const { isDarkMode } = useContext(AppContext);
+  const browserRouter = useBrowserRouter();
   const theme = isDarkMode ? darkTheme : lightTheme;
 
   return (
@@ -32,7 +34,7 @@ const App = () => {
       <Provider store={store}>
         <PersistGate loading={null} persistor={persistor}>
           <ThemeProvider theme={theme}>
-            <RouterProvider router={router} />
+            <RouterProvider router={browserRouter} />
           </ThemeProvider>
         </PersistGate>
       </Provider>

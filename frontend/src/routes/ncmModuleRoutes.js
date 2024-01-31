@@ -1,5 +1,5 @@
 import React from "react";
-import NCMModule from "../containers/ncmModule";
+import NcmModule from "../containers/ncmModule";
 import Dashboard from "../containers/ncmModule/dashboard";
 import ConfigData from "../containers/ncmModule/manageConfigurations";
 import ManageConfigurationsLanding from "../containers/ncmModule/manageConfigurationsLanding";
@@ -12,15 +12,10 @@ import { LANDING_PAGE_PATH as LANDING_PAGE_PATH_MANAGE_CONFIGURATIONS } from "..
 import { PAGE_PATH as PAGE_PATH_CONFIGURATION_BACKUPS } from "../containers/ncmModule/manageConfigurationsLanding/configurationBackups/constants";
 import { PAGE_PATH as PAGE_PATH_REMOTE_COMMAND_SENDER } from "../containers/ncmModule/manageConfigurationsLanding/remoteCommandSender/constants";
 import { MODULE_PATH } from "../containers/ncmModule";
+import { MAIN_LAYOUT_PATH } from "../layouts/mainLayout";
 
-const routes = {
-  path: MODULE_PATH,
-  element: <NCMModule />,
-  children: [
-    {
-      path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_DASHBOARD} replace />,
-    },
+export default function moduleRoutes(roleConfigurations, authorizePageRoutes) {
+  const routes = [
     {
       path: PAGE_PATH_DASHBOARD,
       element: <Dashboard />,
@@ -43,7 +38,19 @@ const routes = {
         },
       ],
     },
-  ],
-};
+  ];
 
-export default routes;
+  // Authorize module page routes
+  const authorizedPageRoutes = authorizePageRoutes({
+    module: MODULE_PATH,
+    pageRoutes: routes,
+    roleConfigurations,
+    defaultPagePath: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}`,
+  });
+
+  return {
+    path: MODULE_PATH,
+    element: <NcmModule />,
+    children: authorizedPageRoutes,
+  };
+}

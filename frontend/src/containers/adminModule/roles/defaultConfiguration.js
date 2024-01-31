@@ -71,7 +71,7 @@ export const defaultConfiguration = {
       [PAGE_PATH_DISCOVERY]: { view: true, read_only: false },
       [PAGE_PATH_LOGIN_CREDENTIALS]: { view: true, read_only: false },
       [PAGE_PATH_V1_V2_CREDENTIALS]: { view: true, read_only: false },
-      [PAGE_PATH_V3_CREDENTIALS]: { view: true, read_only: false },
+      [PAGE_PATH_V3_CREDENTIALS]: { view: false, read_only: false },
       [PAGE_PATH_MANAGE_DEVICES]: { view: true, read_only: false },
       [PAGE_PATH_MANAGE_NETWORKS]: { view: true, read_only: false },
     },

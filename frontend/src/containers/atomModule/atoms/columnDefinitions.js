@@ -1,29 +1,17 @@
-import React, { useState } from "react";
+import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
-import { useSelector } from "react-redux";
-import { selectRoleConfigurations } from "../../../store/features/login/selectors";
-import {
-  getRoleConfigurationsFromToken,
-  isPageEditable,
-} from "../../../utils/helpers";
 import DefaultSelect from "../../../components/selects";
 import DefaultOption from "../../../components/options";
-import { ATOM_ID, PAGE_PATH, indexColumnNameConstants } from "./constants";
+import { ATOM_ID, indexColumnNameConstants } from "./constants";
 import { MONITORING_CREDENTIALS_ID } from "../../monitoringModule/devices/constants";
-import { MODULE_PATH } from "..";
 
 export function useIndexTableColumnDefinitions({
+  pageEditable,
   handleEdit = null,
   dropDowns = null,
 } = {}) {
   const theme = useTheme();
-  const roleConfigurations = getRoleConfigurationsFromToken();
-
-  // states
-  const [pageEditable, setPageEditable] = useState(
-    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
-  );
 
   const monitoringCredentialsOptions =
     dropDowns?.data[MONITORING_CREDENTIALS_ID];

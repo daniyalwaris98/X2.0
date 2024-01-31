@@ -1,10 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import {
-  getPathAllSegments,
-  getRoleConfigurationsFromToken,
-  isPageAllowed,
-} from "../../utils/helpers";
+import { getPathAllSegments } from "../../utils/helpers";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
 import {
@@ -20,7 +17,12 @@ export const MODULE_NAME = "Atom";
 export const MODULE_PATH = "atom_module";
 
 function Index(props) {
-  const roleConfigurations = getRoleConfigurationsFromToken();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageAllowed } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
 
   const menuItems = [
     {
