@@ -20,7 +20,7 @@ from app.repository import blacklisted_token_repository
 from app.repository.blacklisted_token_repository import BlacklistedTokenRepository
 
 from app.schema.auth_schema import SignInNew
-from cryptography.fernet import Fernet
+# from cryptography.fernet import Fernet
 from dotenv import load_dotenv
 import os
 from cryptography.hazmat.primitives.ciphers import Cipher, algorithms, modes
@@ -37,32 +37,34 @@ if key is None:
     raise ValueError("No FERNET_KEY found in .env file")
 
 
-# key = Fernet.generate_key()
-# print("key generated is:::::::::::::::",key,file=sys.stderr)
-cipher_suite = Fernet(key)
-print("cypher suite is::::::::::::::::::::",cipher_suite,file=sys.stderr)
+# # key = Fernet.generate_key()
+# # print("key generated is:::::::::::::::",key,file=sys.stderr)
+# cipher_suite = Fernet(key)
+# print("cypher suite is::::::::::::::::::::",cipher_suite,file=sys.stderr)
 
 
 
 
-def encrypt_data(data, key):
-    # Convert Payload to a JSON string if it's not already a string
-    if not isinstance(data, str):
-        data = json.dumps(data.to_dict())
-
-    block_size = 16
-    # Pad the data to be a multiple of 16 bytes
-    padded_data = data + (block_size - len(data) % block_size) * chr(block_size - len(data) % block_size)
-    # Generate a random IV
-    iv = os.urandom(block_size)
-    # Create an AES cipher object
-    cipher = Cipher(algorithms.AES(key), modes.CFB(iv), backend=default_backend())
-    # Encrypt the data
-    encryptor = cipher.encryptor()
-    encrypted_data = encryptor.update(padded_data.encode('utf-8')) + encryptor.finalize()
-    # Combine IV and encrypted data, and encode as URL-safe base64
-    result = urlsafe_b64encode(iv + encrypted_data).decode('utf-8')
-    return result
+# def encrypt_data(data, key):
+#     # Convert Payload to a JSON string if it's not already a string
+#     if not isinstance(data, str):
+#         data = json.dumps(data.to_dict())
+#         print("data in if not str:::::::::",data,file=sys.stderr)
+#         print("type data in if not str:::::::::", type(data), file=sys.stderr)
+#
+#     block_size = 16
+#     # Pad the data to be a multiple of 16 bytes
+#     padded_data = data + (block_size - len(data) % block_size) * chr(block_size - len(data) % block_size)
+#     # Generate a random IV
+#     iv = os.urandom(block_size)
+#     # Create an AES cipher object
+#     cipher = Cipher(algorithms.AES(key), modes.CFB(iv), backend=default_backend())
+#     # Encrypt the data
+#     encryptor = cipher.encryptor()
+#     encrypted_data = encryptor.update(padded_data.encode('utf-8')) + encryptor.finalize()
+#     # Combine IV and encrypted data, and encode as URL-safe base64
+#     result = urlsafe_b64encode(iv + encrypted_data).decode('utf-8')
+#     return result
 
 encryption_key = b'Sixteen byte key'
 # def encrypt_data(data):
@@ -153,14 +155,14 @@ class AuthService(BaseService):
         )
         print("payload is::::::::::::::",payload,file=sys.stderr)
         # encrypted_result = encrypt_data(payload)
-        encrypted_data = encrypt_data(payload, encryption_key)
-        print("encrypted result is:::::::::::::::::::::",encrypted_data,file=sys.stderr)
-        print("encrypted result type is:::::::::::::",type(encrypted_data),file=sys.stderr)
+        # encrypted_data = encrypt_data(payload, encryption_key)
+        # print("encrypted result is:::::::::::::::::::::",encrypted_data,file=sys.stderr)
+        # print("encrypted result type is:::::::::::::",type(encrypted_data),file=sys.stderr)
         # decrypted = decrypt_data(encrypted_data)
         # print("Decrypted::::::::::::::::::;", decrypted,file=sys.stderr)
-        subject_data = {"encrypted_data": encrypted_data}
+        # subject_data = {"encrypted_data": encrypted_data}
         token_lifespan = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token, expiration_datetime = create_access_token(subject_data, token_lifespan)
+        access_token, expiration_datetime = create_access_token(payload.dict(), token_lifespan)
         print("access token is:::::::::::::::::::",file=sys.stderr)
         print("expiration token is:::::::::::::::",expiration_datetime,file=sys.stderr)
         data = {
