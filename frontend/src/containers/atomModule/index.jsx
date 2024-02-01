@@ -12,6 +12,9 @@ import {
   PAGE_NAME as PAGE_NAME_PASSWORD_GROUPS,
   PAGE_PATH as PAGE_PATH_PASSWORD_GROUPS,
 } from "./passwordGroups/constants";
+import collapse from "..//adminModule/roles/assets/collapse.svg";
+import del from "..//adminModule/roles/assets/del.svg";
+import edit from "..//adminModule/roles/assets/edit.svg";
 
 export const MODULE_NAME = "Atom";
 export const MODULE_PATH = "atom_module";
@@ -22,11 +25,14 @@ function Index(props) {
       id: PAGE_PATH_ATOMS,
       name: PAGE_NAME_ATOMS,
       path: PAGE_PATH_ATOMS,
+      // activeIcon: collapse,
+      // inIcon: del,
     },
     {
       id: PAGE_PATH_PASSWORD_GROUPS,
       name: PAGE_NAME_PASSWORD_GROUPS,
       path: PAGE_PATH_PASSWORD_GROUPS,
+      icon: edit,
     },
   ];
 

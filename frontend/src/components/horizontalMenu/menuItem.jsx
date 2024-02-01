@@ -3,6 +3,7 @@ import Dropdown from "./dropdown";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import "./main.css";
+import dcm from "../../containers/adminModule/roles/assets/dcm.svg";
 
 const MenuItems = ({
   item,
@@ -63,7 +64,8 @@ const MenuItems = ({
       style={{ cursor: "pointer", border: "0px solid red" }}
     >
       {item.path && item.children ? (
-        <>
+        <div style={{ display: "flex", padding: "0 10px" }}>
+          {/* <img src={dcm} alt="" width={15} style={{ paddingRight: "0px" }} /> */}
           <button
             type="button"
             aria-haspopup="menu"
@@ -87,9 +89,10 @@ const MenuItems = ({
             selectedMenuPath={selectedMenuPath}
             setSelectedMenuPath={setSelectedMenuPath}
           />
-        </>
+        </div>
       ) : !item.path && item.children ? (
-        <>
+        <div style={{ display: "flex", padding: "0 10px" }}>
+          {/* <img src={dcm} alt="" width={15} style={{ paddingRight: "0px" }} /> */}
           <button
             type="button"
             aria-haspopup="menu"
@@ -113,23 +116,39 @@ const MenuItems = ({
             selectedMenuPath={selectedMenuPath}
             setSelectedMenuPath={setSelectedMenuPath}
           />
-        </>
+        </div>
       ) : (
-        <Link
-          className={`${menuItemTextClassName} ${
-            selectedMenuPath[depthLevel] === item.id ? "selected" : ""
-          }`}
-          to={item.path}
-          onClick={() => setSelectedMenuPath([...menuPath])}
-          style={{
-            height: "100%",
-            display: "flex",
-            flexDirection: "column",
-            justifyContent: "center",
-          }}
-        >
-          <div>{item.name}</div>
-        </Link>
+        <div style={{ display: "flex", padding: "0 10px" }}>
+          <Link
+            className={`${menuItemTextClassName} ${
+              selectedMenuPath[depthLevel] === item.id ? "selected" : ""
+            }`}
+            to={item.path}
+            onClick={() => setSelectedMenuPath([...menuPath])}
+            style={{
+              height: "50px",
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+            }}
+          >
+            <div style={{ display: "flex", padding: "0 10px" }}>
+              {/* <img
+                src={
+                  item.activeIcon && item.inIcon
+                    ? selectedMenuPath[depthLevel] === item.id
+                      ? item.activeIcon
+                      : item.inIcon
+                    : dcm
+                }
+                alt=""
+                width={15}
+                style={{ paddingRight: "10px" }}
+              /> */}
+              <div>{item.name}</div>
+            </div>
+          </Link>
+        </div>
       )}
     </li>
   );
