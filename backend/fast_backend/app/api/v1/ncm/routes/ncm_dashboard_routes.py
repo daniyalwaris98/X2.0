@@ -19,7 +19,10 @@ router = APIRouter(
 @router.get("/ncm-change-summery-by-time", responses={
     200: {"model": NameValueDictResponseSchema},
     500: {"model": str}
-})
+},
+summary = "API to get the ncm change summary by time",
+description="API to get the ncm change summary by time "
+)
 async def ncm_change_summery_by_time():
     current_time = datetime.now()
     pre_time = datetime.now() - timedelta(days=1)
