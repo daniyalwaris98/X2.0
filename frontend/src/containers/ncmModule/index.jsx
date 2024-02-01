@@ -3,7 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../utils/helpers";
+import { getDefaultPagePath } from "../../utils/helpers";
 import {
   PAGE_NAME as PAGE_NAME_DASHBOARD,
   PAGE_PATH as PAGE_PATH_DASHBOARD,
@@ -38,15 +38,15 @@ function Index(props) {
 
   menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
 
-  let pagePath = getPathAllSegments();
-  if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
-    pagePath = [PAGE_PATH_MANAGE_CONFIGURATIONS];
-  } else pagePath = pagePath.splice(2);
+  const defaultPagePath = getDefaultPagePath(MODULE_PATH, menuItems);
 
   return (
     <>
       <Card>
-        <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
+        <HorizontalMenu
+          menuItems={menuItems}
+          defaultPagePath={defaultPagePath}
+        />
       </Card>
       <Outlet />
     </>

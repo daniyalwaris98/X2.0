@@ -1,6 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import { getPathAllSegments } from "../../utils/helpers";
+import { getDefaultPagePath } from "../../utils/helpers";
 import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
@@ -39,10 +39,7 @@ function Index(props) {
 
   menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
 
-  let pagePath = getPathAllSegments();
-  if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
-    pagePath = [menuItems.length > 0 ? menuItems[0].path : ""];
-  } else pagePath = pagePath.splice(2);
+  const defaultPagePath = getDefaultPagePath(MODULE_PATH, menuItems);
 
   return (
     <>
@@ -52,7 +49,10 @@ function Index(props) {
           height: "50px",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
+        <HorizontalMenu
+          menuItems={menuItems}
+          defaultPagePath={defaultPagePath}
+        />
       </Card>
       <Outlet />
     </>

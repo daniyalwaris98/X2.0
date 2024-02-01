@@ -32,7 +32,7 @@ import logo from "../resources/svgs/logo.svg";
 import dayModeIcon from "../resources/svgs/dayModeIcon.svg";
 import nightModeIcon from "../resources/svgs/nightModeIcon.svg";
 import { useAuthentication, useAuthorization } from "../hooks/useAuth";
-import { getPathSecondSegment } from "../utils/helpers";
+import { getPathSegment } from "../utils/helpers";
 import {
   MODULE_PATH as MODULE_PATH_ADMIN,
   MODULE_NAME as MODULE_NAME_ADMIN,
@@ -129,7 +129,7 @@ export default function Index() {
   const userInfo = getUserInfoFromAccessToken();
   const roleConfigurations = userInfo?.configuration;
 
-  const modulePath = getPathSecondSegment();
+  const modulePath = getPathSegment(3);
   const theme = useTheme();
   const { isDarkMode, setDarkMode } = useContext(AppContext);
   const [open, setOpen] = useState(false);

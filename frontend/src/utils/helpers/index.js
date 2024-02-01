@@ -1,8 +1,13 @@
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
-import CryptoJS from "crypto-js";
-import jwt from "jsonwebtoken";
-import { redirectToLogin } from "../../services/navigationService";
+
+export function getDefaultPagePath(MODULE_PATH, menuItems) {
+  let pagePath = getPathAllSegments();
+  if (pagePath.length === 3 && pagePath[2] === MODULE_PATH) {
+    pagePath = [menuItems.length > 0 ? menuItems[0].path : ""];
+  } else pagePath = pagePath.splice(3);
+  return pagePath;
+}
 
 export function getPathLastSegment() {
   const path = window.location.pathname;
@@ -10,10 +15,10 @@ export function getPathLastSegment() {
   return segments[segments.length - 1];
 }
 
-export function getPathSecondSegment() {
+export function getPathSegment(position) {
   const path = window.location.pathname;
   const segments = path.split("/");
-  return segments[1];
+  return segments[position - 1];
 }
 
 export function getPathAllSegments() {
