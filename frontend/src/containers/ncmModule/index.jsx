@@ -1,5 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
 import { getPathAllSegments } from "../../utils/helpers";
@@ -15,7 +16,7 @@ import {
 export const MODULE_NAME = "NCM";
 export const MODULE_PATH = "ncm_module";
 
-const menuItems = [
+let menuItems = [
   {
     id: PAGE_PATH_DASHBOARD,
     name: PAGE_NAME_DASHBOARD,
@@ -29,6 +30,15 @@ const menuItems = [
 ];
 
 function Index(props) {
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
     pagePath = [PAGE_PATH_MANAGE_CONFIGURATIONS];

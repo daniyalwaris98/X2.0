@@ -1,8 +1,9 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { getPathAllSegments } from "../../utils/helpers";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../utils/helpers";
 import {
   PAGE_NAME as PAGE_NAME_DASHBOARD,
   PAGE_PATH as PAGE_PATH_DASHBOARD,
@@ -59,11 +60,12 @@ import {
   PAGE_NAME as PAGE_NAME_LOAD_BALANCERS,
   PAGE_PATH as PAGE_PATH_LOAD_BALANCERS,
 } from "./vipDropDown/loadBalancers/constants";
+import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 
 export const MODULE_NAME = "IPAM";
 export const MODULE_PATH = "ipam_module";
 
-const menuItems = [
+let menuItems = [
   {
     id: PAGE_PATH_DASHBOARD,
     name: PAGE_NAME_DASHBOARD,
@@ -81,22 +83,22 @@ const menuItems = [
       {
         id: PAGE_PATH_SUBNETS,
         name: PAGE_NAME_SUBNETS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_SUBNETS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_SUBNETS}`,
       },
       {
         id: PAGE_PATH_IP_DETAILS,
         name: PAGE_NAME_IP_DETAILS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_DETAILS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_DETAILS}`,
       },
       {
         id: PAGE_PATH_DISCOVERED_SUBNETS,
         name: PAGE_NAME_DISCOVERED_SUBNETS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_DISCOVERED_SUBNETS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_DISCOVERED_SUBNETS}`,
       },
       {
         id: PAGE_PATH_IP_HISTORY,
         name: PAGE_NAME_IP_HISTORY,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_HISTORY}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_HISTORY}`,
       },
     ],
   },
@@ -107,17 +109,17 @@ const menuItems = [
       {
         id: PAGE_PATH_DNS_SERVERS,
         name: PAGE_NAME_DNS_SERVERS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_SERVERS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_SERVERS}`,
       },
       {
         id: PAGE_PATH_DNS_RECORDS,
         name: PAGE_NAME_DNS_RECORDS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_RECORDS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_RECORDS}`,
       },
       {
         id: PAGE_PATH_DNS_ZONES,
         name: PAGE_NAME_DNS_ZONES,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_ZONES}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_ZONES}`,
       },
     ],
   },
@@ -128,18 +130,27 @@ const menuItems = [
       {
         id: PAGE_PATH_FIREWALLS,
         name: PAGE_NAME_FIREWALLS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_FIREWALLS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_FIREWALLS}`,
       },
       {
         id: PAGE_PATH_LOAD_BALANCERS,
         name: PAGE_NAME_LOAD_BALANCERS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_LOAD_BALANCERS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_LOAD_BALANCERS}`,
       },
     ],
   },
 ];
 
 function Index(props) {
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
     pagePath = [PAGE_PATH_DEVICES];

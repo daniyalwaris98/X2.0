@@ -1,8 +1,9 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { getPathAllSegments } from "../../utils/helpers";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../utils/helpers";
 import {
   PAGE_NAME as PAGE_NAME_MEMBERS,
   PAGE_PATH as PAGE_PATH_MEMBERS,
@@ -15,28 +16,29 @@ import {
   PAGE_NAME as PAGE_NAME_ROLES,
   PAGE_PATH as PAGE_PATH_ROLES,
 } from "./roles/constants";
-import { useAuthorization } from "../../hooks/useAuth";
 
 export const MODULE_NAME = "Admin";
 export const MODULE_PATH = "admin_module";
 
+let menuItems = [
+  { id: PAGE_PATH_MEMBERS, name: PAGE_NAME_MEMBERS, path: PAGE_PATH_MEMBERS },
+  {
+    id: LANDING_PAGE_PATH_FAILED_DEVICE,
+    name: LANDING_PAGE_NAME_FAILED_DEVICE,
+    path: LANDING_PAGE_PATH_FAILED_DEVICE,
+  },
+  { id: PAGE_PATH_ROLES, name: PAGE_NAME_ROLES, path: PAGE_PATH_ROLES },
+];
+
 function Index(props) {
   // hooks
-  const { getUserInfoFromAccessToken, isPageAllowed } = useAuthorization();
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
 
   // user information
   const userInfo = getUserInfoFromAccessToken();
   const roleConfigurations = userInfo?.configuration;
 
-  const menuItems = [
-    { id: PAGE_PATH_MEMBERS, name: PAGE_NAME_MEMBERS, path: PAGE_PATH_MEMBERS },
-    {
-      id: LANDING_PAGE_PATH_FAILED_DEVICE,
-      name: LANDING_PAGE_NAME_FAILED_DEVICE,
-      path: LANDING_PAGE_PATH_FAILED_DEVICE,
-    },
-    { id: PAGE_PATH_ROLES, name: PAGE_NAME_ROLES, path: PAGE_PATH_ROLES },
-  ].filter((item) => isPageAllowed(roleConfigurations, MODULE_PATH, item.path));
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
 
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
