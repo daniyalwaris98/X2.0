@@ -27,7 +27,7 @@ export const LANDING_PAGE_RELATIVE_PATH = "manage_configurations_landing";
 export const LANDING_PAGE_PATH = `${PAGE_PATH_MANAGE_CONFIGURATIONS}/${LANDING_PAGE_RELATIVE_PATH}`;
 
 function Index(props) {
-  const menuItems = [
+  let menuItems = [
     {
       id: PAGE_PATH_CONFIGURATION_BACKUPS,
       name: PAGE_NAME_CONFIGURATION_BACKUPS,

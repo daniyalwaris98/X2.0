@@ -111,7 +111,7 @@ export const defaultConfiguration = {
   [MODULE_PATH_ATOM]: {
     view: true,
     pages: {
-      [PAGE_PATH_ATOM_ATOMS]: { view: true, read_only: true },
+      [PAGE_PATH_ATOM_ATOMS]: { view: true, read_only: false },
       [PAGE_PATH_ATOM_PASSWORD_GROUPS]: { view: true, read_only: false },
     },
   },
