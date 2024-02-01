@@ -320,7 +320,7 @@ async def ncm_backup_summery_dashboard():
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching Data", status_code=500)
 
-
+# /
 @router.get("/get_vendors_in_ncm", responses={
     200:{"model":GetNcmVendorSchema},
     500:{"model":str}
