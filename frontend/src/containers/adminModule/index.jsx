@@ -20,17 +20,17 @@ import {
 export const MODULE_NAME = "Admin";
 export const MODULE_PATH = "admin_module";
 
-let menuItems = [
-  { id: PAGE_PATH_MEMBERS, name: PAGE_NAME_MEMBERS, path: PAGE_PATH_MEMBERS },
-  {
-    id: LANDING_PAGE_PATH_FAILED_DEVICE,
-    name: LANDING_PAGE_NAME_FAILED_DEVICE,
-    path: LANDING_PAGE_PATH_FAILED_DEVICE,
-  },
-  { id: PAGE_PATH_ROLES, name: PAGE_NAME_ROLES, path: PAGE_PATH_ROLES },
-];
-
 function Index(props) {
+  let menuItems = [
+    { id: PAGE_PATH_MEMBERS, name: PAGE_NAME_MEMBERS, path: PAGE_PATH_MEMBERS },
+    {
+      id: LANDING_PAGE_PATH_FAILED_DEVICE,
+      name: LANDING_PAGE_NAME_FAILED_DEVICE,
+      path: LANDING_PAGE_PATH_FAILED_DEVICE,
+    },
+    { id: PAGE_PATH_ROLES, name: PAGE_NAME_ROLES, path: PAGE_PATH_ROLES },
+  ];
+
   // hooks
   const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
 

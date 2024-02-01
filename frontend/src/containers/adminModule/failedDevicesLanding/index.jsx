@@ -36,16 +36,7 @@ export const LANDING_PAGE_NAME = "Failed Devices";
 export const LANDING_PAGE_PATH = "failed_devices_landing";
 
 function Index(props) {
-  const selectedDevice = useSelector(selectSelectedDevice);
-
-  // hooks
-  const { getUserInfoFromAccessToken, isPageAllowed } = useAuthorization();
-
-  // user information
-  const userInfo = getUserInfoFromAccessToken();
-  const roleConfigurations = userInfo?.configuration;
-
-  const menuItems = [
+  let menuItems = [
     {
       id: PAGE_PATH_AUTO_DISCOVERY,
       name: PAGE_NAME_AUTO_DISCOVERY,
@@ -71,7 +62,18 @@ function Index(props) {
       name: PAGE_NAME_UAM,
       path: PAGE_PATH_UAM,
     },
-  ].filter((item) => isPageAllowed(roleConfigurations, MODULE_PATH, item.path));
+  ];
+
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
+  const selectedDevice = useSelector(selectSelectedDevice);
 
   let pagePath = getPathAllSegments();
   if (pagePath.length === 4 && pagePath[3] === LANDING_PAGE_PATH) {

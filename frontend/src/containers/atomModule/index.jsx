@@ -16,20 +16,20 @@ import {
 export const MODULE_NAME = "Atom";
 export const MODULE_PATH = "atom_module";
 
-let menuItems = [
-  {
-    id: PAGE_PATH_ATOMS,
-    name: PAGE_NAME_ATOMS,
-    path: PAGE_PATH_ATOMS,
-  },
-  {
-    id: PAGE_PATH_PASSWORD_GROUPS,
-    name: PAGE_NAME_PASSWORD_GROUPS,
-    path: PAGE_PATH_PASSWORD_GROUPS,
-  },
-];
-
 function Index(props) {
+  let menuItems = [
+    {
+      id: PAGE_PATH_ATOMS,
+      name: PAGE_NAME_ATOMS,
+      path: PAGE_PATH_ATOMS,
+    },
+    {
+      id: PAGE_PATH_PASSWORD_GROUPS,
+      name: PAGE_NAME_PASSWORD_GROUPS,
+      path: PAGE_PATH_PASSWORD_GROUPS,
+    },
+  ];
+
   // hooks
   const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
 

@@ -37,6 +37,7 @@ import {
   PAGE_PATH,
 } from "./constants";
 import { MODULE_PATH } from "../..";
+import { MAIN_LAYOUT_PATH } from "../../../../layouts/mainLayout";
 
 const Index = () => {
   // hooks
@@ -138,7 +139,9 @@ const Index = () => {
 
   function handleIpAddressClick(record) {
     dispatch(setSelectedIpDetail(record));
-    navigate(`/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_IP_HISTORY}`);
+    navigate(
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_IP_HISTORY}`
+    );
   }
 
   function handleTableConfigurationsOpen() {

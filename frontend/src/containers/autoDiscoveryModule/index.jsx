@@ -41,52 +41,52 @@ import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 export const MODULE_NAME = "Auto Discovery";
 export const MODULE_PATH = "auto_discovery_module";
 
-let menuItems = [
-  {
-    id: PAGE_PATH_MANAGE_NETWORKS,
-    name: PAGE_NAME_MANAGE_NETWORKS,
-    path: PAGE_PATH_MANAGE_NETWORKS,
-  },
-  {
-    id: PAGE_PATH_DISCOVERY,
-    name: PAGE_NAME_DISCOVERY,
-    path: PAGE_PATH_DISCOVERY,
-  },
-  {
-    id: PAGE_PATH_MANAGE_DEVICES,
-    name: PAGE_NAME_MANAGE_DEVICES,
-    path: PAGE_PATH_MANAGE_DEVICES,
-  },
-  {
-    id: DROPDOWN_PATH_MANAGE_CREDENTIALS,
-    name: DROPDOWN_NAME_MANAGE_CREDENTIALS,
-    children: [
-      {
-        id: PAGE_PATH_LOGIN_CREDENTIALS,
-        name: PAGE_NAME_LOGIN_CREDENTIALS,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
-      },
-      {
-        id: DROPDOWN_PATH_SNMP_CREDENTIALS,
-        name: DROPDOWN_NAME_SNMP_CREDENTIALS,
-        children: [
-          {
-            id: PAGE_PATH_V1_V2_CREDENTIALS,
-            name: PAGE_NAME_V1_V2_CREDENTIALS,
-            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
-          },
-          {
-            id: PAGE_PATH_V3_CREDENTIALS,
-            name: PAGE_NAME_V3_CREDENTIALS,
-            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
-          },
-        ],
-      },
-    ],
-  },
-];
-
 function Index(props) {
+  let menuItems = [
+    {
+      id: PAGE_PATH_MANAGE_NETWORKS,
+      name: PAGE_NAME_MANAGE_NETWORKS,
+      path: PAGE_PATH_MANAGE_NETWORKS,
+    },
+    {
+      id: PAGE_PATH_DISCOVERY,
+      name: PAGE_NAME_DISCOVERY,
+      path: PAGE_PATH_DISCOVERY,
+    },
+    {
+      id: PAGE_PATH_MANAGE_DEVICES,
+      name: PAGE_NAME_MANAGE_DEVICES,
+      path: PAGE_PATH_MANAGE_DEVICES,
+    },
+    {
+      id: DROPDOWN_PATH_MANAGE_CREDENTIALS,
+      name: DROPDOWN_NAME_MANAGE_CREDENTIALS,
+      children: [
+        {
+          id: PAGE_PATH_LOGIN_CREDENTIALS,
+          name: PAGE_NAME_LOGIN_CREDENTIALS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
+        },
+        {
+          id: DROPDOWN_PATH_SNMP_CREDENTIALS,
+          name: DROPDOWN_NAME_SNMP_CREDENTIALS,
+          children: [
+            {
+              id: PAGE_PATH_V1_V2_CREDENTIALS,
+              name: PAGE_NAME_V1_V2_CREDENTIALS,
+              path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
+            },
+            {
+              id: PAGE_PATH_V3_CREDENTIALS,
+              name: PAGE_NAME_V3_CREDENTIALS,
+              path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
+            },
+          ],
+        },
+      ],
+    },
+  ];
+
   // hooks
   const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
 

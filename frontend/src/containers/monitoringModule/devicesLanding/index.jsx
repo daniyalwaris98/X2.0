@@ -3,6 +3,7 @@ import { Outlet } from "react-router-dom";
 import { useSelector } from "react-redux";
 import { selectSelectedDevice } from "../../../store/features/monitoringModule/devices/selectors";
 import { getPathAllSegments } from "../../../utils/helpers";
+import { useAuthorization } from "../../../hooks/useAuth";
 import HorizontalMenu from "../../../components/horizontalMenu/index";
 import Card from "../../../components/cards";
 import DefaultDetailCards from "../../../components/detailCards";
@@ -18,24 +19,34 @@ import {
   PAGE_NAME as PAGE_NAME_DEVICES_INTERFACES,
   PAGE_PATH as PAGE_PATH_DEVICES_INTERFACES,
 } from "./interfaces/constants";
+import { MODULE_PATH } from "..";
 
 export const LANDING_PAGE_NAME = "Device Details";
 export const LANDING_PAGE_PATH = "devices_landing";
 
-const menuItems = [
-  {
-    id: PAGE_PATH_DEVICES_SUMMARY,
-    name: PAGE_NAME_DEVICES_SUMMARY,
-    path: PAGE_PATH_DEVICES_SUMMARY,
-  },
-  {
-    id: PAGE_PATH_DEVICES_INTERFACES,
-    name: PAGE_NAME_DEVICES_INTERFACES,
-    path: PAGE_PATH_DEVICES_INTERFACES,
-  },
-];
-
 function Index(props) {
+  let menuItems = [
+    {
+      id: PAGE_PATH_DEVICES_SUMMARY,
+      name: PAGE_NAME_DEVICES_SUMMARY,
+      path: PAGE_PATH_DEVICES_SUMMARY,
+    },
+    {
+      id: PAGE_PATH_DEVICES_INTERFACES,
+      name: PAGE_NAME_DEVICES_INTERFACES,
+      path: PAGE_PATH_DEVICES_INTERFACES,
+    },
+  ];
+
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
   const selectedDevice = useSelector(selectSelectedDevice);
 
   let pagePath = getPathAllSegments();

@@ -29,6 +29,7 @@ import {
   indexColumnNameConstants,
 } from "./constants";
 import { MODULE_PATH } from "../..";
+import { MAIN_LAYOUT_PATH } from "../../../../layouts/mainLayout";
 
 const Index = () => {
   // hooks
@@ -109,7 +110,9 @@ const Index = () => {
 
   function handleIpAddressClick(record) {
     dispatch(setSelectedInterface(record));
-    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_BANDWIDTHS}`);
+    navigate(
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_BANDWIDTHS}`
+    );
   }
 
   return (

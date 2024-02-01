@@ -65,83 +65,83 @@ import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 export const MODULE_NAME = "IPAM";
 export const MODULE_PATH = "ipam_module";
 
-let menuItems = [
-  {
-    id: PAGE_PATH_DASHBOARD,
-    name: PAGE_NAME_DASHBOARD,
-    path: PAGE_PATH_DASHBOARD,
-  },
-  {
-    id: PAGE_PATH_DEVICES,
-    name: PAGE_NAME_DEVICES,
-    path: PAGE_PATH_DEVICES,
-  },
-  {
-    id: DROPDOWN_PATH_SUBNETS,
-    name: DROPDOWN_NAME_SUBNETS,
-    children: [
-      {
-        id: PAGE_PATH_SUBNETS,
-        name: PAGE_NAME_SUBNETS,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_SUBNETS}`,
-      },
-      {
-        id: PAGE_PATH_IP_DETAILS,
-        name: PAGE_NAME_IP_DETAILS,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_DETAILS}`,
-      },
-      {
-        id: PAGE_PATH_DISCOVERED_SUBNETS,
-        name: PAGE_NAME_DISCOVERED_SUBNETS,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_DISCOVERED_SUBNETS}`,
-      },
-      {
-        id: PAGE_PATH_IP_HISTORY,
-        name: PAGE_NAME_IP_HISTORY,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_HISTORY}`,
-      },
-    ],
-  },
-  {
-    id: DROPDOWN_PATH_DNS_SERVERS,
-    name: DROPDOWN_NAME_DNS_SERVERS,
-    children: [
-      {
-        id: PAGE_PATH_DNS_SERVERS,
-        name: PAGE_NAME_DNS_SERVERS,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_SERVERS}`,
-      },
-      {
-        id: PAGE_PATH_DNS_RECORDS,
-        name: PAGE_NAME_DNS_RECORDS,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_RECORDS}`,
-      },
-      {
-        id: PAGE_PATH_DNS_ZONES,
-        name: PAGE_NAME_DNS_ZONES,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_ZONES}`,
-      },
-    ],
-  },
-  {
-    id: DROPDOWN_PATH_VIP,
-    name: DROPDOWN_NAME_VIP,
-    children: [
-      {
-        id: PAGE_PATH_FIREWALLS,
-        name: PAGE_NAME_FIREWALLS,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_FIREWALLS}`,
-      },
-      {
-        id: PAGE_PATH_LOAD_BALANCERS,
-        name: PAGE_NAME_LOAD_BALANCERS,
-        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_LOAD_BALANCERS}`,
-      },
-    ],
-  },
-];
-
 function Index(props) {
+  let menuItems = [
+    {
+      id: PAGE_PATH_DASHBOARD,
+      name: PAGE_NAME_DASHBOARD,
+      path: PAGE_PATH_DASHBOARD,
+    },
+    {
+      id: PAGE_PATH_DEVICES,
+      name: PAGE_NAME_DEVICES,
+      path: PAGE_PATH_DEVICES,
+    },
+    {
+      id: DROPDOWN_PATH_SUBNETS,
+      name: DROPDOWN_NAME_SUBNETS,
+      children: [
+        {
+          id: PAGE_PATH_SUBNETS,
+          name: PAGE_NAME_SUBNETS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_SUBNETS}`,
+        },
+        {
+          id: PAGE_PATH_IP_DETAILS,
+          name: PAGE_NAME_IP_DETAILS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_DETAILS}`,
+        },
+        {
+          id: PAGE_PATH_DISCOVERED_SUBNETS,
+          name: PAGE_NAME_DISCOVERED_SUBNETS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_DISCOVERED_SUBNETS}`,
+        },
+        {
+          id: PAGE_PATH_IP_HISTORY,
+          name: PAGE_NAME_IP_HISTORY,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SUBNETS}/${PAGE_PATH_IP_HISTORY}`,
+        },
+      ],
+    },
+    {
+      id: DROPDOWN_PATH_DNS_SERVERS,
+      name: DROPDOWN_NAME_DNS_SERVERS,
+      children: [
+        {
+          id: PAGE_PATH_DNS_SERVERS,
+          name: PAGE_NAME_DNS_SERVERS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_SERVERS}`,
+        },
+        {
+          id: PAGE_PATH_DNS_RECORDS,
+          name: PAGE_NAME_DNS_RECORDS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_RECORDS}`,
+        },
+        {
+          id: PAGE_PATH_DNS_ZONES,
+          name: PAGE_NAME_DNS_ZONES,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_ZONES}`,
+        },
+      ],
+    },
+    {
+      id: DROPDOWN_PATH_VIP,
+      name: DROPDOWN_NAME_VIP,
+      children: [
+        {
+          id: PAGE_PATH_FIREWALLS,
+          name: PAGE_NAME_FIREWALLS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_FIREWALLS}`,
+        },
+        {
+          id: PAGE_PATH_LOAD_BALANCERS,
+          name: PAGE_NAME_LOAD_BALANCERS,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_LOAD_BALANCERS}`,
+        },
+      ],
+    },
+  ];
+
   // hooks
   const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
 

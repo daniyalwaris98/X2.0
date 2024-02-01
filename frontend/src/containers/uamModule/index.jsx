@@ -44,31 +44,31 @@ import {
 export const MODULE_NAME = "UAM";
 export const MODULE_PATH = "uam_module";
 
-let menuItems = [
-  { id: PAGE_PATH_SITES, name: PAGE_NAME_SITES, path: PAGE_PATH_SITES },
-  { id: PAGE_PATH_RACKS, name: PAGE_NAME_RACKS, path: PAGE_PATH_RACKS },
-  { id: PAGE_PATH_DEVICES, name: PAGE_NAME_DEVICES, path: PAGE_PATH_DEVICES },
-  { id: PAGE_PATH_BOARDS, name: PAGE_NAME_BOARDS, path: PAGE_PATH_BOARDS },
-  {
-    id: PAGE_PATH_SUB_BOARDS,
-    name: PAGE_NAME_SUB_BOARDS,
-    path: PAGE_PATH_SUB_BOARDS,
-  },
-  { id: PAGE_PATH_SFPS, name: PAGE_NAME_SFPS, path: PAGE_PATH_SFPS },
-  {
-    id: PAGE_PATH_LICENSES,
-    name: PAGE_NAME_LICENSES,
-    path: PAGE_PATH_LICENSES,
-  },
-  { id: PAGE_PATH_APS, name: PAGE_NAME_APS, path: PAGE_PATH_APS },
-  {
-    id: PAGE_PATH_HW_LIFE_CYCLES,
-    name: PAGE_NAME_HW_LIFE_CYCLES,
-    path: PAGE_PATH_HW_LIFE_CYCLES,
-  },
-];
-
 function Index(props) {
+  let menuItems = [
+    { id: PAGE_PATH_SITES, name: PAGE_NAME_SITES, path: PAGE_PATH_SITES },
+    { id: PAGE_PATH_RACKS, name: PAGE_NAME_RACKS, path: PAGE_PATH_RACKS },
+    { id: PAGE_PATH_DEVICES, name: PAGE_NAME_DEVICES, path: PAGE_PATH_DEVICES },
+    { id: PAGE_PATH_BOARDS, name: PAGE_NAME_BOARDS, path: PAGE_PATH_BOARDS },
+    {
+      id: PAGE_PATH_SUB_BOARDS,
+      name: PAGE_NAME_SUB_BOARDS,
+      path: PAGE_PATH_SUB_BOARDS,
+    },
+    { id: PAGE_PATH_SFPS, name: PAGE_NAME_SFPS, path: PAGE_PATH_SFPS },
+    {
+      id: PAGE_PATH_LICENSES,
+      name: PAGE_NAME_LICENSES,
+      path: PAGE_PATH_LICENSES,
+    },
+    { id: PAGE_PATH_APS, name: PAGE_NAME_APS, path: PAGE_PATH_APS },
+    {
+      id: PAGE_PATH_HW_LIFE_CYCLES,
+      name: PAGE_NAME_HW_LIFE_CYCLES,
+      path: PAGE_PATH_HW_LIFE_CYCLES,
+    },
+  ];
+
   // hooks
   const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
 

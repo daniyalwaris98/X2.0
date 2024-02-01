@@ -38,6 +38,7 @@ import {
   PAGE_PATH,
 } from "./constants";
 import { MODULE_PATH } from "../..";
+import { MAIN_LAYOUT_PATH } from "../../../../layouts/mainLayout";
 
 const Index = () => {
   // hooks
@@ -142,7 +143,9 @@ const Index = () => {
 
   function handleIpAddressClick(record) {
     dispatch(setSelectedDnsZone(record));
-    navigate(`/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_DNS_Records}`);
+    navigate(
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH}/${PAGE_PATH_DNS_Records}`
+    );
   }
 
   return (

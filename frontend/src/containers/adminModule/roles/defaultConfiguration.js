@@ -127,7 +127,7 @@ export const defaultConfiguration = {
   [MODULE_PATH_UAM]: {
     view: true,
     pages: {
-      sites: { view: false, read_only: false },
+      sites: { view: true, read_only: false },
       racks: { view: true, read_only: false },
       devices: { view: true, read_only: false },
       modules: { view: true, read_only: false },

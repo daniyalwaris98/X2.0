@@ -27,6 +27,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
 import { MODULE_PATH } from "../../..";
+import { MAIN_LAYOUT_PATH } from "../../../../../layouts/mainLayout";
 
 const Index = () => {
   // hooks
@@ -84,7 +85,9 @@ const Index = () => {
   // handlers
   function handleIpAddressClick(record) {
     dispatch(setSelectedDevice(record));
-    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`);
+    navigate(
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`
+    );
   }
 
   function handleDefaultExport() {

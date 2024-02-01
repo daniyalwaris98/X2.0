@@ -16,20 +16,19 @@ import {
 export const MODULE_NAME = "NCM";
 export const MODULE_PATH = "ncm_module";
 
-let menuItems = [
-  {
-    id: PAGE_PATH_DASHBOARD,
-    name: PAGE_NAME_DASHBOARD,
-    path: PAGE_PATH_DASHBOARD,
-  },
-  {
-    id: PAGE_PATH_MANAGE_CONFIGURATIONS,
-    name: PAGE_NAME_MANAGE_CONFIGURATIONS,
-    path: PAGE_PATH_MANAGE_CONFIGURATIONS,
-  },
-];
-
 function Index(props) {
+  let menuItems = [
+    {
+      id: PAGE_PATH_DASHBOARD,
+      name: PAGE_NAME_DASHBOARD,
+      path: PAGE_PATH_DASHBOARD,
+    },
+    {
+      id: PAGE_PATH_MANAGE_CONFIGURATIONS,
+      name: PAGE_NAME_MANAGE_CONFIGURATIONS,
+      path: PAGE_PATH_MANAGE_CONFIGURATIONS,
+    },
+  ];
   // hooks
   const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
 
