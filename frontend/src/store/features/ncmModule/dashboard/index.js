@@ -5,39 +5,37 @@ import {
   ELEMENT_NAME,
 } from "../../../../containers/atomModule/passwordGroups/constants";
 
-
-
-
 import {
-    useGetConfigurationChangeByDeviceQuery,
-  
-  } from "../../../features/ncmModule/dashboard/apis";
-  import { useSelector } from "react-redux";
+  useGetConfigurationBackupSummaryQuery,
+  useGetConfigurationChangeByDeviceQuery,
+} from "../../../features/ncmModule/dashboard/apis";
 
+import { useSelector } from "react-redux";
 
 const initialState = {
- configuration_change_by_device_data: [],
- 
+  configuration_change_by_device_data: [],
+  configuration_backup_summary_data: [], // Make sure to define this property in your initial state
 };
 
 const defaultSlice = createSlice({
   name: ELEMENT_NAME,
   initialState,
-  reducers: {
-   
-
-  },
+  reducers: {},
   extraReducers(builder) {
     builder
+      .addMatcher(
+        extendedApi.endpoints.getConfigurationBackupSummary.matchFulfilled,
+        (state, action) => {
+          state.configuration_backup_summary_data = action.payload;
+        }
+      )
       .addMatcher(
         extendedApi.endpoints.getConfigurationChangeByDevice.matchFulfilled,
         (state, action) => {
           state.configuration_change_by_device_data = action.payload;
         }
-      )
-    
+      );
   },
 });
-
 
 export default defaultSlice.reducer;

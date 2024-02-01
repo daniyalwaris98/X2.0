@@ -7,11 +7,12 @@ import ChangeByTimeChart from "./components/ChangeByTimeChart";
 import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
 import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
-import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
+import { selectConfigurationBackupSummary, selectConfigurationChangeByDevice } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
 
 import {
   useGetConfigurationChangeByDeviceQuery,
+  useGetConfigurationBackupSummaryQuery,
   useDeleteRecordsMutation,
   useBulkBackupNcmConfigurationsByDeviceIdsMutation,
 } from "../../../store/features/ncmModule/dashboard/apis";
@@ -20,6 +21,13 @@ import ConfigurationByTimeLineChart from "../../../components/charts/Configurati
 
 
 function Index() {
+  // const {
+  //   data: fetchRecordsData,
+  //   isSuccess: isFetchRecordsSuccess,
+  //   isLoading: isFetchRecordsLoading,
+  //   isError: isFetchRecordsError,
+  //   error: fetchRecordsError,
+  // } = useGetConfigurationChangeByDeviceQuery();
   const {
     data: fetchRecordsData,
     isSuccess: isFetchRecordsSuccess,
@@ -27,12 +35,23 @@ function Index() {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
   } = useGetConfigurationChangeByDeviceQuery();
+  
+  const {
+    data: backupSummaryData,
+    isSuccess: isBackupSummarySuccess,
+    isLoading: isBackupSummaryLoading,
+    isError: isBackupSummaryError,
+    error: backupSummaryError,
+  } = useGetConfigurationBackupSummaryQuery();
+  
 
   // console.log("data", fetchRecordsData)
 
-  const dataSource = useSelector(selectTableData);
+  const dataSource1 = useSelector(selectConfigurationBackupSummary);
+  const dataSource2 = useSelector( selectConfigurationChangeByDevice);
 
-  console.log("dataaaaaaaaa", dataSource);
+  console.log("dataaaaaaaaa1", dataSource1);
+  console.log("dataaaaaaaaa2", dataSource2);
   const companyData = {
     Cisco: 50,
     Fortinet: 10,
@@ -43,6 +62,9 @@ function Index() {
     Hp: 20,
     Juniper: 10,
   };
+  const backsummary={
+     backupSuccess: 4.2, backupFailure: 2, notBackup: 1 
+  }
   return (
     <>
    <Row gutter={[32, 32]} justify="space-between">
@@ -51,7 +73,8 @@ function Index() {
       <h6 className="heading">
         Configuration Backup Summary
       </h6>
-      <ConfigurationBackupSummary />
+      <ConfigurationBackupSummary data={dataSource1} />
+
     </div>
   </Col>
 
@@ -61,7 +84,9 @@ function Index() {
         Configuration Change by Device
       </h6>
       {/* <ChangeByTimeChart /> */}
-      <ConfigurationByTimeLineChart  companyData={dataSource}/>
+      <ConfigurationByTimeLineChart 
+      //  companyData={dataSource}
+  />
     </div>
   </Col>
 </Row>
