@@ -1,3 +1,4 @@
+import traceback
 from datetime import datetime, timedelta
 
 from fastapi import Request
@@ -10,7 +11,7 @@ from app.core.exceptions import AuthError
 from sqlalchemy.orm import Session
 
 from app.models.blacklisted_token import BlacklistedToken
-
+import sys
 from app.core.config import *
 
 pwd_context = CryptContext(schemes=["bcrypt"], deprecated="auto")
@@ -69,17 +70,22 @@ class JWTBearer(HTTPBearer):
     #         is_token_valid = True
     #     return is_token_valid
 
-    def verify_jwt(self, jwt_token: str) -> bool:
-        is_token_valid: bool = False
+    @staticmethod
+    def verify_jwt(jwt_token: str) -> bool:
         try:
-            payload = decode_jwt(jwt_token)
-        except Exception as e:
-            payload = None
+            is_token_valid: bool = False
+            try:
+                payload = decode_jwt(jwt_token)
+            except Exception as e:
+                payload = None
 
-        if payload:
-            # Check if token is blacklisted
-            with Database(configs.DATABASE_URI).session() as db:
-                blacklisted = db.query(BlacklistedToken).filter(BlacklistedToken.token == jwt_token).first()
-                if blacklisted is None:
-                    is_token_valid = True
-        return is_token_valid
+            if payload:
+                # Check if token is blacklisted
+                with Database(configs.DATABASE_URL).session() as db:
+                    blacklisted = db.query(BlacklistedToken).filter(BlacklistedToken.token == jwt_token).first()
+                    if blacklisted is None:
+                        is_token_valid = True
+            return is_token_valid
+        except Exception as e:
+            traceback.print_exc()
+            print("Error while JWT token",str(e),file=sys.stderr)

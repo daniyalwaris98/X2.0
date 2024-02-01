@@ -2,7 +2,7 @@ from dependency_injector.wiring import Provide, inject
 # from fastapi import Depends
 from jose import jwt
 from pydantic import ValidationError
-
+import sys
 from app.core.config import configs
 from app.core.container import Container
 from app.core.exceptions import AuthError
@@ -23,9 +23,11 @@ def get_current_user(
     try:
         payload = jwt.decode(token, configs.SECRET_KEY, algorithms=ALGORITHM)
         token_data = Payload(**payload)
+        print("token data for the payload is:::::::::::::::",token_data,file=sys.stderr)
     except (jwt.JWTError, ValidationError):
         raise AuthError(detail="Could not validate credentials")
-    current_user: User = service.get_by_id(token_data.id)
+    id = token_data.user_id
+    current_user: User = service.get_by_id(id)
     if not current_user:
         raise AuthError(detail="User not found")
     return current_user
