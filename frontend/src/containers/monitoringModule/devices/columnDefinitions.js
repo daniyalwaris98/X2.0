@@ -4,6 +4,7 @@ import { indexColumnNameConstants } from "./constants";
 import DefaultAnchor from "../../../components/anchor";
 
 export function useIndexTableColumnDefinitions({
+  pageEditable,
   handleEdit,
   handleIpAddressClick,
 } = {}) {
@@ -49,7 +50,17 @@ export function useIndexTableColumnDefinitions({
         </div>
       ),
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const dataKeys = columnDefinitions
     .map((item) => {

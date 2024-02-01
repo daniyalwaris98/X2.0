@@ -8,8 +8,10 @@ import { setSelectedInterface } from "../../../../store/features/monitoringModul
 import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
+import { useAuthorization } from "../../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
@@ -18,16 +20,29 @@ import DefaultTableConfigurations from "../../../../components/tableConfiguratio
 import DefaultSpinner from "../../../../components/spinners";
 import { PAGE_PATH as PAGE_PATH_BANDWIDTHS } from "../bandwidths/constants";
 import { LANDING_PAGE_PATH } from "../../devicesLanding";
-import { MODULE_PATH } from "../../index";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
+import { MODULE_PATH } from "../..";
 
 const Index = () => {
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
+
   // hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
