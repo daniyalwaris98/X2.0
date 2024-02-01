@@ -1,5 +1,6 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
 import { getPathAllSegments } from "../../utils/helpers";
@@ -204,10 +205,12 @@ import {
   PAGE_PATH as PAGE_PATH_V3_CREDENTIALS,
 } from "./manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
+import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
+
 export const MODULE_NAME = "Monitoring";
 export const MODULE_PATH = "monitoring_module";
 
-const menuItems = [
+let menuItems = [
   { id: PAGE_PATH_DEVICES, name: PAGE_NAME_DEVICES, path: PAGE_PATH_DEVICES },
   {
     id: DROPDOWN_PATH_NETWORKS,
@@ -220,12 +223,12 @@ const menuItems = [
           {
             id: PAGE_PATH_NETWORKS_ALL_DEVICES_DEVICES,
             name: PAGE_NAME_NETWORKS_ALL_DEVICES_DEVICES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_NETWORKS_ALL_DEVICES}/${PAGE_PATH_NETWORKS_ALL_DEVICES_DEVICES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_NETWORKS_ALL_DEVICES}/${PAGE_PATH_NETWORKS_ALL_DEVICES_DEVICES}`,
           },
           {
             id: PAGE_PATH_NETWORKS_ALL_DEVICES_INTERFACES,
             name: PAGE_NAME_NETWORKS_ALL_DEVICES_INTERFACES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_NETWORKS_ALL_DEVICES}/${PAGE_PATH_NETWORKS_ALL_DEVICES_INTERFACES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_NETWORKS_ALL_DEVICES}/${PAGE_PATH_NETWORKS_ALL_DEVICES_INTERFACES}`,
           },
         ],
       },
@@ -236,12 +239,12 @@ const menuItems = [
           {
             id: PAGE_PATH_ROUTERS_DEVICES,
             name: PAGE_NAME_ROUTERS_DEVICES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_ROUTERS}/${PAGE_PATH_ROUTERS_DEVICES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_ROUTERS}/${PAGE_PATH_ROUTERS_DEVICES}`,
           },
           {
             id: PAGE_PATH_ROUTERS_INTERFACES,
             name: PAGE_NAME_ROUTERS_INTERFACES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_ROUTERS}/${PAGE_PATH_ROUTERS_INTERFACES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_ROUTERS}/${PAGE_PATH_ROUTERS_INTERFACES}`,
           },
         ],
       },
@@ -252,12 +255,12 @@ const menuItems = [
           {
             id: PAGE_PATH_SWITCHES_DEVICES,
             name: PAGE_NAME_SWITCHES_DEVICES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_SWITCHES}/${PAGE_PATH_SWITCHES_DEVICES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_SWITCHES}/${PAGE_PATH_SWITCHES_DEVICES}`,
           },
           {
             id: PAGE_PATH_SWITCHES_INTERFACES,
             name: PAGE_NAME_SWITCHES_INTERFACES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_SWITCHES}/${PAGE_PATH_SWITCHES_INTERFACES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_SWITCHES}/${PAGE_PATH_SWITCHES_INTERFACES}`,
           },
         ],
       },
@@ -268,12 +271,12 @@ const menuItems = [
           {
             id: PAGE_PATH_FIREWALLS_DEVICES,
             name: PAGE_NAME_FIREWALLS_DEVICES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_FIREWALLS}/${PAGE_PATH_FIREWALLS_DEVICES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_FIREWALLS}/${PAGE_PATH_FIREWALLS_DEVICES}`,
           },
           {
             id: PAGE_PATH_FIREWALLS_INTERFACES,
             name: PAGE_NAME_FIREWALLS_INTERFACES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_FIREWALLS}/${PAGE_PATH_FIREWALLS_INTERFACES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_FIREWALLS}/${PAGE_PATH_FIREWALLS_INTERFACES}`,
           },
         ],
       },
@@ -284,12 +287,12 @@ const menuItems = [
           {
             id: PAGE_PATH_WIRELESS_DEVICES,
             name: PAGE_NAME_WIRELESS_DEVICES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_WIRELESS}/${PAGE_PATH_WIRELESS_DEVICES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_WIRELESS}/${PAGE_PATH_WIRELESS_DEVICES}`,
           },
           {
             id: PAGE_PATH_WIRELESS_INTERFACES,
             name: PAGE_NAME_WIRELESS_INTERFACES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_WIRELESS}/${PAGE_PATH_WIRELESS_INTERFACES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_NETWORKS}/${DROPDOWN_PATH_WIRELESS}/${PAGE_PATH_WIRELESS_INTERFACES}`,
           },
         ],
       },
@@ -306,12 +309,12 @@ const menuItems = [
           {
             id: PAGE_PATH_SERVERS_ALL_DEVICES_DEVICES,
             name: PAGE_NAME_SERVERS_ALL_DEVICES_DEVICES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_SERVERS_ALL_DEVICES}/${PAGE_PATH_SERVERS_ALL_DEVICES_DEVICES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_SERVERS_ALL_DEVICES}/${PAGE_PATH_SERVERS_ALL_DEVICES_DEVICES}`,
           },
           {
             id: PAGE_PATH_SERVERS_ALL_DEVICES_INTERFACES,
             name: PAGE_NAME_SERVERS_ALL_DEVICES_INTERFACES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_SERVERS_ALL_DEVICES}/${PAGE_PATH_SERVERS_ALL_DEVICES_INTERFACES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_SERVERS_ALL_DEVICES}/${PAGE_PATH_SERVERS_ALL_DEVICES_INTERFACES}`,
           },
         ],
       },
@@ -322,12 +325,12 @@ const menuItems = [
           {
             id: PAGE_PATH_LINUX_DEVICES,
             name: PAGE_NAME_LINUX_DEVICES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_LINUX}/${PAGE_PATH_LINUX_DEVICES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_LINUX}/${PAGE_PATH_LINUX_DEVICES}`,
           },
           {
             id: PAGE_PATH_LINUX_INTERFACES,
             name: PAGE_NAME_LINUX_INTERFACES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_LINUX}/${PAGE_PATH_LINUX_INTERFACES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_LINUX}/${PAGE_PATH_LINUX_INTERFACES}`,
           },
         ],
       },
@@ -338,12 +341,12 @@ const menuItems = [
           {
             id: PAGE_PATH_WINDOWS_DEVICES,
             name: PAGE_NAME_WINDOWS_DEVICES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_WINDOWS}/${PAGE_PATH_WINDOWS_DEVICES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_WINDOWS}/${PAGE_PATH_WINDOWS_DEVICES}`,
           },
           {
             id: PAGE_PATH_WINDOWS_INTERFACES,
             name: PAGE_NAME_WINDOWS_INTERFACES,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_WINDOWS}/${PAGE_PATH_WINDOWS_INTERFACES}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_SERVERS}/${DROPDOWN_PATH_WINDOWS}/${PAGE_PATH_WINDOWS_INTERFACES}`,
           },
         ],
       },
@@ -361,22 +364,22 @@ const menuItems = [
           {
             id: PAGE_PATH_ACCOUNTS,
             name: PAGE_NAME_ACCOUNTS,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ACCOUNTS}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ACCOUNTS}`,
           },
           {
             id: PAGE_PATH_S3,
             name: PAGE_NAME_S3,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_S3}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_S3}`,
           },
           {
             id: PAGE_PATH_EC2,
             name: PAGE_NAME_EC2,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_EC2}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_EC2}`,
           },
           {
             id: PAGE_PATH_ELB,
             name: PAGE_NAME_ELB,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ELB}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ELB}`,
           },
         ],
       },
@@ -389,7 +392,7 @@ const menuItems = [
       {
         id: PAGE_PATH_LOGIN_CREDENTIALS,
         name: PAGE_NAME_LOGIN_CREDENTIALS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
       },
       {
         id: DROPDOWN_PATH_SNMP_CREDENTIALS,
@@ -398,12 +401,12 @@ const menuItems = [
           {
             id: PAGE_PATH_V1_V2_CREDENTIALS,
             name: PAGE_NAME_V1_V2_CREDENTIALS,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
           },
           {
             id: PAGE_PATH_V3_CREDENTIALS,
             name: PAGE_NAME_V3_CREDENTIALS,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
           },
         ],
       },
@@ -412,6 +415,15 @@ const menuItems = [
 ];
 
 function Index(props) {
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
     pagePath = [PAGE_PATH_DEVICES];

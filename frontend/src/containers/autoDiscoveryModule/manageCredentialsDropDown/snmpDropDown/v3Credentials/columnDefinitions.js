@@ -3,7 +3,10 @@ import { Icon } from "@iconify/react";
 import { DefaultTextWithSwitch } from "../../../../../components/textWithSwitch";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
+export function useIndexTableColumnDefinitions({
+  pageEditable,
+  handleEdit,
+} = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.PROFILE_NAME,
     indexColumnNameConstants.USER_NAME,
@@ -42,7 +45,17 @@ export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
         </div>
       ),
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const dataKeys = columnDefinitions
     .map((item) => {

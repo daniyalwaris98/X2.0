@@ -31,11 +31,8 @@ import ncmActiveIcon from "../resources/svgs/ncmActiveIcon.svg";
 import logo from "../resources/svgs/logo.svg";
 import dayModeIcon from "../resources/svgs/dayModeIcon.svg";
 import nightModeIcon from "../resources/svgs/nightModeIcon.svg";
-import {
-  getPathSecondSegment,
-  getRoleConfigurationsFromToken,
-  isModuleAllowed,
-} from "../utils/helpers";
+import { useAuthentication, useAuthorization } from "../hooks/useAuth";
+import { getPathSecondSegment } from "../utils/helpers";
 import {
   MODULE_PATH as MODULE_PATH_ADMIN,
   MODULE_NAME as MODULE_NAME_ADMIN,
@@ -65,6 +62,7 @@ import {
   MODULE_NAME as MODULE_NAME_UAM,
 } from "../containers/uamModule";
 
+export const MAIN_LAYOUT_PATH = "monetx";
 const drawerWidth = 240;
 
 const openedMixin = (theme) => ({
@@ -122,7 +120,15 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Index() {
-  const roleConfigurations = getRoleConfigurationsFromToken();
+  const { checkTokenAndNavigate, handleLogout } = useAuthentication();
+  const { getUserInfoFromAccessToken, isModuleAllowed } = useAuthorization();
+
+  checkTokenAndNavigate();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
   const modulePath = getPathSecondSegment();
   const theme = useTheme();
   const { isDarkMode, setDarkMode } = useContext(AppContext);
@@ -268,7 +274,7 @@ export default function Index() {
               )}
             </div>
             &nbsp; &nbsp;
-            <ProfileContainer></ProfileContainer>
+            <ProfileContainer onClick={handleLogout}></ProfileContainer>
             &nbsp; &nbsp;
             <div>
               <div

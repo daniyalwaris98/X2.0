@@ -1,8 +1,9 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { getPathAllSegments } from "../../utils/helpers";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../utils/helpers";
 import {
   PAGE_NAME as PAGE_NAME_MANAGE_NETWORKS,
   PAGE_PATH as PAGE_PATH_MANAGE_NETWORKS,
@@ -35,11 +36,12 @@ import {
   PAGE_NAME as PAGE_NAME_V3_CREDENTIALS,
   PAGE_PATH as PAGE_PATH_V3_CREDENTIALS,
 } from "./manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
+import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 
 export const MODULE_NAME = "Auto Discovery";
 export const MODULE_PATH = "auto_discovery_module";
 
-const menuItems = [
+let menuItems = [
   {
     id: PAGE_PATH_MANAGE_NETWORKS,
     name: PAGE_NAME_MANAGE_NETWORKS,
@@ -62,7 +64,7 @@ const menuItems = [
       {
         id: PAGE_PATH_LOGIN_CREDENTIALS,
         name: PAGE_NAME_LOGIN_CREDENTIALS,
-        path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
+        path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
       },
       {
         id: DROPDOWN_PATH_SNMP_CREDENTIALS,
@@ -71,12 +73,12 @@ const menuItems = [
           {
             id: PAGE_PATH_V1_V2_CREDENTIALS,
             name: PAGE_NAME_V1_V2_CREDENTIALS,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
           },
           {
             id: PAGE_PATH_V3_CREDENTIALS,
             name: PAGE_NAME_V3_CREDENTIALS,
-            path: `/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
+            path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
           },
         ],
       },
@@ -85,6 +87,15 @@ const menuItems = [
 ];
 
 function Index(props) {
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
     pagePath = [PAGE_PATH_MANAGE_NETWORKS];

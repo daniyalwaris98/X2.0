@@ -1,4 +1,5 @@
-import React from "react";
+import React, { useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Grid from "@mui/material/Grid";
 import { yupResolver } from "@hookform/resolvers/yup";
@@ -10,6 +11,7 @@ import DefaultFormUnit from "../../components/formUnits";
 import { LoginDialogFooter } from "../../components/dialogFooters";
 import DefaultSpinner from "../../components/spinners";
 import { indexColumnNameConstants } from "./constants";
+import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.USER_NAME]: yup
@@ -21,9 +23,8 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose }) => {
-  // states
-
-  // useForm hook
+  // hooks
+  const navigate = useNavigate();
   const { handleSubmit, control } = useForm({
     resolver: yupResolver(schema),
   });
@@ -48,6 +49,13 @@ const Index = ({ handleClose }) => {
     error: addLoginError,
     type: TYPE_SINGLE,
   });
+
+  // effects
+  useEffect(() => {
+    if (isLoginSuccess) {
+      navigate(`/${MAIN_LAYOUT_PATH}`);
+    }
+  }, [navigate, isLoginSuccess]);
 
   // on form submit
   const onSubmit = (data) => {

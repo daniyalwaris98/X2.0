@@ -7,8 +7,10 @@ import { setSelectedInterface } from "../../../../store/features/monitoringModul
 import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/bandwidths/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
+import { useAuthorization } from "../../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
@@ -23,12 +25,26 @@ import { indexColumnNameConstants as interfacesColumnNameConstants } from "../in
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
+import { MODULE_PATH } from "../..";
 
 const Index = () => {
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
+
   // hooks
   const dispatch = useDispatch();
   const { handleSuccessAlert } = useSweetAlert();

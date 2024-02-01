@@ -22,7 +22,7 @@ import { TABLE_DATA_UNIQUE_ID } from "../configurationBackups/constants";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import { PAGE_NAME } from "./constants";
 
-const Index = ({ handleClose, open, ncmDeviceId }) => {
+const Index = ({ handleClose, open, ncmDeviceId, pageEditable }) => {
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -34,7 +34,7 @@ const Index = ({ handleClose, open, ncmDeviceId }) => {
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_restore: {
       handleClick: handleAdd,
-      visible: selectedRowKeys.length > 0,
+      visible: selectedRowKeys.length > 0 && pageEditable,
     },
   });
 
@@ -130,7 +130,7 @@ const Index = ({ handleClose, open, ncmDeviceId }) => {
               buttonsConfigurationList={buttonsConfigurationList}
               displayColumns={displayColumns}
               dataSource={dataSource}
-              selectedRowKeys={selectedRowKeys}
+              selectedRowKeys={pageEditable ? selectedRowKeys : null}
               setSelectedRowKeys={setSelectedRowKeys}
               dynamicWidth={false}
               scroll={false}

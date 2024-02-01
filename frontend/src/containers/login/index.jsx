@@ -4,7 +4,6 @@ import Form from "./form";
 import { getRoleConfigurationsFromAccessToken } from "../../utils/helpers";
 
 function Index(props) {
-  getRoleConfigurationsFromAccessToken();
   return (
     <div style={{ height: "96vh", display: "flex", padding: "2vh" }}>
       <div style={{ position: "relative", width: "50%" }}>

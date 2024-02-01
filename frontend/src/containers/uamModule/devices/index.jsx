@@ -11,6 +11,7 @@ import {
   DISMANTLE_SELECTION_PROMPT,
   SUCCESSFUL_FILE_EXPORT_MESSAGE,
 } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
@@ -25,12 +26,24 @@ import DetailsByIPAdressModal from "./modal";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // states required in hooks
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
@@ -45,7 +58,7 @@ const Index = () => {
     default_export: { handleClick: handleDefaultExport },
     default_dismantle: {
       handleClick: handleDismantle,
-      visible: selectedRowKeys.length > 0,
+      visible: selectedRowKeys.length > 0 && pageEditable,
     },
   });
 
@@ -167,7 +180,7 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        selectedRowKeys={selectedRowKeys}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
     </DefaultSpinner>

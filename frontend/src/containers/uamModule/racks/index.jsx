@@ -6,6 +6,12 @@ import {
   useDeleteRecordsMutation,
 } from "../../../store/features/uamModule/racks/apis";
 import { jsonToExcel } from "../../../utils/helpers";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling from "../../../hooks/useErrorHandling";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
@@ -19,35 +25,49 @@ import Modal from "./modal";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   DEFAULT_RACK,
   indexColumnNameConstants,
 } from "./constants";
-import {
-  DELETE_PROMPT,
-  DELETE_SELECTION_PROMPT,
-  SUCCESSFUL_FILE_EXPORT_MESSAGE,
-} from "../../../utils/constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // states required in hooks
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    pageEditable,
+    handleEdit,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
     default_delete: {
       handleClick: handleDelete,
-      visible: selectedRowKeys.length > 0,
+      visible: selectedRowKeys.length > 0 && pageEditable,
     },
-    default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
+    default_add: {
+      handleClick: handleDefaultAdd,
+      namePostfix: ELEMENT_NAME,
+      visible: pageEditable,
+    },
   });
 
   // states
@@ -197,7 +217,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
         getCheckboxProps={getCheckboxProps}
-        selectedRowKeys={selectedRowKeys}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
     </DefaultSpinner>

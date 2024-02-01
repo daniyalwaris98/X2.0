@@ -7,6 +7,7 @@ import { setSelectedDevice } from "../../../../../store/features/monitoringModul
 import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/serversDropDown/linux/devices/apis";
 import { jsonToExcel } from "../../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../../utils/constants";
+import { useAuthorization } from "../../../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
 } from "../../../../../hooks/useErrorHandling";
@@ -18,15 +19,28 @@ import DefaultTableConfigurations from "../../../../../components/tableConfigura
 import DefaultSpinner from "../../../../../components/spinners";
 import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../../../devicesLanding/summary/constants";
 import { LANDING_PAGE_PATH } from "../../../devicesLanding";
-import { MODULE_PATH } from "../../../index";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
+  PAGE_PATH,
   DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
+import { MODULE_PATH } from "../../..";
 
 const Index = () => {
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
+
   // hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();

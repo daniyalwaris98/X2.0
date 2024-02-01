@@ -3,6 +3,8 @@ import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/monitoringModule/alerts/selectors";
 import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/alerts/apis";
 import { jsonToExcel } from "../../../utils/helpers";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -14,12 +16,25 @@ import DefaultSpinner from "../../../components/spinners";
 import AlertHistoryModal from "./alertHistoryModal";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
+
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({

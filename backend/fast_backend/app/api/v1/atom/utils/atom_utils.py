@@ -870,6 +870,7 @@ def edit_password_group_util(pass_obj):
             return f"Password Group (default_password) Is Not Editable", 400
 
         name_response, status = validate_password_group_name(pass_obj)
+        print("validate passsword group staus is::::::::::",status,file=sys.stderr)
 
         if status != 200:
             return name_response, status
@@ -891,6 +892,7 @@ def edit_password_group_util(pass_obj):
             return password_exist, status
 
         status = UpdateDBData(password_exist)
+        print("status updated db data us::::::::::::::",status,file=sys.stderr)
         if status == 200:
             pass_data = dict(pass_obj)
             password_group_id = password_group.password_group_id

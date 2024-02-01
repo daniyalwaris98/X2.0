@@ -1,6 +1,8 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
 
+import { MAIN_LAYOUT_PATH } from "../layouts/mainLayout";
+
 import AdminModule from "../containers/adminModule";
 import { MODULE_PATH } from "../containers/adminModule";
 
@@ -25,22 +27,14 @@ import { PAGE_PATH as PAGE_PATH_MONITORING } from "../containers/adminModule/fai
 import NCM from "../containers/adminModule/failedDevicesLanding/ncm";
 import { PAGE_PATH as PAGE_PATH_NCM } from "../containers/adminModule/failedDevicesLanding/ncm/constants";
 
-
 import Dashboard from "../containers/adminModule/dashboard";
 import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../containers/adminModule/dashboard/constants";
-
 
 import UAM from "../containers/adminModule/failedDevicesLanding/uam";
 import { PAGE_PATH as PAGE_PATH_UAM } from "../containers/adminModule/failedDevicesLanding/uam/constants";
 
-const routes = {
-  path: MODULE_PATH,
-  element: <AdminModule />,
-  children: [
-    {
-      path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_DASHBOARD} replace />,
-    },
+export default function moduleRoutes(roleConfigurations, authorizePageRoutes) {
+  const routes = [
     {
       path: PAGE_PATH_DASHBOARD,
       element: <Dashboard />,
@@ -56,13 +50,9 @@ const routes = {
     {
       path: LANDING_PAGE_PATH_FAILED_DEVICES,
       element: <FailedDevicesLanding />,
-    },
-    {
-      path: LANDING_PAGE_PATH_FAILED_DEVICES,
-      element: <FailedDevicesLanding />,
       children: [
         {
-          path: `/${MODULE_PATH}/${LANDING_PAGE_PATH_FAILED_DEVICES}`,
+          path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH_FAILED_DEVICES}`,
           element: <Navigate to={PAGE_PATH_AUTO_DISCOVERY} replace />,
         },
         {
@@ -87,7 +77,19 @@ const routes = {
         },
       ],
     },
-  ],
-};
+  ];
 
-export default routes;
+  // Authorize module page routes
+  const authorizedPageRoutes = authorizePageRoutes({
+    module: MODULE_PATH,
+    pageRoutes: routes,
+    roleConfigurations,
+    defaultPagePath: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}`,
+  });
+
+  return {
+    path: MODULE_PATH,
+    element: <AdminModule />,
+    children: authorizedPageRoutes,
+  };
+}

@@ -23,7 +23,7 @@ import {
   SUCCESSFUL_FILE_EXPORT_MESSAGE,
 } from "../../../../utils/constants";
 
-const Index = ({ ncmHistoryId }) => {
+const Index = ({ ncmHistoryId, pageEditable }) => {
   // selectors
   const dataSource = useSelector(selectConfigurationBackupDetails);
 
@@ -34,7 +34,7 @@ const Index = ({ ncmHistoryId }) => {
   const { handleSuccessAlert, handleCallbackAlert } = useSweetAlert();
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_export: { handleClick: handleDefaultExport },
-    default_delete: { handleClick: handleDelete },
+    default_delete: { handleClick: handleDelete, visible: pageEditable },
   });
 
   // apis

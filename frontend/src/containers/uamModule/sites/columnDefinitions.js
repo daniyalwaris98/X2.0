@@ -2,7 +2,10 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { DEFAULT_SITE, indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
+export function useIndexTableColumnDefinitions({
+  pageEditable,
+  handleEdit,
+} = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.SITE_NAME,
     indexColumnNameConstants.STATUS,
@@ -35,7 +38,17 @@ export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
         ) : null;
       },
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const plainColumnDefinitions = [
     indexColumnNameConstants.SITE_NAME,

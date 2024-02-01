@@ -17,6 +17,7 @@ import {
   DELETE_SELECTION_PROMPT,
   SUCCESSFUL_FILE_EXPORT_MESSAGE,
 } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
@@ -35,9 +36,23 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   FILE_NAME_EXPORT_TEMPLATE,
   TABLE_DATA_UNIQUE_ID,
+  PAGE_PATH,
 } from "./constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
+
   // states required in hooks
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
@@ -45,6 +60,7 @@ const Index = () => {
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
@@ -54,10 +70,14 @@ const Index = () => {
       template_export: { handleClick: handleExport },
       default_delete: {
         handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
+        visible: selectedRowKeys.length > 0 && pageEditable,
       },
-      default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
-      default_import: { handleClick: handleInputClick },
+      default_add: {
+        handleClick: handleAdd,
+        namePostfix: ELEMENT_NAME,
+        visible: pageEditable,
+      },
+      default_import: { handleClick: handleInputClick, visible: pageEditable },
     });
 
   // refs
@@ -231,7 +251,7 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        selectedRowKeys={selectedRowKeys}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
     </DefaultSpinner>

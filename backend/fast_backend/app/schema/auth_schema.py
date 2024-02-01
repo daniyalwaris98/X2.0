@@ -49,3 +49,10 @@ class Payload(BaseModel):
 class SignInResponse(BaseModel):
     data:dict
     message:str
+
+
+class VerifyAccessTokenResponseSchema(BaseModel):
+    access_token:str
+
+
+

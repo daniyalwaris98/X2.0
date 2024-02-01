@@ -5,5 +5,5 @@ from .base_model import BaseModel
 class BlacklistedToken(BaseModel):
     __tablename__ = "blacklisted_token"
 
-    token = Column(String(255), unique=True, index=True)
-    email = Column(String(255), index=True)
+    token = Column(String(5500), unique=True, index=True)
+    email = Column(String(255), index=True,nullable=True)

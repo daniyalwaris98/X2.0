@@ -1,5 +1,4 @@
 import React, { useState, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
 import { useNavigate } from "react-router-dom";
 import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
@@ -23,6 +22,7 @@ import {
   DELETE_SELECTION_PROMPT,
   SUCCESSFUL_FILE_EXPORT_MESSAGE,
 } from "../../../../utils/constants";
+import { useAuthorization } from "../../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
@@ -35,7 +35,6 @@ import DefaultTableConfigurations from "../../../../components/tableConfiguratio
 import DefaultSpinner from "../../../../components/spinners";
 import { PAGE_PATH as PAGE_PATH_IP_DETAILS } from "../ipDetails/constants";
 import { DROPDOWN_PATH } from "../../subnetsDropDown";
-import { MODULE_PATH } from "../../index";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import Modal from "./modal";
 import {
@@ -47,10 +46,22 @@ import {
   indexColumnNameConstants,
   PORT_SCAN,
   DNS_SCAN,
+  PAGE_PATH,
 } from "./constants";
+import { MODULE_PATH } from "../..";
 
 const Index = () => {
-  // states required in hooks
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
@@ -59,6 +70,7 @@ const Index = () => {
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
     handleIpAddressClick,
   });
@@ -69,17 +81,22 @@ const Index = () => {
       template_export: { handleClick: handleExport },
       bulk_scan: {
         handleClick: handleBulkScan,
+        visible: pageEditable,
       },
       default_scan: {
         handleClick: handleDefaultScan,
-        visible: selectedRowKeys.length > 0,
+        visible: selectedRowKeys.length > 0 && pageEditable,
       },
       default_delete: {
         handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
+        visible: selectedRowKeys.length > 0 && pageEditable,
       },
-      default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
-      default_import: { handleClick: handleInputClick },
+      default_add: {
+        handleClick: handleDefaultAdd,
+        namePostfix: ELEMENT_NAME,
+        visible: pageEditable,
+      },
+      default_import: { handleClick: handleInputClick, visible: pageEditable },
     });
 
   // refs
@@ -316,7 +333,7 @@ const Index = () => {
           buttonsConfigurationList={buttonsConfigurationList}
           displayColumns={displayColumns}
           dataSource={dataSource}
-          selectedRowKeys={selectedRowKeys}
+          selectedRowKeys={pageEditable ? selectedRowKeys : null}
           setSelectedRowKeys={setSelectedRowKeys}
         />
       </div>

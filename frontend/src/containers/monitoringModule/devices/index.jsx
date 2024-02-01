@@ -8,6 +8,7 @@ import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features
 import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/devices/apis";
 import { jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -17,7 +18,6 @@ import DefaultSpinner from "../../../components/spinners";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../devicesLanding/summary/constants";
 import { LANDING_PAGE_PATH } from "../devicesLanding";
-import { MODULE_PATH } from "../index";
 import AddModal from "./addModal";
 import UpdateModal from "./updateModal";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
@@ -26,14 +26,29 @@ import {
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  PAGE_PATH,
 } from "./constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
+
   // hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
     handleIpAddressClick,
   });
@@ -41,8 +56,12 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    start_monitoring: { handleClick: handleAdd },
-    default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
+    start_monitoring: { handleClick: handleAdd, visible: pageEditable },
+    default_add: {
+      handleClick: handleAdd,
+      namePostfix: ELEMENT_NAME,
+      visible: pageEditable,
+    },
   });
 
   // states

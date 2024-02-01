@@ -1,10 +1,7 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
-import {
-  getPathAllSegments,
-  getRoleConfigurationsFromToken,
-  isPageAllowed,
-} from "../../utils/helpers";
+import { getPathAllSegments } from "../../utils/helpers";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
 import {
@@ -19,21 +16,28 @@ import {
 export const MODULE_NAME = "Atom";
 export const MODULE_PATH = "atom_module";
 
-function Index(props) {
-  const roleConfigurations = getRoleConfigurationsFromToken();
+let menuItems = [
+  {
+    id: PAGE_PATH_ATOMS,
+    name: PAGE_NAME_ATOMS,
+    path: PAGE_PATH_ATOMS,
+  },
+  {
+    id: PAGE_PATH_PASSWORD_GROUPS,
+    name: PAGE_NAME_PASSWORD_GROUPS,
+    path: PAGE_PATH_PASSWORD_GROUPS,
+  },
+];
 
-  const menuItems = [
-    {
-      id: PAGE_PATH_ATOMS,
-      name: PAGE_NAME_ATOMS,
-      path: PAGE_PATH_ATOMS,
-    },
-    {
-      id: PAGE_PATH_PASSWORD_GROUPS,
-      name: PAGE_NAME_PASSWORD_GROUPS,
-      path: PAGE_PATH_PASSWORD_GROUPS,
-    },
-  ].filter((item) => isPageAllowed(roleConfigurations, MODULE_PATH, item.path));
+function Index(props) {
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
 
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {

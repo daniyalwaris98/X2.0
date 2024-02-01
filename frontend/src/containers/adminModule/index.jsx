@@ -1,8 +1,9 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { getPathAllSegments } from "../../utils/helpers";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../utils/helpers";
 import {
   PAGE_NAME as PAGE_NAME_MEMBERS,
   PAGE_PATH as PAGE_PATH_MEMBERS,
@@ -19,7 +20,7 @@ import {
 export const MODULE_NAME = "Admin";
 export const MODULE_PATH = "admin_module";
 
-const menuItems = [
+let menuItems = [
   { id: PAGE_PATH_MEMBERS, name: PAGE_NAME_MEMBERS, path: PAGE_PATH_MEMBERS },
   {
     id: LANDING_PAGE_PATH_FAILED_DEVICE,
@@ -30,6 +31,15 @@ const menuItems = [
 ];
 
 function Index(props) {
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
   let pagePath = getPathAllSegments();
   if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
     pagePath = [PAGE_PATH_MEMBERS];

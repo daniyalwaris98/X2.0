@@ -1,6 +1,5 @@
 import React, { useState, useRef } from "react";
 import { useSelector } from "react-redux";
-import { selectRoleConfigurations } from "../../../store/features/login/selectors";
 import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
 import {
   useFetchRecordsQuery,
@@ -13,8 +12,6 @@ import {
   convertToJson,
   handleFileChange,
   generateObject,
-  isPageEditable,
-  getRoleConfigurationsFromToken,
 } from "../../../utils/helpers";
 import {
   DELETE_PROMPT,
@@ -26,8 +23,11 @@ import {
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
+import { useAuthorization } from "../../../hooks/useAuth";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import DefaultPageTableSection from "../../../components/pageSections";
 import DefaultSpinner from "../../../components/spinners";
@@ -37,6 +37,7 @@ import PasswordGroupModal from "../passwordGroups/modal";
 import Modal from "./modal";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import AddFromAutoDiscoveryModal from "./addFromAutoDiscoveryModal";
+import { MODULE_PATH } from "..";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
@@ -49,18 +50,23 @@ import {
   ATOM_TRANSITION_ID,
   PAGE_PATH,
 } from "./constants";
-import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // selectors
-  const dataSource = useSelector(selectTableData);
-  const roleConfigurations = getRoleConfigurationsFromToken();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
 
   // states
   const [pageEditable, setPageEditable] = useState(
     isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
   );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
+
+  // selectors
+  const dataSource = useSelector(selectTableData);
 
   // apis required in hooks
   const {
@@ -75,13 +81,18 @@ const Index = () => {
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
     useButtonsConfiguration({
       configure_table: { handleClick: handleTableConfigurationsOpen },
-      atom_export: { handleClick: handleExport },
+      default_atom_export: {
+        handleClick: handleExport,
+        visible: !pageEditable,
+      },
+      atom_export: { handleClick: handleExport, visible: pageEditable },
       default_delete: {
         handleClick: handleDelete,
         visible: selectedRowKeys.length > 0 && pageEditable,
@@ -342,6 +353,8 @@ const Index = () => {
         dataSource.filter((item) => item.hasOwnProperty(ATOM_TRANSITION_ID)),
         FILE_NAME_EXPORT_INCOMPLETE_DATA
       );
+    } else {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     }
     handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
