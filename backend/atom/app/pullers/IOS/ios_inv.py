@@ -47,8 +47,15 @@ class IOSPuller(object):
         login_exception = None
         while c < login_tries :
             try:
-                device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'], device_type=host['device_type'], timeout=600, global_delay_factor=2, banner_timeout=300)
-                # device = ConnectHandler(**host)
+                device = Netmiko(host=host['ip_address'], 
+                                 username=host['username'],
+                                password=host['password'], 
+                                device_type=host['device_type'], 
+                                
+                                timeout=600, 
+                                global_delay_factor=2, banner_timeout=300)
+                
+                # device = ConnectHandler(**device)
                 # device.enable()
                 print(device,file=sys.stderr)
                 print(f"Success: logged in {host['ip_address']}",file=sys.stderr)

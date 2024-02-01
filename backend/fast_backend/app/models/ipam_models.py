@@ -93,6 +93,7 @@ class subnet_table(Base):
     scan_date = Column(DateTime,nullable=True)
     discovered = Column(String(40),nullable=True)
     status = Column(String(45),nullable=True)
+    subnet_state = Column(String(255),nullable=True)
     ipam_device_id = Column(Integer,
         ForeignKey('ipam_devices_fetch_table.ipam_device_id'
                    ),
