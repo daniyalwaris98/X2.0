@@ -2,7 +2,7 @@ export const DESCRIPTIVE_PAGE_NAME = "Wireless Devices";
 export const PAGE_NAME = "Devices";
 export const ELEMENT_NAME = "Device";
 export const PAGE_PATH = "wireless_devices";
-export const FILE_NAME_EXPORT_ALL_DATA = "wireless_devices";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_wireless_devices";
 export const TABLE_DATA_UNIQUE_ID = "device_id";
 export const indexColumnNameConstants = {
   DEVICE_ID: TABLE_DATA_UNIQUE_ID,

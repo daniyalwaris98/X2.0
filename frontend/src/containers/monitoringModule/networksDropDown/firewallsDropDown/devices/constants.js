@@ -2,7 +2,7 @@ export const DESCRIPTIVE_PAGE_NAME = "Firewalls Devices";
 export const PAGE_NAME = "Devices";
 export const ELEMENT_NAME = "Device";
 export const PAGE_PATH = "firewalls_devices";
-export const FILE_NAME_EXPORT_ALL_DATA = "firewalls_devices";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_firewalls_devices";
 export const TABLE_DATA_UNIQUE_ID = "device_id";
 export const indexColumnNameConstants = {
   DEVICE_ID: TABLE_DATA_UNIQUE_ID,
