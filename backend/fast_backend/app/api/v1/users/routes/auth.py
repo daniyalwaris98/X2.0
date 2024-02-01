@@ -6,10 +6,14 @@ from fastapi.responses import JSONResponse
 from app.core.container import Container
 from app.core.dependencies import get_current_active_user
 from app.models.users_models import UserTableModel as User
-from app.schema.auth_schema import SignIn, SignUp, SignInResponse, SignInNew
+from app.schema.auth_schema import SignIn, SignUp, SignInResponse, SignInNew,VerifyAccessTokenResponseSchema
 from app.schema.users_schema import User as UserSchema
 from app.services.auth_service import AuthService
 # from fastapi.status import HTTP_204_NO_CONTENT
+from app.core.security import JWTBearer
+
+
+
 
 from app.core.security import JWTBearer
 
@@ -60,3 +64,36 @@ async def sign_out(
         return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Logout successfully"})
     except Exception as e:
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
+
+
+
+@router.post('/validate_sign_in_token',responses={
+    200:{"model":SignInResponse},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to validate the sign in token",
+description="API to validate the signin token"
+)
+def validate_sign_in_token(token:VerifyAccessTokenResponseSchema):
+    try:
+        print("token is:::::::::::::::::",token,file=sys.stderr)
+        data = {}
+        jwt_token = token.access_token
+        print("jwt token is:::::::::::::::::::::::::::",jwt_token,file=sys.stderr)
+        status = JWTBearer.verify_jwt(jwt_token)
+        print("staus is:::::::::::::::::::::::::",status,file=sys.stderr)
+        if status:
+            data["token"] ={
+                "access_token": status
+            }
+            data['message'] = f"Token validated"
+        else:
+            data["token"] = {
+                "access_token": status
+            }
+            data['message'] = f"Token Not Invalidated"
+        return JSONResponse(content=data,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while validating the sign in token",status_code=500)
