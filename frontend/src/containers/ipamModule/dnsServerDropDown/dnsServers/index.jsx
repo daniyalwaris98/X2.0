@@ -15,6 +15,7 @@ import {
   DELETE_SELECTION_PROMPT,
   SUCCESSFUL_FILE_EXPORT_MESSAGE,
 } from "../../../../utils/constants";
+import { useAuthorization } from "../../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_SINGLE,
@@ -28,7 +29,6 @@ import DefaultPageTableSection from "../../../../components/pageSections";
 import DefaultSpinner from "../../../../components/spinners";
 import { PAGE_PATH as PAGE_PATH_DNS_ZONES } from "../dnsZones/constants";
 import { DROPDOWN_PATH } from "../../dnsServerDropDown";
-import { MODULE_PATH } from "../../index";
 import Modal from "./modal";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
@@ -37,10 +37,22 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
+  PAGE_PATH,
 } from "./constants";
+import { MODULE_PATH } from "../..";
 
 const Index = () => {
-  // states required in hooks
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
@@ -49,6 +61,7 @@ const Index = () => {
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
     handleScan,
     handleIpAddressClick,
@@ -59,9 +72,13 @@ const Index = () => {
     default_export: { handleClick: handleDefaultExport },
     default_delete: {
       handleClick: handleDelete,
-      visible: selectedRowKeys.length > 0,
+      visible: selectedRowKeys.length > 0 && pageEditable,
     },
-    default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
+    default_add: {
+      handleClick: handleAdd,
+      namePostfix: ELEMENT_NAME,
+      visible: pageEditable,
+    },
   });
 
   // states

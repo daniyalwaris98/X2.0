@@ -12,6 +12,7 @@ import {
 } from "../../../../store/features/ipamModule/subnetsDropDown/ipDetails/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
+import { useAuthorization } from "../../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
 } from "../../../../hooks/useErrorHandling";
@@ -25,7 +26,6 @@ import DefaultDetailCards from "../../../../components/detailCards";
 import firewallIcon from "../../../../resources/designRelatedSvgs/firewall.svg";
 import deviceIcon from "../../../../resources/designRelatedSvgs/otherDevices.svg";
 import switchIcon from "../../../../resources/designRelatedSvgs/switches.svg";
-import { MODULE_PATH } from "../../index";
 import { DROPDOWN_PATH } from "../../subnetsDropDown";
 import { PAGE_PATH as PAGE_PATH_IP_HISTORY } from "../ipHistory/constants";
 import { indexColumnNameConstants as subnetsColumnNameConstants } from "../subnets/constants";
@@ -34,13 +34,26 @@ import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  PAGE_PATH,
 } from "./constants";
+import { MODULE_PATH } from "../..";
 
 const Index = () => {
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
     handleIpAddressClick,

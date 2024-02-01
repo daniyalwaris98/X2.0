@@ -6,6 +6,7 @@ import { DefaultTextWithSwitch } from "../../../../components/textWithSwitch";
 import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({
+  pageEditable,
   handleEdit,
   handleScan,
   handleIpAddressClick,
@@ -60,7 +61,17 @@ export function useIndexTableColumnDefinitions({
         </div>
       ),
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const dataKeys = columnDefinitions
     .map((item) => {

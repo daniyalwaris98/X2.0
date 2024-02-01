@@ -12,6 +12,11 @@ export default function useButtonsConfiguration(buttonDetails) {
       COMPLETE: "complete",
       INCOMPLETE: "incomplete",
     },
+    default_atom_export: {
+      ALL_DATA: "all_data",
+      COMPLETE: "complete",
+      INCOMPLETE: "incomplete",
+    },
     atom_add: {
       ADD_MANUALLY: "add_manually",
       FROM_DISCOVERY: "from_discovery",
@@ -82,6 +87,41 @@ export default function useButtonsConfiguration(buttonDetails) {
       sx: {
         backgroundColor: theme?.palette?.default_button?.import_background,
         color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_atom_export: {
+      category: "dropDown",
+      name: "Export",
+      icon: <Icon fontSize="16px" icon="fe:export" />,
+      options: [
+        {
+          type: optionConstants.atom_export.ALL_DATA,
+          icon: <Icon fontSize="16px" icon="icon-park-outline:data-all" />,
+        },
+        {
+          type: optionConstants.atom_export.COMPLETE,
+          icon: (
+            <Icon
+              fontSize="16px"
+              icon="ep:success-filled"
+              color={theme?.palette?.icon?.complete}
+            />
+          ),
+        },
+        {
+          type: optionConstants.atom_export.INCOMPLETE,
+          icon: (
+            <Icon
+              fontSize="16px"
+              icon="material-symbols:info"
+              color={theme?.palette?.icon?.incomplete}
+            />
+          ),
+        },
+      ],
+      sx: {
+        backgroundColor: theme?.palette?.drop_down_button?.export_background,
+        color: theme?.palette?.drop_down_button?.export_text,
       },
     },
     atom_export: {

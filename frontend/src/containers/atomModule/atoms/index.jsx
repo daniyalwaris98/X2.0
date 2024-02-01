@@ -88,7 +88,11 @@ const Index = () => {
   const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
     useButtonsConfiguration({
       configure_table: { handleClick: handleTableConfigurationsOpen },
-      atom_export: { handleClick: handleExport },
+      default_atom_export: {
+        handleClick: handleExport,
+        visible: !pageEditable,
+      },
+      atom_export: { handleClick: handleExport, visible: pageEditable },
       default_delete: {
         handleClick: handleDelete,
         visible: selectedRowKeys.length > 0 && pageEditable,
@@ -349,6 +353,8 @@ const Index = () => {
         dataSource.filter((item) => item.hasOwnProperty(ATOM_TRANSITION_ID)),
         FILE_NAME_EXPORT_INCOMPLETE_DATA
       );
+    } else {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     }
     handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }

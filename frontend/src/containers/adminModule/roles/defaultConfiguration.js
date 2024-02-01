@@ -58,7 +58,7 @@ export const defaultConfiguration = {
   [MODULE_PATH_ATOM]: {
     view: true,
     pages: {
-      [PAGE_PATH_ATOMS]: { view: true, read_only: false },
+      [PAGE_PATH_ATOMS]: { view: true, read_only: true },
       [PAGE_PATH_PASSWORD_GROUPS]: { view: true, read_only: false },
     },
   },
@@ -71,7 +71,7 @@ export const defaultConfiguration = {
       [PAGE_PATH_DISCOVERY]: { view: true, read_only: false },
       [PAGE_PATH_LOGIN_CREDENTIALS]: { view: true, read_only: false },
       [PAGE_PATH_V1_V2_CREDENTIALS]: { view: true, read_only: false },
-      [PAGE_PATH_V3_CREDENTIALS]: { view: false, read_only: false },
+      [PAGE_PATH_V3_CREDENTIALS]: { view: true, read_only: false },
       [PAGE_PATH_MANAGE_DEVICES]: { view: true, read_only: false },
       [PAGE_PATH_MANAGE_NETWORKS]: { view: true, read_only: false },
     },
@@ -127,7 +127,7 @@ export const defaultConfiguration = {
   [MODULE_PATH_UAM]: {
     view: true,
     pages: {
-      sites: { view: true, read_only: false },
+      sites: { view: false, read_only: false },
       racks: { view: true, read_only: false },
       devices: { view: true, read_only: false },
       modules: { view: true, read_only: false },

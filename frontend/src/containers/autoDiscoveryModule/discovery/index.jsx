@@ -8,13 +8,14 @@ import {
 } from "../../../store/features/autoDiscoveryModule/discovery/apis";
 import { jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
-import DefaultPageTableSection from "../../../components/pageSections";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
-import DefaultSpinner from "../../../components/spinners";
+import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import FunctionCounts from "./functionCounts";
 import StartScanningBar from "./startScanningBar";
@@ -24,9 +25,23 @@ import {
   TABLE_DATA_UNIQUE_ID,
   ALL,
   indexColumnNameConstants,
+  PAGE_PATH,
 } from "./constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
+
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({});
@@ -153,7 +168,9 @@ const Index = () => {
 
       <FunctionCounts />
 
-      <StartScanningBar handleChange={handleSubnetChange} />
+      {pageEditable ? (
+        <StartScanningBar handleChange={handleSubnetChange} />
+      ) : null}
 
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}
