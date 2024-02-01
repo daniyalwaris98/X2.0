@@ -2,7 +2,7 @@ import React from "react";
 import { Icon } from "@iconify/react";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
+export function useIndexTableColumnDefinitions({ pageEditable, handleEdit }) {
   const columnDefinitions = [
     indexColumnNameConstants.PN_CODE,
     indexColumnNameConstants.HW_EOL_DATE,
@@ -33,7 +33,17 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         </div>
       ),
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const dataKeys = columnDefinitions
     .map((item) => {

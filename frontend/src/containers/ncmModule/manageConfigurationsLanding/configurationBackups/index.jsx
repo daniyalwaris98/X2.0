@@ -7,6 +7,7 @@ import {
   useFetchRecordsMutation,
   useBackupSingleNcmConfigurationByNcmDeviceIdMutation,
 } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
+import { useAuthorization } from "../../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_SINGLE,
   TYPE_FETCH,
@@ -21,16 +22,31 @@ import CompareModal from "./compareModal";
 import RestoreModal from "./restoreModal";
 import BackupDetails from "./backupDetails";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import { PAGE_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
+import { PAGE_NAME, PAGE_PATH, TABLE_DATA_UNIQUE_ID } from "./constants";
+import { MODULE_PATH } from "../..";
 
 const Index = () => {
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
+
   // hooks
   const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
-    default_restore: { handleClick: handleRestoreModalOpen },
-    default_backup: { handleClick: handleSingleBackup },
+    default_restore: {
+      handleClick: handleRestoreModalOpen,
+    },
+    default_backup: { handleClick: handleSingleBackup, visible: pageEditable },
     default_compare: { handleClick: handleCompareModalOpen },
   });
 
@@ -153,6 +169,7 @@ const Index = () => {
           handleClose={handleRestoreModalClose}
           open={restoreModalOpen}
           ncmDeviceId={selectedDevice?.ncm_device_id}
+          pageEditable={pageEditable}
         />
       ) : null}
 
@@ -165,14 +182,17 @@ const Index = () => {
             displayColumns={displayColumns}
             dataSource={dataSource}
             rowClickable={true}
-            selectedRowKey={selectedRowKey}
+            selectedRowKey={pageEditable ? selectedRowKey : null}
             setSelectedRowKey={setSelectedRowKey}
             dynamicWidth={false}
             scroll={false}
           />
         </Grid>
         <Grid item xs={12}>
-          <BackupDetails ncmHistoryId={selectedRowKey} />
+          <BackupDetails
+            ncmHistoryId={selectedRowKey}
+            pageEditable={pageEditable}
+          />
         </Grid>
       </Grid>
       <br />

@@ -14,6 +14,12 @@ import {
   handleFileChange,
   generateObject,
 } from "../../../utils/helpers";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
@@ -28,24 +34,32 @@ import Modal from "./modal";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   FILE_NAME_EXPORT_ALL_DATA,
   FILE_NAME_EXPORT_TEMPLATE,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import {
-  DELETE_PROMPT,
-  DELETE_SELECTION_PROMPT,
-  SUCCESSFUL_FILE_EXPORT_MESSAGE,
-} from "../../../utils/constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // states required in hooks
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
@@ -55,10 +69,14 @@ const Index = () => {
       template_export: { handleClick: handleExport },
       default_delete: {
         handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
+        visible: selectedRowKeys.length > 0 && pageEditable,
       },
-      inventory_sync: { handleClick: handleSync, namePostfix: PAGE_NAME },
-      default_import: { handleClick: handleInputClick },
+      inventory_sync: {
+        handleClick: handleSync,
+        namePostfix: PAGE_NAME,
+        visible: pageEditable,
+      },
+      default_import: { handleClick: handleInputClick, visible: pageEditable },
     });
 
   // refs
@@ -275,7 +293,7 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        selectedRowKeys={selectedRowKeys}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
     </DefaultSpinner>
