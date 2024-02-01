@@ -309,11 +309,11 @@ async def ncm_backup_summery_dashboard():
             elif ncm.backup_status is True:
                 success += 1
 
-        objList = [
-            {"backup_successful": success},
-            {"backup_failure": fail},
-            {"not_backup": not_backup},
-        ]
+        objList = {
+            "backup_successful": success,
+            "backup_failure": fail,
+            "not_backup": not_backup
+        }
         print("obj list is::::::::::::::::::::::",objList,file=sys.stderr)
         return JSONResponse(content=objList, status_code=200)
     except Exception:
