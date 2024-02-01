@@ -1,10 +1,14 @@
 import React, { useEffect } from "react";
+import PropTypes from "prop-types";
 import * as echarts from "echarts";
 
-const ConfigurationBackupSummary = () => {
+const ConfigurationBackupSummary = ({ data }) => {
   useEffect(() => {
     const chartDom = document.getElementById("backupSummaryChart");
     const myChart = echarts.init(chartDom);
+
+    const { backupSuccess, backupFailure, notBackup } = data;
+
     const option = {
       angleAxis: {
         type: "category",
@@ -34,9 +38,9 @@ const ConfigurationBackupSummary = () => {
       series: [
         {
           type: "bar",
-          data: [4.2],
+          data: [backupSuccess], // Use prop value for "Backup Successful"
           coordinateSystem: "polar",
-          name: "Linux",
+          name: "Backup Successful",
           emphasis: {
             focus: "series",
           },
@@ -44,9 +48,9 @@ const ConfigurationBackupSummary = () => {
         },
         {
           type: "bar",
-          data: [2],
+          data: [backupFailure], // Use prop value for "Backup Failure"
           coordinateSystem: "polar",
-          name: "Cisco",
+          name: "Backup Failure",
           emphasis: {
             focus: "series",
           },
@@ -54,60 +58,39 @@ const ConfigurationBackupSummary = () => {
         },
         {
           type: "bar",
-          data: [3],
+          data: [notBackup], // Use prop value for "Not Backup"
           coordinateSystem: "polar",
-          name: "MicroSoft",
+          name: "Not Backup",
           emphasis: {
             focus: "series",
           },
-          color: "#9E00D5",
-        },
-        {
-          type: "bar",
-          data: [4],
-          coordinateSystem: "polar",
-          name: "VMware",
-          emphasis: {
-            focus: "series",
-          },
-          color: "#84CC7D",
-        },
-        {
-          type: "bar",
-          data: [5],
-          coordinateSystem: "polar",
-          name: "OpenBSD",
-          emphasis: {
-            focus: "series",
-          },
-          color: "#E69B43",
-        },
-        {
-          type: "bar",
-          data: [6],
-          coordinateSystem: "polar",
-          name: "FreeBSD",
-          emphasis: {
-            focus: "series",
-          },
-          color: "#5F83CA",
+          color: "#FF0000",
         },
       ],
       legend: {
         show: true,
-        data: ["Linux", "Cisco", "MicroSoft", "VMware", "OpenBSD", "FreeBSD"],
+        data: ["Backup Successful", "Backup Failure", "Not Backup"],
         y: "top",
         padding: [10, 0],
       },
     };
+
     option && myChart.setOption(option);
 
     return () => {
       myChart.dispose();
     };
-  }, []);
+  }, [data]);
 
   return <div id="backupSummaryChart" style={{ width: "100%", height: "400px" }}></div>;
+};
+
+ConfigurationBackupSummary.propTypes = {
+  data: PropTypes.shape({
+    backupSuccess: PropTypes.number.isRequired,
+    backupFailure: PropTypes.number.isRequired,
+    notBackup: PropTypes.number.isRequired,
+  }).isRequired,
 };
 
 export default ConfigurationBackupSummary;

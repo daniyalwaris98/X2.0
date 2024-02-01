@@ -1,7 +1,7 @@
 import React, { useEffect } from "react";
 import { Row, Col } from "antd";
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
-import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
+// import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
 
 import {
@@ -24,9 +24,9 @@ function Index() {
 
 
 
-  const dataSource = useSelector(selectTableData);
+  // const dataSource = useSelector(selectTableData);
 
-  console.log("dataaaaaaaaa", dataSource);
+  // console.log("dataaaaaaaaa", dataSource);
   const companyData = {
     Cisco: 50,
     Fortinet: 10,

@@ -2,241 +2,128 @@ import React from "react";
 import { Row, Col } from "antd";
 import TypeSummaryChart from "../../ipamModule/dashboard/components/TypeSummaryChart";
 import ConfigurationBackupSummary from "../../ncmModule/dashboard/components/ConfigurationBackupSummary";
-// import TypeSummaryChart from "./components/TypeSummaryChart";
-// import TopSubnet from "./components/TopSubnet";
-// import IpAvailble from "./components/IpAvailble";
-// import DNSChart from "./components/DNSChart";
-// import TenSubnetTable from "./components/TenSubnetTable";
 import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
 import SnmpStatus from "../../autoDiscoveryModule/dashboard/components/SnmpStatus";
 import TenSubnetTable from "../../ipamModule/dashboard/components/TenSubnetTable";
 import DeviceStatus from "./components/DeviceStatus";
 import SubnetSummary from "./components/SubnetSummary";
 import CredentialSummary from "./components/CredentialSummary";
-import Compliance from "../../ncmModule/dashboard/components/Compliance"
+import Compliance from "../../ncmModule/dashboard/components/Compliance";
 
 function Index() {
-  const chartData = [1];
-  const chartDatab = [0.85];
+  const colStyle = {
+    backgroundColor: "#FFFFFF", // Grey background color
+    borderRadius: "8px",
+    height: "100%",
+    padding: "10px",
+  };
+
+  const rowStyle = {
+    marginBottom: "40px", // Add margin between rows
+  };
+  const title = {
+    margin:"0px",
+    fontSize:"16px"
+  }
 
   return (
     <>
-      <Row
-        gutter={[16, 16]}
-        justify="space-between"
-        style={{ height: "332px", paddingTop: "5px" }}
-      >
+      <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Count Per Vendors
-            </h5>
-            <TypeSummaryChart/>
-
+          <div style={colStyle}>
+            <h5 style={title}>Count Per Vendors</h5>
+            <TypeSummaryChart />
           </div>
         </Col>
 
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Subnet Summary
-            </h5>
-<SubnetSummary/>       
-   </div>
+          <div style={colStyle}>
+            <h5 style={title}>Subnet Summary</h5>
+            <SubnetSummary />
+          </div>
         </Col>
+
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Top Vendors For Discovery{" "}
-            </h5>
-<ConfigurationBackupSummary/>          </div>
+          <div style={colStyle}>
+            <h5 style={title}>Top Vendors For Discovery</h5>
+            <ConfigurationBackupSummary />
+          </div>
         </Col>
       </Row>
-      <Row
-        gutter={[16, 16]}
-        justify="space-between"
-        style={{ height: "332px", paddingTop: "130px" }}
-      >
+
+      <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Configuration Change by Time{" "}
-            </h5>
+          <div style={colStyle}>
+            <h5 style={title}>Configuration Change by Time</h5>
             <TopOpenPorts />
           </div>
         </Col>
 
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Credentials Summary{" "}
-            </h5>
-<CredentialSummary/>
+          <div style={colStyle}>
+            <h5 style={title}>Credentials Summary</h5>
+            <CredentialSummary />
           </div>
         </Col>
+
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              SNMP Status{" "}
-            </h5>
-            <SnmpStatus/>
-            {/* <TopSubnet /> */}
+          <div style={colStyle}>
+            <h5 style={title}>SNMP Status</h5>
+            <SnmpStatus />
           </div>
         </Col>
       </Row>
 
-      <Row
-        gutter={[16, 16]}
-        justify="space-between"
-        style={{ height: "332px", paddingTop: "260px" }}
-      >
+      <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Top 5 Subnets by % IP Address Used{" "}
-            </h5>
-            <TenSubnetTable/>
+          <div style={colStyle}>
+            <h5 style={title}>Top 5 Subnets by % IP Address Used</h5>
+            <TenSubnetTable />
           </div>
         </Col>
 
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              EOL Summary{" "}
-            </h5>
-<Compliance/>
+          <div style={colStyle}>
+            <h5 style={title}>EOL Summary</h5>
+            <Compliance />
           </div>
         </Col>
+
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Devices with most unused SFPs{" "}
-            </h5>
-            <TenSubnetTable/>
+          <div style={colStyle}>
+            <h5 style={title}>Devices with most unused SFPs</h5>
+            <TenSubnetTable />
           </div>
         </Col>
       </Row>
 
-      <Row
-        gutter={[16, 16]}
-        justify="space-between"
-        style={{ height: "332px", paddingTop: "290px" }}
-      >
+      <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
         <Col span={8}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Sites Location{" "}
-            </h5>
+          <div style={colStyle}>
+            <h5 style={title}>Sites Location</h5>
             {/* <TypeSummaryChart /> */}
           </div>
         </Col>
 
         <Col span={16}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Device Status Overview{" "}
-            </h5>
-            <DeviceStatus/>
-          
+          <div style={colStyle}>
+            <h5 style={title}>Device Status Overview</h5>
+            <DeviceStatus />
           </div>
         </Col>
       </Row>
-      
-      <Row
-        gutter={[16, 16]}
-        justify="space-between"
-        style={{ height: "332px", paddingTop: "320px" }}
-      >
+
+      <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
         <Col span={12}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-            Devices By CPU Utilization            </h5>
-            <TenSubnetTable/>
+          <div style={colStyle}>
+            <h5 style={title}>Devices By CPU Utilization</h5>
+            <TenSubnetTable />
           </div>
         </Col>
 
         <Col span={12}>
-          <div
-            style={{
-              backgroundColor: "#FFFFFF",
-              borderRadius: "8px",
-              height: "100%",
-            }}
-          >
-            <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-            Devices By Memory Utilization            </h5>
+          <div style={colStyle}>
+            <h5 style={title}>Devices By Memory Utilization</h5>
             <TenSubnetTable />
           </div>
         </Col>
