@@ -25,16 +25,16 @@ import { MAIN_LAYOUT_PATH } from "../layouts/mainLayout";
 export default function moduleRoutes(roleConfigurations, authorizePageRoutes) {
   const routes = [
     {
+      path: PAGE_PATH_DEVICES,
+      element: <Devices />,
+    },
+    {
       path: PAGE_PATH_SITES,
       element: <Sites />,
     },
     {
       path: PAGE_PATH_RACKS,
       element: <Racks />,
-    },
-    {
-      path: PAGE_PATH_DEVICES,
-      element: <Devices />,
     },
     {
       path: PAGE_PATH_BOARDS,

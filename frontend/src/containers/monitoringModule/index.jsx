@@ -4,12 +4,14 @@ import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
 import { getDefaultPagePath } from "../../utils/helpers";
-
+import {
+  PAGE_NAME as PAGE_NAME_DASHBOARD,
+  PAGE_PATH as PAGE_PATH_DASHBOARD,
+} from "./dashboard/constants";
 import {
   PAGE_NAME as PAGE_NAME_DEVICES,
   PAGE_PATH as PAGE_PATH_DEVICES,
 } from "./devices/constants";
-
 ////////////////////////////////////////////////
 import {
   DROPDOWN_NAME as DROPDOWN_NAME_NETWORKS,
@@ -212,6 +214,12 @@ export const MODULE_PATH = "monitoring_module";
 
 function Index(props) {
   let menuItems = [
+    {
+      id: PAGE_PATH_DASHBOARD,
+      name: PAGE_NAME_DASHBOARD,
+      path: PAGE_PATH_DASHBOARD,
+      icon: "ic:outline-dashboard",
+    },
     {
       id: PAGE_PATH_DEVICES,
       name: PAGE_NAME_DEVICES,

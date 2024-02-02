@@ -1,5 +1,6 @@
 // admin module
 import { MODULE_PATH as MODULE_PATH_ADMIN } from "..";
+import { PAGE_PATH as PAGE_PATH_ADMIN_DASHBOARD } from "../dashboard/constants";
 import { PAGE_PATH as PAGE_PATH_ADMIN_MEMBERS } from "../members/constants";
 import { PAGE_PATH as PAGE_PATH_ADMIN_FAILED_DEVICES_AUTO_DISCOVERY } from "../failedDevicesLanding/autoDiscovery/constants";
 import { PAGE_PATH as PAGE_PATH_ADMIN_FAILED_DEVICES_IPAM } from "../failedDevicesLanding/ipam/constants";
@@ -39,6 +40,8 @@ import { PAGE_PATH as PAGE_PATH_IPAM_LOAD_BALANCERS } from "../../ipamModule/vip
 
 // monitoring module
 import { MODULE_PATH as MODULE_PATH_MONITORING } from "../../monitoringModule";
+
+import { PAGE_PATH as PAGE_PATH_MONITORING_DASHBOARD } from "../../monitoringModule/dashboard/constants";
 import { PAGE_PATH as PAGE_PATH_MONITORING_DEVICES } from "../../monitoringModule/devices/constants";
 import { PAGE_PATH as PAGE_PATH_MONITORING_ALERTS } from "../../monitoringModule/alerts/constants";
 
@@ -72,6 +75,7 @@ import { PAGE_PATH as PAGE_PATH_MONITORING_SERVERS_WINDOWS_INTERFACES } from "..
 
 // ncm module
 import { MODULE_PATH as MODULE_PATH_NCM } from "../../ncmModule";
+import { PAGE_PATH as PAGE_PATH_NCM_DASHBOARD } from "../../ncmModule/dashboard/constants";
 import { PAGE_PATH as PAGE_PATH_NCM_MANAGE_CONFIGURATIONS } from "../../ncmModule/manageConfigurations/constants";
 import { PAGE_PATH as PAGE_PATH_NCM_CONFIGURATION_BACKUPS } from "../../ncmModule/manageConfigurationsLanding/configurationBackups/constants";
 import { PAGE_PATH as PAGE_PATH_NCM_REMOTE_COMMAND_SENDER } from "../../ncmModule/manageConfigurationsLanding/remoteCommandSender/constants";
@@ -92,6 +96,7 @@ export const defaultConfiguration = {
   [MODULE_PATH_ADMIN]: {
     view: true,
     pages: {
+      [PAGE_PATH_ADMIN_DASHBOARD]: { view: true, read_only: false },
       [PAGE_PATH_ADMIN_MEMBERS]: { view: true, read_only: false },
       [PAGE_PATH_ADMIN_ROLES]: { view: true, read_only: false },
       [PAGE_PATH_ADMIN_FAILED_DEVICES_AUTO_DISCOVERY]: {
@@ -147,7 +152,7 @@ export const defaultConfiguration = {
   [MODULE_PATH_IPAM]: {
     view: true,
     pages: {
-      // [PAGE_PATH_IPAM_DASHBOARD]: { view: true, read_only: false },
+      [PAGE_PATH_IPAM_DASHBOARD]: { view: true, read_only: false },
       [PAGE_PATH_IPAM_DEVICES]: { view: true, read_only: false },
       [PAGE_PATH_IPAM_SUBNETS]: { view: true, read_only: false },
       [PAGE_PATH_IPAM_IP_DETAILS]: { view: true, read_only: false },
@@ -164,6 +169,7 @@ export const defaultConfiguration = {
   [MODULE_PATH_MONITORING]: {
     view: true,
     pages: {
+      [PAGE_PATH_MONITORING_DASHBOARD]: { view: true, read_only: false },
       [PAGE_PATH_MONITORING_DEVICES]: { view: true, read_only: false },
       [PAGE_PATH_MONITORING_ALERTS]: { view: true, read_only: false },
       [PAGE_PATH_MONITORING_LOGIN_CREDENTIALS]: {
@@ -245,6 +251,7 @@ export const defaultConfiguration = {
   [MODULE_PATH_NCM]: {
     view: true,
     pages: {
+      [PAGE_PATH_NCM_DASHBOARD]: { view: true, read_only: false },
       [PAGE_PATH_NCM_MANAGE_CONFIGURATIONS]: { view: true, read_only: false },
       [PAGE_PATH_NCM_CONFIGURATION_BACKUPS]: { view: true, read_only: false },
       [PAGE_PATH_NCM_REMOTE_COMMAND_SENDER]: { view: true, read_only: false },

@@ -5,27 +5,27 @@ import ConfigurationBackupSummary from "./components/ConfigurationBackupSummary"
 import Compliance from "./components/Compliance";
 import ChangeByTimeChart from "./components/ChangeByTimeChart";
 import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
-import RcmAlarms from '../../../components/charts/RcmAlarms'
+import RcmAlarms from "../../../components/charts/RcmAlarms";
 
 import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
-import { selectConfigurationBackupSummary, selectConfigurationChangeByDevice, selectConfigurationChangeByVendor } from "../../../store/features/ncmModule/dashboard/selectors";
+import {
+  selectConfigurationBackupSummary,
+  selectConfigurationChangeByDevice,
+  selectConfigurationChangeByVendor,
+} from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
 
 import {
   useGetConfigurationChangeByDeviceQuery,
   useGetConfigurationBackupSummaryQuery,
   useGetConfigurationChangeByVendorQuery,
-
-  
 } from "../../../store/features/ncmModule/dashboard/apis";
 import "./index.css";
 import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
 import RcmAlarmDeviceTable from "./components/RcmAlarmDeviceTable";
 
-
 function Index() {
-  
   const {
     data: fetchRecordsData,
     isSuccess: isFetchRecordsSuccess,
@@ -33,7 +33,7 @@ function Index() {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
   } = useGetConfigurationChangeByDeviceQuery();
-  
+
   const {
     data: backupSummaryData,
     isSuccess: isBackupSummarySuccess,
@@ -48,20 +48,13 @@ function Index() {
     isError: isVendorError,
     error: vendorError,
   } = useGetConfigurationBackupSummaryQuery();
-  
 
-  
   const backupSummary = useSelector(selectConfigurationBackupSummary);
   const timeLineChart = useSelector(selectConfigurationChangeByDevice);
   const graph = useSelector(selectConfigurationChangeByVendor);
 
- 
-  
   console.log("graph", graph);
   // console.log("timeLineChart", timeLineChart);
- 
-  
-  
 
   const companyData = {
     Cisco: 50,
@@ -73,81 +66,72 @@ function Index() {
     Hp: 20,
     Juniper: 10,
   };
-  const backsummary={
-     backupSuccess: 4.2, backupFailure: 2, notBackup: 1 
-  }
+  const backsummary = {
+    backupSuccess: 4.2,
+    backupFailure: 2,
+    notBackup: 1,
+  };
   return (
     <>
-   <Row gutter={[32, 32]} justify="space-between">
-  <Col span={8}>
-    <div className="container">
-      <h6 className="heading">
-        Configuration Backup Summary
-      </h6>
-      <ConfigurationBackupSummary data={backupSummary} />
+      <Row gutter={[32, 32]} justify="space-between">
+        <Col span={8}>
+          <div className="container">
+            <h6 className="heading">Configuration Backup Summary</h6>
+            <ConfigurationBackupSummary data={backupSummary} />
+          </div>
+        </Col>
 
-    </div>
-  </Col>
+        <Col span={16}>
+          <div className="container">
+            <h6 className="heading">Configuration Change by Device</h6>
+            {/* <ChangeByTimeChart /> */}
+            <ConfigurationByTimeLineChart companyData={timeLineChart} />
+          </div>
+        </Col>
+      </Row>
 
-  <Col span={16}>
-    <div className="container">
-      <h6 className="heading">
-        Configuration Change by Device
-      </h6>
-      {/* <ChangeByTimeChart /> */}
-      <ConfigurationByTimeLineChart 
-       companyData={timeLineChart}
-  />
-    </div>
-  </Col>
-</Row>
+      <Row gutter={[24, 24]} justify="space-between" className="page_row">
+        <Col span={14}>
+          <div className="container">
+            <h6 className="heading">Recent RCM Alarms</h6>
 
-<Row gutter={[24, 24]} justify="space-between" className="page_row">
-  <Col span={14}>
-    <div className="container">
-      <h6 className="heading">
-        Recent RCM Alarms
-      </h6>
- 
-      <RecentRcmAlarmsChart />
-    </div>
-  </Col>
+            <RecentRcmAlarmsChart />
+          </div>
+        </Col>
 
-  <Col span={10}>
-    <div className="container">
-      <h6 className="heading">
-        Compliance
-      </h6>
-      <Compliance />
-    </div>
-  </Col>
-</Row>
+        <Col span={10}>
+          <div className="container">
+            <h6 className="heading">Compliance</h6>
+            <Compliance />
+          </div>
+        </Col>
+      </Row>
 
-<Row gutter={[24, 24]} justify="space-between" className="page_row">
-  <Col span={12}>
-    <div className="container">
-      <h6 className="heading">
-        Configuration Change by Vendor
-      </h6>
-      <ConfigurationChangeByVendor
-  deviceNames={['Cisco', 'Fortinet', 'Citrix', 'PaloAlto', 'NetScaler']}
-  time={['time1', 'time2', 'time3', 'time4', 'time5']}
-  values={[5,10,6]}
-/>
+      <Row gutter={[24, 24]} justify="space-between" className="page_row">
+        <Col span={12}>
+          <div className="container">
+            <h6 className="heading">Configuration Change by Vendor</h6>
+            <ConfigurationChangeByVendor
+              deviceNames={[
+                "Cisco",
+                "Fortinet",
+                "Citrix",
+                "PaloAlto",
+                "NetScaler",
+              ]}
+              time={["time1", "time2", "time3", "time4", "time5"]}
+              values={[5, 10, 6]}
+            />
+          </div>
+        </Col>
 
-    </div>
-  </Col>
-
-  <Col span={12}>
-    <div className="container">
-      <h6 className="heading">
-        NCM Device Summary
-      </h6>
-      <NcmDeviceSummaryTable />
-    </div>
-  </Col>
-</Row>
-
+        <Col span={12}>
+          <div className="container">
+            <h6 className="heading">NCM Device Summary</h6>
+            <NcmDeviceSummaryTable />
+          </div>
+        </Col>
+      </Row>
     </>
   );
 }

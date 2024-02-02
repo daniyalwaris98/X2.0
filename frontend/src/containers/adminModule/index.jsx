@@ -5,6 +5,10 @@ import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
 import {
+  PAGE_NAME as PAGE_NAME_DASHBOARD,
+  PAGE_PATH as PAGE_PATH_DASHBOARD,
+} from "./dashboard/constants";
+import {
   PAGE_NAME as PAGE_NAME_MEMBERS,
   PAGE_PATH as PAGE_PATH_MEMBERS,
 } from "./members/constants";
@@ -22,6 +26,12 @@ export const MODULE_PATH = "admin_module";
 
 function Index(props) {
   let menuItems = [
+    {
+      id: PAGE_PATH_DASHBOARD,
+      name: PAGE_NAME_DASHBOARD,
+      path: PAGE_PATH_DASHBOARD,
+      icon: "ic:outline-dashboard",
+    },
     {
       id: PAGE_PATH_MEMBERS,
       name: PAGE_NAME_MEMBERS,
