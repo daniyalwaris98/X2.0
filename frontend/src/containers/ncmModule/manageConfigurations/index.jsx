@@ -29,7 +29,7 @@ import DefaultTableConfigurations from "../../../components/tableConfigurations"
 import DefaultSpinner from "../../../components/spinners";
 import { PAGE_PATH as PAGE_PATH_CONFIGURATION_BACKUPS } from "../manageConfigurationsLanding/configurationBackups/constants";
 import { PAGE_PATH as PAGE_PATH_REMOTE_COMMAND_SENDER } from "../manageConfigurationsLanding/remoteCommandSender/constants";
-import { LANDING_PAGE_RELATIVE_PATH as PAGE_PATH_MANAGE_CONFIGURATIONS_LANDING } from "../manageConfigurationsLanding";
+import { LANDING_PAGE_PATH } from "../manageConfigurationsLanding";
 import AddModal from "./addModal";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
@@ -40,6 +40,7 @@ import {
   PAGE_PATH,
 } from "./constants";
 import { MODULE_PATH } from "..";
+import { MAIN_LAYOUT_PATH } from "../../../layouts/mainLayout";
 
 const Index = () => {
   // hooks
@@ -203,14 +204,14 @@ const Index = () => {
   function handleIpAddressClick(record) {
     dispatch(setSelectedDevice(record));
     navigate(
-      `${PAGE_PATH_MANAGE_CONFIGURATIONS_LANDING}/${PAGE_PATH_CONFIGURATION_BACKUPS}`
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_CONFIGURATION_BACKUPS}`
     );
   }
 
   function handleRcsClick(record) {
     dispatch(setSelectedDevice(record));
     navigate(
-      `${PAGE_PATH_MANAGE_CONFIGURATIONS_LANDING}/${PAGE_PATH_REMOTE_COMMAND_SENDER}`
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_REMOTE_COMMAND_SENDER}`
     );
   }
 

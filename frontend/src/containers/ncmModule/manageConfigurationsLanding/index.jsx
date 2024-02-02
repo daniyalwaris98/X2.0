@@ -24,7 +24,8 @@ import { MODULE_PATH } from "..";
 
 export const LANDING_PAGE_NAME = "Manage Configurations";
 export const LANDING_PAGE_RELATIVE_PATH = "manage_configurations_landing";
-export const LANDING_PAGE_PATH = `${PAGE_PATH_MANAGE_CONFIGURATIONS}/${LANDING_PAGE_RELATIVE_PATH}`;
+// export const LANDING_PAGE_PATH = `${PAGE_PATH_MANAGE_CONFIGURATIONS}/${LANDING_PAGE_RELATIVE_PATH}`;
+export const LANDING_PAGE_PATH = "manage_configurations_landing";
 
 function Index(props) {
   let menuItems = [
