@@ -262,14 +262,14 @@ const Index = ({
               <AddableSelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.SITE_NAME}
-                options={siteNames}
+                options={siteNames ? siteNames : []}
                 onAddClick={handleOpenSiteModal}
                 spinning={isFetchSiteNamesLoading}
               />
               <AddableSelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.RACK_NAME}
-                options={rackNames}
+                options={rackNames ? rackNames : []}
                 onAddClick={handleOpenRackModal}
                 spinning={isFetchRackNamesLoading}
               />
@@ -291,13 +291,13 @@ const Index = ({
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.FUNCTION}
-                options={functionNames}
+                options={functionNames ? functionNames : []}
                 spinning={isFetchFunctionNamesLoading}
               />
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.DEVICE_TYPE}
-                options={deviceTypeNames}
+                options={deviceTypeNames ? deviceTypeNames : []}
                 spinning={isFetchDeviceTypeNamesLoading}
               />
               <DefaultFormUnit
@@ -309,13 +309,13 @@ const Index = ({
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.VENDOR}
-                options={vendorNames}
+                options={vendorNames ? vendorNames : []}
                 spinning={isFetchVendorNamesLoading}
               />
               <AddableSelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.PASSWORD_GROUP}
-                options={passwordGroupNames}
+                options={passwordGroupNames ? passwordGroupNames : []}
                 onAddClick={handleOpenPasswordGroupModal}
                 spinning={isFetchPasswordGroupNamesLoading}
               />

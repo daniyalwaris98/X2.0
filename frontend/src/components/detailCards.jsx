@@ -2,6 +2,7 @@ import React from "react";
 import { useTheme } from "@mui/material/styles";
 import DefaultCard from "./cards";
 import { getTitle } from "../utils/helpers";
+import { Icon } from "@iconify/react";
 
 export default function DefaultDetailCards({ data, icons = [], ...rest }) {
   const theme = useTheme();
@@ -46,7 +47,7 @@ export default function DefaultDetailCards({ data, icons = [], ...rest }) {
                 <div>
                   <div
                     style={{
-                      fontSize: "12px",
+                      fontSize: "14px",
                     }}
                   >
                     {getTitle(key)}
@@ -69,7 +70,19 @@ export default function DefaultDetailCards({ data, icons = [], ...rest }) {
                     justifyContent: "center",
                   }}
                 >
-                  <img src={icons[index] ? icons[index] : null} />
+                  <div
+                    style={{
+                      padding: "6px 6px 2px 6px",
+                      borderRadius: "5px",
+                      backgroundColor: "white",
+                    }}
+                  >
+                    <Icon
+                      style={{ color: "green" }}
+                      fontSize={"30px"}
+                      icon={icons[index] ? icons[index] : null}
+                    />
+                  </div>
                 </div>
               </div>
             </div>

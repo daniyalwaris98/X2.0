@@ -222,14 +222,14 @@ const Index = ({
                 <SelectFormUnit
                   control={control}
                   dataKey={indexColumnNameConstants.SITE_NAME}
-                  options={siteNames}
+                  options={siteNames ? siteNames : []}
                   required
                 />
               ) : (
                 <AddableSelectFormUnit
                   control={control}
                   dataKey={indexColumnNameConstants.SITE_NAME}
-                  options={siteNames}
+                  options={siteNames ? siteNames : []}
                   onAddClick={handleOpenSiteModal}
                   spinning={isFetchSiteNamesLoading}
                   required
@@ -252,7 +252,7 @@ const Index = ({
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.STATUS}
-                options={statusNames}
+                options={statusNames ? statusNames : []}
                 spinning={isFetchStatusNamesLoading}
                 required
               />

@@ -175,7 +175,11 @@ const Index = () => {
             [serversColumnNameConstants.TYPE]:
               selectedDnsServer[serversColumnNameConstants.TYPE],
           }}
-          icons={[deviceIcon, firewallIcon, switchIcon]}
+          icons={[
+            "carbon:kubernetes-ip-address",
+            "clarity:rack-server-line",
+            "lucide:file-type",
+          ]}
         />
       ) : null}
 

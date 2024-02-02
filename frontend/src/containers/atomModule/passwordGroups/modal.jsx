@@ -163,7 +163,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.PASSWORD_GROUP_TYPE}
-                options={passwordGroupTypeNames}
+                options={passwordGroupTypeNames ? passwordGroupTypeNames : []}
                 spinning={isPasswordGroupTypeNamesLoading}
                 required
               />

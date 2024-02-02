@@ -70,7 +70,8 @@ function Index({ handleChange }) {
           <SelectFormUnit
             control={control}
             dataKey={indexColumnNameConstants.SUBNET}
-            options={subnetNames ? [ALL, ...subnetNames] : []}
+            // options={subnetNames ? [ALL, ...subnetNames] : []}
+            options={subnetNames ? subnetNames : []}
             spinning={isFetchSubnetNamesLoading}
             label={false}
             required

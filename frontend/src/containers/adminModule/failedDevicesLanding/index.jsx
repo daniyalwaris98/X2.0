@@ -97,7 +97,13 @@ function Index(props) {
             [PAGE_PATH_NCM]: selectedDevice[PAGE_PATH_NCM],
             [PAGE_PATH_UAM]: selectedDevice[PAGE_PATH_UAM],
           }}
-          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon, deviceIcon]}
+          icons={[
+            "iconamoon:discover-light",
+            "carbon:kubernetes-ip-address",
+            "eos-icons:monitoring",
+            "carbon:network-2",
+            "icon-park-outline:category-management",
+          ]}
         />
       ) : null}
       <Card>

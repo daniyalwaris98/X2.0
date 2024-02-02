@@ -72,7 +72,13 @@ function Index(props) {
             [indexColumnNameConstants.VENDOR]:
               selectedDevice[indexColumnNameConstants.VENDOR],
           }}
-          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+          icons={[
+            "carbon:kubernetes-ip-address",
+            "tdesign:device",
+            "lucide:file-type",
+            "lucide:function-square",
+            "material-symbols:source-environment",
+          ]}
         />
       ) : null}
       <Card>

@@ -160,7 +160,12 @@ const Index = () => {
             [zonesColumnNameConstants.ZONE_STATUS]:
               selectedDnsZone[zonesColumnNameConstants.ZONE_STATUS],
           }}
-          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+          icons={[
+            "carbon:kubernetes-ip-address",
+            "ri:time-zone-line",
+            "lucide:file-type",
+            "grommet-icons:status-info",
+          ]}
         />
       ) : null}
 

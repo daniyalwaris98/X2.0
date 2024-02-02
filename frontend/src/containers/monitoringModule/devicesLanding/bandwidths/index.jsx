@@ -136,7 +136,12 @@ const Index = () => {
             [interfacesColumnNameConstants.INTERFACE_STATUS]:
               selectedInterface[interfacesColumnNameConstants.INTERFACE_STATUS],
           }}
-          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+          icons={[
+            "carbon:kubernetes-ip-address",
+            "tdesign:device",
+            "carbon:network-interface",
+            "grommet-icons:status-info",
+          ]}
         />
       ) : null}
 

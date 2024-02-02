@@ -177,7 +177,12 @@ const Index = () => {
             [subnetsColumnNameConstants.SUBNET_LOCATION]:
               selectedSubnet[subnetsColumnNameConstants.SUBNET_LOCATION],
           }}
-          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+          icons={[
+            "carbon:kubernetes-ip-address",
+            "carbon:ibm-cloud-subnets",
+            "fe:mask",
+            "mingcute:location-3-line",
+          ]}
         />
       ) : null}
 

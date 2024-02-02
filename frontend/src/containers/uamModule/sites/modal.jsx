@@ -171,7 +171,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.STATUS}
-                options={statusNames}
+                options={statusNames ? statusNames : []}
                 spinning={isFetchStatusNamesLoading}
                 required
               />

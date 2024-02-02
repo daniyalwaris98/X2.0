@@ -59,7 +59,7 @@ const Index = ({ handleClose, open }) => {
 
   // getting data from the store
   const dataSource = useSelector(selectTableData);
-  const derivedOptions = dataSource.map((item) => ({
+  const derivedOptions = dataSource?.map((item) => ({
     name: `${item.file_name}-${item.date}`,
     value: item.ncm_history_id,
   }));
@@ -88,7 +88,7 @@ const Index = ({ handleClose, open }) => {
               <SelectFormUnitWithHiddenValues
                 control={control}
                 dataKey={compareModalConstants.CONFIGURATION_TO_BE_COMPARED}
-                options={derivedOptions}
+                options={derivedOptions ? derivedOptions : []}
                 required
               />
             </Grid>
@@ -96,7 +96,7 @@ const Index = ({ handleClose, open }) => {
               <SelectFormUnitWithHiddenValues
                 control={control}
                 dataKey={compareModalConstants.COMPARE_TO}
-                options={derivedOptions}
+                options={derivedOptions ? derivedOptions : []}
                 required
               />
             </Grid>
@@ -105,7 +105,6 @@ const Index = ({ handleClose, open }) => {
                 <div
                   style={{
                     margin: "8px",
-
                     borderRadius: "12px",
                     backgroundColor: "#fcfcfc",
                     boxShadow: "rgba(0, 0, 0, 0.05) 0px 0px 0px 1px",

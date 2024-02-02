@@ -136,10 +136,14 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <SelectFormUnitWithHiddenValues
                 control={control}
                 dataKey={indexColumnNameConstants.CREDENTIALS}
-                options={monitoringCredentialsNames.map((item) => ({
-                  name: item[CREDENTIALS],
-                  value: item[MONITORING_CREDENTIALS_ID],
-                }))}
+                options={
+                  monitoringCredentialsNames
+                    ? monitoringCredentialsNames?.map((item) => ({
+                        name: item[CREDENTIALS],
+                        value: item[MONITORING_CREDENTIALS_ID],
+                      }))
+                    : []
+                }
               />
             </Grid>
             <Grid item xs={12}>

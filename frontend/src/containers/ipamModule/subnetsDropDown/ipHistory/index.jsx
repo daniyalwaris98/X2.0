@@ -160,7 +160,11 @@ const Index = () => {
             [ipDetailsColumnNameConstants.MAC_ADDRESS]:
               selectedIpDetail[ipDetailsColumnNameConstants.MAC_ADDRESS],
           }}
-          icons={[deviceIcon, firewallIcon, switchIcon, switchIcon]}
+          icons={[
+            "carbon:kubernetes-ip-address",
+            "carbon:ibm-cloud-subnets",
+            "icon-park-outline:i-mac",
+          ]}
         />
       ) : null}
 

@@ -133,7 +133,7 @@ const MenuItems = ({
               <div
                 style={{
                   display: "flex",
-                  fontSize: `${depthLevel > 0 ? "14px" : "17px"}`,
+                  fontSize: `${depthLevel > 0 ? "14px" : "15px"}`,
                 }}
               >
                 <div>
@@ -199,7 +199,7 @@ const MenuItems = ({
                   />
                 </div>
                 <div
-                  style={{ fontSize: `${depthLevel > 0 ? "14px" : "17px"}` }}
+                  style={{ fontSize: `${depthLevel > 0 ? "14px" : "16px"}` }}
                 >
                   {item.name}
                 </div>

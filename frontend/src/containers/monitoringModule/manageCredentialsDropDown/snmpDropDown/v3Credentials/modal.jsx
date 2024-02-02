@@ -188,7 +188,9 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.AUTHORIZATION_PROTOCOL}
-                options={authorizationProtocolNames}
+                options={
+                  authorizationProtocolNames ? authorizationProtocolNames : []
+                }
                 spinning={isAuthorizationProtocolLoading}
                 required
               />
@@ -212,7 +214,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.ENCRYPTION_PROTOCOL}
-                options={encryptionProtocolNames}
+                options={encryptionProtocolNames ? encryptionProtocolNames : []}
                 spinning={isEncryptionProtocolLoading}
                 required
               />
