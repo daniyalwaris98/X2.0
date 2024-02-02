@@ -19,7 +19,10 @@ router = APIRouter(
 @router.get("/ncm-change-summery-by-time", responses={
     200: {"model": NameValueDictResponseSchema},
     500: {"model": str}
-})
+},
+summary = "API to get the ncm change summary by time",
+description="API to get the ncm change summary by time "
+)
 async def ncm_change_summery_by_time():
     current_time = datetime.now()
     pre_time = datetime.now() - timedelta(days=1)
@@ -27,7 +30,7 @@ async def ncm_change_summery_by_time():
     try:
         query = (f"SELECT COUNT(*) AS backup_count, "
                  f"DATE_FORMAT(config_change_date, '%Y-%m-%d %H:00:00') "
-                 f"AS hour_interval FROM NcmDeviceTable "
+                 f"AS hour_interval FROM ncm_device_table "
                  f"WHERE config_change_date IS NOT NULL "
                  f"GROUP BY hour_interval ORDER BY backup_count DESC LIMIT 5;")
 
@@ -138,8 +141,8 @@ async def ncm_alarm_summery():
             obj_dict = {"ip_address": atom.ip_address, "device_name": atom.device_name,
                         "alarm_category": alarm.alarm_category, "alarm_title": alarm.alarm_title,
                         "alarm_description": alarm.alarm_description,
-                        "alarm_status": alarm.alarm_status, "creation_date": alarm.creation_date,
-                        "modification_date": alarm.modification_date,
+                        "alarm_status": alarm.alarm_status, "creation_date": alarm.creation_date.isoformat(),
+                        "modification_date": alarm.modification_date.isoformat(),
                         "resolve_remarks": alarm.resolve_remarks, "mail_status": alarm.mail_status}
 
             objList.append(obj_dict)
@@ -166,7 +169,7 @@ description="API to show the device summary on ncm by in table"
 )
 def ncm_device_summary_by_fucntion():
     try:
-        query = f"SELECT atom_table.device_type, atom_table.`function`, atom_table.`vendor`,COUNT(*) AS device_count FROM ncm_device_table INNER JOIN atom_table ON ncm_device_table.atom_id = atom_table.atom_id GROUP BY atom_table.device_type, atom_table.`function`;"
+        query = f"SELECT atom_table.device_type, atom_table.`function`, atom_table.`vendor`,COUNT(*) AS device_count FROM ncm_device_table INNER JOIN atom_table ON ncm_device_table.atom_id = atom_table.atom_id GROUP BY atom_table.device_type, atom_table.`function`,atom_table.`vendor`;"
         result = configs.db.execute(query)
         print("result is::::::::::::::::",result,file=sys.stderr)
         objList = []
@@ -280,11 +283,11 @@ def ncm_device_summary_by_fucntion():
 #
 #
 #
-#
+#200: {"model": list[NCMBackupSummaryConfiguration]},
 
 
 @router.get("/ncm_backup_summery_dashboard", responses={
-    200: {"model": list[NCMBackupSummaryConfiguration]},
+    200: {"model": dict},
     500: {"model": str}
 },
 summary="API to show the ncm backup summary",
@@ -306,18 +309,18 @@ async def ncm_backup_summery_dashboard():
             elif ncm.backup_status is True:
                 success += 1
 
-        objList = [
-            {"backup_successful": success},
-            {"backup_failure": fail},
-            {"not_backup": not_backup},
-        ]
+        objList = {
+            "backup_successful": success,
+            "backup_failure": fail,
+            "not_backup": not_backup
+        }
         print("obj list is::::::::::::::::::::::",objList,file=sys.stderr)
         return JSONResponse(content=objList, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching Data", status_code=500)
 
-
+# /
 @router.get("/get_vendors_in_ncm", responses={
     200:{"model":GetNcmVendorSchema},
     500:{"model":str}
@@ -363,17 +366,17 @@ def ncm_alarm_by_category():
     try:
 
 
-        configuratoin_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_category='Configuration';"
+        configuratoin_query = f"SELECT count(*) FROM ncm_alarm_table  WHERE alarm_category='Configuration';"
         configuration_result = configs.db.execute(configuratoin_query).scalar()
 
-        login_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_category='Login';"
+        login_query = f"SELECT count(*) FROM ncm_alarm_table WHERE alarm_category='Login';"
         login_result = configs.db.execute(login_query).scalar()
 
-        open_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_status='Open';"
-        open_result = configs.db.execute(open_query)
+        open_query = f"SELECT count(*) FROM ncm_alarm_table WHERE alarm_status='Open';"
+        open_result = configs.db.execute(open_query).scalar()
 
-        close_query = f"SELECT count(*) FROM ncm_alarm_category WHERE alarm_status='Close';"
-        close_result = configs.db.execute(close_query)
+        close_query = f"SELECT count(*) FROM ncm_alarm_table WHERE alarm_status='Close';"
+        close_result = configs.db.execute(close_query).scalar()
 
         print("configuration query result is::::::::::::::::::::",configuration_result,file=sys.stderr)
         print("login query result is::::::::::::::::::::::::::::",login_result,file=sys.stderr)

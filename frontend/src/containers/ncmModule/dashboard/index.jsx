@@ -7,27 +7,22 @@ import ChangeByTimeChart from "./components/ChangeByTimeChart";
 import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
 import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
-import { selectConfigurationBackupSummary, selectConfigurationChangeByDevice } from "../../../store/features/ncmModule/dashboard/selectors";
+import { selectConfigurationBackupSummary, selectConfigurationChangeByDevice, selectRecentRcmAlarms, selectRecentRcmAlarmsCount } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
 
 import {
   useGetConfigurationChangeByDeviceQuery,
   useGetConfigurationBackupSummaryQuery,
-  useDeleteRecordsMutation,
-  useBulkBackupNcmConfigurationsByDeviceIdsMutation,
+  useGetRecentRcmAlarmsQuery,
+  useGetRecentRcmAlarmsCountQuery,
+  
 } from "../../../store/features/ncmModule/dashboard/apis";
 import "./index.css";
 import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
 
 
 function Index() {
-  // const {
-  //   data: fetchRecordsData,
-  //   isSuccess: isFetchRecordsSuccess,
-  //   isLoading: isFetchRecordsLoading,
-  //   isError: isFetchRecordsError,
-  //   error: fetchRecordsError,
-  // } = useGetConfigurationChangeByDeviceQuery();
+  
   const {
     data: fetchRecordsData,
     isSuccess: isFetchRecordsSuccess,
@@ -44,14 +39,34 @@ function Index() {
     error: backupSummaryError,
   } = useGetConfigurationBackupSummaryQuery();
   
+  const {
+    data: rcmData,
+    isSuccess: isRcmSuccess,
+    isLoading: isRcmLoading,
+    isError: isRcmError,
+    error: recentRcmAlarmsError,
+  } = useGetRecentRcmAlarmsQuery();
+  
+  const {
+    data: rcmAlarmsCountData,
+    isSuccess: isRcmAlarmsCountSuccess,
+    isLoading: isRcmAlarmsCountLoading,
+    isError: isRcmAlarmsCountError,
+    error: recentRcmAlarmsCountError,
+  } = useGetRecentRcmAlarmsCountQuery();
+  
+  const backupSummary = useSelector(selectConfigurationBackupSummary);
+  const timeLineChart = useSelector(selectConfigurationChangeByDevice);
+  const RcmAlarms = useSelector(selectRecentRcmAlarms);
+  const RcmAlarmsCount = useSelector(selectRecentRcmAlarmsCount);
+  
+  console.log("backupSummary", backupSummary);
+  console.log("timeLineChart", timeLineChart);
+  console.log("RcmAlarms", RcmAlarms);
+  console.log("RcmAlarmsCount", RcmAlarmsCount);
+  
+  
 
-  // console.log("data", fetchRecordsData)
-
-  const dataSource1 = useSelector(selectConfigurationBackupSummary);
-  const dataSource2 = useSelector( selectConfigurationChangeByDevice);
-
-  console.log("dataaaaaaaaa1", dataSource1);
-  console.log("dataaaaaaaaa2", dataSource2);
   const companyData = {
     Cisco: 50,
     Fortinet: 10,
@@ -73,7 +88,7 @@ function Index() {
       <h6 className="heading">
         Configuration Backup Summary
       </h6>
-      <ConfigurationBackupSummary data={dataSource1} />
+      <ConfigurationBackupSummary data={backupSummary} />
 
     </div>
   </Col>
@@ -85,7 +100,7 @@ function Index() {
       </h6>
       {/* <ChangeByTimeChart /> */}
       <ConfigurationByTimeLineChart 
-      //  companyData={dataSource}
+       companyData={timeLineChart}
   />
     </div>
   </Col>

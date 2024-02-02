@@ -14,7 +14,9 @@ import { useSelector } from "react-redux";
 
 const initialState = {
   configuration_change_by_device_data: [],
-  configuration_backup_summary_data: [], // Make sure to define this property in your initial state
+  configuration_backup_summary_data: [], 
+  recent_rcm_alarms_data:[],
+  recent_rcm_alarms_count_data:[],
 };
 
 const defaultSlice = createSlice({
@@ -33,6 +35,18 @@ const defaultSlice = createSlice({
         extendedApi.endpoints.getConfigurationChangeByDevice.matchFulfilled,
         (state, action) => {
           state.configuration_change_by_device_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getRecentRcmAlarms.matchFulfilled,
+        (state, action) => {
+          state.recent_rcm_alarms_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getRecentRcmAlarmsCount.matchFulfilled,
+        (state, action) => {
+          state.recent_rcm_alarms_count_data = action.payload;
         }
       );
   },

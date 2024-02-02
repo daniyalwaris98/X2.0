@@ -3,9 +3,9 @@ from app.schema.base_schema import *
 
 
 class AwsCredentialScehma(BaseSchema):
-    account_label:str
     access_key: str
-    secret_key : str
+    secret_access_key : str
+    account_label : str
 
 class GetAwsSchema(BaseSchema):
     aws_access_key : str

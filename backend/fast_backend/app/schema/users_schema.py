@@ -57,6 +57,8 @@ class AddUserSchema(BaseSchema):
     name:str
     email_address:str
     password:str |None = None
+    email_address:str
+    password:str |None = None
     status:str
     user_name:str
     team:str

@@ -7,7 +7,7 @@ const ConfigurationBackupSummary = ({ data }) => {
     const chartDom = document.getElementById("backupSummaryChart");
     const myChart = echarts.init(chartDom);
 
-    const { backupSuccess, backupFailure, notBackup } = data;
+    const { backup_successful, backup_failure, not_backup } = data; // Adjusted the keys here
 
     const option = {
       angleAxis: {
@@ -38,7 +38,7 @@ const ConfigurationBackupSummary = ({ data }) => {
       series: [
         {
           type: "bar",
-          data: [backupSuccess], // Use prop value for "Backup Successful"
+          data: [backup_successful], // Adjusted the key here
           coordinateSystem: "polar",
           name: "Backup Successful",
           emphasis: {
@@ -48,7 +48,7 @@ const ConfigurationBackupSummary = ({ data }) => {
         },
         {
           type: "bar",
-          data: [backupFailure], // Use prop value for "Backup Failure"
+          data: [backup_failure], // Adjusted the key here
           coordinateSystem: "polar",
           name: "Backup Failure",
           emphasis: {
@@ -58,7 +58,7 @@ const ConfigurationBackupSummary = ({ data }) => {
         },
         {
           type: "bar",
-          data: [notBackup], // Use prop value for "Not Backup"
+          data: [not_backup], // Adjusted the key here
           coordinateSystem: "polar",
           name: "Not Backup",
           emphasis: {
@@ -87,9 +87,9 @@ const ConfigurationBackupSummary = ({ data }) => {
 
 ConfigurationBackupSummary.propTypes = {
   data: PropTypes.shape({
-    backupSuccess: PropTypes.number.isRequired,
-    backupFailure: PropTypes.number.isRequired,
-    notBackup: PropTypes.number.isRequired,
+    backup_successful: PropTypes.number.isRequired,
+    backup_failure: PropTypes.number.isRequired,
+    not_backup: PropTypes.number.isRequired,
   }).isRequired,
 };
 
