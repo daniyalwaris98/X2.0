@@ -32,11 +32,13 @@ function Index(props) {
       id: PAGE_PATH_CONFIGURATION_BACKUPS,
       name: PAGE_NAME_CONFIGURATION_BACKUPS,
       path: PAGE_PATH_CONFIGURATION_BACKUPS,
+      icon: "dashicons:backup",
     },
     {
       id: PAGE_PATH_REMOTE_COMMAND_SENDER,
       name: PAGE_NAME_REMOTE_COMMAND_SENDER,
       path: PAGE_PATH_REMOTE_COMMAND_SENDER,
+      icon: "ph:command",
     },
   ];
 

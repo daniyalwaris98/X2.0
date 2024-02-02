@@ -25,14 +25,13 @@ function Index(props) {
       id: PAGE_PATH_ATOMS,
       name: PAGE_NAME_ATOMS,
       path: PAGE_PATH_ATOMS,
-      // activeIcon: collapse,
-      // inIcon: del,
+      icon: "solar:atom-outline",
     },
     {
       id: PAGE_PATH_PASSWORD_GROUPS,
       name: PAGE_NAME_PASSWORD_GROUPS,
       path: PAGE_PATH_PASSWORD_GROUPS,
-      icon: edit,
+      icon: "teenyicons:password-outline",
     },
   ];
 

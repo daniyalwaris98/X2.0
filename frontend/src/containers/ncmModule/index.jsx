@@ -22,13 +22,16 @@ function Index(props) {
       id: PAGE_PATH_DASHBOARD,
       name: PAGE_NAME_DASHBOARD,
       path: PAGE_PATH_DASHBOARD,
+      icon: "ic:outline-dashboard",
     },
     {
       id: PAGE_PATH_MANAGE_CONFIGURATIONS,
       name: PAGE_NAME_MANAGE_CONFIGURATIONS,
       path: PAGE_PATH_MANAGE_CONFIGURATIONS,
+      icon: "icon-park-outline:setting-config",
     },
   ];
+
   // hooks
   const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
 

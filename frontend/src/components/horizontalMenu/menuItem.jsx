@@ -3,7 +3,7 @@ import Dropdown from "./dropdown";
 import { useState, useEffect, useRef } from "react";
 import { Link } from "react-router-dom";
 import "./main.css";
-import dcm from "../../containers/adminModule/roles/assets/dcm.svg";
+import { Icon } from "@iconify/react";
 
 const MenuItems = ({
   item,
@@ -63,21 +63,42 @@ const MenuItems = ({
       onClick={closeDropdown}
       style={{ cursor: "pointer", border: "0px solid red" }}
     >
-      {item.path && item.children ? (
-        <div style={{ display: "flex", padding: "0 10px" }}>
-          {/* <img src={dcm} alt="" width={15} style={{ paddingRight: "0px" }} /> */}
+      {
+        /* {item.path && item.children ? (
+        <div
+          className={`${menuItemTextClassName} ${
+            selectedMenuPath[depthLevel] === item.id ? "selected" : ""
+          }`}
+          style={{ display: "flex", padding: "0 10px", height: "5px" }}
+        >
           <button
             type="button"
             aria-haspopup="menu"
             aria-expanded={dropdown ? "true" : "false"}
             onClick={() => toggleDropdown()}
-            className={`${menuItemTextClassName} ${
-              selectedMenuPath[depthLevel] === item.id ? "selected" : ""
-            }`}
-            style={{ border: "0px solid red", height: "51px" }}
+
+            // style={{ border: "0px solid red", height: "51px" }}
           >
-            <Link to={item.path}>{item.name}</Link>
-            {depthLevel > 0 ? <span>&raquo;</span> : <span className="arrow" />}
+            <div style={{ display: "flex" }}>
+              <div>
+                <Icon
+                  fontSize={"20px"}
+                  icon={item.icon ? item.icon : ""}
+                  style={{
+                    paddingRight: "10px",
+                    marginBottom: "-4px",
+                  }}
+                />
+              </div>
+              <div>
+                <Link to={item.path}>{item.name}</Link>
+              </div>
+              {depthLevel > 0 ? (
+                <span>&raquo;</span>
+              ) : (
+                <span className="arrow" />
+              )}
+            </div>
           </button>
           <Dropdown
             depthLevel={depthLevel}
@@ -90,66 +111,103 @@ const MenuItems = ({
             setSelectedMenuPath={setSelectedMenuPath}
           />
         </div>
-      ) : !item.path && item.children ? (
-        <div style={{ display: "flex", padding: "0 10px" }}>
-          {/* <img src={dcm} alt="" width={15} style={{ paddingRight: "0px" }} /> */}
-          <button
-            type="button"
-            aria-haspopup="menu"
-            aria-expanded={dropdown ? "true" : "false"}
-            onClick={() => toggleDropdown()}
-            className={`${menuItemTextClassName} ${
-              selectedMenuPath[depthLevel] === item.id ? "selected" : ""
-            }`}
-            style={{ border: "0px solid red", height: "100%" }}
-          >
-            {item.name}
-            {depthLevel > 0 ? <span>&raquo;</span> : <span className="arrow" />}
-          </button>
-          <Dropdown
-            depthLevel={depthLevel}
-            submenus={item.children}
-            dropdown={dropdown}
-            menuPath={menuPath}
-            handleAddMenuPath={handleAddMenuPath}
-            handleRemoveMenuPath={handleRemoveMenuPath}
-            selectedMenuPath={selectedMenuPath}
-            setSelectedMenuPath={setSelectedMenuPath}
-          />
-        </div>
-      ) : (
-        <div style={{ display: "flex", padding: "0 10px" }}>
-          <Link
-            className={`${menuItemTextClassName} ${
-              selectedMenuPath[depthLevel] === item.id ? "selected" : ""
-            }`}
-            to={item.path}
-            onClick={() => setSelectedMenuPath([...menuPath])}
+      ) : */
+        !item.path && item.children ? (
+          <div
             style={{
-              height: "50px",
               display: "flex",
-              flexDirection: "column",
-              justifyContent: "center",
+              padding: "0 10px",
+              height: "50px",
+              marginBottom: "-1px",
             }}
           >
-            <div style={{ display: "flex", padding: "0 10px" }}>
-              {/* <img
-                src={
-                  item.activeIcon && item.inIcon
-                    ? selectedMenuPath[depthLevel] === item.id
-                      ? item.activeIcon
-                      : item.inIcon
-                    : dcm
-                }
-                alt=""
-                width={15}
-                style={{ paddingRight: "10px" }}
-              /> */}
-              <div>{item.name}</div>
-            </div>
-          </Link>
-        </div>
-      )}
+            <button
+              className={`${menuItemTextClassName} ${
+                selectedMenuPath[depthLevel] === item.id ? "selected" : ""
+              }`}
+              type="button"
+              aria-haspopup="menu"
+              aria-expanded={dropdown ? "true" : "false"}
+              onClick={() => toggleDropdown()}
+            >
+              <div
+                style={{
+                  display: "flex",
+                  fontSize: `${depthLevel > 0 ? "14px" : "17px"}`,
+                }}
+              >
+                <div>
+                  <Icon
+                    fontSize={"20px"}
+                    icon={item.icon ? item.icon : ""}
+                    style={{
+                      paddingRight: "10px",
+                      marginBottom: "-4px",
+                    }}
+                  />
+                </div>
+                <div>{item.name}</div>
+                {depthLevel > 0 ? (
+                  <span>&raquo;</span>
+                ) : (
+                  <span className="arrow" />
+                )}
+              </div>
+            </button>
+            <Dropdown
+              depthLevel={depthLevel}
+              submenus={item.children}
+              dropdown={dropdown}
+              menuPath={menuPath}
+              handleAddMenuPath={handleAddMenuPath}
+              handleRemoveMenuPath={handleRemoveMenuPath}
+              selectedMenuPath={selectedMenuPath}
+              setSelectedMenuPath={setSelectedMenuPath}
+            />
+          </div>
+        ) : (
+          <div
+            className={`${menuItemTextClassName} ${
+              selectedMenuPath[depthLevel] === item.id ? "selected" : ""
+            }`}
+            style={{
+              display: "flex",
+              padding: "0 10px",
+              height: "50px",
+              margin: "0 10px",
+              marginBottom: "-1px",
+            }}
+          >
+            <Link
+              to={item.path}
+              onClick={() => setSelectedMenuPath([...menuPath])}
+              style={{
+                display: "flex",
+                flexDirection: "column",
+                justifyContent: "center",
+              }}
+            >
+              <div style={{ display: "flex" }}>
+                <div>
+                  <Icon
+                    fontSize={"20px"}
+                    icon={item.icon ? item.icon : ""}
+                    style={{
+                      paddingRight: "10px",
+                      marginBottom: "-4px",
+                    }}
+                  />
+                </div>
+                <div
+                  style={{ fontSize: `${depthLevel > 0 ? "14px" : "17px"}` }}
+                >
+                  {item.name}
+                </div>
+              </div>
+            </Link>
+          </div>
+        )
+      }
     </li>
   );
 };

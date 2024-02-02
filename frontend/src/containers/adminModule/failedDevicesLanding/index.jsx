@@ -41,26 +41,31 @@ function Index(props) {
       id: PAGE_PATH_AUTO_DISCOVERY,
       name: PAGE_NAME_AUTO_DISCOVERY,
       path: PAGE_PATH_AUTO_DISCOVERY,
+      icon: "iconamoon:discover-light",
     },
     {
       id: PAGE_PATH_IPAM,
       name: PAGE_NAME_IPAM,
       path: PAGE_PATH_IPAM,
+      icon: "carbon:kubernetes-ip-address",
     },
     {
       id: PAGE_PATH_MONITORING,
       name: PAGE_NAME_MONITORING,
       path: PAGE_PATH_MONITORING,
+      icon: "eos-icons:monitoring",
     },
     {
       id: PAGE_PATH_NCM,
       name: PAGE_NAME_NCM,
       path: PAGE_PATH_NCM,
+      icon: "carbon:network-2",
     },
     {
       id: PAGE_PATH_UAM,
       name: PAGE_NAME_UAM,
       path: PAGE_PATH_UAM,
+      icon: "icon-park-outline:category-management",
     },
   ];
 
