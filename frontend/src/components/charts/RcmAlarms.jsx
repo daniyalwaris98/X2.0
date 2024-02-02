@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const RcmAlarms = () => {
+const RcmAlarms = ({ data }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -32,11 +32,7 @@ const RcmAlarms = () => {
             show: false,
           },
           color: ['#E34444'],
-          data: [
-            { value: 1048, name: 'Alarm 1' },
-            { value: 735, name: 'Alarm 2' },
-            { value: 580, name: 'Alarm 3' },
-          ],
+          data: data, // Use the data passed through props
         },
       ],
     };
@@ -55,7 +51,7 @@ const RcmAlarms = () => {
       window.removeEventListener('resize', resizeHandler);
       myChart.dispose();
     };
-  }, []); // Empty dependency array to run the effect only once
+  }, [data]); // Include 'data' in the dependency array to re-run the effect when 'data' changes
 
   return (
     <div ref={chartRef} className="chart-container" style={{ width: '100%', height: '400px' }} />

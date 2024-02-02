@@ -19,6 +19,12 @@ export const extendedApi = monetxApi.injectEndpoints({
     getRecentRcmAlarmsCount: builder.query({           
       query: () => "/api/v1/ncm/ncm_dashboard/get_ncm_alarm_by_category_graph",
     }),
+    getNcmDeviceSummaryTable: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/ncm_device_summary_by_fucntion",
+    }),
+    getConfigurationChangeByVendor: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
+    }),
 
     
   
@@ -28,6 +34,6 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useGetConfigurationBackupSummaryQuery, useGetConfigurationChangeByDeviceQuery, useGetRecentRcmAlarmsQuery, useGetRecentRcmAlarmsCountQuery
+  useGetConfigurationBackupSummaryQuery, useGetConfigurationChangeByDeviceQuery, useGetRecentRcmAlarmsQuery, useGetRecentRcmAlarmsCountQuery, useGetNcmDeviceSummaryTableQuery, useGetConfigurationChangeByVendorQuery
 
 } = extendedApi;

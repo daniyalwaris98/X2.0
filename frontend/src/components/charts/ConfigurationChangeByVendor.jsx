@@ -1,41 +1,13 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const ConfigurationChangeByVendor = () => {
+const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
     const myChart = echarts.init(chartRef.current);
 
-    const deviceNames = ['Cisco', 'Fortinet', 'Citrix', 'PaloAlto', 'NetScaler'];
-    const categories = (function () {
-      let now = new Date();
-      let res = [];
-      let len = 10;
-      while (len--) {
-        res.unshift(now.toLocaleTimeString().replace(/^\D*/, ''));
-        now = new Date(+now - 2000);
-      }
-      return res;
-    })();
-
-    const data = (function () {
-      let res = [];
-      let len = 10;
-      while (len--) {
-        res.push(Math.round(Math.random() * 1000));
-      }
-      return res;
-    })();
-    const data2 = (function () {
-      let res = [];
-      let len = 0;
-      while (len < 10) {
-        res.push(+(Math.random() * 10 + 5).toFixed(1));
-        len++;
-      }
-      return res;
-    })();
+    const categories = time;
 
     const option = {
       tooltip: {
@@ -96,7 +68,7 @@ const ConfigurationChangeByVendor = () => {
           type: 'bar',
           xAxisIndex: 1,
           yAxisIndex: 1,
-          data: data,
+          data: values,
           itemStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
               { offset: 0, color: '#31C7A4' },
@@ -110,7 +82,7 @@ const ConfigurationChangeByVendor = () => {
           type: 'line',
           xAxisIndex: 0,
           yAxisIndex: 0,
-          data: data2,
+          data: values, // Assuming values represent the line data
           itemStyle: {
             color: '#31C7A4',
           },
@@ -122,12 +94,8 @@ const ConfigurationChangeByVendor = () => {
 
     const intervalId = setInterval(() => {
       let axisData = new Date().toLocaleTimeString().replace(/^\D*/, '');
-      data.shift();
-      data.push(Math.round(Math.random() * 1000));
-      data2.shift();
-      data2.push(+(Math.random() * 10 + 5).toFixed(1));
-      categories.shift();
-      categories.push(axisData);
+      values.shift();
+      values.push(Math.round(Math.random() * 1000));
 
       myChart.setOption({
         xAxis: [
@@ -140,10 +108,10 @@ const ConfigurationChangeByVendor = () => {
         ],
         series: [
           {
-            data: data,
+            data: values,
           },
           {
-            data: data2,
+            data: values,
           },
         ],
       });
@@ -153,7 +121,7 @@ const ConfigurationChangeByVendor = () => {
       clearInterval(intervalId);
       myChart.dispose();
     };
-  }, []);
+  }, [deviceNames, time, values]);
 
   return <div ref={chartRef} className="chart-container" style={{ width: '100%', height: '400px' }} />;
 };
