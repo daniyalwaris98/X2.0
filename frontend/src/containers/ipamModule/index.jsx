@@ -71,15 +71,18 @@ function Index(props) {
       id: PAGE_PATH_DASHBOARD,
       name: PAGE_NAME_DASHBOARD,
       path: PAGE_PATH_DASHBOARD,
+      icon: "ic:outline-dashboard",
     },
     {
       id: PAGE_PATH_DEVICES,
       name: PAGE_NAME_DEVICES,
       path: PAGE_PATH_DEVICES,
+      icon: "tdesign:device",
     },
     {
       id: DROPDOWN_PATH_SUBNETS,
       name: DROPDOWN_NAME_SUBNETS,
+      icon: "carbon:ibm-cloud-subnets",
       children: [
         {
           id: PAGE_PATH_SUBNETS,
@@ -106,37 +109,44 @@ function Index(props) {
     {
       id: DROPDOWN_PATH_DNS_SERVERS,
       name: DROPDOWN_NAME_DNS_SERVERS,
+      icon: "clarity:rack-server-line",
       children: [
         {
           id: PAGE_PATH_DNS_SERVERS,
           name: PAGE_NAME_DNS_SERVERS,
           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_SERVERS}`,
+          icon: "clarity:rack-server-line",
         },
         {
           id: PAGE_PATH_DNS_RECORDS,
           name: PAGE_NAME_DNS_RECORDS,
           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_RECORDS}`,
+          icon: "vaadin:records",
         },
         {
           id: PAGE_PATH_DNS_ZONES,
           name: PAGE_NAME_DNS_ZONES,
           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_DNS_SERVERS}/${PAGE_PATH_DNS_ZONES}`,
+          icon: "ri:time-zone-line",
         },
       ],
     },
     {
       id: DROPDOWN_PATH_VIP,
       name: DROPDOWN_NAME_VIP,
+      icon: "mdi:virtual-private-network",
       children: [
         {
           id: PAGE_PATH_FIREWALLS,
           name: PAGE_NAME_FIREWALLS,
           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_FIREWALLS}`,
+          icon: "carbon:firewall",
         },
         {
           id: PAGE_PATH_LOAD_BALANCERS,
           name: PAGE_NAME_LOAD_BALANCERS,
           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_VIP}/${PAGE_PATH_LOAD_BALANCERS}`,
+          icon: "carbon:load-balancer-vpc",
         },
       ],
     },

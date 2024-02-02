@@ -30,11 +30,13 @@ function Index(props) {
       id: PAGE_PATH_DEVICES_SUMMARY,
       name: PAGE_NAME_DEVICES_SUMMARY,
       path: PAGE_PATH_DEVICES_SUMMARY,
+      icon: "solar:graph-broken",
     },
     {
       id: PAGE_PATH_DEVICES_INTERFACES,
       name: PAGE_NAME_DEVICES_INTERFACES,
       path: PAGE_PATH_DEVICES_INTERFACES,
+      icon: "carbon:network-interface",
     },
   ];
 

@@ -47,39 +47,47 @@ function Index(props) {
       id: PAGE_PATH_MANAGE_NETWORKS,
       name: PAGE_NAME_MANAGE_NETWORKS,
       path: PAGE_PATH_MANAGE_NETWORKS,
+      icon: "carbon:network-2",
     },
     {
       id: PAGE_PATH_DISCOVERY,
       name: PAGE_NAME_DISCOVERY,
       path: PAGE_PATH_DISCOVERY,
+      icon: "iconamoon:discover-light",
     },
     {
       id: PAGE_PATH_MANAGE_DEVICES,
       name: PAGE_NAME_MANAGE_DEVICES,
       path: PAGE_PATH_MANAGE_DEVICES,
+      icon: "tdesign:device",
     },
     {
       id: DROPDOWN_PATH_MANAGE_CREDENTIALS,
       name: DROPDOWN_NAME_MANAGE_CREDENTIALS,
+      icon: "octicon:id-badge-16",
       children: [
         {
           id: PAGE_PATH_LOGIN_CREDENTIALS,
           name: PAGE_NAME_LOGIN_CREDENTIALS,
           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${PAGE_PATH_LOGIN_CREDENTIALS}`,
+          icon: "carbon:password",
         },
         {
           id: DROPDOWN_PATH_SNMP_CREDENTIALS,
           name: DROPDOWN_NAME_SNMP_CREDENTIALS,
+          icon: "fluent:protocol-handler-16-regular",
           children: [
             {
               id: PAGE_PATH_V1_V2_CREDENTIALS,
               name: PAGE_NAME_V1_V2_CREDENTIALS,
               path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V1_V2_CREDENTIALS}`,
+              icon: "solar:shield-network-broken",
             },
             {
               id: PAGE_PATH_V3_CREDENTIALS,
               name: PAGE_NAME_V3_CREDENTIALS,
               path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_MANAGE_CREDENTIALS}/${DROPDOWN_PATH_SNMP_CREDENTIALS}/${PAGE_PATH_V3_CREDENTIALS}`,
+              icon: "solar:shield-network-broken",
             },
           ],
         },
