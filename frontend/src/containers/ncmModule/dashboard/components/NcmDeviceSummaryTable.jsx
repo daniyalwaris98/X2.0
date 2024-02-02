@@ -1,29 +1,36 @@
-import React from 'react'
+import React from 'react';
 import { Table } from 'antd';
-
-
-const dataSource = [
-    { key: '1', col1: 'CISCO IOS Switch', col2: 'CISCO', col3: 'IOS', col4: '02' },
-    { key: '2', col1: 'Fortinet Router', col2: 'FORTINET', col3: 'BIG-IP', col4: '03' },
-    { key: '3', col1: 'CISCO IOS Switch', col2: 'CISCO', col3: 'IOS', col4: '02' },
-    { key: '4', col1: 'CISCO Switch', col2: 'CISCO', col3: 'CISCO', col4: '02' },
-    
-  ];
-  
-  const columns = [
-    { title: 'Device Type', dataIndex: 'col1', key: 'col1' },
-    { title: 'Vendor ', dataIndex: 'col2', key: 'col2' },
-    { title: 'OS Type', dataIndex: 'col3', key: 'col3' },
-    { title: 'Devices', dataIndex: 'col4', key: 'col4' },
-  ];
-  
+import { selectNcmDeviceSummaryTable } from '../../../../store/features/ncmModule/dashboard/selectors';
+import { useGetNcmDeviceSummaryTableQuery } from '../../../../store/features/ncmModule/dashboard/apis';
+import { useSelector } from 'react-redux';
 
 function NcmDeviceSummaryTable() {
+  const {
+    data: ncmTableData,
+    isSuccess: isNcmTableSuccess,
+    isLoading: isNcmTableLoading,
+    isError: isNcmTableError,
+    error: recentNcmTableError,
+  } = useGetNcmDeviceSummaryTableQuery();
+
+  const ncmTable = useSelector(selectNcmDeviceSummaryTable);
+
+  console.log('ncmTable', ncmTable);
+
+  const dataSource = ncmTableData || []; // Use API response data or provide a default empty array
+
+  const columns = [
+    { title: 'Device Type', dataIndex: 'device_type', key: 'device_type' },
+    { title: 'Vendor ', dataIndex: 'vendor', key: 'vendor' },
+    { title: 'OS Type', dataIndex: 'function', key: 'function' },
+    { title: 'Devices', dataIndex: 'device_count', key: 'device_count' },
+  ];
+
   return (
-    <div style={{padding:"0px 15px"}}>
-    <Table dataSource={dataSource} columns={columns} />
+    <div style={{ padding: '0px 15px' }}>
+      <Table dataSource={dataSource} columns={columns} />
     </div>
-  )
+  );
 }
 
-export default NcmDeviceSummaryTable
+export default NcmDeviceSummaryTable;

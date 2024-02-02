@@ -5,20 +5,23 @@ import ConfigurationBackupSummary from "./components/ConfigurationBackupSummary"
 import Compliance from "./components/Compliance";
 import ChangeByTimeChart from "./components/ChangeByTimeChart";
 import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
+import RcmAlarms from '../../../components/charts/RcmAlarms'
+
 import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
-import { selectConfigurationBackupSummary, selectConfigurationChangeByDevice, selectRecentRcmAlarms, selectRecentRcmAlarmsCount } from "../../../store/features/ncmModule/dashboard/selectors";
+import { selectConfigurationBackupSummary, selectConfigurationChangeByDevice, selectConfigurationChangeByVendor } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
 
 import {
   useGetConfigurationChangeByDeviceQuery,
   useGetConfigurationBackupSummaryQuery,
-  useGetRecentRcmAlarmsQuery,
-  useGetRecentRcmAlarmsCountQuery,
+  useGetConfigurationChangeByVendorQuery,
+
   
 } from "../../../store/features/ncmModule/dashboard/apis";
 import "./index.css";
 import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
+import RcmAlarmDeviceTable from "./components/RcmAlarmDeviceTable";
 
 
 function Index() {
@@ -38,32 +41,25 @@ function Index() {
     isError: isBackupSummaryError,
     error: backupSummaryError,
   } = useGetConfigurationBackupSummaryQuery();
-  
   const {
-    data: rcmData,
-    isSuccess: isRcmSuccess,
-    isLoading: isRcmLoading,
-    isError: isRcmError,
-    error: recentRcmAlarmsError,
-  } = useGetRecentRcmAlarmsQuery();
+    data: vendorData,
+    isSuccess: isVendorSuccess,
+    isLoading: isVendorLoading,
+    isError: isVendorError,
+    error: vendorError,
+  } = useGetConfigurationBackupSummaryQuery();
   
-  const {
-    data: rcmAlarmsCountData,
-    isSuccess: isRcmAlarmsCountSuccess,
-    isLoading: isRcmAlarmsCountLoading,
-    isError: isRcmAlarmsCountError,
-    error: recentRcmAlarmsCountError,
-  } = useGetRecentRcmAlarmsCountQuery();
+
   
   const backupSummary = useSelector(selectConfigurationBackupSummary);
   const timeLineChart = useSelector(selectConfigurationChangeByDevice);
-  const RcmAlarms = useSelector(selectRecentRcmAlarms);
-  const RcmAlarmsCount = useSelector(selectRecentRcmAlarmsCount);
+  const graph = useSelector(selectConfigurationChangeByVendor);
+
+ 
   
-  console.log("backupSummary", backupSummary);
-  console.log("timeLineChart", timeLineChart);
-  console.log("RcmAlarms", RcmAlarms);
-  console.log("RcmAlarmsCount", RcmAlarmsCount);
+  console.log("graph", graph);
+  // console.log("timeLineChart", timeLineChart);
+ 
   
   
 
@@ -112,6 +108,7 @@ function Index() {
       <h6 className="heading">
         Recent RCM Alarms
       </h6>
+ 
       <RecentRcmAlarmsChart />
     </div>
   </Col>
@@ -132,7 +129,12 @@ function Index() {
       <h6 className="heading">
         Configuration Change by Vendor
       </h6>
-      <ConfigurationChangeByVendor />
+      <ConfigurationChangeByVendor
+  deviceNames={['Cisco', 'Fortinet', 'Citrix', 'PaloAlto', 'NetScaler']}
+  time={['time1', 'time2', 'time3', 'time4', 'time5']}
+  values={[5,10,6]}
+/>
+
     </div>
   </Col>
 

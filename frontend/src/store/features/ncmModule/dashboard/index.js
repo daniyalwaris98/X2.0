@@ -17,6 +17,7 @@ const initialState = {
   configuration_backup_summary_data: [], 
   recent_rcm_alarms_data:[],
   recent_rcm_alarms_count_data:[],
+  configuration_change_by_vendor_data: [],
 };
 
 const defaultSlice = createSlice({
@@ -48,7 +49,20 @@ const defaultSlice = createSlice({
         (state, action) => {
           state.recent_rcm_alarms_count_data = action.payload;
         }
-      );
+      )
+      .addMatcher(
+        extendedApi.endpoints.getNcmDeviceSummaryTable.matchFulfilled,
+        (state, action) => {
+          state.ncm_device_summary_table_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getConfigurationChangeByVendor.matchFulfilled,
+        (state, action) => {
+          state.configuration_change_by_vendor_data = action.payload;
+        }
+      )
+      ;
   },
 });
 
