@@ -160,8 +160,10 @@ def top_10_subnet_ip_used():
             subnets_data = list(zip(subnet_address_list, subnet_usage_list))
 
 
-            sorted_subnets = sorted(subnets_data, key=lambda x: x[1], reverse=True)
-
+            
+            #sorted_subnets = sorted(subnets_data, key=lambda x: x[1], reverse=True)
+            #sorted_subnets = sorted(subnets_data, key=lambda x: str(x[1]) if x[1] is not None else 0, reverse=True)
+            sorted_subnets = sorted(subnets_data, key=lambda x: int(x[1]) if x[1] is not None and x[1].isdigit() else 0, reverse=True)
             # Create a dictionary for the top 10 subnets
             obj_dict = dict(sorted_subnets[:10])
 
