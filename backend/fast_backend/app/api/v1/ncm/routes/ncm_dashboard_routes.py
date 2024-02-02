@@ -330,22 +330,34 @@ description="API to get the vendor in ncm"
 )
 async def ncm_vendor_count():
     try:
-        queryString = (f"select atom_table.vendor, count(*) from ncm_device_table inner join "
-                       f"atom_table on ncm_device_table.atom_id = atom_table.atom_id  "
-                       f"group by vendor;")
+        queryString = (f"SELECT atom_table.vendor, COUNT(*), "
+                        f"DATE_FORMAT(ncm_device_table.config_change_date, '%H:%i:%s') AS config_change_time "
+                        f"FROM ncm_device_table "
+                        f"INNER JOIN atom_table ON ncm_device_table.atom_id = atom_table.atom_id "
+                        f"GROUP BY vendor, config_change_time ;")
         print("query string is::::::::::::::::::::::::",queryString,file=sys.stderr)
         result = configs.db.execute(queryString)
         print("reuslt is:::::::::::",result,file=sys.stderr)
         obj_list = []
 
-        for row in result:
+        '''for row in result:
             print("row is::::::::::::::::::::::",row,file=sys.stderr)
             print("row [0] is:::::::::::::::",row[0],file=sys.stderr)
             print("row[1] is:::::::::::::::::::",row[1],file=sys.stderr)
             obj_dict = {"name": row[0], "value": row[1]}
             print("obj dict is::::::::::::::::::::",obj_dict,file=sys.stderr)
             if row[0] is None:
-                obj_dict["name"] = "Other"
+                obj_dict["name"] = "Other"'''
+
+        for row in result:
+            print("row is::::::::::::::::::::::", row, file=sys.stderr)
+            print("row [0] is:::::::::::::::", row[0], file=sys.stderr)
+            print("row[1] is:::::::::::::::::::", row[1], file=sys.stderr)
+            print("config_change_time is:::::::::::::::::::", row[2], file=sys.stderr)
+            obj_dict = {"name": row[0], "value": row[1], "config_change_time": row[2]}
+            print("obj dict is::::::::::::::::::::", obj_dict, file=sys.stderr)
+            if row[0] is None:
+                obj_dict["name"] = "Other"        
 
             obj_list.append(obj_dict)
         print("objlist is:::::::::::::::::",obj_list,file=sys.stderr)
