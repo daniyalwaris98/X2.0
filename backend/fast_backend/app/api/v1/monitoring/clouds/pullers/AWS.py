@@ -1,8 +1,9 @@
-# import boto3
+#import boto3
 import os
 import sys
 from app.utils.db_utils import *
 import traceback
+import boto3
 # from app.mail import GenerateMailForCloudAlert
 
 

@@ -787,7 +787,7 @@ def get_snmp_v3_credentials():
 summary="Use this api in Auto Discovery Manage credentials page to show credentials count of SNMP V1,V2 and SSH login ",
 description="Use this api in Auto Discovery Manage credentials page to show credentials count of SNMP V1,V2 and SSH login "
 )
-def GetSNMPV2Count(user_data):
+def GetSNMPV2Count():
     try:
         queryString = f"select count(*) from snmp_credentials_table where category='v1/v2';"
         v2Count = configs.db.execute(queryString).fetchone()
@@ -1254,7 +1254,7 @@ description="API to get the discovery data in atom"
 def get_discovery_data_in_atom():
     try:
         discovery_list =[]
-        discovery_exsist = configs.db.quer(AutoDiscoveryTable).all()
+        discovery_exsist = configs.db.query(AutoDiscoveryTable).all()
         for data in discovery_exsist:
             transition_atom_exsist = configs.db.query(AtomTransitionTable).filter_by(ip_address = data.ip_address).first()
             if not transition_atom_exsist:
