@@ -45,7 +45,7 @@ function Index() {
   } = useGetConfigurationBackupSummaryQuery();
   
 
-  // console.log("data", fetchRecordsData)
+
 
   const dataSource1 = useSelector(selectConfigurationBackupSummary);
   const dataSource2 = useSelector( selectConfigurationChangeByDevice);
@@ -85,7 +85,7 @@ function Index() {
       </h6>
       {/* <ChangeByTimeChart /> */}
       <ConfigurationByTimeLineChart 
-      //  companyData={dataSource}
+       companyData={dataSource2}
   />
     </div>
   </Col>
