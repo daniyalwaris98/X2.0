@@ -468,9 +468,10 @@ def edit_wmi_credentials(wmiObj:WMIMonitoringCredentialSchema):
                 "category":credentials.category
             }
             data_dict_wmi['data'] = data_dict
-            data_dict_wmi['message'] = f"{credentials.profile_name} : Inserted Successfully"
-
-        return JSONResponse(content=data_dict_wmi,status_code=200)
+            data_dict_wmi['message'] = f"{credentials.profile_name} : Updated Successfully"
+            return JSONResponse(content=data_dict_wmi,status_code=200)
+        else:
+            return JSONResponse(content=f"Credentials Not Found",status_code=400)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured while adding wmi credentials",status_code=500)

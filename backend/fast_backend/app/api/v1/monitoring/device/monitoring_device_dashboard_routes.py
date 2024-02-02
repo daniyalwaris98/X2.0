@@ -142,7 +142,10 @@ def get_device_by_ip_address(ip: str = Query(..., description="IP address of the
 @router.get("/get_ip_alerts", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
-})
+},
+summary ="API to get ip alerts",
+description = "API to get ip alerts"
+)
 def ip_alerts(ip: str = Query(..., description="IP address of the device")):
     try:
 
@@ -187,7 +190,10 @@ def ip_alerts(ip: str = Query(..., description="IP address of the device")):
 @router.get("/get_interface_band/{ip, interface_name}", responses={
     200: {"model": str},
     500: {"model": str}
-})
+},
+summary ="API to get interface_band/{ip, interface_name}",
+description = "API to get interface_band/{ip, interface_name}"
+)
 async def int_band(ip: str = Query(..., description="IP address of the device"),
                    interface_name: str = Query(..., description="Interface name")):
     org = "monetx"
