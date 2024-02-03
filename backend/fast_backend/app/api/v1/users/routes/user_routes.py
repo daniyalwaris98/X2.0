@@ -1,5 +1,5 @@
 import json
-
+import asyncio
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 import sys
@@ -10,7 +10,7 @@ from app.schema.users_schema import *
 from app.utils.db_utils import *
 from app.api.v1.users.utils.user_utils import *
 #from app.models.users_models import *
-
+from app.api.v1.users.routes.license_routes import generate_license
 router = APIRouter(
     prefix="/user",
     tags=["admin_routes"]
@@ -27,8 +27,12 @@ summary="API to add the end user"
 )
 def add_end_user(Userobj:EndUserResponseScehma):
     try:
+        users_dict = {}
         users = EndUserTable()
         end_user = dict(Userobj)
+        end_user_exsists = configs.db.query(EndUserTable).filter_by(company_name=Userobj.company_name).first()
+        if end_user_exsists:
+            return JSONResponse(content="End User Already Exsists",status_code=400)
         for key,value in end_user.items():
             print("key in end user is:::::::::::::",key,file=sys.stderr)
             print("value in end user is::::::::::::",value,file=sys.stderr)
@@ -38,8 +42,36 @@ def add_end_user(Userobj:EndUserResponseScehma):
                 print("set attribute is true for the table")
                 InsertDBData(users)
                 print("Data Inserted into the end user table is:::::::::::::::",file=sys.stderr)
+                data = {
+                    "end_user_id":users.end_user_id,
+                    "company_name":users.company_name,
+                    "po_box":users.po_box,
+                    "email":users.email,
+                    "address":users.address,
+                    "street_name":users.street_name,
+                    "city":users.city,
+                    "country":users.country,
+                    "contact_person":users.contact_person
+                }
+                users_dict['data']= data
+                users_dict['message']  =f"End user Inserted"
             else:
                 print("has attribute false for the end user model and the key not found",file=sys.stderr)
+            end_user_verify = configs.db.query(EndUserTable).filter_by(company_name=Userobj.company_name).first()
+            if end_user_verify:
+                if key =='liscence_statrt_date' or key=="liscence_end_date" or key =="device_onboard_limit":
+                    license_data = {
+                        "start_date":Userobj.license_start_date,
+                        "end_date":Userobj.license_end_date,
+                        "device_onboard_limit":Userobj.device_onboard_limit,
+                        "end_user_id":end_user_verify.end_user_id,
+                        "company_name":Userobj.company_name
+                    }
+                    result = asyncio.run(generate_license(license_data))
+                    print("Result of generate_license:", result)
+            else:
+                return JSONResponse(content="Company Didnt Exsists",status_code=400)
+        return users_dict
     except Exception as e:
         traceback.print_exc()
 
@@ -153,7 +185,7 @@ def get_all_users():
         for user in users:
             print("user is::::::::::::::::::",user,file=sys.stderr)
             user_dict = {
-                "user_id":user.user_id,
+                "user_id":user.id,
                 "user_name":user.name,
                 "email":user.email,
                 "status":user.status,

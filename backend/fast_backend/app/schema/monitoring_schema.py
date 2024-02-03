@@ -186,11 +186,11 @@ class SnmpV3CredentialsRequestSchema(SnmpCredentialsSchema):
 
 
 class SnmpV2CredentialsResponseSchema(SnmpV2CredentialsRequestSchema):
-    credentials_id: int
+    monitoring_credentials_id: int
 
 
 class SnmpV3CredentialsResponseSchema(SnmpV3CredentialsRequestSchema):
-    credentials_id: int
+    monitoring_credentials_id: int
 
 class Response200(BaseSchema):
     data: dict
@@ -232,10 +232,10 @@ class AddAtomInMonitoringSchema(BaseSchema):
 
 
 class EditSnmpV2Credentials(SnmpV2CredentialsResponseSchema):
-    credentials_id : int
+    monitoring_credentials_id : int
 
 class EditSnmpV3CredentialsResponseSchema(SnmpV3CredentialsRequestSchema):
-    credentials_id:int
+    monitoring_credentials_id:int
 
 class MonitoringAlertsByIpAddress(BaseSchema):
     ip_address:str

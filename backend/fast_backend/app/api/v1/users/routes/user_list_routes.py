@@ -37,7 +37,7 @@ description="API to get the user account type dropdown"
 )
 def get_user_account_type():
     try:
-        return JSONResponse(content=get_user_account_type,status_code=200)
+        return JSONResponse(content=user_account_type_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting the user account type",status_code=500)

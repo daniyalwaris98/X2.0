@@ -1,3 +1,5 @@
+import traceback
+
 from app.api.v1.ipam.routes.device_routes import *
 from app.models.ipam_models import *
 from app.models.atom_models import *
@@ -724,53 +726,48 @@ def validate_password_group_name(pass_obj):
 
 
 def validate_password_group_credentials(pass_obj, password_exist):
-    print("pass obj is::::::::::::::::::::::::::::::::::;",pass_obj,file=sys.stderr)
-    print("password exsist is::::::::::::::::::::::::::::::::::::",password_exist,file=sys.stderr)
-    pass_obj["username"] = pass_obj["username"].strip()
-    if pass_obj["username"] == "":
-        return (
-            f"{pass_obj['password_group']} : Username Field Can Not Be Empty",
-            400,
-        )
-    password_exist.username = pass_obj["username"]
-    if pass_obj['password_group_type'] is None or pass_obj['password_group_type'] == '':
-        return f"Password Group Type cannot be empty",400
+    try:
+        print("pass obj is::::::::::::::::::::::::::::::::::;", pass_obj, file=sys.stderr)
+        print("password exist is::::::::::::::::::::::::::::::::::::", password_exist, file=sys.stderr)
+        pass_obj["username"] = pass_obj["username"].strip()
 
-    if pass_obj['password_group_type'] == 'telnet' or pass_obj['password_group_type'] == 'Telnet':
-        print("passowrd gorup type is::::::::::::::::::::::::::;telnet",file=sys.stderr)
-        if pass_obj['secret_password'] is None or pass_obj['secret_password'] == '':
-            return f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",400
-            # print("password cannot be emoty for telnet:::::::::::::::::::",file=sys.stderr)
+        if pass_obj["username"] == "":
+            return f"{pass_obj['password_group']} : Username Field Can Not Be Empty", 400
 
-    pass_obj["password"] = pass_obj["password"].strip()
-    if pass_obj["password"] == "":
-        return f"{pass_obj['password_group']} : Password Field Can Not be Empty", 400
-    
-    password_exist.password = pass_obj["password"]
-    
+        password_exist.username = pass_obj["username"]
 
-    if pass_obj["password_group_type"] == PasswordGroupTypeEnum.telnet:
-        password_exist.password_group_type = "Telnet"
-        print("password group type is password exsit.password_group_type============",file=sys.stderr)
-        if pass_obj["secret_password"] is None:
-            return (
-                f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
-                
-            ),400
+        if pass_obj['password_group_type'] is None or pass_obj['password_group_type'] == '':
+            return f"Password Group Type cannot be empty", 400
 
-        pass_obj["secret_password"] = pass_obj["secret_password"].strip()
+        pass_obj["password"] = pass_obj["password"].strip()
 
-        if pass_obj["secret_password"].strip() == "":
-            return (
-                f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
-                400,
-            )
+        if pass_obj["password"] == "":
+            return f"{pass_obj['password_group']} : Password Field Can Not be Empty", 400
+
+        password_exist.password = pass_obj["password"]
+
+        if pass_obj["password_group_type"] == 'TELNET':
+                password_exist.password_group_type = "TELNET"
+
+        if pass_obj["password_group_type"]=="SSH":
+                password_exist.password_group_type = "SSH"
+
+        if "secret_password" in pass_obj and pass_obj["secret_password"]:
+                pass_obj["secret_password"] = pass_obj["secret_password"].strip()
+
+        # if pass_obj["secret_password"].strip() == "":
+        #             return f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For SSH", 400
 
         password_exist.secret_password = pass_obj["secret_password"]
-    else:
-        password_exist.password_group_type = "SSH"
+        print("password exist for the secret password is:::", password_exist.secret_password, file=sys.stderr)
 
-    return password_exist, 200
+        # else:
+        #     return f"{pass_obj['password_group']} : Invalid Password Group Type", 400
+
+        return password_exist, 200
+    except Exception as e:
+        traceback.print_exc()
+        print("Error occurred while validating the password group", str(e))
 
 
 def add_password_group_util(pass_obj, update):
@@ -894,10 +891,13 @@ def edit_password_group_util(pass_obj):
         status = UpdateDBData(password_exist)
         print("status updated db data us::::::::::::::",status,file=sys.stderr)
         if status == 200:
+            configs.db.merge(password_exist)
+            configs.db.commit()
+            print("password group updated:::::::::::::::",file=sys.stderr)
             pass_data = dict(pass_obj)
             password_group_id = password_group.password_group_id
             pass_data['password_group_id'] = password_group_id
-            msg=   f"{pass_obj['password_group']} : Password Group Updated Successfully"
+            msg=f"{pass_obj['password_group']} : Password Group Updated Successfully"
             password_group_data = {
                     "data":pass_data,
                     "message":msg

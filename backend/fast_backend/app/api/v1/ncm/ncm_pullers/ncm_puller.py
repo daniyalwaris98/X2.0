@@ -85,12 +85,12 @@ class NCMPuller(object):
         connection = None
 
         # Telnet Connect
-        if self.credential.password_group_type == "Telnet":
+        if self.credential.password_group_type == "Telnet" or self.credential.password_group_type == "TELNET":
             if self.atom.device_type not in device_type_telnet_dictionary.keys():
                 self.response = f"{self.atom.ip_address} : Telnet Support Not Available For {self.atom.device_type}"
                 self.status = 500
                 return
-
+            print("TELNET login is being  executed::::::::::::",file=sys.stderr)
             device_type = device_type_telnet_dictionary[self.atom.device_type]
             while telnet_tries < total_tries:
                 try:

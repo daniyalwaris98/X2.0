@@ -2,7 +2,7 @@ from fastapi import FastAPI,APIRouter
 from fastapi.responses import JSONResponse
 import sys
 import traceback
-
+import asyncio
 from starlette import status
 import ast
 from app.models.users_models import *
@@ -120,22 +120,22 @@ async def LicenseDaysLeft(date_string):
 
 
 
-@router.post('/generate_license',responses={
-    200:{"model":str},
-    400:{"model":str},
-    500:{"model":str}
-},
-summary="API to Generate the license",
-description="API to generate the license"
-)
-async def generate_license(license_data: GenerateLicenseResponseScehma):
+# @router.post('/generate_license',responses={
+#     200:{"model":str},
+#     400:{"model":str},
+#     500:{"model":str}
+# },
+# summary="API to Generate the license",
+# description="API to generate the license"
+# )
+async def generate_license(license_data):
     try:
         objDict = {}
         license_data = dict(license_data)
         end_user_id = ""
         print("license data is:::::::::::::::::::::", license_data, file=sys.stderr)
-        end_user_exsists = configs.db.query(EndUserTable).filter_by(company_name = license_data['company_name']).first()
-        end_user_id = end_user_exsists.end_user_id
+        # end_user_exsists = configs.db.query(EndUserTable).filter_by(company_name = license_data['company_name']).first()
+        end_user_id = license_data['end_user_id']
         # Verify required fields
         required_fields = ['company_name', 'start_date', 'end_date', 'device_onboard_limit']
         for field in required_fields:
