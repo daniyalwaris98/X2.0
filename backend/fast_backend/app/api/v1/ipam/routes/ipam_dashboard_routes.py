@@ -243,7 +243,7 @@ async def subnet_summary():
 
         manually_added = 0
         discovered_added = 0
-        total_count = 0
+        # total_count = 0
 
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
@@ -251,13 +251,13 @@ async def subnet_summary():
             # Update the counts by adding the values from the current row
             manually_added += row[0]
             discovered_added += row[1]
-            total_count += row[2]
+            #total_count += row[2]
             
             
         counts = {
             "manually_added": manually_added ,
             "discovered_added" : discovered_added,
-            "total_count": total_count,
+            
         }
        
         print("subnet_state counts are::::::::::::::::::::::::::::", counts, file=sys.stderr)

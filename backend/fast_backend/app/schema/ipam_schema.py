@@ -235,7 +235,7 @@ class ResponseDNSSummary(BaseSchema):
 
 
 class SubnetSummaryResponse(BaseSchema):
-    total_count : int
+    #total_count : int
     manual : int 
     discovered : int
 
