@@ -14,14 +14,16 @@ class SignIn(BaseModel):
 
 
 class SignUp(BaseModel):
-    email: str
-    password: str
-    name: str
-    role: str
-    status:str
-    team:str
-    account_type:str
-    company_name:str
+    company:dict
+    user:dict
+    # email: str
+    # password: str
+    # name: str
+    # role: str
+    # status:str
+    # team:str
+    # account_type:str
+    # company_name:str
 
 class Payload(BaseModel):
     user_id: int

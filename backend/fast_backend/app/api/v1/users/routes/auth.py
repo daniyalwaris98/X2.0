@@ -11,7 +11,7 @@ from app.schema.users_schema import User as UserSchema
 from app.services.auth_service import AuthService
 # from fastapi.status import HTTP_204_NO_CONTENT
 from app.core.security import JWTBearer
-
+from app.api.v1.users.utils.user_utils import add_end_user_registration
 
 
 
