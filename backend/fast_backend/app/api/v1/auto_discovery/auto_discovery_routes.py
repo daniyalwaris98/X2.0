@@ -243,7 +243,7 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
             return JSONResponse("Select a subnet to scan", 400)
 
         network = configs.db.query(AutoDiscoveryNetworkTable).filter(
-            AutoDiscoveryNetworkTable.subnet == subnet).first()
+            AutoDiscoveryNetworkTable.subnet == subnet.subnet).first()
 
         if network is not None:
             results = auto_discover.get_range_inventory_data(
