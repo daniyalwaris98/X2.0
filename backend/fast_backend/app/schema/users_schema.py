@@ -121,7 +121,7 @@ class FindUserResult(BaseModel):
 
 
 
-class FailedDevicesCountResponseSchema():
+class FailedDevicesCountResponseSchema(BaseSchema):
     auto_discovery_failed_devices:int |None = None
     ipam_failed_devices:int |None = None
     monitoring_failed_devices:int |None = None
