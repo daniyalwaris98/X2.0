@@ -158,7 +158,7 @@ def get_monitoring_failed_devices():
 
 
 @router.get('/get_failed_devices_count',responses={
-    200:{"model":str},
+    200:{"model":list[FailedDevicesCountResponseSchema]},
     400:{"model":str}
 })
 def get_failed_devices_count():
