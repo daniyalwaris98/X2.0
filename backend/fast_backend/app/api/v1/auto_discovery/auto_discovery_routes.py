@@ -1263,7 +1263,7 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3RequestSchema):
     try:
         data_dict = {}
         v3_data = dict(v3_data)
-        v3_exsists = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(monitoring_credentials_id = v3_data['credentials_id']).first()
+        v3_exsists = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(credentials_id = v3_data['credentials_id']).first()
         if v3_exsists:
             v3_exsists.username = v3_data['user_name']
             v3_exsists.authentication_password = v3_data['authentication_password']
