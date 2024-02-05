@@ -57,7 +57,7 @@ def AddUserInDB(user_data):
     try:
         user_data_dict = user_data.dict()
         user = UserTableModel()
-        end_user_exsist = configs.db.query(EndUserTable).filter_by(company_name=user_data_dict['company_name']).first()
+        end_user_exsist = configs.db.query(EndUserTable).filter_by(end_user_id=user_data_dict['end_user_id']).first()
         if not end_user_exsist:
             return "End User Not Found", 400
         end_user_id = end_user_exsist.end_user_id
