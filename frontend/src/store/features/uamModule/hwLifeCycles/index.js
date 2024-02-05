@@ -54,24 +54,24 @@ const hwLifeCycleSlice = createSlice({
           });
         }
       )
-      .addMatcher(
-        extendedApi.endpoints.syncToInventory.matchFulfilled,
-        (state, action) => {
-          let temp = action.payload.data?.forEach((responseItem) => {
-            const indexToUpdate = state.all_data.findIndex((tableItem) => {
-              return (
-                tableItem[TABLE_DATA_UNIQUE_ID] ===
-                responseItem[TABLE_DATA_UNIQUE_ID]
-              );
-            });
-            if (indexToUpdate !== -1) {
-              state.all_data[indexToUpdate] = responseItem;
-            } else {
-              state.all_data = [responseItem, ...state.all_data];
-            }
-          });
-        }
-      )
+      // .addMatcher(
+      //   extendedApi.endpoints.syncToInventory.matchFulfilled,
+      //   (state, action) => {
+      //     let temp = action.payload.data?.forEach((responseItem) => {
+      //       const indexToUpdate = state.all_data.findIndex((tableItem) => {
+      //         return (
+      //           tableItem[TABLE_DATA_UNIQUE_ID] ===
+      //           responseItem[TABLE_DATA_UNIQUE_ID]
+      //         );
+      //       });
+      //       if (indexToUpdate !== -1) {
+      //         state.all_data[indexToUpdate] = responseItem;
+      //       } else {
+      //         state.all_data = [responseItem, ...state.all_data];
+      //       }
+      //     });
+      //   }
+      // )
       .addMatcher(
         extendedApi.endpoints.deleteHwLifeCycle.matchFulfilled,
         (state, action) => {

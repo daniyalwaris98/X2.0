@@ -17,7 +17,7 @@ const initialState = {
   v3_credentials_encryption_protocols: [],
   ipam_devices_fetch_dates: [],
   account_type_names: [],
-  use_roles_names: [],
+  user_roles_names: [],
 };
 
 const dropDownsSlice = createSlice({
@@ -103,7 +103,7 @@ const dropDownsSlice = createSlice({
         extendedApi.endpoints.fetchV3CredentialsEncryptionProtocolNames
           .matchFulfilled,
         (state, action) => {
-          state.monitoring_credentials_names = action.payload;
+          state.v3_credentials_encryption_protocols = action.payload;
         }
       )
       .addMatcher(

@@ -63,7 +63,7 @@ const Index = ({
   handleOpenPasswordGroupModal,
 }) => {
   // useForm hook
-  const { handleSubmit, control, setValue, watch } = useForm({
+  const { handleSubmit, control, setValue, watch, reset } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -71,6 +71,14 @@ const Index = ({
   useEffect(() => {
     formSetter(recordToEdit, setValue);
   }, []);
+
+  // // Watch the site name value
+  // const siteName = watch(indexColumnNameConstants.SITE_NAME);
+
+  // // Reset the rack value to null when the site changes
+  // useEffect(() => {
+  //   reset({ [indexColumnNameConstants.RACK_NAME]: null });
+  // }, [siteName, reset]);
 
   // fetching dropdowns data from backend using apis
   const {

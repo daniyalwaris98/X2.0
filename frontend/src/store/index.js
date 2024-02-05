@@ -5,6 +5,7 @@ import { monetxApi } from "./features/apiSlice";
 import loginReducer, { logout } from "./features/login";
 
 // admin module
+import adminFailedDevicesLandingReducer from "./features/adminModule/failedDevices/landing";
 import adminAutoDiscoveryFailedDevicesReducer from "./features/adminModule/failedDevices/autoDiscovery";
 import adminIpamFailedDevicesReducer from "./features/adminModule/failedDevices/ipam";
 import adminMonitoringFailedDevicesReducer from "./features/adminModule/failedDevices/monitoring";
@@ -128,6 +129,7 @@ const rootReducer = combineReducers({
   login: loginReducer,
 
   // admin module
+  admin_failed_devices_landing: adminFailedDevicesLandingReducer,
   admin_auto_discovery_failed_devices: adminAutoDiscoveryFailedDevicesReducer,
   admin_ipam_failed_devices: adminIpamFailedDevicesReducer,
   admin_monitoring_failed_devices: adminMonitoringFailedDevicesReducer,

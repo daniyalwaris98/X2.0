@@ -12,9 +12,10 @@ export function useIndexTableColumnDefinitions({
     indexColumnNameConstants.USER_NAME,
     indexColumnNameConstants.DESCRIPTION,
     indexColumnNameConstants.PORT,
-    indexColumnNameConstants.AUTHORIZATION_PROTOCOL,
+    indexColumnNameConstants.COMMUNITY,
+    indexColumnNameConstants.AUTHENTICATION_PROTOCOL,
     {
-      data_key: indexColumnNameConstants.AUTHORIZATION_PASSWORD,
+      data_key: indexColumnNameConstants.AUTHENTICATION_PASSWORD,
       render: (text, record) => <DefaultTextWithSwitch text={text} />,
     },
     indexColumnNameConstants.ENCRYPTION_PROTOCOL,

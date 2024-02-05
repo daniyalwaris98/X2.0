@@ -1,7 +1,7 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { useFetchRecordsQuery } from "../../../../store/features/adminModule/failedDevices/uam/apis";
 import { selectTableData } from "../../../../store/features/adminModule/failedDevices/uam/selectors";
+import { useFetchRecordsQuery } from "../../../../store/features/adminModule/failedDevices/uam/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
 import useErrorHandling from "../../../../hooks/useErrorHandling";

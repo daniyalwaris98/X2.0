@@ -19,6 +19,7 @@ import {
   useAddRecordMutation,
 } from "../../../store/features/adminModule/members/apis";
 import { formSetter, getTitle } from "../../../utils/helpers";
+import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_SINGLE,
@@ -37,11 +38,17 @@ const schema = yup.object().shape({
   [indexColumnNameConstants.USER_NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
+  [indexColumnNameConstants.PASSWORD]: yup
+    .string()
+    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
   [indexColumnNameConstants.EMAIL_ADDRESS]: yup
     .string()
     .required(
       `${getTitle(indexColumnNameConstants.EMAIL_ADDRESS)} is required`
     ),
+  [indexColumnNameConstants.PASSWORD]: yup
+    .string()
+    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
   [indexColumnNameConstants.NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.NAME)} is required`),
@@ -51,21 +58,21 @@ const schema = yup.object().shape({
   [indexColumnNameConstants.STATUS]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.STATUS)} is required`),
-  [indexColumnNameConstants.COMPANY_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.COMPANY_NAME)} is required`),
   [indexColumnNameConstants.ACCOUNT_TYPE]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.ACCOUNT_TYPE)} is required`),
-  [indexColumnNameConstants.LAST_LOGIN]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.LAST_LOGIN)} is required`),
   [indexColumnNameConstants.TEAM]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.TEAM)} is required`),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
+  // hooks
+  const { getUserInfoFromAccessToken } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+
   // useForm hook
   const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
@@ -174,10 +181,13 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // on form submit
   const onSubmit = (data) => {
+    console.log("members modal", data);
     if (recordToEdit) {
       data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
+      data[indexColumnNameConstants.END_USER_ID] =
+        userInfo[indexColumnNameConstants.END_USER_ID];
       addRecord(data);
     }
   };
@@ -197,17 +207,23 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 required
               />
               <DefaultFormUnit
+                type="password"
+                control={control}
+                dataKey={indexColumnNameConstants.PASSWORD}
+                required
+              />
+              <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
                 required
               />
+            </Grid>
+            <Grid item xs={4}>
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.NAME}
                 required
               />
-            </Grid>
-            <Grid item xs={4}>
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.STATUS}
@@ -229,11 +245,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 dataKey={indexColumnNameConstants.ACCOUNT_TYPE}
                 options={accountTypeNames}
                 spinning={isFetchAccountTypeNamesLoading}
-                required
-              />
-              <DefaultFormUnit
-                control={control}
-                dataKey={indexColumnNameConstants.LAST_LOGIN}
                 required
               />
               <DefaultFormUnit

@@ -89,6 +89,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   const onSubmit = (data) => {
     if (recordToEdit) {
       data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
+      console.log("wowwwwwww", data);
       updateRecord(data);
     } else {
       addRecord(data);

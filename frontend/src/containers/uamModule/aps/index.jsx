@@ -8,11 +8,11 @@ import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import DefaultPageTableSection from "../../../components/pageSections";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import DefaultSpinner from "../../../components/spinners";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   PAGE_PATH,

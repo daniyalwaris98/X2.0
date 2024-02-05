@@ -6,7 +6,7 @@ import DefaultInput, { PasswordInput } from "./inputs";
 import DefaultSelect, { AddableSelect } from "./selects";
 import DefaultOption from "./options";
 import { Controller } from "react-hook-form";
-import { getTitle } from "../utils/helpers";
+import { getTitle, isFirstLetterVowel } from "../utils/helpers";
 import { useTheme } from "@mui/material/styles";
 import DefaultDate from "./dates";
 import DefaultSpinner from "./spinners";
@@ -128,7 +128,7 @@ export function SelectFormUnit({
                       color: theme.palette.default_select.place_holder,
                     }}
                   >
-                    Select a {title}
+                    Select {isFirstLetterVowel(title) ? "an" : "a"} {title}
                   </DefaultOption>
                   {options?.map((value) => (
                     <DefaultOption value={value}>{value}</DefaultOption>
