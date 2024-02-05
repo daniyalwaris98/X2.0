@@ -171,8 +171,8 @@ def edit_network_util(network_obj):
 
         if network_obj['scan_status'] is None:
             network_obj['scan_status'] = "InActive"
-        elif str(network_obj['scan_status']).lower() == 'inactive':
-            network_obj['scan_status'] = "InActive"
+        elif str(network_obj['scan_status']).lower() == 'In Active':
+            network_obj['scan_status'] = "In Active"
         else:
             network_obj['scan_status'] = "Active"
 
