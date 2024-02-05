@@ -316,7 +316,7 @@ def delete_user(user_id :list[int]):
         error_list = []
         for data in user_id:
             print("data is ::::::::::::::::::;",data,file=sys.stderr)
-            user_exsist = configs.db.query(UserTableModel).filter_by(user_id=data).first()
+            user_exsist = configs.db.query(UserTableModel).filter_by(id=data).first()
             if user_exsist:
                 deleted_ids.append(data)
                 DeleteDBData(user_exsist)
