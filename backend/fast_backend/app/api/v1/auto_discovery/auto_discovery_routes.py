@@ -1266,17 +1266,17 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3RequestSchema):
         v3_exsists = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(credentials_id = v3_data['credentials_id']).first()
         if v3_exsists:
             v3_exsists.username = v3_data['user_name']
-            v3_exsists.authentication_password = v3_data['authentication_password']
+            v3_exsists.password = v3_data['authentication_password']
             v3_exsists.encryption_password = v3_data['encryption_password']
-            v3_exsists.authentication_protocol = v3_data['authentication_protocol']
-            v3_exsists.encryption_protocol = v3_data['encryption_protocol']
+            v3_exsists.authentication_method = v3_data['authentication_protocol']
+            v3_exsists.encryption_method = v3_data['encryption_protocol']
             data ={
                 "credentials_id":v3_exsists.monitoring_credentials_id,
                 "user_name":v3_exsists.username,
-                "authentication_password":v3_exsists.authentication_password,
+                "authentication_password":v3_exsists.password,
                 "encryption_password":v3_exsists.encryption_password,
-                "authentication_protocol":v3_exsists.authentication_protocol,
-                "encryption_protocol":v3_exsists.encryption_protocol
+                "authentication_protocol":v3_exsists.authentication_method,
+                "encryption_protocol":v3_exsists.encryption_method
             }
             message = f"{v3_exsists.profile_name} : Updated Successfully"
             data_dict['data'] = data
