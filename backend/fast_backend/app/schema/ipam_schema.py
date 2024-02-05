@@ -211,15 +211,10 @@ class IpHistoryResponseSchema(BaseSchema):
     ip_address:str
 
 
-'''class PortsValue(BaseSchema):
-    port_list: list[str | int | None]
-    #ports_frequency : list[str | int | None]'''
-
-
 
 class PortsValue(BaseSchema):
     ports: List[Union[str, None]]
-    frequency: List[int]
+    counts: List[int]
 
 
 class Ip_Address_counts(BaseSchema):
