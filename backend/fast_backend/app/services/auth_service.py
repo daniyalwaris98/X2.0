@@ -12,9 +12,9 @@ from app.schema.users_schema import FindUser
 from app.services.base_service import BaseService
 from app.utils.hash import get_rand_hash
 from app.models.users_models import *
-
+from app.api.v1.users.utils.user_utils import add_end_user_registration
 from app.models.blacklisted_token import BlacklistedToken
-
+from fastapi.responses import JSONResponse
 from app.repository import blacklisted_token_repository
 
 from app.repository.blacklisted_token_repository import BlacklistedTokenRepository
@@ -183,50 +183,75 @@ class AuthService(BaseService):
     def sign_up(self, user_info: SignUp):
         user_token = get_rand_hash()
         user_data = user_info.dict(exclude_none=True)
+        print("user data is:::::::::", user_data, file=sys.stderr)
         role = user_data.pop('role', 'user')
+        company_dict = {}
+        response = None  # Initialize response variable
+        company_name = ""
+        for key, value in user_data.items():
+            print("key for the user data is::::::", key, file=sys.stderr)
+            print("value for the user data is::::::::", value, file=sys.stderr)
 
-        # Access attributes using dot notation
-        print("user_info company name is:::",user_info.company_name,file=sys.stderr)
-        end_user_id = None
-        end_user_exist = configs.db.query(EndUserTable).filter_by(company_name=user_info.company_name).first()
-        if end_user_exist:
-            end_user_id = end_user_exist.end_user_id
-            print("end user id is:::::::::::::::",end_user_id,file=sys.stderr)
+            if key == 'company':
+                company_dict.update(value)
+                company_name = value.get('company_name')
+                print("company dict is:::::::::::::;", company_dict, file=sys.stderr)
+                add_end_user_registration(company_dict)
+            if key == 'user':
+                user_name = value.get('role')
+                user_exist = configs.db.query(UserTableModel).filter_by(user_name=user_name).first()
+                if user_exist:
+                    response = JSONResponse(content=f"{user_name} Already Exists", status_code=400)
+                else:
+                    # Access attributes using dot notation
+                    end_user_id = None
+                    print("company name for the user attribute is:::::", company_name, file=sys.stderr)
+                    end_user_exist = configs.db.query(EndUserTable).filter_by(company_name=company_name).first()
 
+                    if end_user_exist:
+                        end_user_id = end_user_exist.end_user_id
+                        print("end user id is:::::::::::::::", end_user_id, file=sys.stderr)
+                    else:
+                        response = JSONResponse(content="Company Detail Not found", status_code=400)
 
-        role_id= None
-        role_exsists = configs.db.query(UserRoleTableModel).filter_by(role = user_info.role).first()
-        if role_exsists:
-            role_id = role_exsists.role_id
+                    role_id = None
+                    role = value.get('role')
+                    print("role is:::::::::::::::", role, file=sys.stderr)
+                    role_exists = configs.db.query(UserRoleTableModel).filter_by(role=role).first()
 
-        # Remove fields from user_data if they are being set explicitly
-        # For example, if 'team', 'account_type', and 'status' are set explicitly, pop them from user_data
-        team = user_data.pop('team', None)
-        account_type = user_data.pop('account_type', None)
-        status = user_data.pop('status', None)
-        name = user_info.name
-        user_name = user_info.name
+                    if role_exists:
+                        role_id = role_exists.role_id
+                    else:
+                        response = JSONResponse(content="User Role Not found", status_code=500)
 
-        # Ensure all required fields are set correctly
-        user = UserTableModel(
-            is_active=True,
-            is_superuser=False,
-            user_token=user_token,
-            role=role,
-            teams=team,  # Set explicitly here
-            account_type=account_type,
-            status=status,
-            end_user_id = end_user_id,
-            name = name,
-            user_name = user_name
+                    # Remove fields from user_data if they are being set explicitly
+                    # For example, if 'team', 'account_type', and 'status' are set explicitly, pop them from user_data
+                    team = value.pop('team', None)
+                    account_type = value.pop('account_type', None)
+                    status = value.pop('status', None)
+                    name = value.pop('name', None)
+                    user_name = value.pop('user_name', None)
 
-        )
+                    # Ensure all required fields are set correctly
+                    user = UserTableModel(
+                        is_active=True,
+                        is_superuser=False,
+                        user_token=user_token,
+                        role=role,
+                        teams=team,  # Set explicitly here
+                        account_type=account_type,
+                        status=status,
+                        end_user_id=end_user_id,
+                        name=name,
+                        user_name=user_name
+                    )
+                    password = value.get('password')
+                    user.password = get_password_hash(password)
+                    created_user = self.user_repository.create(user)
+                    delattr(created_user, "password")
+                    response = created_user  # Update response with created_user
 
-        user.password = get_password_hash(user_info.password)
-        created_user = self.user_repository.create(user)
-        delattr(created_user, "password")
-        return created_user
-
+        return response
     def blacklist_token(self, email: str, token: str):
         blacklisted_token = BlacklistedToken(email=email, token=token)
         self.blacklisted_token_repository.create(blacklisted_token)

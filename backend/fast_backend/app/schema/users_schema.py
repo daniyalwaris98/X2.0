@@ -60,14 +60,12 @@ class AddUserSchema(BaseSchema):
     name:str
     email_address:str
     password:str |None = None
-    email_address:str
-    password:str |None = None
-    status:str
-    user_name:str
-    team:str
-    account_type:str
-    role:str
-    company_name:str
+    status:str |None = None
+    user_name:str |None = None
+    team:str |None = None
+    account_type:str |None = None
+    role:str |None = None
+    end_user_id:int |None = None
 
 class GetUserResponseScehma(BaseSchema):
     user_id:int
@@ -120,3 +118,12 @@ class UpsertUser(BaseUser, metaclass=AllOptional):
 class FindUserResult(BaseModel):
     founds: Optional[List[User]]
     search_options: Optional[SearchOptions]
+
+
+
+class FailedDevicesCountResponseSchema(BaseSchema):
+    auto_discovery_failed_devices:int |None = None
+    ipam_failed_devices:int |None = None
+    monitoring_failed_devices:int |None = None
+    ncm_failed_devices:int |None = None
+    uam_failed_devices:int |None = None

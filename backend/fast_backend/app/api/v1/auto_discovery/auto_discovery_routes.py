@@ -243,7 +243,7 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
             return JSONResponse("Select a subnet to scan", 400)
 
         network = configs.db.query(AutoDiscoveryNetworkTable).filter(
-            AutoDiscoveryNetworkTable.subnet == subnet).first()
+            AutoDiscoveryNetworkTable.subnet == subnet.subnet).first()
 
         if network is not None:
             results = auto_discover.get_range_inventory_data(
@@ -676,12 +676,12 @@ def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
         credentials = SNMP_CREDENTIALS_TABLE()
         v3_credentials = dict(credentialObj)
         print("v3 credentials are::::::::::::::::::::::",v3_credentials,file=sys.stderr)
-        username = v3_credentials['username']
+        username = v3_credentials['user_name']
         if configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(username=username).first():
             return JSONResponse(content="Duplicate entry", status_code=400)
 
         description = v3_credentials['description']
-        username = v3_credentials['username']
+        username = v3_credentials['user_name']
         port = v3_credentials['port']
         authorization_protocol = v3_credentials['authorization_protocol']
         authorization_password = v3_credentials['authorization_password']
@@ -699,7 +699,7 @@ def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
 
         snmp_dict = {
             "profile_name": credentials.profile_name,
-            "username": credentials.profile_name,
+            "user_name": credentials.username,
             "community": credentials.snmp_read_community,  # Check if this field is required
             "description": credentials.description,
             "port": credentials.snmp_port,
@@ -1263,24 +1263,25 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3RequestSchema):
     try:
         data_dict = {}
         v3_data = dict(v3_data)
-        v3_exsists = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(monitoring_credentials_id = v3_data['credentials_id']).first()
+        v3_exsists = configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(credentials_id = v3_data['credentials_id']).first()
         if v3_exsists:
-            v3_exsists.username = v3_data['username']
-            v3_exsists.authentication_password = v3_data['authentication_password']
+            v3_exsists.username = v3_data['user_name']
+            v3_exsists.password = v3_data['authentication_password']
             v3_exsists.encryption_password = v3_data['encryption_password']
-            v3_exsists.authentication_protocol = v3_data['authentication_protocol']
-            v3_exsists.encryption_protocol = v3_data['encryption_protocol']
+            v3_exsists.authentication_method = v3_data['authentication_protocol']
+            v3_exsists.encryption_method = v3_data['encryption_protocol']
             data ={
-                "credentials_id":v3_exsists.monitoring_credentials_id,
-                "username":v3_exsists.username,
-                "authentication_password":v3_exsists.authentication_password,
+                "credentials_id":v3_exsists.credentials_id,
+                "user_name":v3_exsists.username,
+                "authentication_password":v3_exsists.password,
                 "encryption_password":v3_exsists.encryption_password,
-                "authentication_protocol":v3_exsists.authentication_protocol,
-                "encryption_protocol":v3_exsists.encryption_protocol
+                "authentication_protocol":v3_exsists.authentication_method,
+                "encryption_protocol":v3_exsists.encryption_method
             }
             message = f"{v3_exsists.profile_name} : Updated Successfully"
             data_dict['data'] = data
             data_dict['messgae'] = message
+            return data_dict
         else:
             return JSONResponse(content=f"{v3_exsists['credentials_id']} : Not Found",status_code=400)
 
