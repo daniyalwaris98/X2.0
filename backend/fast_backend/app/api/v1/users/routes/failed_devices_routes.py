@@ -187,7 +187,7 @@ def get_failed_devices_count():
             "uam_failed_devices":uam_result
         }
         failed_devices_list.append(failed_dict)
-        return failed_devices_list
+        return failed_dict
 
     except Exception as e:
         traceback.print_exc()
