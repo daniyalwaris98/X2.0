@@ -187,13 +187,14 @@ class AuthService(BaseService):
         role = user_data.pop('role', 'user')
         company_dict = {}
         response = None  # Initialize response variable
-
+        company_name = ""
         for key, value in user_data.items():
             print("key for the user data is::::::", key, file=sys.stderr)
             print("value for the user data is::::::::", value, file=sys.stderr)
 
             if key == 'company':
                 company_dict.update(value)
+                company_name = value.get('company_name')
                 print("company dict is:::::::::::::;", company_dict, file=sys.stderr)
                 add_end_user_registration(company_dict)
             if key == 'user':
@@ -204,7 +205,6 @@ class AuthService(BaseService):
                 else:
                     # Access attributes using dot notation
                     end_user_id = None
-                    company_name = value.get('company_name')
                     print("company name for the user attribute is:::::", company_name, file=sys.stderr)
                     end_user_exist = configs.db.query(EndUserTable).filter_by(company_name=company_name).first()
 
