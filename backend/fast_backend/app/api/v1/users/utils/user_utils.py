@@ -74,6 +74,15 @@ def AddUserInDB(user_data):
             user_name_exsist.end_user_id = end_user_id
             user_name_exsist.role_id = role_id
             UpdateDBData(user_name_exsist)
+            data = {
+                "user_id": user_name_exsist.id,
+                "name": user.name,
+                "password": user.password,
+                "role": role_exsist.role,
+                "company_name": end_user_exsist.company_name,
+                "status": user.status,
+                "teams": user.teams
+            }
             message = f"{user_name_exsist.user_name} : Updated Successfully"
         else:
 
