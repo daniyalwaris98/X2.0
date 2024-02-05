@@ -23,4 +23,4 @@ export const selectIpamDevicesFetchDatesNames = (state) =>
   state.drop_downs.ipam_devices_fetch_dates;
 export const selectAccountTypeNames = (state) =>
   state.drop_downs.account_type_names;
-export const selectUserRoleNames = (state) => state.drop_downs.use_role_names;
+export const selectUserRoleNames = (state) => state.drop_downs.user_role_names;

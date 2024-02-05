@@ -134,7 +134,7 @@ def insert_uam_device_board_data(uam_id, data):
         if main_board_obj:
             # Update main board info
             main_board_obj.serial_number = serial_number
-            main_board_obj.description = description
+            # main_board_obj.device_slot_id = description
             main_board_obj.pn_code = device_pn_code
             main_board_obj.device_slot_id = device_slot_id
             print(f"{device_slot_id}updated the table for the main chasis board>>>>>>>>>>.",file=sys.stderr)
@@ -144,7 +144,7 @@ def insert_uam_device_board_data(uam_id, data):
                 uam_id=uam_id,
                 board_name=board_name,
                 serial_number=serial_number,
-                description=description,
+                # description=description,
                 pn_code=device_pn_code,
                 device_slot_id=device_slot_id
             )

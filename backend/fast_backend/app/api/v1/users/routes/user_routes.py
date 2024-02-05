@@ -316,13 +316,21 @@ def delete_user(user_id :list[int]):
         error_list = []
         for data in user_id:
             print("data is ::::::::::::::::::;",data,file=sys.stderr)
-            user_exsist = configs.db.query(UserTableModel).filter_by(user_id=data).first()
+            user_exsist = configs.db.query(UserTableModel).filter_by(id=data).first()
             if user_exsist:
                 deleted_ids.append(data)
                 DeleteDBData(user_exsist)
                 success_list.append(f"{data} : Is deleted")
             else:
                 error_list.append(f"{data} : Not Found")
+        responses = {
+            "data":deleted_ids,
+            "suucess_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Deleting the User",status_code=500)

@@ -1,9 +1,9 @@
 export const PAGE_NAME = "Login";
 export const PAGE_PATH = "login";
 export const ACCESS_TOKEN = "monetx_access_token";
-export const LOGIN_FORM = "login_form";
-export const COMPANY_FORM = "company_form";
-export const USER_FORM = "user_form";
+export const LOGIN = "login";
+export const COMPANY = "company";
+export const USER = "user";
 export const indexColumnNameConstants = {
   USER_NAME: "user_name",
   PASSWORD: "password",
@@ -25,7 +25,8 @@ export const companyConstants = {
   DEVICE_ONBOARD_LIMIT: "device_onboard_limit",
 };
 export const userConstants = {
-  EMAIL: "email",
+  USER_NAME: "user_name",
+  EMAIL_ADDRESS: "email_address",
   PASSWORD: "password",
   NAME: "name",
   ROLE: "role",

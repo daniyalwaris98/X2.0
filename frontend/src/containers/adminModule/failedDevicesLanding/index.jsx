@@ -1,11 +1,15 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectFailedDevicesCounts } from "../../../store/features/adminModule/failedDevices/landing/selectors";
+import { useFetchRecordsQuery } from "../../../store/features/adminModule/failedDevices/landing/apis";
+import { getPathAllSegments } from "../../../utils/helpers";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import DefaultDetailCards from "../../../components/detailCards";
 import Card from "../../../components/cards";
 import HorizontalMenu from "../../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../../utils/helpers";
-import firewallIcon from "../../../resources/designRelatedSvgs/firewall.svg";
-import deviceIcon from "../../../resources/designRelatedSvgs/otherDevices.svg";
-import switchIcon from "../../../resources/designRelatedSvgs/switches.svg";
+import DefaultSpinner from "../../../components/spinners";
 import {
   PAGE_NAME as PAGE_NAME_AUTO_DISCOVERY,
   PAGE_PATH as PAGE_PATH_AUTO_DISCOVERY,
@@ -26,11 +30,7 @@ import {
   PAGE_NAME as PAGE_NAME_UAM,
   PAGE_PATH as PAGE_PATH_UAM,
 } from "./uam/constants";
-import { useSelector } from "react-redux";
-import { selectSelectedDevice } from "../../../store/features/monitoringModule/devices/selectors";
-import { useAuthorization } from "../../../hooks/useAuth";
 import { MODULE_PATH } from "..";
-import DefaultDetailCards from "../../../components/detailCards";
 
 export const LANDING_PAGE_NAME = "Failed Devices";
 export const LANDING_PAGE_PATH = "failed_devices_landing";
@@ -78,7 +78,25 @@ function Index(props) {
 
   menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
 
-  const selectedDevice = useSelector(selectSelectedDevice);
+  const selectedFailedDevicesCounts = useSelector(selectFailedDevicesCounts);
+
+  // apis
+  const {
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isLoading: isFetchRecordsLoading,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+  } = useFetchRecordsQuery();
+
+  // error handling custom hooks
+  useErrorHandling({
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+    type: TYPE_FETCH,
+  });
 
   let pagePath = getPathAllSegments();
   if (pagePath.length === 4 && pagePath[3] === LANDING_PAGE_PATH) {
@@ -86,16 +104,17 @@ function Index(props) {
   } else pagePath = pagePath.splice(4);
 
   return (
-    <>
-      {selectedDevice ? (
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
+      {selectedFailedDevicesCounts ? (
         <DefaultDetailCards
           data={{
             [PAGE_PATH_AUTO_DISCOVERY]:
-              selectedDevice[PAGE_PATH_AUTO_DISCOVERY],
-            [PAGE_PATH_IPAM]: selectedDevice[PAGE_PATH_IPAM],
-            [PAGE_PATH_MONITORING]: selectedDevice[PAGE_PATH_MONITORING],
-            [PAGE_PATH_NCM]: selectedDevice[PAGE_PATH_NCM],
-            [PAGE_PATH_UAM]: selectedDevice[PAGE_PATH_UAM],
+              selectedFailedDevicesCounts[PAGE_PATH_AUTO_DISCOVERY],
+            [PAGE_PATH_IPAM]: selectedFailedDevicesCounts[PAGE_PATH_IPAM],
+            [PAGE_PATH_MONITORING]:
+              selectedFailedDevicesCounts[PAGE_PATH_MONITORING],
+            [PAGE_PATH_NCM]: selectedFailedDevicesCounts[PAGE_PATH_NCM],
+            [PAGE_PATH_UAM]: selectedFailedDevicesCounts[PAGE_PATH_UAM],
           }}
           icons={[
             "iconamoon:discover-light",
@@ -113,7 +132,7 @@ function Index(props) {
       <br />
       <br />
       <br />
-    </>
+    </DefaultSpinner>
   );
 }
 

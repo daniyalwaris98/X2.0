@@ -69,7 +69,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     fetchUserRoleNames: builder.query({
-      query: () => "/api/v1/users/user_static_list/get_user_status",
+      query: () => "/api/v1/users/user/get_user_role_dropdown",
     }),
   }),
 });

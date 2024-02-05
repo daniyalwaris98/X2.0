@@ -33,7 +33,7 @@ import { useIndexTableColumnDefinitions as useLicensesTableColumnDefinitions } f
 import { TABLE_DATA_UNIQUE_ID as SITE_ID } from "../sites/constants";
 import { CustomPageHeader } from "./customPageHeader";
 import { indexColumnNameConstants } from "./constants";
-import { PAGE_NAME } from "./constants";
+import { ELEMENT_NAME } from "./constants";
 
 const Index = ({ handleClose, open, record }) => {
   const parameters = {
@@ -199,7 +199,7 @@ const Index = ({ handleClose, open, record }) => {
   }
 
   return (
-    <DetailsModal title={`${PAGE_NAME} Details`} open={open}>
+    <DetailsModal title={`${ELEMENT_NAME} Details`} open={open}>
       <DefaultSpinner
         spinning={
           isFetchSitesByIPAddressRecordsLoading ||

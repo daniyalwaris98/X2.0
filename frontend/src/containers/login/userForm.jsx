@@ -11,7 +11,7 @@ import useErrorHandling, { TYPE_SINGLE } from "../../hooks/useErrorHandling";
 import DefaultFormUnit from "../../components/formUnits";
 import { UserDialogFooter } from "../../components/dialogFooters";
 import DefaultSpinner from "../../components/spinners";
-import { COMPANY_FORM, USER_FORM, userConstants } from "./constants";
+import { COMPANY, USER, userConstants } from "./constants";
 import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 import {
   selectCompanyDetails,
@@ -21,9 +21,30 @@ import { useSelector } from "react-redux/es/hooks/useSelector";
 import { setCompanyDetails, setUserDetails } from "../../store/features/login";
 
 const schema = yup.object().shape({
-  [userConstants.EMAIL]: yup
+  [userConstants.USER_NAME]: yup
     .string()
-    .required(`${getTitle(userConstants.EMAIL)} is required`),
+    .required(`${getTitle(userConstants.USER_NAME)} is required`),
+  [userConstants.EMAIL_ADDRESS]: yup
+    .string()
+    .required(`${getTitle(userConstants.EMAIL_ADDRESS)} is required`),
+  [userConstants.PASSWORD]: yup
+    .string()
+    .required(`${getTitle(userConstants.PASSWORD)} is required`),
+  [userConstants.STATUS]: yup
+    .string()
+    .required(`${getTitle(userConstants.STATUS)} is required`),
+  [userConstants.TEAM]: yup
+    .string()
+    .required(`${getTitle(userConstants.TEAM)} is required`),
+  [userConstants.ACCOUNT_TYPE]: yup
+    .string()
+    .required(`${getTitle(userConstants.ACCOUNT_TYPE)} is required`),
+  [userConstants.ROLE]: yup
+    .string()
+    .required(`${getTitle(userConstants.ROLE)} is required`),
+  [userConstants.NAME]: yup
+    .string()
+    .required(`${getTitle(userConstants.NAME)} is required`),
 });
 
 const Index = ({ setCurrentForm }) => {
@@ -77,12 +98,12 @@ const Index = ({ setCurrentForm }) => {
   // handlers
   function handleBack() {
     dispatch(setUserDetails(getValues()));
-    setCurrentForm(COMPANY_FORM);
+    setCurrentForm(COMPANY);
   }
 
   // on form submit
   const onSubmit = (data) => {
-    register({ company: companyDetails, user: data });
+    register({ [COMPANY]: companyDetails, [USER]: data });
   };
 
   return (
@@ -104,9 +125,14 @@ const Index = ({ setCurrentForm }) => {
         <Grid container spacing={5}>
           <Grid item xs={6}>
             <DefaultFormUnit
+              control={control}
+              dataKey={userConstants.USER_NAME}
+              required
+            />
+            <DefaultFormUnit
               type="email"
               control={control}
-              dataKey={userConstants.EMAIL}
+              dataKey={userConstants.EMAIL_ADDRESS}
               required
             />
             <DefaultFormUnit
@@ -120,13 +146,13 @@ const Index = ({ setCurrentForm }) => {
               dataKey={userConstants.NAME}
               required
             />
+          </Grid>
+          <Grid item xs={6}>
             <DefaultFormUnit
               control={control}
               dataKey={userConstants.ROLE}
               required
             />
-          </Grid>
-          <Grid item xs={6}>
             <DefaultFormUnit
               control={control}
               dataKey={userConstants.STATUS}

@@ -10,7 +10,7 @@ import useErrorHandling, { TYPE_SINGLE } from "../../hooks/useErrorHandling";
 import DefaultFormUnit from "../../components/formUnits";
 import { LoginDialogFooter } from "../../components/dialogFooters";
 import DefaultSpinner from "../../components/spinners";
-import { COMPANY_FORM, indexColumnNameConstants } from "./constants";
+import { COMPANY, indexColumnNameConstants } from "./constants";
 import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 
 const schema = yup.object().shape({
@@ -59,7 +59,7 @@ const Index = ({ setCurrentForm }) => {
 
   // handlers
   function handleRegister() {
-    setCurrentForm(COMPANY_FORM);
+    setCurrentForm(COMPANY);
   }
 
   // on form submit

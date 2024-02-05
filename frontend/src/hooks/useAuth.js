@@ -13,10 +13,15 @@ export function useAuthorization() {
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
     if (accessToken) {
       let userInfo = jwt.decode(accessToken);
+      console.log("getUserInfoFromAccessToken user role:", userInfo?.role);
+      console.log(
+        "getUserInfoFromAccessToken:",
+        JSON.parse(userInfo.configuration)
+      );
       userInfo = {
         ...userInfo,
-        // configuration: JSON.parse(userInfo.configuration),
-        configuration: defaultConfiguration,
+        configuration: JSON.parse(userInfo.configuration),
+        // configuration: defaultConfiguration,
       };
       return userInfo;
     } else {
@@ -213,6 +218,7 @@ export function useAuthentication() {
     localStorage.removeItem(ACCESS_TOKEN);
     clearLocalStorageOnLogout();
     navigate("/");
+    // window.location.reload();
   }
 
   return {

@@ -118,3 +118,12 @@ class UpsertUser(BaseUser, metaclass=AllOptional):
 class FindUserResult(BaseModel):
     founds: Optional[List[User]]
     search_options: Optional[SearchOptions]
+
+
+
+class FailedDevicesCountResponseSchema(BaseSchema):
+    auto_discovery_failed_devices:int |None = None
+    ipam_failed_devices:int |None = None
+    monitoring_failed_devices:int |None = None
+    ncm_failed_devices:int |None = None
+    uam_failed_devices:int |None = None

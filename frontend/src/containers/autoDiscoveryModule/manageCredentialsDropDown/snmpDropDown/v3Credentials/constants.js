@@ -9,9 +9,10 @@ export const indexColumnNameConstants = {
   USER_NAME: "user_name",
   DESCRIPTION: "description",
   PORT: "port",
-  AUTHORIZATION_PROTOCOL: "authorization_protocol",
-  AUTHORIZATION_PASSWORD: "authorization_password",
+  AUTHENTICATION_PROTOCOL: "authentication_protocol",
+  AUTHENTICATION_PASSWORD: "authentication_password",
   ENCRYPTION_PROTOCOL: "encryption_protocol",
   ENCRYPTION_PASSWORD: "encryption_password",
+  COMMUNITY: "community",
   ACTIONS: "actions",
 };

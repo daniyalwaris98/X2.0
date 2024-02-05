@@ -8,7 +8,7 @@ import { formSetter, getTitle } from "../../utils/helpers";
 import DefaultFormUnit, { DateFormUnit } from "../../components/formUnits";
 import { CompanyDialogFooter } from "../../components/dialogFooters";
 import DefaultSpinner from "../../components/spinners";
-import { LOGIN_FORM, USER_FORM, companyConstants } from "./constants";
+import { LOGIN, USER, companyConstants } from "./constants";
 import { setCompanyDetails } from "../../store/features/login";
 import { selectCompanyDetails } from "../../store/features/login/selectors";
 import { useSelector } from "react-redux/es/hooks/useSelector";
@@ -17,6 +17,45 @@ const schema = yup.object().shape({
   [companyConstants.COMPANY_NAME]: yup
     .string()
     .required(`${getTitle(companyConstants.COMPANY_NAME)} is required`),
+  [companyConstants.PO_BOX]: yup
+    .string()
+    .required(`${getTitle(companyConstants.PO_BOX)} is required`),
+  [companyConstants.ADDRESS]: yup
+    .string()
+    .required(`${getTitle(companyConstants.ADDRESS)} is required`),
+  [companyConstants.STREET_NAME]: yup
+    .string()
+    .required(`${getTitle(companyConstants.STREET_NAME)} is required`),
+  [companyConstants.CITY]: yup
+    .string()
+    .required(`${getTitle(companyConstants.CITY)} is required`),
+  [companyConstants.COUNTRY]: yup
+    .string()
+    .required(`${getTitle(companyConstants.COUNTRY)} is required`),
+  [companyConstants.CONTACT_PERSON]: yup
+    .string()
+    .required(`${getTitle(companyConstants.CONTACT_PERSON)} is required`),
+  [companyConstants.CONTACT_NUMBER]: yup
+    .string()
+    .required(`${getTitle(companyConstants.CONTACT_NUMBER)} is required`),
+  [companyConstants.EMAIL]: yup
+    .string()
+    .required(`${getTitle(companyConstants.EMAIL)} is required`),
+  [companyConstants.DOMAIN_NAME]: yup
+    .string()
+    .required(`${getTitle(companyConstants.DOMAIN_NAME)} is required`),
+  [companyConstants.INDUSTRY_TYPE]: yup
+    .string()
+    .required(`${getTitle(companyConstants.INDUSTRY_TYPE)} is required`),
+  [companyConstants.LICENSE_START_DATE]: yup
+    .string()
+    .required(`${getTitle(companyConstants.LICENSE_START_DATE)} is required`),
+  [companyConstants.LICENSE_END_DATE]: yup
+    .string()
+    .required(`${getTitle(companyConstants.LICENSE_END_DATE)} is required`),
+  [companyConstants.DEVICE_ONBOARD_LIMIT]: yup
+    .string()
+    .required(`${getTitle(companyConstants.DEVICE_ONBOARD_LIMIT)} is required`),
 });
 
 const Index = ({ setCurrentForm }) => {
@@ -37,13 +76,13 @@ const Index = ({ setCurrentForm }) => {
   // handlers
   function handleBack() {
     dispatch(setCompanyDetails(getValues()));
-    setCurrentForm(LOGIN_FORM);
+    setCurrentForm(LOGIN);
   }
 
   // on form submit
   const onSubmit = (data) => {
     dispatch(setCompanyDetails(data));
-    setCurrentForm(USER_FORM);
+    setCurrentForm(USER);
   };
 
   return (

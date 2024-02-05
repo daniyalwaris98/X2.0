@@ -1,6 +1,14 @@
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 
+export function isFirstLetterVowel(str) {
+  // Convert the string to lowercase to handle both uppercase and lowercase vowels
+  const firstLetter = str.charAt(0).toLowerCase();
+
+  // Check if the first letter is a vowel
+  return ["a", "e", "i", "o", "u"].includes(firstLetter);
+}
+
 export function getDefaultPagePath(MODULE_PATH, menuItems) {
   let pagePath = getPathAllSegments();
   if (pagePath.length === 3 && pagePath[2] === MODULE_PATH) {

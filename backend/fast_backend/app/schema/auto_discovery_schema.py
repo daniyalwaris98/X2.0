@@ -87,8 +87,8 @@ class AddSnmpV3Schema(BaseSchema):
     profile_name:str | None = None
     description: str | None = None
     port:int | None = None
-    authorization_protocol:str |None = None
-    authorization_password:str | None = None
+    authentication_protocol:str |None = None
+    authentication_password:str | None = None
     encryption_password:str |None = None
 
 
