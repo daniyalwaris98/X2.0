@@ -86,7 +86,7 @@ def AddUserInDB(user_data):
 
         # Construct the response data
         data = {
-            "user_id": user.user_id,
+            "user_id": user.id,
             "name": user.name,
             "password": user.password,
             "role": role_exsist.role,
