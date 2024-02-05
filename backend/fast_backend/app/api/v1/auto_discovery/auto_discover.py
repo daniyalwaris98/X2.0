@@ -4,8 +4,11 @@ import threading
 import traceback
 
 import nmap
+from pysnmp.entity.engine import SnmpEngine
 from pysnmp.entity.rfc3413.oneliner import cmdgen
 from pysnmp.entity.rfc3413.cmdgen import CommandGenerator
+from pysnmp.hlapi import UsmUserData, UdpTransportTarget, getCmd, ContextData
+from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 
 
 def discover_ip_list(ip_list, results):
@@ -256,46 +259,48 @@ def get_all_ips_from_range(start_ip, end_ip):
         traceback.print_exc()
         print("Exception in get_all_ips_from_range:", str(e), file=sys.stderr)
 def test_snmp_v2_credentials(ip_address, credentials):
-    for credential in credentials:
+    try:
+        for credential in credentials:
 
-        print(f"\nTesting SNMP Credentials : {ip_address} : {credential}\n")
+            print(f"\nTesting SNMP Credentials : {ip_address} : {credential}\n")
 
-        # Create an SNMP session
-        cmd_generator = cmdgen.CommandGenerator()
-        # print("cmd :::::::::::::::::: gen :::::::::::::::::::",cmd_generator,file=sys.stderr)
-        print("command generator is:::::::::",cmd_generator,file=sys.stderr)
-        # Retrieve the SNMP version from the Microsoft server
-        error_indication, error_status, error_index, var_binds = cmd_generator.getCmd(
-            cmdgen.CommunityData(credential),
-            cmdgen.UdpTransportTarget((ip_address, 161)),
-            '1.3.6.1.2.1.1.1.0'
-        )
+            # Create an SNMP session
+            cmd_generator = cmdgen.CommandGenerator()
+            # print("cmd :::::::::::::::::: gen :::::::::::::::::::",cmd_generator,file=sys.stderr)
+            print("command generator is:::::::::",cmd_generator,file=sys.stderr)
+            # Retrieve the SNMP version from the Microsoft server
+            error_indication, error_status, error_index, var_binds = cmd_generator.getCmd(
+                cmdgen.CommunityData(credential),
+                cmdgen.UdpTransportTarget((ip_address, 161)),
+                '1.3.6.1.2.1.1.1.0'
+            )
 
-        # Check for errors
-        if error_indication:
-            print(f'{ip_address} : {credential} : SNMP GET request failed: %s' %
-                  error_indication, file=sys.stderr)
-        elif error_status:
-            print(f'{ip_address} : {credential} : SNMP GET request failed: %s at %s' % (
-                error_status.prettyPrint(),
-                error_index and var_binds[int(error_index) - 1][0] or '?'), file=sys.stderr)
-        else:
-            for varBind in var_binds:
-                print(' = '.join([x.prettyPrint()
-                                  for x in varBind]), file=sys.stderr)
+            # Check for errors
+            if error_indication:
+                print(f'{ip_address} : {credential} : SNMP GET request failed: %s' %
+                      error_indication, file=sys.stderr)
+            elif error_status:
+                print(f'{ip_address} : {credential} : SNMP GET request failed: %s at %s' % (
+                    error_status.prettyPrint(),
+                    error_index and var_binds[int(error_index) - 1][0] or '?'), file=sys.stderr)
+            else:
+                for varBind in var_binds:
+                    print(' = '.join([x.prettyPrint()
+                                      for x in varBind]), file=sys.stderr)
 
-            try:
-                snmp_version = "Unknown"
-                for name in var_binds:
-                    version = name.prettyPrint()
-                    index = version.index(':')
-                    snmp_version = version[0:index]
-            except Exception:
-                snmp_version = 'Unresolved'
-            return {'ip_address': ip_address, 'snmp_version': snmp_version,
-                    'credential': credential}
-
-    return None
+                try:
+                    snmp_version = "Unknown"
+                    for name in var_binds:
+                        version = name.prettyPrint()
+                        index = version.index(':')
+                        snmp_version = version[0:index]
+                except Exception:
+                    snmp_version = 'Unresolved'
+                return {'ip_address': ip_address, 'snmp_version': snmp_version,
+                        'credential': credential}
+    except Exception as e:
+        traceback.print_exc()
+        return False
 
 
 def test_snmp_v_credentials(ip_address, credentials):
@@ -343,7 +348,7 @@ def test_snmp_v_credentials(ip_address, credentials):
         except Exception:
             print('SNMPv3 connection failed: %s')
 
-    return None
+    return False
 def TestSNMPV3Credentials(ip_address, credentials):
     for credential in credentials:
 

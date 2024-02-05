@@ -58,9 +58,10 @@ def test_aws_connection(testObj:AwsCredentialScehma):
              )
 def add_aws_credentials(addAws:AwsCredentialScehma):
     try:
+        print("add aws obj is:::::::::::::::",addAws,file=sys.stderr)
         addAwsObj = dict(addAws)
         access_key = addAwsObj['access_key']
-        secret_key = addAwsObj['secret_key']
+        secret_key = addAwsObj['secret_access_key']
         account_label = addAwsObj['account_label']
         aws_query = configs.db.query(AWS_CREDENTIALS).filter_by(access_key = access_key).first()
         if aws_query is not None:

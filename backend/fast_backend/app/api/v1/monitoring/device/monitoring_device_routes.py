@@ -277,7 +277,11 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
                         "ping_status": monitoringDevice.ping_status,
                         "active_id": monitoringDevice.active_id,
                         "device_heatmap": monitoringDevice.device_heatmap,
-                        "monitoring_credentials_id": monitoringDevice.monitoring_credentials_id
+                        "monitoring_credentials_id": monitoringDevice.monitoring_credentials_id,
+                        "snmp_status": monitoringDevice.snmp_status,
+                        "ip_address":atom.ip_address,
+                        "vendor":atom.vendor,
+                        "function":atom.function
                     }
                     data.append(monitoring_device_dict)
                     success_msg = f"{atom_id} : Device Added Successfully"

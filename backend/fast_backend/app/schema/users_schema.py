@@ -42,6 +42,9 @@ class EndUserResponseScehma(BaseSchema):
     email:str
     domain_name:str
     industry_type:str
+    license_start_date: datetime
+    license_end_date: datetime
+    device_onboard_limit: int
 
 class GenerateLicenseResponseScehma(BaseSchema):
     start_date:datetime

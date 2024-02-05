@@ -370,22 +370,22 @@ def edit_snmp_v1_v2_credentials(v2_data:EditSnmpV2Credentials):
     try:
         data_dict = {}
         v2_data = dict(v2_data)
-        v2_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = v2_data['credentials_id']).first()
+        v2_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = v2_data['monitoring_credentials_id']).first()
         if v2_exsists:
             v2_exsists.profile_name = v2_data['profile_name']
             v2_exsists.description = v2_data['description']
-            v2_exsists.port = v2_exsists.port
+            v2_exsists.snmp_portport = v2_data['port']
             v2_exsists.snmp_read_community = v2_data['community']
             data ={
-                "credentials_id":v2_exsists.monitoring_credentials_id,
+                "monitoring_credentials_id":v2_exsists.monitoring_credentials_id,
                 "profile_name":v2_exsists.profile_name,
                 "description":v2_exsists.description,
-                "port":v2_exsists.port,
+                "port":v2_exsists.snmp_port,
                 "community":v2_exsists.snmp_read_community,
-                "monitoring_credentials_id":v2_exsists.monitoring_credentials_id
             }
-            message = f"{v2_exsists.profile_name} : Updated Successfully"
+            data_dict['message'] = f"{v2_exsists.profile_name} : Updated Successfully"
             data_dict['data'] = data
+            return  data_dict
         else:
             return JSONResponse(content=f"{v2_data['credentials_id']} : Not Found",status_code=400)
 

@@ -14,15 +14,16 @@ router = APIRouter(
     tags=["monitoring_network"]
 )
 
-@router.get('/get_interfaces_by_ip_address',responses={
+@router.post('/get_interfaces_by_ip_address',responses={
     200:{"model":list[InterfaceCardDataSchema]},
     500:{"model":str}
 },
 summary="API to get the interfaces based on ip address",
 description="API to get the interfaces based on ip address"
 )
-def get_interfaces_by_ip_address(ip: str = Query(..., description="IP address of the device")):
+def get_interfaces_by_ip_address(ip: MonitoringAlertsByIpAddress):
     try:
+        ip=ip.ip_address
         interfaces_list = []
         query = f'import "strings"\
                        import "influxdata/influxdb/schema"\

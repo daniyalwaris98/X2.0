@@ -272,6 +272,7 @@ def CheckSSHConnection(ip_address, username, password):
 
 def CheckSSHStatus():
     try:
+        data =False
         ipList = []
         query_string = f"select IP_ADDRESS from auto_discovery_table;"
         result = configs.db.execute(query_string)
@@ -310,14 +311,18 @@ def CheckSSHStatus():
                 configs.db.execute(queryString1)
                 configs.db.commit()
                 print(f"SSH STATUS SUCCESSFULLY UPDATED FOR {ip}", file=sys.stderr)
-
+                if status ==True:
+                    data =True
+        return data
     except Exception as e:
         configs.db.rollback()
         traceback.print_exc()
+        return data
 
 
 def CheckSNMPCredentials():
     try:
+        data = False
         # Fetch enabled SNMP statuses using ORM
         enabled_snmp_devices = configs.db.query(AutoDiscoveryTable).filter_by(snmp_status='Enabled').all()
         print("Enabled SNMP devices are:::::::::::::")
@@ -345,18 +350,21 @@ def CheckSNMPCredentials():
             if test_result is None:
                 # No v2 credentials matched, try v3
                 test_result = auto_discover.TestSNMPV3Credentials(device.ip_address, v3_list)
+                if test_result!=False:
+                    data =True
 
             if test_result is not None:
                 # Credentials matched, update the device entry
                 device.SNMP_VERSION = test_result['snmp_version']
                 device.MODIFICATION_DATE = datetime.now()
                 configs.db.session.commit()
+        return data
 
     except Exception as e:
         configs.db.rollback()
         traceback.print_exc()
         print("Error in SNMP credentials:", str(e), file=sys.stderr)
-
+        return False
 
 
 # def CheckSNMPCredentials():

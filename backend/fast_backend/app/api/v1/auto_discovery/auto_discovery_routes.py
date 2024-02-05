@@ -533,7 +533,19 @@ async def get_manage_devices():
         obj_list = []
 
         for row in results:
-            obj_list.append(row.as_dict())
+            objDict = {
+               "discovery_id":row.discovery_id,
+                "ip_address":row.ip_address,
+                "subnet":row.subnet,
+                "os_type":row.os_type,
+                "make_model":row.make_model,
+                "function":row.function,
+                "vendor":row.vendor,
+                "snmp_status":row.snmp_status,
+                "snmp_version":row.snmp_version,
+                "ssh_status":row.ssh_status
+            }
+            obj_list.append(objDict)
 
         return obj_list
 
@@ -552,16 +564,52 @@ async def get_manage_devices():
             )
 async def check_credential_status():
     try:
-        ssh_threading = threading.Thread(target=CheckSSHStatus)
+        success_list = []
+        error_list = []
+        data = {}
+        ssh_threading= threading.Thread(target=CheckSSHStatus)
         print("snmp threading is::::::::::::::::::::::",ssh_threading,file=sys.stderr)
         ssh_threading.start()
 
-        snmp_thread = threading.Thread(target=CheckSNMPCredentials)
+        snmp_thread= threading.Thread(target=CheckSNMPCredentials)
         print("snmp threading is:::::",snmp_thread,file=sys.stderr)
         snmp_thread.start()
 
         ssh_threading.join()
         snmp_thread.join()
+        if snmp_thread or snmp_thread:
+            results = configs.db.query(AutoDiscoveryTable).all()
+            obj_list = []
+
+            for row in results:
+                objDict = {
+                   "discovery_id":row.discovery_id,
+                    "ip_address":row.ip_address,
+                    "subnet":row.subnet,
+                    "os_type":row.os_type,
+                    "make_model":row.make_model,
+                    "function":row.function,
+                    "vendor":row.vendor,
+                    "snmp_status":row.snmp_status,
+                    "snmp_version":row.snmp_version,
+                    "ssh_status":row.ssh_status
+                }
+                obj_list.append(objDict)
+                data['data'] = objDict
+                success_list.append("Success")
+
+        else:
+            error_list.append("SNMP/SHH credentials failed")
+
+        responses = {
+            "data":data,
+            "success_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
+
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting Checking Credential Status",status_code=500)
@@ -1183,18 +1231,18 @@ def edit_snmp_v1_v2_credentials(v2_data:EditSnmpV2RequestSchema):
         if v2_exsists:
             v2_exsists.profile_name = v2_data['profile_name']
             v2_exsists.description = v2_data['description']
-            v2_exsists.port = v2_exsists['port']
+            v2_exsists.port = v2_data['port']
             v2_exsists.snmp_read_community = v2_data['community']
             data ={
-                "credentials_id":v2_exsists.monitoring_credentials_id,
+                "credentials_id":v2_exsists.credentials_id,
                 "profile_name":v2_exsists.profile_name,
                 "description":v2_exsists.description,
                 "port":v2_exsists.port,
                 "community":v2_exsists.snmp_read_community,
-                "monitoring_credentials_id":v2_exsists.monitoring_credentials_id
             }
-            message = f"{v2_exsists.profile_name} : Updated Successfully"
+            data_dict['message'] = f"{v2_exsists.profile_name} : Updated Successfully"
             data_dict['data'] = data
+            return data_dict
         else:
             return JSONResponse(content=f"{v2_data['credentials_id']} : Not Found",status_code=400)
 
