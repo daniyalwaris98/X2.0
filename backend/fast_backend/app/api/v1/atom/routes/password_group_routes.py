@@ -123,7 +123,7 @@ def delete_password_groups(pass_list: list[int]):
             password = configs.db.query(PasswordGroupTable).filter(
                     PasswordGroupTable.password_group_id == pass_obj).first()
             print("password is:::::::::::::::::::::::::::::::::::::",password,file=sys.stderr)
-            if password.password_id == default_password.password_id:
+            if password.password_group_id == default_password.password_group_id:
                 error_list.append(f"{password.password_id} : defualt password cannot be deleted ")
             print("is passsowrd is true::::::::::",file=sys.stderr)
             password_id = password.password_group_id
