@@ -57,9 +57,9 @@ class SendCommandRequestSchema(NcmDeviceId):
     cmd: str
 
 class GetNcmVendorSchema(BaseSchema):
-    name: str
-    value : int
-    config_change_time : str 
+    name: list[str]
+    config_change_time : list[str] 
+    value : list[int]
 
 
 class Response200(BaseSchema):

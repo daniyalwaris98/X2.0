@@ -268,3 +268,42 @@ async def subnet_summary():
             content = "Error While Fetching subnet_state Counts from subnet_table",
             status_code = 500,
         )
+
+
+@router.get("/type_summary", responses={
+    200: {"model": List[TypeSummaryResponse]},
+    500: {"model": str}
+},
+summary="API to get type_summary",
+description="API to get type_summary"
+)
+async def type_summary():
+    try:
+        query = (
+                f"SELECT atom_table.vendor, COUNT(*) AS counts "
+                f"FROM  ipam_devices_fetch_table "
+                f"INNER JOIN atom_table ON ipam_devices_fetch_table.atom_id = atom_table.atom_id "
+                f"GROUP BY vendor;")
+
+        #print("query string is::::::::::::::::::::::::",query=sys.stderr)
+        result = configs.db.execute(query)
+        print("reuslt is:::::::::::",result,file=sys.stderr)
+        objt_list=[]
+
+        for row in result:
+            print("row is::::::::::::::::::::::", row, file=sys.stderr)
+            print("row [0] is:::::::::::::::", row[0], file=sys.stderr)
+            print("row[1] is:::::::::::::::::::", row[1], file=sys.stderr)
+            objt_dict = {"vender": row[0],"counts": row[1]}
+            print("obj dict is::::::::::::::::::::", objt_dict, file=sys.stderr)
+            objt_list.append(objt_dict)
+   
+
+        print("objlist is:::::::::::::::::", objt_list, file=sys.stderr)
+        return  JSONResponse(content=objt_list, status_code = 200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(
+            content = "Error While Fetching subnet_state Counts from subnet_table",
+            status_code = 500,
+        )

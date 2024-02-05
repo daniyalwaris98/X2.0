@@ -241,3 +241,7 @@ class SubnetSummaryResponse(BaseSchema):
 
 class DnsZoneByServerID(BaseSchema):
     dns_server_id:int
+
+class TypeSummaryResponse(BaseSchema):
+    vender : str
+    counts : int     

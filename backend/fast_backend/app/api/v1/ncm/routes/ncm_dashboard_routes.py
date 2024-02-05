@@ -338,7 +338,11 @@ async def ncm_vendor_count():
         print("query string is::::::::::::::::::::::::",queryString,file=sys.stderr)
         result = configs.db.execute(queryString)
         print("reuslt is:::::::::::",result,file=sys.stderr)
-        obj_list = []
+        #obj_list = []
+        names=[]
+        time=[]
+        values=[]
+
 
         '''for row in result:
             print("row is::::::::::::::::::::::",row,file=sys.stderr)
@@ -353,13 +357,18 @@ async def ncm_vendor_count():
             print("row is::::::::::::::::::::::", row, file=sys.stderr)
             print("row [0] is:::::::::::::::", row[0], file=sys.stderr)
             print("row[1] is:::::::::::::::::::", row[1], file=sys.stderr)
-            print("config_change_time is:::::::::::::::::::", row[2], file=sys.stderr)
-            obj_dict = {"name": row[0], "value": row[1], "config_change_time": row[2]}
-            print("obj dict is::::::::::::::::::::", obj_dict, file=sys.stderr)
-            if row[0] is None:
-                obj_dict["name"] = "Other"        
+            #print("config_change_time is:::::::::::::::::::", row[2], file=sys.stderr)
+            #bj_dict = {"name": row[0], "value": row[1], "config_change_time": row[2]}
+            #print("obj dict is::::::::::::::::::::", obj_dict, file=sys.stderr)
+            names.append(row[0])
+            values.append(row[1])
+            time.append(row[2])
+            
+            #if row[0] is None:
+                #obj_dict["name"] = "Other"        
 
-            obj_list.append(obj_dict)
+            #obj_list.append(obj_dict)
+            obj_list ={"names": names, "time": time, "values": values}
         print("objlist is:::::::::::::::::",obj_list,file=sys.stderr)
         return JSONResponse(content=obj_list, status_code=200)
     except Exception:
