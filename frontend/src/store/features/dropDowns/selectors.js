@@ -8,7 +8,8 @@ export const selectPasswordGroupNames = (state) =>
   state.drop_downs.password_group_names;
 export const selectPasswordGroupTypeNames = (state) =>
   state.drop_downs.password_group_type_names;
-export const selectStatusNames = (state) => state.drop_downs.status_names;
+export const selectProductionStatusNames = (state) =>
+  state.drop_downs.production_status_names;
 export const selectSubnetNames = (state) => state.drop_downs.subnet_names;
 export const selectActiveStatusNames = (state) =>
   state.drop_downs.active_status_names;
@@ -20,3 +21,6 @@ export const selectV3CredentialsEncryptionProtocolNames = (state) =>
   state.drop_downs.v3_credentials_encryption_protocols;
 export const selectIpamDevicesFetchDatesNames = (state) =>
   state.drop_downs.ipam_devices_fetch_dates;
+export const selectAccountTypeNames = (state) =>
+  state.drop_downs.account_type_names;
+export const selectUserRoleNames = (state) => state.drop_downs.use_role_names;

@@ -10,7 +10,7 @@ import useErrorHandling, { TYPE_SINGLE } from "../../hooks/useErrorHandling";
 import DefaultFormUnit from "../../components/formUnits";
 import { LoginDialogFooter } from "../../components/dialogFooters";
 import DefaultSpinner from "../../components/spinners";
-import { indexColumnNameConstants } from "./constants";
+import { COMPANY_FORM, indexColumnNameConstants } from "./constants";
 import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 
 const schema = yup.object().shape({
@@ -22,7 +22,7 @@ const schema = yup.object().shape({
     .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
 });
 
-const Index = ({ handleClose }) => {
+const Index = ({ setCurrentForm }) => {
   // hooks
   const navigate = useNavigate();
   const { handleSubmit, control } = useForm({
@@ -57,6 +57,11 @@ const Index = ({ handleClose }) => {
     }
   }, [navigate, isLoginSuccess]);
 
+  // handlers
+  function handleRegister() {
+    setCurrentForm(COMPANY_FORM);
+  }
+
   // on form submit
   const onSubmit = (data) => {
     login(data);
@@ -78,9 +83,21 @@ const Index = ({ handleClose }) => {
               dataKey={indexColumnNameConstants.PASSWORD}
               required
             />
+            <div
+              style={{
+                display: "flex",
+                justifyContent: "right",
+                color: "#66B127",
+                cursor: "pointer",
+              }}
+              onClick={handleRegister}
+            >
+              Register
+            </div>
           </Grid>
+
           <Grid item xs={12}>
-            <LoginDialogFooter handleClose={handleClose} />
+            <LoginDialogFooter handleRegister={handleRegister} />
           </Grid>
         </Grid>
       </form>

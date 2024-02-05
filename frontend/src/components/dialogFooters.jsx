@@ -150,3 +150,79 @@ export function UpdateDialogFooter({
     </div>
   );
 }
+
+export function CompanyDialogFooter({ handleBack, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_back: {
+      handleClick: handleBack,
+      sx: { width: "100%", backgroundColor: "#66B127" },
+    },
+    default_next: {
+      sx: { width: "100%", backgroundColor: "#66B127" },
+    },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "right",
+        padding: "20px 0",
+        ...sx,
+      }}
+      {...rest}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "10px",
+          ...sx,
+        }}
+        {...rest}
+      >
+        {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+      </div>
+    </div>
+  );
+}
+
+export function UserDialogFooter({ handleBack, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_back: {
+      handleClick: handleBack,
+      sx: { width: "100%", backgroundColor: "#66B127" },
+    },
+    default_register: {
+      sx: { width: "100%", backgroundColor: "#66B127" },
+    },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "right",
+        padding: "20px 0",
+        ...sx,
+      }}
+      {...rest}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "10px",
+          ...sx,
+        }}
+        {...rest}
+      >
+        {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+      </div>
+    </div>
+  );
+}

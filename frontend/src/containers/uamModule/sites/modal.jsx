@@ -4,14 +4,14 @@ import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import Grid from "@mui/material/Grid";
 import { useSelector } from "react-redux";
-import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
+import { selectProductionStatusNames } from "../../../store/features/dropDowns/selectors";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../store/features/uamModule/sites/apis";
 import {
   useFetchSiteNamesQuery,
-  useFetchStatusNamesQuery,
+  useFetchProductionStatusNamesQuery,
 } from "../../../store/features/dropDowns/apis";
 import { formSetter, getTitle } from "../../../utils/helpers";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
@@ -89,12 +89,12 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   });
 
   const {
-    data: fetchStatusNamesData,
-    isSuccess: isFetchStatusNamesSuccess,
-    isLoading: isFetchStatusNamesLoading,
-    isError: isFetchStatusNamesError,
-    error: fetchStatusNamesError,
-  } = useFetchStatusNamesQuery();
+    data: fetchProductionStatusNamesData,
+    isSuccess: isFetchProductionStatusNamesSuccess,
+    isLoading: isFetchProductionStatusNamesLoading,
+    isError: isFetchProductionStatusNamesError,
+    error: fetchProductionStatusNamesError,
+  } = useFetchProductionStatusNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -116,15 +116,15 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   });
 
   useErrorHandling({
-    data: fetchStatusNamesData,
-    isSuccess: isFetchStatusNamesSuccess,
-    isError: isFetchStatusNamesError,
-    error: fetchStatusNamesError,
+    data: fetchProductionStatusNamesData,
+    isSuccess: isFetchProductionStatusNamesSuccess,
+    isError: isFetchProductionStatusNamesError,
+    error: fetchProductionStatusNamesError,
     type: TYPE_FETCH,
   });
 
   // getting dropdowns data from the store
-  const statusNames = useSelector(selectStatusNames);
+  const productionStatusNames = useSelector(selectProductionStatusNames);
 
   // effects
   useEffect(() => {
@@ -171,8 +171,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.STATUS}
-                options={statusNames ? statusNames : []}
-                spinning={isFetchStatusNamesLoading}
+                options={productionStatusNames ? productionStatusNames : []}
+                spinning={isFetchProductionStatusNamesLoading}
                 required
               />
               <DefaultFormUnit

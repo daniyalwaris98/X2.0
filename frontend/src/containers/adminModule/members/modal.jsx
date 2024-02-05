@@ -4,8 +4,16 @@ import * as yup from "yup";
 import { yupResolver } from "@hookform/resolvers/yup";
 import Grid from "@mui/material/Grid";
 import { useSelector } from "react-redux";
-import { useFetchPasswordGroupNamesQuery } from "../../../store/features/dropDowns/apis";
-import { selectPasswordGroupNames } from "../../../store/features/dropDowns/selectors";
+import {
+  useFetchAccountTypeNamesQuery,
+  useFetchActiveStatusNamesQuery,
+  useFetchUserRoleNamesQuery,
+} from "../../../store/features/dropDowns/apis";
+import {
+  selectAccountTypeNames,
+  selectActiveStatusNames,
+  selectUserRoleNames,
+} from "../../../store/features/dropDowns/selectors";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
@@ -93,12 +101,28 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // fetching dropdowns data from backend using apis
   const {
-    data: fetchPasswordGroupNamesData,
-    isSuccess: isFetchPasswordGroupNamesSuccess,
-    isLoading: isFetchPasswordGroupNamesLoading,
-    isError: isFetchPasswordGroupNamesError,
-    error: fetchPasswordGroupNamesError,
-  } = useFetchPasswordGroupNamesQuery();
+    data: fetchAccountTypeNamesData,
+    isSuccess: isFetchAccountTypeNamesSuccess,
+    isLoading: isFetchAccountTypeNamesLoading,
+    isError: isFetchAccountTypeNamesError,
+    error: fetchAccountTypeNamesError,
+  } = useFetchAccountTypeNamesQuery();
+
+  const {
+    data: fetchActiveStatusNamesData,
+    isSuccess: isFetchActiveStatusNamesSuccess,
+    isLoading: isFetchActiveStatusNamesLoading,
+    isError: isFetchActiveStatusNamesError,
+    error: fetchActiveStatusNamesError,
+  } = useFetchActiveStatusNamesQuery();
+
+  const {
+    data: fetchUserRoleNamesData,
+    isSuccess: isFetchUserRoleNamesSuccess,
+    isLoading: isFetchUserRoleNamesLoading,
+    isError: isFetchUserRoleNamesError,
+    error: fetchUserRoleNamesError,
+  } = useFetchUserRoleNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -120,15 +144,33 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   });
 
   useErrorHandling({
-    data: fetchPasswordGroupNamesData,
-    isSuccess: isFetchPasswordGroupNamesSuccess,
-    isError: isFetchPasswordGroupNamesError,
-    error: fetchPasswordGroupNamesError,
+    data: fetchAccountTypeNamesData,
+    isSuccess: isFetchAccountTypeNamesSuccess,
+    isError: isFetchAccountTypeNamesError,
+    error: fetchAccountTypeNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchActiveStatusNamesData,
+    isSuccess: isFetchActiveStatusNamesSuccess,
+    isError: isFetchActiveStatusNamesError,
+    error: fetchActiveStatusNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchUserRoleNamesData,
+    isSuccess: isFetchUserRoleNamesSuccess,
+    isError: isFetchUserRoleNamesError,
+    error: fetchUserRoleNamesError,
     type: TYPE_FETCH,
   });
 
   // getting dropdowns data from the store
-  const passwordGroupNames = useSelector(selectPasswordGroupNames);
+  const accountTypeNames = useSelector(selectAccountTypeNames);
+  const activeStatusNames = useSelector(selectActiveStatusNames);
+  const userRoleNames = useSelector(selectUserRoleNames);
 
   // on form submit
   const onSubmit = (data) => {
@@ -162,29 +204,22 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.NAME}
-                spinning={isFetchPasswordGroupNamesLoading}
                 required
               />
             </Grid>
             <Grid item xs={4}>
               <SelectFormUnit
                 control={control}
-                dataKey={indexColumnNameConstants.COMPANY_NAME}
-                options={["to be implemented"]}
-                spinning={isFetchPasswordGroupNamesLoading}
+                dataKey={indexColumnNameConstants.STATUS}
+                options={activeStatusNames}
+                spinning={isFetchActiveStatusNamesLoading}
                 required
               />
               <SelectFormUnit
                 control={control}
-                dataKey={indexColumnNameConstants.STATUS}
-                options={["to be implemented"]}
-                spinning={isFetchPasswordGroupNamesLoading}
-                required
-              />
-
-              <DefaultFormUnit
-                control={control}
                 dataKey={indexColumnNameConstants.ROLE}
+                options={userRoleNames}
+                spinning={isFetchUserRoleNamesLoading}
                 required
               />
             </Grid>
@@ -192,7 +227,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.ACCOUNT_TYPE}
-                options={["to be implemented"]}
+                options={accountTypeNames}
+                spinning={isFetchAccountTypeNamesLoading}
                 required
               />
               <DefaultFormUnit

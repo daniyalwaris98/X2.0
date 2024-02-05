@@ -9,7 +9,14 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
+    register: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/users/auth/sign_up",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation } = extendedApi;
+export const { useLoginMutation, useRegisterMutation } = extendedApi;

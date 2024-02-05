@@ -1,7 +1,10 @@
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
 
-const initialState = {};
+const initialState = {
+  company_details: null,
+  user_details: null,
+};
 
 const defaultSlice = createSlice({
   name: "login",
@@ -9,6 +12,14 @@ const defaultSlice = createSlice({
   reducers: {
     logout: (state) => {
       localStorage.removeItem("monetx_access_token");
+    },
+    setCompanyDetails: (state, action) => {
+      console.log("action.payload");
+      state.company_details = action.payload;
+    },
+    setUserDetails: (state, action) => {
+      console.log("action.payload");
+      state.user_details = action.payload;
     },
   },
   extraReducers(builder) {
@@ -24,5 +35,6 @@ const defaultSlice = createSlice({
   },
 });
 
-export const { logout } = defaultSlice.actions;
+export const { logout, setCompanyDetails, setUserDetails } =
+  defaultSlice.actions;
 export default defaultSlice.reducer;

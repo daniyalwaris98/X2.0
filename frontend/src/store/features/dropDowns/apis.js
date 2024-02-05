@@ -33,16 +33,12 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/atom/static_list/get_password_group_type_dropdown",
     }),
 
-    fetchStatusNames: builder.query({
+    fetchProductionStatusNames: builder.query({
       query: () => "/api/v1/atom/static_list/get_status_dropdown",
     }),
 
     fetchSubnetNames: builder.query({
       query: () => "/api/v1/auto_discovery/get_subnets_dropdown",
-    }),
-
-    fetchActiveStatusNames: builder.query({
-      query: () => "/api/v1/users/user_static_list/get_user_status",
     }),
 
     fetchMonitoringCredentialsNames: builder.query({
@@ -63,6 +59,18 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchIpamDevicesFetchDates: builder.query({
       query: () => "/api/v1/ipam/ipam_device/get_ipam_devices_fetch_dates",
     }),
+
+    fetchAccountTypeNames: builder.query({
+      query: () => "/api/v1/users/user_static_list/get_user_account_type",
+    }),
+
+    fetchActiveStatusNames: builder.query({
+      query: () => "/api/v1/users/user_static_list/get_user_status",
+    }),
+
+    fetchUserRoleNames: builder.query({
+      query: () => "/api/v1/users/user_static_list/get_user_status",
+    }),
   }),
 });
 
@@ -74,12 +82,14 @@ export const {
   useFetchDeviceTypeNamesQuery,
   useFetchPasswordGroupNamesQuery,
   useFetchPasswordGroupTypeNamesQuery,
-  useFetchStatusNamesQuery,
+  useFetchProductionStatusNamesQuery,
   useFetchSubnetNamesQuery,
   useFetchActiveStatusNamesQuery,
   useFetchMonitoringCredentialsNamesQuery,
   useFetchV3CredentialsAuthorizationProtocolNamesQuery,
   useFetchV3CredentialsEncryptionProtocolNamesQuery,
+  useFetchAccountTypeNamesQuery,
+  useFetchUserRoleNamesQuery,
 } = extendedApi;
 
 export const useFetchIpamDevicesFetchDatesLazyQuery =

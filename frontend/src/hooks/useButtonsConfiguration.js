@@ -387,6 +387,29 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
+    default_next: {
+      name: "Next",
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_register: {
+      name: "Register",
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_back: {
+      name: "Back",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
   };
 
   const dropdownButtonOptionsConstants = Object.keys(buttonDetails).reduce(
