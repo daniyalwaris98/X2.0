@@ -67,7 +67,7 @@ class AddUserSchema(BaseSchema):
     team:str
     account_type:str
     role:str
-    company_name:str
+    end_user_id:int
 
 class GetUserResponseScehma(BaseSchema):
     user_id:int
