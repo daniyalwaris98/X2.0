@@ -357,11 +357,7 @@ def get_user_role():
         user_list = []
         user_role_exsists = configs.db.query(UserRoleTableModel).all()
         for data in user_role_exsists:
-            user_dict = {
-                "role_id":data.role_id,
-                "role":data.role
-            }
-            user_list.append(user_dict)
+            user_list.append(data.role)
         return JSONResponse(content=user_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
@@ -386,7 +382,7 @@ def get_user_company():
                 "end_user_id":data.end_user_id,
                 "company_name":data.company_name
             }
-            user_list.append(user_dict)
+            user_list.append(data.company_name)
         return JSONResponse(content=user_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
