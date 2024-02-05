@@ -1271,7 +1271,7 @@ def edit_snmp_v3_credentials(v3_data:EditSnmpV3RequestSchema):
             v3_exsists.authentication_method = v3_data['authentication_protocol']
             v3_exsists.encryption_method = v3_data['encryption_protocol']
             data ={
-                "credentials_id":v3_exsists.monitoring_credentials_id,
+                "credentials_id":v3_exsists.credentials_id,
                 "user_name":v3_exsists.username,
                 "authentication_password":v3_exsists.password,
                 "encryption_password":v3_exsists.encryption_password,
