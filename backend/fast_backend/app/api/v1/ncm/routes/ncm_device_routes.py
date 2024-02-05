@@ -612,19 +612,23 @@ def get_true_backup():
         backups_list = []
         backups = configs.db.query(NcmDeviceTable).filter_by(backup_state = 'True').all()
         print("backups are :::::::::::::::::::::::::",backups,file=sys.stderr)
-        for backup in backups:
-            atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = backup.atom_id).first()
-            backup_dict = {
-                "ncm_device_id": backup.ncm_device_id,
-                "status":backup.status,
-                "config_change_date": backup.config_change_date,
-                "ip_address":atom_exsist.ip_address
-            }
-            backups_list.append(backup_dict)
-            backup.backup_state = 'False'
-            configs.db.merge(backup)
-            configs.db.commit()
-        return backups_list
+        if backups:
+            for backup in backups:
+                atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = backup.atom_id).first()
+                backup_dict = {
+                    "ncm_device_id": backup.ncm_device_id,
+                    "status":backup.status,
+                    "config_change_date": backup.config_change_date,
+                    "ip_address":atom_exsist.ip_address
+                }
+                backups_list.append(backup_dict)
+                backup.backup_state = 'False'
+                configs.db.merge(backup)
+                configs.db.commit()
+                print("backup state set to false ::::::::::::::",file=sys.stderr)
+                return backups_list
+            else:
+                return []
 
     except Exception as e:
         traceback.print_exc()
