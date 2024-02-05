@@ -4,8 +4,8 @@ import DefaultButton, {
   DropDownButton,
   DropDownCheckboxButton,
 } from "../components/buttons";
-import { Spin } from "antd";
 import { LoadingOutlined } from "@ant-design/icons";
+import DefaultSpinner from "../components/spinners";
 
 export default function useButtonGenerator() {
   const theme = useTheme();
@@ -33,7 +33,7 @@ export default function useButtonGenerator() {
     );
     if (category === "default") {
       let defaultButton = (
-        <Spin spinning={loader} indicator={antIcon}>
+        <DefaultSpinner spinning={loader} indicator={antIcon}>
           <DefaultButton handleClick={handleClick} sx={sx} {...rest}>
             {iconPosition === "left" ? icon : null}
             {name || namePostfix ? (
@@ -50,12 +50,12 @@ export default function useButtonGenerator() {
             ) : null}
             {iconPosition === "right" ? icon : null}
           </DefaultButton>
-        </Spin>
+        </DefaultSpinner>
       );
       return <>{visible ? defaultButton : null}</>;
     } else if (category === "dropDown") {
       let dropDownButton = (
-        <Spin spinning={loader}>
+        <DefaultSpinner spinning={loader}>
           <DropDownButton handleClick={handleClick} sx={sx} options={options}>
             {iconPosition === "left" ? icon : null}
             {name || namePostfix ? (
@@ -72,12 +72,12 @@ export default function useButtonGenerator() {
             ) : null}
             {iconPosition === "right" ? icon : null}
           </DropDownButton>
-        </Spin>
+        </DefaultSpinner>
       );
       return <>{visible ? dropDownButton : null}</>;
     } else if (category === "dropDownCheckbox") {
       let dropDownCheckboxButton = (
-        <Spin spinning={loader}>
+        <DefaultSpinner spinning={loader}>
           <DropDownCheckboxButton
             handleClick={handleClick}
             sx={sx}
@@ -98,7 +98,7 @@ export default function useButtonGenerator() {
             ) : null}
             {iconPosition === "right" ? icon : null}
           </DropDownCheckboxButton>
-        </Spin>
+        </DefaultSpinner>
       );
       return <>{visible ? dropDownCheckboxButton : null}</>;
     }

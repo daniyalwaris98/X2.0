@@ -5,7 +5,7 @@ import Grid from "@mui/material/Grid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
 import { formSetter, getTitle } from "../../utils/helpers";
-import DefaultFormUnit from "../../components/formUnits";
+import DefaultFormUnit, { DateFormUnit } from "../../components/formUnits";
 import { CompanyDialogFooter } from "../../components/dialogFooters";
 import DefaultSpinner from "../../components/spinners";
 import { LOGIN_FORM, USER_FORM, companyConstants } from "./constants";
@@ -108,6 +108,7 @@ const Index = ({ setCurrentForm }) => {
               required
             />
             <DefaultFormUnit
+              type="email"
               control={control}
               dataKey={companyConstants.EMAIL}
               required
@@ -124,12 +125,12 @@ const Index = ({ setCurrentForm }) => {
               dataKey={companyConstants.INDUSTRY_TYPE}
               required
             />
-            <DefaultFormUnit
+            <DateFormUnit
               control={control}
               dataKey={companyConstants.LICENSE_START_DATE}
               required
             />
-            <DefaultFormUnit
+            <DateFormUnit
               control={control}
               dataKey={companyConstants.LICENSE_END_DATE}
               required

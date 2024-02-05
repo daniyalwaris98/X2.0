@@ -104,6 +104,7 @@ const Index = ({ setCurrentForm }) => {
         <Grid container spacing={5}>
           <Grid item xs={6}>
             <DefaultFormUnit
+              type="email"
               control={control}
               dataKey={userConstants.EMAIL}
               required

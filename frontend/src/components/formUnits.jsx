@@ -39,7 +39,7 @@ export default function DefaultFormUnit({
             ) : null}
             <DefaultSpinner spinning={spinning}>
               <InputWrapper>
-                {type === "text" ? (
+                {type !== "password" ? (
                   <DefaultInput
                     field={field}
                     name={dataKey}

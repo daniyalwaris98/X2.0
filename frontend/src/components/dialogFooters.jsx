@@ -90,7 +90,7 @@ export function LoginDialogFooter({ handleClose, sx, ...rest }) {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_login: {
       handleClick: handleClose,
-      sx: { width: "100%", backgroundColor: "#66B127" },
+      sx: { width: "150px", backgroundColor: "#66B127" },
     },
   });
   const buttonGenerator = useButtonGenerator();
@@ -99,7 +99,7 @@ export function LoginDialogFooter({ handleClose, sx, ...rest }) {
     <div
       style={{
         display: "flex",
-        justifyContent: "left",
+        justifyContent: "center",
         padding: "20px 0",
         ...sx,
       }}
@@ -194,10 +194,10 @@ export function UserDialogFooter({ handleBack, sx, ...rest }) {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_back: {
       handleClick: handleBack,
-      sx: { width: "100%", backgroundColor: "#66B127" },
+      sx: { backgroundColor: "#66B127" },
     },
     default_register: {
-      sx: { width: "100%", backgroundColor: "#66B127" },
+      sx: { backgroundColor: "#66B127" },
     },
   });
   const buttonGenerator = useButtonGenerator();
