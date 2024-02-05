@@ -60,14 +60,12 @@ class AddUserSchema(BaseSchema):
     name:str
     email_address:str
     password:str |None = None
-    email_address:str
-    password:str |None = None
-    status:str
-    user_name:str
-    team:str
-    account_type:str
-    role:str
-    end_user_id:int
+    status:str |None = None
+    user_name:str |None = None
+    team:str |None = None
+    account_type:str |None = None
+    role:str |None = None
+    end_user_id:int |None = None
 
 class GetUserResponseScehma(BaseSchema):
     user_id:int
