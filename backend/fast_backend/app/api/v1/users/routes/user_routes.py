@@ -323,6 +323,14 @@ def delete_user(user_id :list[int]):
                 success_list.append(f"{data} : Is deleted")
             else:
                 error_list.append(f"{data} : Not Found")
+        responses = {
+            "data":deleted_ids,
+            "suucess_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Deleting the User",status_code=500)
