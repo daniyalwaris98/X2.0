@@ -62,6 +62,12 @@ const defaultSlice = createSlice({
           state.configuration_change_by_vendor_data = action.payload;
         }
       )
+      .addMatcher(
+        extendedApi.endpoints.getNcmChangeByVendor.matchFulfilled,
+        (state, action) => {
+          state.ncm_change_by_vendor_data = action.payload;
+        }
+      )
       ;
   },
 });

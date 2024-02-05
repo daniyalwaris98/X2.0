@@ -1,5 +1,20 @@
 import React from 'react';
 import { Table, Progress } from 'antd';
+import { useSelector } from "react-redux";
+
+
+import {
+selectTopTenSubnet,
+// selectNcmChangeByVendor
+
+} from "../../../../store/features/ipamModule/dashboard/selectors";
+
+
+import {
+useGetTopTenSubnetQuery,
+// useGetNcmChangeByVendorQuery
+
+} from "../../../../store/features/ipamModule/dashboard/apis";
 
 const columns = [
   {
@@ -9,13 +24,13 @@ const columns = [
     align: 'center',
     render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
   },
-  {
-    title: 'IP % Space Used',
-    dataIndex: 'col2',
-    key: 'col2',
-    align: 'center',
-    render: text => <span style={{ display: 'block', color: 'green' }}>{text}</span>,
-  },
+  // {
+  //   title: 'IP % Space Used',
+  //   dataIndex: 'col2',
+  //   key: 'col2',
+  //   align: 'center',
+  //   render: text => <span style={{ display: 'block', color: 'green' }}>{text}</span>,
+  // },
   {
     title: 'Progress',
     dataIndex: 'col3',
@@ -38,17 +53,14 @@ const data = [
   {
     key: '1',
     col1: '10..66.211.141',
-    col2: 'Percentage',
   },
   {
     key: '2',
     col1: '10..66.211.141',
-    col2: 'Percentage',
   },
   {
     key: '3',
     col1: '1',
-    col2: 'Percentage',
   },
 ];
 
@@ -56,6 +68,19 @@ const TenSubnetTable = () => {
   const getRowClassName = (record, index) => {
     return index % 2 === 0 ? 'dark-row' : 'light-row';
   };
+
+
+  const {
+    data: topTenData,
+    isSuccess: isTopTenSuccess,
+    isLoading: isTopTenLoading,
+    isError: isTopTenError,
+    error: topTenError,
+   
+  } = useGetTopTenSubnetQuery();
+
+  console.log("husnain",topTenData)
+
 
   return (
     <Table

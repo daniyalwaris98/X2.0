@@ -6,10 +6,32 @@ import IpAvailble from "./components/IpAvailble";
 import DNSChart from "./components/DNSChart";
 import TenSubnetTable from "./components/TenSubnetTable";
 import TopOpenPorts from "./components/TopOpenPorts";
+import { useSelector } from "react-redux";
+
+
+import {
+selectTopTenSubnet,
+selectNcmChangeByVendor
+
+} from "../../../store/features/ipamModule/dashboard/selectors";
+
+
+import {
+useGetTopTenSubnetQuery,
+useGetNcmChangeByVendorQuery
+
+} from "../../../store/features/ipamModule/dashboard/apis";
+
 
 function Index() {
-  const chartData = [1];
-  const chartDatab = [0.85];
+ 
+
+  
+
+
+
+
+ 
 
   return (
     <>

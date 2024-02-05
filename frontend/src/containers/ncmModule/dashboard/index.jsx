@@ -8,18 +8,18 @@ import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
 import RcmAlarms from "../../../components/charts/RcmAlarms";
 
 import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
-import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
+import ConfigurationChangeByVendor from "./components/ConfigurationChangeByVendor";
 import {
   selectConfigurationBackupSummary,
   selectConfigurationChangeByDevice,
-  selectConfigurationChangeByVendor,
+  selectNcmChangeByVendor,
 } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
 
 import {
   useGetConfigurationChangeByDeviceQuery,
   useGetConfigurationBackupSummaryQuery,
-  useGetConfigurationChangeByVendorQuery,
+  useGetNcmChangeByVendorQuery,
 } from "../../../store/features/ncmModule/dashboard/apis";
 import "./index.css";
 import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
@@ -48,10 +48,17 @@ function Index() {
     isError: isVendorError,
     error: vendorError,
   } = useGetConfigurationBackupSummaryQuery();
+  const {
+    data: ncmData,
+    isSuccess: isNcmSuccess,
+    isLoading: isNcmLoading,
+    isError: isNcmError,
+    error: ncmError,
+  } = useGetNcmChangeByVendorQuery();
 
   const backupSummary = useSelector(selectConfigurationBackupSummary);
   const timeLineChart = useSelector(selectConfigurationChangeByDevice);
-  const graph = useSelector(selectConfigurationChangeByVendor);
+  const graph = useSelector(selectNcmChangeByVendor);
 
   console.log("graph", graph);
   // console.log("timeLineChart", timeLineChart);
@@ -119,7 +126,7 @@ function Index() {
                 "PaloAlto",
                 "NetScaler",
               ]}
-              time={["time1", "time2", "time3", "time4", "time5"]}
+              time={["11:00", "11:30", "12:00", "12:30", "01:00"]}
               values={[5, 10, 6]}
             />
           </div>
