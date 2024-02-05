@@ -676,12 +676,12 @@ def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
         credentials = SNMP_CREDENTIALS_TABLE()
         v3_credentials = dict(credentialObj)
         print("v3 credentials are::::::::::::::::::::::",v3_credentials,file=sys.stderr)
-        username = v3_credentials['username']
+        username = v3_credentials['user_name']
         if configs.db.query(SNMP_CREDENTIALS_TABLE).filter_by(username=username).first():
             return JSONResponse(content="Duplicate entry", status_code=400)
 
         description = v3_credentials['description']
-        username = v3_credentials['username']
+        username = v3_credentials['user_name']
         port = v3_credentials['port']
         authorization_protocol = v3_credentials['authorization_protocol']
         authorization_password = v3_credentials['authorization_password']
@@ -699,7 +699,7 @@ def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
 
         snmp_dict = {
             "profile_name": credentials.profile_name,
-            "username": credentials.profile_name,
+            "user_name": credentials.username,
             "community": credentials.snmp_read_community,  # Check if this field is required
             "description": credentials.description,
             "port": credentials.snmp_port,
