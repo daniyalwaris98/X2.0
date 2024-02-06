@@ -4,7 +4,6 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
 
 
-
     getConfigurationBackupSummary: builder.query({
       query: () => "/api/v1/ncm/ncm_dashboard/ncm_backup_summery_dashboard",
       

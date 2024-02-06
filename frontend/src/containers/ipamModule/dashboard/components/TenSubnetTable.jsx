@@ -19,21 +19,21 @@ useGetTopTenSubnetQuery,
 const columns = [
   {
     title: 'Subnet',
-    dataIndex: 'col1',
-    key: 'col1',
-    align: 'center',
+    dataIndex: 'subnet',
+    key: 'subnet',
+    align: 'start',
     render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
   },
   {
     title: 'Progress',
-    dataIndex: 'col2',
-    key: 'col2',
+    dataIndex: 'value',
+    key: 'value',
     align: 'center',
     render: (_, record) => (
       <Progress
-        percent={record.col2}  // Use the actual percentage value from your data
+        percent={record.value}  // Use the actual percentage value from your data
         status="active"
-        strokeColor={record.col2 > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
+        strokeColor={record.value > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
       />
     ),
   },
@@ -42,18 +42,18 @@ const columns = [
 const data = [
   {
     key: '1',
-    col1: '10..66.211.141',
-    col2: "50"
+    subnet: '10..66.211.141',
+    value: "50"
   },
   {
     key: '2',
-    col1: '10..66.211.141',
-    col2: "10"
+    subnet: '10..66.211.141',
+    value: "10"
   },
   {
     key: '3',
-    col1: '1',
-    col2: "60"
+    subnet: '1',
+    value: "60"
   },
 ];
 
@@ -77,14 +77,15 @@ const TenSubnetTable = () => {
 
   return (
     <Table
-      dataSource={data}
-      columns={columns}
-      pagination={false}
-      bordered={false}
-      rowClassName={getRowClassName}
-      style={{ border: 'none' }}
-      headerStyle={{ background: 'black', color: 'white' }}
-    />
+    dataSource={topTenData || []}
+    columns={columns}
+    pagination={false}
+    bordered={false}
+    rowClassName={getRowClassName}
+    style={{ border: 'none', overflow: "scroll", height: "400px" }}
+    headerStyle={{ background: 'black', color: 'white' }}
+  />
+  
   );
 };
 

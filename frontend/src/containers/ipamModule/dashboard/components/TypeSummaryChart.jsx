@@ -1,22 +1,19 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const TypeSummaryChart = () => {
+const TypeSummaryChart = ({ data }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
     const myChart = echarts.init(chartRef.current);
 
+    const colors = ['#3E72E7', '#74ABFF', '#30C9C9', '#8F37FF', '#409F47', '#F03F41']; // Define colors here
+
     const option = {
       dataset: {
         source: [
           ['product', 'score', 'amount', 'color'],
-          ['Cisco', 150, 50, '#3E72E7'],
-          ['Arsita', 350, 80, '#74ABFF'],
-          ['Fortinet', 450, 90, '#30C9C9'],
-          ['Juniper', 450, 90, '#8F37FF'],
-          ['D-Link', 450, 80, '#409F47'],
-          ['Versa', 450, 60, '#F03F41'],
+          ...data.map((device, index) => [device.vender, device.counts, index, colors[index]])
         ],
       },
       yAxis: { type: 'category' },
@@ -44,7 +41,7 @@ const TypeSummaryChart = () => {
 
     // Cleanup function to destroy the chart when the component unmounts
     return () => myChart.dispose();
-  }, []);
+  }, [data]);
 
   return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
 };
