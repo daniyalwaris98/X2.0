@@ -11,14 +11,14 @@ import { useSelector } from "react-redux";
 
 import {
 selectTopTenSubnet,
-selectNcmChangeByVendor, selectIpAvailbility, selectTypeSummary, selectSubnetSummary
+selectNcmChangeByVendor, selectIpAvailbility, selectTypeSummary, selectSubnetSummary,selectTopTenOpenPorts,selectDns
 
 } from "../../../store/features/ipamModule/dashboard/selectors";
 
 
 import {
 useGetTopTenSubnetQuery,
-useGetNcmChangeByVendorQuery, useGetIpAvailibilityQuery,useGetTypeSummaryQuery, useGetSubnetSummaryQuery
+useGetNcmChangeByVendorQuery, useGetIpAvailibilityQuery,useGetTypeSummaryQuery, useGetSubnetSummaryQuery,useGetTopTenOpenPortsQuery, useGetDnsQuery
 
 } from "../../../store/features/ipamModule/dashboard/apis";
 
@@ -48,6 +48,22 @@ function Index() {
     error: subnetSummaryError,
    
   } = useGetSubnetSummaryQuery();
+  const {
+    data: topTenOpenPortsData,
+    isSuccess: isTopTenOpenPortsSuccess,
+    isLoading: isTopTenOpenPortsLoading,
+    isError: isTopTenOpenPortsError,
+    error: topTenOpenPortsError,
+   
+  } = useGetTopTenOpenPortsQuery();
+  const {
+    data: dnsData,
+    isSuccess: isDnsSuccess,
+    isLoading: isDnsLoading,
+    isError: isDnsError,
+    error: dnsError,
+   
+  } = useGetDnsQuery();
   const apiResponse = {
     "total_ip": 1048,
    "used_ip": 580,
@@ -66,6 +82,8 @@ function Index() {
   console.log("ip availble", ipAvailibilityData)
   console.log("typeSummaryData",typeSummaryData)
   console.log("subnetSummaryData",subnetSummaryData)
+  console.log("topTenOpenPortsData",topTenOpenPortsData)
+  console.log("dnsData",dnsData)
 
   return (
     <>

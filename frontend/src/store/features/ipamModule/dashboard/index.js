@@ -48,6 +48,18 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
+        extendedApi.endpoints.getTopTenOpenPorts.matchFulfilled,
+        (state, action) => {
+          state.top_ten_open_ports_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getDns.matchFulfilled,
+        (state, action) => {
+          state.dns_data = action.payload;
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.getNcmChangeByVendor.matchFulfilled,
         (state, action) => {
           state.ncm_change_by_vendor_data = action.payload;

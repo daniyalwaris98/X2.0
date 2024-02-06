@@ -7,6 +7,10 @@ state.ipam_dashboard.subnet_summary_data;
 
 export const selectIpAvailbility = (state) =>
 state.ipam_dashboard.ip_availibility_data;
+export const selectTopTenOpenPorts = (state) =>
+state.ipam_dashboard.top_ten_open_ports_data;
+export const selectDns = (state) =>
+state.ipam_dashboard.dns_data;
 // export const selectConfigurationBackupSummary = (state) =>
 // state.ncm_dashboard.configuration_backup_summary_data;
 // export const selectRecentRcmAlarms = (state) =>

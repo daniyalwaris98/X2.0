@@ -24,6 +24,18 @@ export const extendedApi = monetxApi.injectEndpoints({
     getIpAvailibility: builder.query({           
       query: () => "/api/v1/ipam/ipam_dashboard/ip_availability_summary",
     }),
+
+    
+    getTopTenOpenPorts: builder.query({           
+      query: () => "/api/v1/ipam/ipam_dashboard/tcp_open_ports",
+    }),
+    getDns: builder.query({           
+      query: () => "/api/v1/ipam/ipam_dashboard/dns_summary",
+    }),
+
+   
+
+   
   
     // getConfigurationChangeByDevice: builder.query({           
     //   query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",
@@ -50,6 +62,6 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useGetTopTenSubnetQuery, useGetNcmChangeByVendorQuery, useGetIpAvailibilityQuery, useGetTypeSummaryQuery, useGetSubnetSummaryQuery
+  useGetTopTenSubnetQuery, useGetNcmChangeByVendorQuery, useGetIpAvailibilityQuery, useGetTypeSummaryQuery, useGetSubnetSummaryQuery, useGetTopTenOpenPortsQuery, useGetDnsQuery
 
 } = extendedApi;
