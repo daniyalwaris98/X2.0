@@ -8,20 +8,25 @@ import TenSubnetTable from "./components/TenSubnetTable";
 import TopOpenPorts from "./components/TopOpenPorts";
 import { useSelector } from "react-redux";
 
-
 import {
-selectTopTenSubnet,
-selectNcmChangeByVendor, selectIpAvailbility, selectTypeSummary, selectSubnetSummary,selectTopTenOpenPorts,selectDns
-
+  selectTopTenSubnet,
+  selectNcmChangeByVendor,
+  selectIpAvailbility,
+  selectTypeSummary,
+  selectSubnetSummary,
+  selectTopTenOpenPorts,
+  selectDns,
 } from "../../../store/features/ipamModule/dashboard/selectors";
 
-
 import {
-useGetTopTenSubnetQuery,
-useGetNcmChangeByVendorQuery, useGetIpAvailibilityQuery,useGetTypeSummaryQuery, useGetSubnetSummaryQuery,useGetTopTenOpenPortsQuery, useGetDnsQuery
-
+  useGetTopTenSubnetQuery,
+  useGetNcmChangeByVendorQuery,
+  useGetIpAvailibilityQuery,
+  useGetTypeSummaryQuery,
+  useGetSubnetSummaryQuery,
+  useGetTopTenOpenPortsQuery,
+  useGetDnsQuery,
 } from "../../../store/features/ipamModule/dashboard/apis";
-
 
 function Index() {
   const {
@@ -30,7 +35,6 @@ function Index() {
     isLoading: isIpAvailibilityLoading,
     isError: isIpAvailibilityError,
     error: ipAvailibilityError,
-   
   } = useGetIpAvailibilityQuery();
   const {
     data: typeSummaryData,
@@ -38,7 +42,6 @@ function Index() {
     isLoading: isTypeSummaryLoading,
     isError: isTypeSummaryError,
     error: typeSummaryError,
-   
   } = useGetTypeSummaryQuery();
   const {
     data: subnetSummaryData,
@@ -46,7 +49,6 @@ function Index() {
     isLoading: isSubnetSummaryLoading,
     isError: isSubnetSummaryError,
     error: subnetSummaryError,
-   
   } = useGetSubnetSummaryQuery();
   const {
     data: topTenOpenPortsData,
@@ -54,7 +56,6 @@ function Index() {
     isLoading: isTopTenOpenPortsLoading,
     isError: isTopTenOpenPortsError,
     error: topTenOpenPortsError,
-   
   } = useGetTopTenOpenPortsQuery();
   const {
     data: dnsData,
@@ -62,28 +63,38 @@ function Index() {
     isLoading: isDnsLoading,
     isError: isDnsError,
     error: dnsError,
-   
   } = useGetDnsQuery();
   const apiResponse = {
-    "total_ip": 1048,
-   "used_ip": 580,
-    "available_ip": 735
+    total_ip: 1048,
+    used_ip: 580,
+    available_ip: 735,
   };
   const data = [
-    { vender: 'A', counts: 50 },
-    { vender: 'B', counts: 80 },
-    { vender: 'C', counts: 90 },
-    { vender: 'D', counts: 50 },
-    { vender: 'E', counts: 80 },
-    { vender: 'F', counts: 90 },
+    { vender: "A", counts: 50 },
+    { vender: "B", counts: 80 },
+    { vender: "C", counts: 90 },
+    { vender: "D", counts: 50 },
+    { vender: "E", counts: 80 },
+    { vender: "F", counts: 90 },
     // Add more data as needed
   ];
-
-  console.log("ip availble", ipAvailibilityData)
-  console.log("typeSummaryData",typeSummaryData)
-  console.log("subnetSummaryData",subnetSummaryData)
-  console.log("topTenOpenPortsData",topTenOpenPortsData)
-  console.log("dnsData",dnsData)
+  // {
+  //   "ports": [
+  //     "string"
+  //   ],
+  //   "counts": [
+  //     0
+  //   ]
+  // }
+  const chartData = {
+    ports: ["Port 1", "Port 2", "Port 3", "Port 4", "Port 5", "Port 6"],
+    values: [10, 20, 15, 10, 20, 15],
+  };
+  console.log("ip availble", ipAvailibilityData);
+  console.log("typeSummaryData", typeSummaryData);
+  console.log("subnetSummaryData", subnetSummaryData);
+  console.log("topTenOpenPortsData", topTenOpenPortsData);
+  console.log("dnsData", dnsData);
 
   return (
     <>
@@ -103,8 +114,10 @@ function Index() {
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
               Type Summary
             </h5>
-            <TypeSummaryChart data={typeSummaryData !== undefined? typeSummaryData:[]} />
-                    </div>
+            <TypeSummaryChart
+              data={typeSummaryData !== undefined ? typeSummaryData : []}
+            />
+          </div>
         </Col>
 
         <Col span={8}>
@@ -116,7 +129,7 @@ function Index() {
             }}
           >
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-            Top 10 Subnets by % IP Address Used{" "}
+              Top 10 Subnets by % IP Address Used{" "}
             </h5>
             <TenSubnetTable />
           </div>
@@ -130,7 +143,7 @@ function Index() {
             }}
           >
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-            Subnet Summary
+              Subnet Summary
             </h5>
             <TopSubnet />
           </div>
@@ -153,10 +166,10 @@ function Index() {
               IP Availability Summary{" "}
             </h5>
 
-            <IpAvailble  
-          data={ipAvailibilityData !== undefined? ipAvailibilityData:[]} 
-          // data={apiResponse}
-        />
+            <IpAvailble
+              data={ipAvailibilityData !== undefined ? ipAvailibilityData : []}
+              // data={apiResponse}
+            />
           </div>
         </Col>
 
@@ -171,7 +184,7 @@ function Index() {
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
               Top 10 Open Ports
             </h5>
-            <TopOpenPorts />
+            <TopOpenPorts chartData={topTenOpenPortsData} />{" "}
           </div>
         </Col>
         <Col span={7}>
@@ -186,7 +199,7 @@ function Index() {
               DNS{" "}
             </h5>
             <div style={{ display: "flex" }}>
-              <DNSChart/>
+              <DNSChart />
               {/* <DNSChart/> */}
             </div>
           </div>

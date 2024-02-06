@@ -1,10 +1,11 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-
 const TopOpenPorts = ({ chartData }) => {
+  const chartRef = useRef(null);
+
   useEffect(() => {
-    if (!chartData || !chartData.ports || !chartData.values) {
+    if (!chartData || !chartData.ports || !chartData.counts) {
       console.error('Invalid chart data:', chartData);
       return;
     }
@@ -19,7 +20,7 @@ const TopOpenPorts = ({ chartData }) => {
       },
       series: [
         {
-          data: chartData.values,
+          data: chartData.counts,
           type: 'bar',
           showBackground: true,
           backgroundStyle: {
@@ -32,7 +33,7 @@ const TopOpenPorts = ({ chartData }) => {
           },
           emphasis: {
             itemStyle: {
-              color: 'red',
+              color: '#66B127',
               borderRadius: [20, 20, 0, 0],
             },
           },
@@ -40,13 +41,7 @@ const TopOpenPorts = ({ chartData }) => {
       ],
     };
 
-    const chartDom = document.getElementById('main');
-    if (!chartDom) {
-      console.error('Chart element with id "main" not found.');
-      return;
-    }
-
-    const myChart = echarts.init(chartDom);
+    const myChart = echarts.init(chartRef.current);
     myChart.setOption(option);
 
     return () => {
@@ -54,20 +49,7 @@ const TopOpenPorts = ({ chartData }) => {
     };
   }, [chartData]);
 
-  return <div id="main" style={{ width: '100%', height: '400px' }} />;
+  return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
 };
 
-// Example parent component
-const App = () => {
-  // Sample chart data
-  const chartData = {
-    ports: ['Port 1', 'Port 2', 'Port 3','Port 4', 'Port 5', 'Port 6'],
-    values: [10, 20, 15,10, 20, 15],
-  };
-
-  return (
-     <TopOpenPorts chartData={chartData} style={{width:"100%"}}/>
-   );
-};
-
-export default App;
+export default TopOpenPorts;
