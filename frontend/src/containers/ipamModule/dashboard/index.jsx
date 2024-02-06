@@ -11,27 +11,61 @@ import { useSelector } from "react-redux";
 
 import {
 selectTopTenSubnet,
-selectNcmChangeByVendor
+selectNcmChangeByVendor, selectIpAvailbility, selectTypeSummary, selectSubnetSummary
 
 } from "../../../store/features/ipamModule/dashboard/selectors";
 
 
 import {
 useGetTopTenSubnetQuery,
-useGetNcmChangeByVendorQuery
+useGetNcmChangeByVendorQuery, useGetIpAvailibilityQuery,useGetTypeSummaryQuery, useGetSubnetSummaryQuery
 
 } from "../../../store/features/ipamModule/dashboard/apis";
 
 
 function Index() {
- 
+  const {
+    data: ipAvailibilityData,
+    isSuccess: isIpAvailibilitySuccess,
+    isLoading: isIpAvailibilityLoading,
+    isError: isIpAvailibilityError,
+    error: ipAvailibilityError,
+   
+  } = useGetIpAvailibilityQuery();
+  const {
+    data: typeSummaryData,
+    isSuccess: isTypeSummarySuccess,
+    isLoading: isTypeSummaryLoading,
+    isError: isTypeSummaryError,
+    error: typeSummaryError,
+   
+  } = useGetTypeSummaryQuery();
+  const {
+    data: subnetSummaryData,
+    isSuccess: isSubnetSummarySuccess,
+    isLoading: isSubnetSummaryLoading,
+    isError: isSubnetSummaryError,
+    error: subnetSummaryError,
+   
+  } = useGetSubnetSummaryQuery();
+  const apiResponse = {
+    "total_ip": 1048,
+   "used_ip": 580,
+    "available_ip": 735
+  };
+  const data = [
+    { vender: 'A', counts: 50 },
+    { vender: 'B', counts: 80 },
+    { vender: 'C', counts: 90 },
+    { vender: 'D', counts: 50 },
+    { vender: 'E', counts: 80 },
+    { vender: 'F', counts: 90 },
+    // Add more data as needed
+  ];
 
-  
-
-
-
-
- 
+  console.log("ip availble", ipAvailibilityData)
+  console.log("typeSummaryData",typeSummaryData)
+  console.log("subnetSummaryData",subnetSummaryData)
 
   return (
     <>
@@ -51,8 +85,8 @@ function Index() {
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
               Type Summary
             </h5>
-            <TypeSummaryChart />
-          </div>
+            <TypeSummaryChart data={typeSummaryData !== undefined? typeSummaryData:[]} />
+                    </div>
         </Col>
 
         <Col span={8}>
@@ -101,7 +135,10 @@ function Index() {
               IP Availability Summary{" "}
             </h5>
 
-            <IpAvailble />
+            <IpAvailble  
+          data={ipAvailibilityData !== undefined? ipAvailibilityData:[]} 
+          // data={apiResponse}
+        />
           </div>
         </Col>
 

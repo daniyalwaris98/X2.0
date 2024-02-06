@@ -1,8 +1,13 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import * as echarts from 'echarts';
 
-const IpAvailable = () => {
+const IpAvailable = ({ data }) => {
   const chartRef = useRef(null);
+  const [chartData, setChartData] = useState({ total: 0, used: 0, available: 0 });
+
+  useEffect(() => {
+    setChartData({ total: data.total_ip, used: data.used_ip, available: data.available_ip });
+  }, [data.total_ip, data.used_ip, data.available_ip]);
 
   useEffect(() => {
     const myChart = echarts.init(chartRef.current);
@@ -36,9 +41,9 @@ const IpAvailable = () => {
             show: false,
           },
           data: [
-            { value: 1048, name: 'Total IPs', itemStyle: { color: '#74ABFF' } },
-            { value: 735, name: 'Free IPs', itemStyle: { color: '#66B127' } },
-            { value: 580, name: 'Used IPs', itemStyle: { color: '#8F37FF' } },
+            { value: chartData.total, name: 'Total IPs', itemStyle: { color: '#74ABFF' } },
+            { value: chartData.available, name: 'Free IPs', itemStyle: { color: '#66B127' } },
+            { value: chartData.used, name: 'Used IPs', itemStyle: { color: '#8F37FF' } },
           ],
         },
       ],
@@ -48,7 +53,7 @@ const IpAvailable = () => {
 
     // Cleanup function to detach chart when component unmounts
     return () => myChart.dispose();
-  }, []); // Empty dependency array to run effect only once
+  }, [chartData]);
 
   return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
 };

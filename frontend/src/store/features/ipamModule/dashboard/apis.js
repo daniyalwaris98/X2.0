@@ -2,15 +2,27 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-
+    getTypeSummary: builder.query({           
+      query: () => "/api/v1/ipam/ipam_dashboard/type_summary",
+    }),
 
 
     getTopTenSubnet: builder.query({
       query: () => "/api/v1/ipam/ipam_dashboard/top_10_subnet_ip_used",
       
     }),
+
+    getSubnetSummary: builder.query({           
+      query: () => "/api/v1/ipam/ipam_dashboard/subnet_summary",
+    }),
      getNcmChangeByVendor: builder.query({           
       query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
+    }),
+
+
+
+    getIpAvailibility: builder.query({           
+      query: () => "/api/v1/ipam/ipam_dashboard/ip_availability_summary",
     }),
   
     // getConfigurationChangeByDevice: builder.query({           
@@ -38,6 +50,6 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useGetTopTenSubnetQuery, useGetNcmChangeByVendorQuery
+  useGetTopTenSubnetQuery, useGetNcmChangeByVendorQuery, useGetIpAvailibilityQuery, useGetTypeSummaryQuery, useGetSubnetSummaryQuery
 
 } = extendedApi;

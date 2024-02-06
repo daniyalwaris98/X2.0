@@ -1,5 +1,12 @@
+export const selectTypeSummary = (state) =>
+state.ipam_dashboard.type_summary_data;
 export const selectTopTenSubnet = (state) =>
 state.ipam_dashboard.top_ten_subnet_data;
+export const selectSubnetSummary = (state) =>
+state.ipam_dashboard.subnet_summary_data;
+
+export const selectIpAvailbility = (state) =>
+state.ipam_dashboard.ip_availibility_data;
 // export const selectConfigurationBackupSummary = (state) =>
 // state.ncm_dashboard.configuration_backup_summary_data;
 // export const selectRecentRcmAlarms = (state) =>

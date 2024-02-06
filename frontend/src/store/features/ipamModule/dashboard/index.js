@@ -23,10 +23,28 @@ const defaultSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
+    .addMatcher(
+      extendedApi.endpoints.getTypeSummary.matchFulfilled,
+      (state, action) => {
+        state.type_summary_data = action.payload;
+      }
+    )
       .addMatcher(
         extendedApi.endpoints.getTopTenSubnet.matchFulfilled,
         (state, action) => {
           state.top_ten_subnet_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getSubnetSummary.matchFulfilled,
+        (state, action) => {
+          state.subnet_summary_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getIpAvailibility.matchFulfilled,
+        (state, action) => {
+          state.ip_availibility_data = action.payload;
         }
       )
       .addMatcher(
