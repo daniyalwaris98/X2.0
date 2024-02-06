@@ -331,16 +331,18 @@ description="API to get the vendor in ncm"
 async def ncm_vendor_count():
     try:
         queryString = (f"SELECT atom_table.vendor, COUNT(*), "
-                        f"DATE_FORMAT(ncm_device_table.config_change_date, '%H:%i:%s') AS config_change_time "
+                        f"DATE_FORMAT(ncm_device_table.config_change_date, '%H:%i:%s') AS config_change_time, "
+                        f"CAST(DATE(ncm_device_table.config_change_date) AS CHAR) AS config_date "
                         f"FROM ncm_device_table "
                         f"INNER JOIN atom_table ON ncm_device_table.atom_id = atom_table.atom_id "
-                        f"GROUP BY vendor, config_change_time ;")
+                        f"GROUP BY vendor, config_change_time, config_date ;")
         print("query string is::::::::::::::::::::::::",queryString,file=sys.stderr)
         result = configs.db.execute(queryString)
         print("reuslt is:::::::::::",result,file=sys.stderr)
         #obj_list = []
         names=[]
         time=[]
+        date =[]
         values=[]
 
 
@@ -357,18 +359,21 @@ async def ncm_vendor_count():
             print("row is::::::::::::::::::::::", row, file=sys.stderr)
             print("row [0] is:::::::::::::::", row[0], file=sys.stderr)
             print("row[1] is:::::::::::::::::::", row[1], file=sys.stderr)
-            #print("config_change_time is:::::::::::::::::::", row[2], file=sys.stderr)
+            
+            print("config_change_time is:::::::::::::::::::", row[2], file=sys.stderr)
+            print("config_date is:::::::::::::::::::", row[3], file=sys.stderr)
             #bj_dict = {"name": row[0], "value": row[1], "config_change_time": row[2]}
             #print("obj dict is::::::::::::::::::::", obj_dict, file=sys.stderr)
             names.append(row[0])
             values.append(row[1])
             time.append(row[2])
+            date.append(row[3])
             
             #if row[0] is None:
                 #obj_dict["name"] = "Other"        
 
             #obj_list.append(obj_dict)
-            obj_list ={"names": names, "time": time, "values": values}
+            obj_list ={"names": names, "time": time, "date": date, "values": values }
         print("objlist is:::::::::::::::::",obj_list,file=sys.stderr)
         return JSONResponse(content=obj_list, status_code=200)
     except Exception:

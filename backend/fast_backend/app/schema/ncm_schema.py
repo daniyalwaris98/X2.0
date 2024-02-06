@@ -59,6 +59,7 @@ class SendCommandRequestSchema(NcmDeviceId):
 class GetNcmVendorSchema(BaseSchema):
     name: list[str]
     config_change_time : list[str] 
+    config_date : list[str]
     value : list[int]
 
 
