@@ -26,34 +26,34 @@ const columns = [
   },
   {
     title: 'Progress',
-    dataIndex: 'col3',
-    key: 'col3',
+    dataIndex: 'col2',
+    key: 'col2',
     align: 'center',
     render: (_, record) => (
       <Progress
-        percent={record.col3}  // Use the actual percentage value from your data
+        percent={record.col2}  // Use the actual percentage value from your data
         status="active"
-        strokeColor={{
-          from: '#108ee9',
-          to: '#87d068',
-        }}
+        strokeColor={record.col2 > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
       />
     ),
   },
-];
+];  
 
 const data = [
   {
     key: '1',
     col1: '10..66.211.141',
+    col2: "50"
   },
   {
     key: '2',
     col1: '10..66.211.141',
+    col2: "10"
   },
   {
     key: '3',
     col1: '1',
+    col2: "60"
   },
 ];
 
