@@ -9,9 +9,9 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/ipam/ipam_dashboard/top_10_subnet_ip_used",
       
     }),
-    getNcmChangeByVendor: builder.query({           
-        query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
-      }),
+     getNcmChangeByVendor: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
+    }),
   
     // getConfigurationChangeByDevice: builder.query({           
     //   query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",

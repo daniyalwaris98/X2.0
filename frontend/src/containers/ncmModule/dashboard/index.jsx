@@ -60,7 +60,7 @@ function Index() {
   const timeLineChart = useSelector(selectConfigurationChangeByDevice);
   const graph = useSelector(selectNcmChangeByVendor);
 
-  console.log("graph", graph);
+  console.log("backupSummaryhusnain", backupSummaryData);
   // console.log("timeLineChart", timeLineChart);
 
   const companyData = {
@@ -84,7 +84,7 @@ function Index() {
         <Col span={8}>
           <div className="container">
             <h6 className="heading">Configuration Backup Summary</h6>
-            <ConfigurationBackupSummary data={backupSummary} />
+            <ConfigurationBackupSummary data={backsummary} />
           </div>
         </Col>
 

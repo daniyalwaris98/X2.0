@@ -64,7 +64,7 @@ function Index() {
             }}
           >
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Subnet Summary
+            Top 10 Subnets by % IP Address Used{" "}
             </h5>
             <TenSubnetTable />
           </div>
@@ -78,7 +78,7 @@ function Index() {
             }}
           >
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
-              Top 10 Subnets by % IP Address Used{" "}
+            Subnet Summary
             </h5>
             <TopSubnet />
           </div>

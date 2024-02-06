@@ -24,13 +24,6 @@ const columns = [
     align: 'center',
     render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
   },
-  // {
-  //   title: 'IP % Space Used',
-  //   dataIndex: 'col2',
-  //   key: 'col2',
-  //   align: 'center',
-  //   render: text => <span style={{ display: 'block', color: 'green' }}>{text}</span>,
-  // },
   {
     title: 'Progress',
     dataIndex: 'col3',
@@ -38,7 +31,7 @@ const columns = [
     align: 'center',
     render: (_, record) => (
       <Progress
-        percent={50}  // Replace with the actual percent value from your data
+        percent={record.col3}  // Use the actual percentage value from your data
         status="active"
         strokeColor={{
           from: '#108ee9',
