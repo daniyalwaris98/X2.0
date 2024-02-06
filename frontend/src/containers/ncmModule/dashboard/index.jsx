@@ -56,6 +56,8 @@ function Index() {
     error: ncmError,
   } = useGetNcmChangeByVendorQuery();
 
+  console.log("vendor data ", vendorData)
+
   const backupSummary = useSelector(selectConfigurationBackupSummary);
   const timeLineChart = useSelector(selectConfigurationChangeByDevice);
   const graph = useSelector(selectNcmChangeByVendor);
