@@ -145,6 +145,8 @@ def top_10_subnet_ip_used():
         
         subnet_address_list = []
         subnet_usage_list = []
+        newsubnet_usage_list = []
+
         for row in result:
             print("row is::::::::::::::::::::::::::::", row, file=sys.stderr)
             subnet_address_list.append(row[0])
@@ -156,11 +158,19 @@ def top_10_subnet_ip_used():
             obj_dict = {"subnet_address": subnet_usage_list, "subnet_usage": subnet_usage_list }
             print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
         else:
-            subnets_data = list(zip(subnet_address_list, subnet_usage_list))
-            #sorted_subnets = sorted(subnets_data, key=lambda x: (x[1] is None, x[1]), reverse=True)
-        obj_dict = dict(subnets_data)
-        print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
-        return JSONResponse(content=obj_dict, status_code=200)
+            for  usage in subnet_usage_list:
+                if usage is None :
+                    usage = '0.0'
+                    newsubnet_usage_list.append(usage)
+                else:
+                    newsubnet_usage_list.append(usage)
+            print(newsubnet_usage_list)
+            subnets_data = list(zip(subnet_address_list, newsubnet_usage_list))
+            sorted_subnets = sorted(subnets_data, key=lambda x: x[1], reverse=True)
+            result_list = [{"subnet": subnet, "value": value} for subnet, value in sorted_subnets[:10]]
+            
+        print("obj dict is:::::::::::::::::::::::::", result_list, file=sys.stderr)
+        return JSONResponse(content= result_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
