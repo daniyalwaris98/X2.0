@@ -76,22 +76,15 @@ function Index() {
     { vender: "D", counts: 50 },
     { vender: "E", counts: 80 },
     { vender: "F", counts: 90 },
-    // Add more data as needed
+    
   ];
-  // {
-  //   "ports": [
-  //     "string"
-  //   ],
-  //   "counts": [
-  //     0
-  //   ]
-  // }
+ 
   const chartData = {
     ports: ["Port 1", "Port 2", "Port 3", "Port 4", "Port 5", "Port 6"],
     values: [10, 20, 15, 10, 20, 15],
   };
   console.log("ip availble", ipAvailibilityData);
-  console.log("typeSummaryData", typeSummaryData);
+  console.log("typeSummaryData", typeSummaryData); 
   console.log("subnetSummaryData", subnetSummaryData);
   console.log("topTenOpenPortsData", topTenOpenPortsData);
   console.log("dnsData", dnsData);
@@ -168,7 +161,6 @@ function Index() {
 
             <IpAvailble
               data={ipAvailibilityData !== undefined ? ipAvailibilityData : []}
-              // data={apiResponse}
             />
           </div>
         </Col>
@@ -184,7 +176,7 @@ function Index() {
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
               Top 10 Open Ports
             </h5>
-            <TopOpenPorts chartData={topTenOpenPortsData} />{" "}
+            <TopOpenPorts chartData={topTenOpenPortsData !== undefined ? topTenOpenPortsData : []} />{" "}
           </div>
         </Col>
         <Col span={7}>
@@ -200,7 +192,6 @@ function Index() {
             </h5>
             <div style={{ display: "flex" }}>
               <DNSChart />
-              {/* <DNSChart/> */}
             </div>
           </div>
         </Col>
