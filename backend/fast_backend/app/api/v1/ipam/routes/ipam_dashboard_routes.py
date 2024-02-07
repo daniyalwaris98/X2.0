@@ -24,15 +24,15 @@ router = APIRouter(
     200: {"model": PortsValue},
     500: {"model": str}
 },
-summary="API to get all ports and their frequency from ip_table",
-description="API to get all ports and their frequency from ip_table"
+summary="API to get all ports and their counts from ip_table",
+description="API to get all ports and their counts from ip_table"
 )
 async def tcp_open_ports():
     
 
     try:
         port_list = []
-        port_frequency =[]
+        port_counts =[]
         
         query = (
             "SELECT open_ports, COUNT(open_ports) AS frequency "
@@ -47,19 +47,19 @@ async def tcp_open_ports():
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
 
-            # If the open_ports is None or an empty string, consider it as "Undefined"
-            port = "Undefined" if row[0] is None or row[0] == "" else row[0]
+            # If the open_ports is None or an empty string, consider it as "None"
+            port = "None" if row[0] is None or row[0] == "" else row[0]
 
             port_list.append(port)
-            port_frequency.append(int(row[1]))
+            port_counts.append(int(row[1]))
 
         print("port list is::::::::::::::::::::::::::::", port_list, file=sys.stderr)
 
         if len(port_list) <= 0:
             port_list = ["PortA", "PortB", "PortC", "Other"]
-            port_frequency = [0, 0, 0, 0]
+            port_counts = [0, 0, 0, 0]
 
-        obj_dict = {"ports": port_list, "frequency": port_frequency}
+        obj_dict = {"ports": port_list, "counts": port_counts}
         print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
 
         return JSONResponse(content=obj_dict, status_code=200)
@@ -126,61 +126,11 @@ async def ip_availability_summary():
 
 
 
-@router.get('/top_10_subnet_ip_used', responses={
-    200: {"model":dict},
-    500: {"model": str}
-}, summary="API to get top 10_subnet_ip_used",
-description="API to get top_10_subnet_ip_used"
-)
-def top_10_subnet_ip_used():
-    try:
-        query = (
-            "SELECT subnet_table.subnet_address, subent_usage_table.subnet_usage "
-            "FROM subnet_table "
-            "INNER JOIN subent_usage_table ON subnet_table.subnet_id = subent_usage_table.subnet_id"
-        )
-
-        result = configs.db.execute(query)
-        print("result is::::::::::::::::", result, file=sys.stderr)
-        
-        subnet_address_list = []
-        subnet_usage_list = []
-        for row in result:
-            print("row is::::::::::::::::::::::::::::", row, file=sys.stderr)
-            
-            subnet_address_list.append(row[0])
-            subnet_usage_list.append(row[1])
-        
-        if len(subnet_address_list) <= 0:
-            subnet_address_list = ["SubnetA", "subnetB", "Other"]
-            subnet_usage_list= [0, 0, 0]
-            obj_dict = {"subnet_address": subnet_usage_list, "subnet_usage": subnet_usage_list }
-            print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
-        else:
-            subnets_data = list(zip(subnet_address_list, subnet_usage_list))
-
-
-            
-            #sorted_subnets = sorted(subnets_data, key=lambda x: x[1], reverse=True)
-            #sorted_subnets = sorted(subnets_data, key=lambda x: str(x[1]) if x[1] is not None else 0, reverse=True)
-            sorted_subnets = sorted(subnets_data, key=lambda x: int(x[1]) if x[1] is not None and x[1].isdigit() else 0, reverse=True)
-            # Create a dictionary for the top 10 subnets
-            obj_dict = dict(sorted_subnets[:10])
-
-            print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
-        return JSONResponse(content=obj_dict, status_code=200)
-    except Exception:
-        traceback.print_exc()
-        return JSONResponse(
-           content =  "Error While Fetching The Data\nFor subnet_address and subnet_usage from subnet_table , subent_usage_table",
-            status_code = 500,
-        )
-    
 
 
 
 @router.get("/dns_summary", responses={
-    200: {"model": ResponseDNSSummary},
+    200: {"model": list[ResponseDNSSummary]},
     500: {"model": str}
 },
 summary="API to get DNS summary status",
@@ -202,6 +152,7 @@ async def DNS_Summary():
 
         not_resolved_ip = 0
         resolved_ip = 0
+        count_list =[]
 
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
@@ -211,10 +162,11 @@ async def DNS_Summary():
             resolved_ip += row[1]
             # total_ip += row["total_ip"]
 
-        counts = {
-            "not_resolved_ip": not_resolved_ip,
-            "resolved_ip": resolved_ip,
-        }
+
+        counts =[ 
+            {"not_resolved_ip": not_resolved_ip},
+            {"resolved_ip": resolved_ip}]
+    
 
         print("status counts are::::::::::::::::::::::::::::", counts, file=sys.stderr)
 
@@ -251,7 +203,7 @@ async def subnet_summary():
 
         manually_added = 0
         discovered_added = 0
-        total_count = 0
+        # total_count = 0
 
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
@@ -259,13 +211,13 @@ async def subnet_summary():
             # Update the counts by adding the values from the current row
             manually_added += row[0]
             discovered_added += row[1]
-            total_count += row[2]
+            #total_count += row[2]
             
             
         counts = {
             "manually_added": manually_added ,
             "discovered_added" : discovered_added,
-            "total_count": total_count,
+            
         }
        
         print("subnet_state counts are::::::::::::::::::::::::::::", counts, file=sys.stderr)
@@ -276,3 +228,98 @@ async def subnet_summary():
             content = "Error While Fetching subnet_state Counts from subnet_table",
             status_code = 500,
         )
+
+
+@router.get("/type_summary", responses={
+    200: {"model": List[TypeSummaryResponse]},
+    500: {"model": str}
+},
+summary="API to get type_summary",
+description="API to get type_summary"
+)
+async def type_summary():
+    try:
+        query = (
+                f"SELECT atom_table.vendor, COUNT(*) AS counts "
+                f"FROM  ipam_devices_fetch_table "
+                f"INNER JOIN atom_table ON ipam_devices_fetch_table.atom_id = atom_table.atom_id "
+                f"GROUP BY vendor;")
+
+        #print("query string is::::::::::::::::::::::::",query=sys.stderr)
+        result = configs.db.execute(query)
+        print("reuslt is:::::::::::",result,file=sys.stderr)
+        objt_list=[]
+
+        for row in result:
+            print("row is::::::::::::::::::::::", row, file=sys.stderr)
+            print("row [0] is:::::::::::::::", row[0], file=sys.stderr)
+            print("row[1] is:::::::::::::::::::", row[1], file=sys.stderr)
+            objt_dict = {"vender": row[0],"counts": row[1]}
+            print("obj dict is::::::::::::::::::::", objt_dict, file=sys.stderr)
+            objt_list.append(objt_dict)
+   
+
+        print("objlist is:::::::::::::::::", objt_list, file=sys.stderr)
+        return  JSONResponse(content=objt_list, status_code = 200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(
+            content = "Error While Fetching subnet_state Counts from subnet_table",
+            status_code = 500,
+        )
+    
+
+
+@router.get('/top_10_subnet_ip_used', responses={
+    200: {"model":dict},
+    500: {"model": str}
+}, summary="API to get top 10_subnet_ip_used",
+description="API to get top_10_subnet_ip_used"
+)
+def top_10_subnet_ip_used():
+    try:
+        query = (
+            "SELECT subnet_table.subnet_address, subent_usage_table.subnet_usage "
+            "FROM subnet_table "
+            "INNER JOIN subent_usage_table ON subnet_table.subnet_id = subent_usage_table.subnet_id"
+        )
+
+        result = configs.db.execute(query)
+        print("result is::::::::::::::::", result, file=sys.stderr)
+        
+        subnet_address_list = []
+        subnet_usage_list = []
+        newsubnet_usage_list = []
+
+        for row in result:
+            print("row is::::::::::::::::::::::::::::", row, file=sys.stderr)
+            subnet_address_list.append(row[0])
+            subnet_usage_list.append(row[1])
+        
+        if len(subnet_address_list) <= 0:
+            subnet_address_list = ["SubnetA", "subnetB", "Other"]
+            subnet_usage_list= [0, 0, 0]
+            obj_dict = {"subnet_address": subnet_usage_list, "subnet_usage": subnet_usage_list }
+            print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
+        else:
+            for  usage in subnet_usage_list:
+                if usage is None :
+                    usage = '0.0'
+                    newsubnet_usage_list.append(usage)
+                else:
+                    newsubnet_usage_list.append(usage)
+            print(newsubnet_usage_list)
+            subnets_data = list(zip(subnet_address_list, newsubnet_usage_list))
+            sorted_subnets = sorted(subnets_data, key=lambda x: x[1], reverse=True)
+            result_list = [{"subnet": subnet, "value": value} for subnet, value in sorted_subnets[:10]]
+            
+        print("obj dict is:::::::::::::::::::::::::", result_list, file=sys.stderr)
+        return JSONResponse(content= result_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(
+           content =  "Error While Fetching The Data\nFor subnet_address and subnet_usage from subnet_table , subent_usage_table",
+            status_code = 500,
+        )
+    
+

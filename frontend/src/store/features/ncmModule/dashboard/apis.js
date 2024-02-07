@@ -4,7 +4,6 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
 
 
-
     getConfigurationBackupSummary: builder.query({
       query: () => "/api/v1/ncm/ncm_dashboard/ncm_backup_summery_dashboard",
       
@@ -22,6 +21,9 @@ export const extendedApi = monetxApi.injectEndpoints({
     getNcmDeviceSummaryTable: builder.query({           
       query: () => "/api/v1/ncm/ncm_dashboard/ncm_device_summary_by_fucntion",
     }),
+    getNcmChangeByVendor: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
+    }),
     getConfigurationChangeByVendor: builder.query({           
       query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
     }),
@@ -34,6 +36,6 @@ export const extendedApi = monetxApi.injectEndpoints({
 });
 
 export const {
-  useGetConfigurationBackupSummaryQuery, useGetConfigurationChangeByDeviceQuery, useGetRecentRcmAlarmsQuery, useGetRecentRcmAlarmsCountQuery, useGetNcmDeviceSummaryTableQuery, useGetConfigurationChangeByVendorQuery
+  useGetConfigurationBackupSummaryQuery, useGetConfigurationChangeByDeviceQuery, useGetRecentRcmAlarmsQuery, useGetRecentRcmAlarmsCountQuery, useGetNcmDeviceSummaryTableQuery, useGetConfigurationChangeByVendorQuery, useGetNcmChangeByVendorQuery
 
 } = extendedApi;
