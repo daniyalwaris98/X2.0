@@ -67,7 +67,7 @@ function Index() {
         <Col span={7}>
           <div className="container">
             <h6 className="heading">Top Vendors For Discovery</h6>
-            <ConfigurationBackupSummary />
+            {/* <ConfigurationBackupSummary /> */}
           </div>
         </Col>
       </Row>

@@ -1,7 +1,7 @@
 import React from "react";
 import { Row, Col } from "antd";
-import TypeSummaryChart from "../../ipamModule/dashboard/components/TypeSummaryChart";
-import ConfigurationBackupSummary from "../../ncmModule/dashboard/components/ConfigurationBackupSummary";
+import ConfigurationBackupSummary from "./components/ConfigurationBackupSummary";
+import CountPerVendors from "./components/CountPerVendors"
 import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
 import SnmpStatus from "../../autoDiscoveryModule/dashboard/components/SnmpStatus";
 import TenSubnetTable from "../../ipamModule/dashboard/components/TenSubnetTable";
@@ -32,8 +32,8 @@ function Index() {
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Count Per Vendors</h5>
-            <TypeSummaryChart />
-          </div>
+            {/* <CountPerVendors/> */}
+                      </div>
         </Col>
 
         <Col span={8}>
@@ -46,7 +46,7 @@ function Index() {
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Top Vendors For Discovery</h5>
-            <ConfigurationBackupSummary />
+            {/* <ConfigurationBackupSummary /> */}
           </div>
         </Col>
       </Row>
