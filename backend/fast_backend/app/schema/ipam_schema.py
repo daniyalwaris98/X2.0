@@ -228,10 +228,14 @@ class SubnetIPUsage(BaseSchema):
     subnet_usage : str
 
 
-class ResponseDNSSummary(BaseSchema):
+'''class ResponseDNSSummary(BaseSchema):
     Not_Resolved : int
-    Resolved : int
-   
+    Resolved : int'''
+
+class ResponseDNSSummary(BaseSchema):
+    name : str
+    value : int
+
 
 
 class SubnetSummaryResponse(BaseSchema):

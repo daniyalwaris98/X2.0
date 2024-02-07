@@ -130,7 +130,7 @@ async def ip_availability_summary():
 
 
 @router.get("/dns_summary", responses={
-    200: {"model": dict},
+    200: {"model": List[ResponseDNSSummary]},
     500: {"model": str}
 },
 summary="API to get DNS summary status",
@@ -152,7 +152,7 @@ async def DNS_Summary():
 
         not_resolved_ip = 0
         resolved_ip = 0
-        count_list =[]
+        counts =[]
 
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
@@ -163,14 +163,21 @@ async def DNS_Summary():
             # total_ip += row["total_ip"]
 
 
-        counts =[ 
-            {"not_resolved_ip": not_resolved_ip},
-            {"resolved_ip": resolved_ip}]
+        counts =[
+            {
+                "name":"not_resolved_ip",
+                "value": not_resolved_ip
+            },
+            {
+                "name":"resolved_ip",
+                "value": resolved_ip
+            }
+            ]
     
-
+        
         print("status counts are::::::::::::::::::::::::::::", counts, file=sys.stderr)
 
-        return JSONResponse(content=counts, status_code =200)
+        return JSONResponse(content=counts , status_code =200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
