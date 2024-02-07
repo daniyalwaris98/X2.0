@@ -138,7 +138,13 @@ function Index() {
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
               Subnet Summary
             </h5>
-            <TopSubnet />
+            <TopSubnet
+             data={subnetSummaryData !== undefined?subnetSummaryData :[]}
+            //  data={[{"name":"manually_added","value":15},{"name":"discovered_added","value":20}]} 
+
+            
+            
+            />
           </div>
         </Col>
       </Row>
@@ -191,7 +197,8 @@ function Index() {
               DNS{" "}
             </h5>
             <div style={{ display: "flex" }}>
-              <DNSChart />
+            <DNSChart data={dnsData !== undefined ? dnsData :[]}/>
+            {/* data={{ notresolved: 30, resolved: 70 }}dnsData /> */}
             </div>
           </div>
         </Col>

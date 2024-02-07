@@ -1,11 +1,16 @@
 import React, { useEffect } from "react";
 import * as echarts from "echarts";
 
-const DNSChart = () => {
-  const notResolvedValue = 30;
-  const resolvedValue = 70;
-
+const DNSChart = ({ data }) => {
   useEffect(() => {
+    if (!data || !Array.isArray(data)) return;
+
+    const notResolvedEntry = data.find(entry => entry.name === "not_resolved_ip");
+    const resolvedEntry = data.find(entry => entry.name === "resolved_ip");
+
+    const notResolvedValue = notResolvedEntry ? notResolvedEntry.value : 0;
+    const resolvedValue = resolvedEntry ? resolvedEntry.value : 0;
+
     const notResolvedChartDom = document.getElementById("notresolved");
     const notResolvedChart = echarts.init(notResolvedChartDom);
 
@@ -87,12 +92,6 @@ const DNSChart = () => {
 
     notResolvedChart.setOption(notResolvedOption);
 
-    return () => {
-      notResolvedChart.dispose();
-    };
-  }, []);
-
-  useEffect(() => {
     const resolvedChartDom = document.getElementById("resolved");
     const resolvedChart = echarts.init(resolvedChartDom);
 
@@ -175,9 +174,10 @@ const DNSChart = () => {
     resolvedChart.setOption(resolvedOption);
 
     return () => {
+      notResolvedChart.dispose();
       resolvedChart.dispose();
     };
-  }, []);
+  }, [data]);
 
   return (
     <>
