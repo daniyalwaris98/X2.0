@@ -240,8 +240,8 @@ class ResponseDNSSummary(BaseSchema):
 
 class SubnetSummaryResponse(BaseSchema):
     #total_count : int
-    manual : int 
-    discovered : int
+    name : str 
+    value : int
 
 class DnsZoneByServerID(BaseSchema):
     dns_server_id:int
