@@ -130,7 +130,7 @@ async def ip_availability_summary():
 
 
 @router.get("/dns_summary", responses={
-    200: {"model": list[ResponseDNSSummary]},
+    200: {"model": dict},
     500: {"model": str}
 },
 summary="API to get DNS summary status",
