@@ -141,8 +141,6 @@ export function transformDateTimeToDate(originalValue, originalObject) {
 }
 
 export function deepEqual(obj1, obj2) {
-  // console.log("obj1", obj1);
-  // console.log("obj2", obj2);
   // Check if both objects are objects
   if (obj1 !== null && obj2 !== null) {
     if (typeof obj1 !== "object" || typeof obj2 !== "object") {

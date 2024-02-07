@@ -13,11 +13,6 @@ export function useAuthorization() {
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
     if (accessToken) {
       let userInfo = jwt.decode(accessToken);
-      console.log("getUserInfoFromAccessToken user role:", userInfo?.role);
-      console.log(
-        "getUserInfoFromAccessToken:",
-        JSON.parse(userInfo.configuration)
-      );
       userInfo = {
         ...userInfo,
         configuration: JSON.parse(userInfo.configuration),
@@ -55,6 +50,7 @@ export function useAuthorization() {
   }
 
   function removeEmptyChildren(data) {
+    console.log("removeEmptyChildren");
     return data.reduce((acc, item) => {
       const newItem = { ...item };
 
@@ -74,6 +70,7 @@ export function useAuthorization() {
 
   // Define a recursive function to filter menus and their children
   function filterPageMenus(menus, roleConfigurations, modulePath) {
+    console.log("filterPageMenus");
     menus = menus
       ?.filter((item) =>
         isPageAllowed(roleConfigurations, modulePath, item.path)
@@ -91,12 +88,12 @@ export function useAuthorization() {
         }
         return item;
       });
-    console.log("menus", menus);
     return removeEmptyChildren(menus);
   }
 
   // Define a recursive function to filter routes and their children
   function filterPageRoutes(routes, roleConfigurations, modulePath) {
+    console.log("filterPageRoutes");
     return routes
       ?.filter((item) =>
         isPageAllowed(roleConfigurations, modulePath, item.path)

@@ -234,7 +234,6 @@ const Index = ({
 
   // on form submit
   const onSubmit = (data) => {
-    console.log(data);
     if (recordToEdit) {
       if (recordToEdit[ATOM_ID]) {
         data[ATOM_ID] = recordToEdit[ATOM_ID];

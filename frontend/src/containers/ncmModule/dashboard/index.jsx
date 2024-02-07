@@ -53,7 +53,7 @@ function Index() {
   const timeLineChart = useSelector(selectConfigurationChangeByDevice);
   const graph = useSelector(selectConfigurationChangeByVendor);
 
-  console.log("graph", graph);
+  // console.log("graph", graph);
   // console.log("timeLineChart", timeLineChart);
 
   const companyData = {

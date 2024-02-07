@@ -181,7 +181,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // on form submit
   const onSubmit = (data) => {
-    console.log("members modal", data);
     if (recordToEdit) {
       data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);

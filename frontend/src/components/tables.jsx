@@ -212,7 +212,7 @@ export default function DefaultTable({
   }
 
   function handleChange(pagination, filters, sorter, extra) {
-    console.log("Various parameters", pagination, filters, sorter, extra);
+    // console.log("Various parameters", pagination, filters, sorter, extra);
   }
 
   function handleRowClick(record) {

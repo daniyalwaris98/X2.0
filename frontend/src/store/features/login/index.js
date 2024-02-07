@@ -14,11 +14,9 @@ const defaultSlice = createSlice({
       localStorage.removeItem("monetx_access_token");
     },
     setCompanyDetails: (state, action) => {
-      console.log("action.payload");
       state.company_details = action.payload;
     },
     setUserDetails: (state, action) => {
-      console.log("action.payload");
       state.user_details = action.payload;
     },
   },

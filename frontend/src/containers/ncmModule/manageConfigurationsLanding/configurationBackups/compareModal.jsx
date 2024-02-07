@@ -74,7 +74,7 @@ const Index = ({ handleClose, open }) => {
   };
 
   useEffect(() => {
-    console.log("compareBackupsData", compareBackupsData);
+    // console.log("compareBackupsData", compareBackupsData);
   }, [compareBackupsData]);
 
   const sampleHTML = "<div><p>Hello, World!</p></div>";
