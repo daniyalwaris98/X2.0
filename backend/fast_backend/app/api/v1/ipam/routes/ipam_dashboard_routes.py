@@ -188,7 +188,7 @@ async def DNS_Summary():
 
 
 @router.get("/subnet_summary", responses={
-    200: {"model": SubnetSummaryResponse},
+    200: {"model": List[SubnetSummaryResponse]},
     500: {"model": str}
 },
 summary="API to get subnet_summary",
@@ -221,11 +221,18 @@ async def subnet_summary():
             #total_count += row[2]
             
             
-        counts = {
-            "manually_added": manually_added ,
-            "discovered_added" : discovered_added,
+        counts =[
+             {
+            "name":"manually_added",
+            "value": manually_added
+            },
+            {
+           "name": "discovered_added" ,
+           "value": discovered_added
+           }
+           ]
             
-        }
+        
        
         print("subnet_state counts are::::::::::::::::::::::::::::", counts, file=sys.stderr)
         return JSONResponse(content=counts, status_code = 200)
