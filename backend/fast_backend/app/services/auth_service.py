@@ -16,7 +16,7 @@ from app.api.v1.users.utils.user_utils import add_end_user_registration
 from app.models.blacklisted_token import BlacklistedToken
 from fastapi.responses import JSONResponse
 from app.repository import blacklisted_token_repository
-
+from app.api.v1.users.routes.license_routes import *
 from app.repository.blacklisted_token_repository import BlacklistedTokenRepository
 
 from app.schema.auth_schema import SignInNew
@@ -99,159 +99,190 @@ class AuthService(BaseService):
         self.blacklisted_token_repository = blacklisted_token_repository
 
     def sign_in(self, sign_in_info: SignInNew):
-        sign_in_data ={}
-        find_user = FindUser()
-        find_user.user_name = sign_in_info.user_name
-        user: List[UserTableModel] = self.user_repository.read_by_options(find_user)["founds"]
-        if len(user) < 1:
-            raise AuthError(detail="Incorrect username or password")
-        found_user = user[0]
-        print("sign in info is::::::::",sign_in_info,file=sys.stderr)
-        print("found user is::::::::::::::::",found_user,file=sys.stderr)
-        if not found_user.is_active:
-            raise AuthError(detail="Account is not active")
-        if not verify_password(sign_in_info.password, found_user.password):
-            raise AuthError(detail="Incorrect username or password")
-        delattr(found_user, "password")
-
-        user_role_id = None
-        configuration = None
-        user_id = None
-        role = None
-        user_exsist = configs.db.query(UserTableModel).filter_by(user_name = sign_in_info.user_name).first()
-        if user_exsist:
-            print("user exesist sis:::",user_exsist,file=sys.stderr)
-            user_id = user_exsist.id
-            print("user id is::::::::::::::::::",user_id,file=sys.stderr)
-        user_role = configs.db.query(UserRoleTableModel).filter_by(role = user_exsist.role).first()
-        print("user role is:::",user_role)
-        if user_role:
-            role =user_role.role
-            user_role_id = user_role.role_id
-            configuration = user_role.configuration
-            print("user role id :::::::::::::::::::",user_role_id,file=sys.stderr)
-            print("confguration is :::::::::::::::::::", configuration, file=sys.stderr)
-
-        else:
+        try:
             user_role_id = None
-        end_user_exsists = configs.db.query(EndUserTable).filter_by(end_user_id = user_exsist.end_user_id).first()
-        if end_user_exsists:
-            end_user_id = end_user_exsists.end_user_id
-        else:
-            return "No end user found"
-        print("user role id is",user_role_id,file=sys.stderr)
-        print("end user id is::::::::",end_user_id,file=sys.stderr)
-        print("configuration is",configuration,file=sys.stderr)
+            configuration = None
+            user_id = None
+            role = None
+            liscence_verification = None
 
-        payload = Payload(
-            user_id=found_user.id,
-            email_address=found_user.email,
-            name=found_user.name,
-            is_superuser=found_user.is_superuser,
-            user_role_id=user_role_id,
-            end_user_id = end_user_id,
-            configuration = configuration,
-            role = role
-        )
-        print("payload is::::::::::::::",payload,file=sys.stderr)
-        # encrypted_result = encrypt_data(payload)
-        # encrypted_data = encrypt_data(payload, encryption_key)
-        # print("encrypted result is:::::::::::::::::::::",encrypted_data,file=sys.stderr)
-        # print("encrypted result type is:::::::::::::",type(encrypted_data),file=sys.stderr)
-        # decrypted = decrypt_data(encrypted_data)
-        # print("Decrypted::::::::::::::::::;", decrypted,file=sys.stderr)
-        # subject_data = {"encrypted_data": encrypted_data}
-        token_lifespan = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
-        access_token, expiration_datetime = create_access_token(payload.dict(), token_lifespan)
-        print("access token is:::::::::::::::::::",file=sys.stderr)
-        print("expiration token is:::::::::::::::",expiration_datetime,file=sys.stderr)
-        data = {
-            "access_token": access_token,
-            "expiration_datetime":expiration_datetime
-        }
-        message = f"Successfully logged in as {found_user.name}"
-        sign_in_data['data'] = data
-        sign_in_data['message'] = message
-        # sign_in_result = {
-        #     "access_token": access_token,
-        #     "expiration": expiration_datetime,
-        #     "user_info": found_user,
-        print("sign in data::::::::::::;",sign_in_data,file=sys.stderr)
-        # }
-        return sign_in_data
-
-    def sign_up(self, user_info: SignUp):
-        user_token = get_rand_hash()
-        user_data = user_info.dict(exclude_none=True)
-        print("user data is:::::::::", user_data, file=sys.stderr)
-        role = user_data.pop('role', 'user')
-        company_dict = {}
-        response = None  # Initialize response variable
-        company_name = ""
-        for key, value in user_data.items():
-            print("key for the user data is::::::", key, file=sys.stderr)
-            print("value for the user data is::::::::", value, file=sys.stderr)
-
-            if key == 'company':
-                company_dict.update(value)
-                company_name = value.get('company_name')
-                print("company dict is:::::::::::::;", company_dict, file=sys.stderr)
-                add_end_user_registration(company_dict)
-            if key == 'user':
-                user_name = value.get('role')
-                user_exist = configs.db.query(UserTableModel).filter_by(user_name=user_name).first()
-                if user_exist:
-                    response = JSONResponse(content=f"{user_name} Already Exists", status_code=400)
+            sign_in_data ={}
+            find_user = FindUser()
+            find_user.user_name = sign_in_info.user_name
+            user: List[UserTableModel] = self.user_repository.read_by_options(find_user)["founds"]
+            user_name = sign_in_info.user_name
+            print("usrename is::::::::::::::::::::::::::;;", user_name, file=sys.stderr)
+            user_exsist = configs.db.query(UserTableModel).filter_by(user_name=user_name).first()
+            if user_exsist:
+                print("user exesist sis:::", user_exsist, file=sys.stderr)
+                user_id = user_exsist.id
+                print("user id is::::::::::::::::::", user_id, file=sys.stderr)
+                end_user_exsists = configs.db.query(EndUserTable).filter_by(end_user_id=user_exsist.end_user_id).first()
+                if end_user_exsists:
+                    end_user_id = end_user_exsists.end_user_id
                 else:
-                    # Access attributes using dot notation
-                    end_user_id = None
-                    print("company name for the user attribute is:::::", company_name, file=sys.stderr)
-                    end_user_exist = configs.db.query(EndUserTable).filter_by(company_name=company_name).first()
+                    return JSONResponse(content="Company Not Registered And User Not found", status_code=400)
 
-                    if end_user_exist:
-                        end_user_id = end_user_exist.end_user_id
-                        print("end user id is:::::::::::::::", end_user_id, file=sys.stderr)
+            else:
+                return JSONResponse(content="User Not Found",status_code=400)
+            if len(user) < 1:
+                return JSONResponse(content = "Incorrect user name or password",status_code=400)
+            found_user = user[0]
+            print("sign in info is::::::::",sign_in_info,file=sys.stderr)
+            print("found user is::::::::::::::::",found_user.user_name,file=sys.stderr)
+            if not found_user.is_active:
+                return JSONResponse(content = "Incorrect user name or password",status_code=400)
+            if not found_user.user_name:
+                return JSONResponse(content = "User Not Found",status_code=400)
+            if not verify_password(sign_in_info.password, found_user.password):
+                return JSONResponse(content = "Incorrect user name or password",status_code=400)
+            delattr(found_user, "password")
+
+
+
+            user_role = configs.db.query(UserRoleTableModel).filter_by(role = user_exsist.role).first()
+            print("user role is:::",user_role)
+            if user_role:
+                role =user_role.role
+                user_role_id = user_role.role_id
+                configuration = user_role.configuration
+                print("user role id :::::::::::::::::::",user_role_id,file=sys.stderr)
+                print("confguration is :::::::::::::::::::", configuration, file=sys.stderr)
+
+            else:
+                user_role_id = None
+
+            liscence_exsists = configs.db.query(LicenseVerfificationModel).filter_by(end_user_id = end_user_exsists.end_user_id).first()
+            if liscence_exsists:
+                result = check_license_expiration(liscence_exsists.license_verfification_id)
+                print("result for the liscence exists is::::::::::::",result,file=sys.stderr)
+                liscence_verification = result
+                print("liscence verification is:::::::::::::::::::::::::",liscence_verification,file=sys.stderr)
+            else:
+                return JSONResponse(content="Liscence Not Found",status_code=400)
+            print("user role id is",user_role_id,file=sys.stderr)
+            print("end user id is::::::::",end_user_id,file=sys.stderr)
+            print("configuration is",configuration,file=sys.stderr)
+
+            payload = Payload(
+                user_id=found_user.id,
+                email_address=found_user.email,
+                name=found_user.name,
+                is_superuser=found_user.is_superuser,
+                user_role_id=user_role_id,
+                end_user_id = end_user_id,
+                configuration = configuration,
+                role = role,
+                liscence_verification = liscence_verification
+            )
+            print("payload is::::::::::::::",payload,file=sys.stderr)
+            # encrypted_result = encrypt_data(payload)
+            # encrypted_data = encrypt_data(payload, encryption_key)
+            # print("encrypted result is:::::::::::::::::::::",encrypted_data,file=sys.stderr)
+            # print("encrypted result type is:::::::::::::",type(encrypted_data),file=sys.stderr)
+            # decrypted = decrypt_data(encrypted_data)
+            # print("Decrypted::::::::::::::::::;", decrypted,file=sys.stderr)
+            # subject_data = {"encrypted_data": encrypted_data}
+            token_lifespan = timedelta(minutes=configs.ACCESS_TOKEN_EXPIRE_MINUTES)
+            access_token, expiration_datetime = create_access_token(payload.dict(), token_lifespan)
+            print("access token is:::::::::::::::::::",access_token,file=sys.stderr)
+            print("expiration token is:::::::::::::::",expiration_datetime,file=sys.stderr)
+            data = {
+                "access_token": access_token,
+                "expiration_datetime":expiration_datetime
+            }
+            message = f"Successfully logged in as {found_user.name}"
+            sign_in_data['data'] = data
+            sign_in_data['message'] = message
+            # sign_in_result = {
+            #     "access_token": access_token,
+            #     "expiration": expiration_datetime,
+            #     "user_info": found_user,
+            print("sign in data::::::::::::;",sign_in_data,file=sys.stderr)
+            # }
+            return sign_in_data
+        except Exception as e:
+            traceback.print_exc()
+            print("error occured while signin")
+    def sign_up(self, user_info: SignUp):
+        try:
+            user_token = get_rand_hash()
+            user_data = user_info.dict(exclude_none=True)
+            print("user data is:::::::::", user_data, file=sys.stderr)
+            role = user_data.pop('role', 'user')
+            company_dict = {}
+            response = None  # Initialize response variable
+            company_name = ""
+            for key, value in user_data.items():
+                print("key for the user data is::::::", key, file=sys.stderr)
+                print("value for the user data is::::::::", value, file=sys.stderr)
+
+                if key == 'company':
+                    company_dict.update(value)
+                    company_name = value.get('company_name')
+                    print("company dict is:::::::::::::;", company_dict, file=sys.stderr)
+                    add_end_user_registration(company_dict)
+                elif key == 'user':
+                    user_name = value.get('role')
+                    user_exist = configs.db.query(UserTableModel).filter_by(user_name=user_name).first()
+                    if user_exist:
+                        response = JSONResponse(content=f"{user_name} Already Exists", status_code=400)
                     else:
-                        response = JSONResponse(content="Company Detail Not found", status_code=400)
+                        # Access attributes using dot notation
+                        end_user_id = None
+                        print("company name for the user attribute is:::::", company_name, file=sys.stderr)
+                        end_user_exist = configs.db.query(EndUserTable).filter_by(company_name=company_name).first()
 
-                    role_id = None
-                    role = value.get('role')
-                    print("role is:::::::::::::::", role, file=sys.stderr)
-                    role_exists = configs.db.query(UserRoleTableModel).filter_by(role=role).first()
+                        if end_user_exist:
+                            end_user_id = end_user_exist.end_user_id
+                            print("end user id is:::::::::::::::", end_user_id, file=sys.stderr)
+                        else:
+                            response = JSONResponse(content="Company Detail Not found", status_code=400)
 
-                    if role_exists:
-                        role_id = role_exists.role_id
-                    else:
-                        response = JSONResponse(content="User Role Not found", status_code=500)
+                        role_id = None
+                        role = value.get('role')
+                        print("role is:::::::::::::::", role, file=sys.stderr)
+                        role_exists = configs.db.query(UserRoleTableModel).filter_by(role=role).first()
 
-                    # Remove fields from user_data if they are being set explicitly
-                    # For example, if 'team', 'account_type', and 'status' are set explicitly, pop them from user_data
-                    team = value.pop('team', None)
-                    account_type = value.pop('account_type', None)
-                    status = value.pop('status', None)
-                    name = value.pop('name', None)
-                    user_name = value.pop('user_name', None)
+                        if role_exists:
+                            role_id = role_exists.role_id
+                        else:
+                            response = JSONResponse(content="User Role Not found", status_code=500)
 
-                    # Ensure all required fields are set correctly
-                    user = UserTableModel(
-                        is_active=True,
-                        is_superuser=False,
-                        user_token=user_token,
-                        role=role,
-                        teams=team,  # Set explicitly here
-                        account_type=account_type,
-                        status=status,
-                        end_user_id=end_user_id,
-                        name=name,
-                        user_name=user_name
-                    )
-                    password = value.get('password')
-                    user.password = get_password_hash(password)
-                    created_user = self.user_repository.create(user)
-                    delattr(created_user, "password")
-                    response = created_user  # Update response with created_user
+                        # Remove fields from user_data if they are being set explicitly
+                        # For example, if 'team', 'account_type', and 'status' are set explicitly, pop them from user_data
+                        team = value.pop('team', None)
+                        account_type = value.pop('account_type', None)
+                        status = value.pop('status', None)
+                        name = value.pop('name', None)
+                        user_name = value.pop('user_name', None)
 
-        return response
+                        # Ensure all required fields are set correctly
+                        user = UserTableModel(
+                            is_active=True,
+                            is_superuser=False,
+                            user_token=user_token,
+                            role=role,
+                            teams=team,  # Set explicitly here
+                            account_type=account_type,
+                            status=status,
+                            end_user_id=end_user_id,
+                            name=name,
+                            user_name=user_name
+                        )
+                        password = value.get('password')
+                        user.password = get_password_hash(password)
+                        created_user = self.user_repository.create(user)
+                        delattr(created_user, "password")
+                        response = created_user  # Update response with created_user
+
+            return response
+        except Exception as e:
+            traceback.print_exc()
+            print("error while sign in",str(e),file=sys.stderr)
     def blacklist_token(self, email: str, token: str):
-        blacklisted_token = BlacklistedToken(email=email, token=token)
-        self.blacklisted_token_repository.create(blacklisted_token)
+        try:
+            blacklisted_token = BlacklistedToken(email=email, token=token)
+            self.blacklisted_token_repository.create(blacklisted_token)
+        except Exception as e:
+            traceback.print_exc()

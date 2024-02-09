@@ -185,6 +185,31 @@ class SnmpV3CredentialsRequestSchema(SnmpCredentialsSchema):
     encryption_protocol: str
 
 
+
+
+
+class AddMonitoringSnmpV3CredentialsRequestSchema(BaseSchema):
+    username: str
+    authorization_password: str
+    encryption_password: str
+    authorization_protocol: str
+    encryption_protocol: str
+    profile_name: str
+    description: str | None
+    port: int
+
+class MonitoringSnmpV3CredentialsRequestSchema(BaseSchema):
+    monitoring_credentials_id:int
+    username: str
+    authorization_password: str
+    encryption_password: str
+    authorization_protocol: str
+    encryption_protocol: str
+    profile_name: str
+    description: str | None
+    port: int
+
+
 class SnmpV2CredentialsResponseSchema(SnmpV2CredentialsRequestSchema):
     monitoring_credentials_id: int
 
@@ -234,7 +259,7 @@ class AddAtomInMonitoringSchema(BaseSchema):
 class EditSnmpV2Credentials(SnmpV2CredentialsResponseSchema):
     monitoring_credentials_id : int
 
-class EditSnmpV3CredentialsResponseSchema(SnmpV3CredentialsRequestSchema):
+class EditSnmpV3CredentialsResponseSchema(MonitoringSnmpV3CredentialsRequestSchema):
     monitoring_credentials_id:int
 
 class MonitoringAlertsByIpAddress(BaseSchema):

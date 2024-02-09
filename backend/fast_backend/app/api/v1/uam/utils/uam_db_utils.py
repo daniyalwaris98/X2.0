@@ -144,7 +144,7 @@ def insert_uam_device_board_data(uam_id, data):
                 uam_id=uam_id,
                 board_name=board_name,
                 serial_number=serial_number,
-                # description=description,
+                status=description,
                 pn_code=device_pn_code,
                 device_slot_id=device_slot_id
             )

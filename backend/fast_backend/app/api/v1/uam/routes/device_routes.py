@@ -421,8 +421,15 @@ async def dismantle_onboard_device(device_ips: list[str]):
         success_list = []
 
         for ip in device_ips:
+            print("ip in desvice type is:::::::::::::::::::::::",ip,file=sys.stderr)
             try:
-                response, status = update_uam_status_utils(ip, "Dismantled")
+                ip_address = None
+                uam_exsits = configs.db.query(UamDeviceTable).filter_by(uam_id = ip).first()
+                if uam_exsits:
+                    atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = uam_exsits.atom_id).first()
+                    if atom_exsist:
+                        ip_address = atom_exsist.ip_address
+                response, status = update_uam_status_utils(ip_address, "Dismantled")
                 print("repsonse for the dismanteled onboard device is :::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
                 print(response, status, file=sys.stderr)
 

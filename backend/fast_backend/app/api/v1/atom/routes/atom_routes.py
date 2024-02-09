@@ -20,19 +20,13 @@ router = APIRouter(
 })
 async def add_atom(atom: AddAtomRequestSchema):
     try:
-        print("add atom is being executed::::::::::::::::::::::::::::",file=sys.stderr)
         response, status = add_complete_atom(atom, False)
-        print("response of add complete atom is::::::::::::::::::::::::::::",response,file=sys.stderr)
-        print("status for add complete atom is :::::::::::::::::::::",status,file=sys.stderr)
         atom_response = response
         if status != 200:
             response, status = add_transition_atom(atom, False)
             if isinstance(response,dict):
-                print("if reponse not 200::::::::::::::::::::::::::::::::::::::::::",response,file=sys.stderr)
                 transition_message = response.get('message', '')
-                print("tranistion message is:::::::::::::::",transition_message,file=sys.stderr)
                 if re.search(r"Can Not be Empty$", atom_response):
-                    print("cannot be empty is true::::::::::::::::::::::", file=sys.stderr)
                     message = f"{transition_message} and Note: (To complete the atom following fields are required: Device Name, Function, device type, vendor)"
                     response['message'] = message
                 else:
@@ -43,7 +37,6 @@ async def add_atom(atom: AddAtomRequestSchema):
             else:
                 return JSONResponse(content=response, status_code=status)
         elif status ==400:
-            print("status is 400:::::::::::::::::::::::::::::::::",400,file=sys.stderr)
             return JSONResponse(content = response,status_code = 400)
         else:
             return JSONResponse(content = response,status_code = status)
@@ -64,7 +57,6 @@ async def add_atom(atom: AddAtomRequestSchema):
 })
 async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
     try:
-        print("atom objs is:::::::::::::::::::::::::::::::::::::::::::::::",atom_objs,file=sys.stderr)
         row = 0
         error_list = []
         success_list = []
@@ -79,7 +71,6 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                 atomObj["ip_address"] = atomObj["ip_address"].strip()
                 if atomObj["ip_address"] == "":
                     error_list.append(f"Row {row} : IP Address Can Not Be Empty")
-                    
 
                 atom = configs.db.query(AtomTable).filter(
                     AtomTable.ip_address == atomObj["ip_address"]).first()
@@ -89,26 +80,19 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
 
                 if atom is not None:
                     msg, status = add_complete_atom(atomObj, True)
-                    print("msg in atom is ::::::::::::::::",msg,file=sys.stderr)
                     if isinstance(msg,dict):
                         for key,value in msg.items():
-                                print("key for msg ares for instance::::::::::::::::::::",key,file=sys.stderr)
-                                print("values are instance:::::::::::::::::::::::::::::",value,file=sys.stderr)
-
                                 if key =='data':
                                     data_lst.append(value)
                                 if key == 'message':
                                     if value not in success_list:
                                         success_list.append(value)
                     else:
-                        print("atom msg ims not a dict and it is string",file=sys.stderr)
                         error_list.append(msg)
                 elif transit_atom is not None:
                     msg, status = add_transition_atom(atomObj, True)
                    
                     for key,value in msg.items():
-                    
-
                         if key =='data':
                             data_lst.append(value)
                         if key == 'message':
@@ -117,17 +101,13 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                                     success_list.append(value)
                 else:
                     msg, status = add_complete_atom(atomObj, False)
-                    print("msg for add complete atom is34343434343434:::::::::::::::::::::",msg,file=sys.stderr)
                     if isinstance(msg, dict):
                         for key,value in msg.items():
-                                print("key for msg ares::::::::::::::::::::",key,file=sys.stderr)
-                                print("values are:::::::::::::::::::::::::::::",value,file=sys.stderr)
 
                                 if key =='data':
                                     data_lst.append(value)
                                 if key == 'message':
                                     if value not in success_list:
-                                        print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
                                         success_list.append(value)
 
                     if status != 200:
@@ -138,7 +118,6 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                                     data_lst.append(value)
                                 if key == 'message':
                                     if value not in success_list:
-                                        # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
                                         success_list.append(value)
                         else:
                             error_list.append(msg)
@@ -172,20 +151,37 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
             unique_success_list.extend(success_list)
             # filtered_list = list(filtered_dict.values())
             # unique_success_list = list(success_list)
-        print("step 3 is::::::::::::::::::::::::::::::::::::::::",file=sys.stderr)
-        print("filtered data list is:::::::::::::::",filtered_list,file=sys.stderr)
-        print("unique success liset is:::::::::::::::::::::::::::",unique_success_list,file=sys.stderr)
+
+        unique_data_lst = []
+        unique_success_list = []
+        unique_error_list = []
+
+        for item in data_lst:
+            if item not in unique_data_lst:
+                unique_data_lst.append(item)
+
+        for item in success_list:
+            if item not in unique_success_list:
+                unique_success_list.append(item)
+
+        for item in error_list:
+            if item not in unique_error_list:
+                unique_error_list.append(item)
+
+        if not unique_data_lst:
+            unique_error_list.append("Empty Import")
+
         if not filtered_list:
-            print("step4::::::::::::::::::::::::::::::::::Filtered list is None")
             error_list.append("Empty Import")
-        print("filtered list is:::::::::::::::::::::::::::",filtered_list,file=sys.stderr)
+
         response = SummeryResponseSchema(
-            data = filtered_list,
+            data=unique_data_lst,
             success=len(unique_success_list),
-            error=len(error_list),
+            error=len(unique_error_list),
             success_list=unique_success_list,
-            error_list=error_list
+            error_list=unique_error_list
         )
+
         return response
 
     except Exception:
@@ -200,11 +196,11 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
 })
 async def edit_atom(atom: EditAtomRequestSchema):
     try:
+
         atom = atom.dict()
         response, status = edit_atom_util(atom)
-        print("response in edit atom is::::::::::::::::::::::::::::",response,file=sys.stderr)
-
         return JSONResponse(response)
+
     except Exception:
         traceback.print_exc()
         return "Error Occurred While Updating Atom Device", 500
@@ -224,9 +220,7 @@ async def get_atoms():
             count = len(transition_list)
             for trans_atom in transition_list:
                 atom_obj_list.append(trans_atom)
-                # count = len(trans_atom)
 
-            # print("count for atom is::::::::::::::::::::::::::::::",count,file=sys.stderr)
         except Exception:
             traceback.print_exc()
 
@@ -279,7 +273,6 @@ async def get_atoms():
 
         print(atom_obj_list, file=sys.stderr)
         sorted_list = sorted(atom_obj_list, key=lambda x: x['creation_date'], reverse=True)
-        # print("sorted list based on the creation date is::::::::::::::::::::::",sorted_list,file=sys.stderr)
         if len(atom_obj_list) <= 0:
             atom_obj_list = None
 
@@ -295,7 +288,7 @@ async def get_atoms():
     200: {"model": DeleteResponseSchema},
     500: {"model": str}
 })
-def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
+async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
     try:
         success_list = []
         error_list = []
@@ -306,20 +299,15 @@ def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
         for atom_obj in atom_list:
             deleted_atom ={}
             atom_obj = atom_obj.dict()
-            print("obj is::::::::::::::::::::::::::::::::::::", file=sys.stderr)
-           
 
             if "atom_id" in atom_obj and atom_obj['atom_id'] is not None and atom_obj['atom_id'] != 0:
                 atoms = configs.db.query(AtomTable).filter_by(atom_id=atom_obj['atom_id']).all()
                 if atoms:
-                    print("if atom is::::::::::::::::::::::::::::::::::::::::", atoms, file=sys.stderr)
                     for atom in atoms:
                         atom_found = True
                         deleted_atom_id = atom.atom_id
                         atom_ip_address = atom.ip_address
-                        print("atom id is::::::::::::::::::::::::::::::", deleted_atom_id, file=sys.stderr)
                         DeleteDBData(atom)
-                        print("atom delted successfully:::::::::::::::::::::::::::", file=sys.stderr)
                         deleted_atom['atom_id'] = deleted_atom_id
                         success_list.append(f"{atom_ip_address} : Atom Deleted Successfully")
                         deleted_atoms_lst.append(deleted_atom)
@@ -328,25 +316,19 @@ def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                     print(f"Atom Not Found for atom_id: {not_found_atom_id}", file=sys.stderr)
                     error_list.append(f"Atom Not Found for atom_id: {not_found_atom_id}")
 
-            print("start of atom transition::::::::::::::", file=sys.stderr)
             if "atom_transition_id" in atom_obj and atom_obj['atom_transition_id'] is not None and atom_obj['atom_transition_id'] != 0:
-                print("atom transition found in :::::::::::::::::", file=sys.stderr)
                 atom_transition = configs.db.query(AtomTransitionTable).filter_by(atom_transition_id=atom_obj["atom_transition_id"]).all()
                 if atom_transition:
-                    print("atom transition atom is::::::::::::::::::::::::::::::::", file=sys.stderr)
                     for atoms in atom_transition:
                         transition_atom_found = True
                         atom_transition_id = atoms.atom_transition_id
                         transition_atom_ip = atoms.ip_address
-                        print("atom transition id:::::::::::::::::::::",atom_transition_id,file=sys.stderr)
                         DeleteDBData(atoms)
-                        print("atom transition delted successsfully:::::::::::::::::::::::", file=sys.stderr)
                         deleted_atom['atom_transition_id'] = atom_transition_id
                         success_list.append(f"{transition_atom_ip} : Atom Transition Deleted Successfully")
                         deleted_atoms_lst.append(deleted_atom)
                 else:
                     not_found_atom_transition_id = atom_obj['atom_transition_id']
-                    print("Not found atom tranistion id is::::::::::::",file=sys.stderr)
                     print(f"Atom transition Not Found for id: {not_found_atom_transition_id}", file=sys.stderr)
                     error_list.append(f"Atom Transition Not Found for id: {not_found_atom_transition_id}")
         
@@ -366,4 +348,3 @@ def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Deleting Atom", status_code=500)
-#updated

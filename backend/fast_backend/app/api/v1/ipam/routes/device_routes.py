@@ -1184,6 +1184,8 @@ description="Use API in the IPam devices page on a fetch button to fetch all the
 def fetch_ipam_devices():
     try:
         data = []
+        host = {}
+        devices_data = {}
         success_list = []
         error_list = []
         ipam_devices = configs.db.query(IpamDevicesFetchTable).all()
@@ -1194,21 +1196,26 @@ def fetch_ipam_devices():
             atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = atom_id).first()
             if atom_exsist:
                 ip_address = atom_exsist.ip_address
+                current_time = datetime.now()
+                devices_data['ip_address'] = atom_exsist.ip_address
+                devices_data['device_name'] =atom_exsist.device_name
+
                 latest_failed_device = (
                     configs.db.query(FailedDevicesTable)
-                    .filter_by(ip_address=ip_address)
-                    .order_by(desc(FailedDevicesTable.date))
-                    .first()
+                    .filter(FailedDevicesTable.ip_address == ip_address)
+                    .filter(
+                        FailedDevicesTable.date <= current_time)  # Filter for records created up to the current time
+                    .order_by(desc(FailedDevicesTable.date))  # Then order by creation_date in descending order
+                    .first()  # And get the most recent record
                 )
-
                 if latest_failed_device:
                     error_list.append(f"{latest_failed_device.ip_address} : failed due to {latest_failed_device.failure_reason}")
                 else:
                     ipam_devices = configs.db.query(IpamDevicesFetchTable).filter_by(atom_id=atom_id).all()
                     for device in ipam_devices:
-                        devices_data = {}
                         devices_data['ipam_device_id'] = device.ipam_device_id
                         devices_data['interface_ip'] = device.interface_ip
+                        devices_data['interface'] = device.interface
                         devices_data['interface_description'] = device.interface_description
                         devices_data['virtual_ip'] = device.virtual_ip
                         devices_data['vlan'] = device.vlan
@@ -1221,9 +1228,10 @@ def fetch_ipam_devices():
                             devices_data['discovered_from'] = ip.discovered_from
                         subnet = configs.db.query(subnet_table).filter_by(ipam_device_id=device.ipam_device_id).all()
                         for row in subnet:
-                            devices_data['subnet'] = row.subnet_address
+                            devices_data['subnet_address'] = row.subnet_address
                             devices_data['subnet_mask'] = row.subnet_mask
                             devices_data['location'] = row.location
+                            devices_data['subnet_name'] = row.subnet_name
                             subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id=row.subnet_id).all()
                             for usage in subnet_usage:
                                 devices_data['subnet_usage'] = usage.subnet_usage

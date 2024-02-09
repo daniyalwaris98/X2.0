@@ -153,11 +153,17 @@ class IPAMPM(object):
 
                 try:
                     arps = device.send_command("show ip arp", use_textfsm=True)
+                    print("arps are :::::::::::::::::::::::::::::: ",arps,file=sys.stderr)
                     if isinstance(arps, str):
                         print("Error in show ip arp", file=sys.stderr)
                         raise Exception("Failed to send Command, show ip arp" + str(arps))
 
                     for arp in arps:
+                        print("arp is: :::::::::::::::::::::::::::::::: ",arp,file=sys.stderr)
+                        mac_address = arp.get("address")
+                        print("mac address is:::::::::::::::::",mac_address,file=sys.stderr)
+                        ip_address = arp.get("address")
+                        print("ip adress is::::::::::::::::",ip_address,file=sys.stderr)
                         dic = {}
                         dic['ip_address'] = arp.get("address")
                         dic['mac_address'] = arp.get("mac")
@@ -177,12 +183,13 @@ class IPAMPM(object):
                                                   use_textfsm=True)
                     else:
                         ips = device.send_command('show interface', use_textfsm=True)
-
+                        print("ips are:::::::::::::::::::::",ips,file=sys.stderr)
                     if isinstance(arps, str):
                         print("Error in show ip interface brief", file=sys.stderr)
                         raise Exception("Failed to send Command, show ip interface brief" + str(arps))
 
                     for ip in ips:
+                        print("ip in ips ::::::::::::::::::",ip,file=sys.stderr)
                         dic = {}
                         ips = ip.get("ip_address")
                         if "/" in ips:
@@ -194,7 +201,9 @@ class IPAMPM(object):
                         ipData.append(dic)
 
                     for arp in pmData:
+                        print("arp in pmData :::::::::::::::::::::::",arp,file=sys.stderr)
                         for ip in ipData:
+                            print("ip in IP data is::::::::::::",ip,file=sys.stderr)
                             if ip['ip_address']:
 
                                 if arp['ip_address'] == ip['ip_address']:
@@ -209,6 +218,7 @@ class IPAMPM(object):
                 # Updating IP Data
                 print("Populating PM data in Ip Table", file=sys.stderr)
                 for record in pmData:
+                    print("record in pm data is::::::::::::::::::::",record,file=sys.stderr)
                     print("RECORDDDDDDDDDDDDDDDDD IS ", record, file=sys.stderr)
                     query = f"update ip_table set MAC_ADDRESS='{record['mac_address']}', CONFIGURATION_INTERFACE='{record['interface']}', CONFIGURATION_SWITCH='{host['device_name']}' where IP_ADDRESS='{record['ip_address']}';"
                     try:

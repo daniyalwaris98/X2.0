@@ -14,29 +14,32 @@ from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
 def discover_ip_list(ip_list, results):
     try:
         for ip in ip_list:
-            print("ip in discover ip list is::::::::::::::",ip,file=sys.stderr)
+            print(f"ip in discover ip list is:::::::::::::: {ip}", file=sys.stderr)
             try:
                 scanner = nmap.PortScanner()
-                scanner.scan(ip, arguments='-O -T5')
-                host = scanner.all_hosts()[0]
-                if host:
+                scanner.scan(ip, arguments='-O -T5')  # Perform an OS detection scan
+                if scanner.all_hosts():  # Check if the list of all hosts is not empty
+                    host = scanner.all_hosts()[0]  # Safely access the first host
                     udp = nmap.PortScanner()
-                    udp.scan(ip, arguments='-sU -T5')
+                    udp.scan(ip, arguments='-sU -T5')  # Perform a UDP scan
 
-                    data_list = extract_ip_data(scanner, udp, host)
+                    data_list = extract_ip_data(scanner, udp, host)  # Assuming this is a function you've defined
 
                     if data_list is not None:
                         results.append(data_list)
                 else:
-                    print("Host Not found",file=sys.stderr)
-            except Exception:
+                    print("No hosts found or they are not responding.", file=sys.stderr)
+            except Exception as e:
                 traceback.print_exc()
-                print("Error In DiscoverIPList For " + ip, file=sys.stderr)
+                print(f"Error In DiscoverIPList For",str(e),file=sys.stderr)
     except Exception as e:
+        print("Error while discovring IP list:::",str(e),file=sys.stderr)
         traceback.print_exc()
-        print("error in discover ip list",str(e))
+
 def get_range_inventory_data(start_ip, end_ip):
     try:
+        print("start ip::::::::",start_ip,file=sys.stderr)
+        print("end ip::::::::",end_ip,file=sys.stderr)
         ip_list = get_all_ips_from_range(start_ip, end_ip)
         print("ip list is::::::::::::::::::",ip_list,file=sys.stderr)
 
@@ -392,4 +395,32 @@ def TestSNMPV3Credentials(ip_address, credentials):
         except Exception as e:
             print('SNMPv3 connection failed: %s' % e)
 
-    return None
+    return False
+
+
+
+def calculate_start_ip(subnet):
+    """
+    Calculate the start IP address of a given subnet.
+
+    Args:
+    subnet (str): The subnet in CIDR notation, e.g., '192.168.1.0/24'.
+
+    Returns:
+    str: The start IP address of the subnet.
+    """
+    network = ipaddress.ip_network(subnet, strict=False)
+    return str(network.network_address)
+
+def calculate_end_ip(subnet):
+    """
+    Calculate the end IP address of a given subnet.
+
+    Args:
+    subnet (str): The subnet in CIDR notation, e.g., '192.168.1.0/24'.
+
+    Returns:
+    str: The end IP address of the subnet.
+    """
+    network = ipaddress.ip_network(subnet, strict=False)
+    return str(network.broadcast_address)

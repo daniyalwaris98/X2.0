@@ -23,20 +23,35 @@ router = APIRouter(
 )
 
 
-@router.post("/sign_in", response_model=SignInResponse)
+@router.post("/sign_in", responses={
+    200:{"model":SignInResponse},
+    400:{"model":str},
+    500:{"model":str}
+})
 @inject
 async def sign_in(user_info: SignInNew, service: AuthService = Depends(Provide[Container.auth_service])):
-    return service.sign_in(user_info)
-
-
-@router.post("/sign_up", response_model=UserSchema)
-@inject
-async def sign_up(user_info: SignUp, service: AuthService = Depends(Provide[Container.auth_service])):
     try:
+        result =  service.sign_in(user_info)
+        print("result in sign in for serivxw is:::",result,file=sys.stderr)
+        return result
+    except Exception as e:
+        traceback  .print_exc()
+
+@router.post("/sign_up",  responses = {
+                    200:{"model":UserSchema},
+                    400:{"model":str},
+                    500:{"model":str}
+                  },)
+@inject
+async def sign_up(user_info: SignUp
+                  ,service: AuthService = Depends(Provide[Container.auth_service])):
+    try:
+        print("user infor for signup is::::::::::::",user_info,file=sys.stderr)
         #print("provider is::::",Provide,file=sys.stderr)
         return service.sign_up(user_info)
     except Exception as e :
         traceback.print_exc()
+        return JSONResponse(content="Error Occured while Sign in ",status_code=500)
 
 @router.get("/me", response_model=UserSchema)
 @inject
@@ -63,6 +78,7 @@ async def sign_out(
 
         return JSONResponse(status_code=status.HTTP_200_OK, content={"message": "Logout successfully"})
     except Exception as e:
+        traceback.print_exc()
         raise HTTPException(status_code=status.HTTP_500_INTERNAL_SERVER_ERROR, detail=str(e))
 
 

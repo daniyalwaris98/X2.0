@@ -55,7 +55,7 @@ const IpAvailable = ({ data }) => {
     return () => myChart.dispose();
   }, [chartData]);
 
-  return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
+  return <div ref={chartRef} style={{ maxWidth: '100%', height: '400px' }} />;
 };
 
 export default IpAvailable;
