@@ -15,7 +15,8 @@ router = APIRouter(
 @router.get("/get_snapshot", responses={
     200: {"model": list[SnapShotSchema]},
     500: {"model": str}
-})
+},summary="API to get snapshot",
+description="API to snapshot")
 def snapshot():
     try:
         query_string = (
@@ -71,7 +72,8 @@ def snapshot():
 @router.get("/get_monitoring_heatmap", responses={
     200: {"model": list[MonitoringSpiralSchema]},
     500: {"model": str}
-})
+},summary="API to get monitoring_heatmap",
+description="API to get monitoring_heatmap")
 def monitoring_heatmap():
     try:
         sqlquery = ("SELECT COUNT(device_heatmap) FROM monitoring_devices_table "
@@ -128,7 +130,8 @@ def monitoring_heatmap():
 @router.get("/get_device_status_map", responses={
     200: {"model": list[MonitoringMapSchema]},
     500: {"model": str}
-})
+},summary="API to get device status map",
+description="API to get device status map")
 def get_device_status_map():
     try:
         results = (
@@ -204,7 +207,8 @@ def get_device_status_map():
 @router.get("/get_top_interfaces", responses={
     200: {"model": list[TopInterfacesSchema]},
     500: {"model": str}
-})
+},summary="API to get top interfaces",
+description="API to get top interfaces")
 def get_top_interfaces():
     try:
         query_api = configs.client.query_api()
@@ -284,7 +288,8 @@ def get_top_interfaces():
 @router.get("/get_cpu_dashboard", responses={
     200: {"model": list[CpuDashboardSchema]},
     500: {"model": str}
-})
+},summary="API to get cpu dashboard",
+description="API to get cpu dashboard")
 def cpu_stats_fetching():
     try:
         query_api = configs.client.query_api()
@@ -364,7 +369,8 @@ def cpu_stats_fetching():
 @router.get("/get_memory_dashboard", responses={
     200: {"model": list[MemoryDashboardSchema]},
     500: {"model": str}
-})
+},summary="API to get memory dashboard ",
+description="API to get memory dashboard")
 def memory_stats_fetching():
     try:
         query_api = configs.client.query_api()

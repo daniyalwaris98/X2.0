@@ -24,9 +24,12 @@ async def get_top_os_for_discovery():
                         f"auto_discovery_table GROUP BY OS_TYPE "
                         f"ORDER BY count DESC LIMIT 10;")
         result = configs.db.execute(query_string)
-
+        print(result)
         obj_list = []
         for row in result:
+            print("results is::::::::::::::::::::::::",  row[0], file=sys.stderr)
+            print("results is::::::::::::::::::::::::",  row[1], file=sys.stderr)
+
             obj_list.append({"name": row[0], "value": row[1]})
 
         return JSONResponse(content=obj_list, status_code=200)
@@ -76,7 +79,7 @@ async def get_snmp_status_graph():
 
         enable = 0
         disable = 0
-
+        obj_list =[]
         for row in result:
             if row[0] == "Enabled":
                 enable += row[1]
@@ -108,12 +111,17 @@ async def get_top_functions_for_discovery():
                         f"auto_discovery_table GROUP BY `function` ORDER BY count DESC LIMIT 5;")
         result = configs.db.execute(query_string)
 
-        obj_dict = {"name": [], "value": []}
+        '''obj_dict = {"name": [], "value": []}
         for row in result:
             obj_dict["name"].append(row[0].capitalize())
             obj_dict["value"].append(row[1])
 
-        return JSONResponse(content=obj_dict, status_code=200)
+        return JSONResponse(content=obj_dict, status_code=200)'''
+        obj_list = []
+        for row in result:
+            obj_list.append({"name": (row[0].capitalize()), "value": row[1]})
+        print("result..................",obj_list,file=sys.stderr)
+        return JSONResponse(content=obj_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
