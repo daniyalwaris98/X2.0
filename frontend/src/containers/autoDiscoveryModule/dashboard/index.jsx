@@ -1,24 +1,20 @@
 import React, { useEffect } from "react";
 import { Row, Col } from "antd";
-// import ConfigurationBackupSummary from "./components/ConfigurationBackupSummary";
-// import ConfigurationByTimeLineChart from './ConfigurationByTimeLineChart';
-// import Compliance from "./components/Compliance";
-// import ChangeByTimeChart from "./components/ChangeByTimeChart";
-// import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
-// import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
+
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
 // import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
-
 import {
-  useGetConfigurationChangeByDeviceQuery,
-  useDeleteRecordsMutation,
-  useBulkBackupNcmConfigurationsByDeviceIdsMutation,
-} from "../../../store/features/ncmModule/dashboard/apis";
+  selectSnmpStatus,
+  selectCredentialsSummary,
+  selectConfigurationChangeByDevice
+} from "../../../store/features/autoDiscoveryModule/dashboard/selectors";
+import {
+  useGetSnmpStatusQuery,
+  useGetCredentialsSummaryQuery,
+  useGetConfigurationChangeByDeviceQuery
+} from "../../../store/features/autoDiscoveryModule/dashboard/apis";
 import "./index.css";
-import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
-import ConfigurationBackupSummary from "../../ncmModule/dashboard/components/ConfigurationBackupSummary";
-import TopSubnet from "../../ipamModule/dashboard/components/TopSubnet";
 import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
 import CredentialSummary from "./components/CredentialSummary";
 import SnmpStatus from "./components/SnmpStatus";
@@ -33,11 +29,23 @@ function Index() {
     error: fetchRecordsError,
   } = useGetConfigurationChangeByDeviceQuery();
 
+  const {
+    data: snmpStatusData,
+    isSuccess: isSnmpStatusSuccess,
+    isLoading: isSnmpStatusLoading,
+    isError: isSnmpStatusError,
+    error: SnmpStatusError,
+  } = useGetSnmpStatusQuery();
+  const {
+    data: credentialsSummaryData,
+    isSuccess: isCredentialsSummarySuccess,
+    isLoading: isCredentialsSummaryLoading,
+    isError: isCredentialsSummaryError,
+    error: credentialsSummaryError,
+  } = useGetCredentialsSummaryQuery();
+  console.log("snmpStatusData",snmpStatusData)
+  console.log("credentialsSummaryData",credentialsSummaryData)
 
-
-  // const dataSource = useSelector(selectTableData);
-
-  // console.log("dataaaaaaaaa", dataSource);
   const companyData = {
     Cisco: 50,
     Fortinet: 10,
@@ -48,14 +56,44 @@ function Index() {
     Hp: 20,
     Juniper: 10,
   };
+
+
+  const apiResponse = [
+    {
+      "name": "Sales",
+      "value": 4200
+    },
+    {
+      "name": "Admin",
+      "value": 3000
+    },
+    {
+      "name": "Inform",
+      "value": 20000
+    },
+    {
+      "name": "Customer",
+      "value": 35000
+    },
+    {
+      "name": "Develop",
+      "value": 50000
+    },
+    {
+      "name": "Market",
+      "value": 0
+    }
+  ];
   return (
     <>
       <Row gutter={[32, 32]} justify="space-between">
         <Col span={7}>
           <div className="container">
             <h6 className="heading">SNMP Status </h6>
-            <SnmpStatus />
-          </div>
+            <SnmpStatus
+             responseData={apiResponse} 
+             /> 
+                      </div>
         </Col>
 
         <Col span={10}>
