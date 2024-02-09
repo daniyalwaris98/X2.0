@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const SnmpStatus = () => {
+const SnmpStatus = ({ responseData }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -10,17 +10,10 @@ const SnmpStatus = () => {
 
       const option = {
         legend: {
-          data: ['Allocated Budget', 'Actual Spending']
+          data: responseData.map(item => item.name)
         },
         radar: {
-          indicator: [
-            { name: 'Sales', max: 6500 },
-            { name: 'Admin', max: 16000 },
-            { name: 'Inform', max: 30000 },
-            { name: 'Customer', max: 38000 },
-            { name: 'Develop', max: 52000 },
-            { name: 'Market', max: 25000 }
-          ]
+          indicator: responseData.map(item => ({ name: item.name, max: item.value }))
         },
         series: [
           {
@@ -31,15 +24,8 @@ const SnmpStatus = () => {
             },
             data: [
               {
-                value: [4200, 3000, 20000, 35000, 50000, 18000],
+                value: responseData.map(item => item.value),
                 name: 'Allocated Budget'
-              },
-              {
-                value: [5000, 14000, 28000, 26000, 42000, 21000],
-                name: 'Actual Spending',
-                areaStyle: {
-                  color: '#3D9E47', // Color for 'Actual Spending'
-                },
               }
             ]
           }
@@ -48,7 +34,7 @@ const SnmpStatus = () => {
 
       myChart.setOption(option);
     }
-  }, []);
+  }, [responseData]);
 
   return (
     <div ref={chartRef} id="snmpStatusChart" style={{ width: '80%', height: '400px', margin: "0 0 0 30px" }} />
