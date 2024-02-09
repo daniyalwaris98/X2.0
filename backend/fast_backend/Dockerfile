@@ -4,7 +4,7 @@ FROM python:3.10.9
 
 COPY . /app
 WORKDIR /app
-#RUN apt-get update
+RUN apt-get update
 #RUN apt-get -y install libsasl2-dev python-dev libldap2-dev libssl-dev
 # RUN pip install --no-cache-dir -r requirements.txt
 # RUN pip install firebase-admin
