@@ -147,7 +147,9 @@ async def get_site_dropdown():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.get("/phy_leaf_let")
+@router.get("/phy_leaf_let"
+            ,summary="API to get phy_leaf_let",
+            description="API to get phy_leaf_let")
 async def phy_leaflet():
     try:
         result = configs.db.query(SiteTable).all()
