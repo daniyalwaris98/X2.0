@@ -56,9 +56,6 @@ class NcmConfigHistorySchema(BaseSchema):
 class SendCommandRequestSchema(NcmDeviceId):
     cmd: str
 
-class GetNcmVendorSchema(BaseSchema):
-    name: str
-    value : int
 
 
 class Response200(BaseSchema):
@@ -112,3 +109,9 @@ class GetNcmAlarmCategoryGraph(BaseSchema):
     name:str
     vlaue: int
     total_count:int | None = None
+
+class GetNcmVendorSchema(BaseSchema):
+    name: list[str]
+    config_change_time : list[str] 
+    config_date : list[str]
+    value : list[int]

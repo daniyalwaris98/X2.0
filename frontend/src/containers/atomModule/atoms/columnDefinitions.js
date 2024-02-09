@@ -1,19 +1,18 @@
 import React from "react";
 import { Icon } from "@iconify/react";
 import { useTheme } from "@mui/material/styles";
-import { ATOM_ID, indexColumnNameConstants } from "./constants";
-import {
-  MONITORING_CREDENTIALS_ID,
-  CREDENTIALS,
-} from "../../monitoringModule/devices/constants";
 import DefaultSelect from "../../../components/selects";
 import DefaultOption from "../../../components/options";
+import { ATOM_ID, indexColumnNameConstants } from "./constants";
+import { MONITORING_CREDENTIALS_ID } from "../../monitoringModule/devices/constants";
 
 export function useIndexTableColumnDefinitions({
+  pageEditable,
   handleEdit = null,
   dropDowns = null,
-}) {
+} = {}) {
   const theme = useTheme();
+
   const monitoringCredentialsOptions =
     dropDowns?.data[MONITORING_CREDENTIALS_ID];
 
@@ -118,53 +117,23 @@ export function useIndexTableColumnDefinitions({
         </div>
       ),
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const columnDefinitionsForIpamDevices = [
     indexColumnNameConstants.IP_ADDRESS,
     indexColumnNameConstants.DEVICE_NAME,
     indexColumnNameConstants.FUNCTION,
     indexColumnNameConstants.VENDOR,
-    {
-      data_key: indexColumnNameConstants.ONBOARD_STATUS,
-      title: "Board",
-      fixed: "right",
-      align: "center",
-      width: 80,
-      render: (text, record) => (
-        <div
-          style={{
-            textAlign: "center",
-          }}
-        >
-          {record.on_board_status === true ? (
-            <span
-              style={{
-                display: "inline-block",
-                borderRadius: "10px",
-                backgroundColor: "#c2dfbf",
-                color: "#3D9E47",
-                padding: "1px 15px",
-              }}
-            >
-              True
-            </span>
-          ) : record.on_board_status === false ? (
-            <div
-              style={{
-                display: "inline-block",
-                borderRadius: "10px",
-                backgroundColor: "#ffe2dd",
-                color: "#E34444",
-                padding: "1px 15px",
-              }}
-            >
-              False
-            </div>
-          ) : null}
-        </div>
-      ),
-    },
   ];
 
   const columnDefinitionsForNcmDevices = [
@@ -172,46 +141,6 @@ export function useIndexTableColumnDefinitions({
     indexColumnNameConstants.DEVICE_NAME,
     indexColumnNameConstants.FUNCTION,
     indexColumnNameConstants.VENDOR,
-    {
-      data_key: indexColumnNameConstants.ONBOARD_STATUS,
-      title: "Board",
-      fixed: "right",
-      align: "center",
-      width: 80,
-      render: (text, record) => (
-        <div
-          style={{
-            textAlign: "center",
-          }}
-        >
-          {record.on_board_status === true ? (
-            <span
-              style={{
-                display: "inline-block",
-                borderRadius: "10px",
-                backgroundColor: "#c2dfbf",
-                color: "#3D9E47",
-                padding: "1px 15px",
-              }}
-            >
-              True
-            </span>
-          ) : record.on_board_status === false ? (
-            <div
-              style={{
-                display: "inline-block",
-                borderRadius: "10px",
-                backgroundColor: "#ffe2dd",
-                color: "#E34444",
-                padding: "1px 15px",
-              }}
-            >
-              False
-            </div>
-          ) : null}
-        </div>
-      ),
-    },
   ];
 
   const columnDefinitionsForMonitoringDevices = [
@@ -245,6 +174,7 @@ export function useIndexTableColumnDefinitions({
       ),
     },
   ];
+
   const dataKeys = columnDefinitions
     .map((item) => {
       if (typeof item === "object") {

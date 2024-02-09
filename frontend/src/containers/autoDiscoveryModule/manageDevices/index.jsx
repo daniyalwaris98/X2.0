@@ -1,39 +1,50 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/autoDiscoveryModule/manageDevices/selectors";
 import {
   useFetchRecordsQuery,
   useAutoDiscoveryCheckCredentialsStatusLazyQuery,
 } from "../../../store/features/autoDiscoveryModule/manageDevices/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/autoDiscoveryModule/manageDevices/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  PAGE_PATH,
 } from "./constants";
-import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    default_fetch: { handleClick: handleFetch },
+    default_fetch: { handleClick: handleFetch, visible: pageEditable },
   });
 
   // states
@@ -85,7 +96,7 @@ const Index = () => {
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleFetch() {
@@ -97,7 +108,9 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner
+      spinning={isFetchRecordsLoading || isCheckCredentialsStatusLoading}
+    >
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -118,7 +131,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

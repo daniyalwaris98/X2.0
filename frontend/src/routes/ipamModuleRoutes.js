@@ -1,11 +1,10 @@
 import React from "react";
 import { Navigate } from "react-router-dom";
-import IPAMModule from "../containers/ipamModule";
+import IpamModule from "../containers/ipamModule";
 
 import { MODULE_PATH } from "../containers/ipamModule";
 import Dashboard from "../containers/ipamModule/dashboard";
 import Devices from "../containers/ipamModule/devices";
-
 
 import SubnetsDropDown from "../containers/ipamModule/subnetsDropDown";
 import Subnets from "../containers/ipamModule/subnetsDropDown/subnets";
@@ -40,14 +39,10 @@ import { DROPDOWN_PATH as DROPDOWN_PATH_VIP } from "../containers/ipamModule/vip
 import { PAGE_PATH as PAGE_PATH_FIREWALLS } from "../containers/ipamModule/vipDropDown/firewalls/constants";
 import { PAGE_PATH as PAGE_PATH_LOAD_BALANCERS } from "../containers/ipamModule/vipDropDown/loadBalancers/constants";
 
-const routes = {
-  path: MODULE_PATH,
-  element: <IPAMModule />,
-  children: [
-      {
-        path: `/${MODULE_PATH}`,
-        element: <Navigate to={PAGE_PATH_DASHBOARD} replace />,
-      },
+import { MAIN_LAYOUT_PATH } from "../layouts/mainLayout";
+
+export default function moduleRoutes(roleConfigurations, authorizePageRoutes) {
+  const routes = [
     {
       path: PAGE_PATH_DASHBOARD,
       element: <Dashboard />,
@@ -110,7 +105,19 @@ const routes = {
         },
       ],
     },
-  ],
-};
+  ];
 
-export default routes;
+  // Authorize module page routes
+  const authorizedPageRoutes = authorizePageRoutes({
+    module: MODULE_PATH,
+    pageRoutes: routes,
+    roleConfigurations,
+    defaultPagePath: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}`,
+  });
+
+  return {
+    path: MODULE_PATH,
+    element: <IpamModule />,
+    children: authorizedPageRoutes,
+  };
+}

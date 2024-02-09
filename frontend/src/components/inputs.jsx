@@ -18,7 +18,9 @@ export default function DefaultInput({
       style={{
         borderStyle: "solid",
         color: theme?.palette?.default_input?.primary_text,
-        backgroundColor: theme?.palette?.default_input?.background,
+        backgroundColor: rest.disabled
+          ? "#F6F6F6"
+          : theme?.palette?.default_input?.background,
         borderColor: theme?.palette?.default_input?.border,
         borderRadius: "5px",
         padding: "7px 10px",
@@ -67,6 +69,7 @@ export function PasswordInput({ field, type = "text", sx, children, ...rest }) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
+          backgroundColor: theme?.palette?.default_input?.background,
           border: `2px solid ${theme?.palette?.default_input?.border}`,
           borderRadius: "0px 5px 5px 0px",
           borderLeft: "none",

@@ -2,42 +2,40 @@ import { monetxApi } from "../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    getConfigurationChangeByDevice: builder.query({    
-       
+
+
+    getConfigurationBackupSummary: builder.query({
+      query: () => "/api/v1/ncm/ncm_dashboard/ncm_backup_summery_dashboard",
+      
+    }),
+  
+    getConfigurationChangeByDevice: builder.query({           
       query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",
     }),
+    getRecentRcmAlarms: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/ncm_alarm_summery",
+    }),
+    getRecentRcmAlarmsCount: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/get_ncm_alarm_by_category_graph",
+    }),
+    getNcmDeviceSummaryTable: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/ncm_device_summary_by_fucntion",
+    }),
+    getNcmChangeByVendor: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
+    }),
+    getConfigurationChangeByVendor: builder.query({           
+      query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
+    }),
 
-    // getAllNcmDevices: builder.query({
-    //     query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",
-    //   }),
-    //   getAllNcmDevices: builder.query({
-    //     query: () => "/api/v1/ncm/ncm_dashboard/ncm_change_summery_by_device",
-    //   }),
+    
+  
 
 
-    // deleteNcmDevices: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/api/v1/ncm/ncm_device/delete_ncm_devices",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    // }),
-
-    // call this api on loop when bulk backup starts, end the loop when this api returns empty array
-    // getAllCompletedBackups: builder.query({
-    //   query: () => "/api/v1/ncm/ncm_device/get_all_ncm_devices",
-    // }),
-
-    // bulkBackupNcmConfigurationsByDeviceIds: builder.mutation({
-    //   query: (data) => ({
-    //     url: "/api/v1/ncm/ncm_device/bulk_backup_configuration",
-    //     method: "POST",
-    //     body: data,
-    //   }),
-    // }),
   }),
 });
 
 export const {
-useGetConfigurationChangeByDeviceQuery
+  useGetConfigurationBackupSummaryQuery, useGetConfigurationChangeByDeviceQuery, useGetRecentRcmAlarmsQuery, useGetRecentRcmAlarmsCountQuery, useGetNcmDeviceSummaryTableQuery, useGetConfigurationChangeByVendorQuery, useGetNcmChangeByVendorQuery
+
 } = extendedApi;

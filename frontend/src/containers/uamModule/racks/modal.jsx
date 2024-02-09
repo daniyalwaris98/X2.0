@@ -1,17 +1,12 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import FormModal from "../../../components/dialogs";
-import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import {
-  SelectFormUnit,
-  AddableSelectFormUnit,
-  DateFormUnit,
-} from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
+import Grid from "@mui/material/Grid";
+import { useSelector } from "react-redux";
+import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
+import { selectProductionStatusNames } from "../../../store/features/dropDowns/selectors";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
@@ -19,19 +14,26 @@ import {
 import {
   useFetchRackNamesQuery,
   useFetchSiteNamesQuery,
-  useFetchStatusNamesQuery,
+  useFetchProductionStatusNamesQuery,
 } from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import { selectSiteNames } from "../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../hooks/useErrorHandling";
 import {
   formSetter,
   getTitle,
   transformDateTimeToDate,
 } from "../../../utils/helpers";
-import { selectStatusNames } from "../../../store/features/dropDowns/selectors";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
+import {
+  SelectFormUnit,
+  AddableSelectFormUnit,
+  DateFormUnit,
+} from "../../../components/formUnits";
+import DefaultFormUnit from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
 import { ELEMENT_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 
@@ -64,12 +66,8 @@ const Index = ({
   handleOpenSiteModal,
   nested = false,
 }) => {
-  const theme = useTheme();
-
-  // states
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue, watch } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -115,10 +113,21 @@ const Index = ({
       skip: !isAddRecordSuccess && !isUpdateRecordSuccess,
     }
   );
-  const { error: siteNamesError, isLoading: isSiteNamesLoading } =
-    useFetchSiteNamesQuery();
-  const { error: statusNamesError, isLoading: isStatusNamesLoading } =
-    useFetchStatusNamesQuery();
+  const {
+    data: fetchSiteNamesData,
+    isSuccess: isFetchSiteNamesSuccess,
+    isLoading: isFetchSiteNamesLoading,
+    isError: isFetchSiteNamesError,
+    error: fetchSiteNamesError,
+  } = useFetchSiteNamesQuery();
+
+  const {
+    data: fetchProductionStatusNamesData,
+    isSuccess: isFetchProductionStatusNamesSuccess,
+    isLoading: isFetchProductionStatusNamesLoading,
+    isError: isFetchProductionStatusNamesError,
+    error: fetchProductionStatusNamesError,
+  } = useFetchProductionStatusNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -139,9 +148,25 @@ const Index = ({
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: fetchSiteNamesData,
+    isSuccess: isFetchSiteNamesSuccess,
+    isError: isFetchSiteNamesError,
+    error: fetchSiteNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchProductionStatusNamesData,
+    isSuccess: isFetchProductionStatusNamesSuccess,
+    isError: isFetchProductionStatusNamesError,
+    error: fetchProductionStatusNamesError,
+    type: TYPE_FETCH,
+  });
+
   // ///getting dropdowns data from the store
   const siteNames = useSelector(selectSiteNames);
-  const statusNames = useSelector(selectStatusNames);
+  const productionStatusNames = useSelector(selectProductionStatusNames);
 
   // effects
   useEffect(() => {
@@ -162,96 +187,99 @@ const Index = ({
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={3}>
-          <Grid item xs={12} sm={4}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.RACK_NAME}
-              disabled={recordToEdit !== null}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SERIAL_NUMBER}
-            />
-            <DateFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.MANUFACTURE_DATE}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PN_CODE}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.UNIT_POSITION}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            {nested ? (
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={3}>
+            <Grid item xs={12} sm={4}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.RACK_NAME}
+                disabled={recordToEdit !== null}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SERIAL_NUMBER}
+              />
+              <DateFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.MANUFACTURE_DATE}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.PN_CODE}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.UNIT_POSITION}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
+              {nested ? (
+                <SelectFormUnit
+                  control={control}
+                  dataKey={indexColumnNameConstants.SITE_NAME}
+                  options={siteNames ? siteNames : []}
+                  required
+                />
+              ) : (
+                <AddableSelectFormUnit
+                  control={control}
+                  dataKey={indexColumnNameConstants.SITE_NAME}
+                  options={siteNames ? siteNames : []}
+                  onAddClick={handleOpenSiteModal}
+                  spinning={isFetchSiteNamesLoading}
+                  required
+                />
+              )}
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.HEIGHT}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.WIDTH}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DEPTH}
+              />
+            </Grid>
+            <Grid item xs={12} sm={4}>
               <SelectFormUnit
                 control={control}
-                dataKey={indexColumnNameConstants.SITE_NAME}
-                options={siteNames}
+                dataKey={indexColumnNameConstants.STATUS}
+                options={productionStatusNames ? productionStatusNames : []}
+                spinning={isFetchProductionStatusNamesLoading}
                 required
               />
-            ) : (
-              <AddableSelectFormUnit
+              <DefaultFormUnit
                 control={control}
-                dataKey={indexColumnNameConstants.SITE_NAME}
-                options={siteNames}
-                onAddClick={handleOpenSiteModal}
-                required
+                dataKey={indexColumnNameConstants.RU}
               />
-            )}
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.HEIGHT}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.WIDTH}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DEPTH}
-            />
-          </Grid>
-          <Grid item xs={12} sm={4}>
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.STATUS}
-              options={statusNames}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.RU}
-            />
-            <DateFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.RFS_DATE}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.RACK_MODEL}
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.FLOOR}
-            />
-          </Grid>
+              <DateFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.RFS_DATE}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.RACK_MODEL}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.FLOOR}
+              />
+            </Grid>
 
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

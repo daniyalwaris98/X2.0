@@ -12,7 +12,7 @@ router = APIRouter(
     400: {"model": str},
     500: {"model": str}
 })
-def add_passwords_group(pass_obj: AddPasswordGroupRequestSchema):
+async def add_passwords_group(pass_obj: AddPasswordGroupRequestSchema):
     try:
         print("pass obj is::::::::::::::::::::::::::::::::::::::",pass_obj,file=sys.stderr)
         pass_obj = pass_obj.dict()
@@ -29,6 +29,7 @@ def add_passwords_group(pass_obj: AddPasswordGroupRequestSchema):
 
         
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Password Group", status_code=500)
 
@@ -37,7 +38,7 @@ def add_passwords_group(pass_obj: AddPasswordGroupRequestSchema):
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
-def add_password_groups(pass_list: list[AddPasswordGroupRequestSchema]):
+async def add_password_groups(pass_list: list[AddPasswordGroupRequestSchema]):
     try:
         print("passwprd list is::::::::::::::::::::::::::::::::::::::::::::",pass_list,file=sys.stderr)
         success_list = []
@@ -84,7 +85,7 @@ def add_password_groups(pass_list: list[AddPasswordGroupRequestSchema]):
     400: {"model": str},
     500: {"model": str}
 })
-def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
+async def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
     try:
         pass_obj = pass_obj.dict()
 
@@ -106,7 +107,7 @@ def edit_password_group(pass_obj: EditPasswordGroupRequestSchema):
     400:{"model":str},
     500: {"model": str}
 })
-def delete_password_groups(pass_list: list[int]):
+async def delete_password_groups(pass_list: list[int]):
     try:
 
         success_list = []
@@ -123,7 +124,7 @@ def delete_password_groups(pass_list: list[int]):
             password = configs.db.query(PasswordGroupTable).filter(
                     PasswordGroupTable.password_group_id == pass_obj).first()
             print("password is:::::::::::::::::::::::::::::::::::::",password,file=sys.stderr)
-            if password.password_id == default_password.password_id:
+            if password.password_group_id == default_password.password_group_id:
                 error_list.append(f"{password.password_id} : defualt password cannot be deleted ")
             print("is passsowrd is true::::::::::",file=sys.stderr)
             password_id = password.password_group_id
@@ -187,6 +188,7 @@ async def get_password_groups():
         print("sorted list is::::::::::::::::::::::",sorted_list,file=sys.stderr)
         return JSONResponse(content=sorted_list, status_code=200)
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Password Groups",
                             status_code=500)

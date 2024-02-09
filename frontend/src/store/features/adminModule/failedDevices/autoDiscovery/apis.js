@@ -2,11 +2,13 @@ import { monetxApi } from "../../../apiSlice";
 
 export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
-    getAllAdminFailedDevices: builder.query({
-      query: () => "/api/v1/atom/password_group/get_password_groups",
+    getAllAdminAutoDiscoveryFailedDevices: builder.query({
+      query: () =>
+        "/api/v1/users/failed_devices/get_auto_discovery_failed_devices",
     }),
   }),
 });
 
-export const { useGetAllAdminFailedDevicesQuery: useFetchRecordsQuery } =
-  extendedApi;
+export const {
+  useGetAllAdminAutoDiscoveryFailedDevicesQuery: useFetchRecordsQuery,
+} = extendedApi;

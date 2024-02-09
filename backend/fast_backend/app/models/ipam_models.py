@@ -93,6 +93,7 @@ class subnet_table(Base):
     scan_date = Column(DateTime,nullable=True)
     discovered = Column(String(40),nullable=True)
     status = Column(String(45),nullable=True)
+    subnet_state = Column(String(55),nullable = True)
     ipam_device_id = Column(Integer,
         ForeignKey('ipam_devices_fetch_table.ipam_device_id'
                    ),
@@ -143,6 +144,8 @@ class ip_interface_table(Base):
     interface_location = Column(String(256),nullable = True)
     discovered_from = Column(String(256),nullable=True)
     interface_status = Column(String(256),nullable=True)
+    interfaces = Column(String(2500),nullable=True)
+    mac_address = Column(String(150),nullable=True)
     ip_id = Column(Integer,
                    ForeignKey('ip_table.ip_id')
                    ,nullable=True

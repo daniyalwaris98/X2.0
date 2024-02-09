@@ -1,52 +1,55 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const TopOpenPorts = () => {
-  useEffect(() => {
-    // Your ECharts code here
-    var chartDom = document.getElementById('main');
-    var myChart = echarts.init(chartDom);
+const TopOpenPorts = ({ chartData }) => {
+  const chartRef = useRef(null);
 
-    var option = {
+  useEffect(() => {
+    if (!chartData || !chartData.ports || !chartData.counts) {
+      console.error('Invalid chart data:', chartData);
+      return;
+    }
+
+    const option = {
       xAxis: {
         type: 'category',
-        data: ['Port 22', 'Port 22', 'Port 22', 'Port 22', 'Port 22', 'Port 22', 'Port 22'],
+        data: chartData.ports,
       },
       yAxis: {
         type: 'value',
       },
       series: [
         {
-          data: [120, 200, 150, 80, 70, 110, 130],
+          data: chartData.counts,
           type: 'bar',
           showBackground: true,
           backgroundStyle: {
             color: '#F4F8F3',
-            borderRadius: [20, 20, 0, 0], // Set the radius of the bars
+            borderRadius: [20, 20, 0, 0],
           },
           itemStyle: {
-            color: '#66B127', // Set the color of the bars
-            borderRadius: [20, 20, 0, 0], // Set the border radius of color-filled inside the bar
+            color: '#66B127',
+            borderRadius: [20, 20, 0, 0],
           },
           emphasis: {
             itemStyle: {
-              color: 'red', // Set the inside filler color when highlighted
-              borderRadius: [20, 20, 0, 0], // Set the border radius of color-filled inside the highlighted bar
+              color: '#66B127',
+              borderRadius: [20, 20, 0, 0],
             },
           },
         },
       ],
     };
 
-    option && myChart.setOption(option);
+    const myChart = echarts.init(chartRef.current);
+    myChart.setOption(option);
 
-    // Clean up ECharts instance on component unmount
     return () => {
       myChart.dispose();
     };
-  }, []); // Empty dependency array ensures that this effect runs once after initial render
+  }, [chartData]);
 
-  return <div id="main" style={{ width: '100%', height: '400px' }}></div>;
+  return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
 };
 
 export default TopOpenPorts;

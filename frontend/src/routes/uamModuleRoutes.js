@@ -20,14 +20,13 @@ import { PAGE_PATH as PAGE_PATH_LICENSES } from "../containers/uamModule/license
 import { PAGE_PATH as PAGE_PATH_APS } from "../containers/uamModule/aps/constants";
 import { PAGE_PATH as PAGE_PATH_HW_LIFE_CYCLES } from "../containers/uamModule/hwLifeCycles/constants";
 import { MODULE_PATH } from "../containers/uamModule";
+import { MAIN_LAYOUT_PATH } from "../layouts/mainLayout";
 
-const routes = {
-  path: MODULE_PATH,
-  element: <UamModule />,
-  children: [
+export default function moduleRoutes(roleConfigurations, authorizePageRoutes) {
+  const routes = [
     {
-      path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_SITES} replace />,
+      path: PAGE_PATH_DEVICES,
+      element: <Devices />,
     },
     {
       path: PAGE_PATH_SITES,
@@ -36,10 +35,6 @@ const routes = {
     {
       path: PAGE_PATH_RACKS,
       element: <Racks />,
-    },
-    {
-      path: PAGE_PATH_DEVICES,
-      element: <Devices />,
     },
     {
       path: PAGE_PATH_BOARDS,
@@ -65,7 +60,19 @@ const routes = {
       path: PAGE_PATH_HW_LIFE_CYCLES,
       element: <Hwlifecycles />,
     },
-  ],
-};
+  ];
 
-export default routes;
+  // Authorize module page routes
+  const authorizedPageRoutes = authorizePageRoutes({
+    module: MODULE_PATH,
+    pageRoutes: routes,
+    roleConfigurations,
+    defaultPagePath: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}`,
+  });
+
+  return {
+    path: MODULE_PATH,
+    element: <UamModule />,
+    children: authorizedPageRoutes,
+  };
+}

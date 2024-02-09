@@ -4,10 +4,10 @@ export const extendedApi = monetxApi.injectEndpoints({
   endpoints: (builder) => ({
     getAllBandwidthsByInterface: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/monitoring/monitoring_network/get_all_interfaces_by_ip_address",
+        url: "/api/v1/monitoring/devices/get_interface_band",
         method: "POST",
         body: data,
-      }),
+      }), // {ip_address:"",interface_name:"" }
     }),
   }),
 });

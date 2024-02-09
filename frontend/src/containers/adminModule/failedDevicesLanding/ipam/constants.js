@@ -1,7 +1,7 @@
 export const DESCRIPTIVE_PAGE_NAME = "IPAM Failed Devices";
 export const PAGE_NAME = "IPAM";
 export const ELEMENT_NAME = "Failed Device";
-export const PAGE_PATH = "ipam";
+export const PAGE_PATH = "ipam_failed_devices";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_ipam_failed_devices";
 export const TABLE_DATA_UNIQUE_ID = "failure_id";
 export const indexColumnNameConstants = {

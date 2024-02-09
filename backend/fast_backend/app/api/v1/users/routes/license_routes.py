@@ -2,7 +2,7 @@ from fastapi import FastAPI,APIRouter
 from fastapi.responses import JSONResponse
 import sys
 import traceback
-
+import asyncio
 from starlette import status
 import ast
 from app.models.users_models import *
@@ -13,6 +13,8 @@ from datetime import datetime
 import hashlib
 import base64
 import json
+import asyncio
+
 
 router = APIRouter(
     prefix="/licenses",
@@ -20,7 +22,7 @@ router = APIRouter(
 )
 
 
-async def Hashing(string):
+def Hashing(string):
     try:
         length = 20
         #conversion of string to bytes
@@ -118,75 +120,73 @@ async def LicenseDaysLeft(date_string):
 
 
 
-@router.post('/generate_license',responses={
-    200:{"model":str},
-    400:{"model":str},
-    500:{"model":str}
-},
-summary="API to Generate the license",
-description="API to generate the license"
-)
-async def generate_license(license_data:GenerateLicenseResponseScehma) :
+# @router.post('/generate_license',responses={
+#     200:{"model":str},
+#     400:{"model":str},
+#     500:{"model":str}
+# },
+# summary="API to Generate the license",
+# description="API to generate the license"
+# )
+def generate_license(license_data):
     try:
-        hashDict = {}
+        print("liscence data is being executed::::::",file=sys.stderr)
         objDict = {}
         license_data = dict(license_data)
         end_user_id = ""
-        if 'company_name' in license_data:
-            objDict['company_name'] = license_data['company_name']
-            company_exsist = configs.db.query(EndUserTable).filter_by(company_name = license_data['company_name']).first()
-            if company_exsist:
-                end_user_id = company_exsist.end_user_id
-                print("end user id is::::::::::",end_user_id,file=sys.stderr)
-            else:
-                return JSONResponse(content="Company Not Found",status_code=400)
-        else:
-            return JSONResponse(content="Compnay Name Is Missing", status_code=400)
-        if 'start_date' in license_data:
-            objDict['start_date'] = license_data['start_date']
-        else:
-            return  JSONResponse(content="Start Date Is Missing",status_code=400)
-        if 'end_date' in license_data:
-            objDict['end_date'] = license_data['end_date']
-        else:
-            return JSONResponse(content="End Date Is Missing",status_code=400)
-        if 'device_onboard_limit' in license_data:
-            objDict['device_onboard_limit'] = license_data['device_onboard_limit']
-        else:
-            return  JSONResponse(content="Device Onboard Limit Is Missing",status_code=400)
+        print("license data is:::::::::::::::::::::", license_data, file=sys.stderr)
+        end_user_exsists = configs.db.query(EndUserTable).filter_by(company_name = license_data['company_name']).first()
+        if end_user_exsists:
+            end_user_id = license_data['end_user_id']
+        # Verify required fields
+        required_fields = ['company_name', 'start_date', 'end_date', 'device_onboard_limit']
+        for field in required_fields:
+            if field not in license_data:
+                return JSONResponse(content=f"{field} Is Missing", status_code=400)
+        start_date_obj = datetime.strptime(license_data['start_date'], '%a, %d %b %Y %H:%M:%S GMT')
+        end_date_obj = datetime.strptime(license_data['end_date'], '%a, %d %b %Y %H:%M:%S GMT')
+        print("start date obj is::::::::::::::::::::",start_date_obj,file=sys.stderr)
+        print("end dateobj is::::::::::::::::::::::::",end_date_obj,file=sys.stderr)
+
+        objDict['company_name'] = license_data['company_name']
+        objDict['start_date'] = start_date_obj
+        objDict['end_date'] = end_date_obj
+        objDict['device_onboard_limit'] = license_data['device_onboard_limit']
         objDict['middleware'] = 'Monetx'
+        print("setting attrbute to the object::::::::::::")
         strDict = str(objDict)
-        print("str dict with the the license generate object is::::::",strDict,file=sys.stderr)
-        res = bytes(strDict,'utf-8')
+        res = bytes(strDict, 'utf-8')
         final = base64.b64encode(res)
-        print("final data is::::::::::::::::::::::",final,file=sys.stderr)
         encoded_data = final.decode("utf-8")
-        print("encoded data is::::::::::::::::::::::::",encoded_data,file=sys.stderr)
-        hashedString = Hashing(encoded_data)
-        hashDict["hashed_string"] = hashedString
-        hashDict["encoded_data"] = encoded_data
+
+        hashedString = Hashing(encoded_data) if asyncio.iscoroutinefunction(Hashing) else Hashing(encoded_data)
+        hashDict = {
+            "hashed_string": hashedString,
+            "encoded_data": encoded_data
+        }
+
         with open("/app/hashFile", "w") as outfile:
             json.dump(hashDict, outfile)
-        license_tenure_in_month = license_data['end_date']
-        license_tenure = LicenseTenure(license_tenure_in_month)
-        print("license tenure is::::::::::",license_tenure,file=sys.stderr)
-        try:
-            license_tab = LicenseVerfificationModel()
-            license_tab.end_user_id = end_user_id
-            license_tab.start_date = license_data['start_date']
-            license_tab.end_date = license_data['end_date']
-            license_tab.license_generate_key = encoded_data
-            license_tab.license_verfification_key = encoded_data
-            license_tab.device_onboard_limit = license_data['device_onboard_limit']
-            license_tab.verification = 'Verified'
-            InsertDBData(license_tab)
-            print("Data Inserted to the DB for the license verification",file=sys.stderr)
-        except Exception as e:
-            traceback.print_exc()
-        return encoded_data
+        print("encoded data is:::::::::::::::::::",encoded_data,file=sys.stderr)
+        license_tab = LicenseVerfificationModel()
+        license_tab.end_user_id = end_user_id
+        license_tab.start_date = start_date_obj
+        license_tab.end_date = end_date_obj
+        license_tab.license_generate_key = encoded_data
+        license_tab.license_verfification_key = encoded_data
+        license_tab.device_onboard_limit = license_data['device_onboard_limit']
+        license_tab.verification = 'Verified'
+        configs.db.add(license_tab)
+        configs.db.commit()
+        print("Data Inserted to the DB for the license verification", file=sys.stderr)
+
+        data_license = {'encoded': encoded_data}
+        return {'encoded': encoded_data}
+
     except Exception as e:
         traceback.print_exc()
-        return JSONResponse(content="Error Occurred While Generating License",status_code=500)
+        return JSONResponse(content="Error Occurred While Generating License", status_code=500)
+
 
 
 @router.post('/decode_license')
@@ -211,7 +211,28 @@ async def liscence_expiry():
                 liscence.verfication ='Expired'
                 UpdateDBData(liscences)
 
-
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Liscence Expiry",status_code=500)
+
+def check_license_expiration(license_id):
+    try:
+        # Assuming 'license_id' is the identifier to find the specific license
+        license = configs.db.query(LicenseVerfificationModel).filter_by(license_verfification_id=license_id).first()
+        if license:
+            current_date = datetime.now()
+            if license.end_date < current_date:
+                license.verfication = 'Expired'
+                configs.db.merge(license)
+                configs.db.commit()
+                print("db updated for liscence vification:::::::::::::::",file=sys.stderr)
+                return 'Expired'
+            else:
+                return license.verfication
+        else:
+            return 'License Not Found'
+    except Exception as e:
+        # Handle any exceptions that occur
+        print(f"An error occurred: {e}")
+        traceback.print_exc()
+        return 'Error Checking License'

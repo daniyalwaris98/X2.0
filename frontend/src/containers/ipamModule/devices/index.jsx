@@ -1,45 +1,63 @@
-import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import React, { useEffect, useState } from "react";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/ipamModule/devices/selectors";
+import { useFetchIpamDevicesFetchDatesLazyQuery } from "../../../store/features/dropDowns/apis";
 import {
   useFetchRecordsQuery,
   useFetchIpamDevicesLazyQuery,
-  useGetIpamDevicesFetchDatesQuery,
   useGetIpamDevicesByFetchDateMutation,
 } from "../../../store/features/ipamModule/devices/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/ipamModule/devices/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
+import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import { PageTableSectionWithCustomPageHeader } from "../../../components/pageSections";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
-import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultSpinner from "../../../components/spinners";
+import Modal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import CustomPageHeader from "./customPageHeader";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  PAGE_PATH,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import { PageTableSectionWithCustomPageHeader } from "../../../components/pageSections";
-import CustomPageHeader from "./customPageHeader";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    default_fetch: { handleClick: handleFetch },
-    default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
+    default_fetch: { handleClick: handleFetch, visible: pageEditable },
+    default_add: {
+      handleClick: handleAdd,
+      namePostfix: ELEMENT_NAME,
+      visible: pageEditable,
+    },
   });
 
   // states
@@ -72,14 +90,16 @@ const Index = () => {
     },
   ] = useFetchIpamDevicesLazyQuery();
 
-  // apis
-  const {
-    data: getIpamDevicesFetchDatesData,
-    isSuccess: isGetIpamDevicesFetchDatesSuccess,
-    isLoading: isGetIpamDevicesFetchDatesLoading,
-    isError: isGetIpamDevicesFetchDatesError,
-    error: getIpamDevicesFetchDatesError,
-  } = useGetIpamDevicesFetchDatesQuery();
+  const [
+    getIpamDevicesFetchDates,
+    {
+      data: getIpamDevicesFetchDatesData,
+      isSuccess: isGetIpamDevicesFetchDatesSuccess,
+      isLoading: isGetIpamDevicesFetchDatesLoading,
+      isError: isGetIpamDevicesFetchDatesError,
+      error: getIpamDevicesFetchDatesError,
+    },
+  ] = useFetchIpamDevicesFetchDatesLazyQuery();
 
   const [
     getIpamDevicesByFetchDate,
@@ -125,6 +145,11 @@ const Index = () => {
     type: TYPE_BULK,
   });
 
+  // effects
+  useEffect(() => {
+    getIpamDevicesFetchDates();
+  }, [isFetchIpamDevicesSuccess]);
+
   // handlers
   function handleFetch() {
     fetchIpamDevices();
@@ -140,7 +165,7 @@ const Index = () => {
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -152,7 +177,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading ||
         isFetchIpamDevicesLoading ||
@@ -187,7 +212,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

@@ -1,18 +1,12 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({
+  pageEditable,
+  handleEdit,
+} = {}) {
   const columnDefinitions = [
-    indexColumnNameConstants.NETWORK_NAME,
-    indexColumnNameConstants.SUBNET,
-    indexColumnNameConstants.NO_OF_DEVICES,
-    indexColumnNameConstants.SCAN_STATUS,
-    indexColumnNameConstants.EXCLUDED_IP_RANGE,
-    ////////
     indexColumnNameConstants.NETWORK_NAME,
     indexColumnNameConstants.SUBNET,
     indexColumnNameConstants.NO_OF_DEVICES,
@@ -41,7 +35,17 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         </div>
       ),
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const dataKeys = columnDefinitions
     .map((item) => {

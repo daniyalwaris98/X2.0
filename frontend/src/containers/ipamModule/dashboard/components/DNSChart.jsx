@@ -1,62 +1,190 @@
-import React, { useEffect, useRef } from 'react';
-import * as echarts from 'echarts';
+import React, { useEffect } from "react";
+import * as echarts from "echarts";
 
-const DNSChart = ({ color, data }) => {
-  const chartRef = useRef(null);
-
+const DNSChart = ({ data }) => {
   useEffect(() => {
-    const myChart = echarts.init(chartRef.current);
+    if (!data || !Array.isArray(data)) return;
 
-    const option = {
-      polar: {},
+    const notResolvedEntry = data.find(entry => entry.name === "not_resolved_ip");
+    const resolvedEntry = data.find(entry => entry.name === "resolved_ip");
+
+    const notResolvedValue = notResolvedEntry ? notResolvedEntry.value : 0;
+    const resolvedValue = resolvedEntry ? resolvedEntry.value : 0;
+
+    const notResolvedChartDom = document.getElementById("notresolved");
+    const notResolvedChart = echarts.init(notResolvedChartDom);
+
+    const notResolvedOption = {
       angleAxis: {
-        type: 'value',
+        max: 100,
         startAngle: 0,
-        axisLabel: { show: false },
-        axisTick: { show: false },
-        axisLine: { show: false },
-        splitLine: { show: false },
-        min: 0,
-        max: 1,
+        axisLabel: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
+        splitLine: {
+          show: false,
+        },
       },
       radiusAxis: {
-        type: 'category',
-        data: [''],
-        z: 10,
-        axisLabel: { show: false },
-        axisTick: { show: false },
-        axisLine: { show: false },
-        splitLine: { show: false },
+        type: "category",
+        axisLabel: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
+      },
+      polar: {
+        radius: [50, "100%"],
       },
       series: [
         {
-          type: 'bar',
-          data: data || [0.50], // Use the provided data or default to [0.50]
-          coordinateSystem: 'polar',
-          name: 'Circular Line',
-          roundCap: true,
-          radius: ['10%', '50%'],
+          type: "bar",
+          data: [notResolvedValue],
+          coordinateSystem: "polar",
+          name: "Not Resolved",
+          color: "red",
+          showBackground: true,
+          backgroundStyle: {
+            color: "rgba(180, 180, 180, 0.2)",
+          },
           itemStyle: {
-            color: color || 'green', // Use the provided color or default to 'green'
-            opacity: 0.8,
-            barMaxWidth: 50,
-            label: {
-              show: true,
-              position: 'inside',
-              formatter: '{c}%',
-            },
+            borderRadius: [20, 20, 20, 20],
+          },
+          emphasis: {
+            focus: "series",
           },
         },
       ],
-      legend: { show: false },
+      graphic: [
+        {
+          type: "text",
+          left: "center",
+          top: "center",
+          style: {
+            text: `${notResolvedValue}%`,
+            fill: "black",
+            fontSize: 24,
+            fontWeight: "bold",
+          },
+        },
+      ],
+      legend: {
+        show: true,
+        data: ["Not Resolved"],
+        icon: "none",
+        y: "bottom",
+        align: "center",
+        textStyle: {
+          fontWeight: "bold",
+        },
+      },
     };
 
-    option && myChart.setOption(option);
+    notResolvedChart.setOption(notResolvedOption);
 
-    return () => myChart.dispose();
-  }, [color, data]);
+    const resolvedChartDom = document.getElementById("resolved");
+    const resolvedChart = echarts.init(resolvedChartDom);
 
-  return <div ref={chartRef} style={{ width: '50%', height: '400px' }} />;
+    const resolvedOption = {
+      angleAxis: {
+        max: 100,
+        startAngle: 0,
+        axisLabel: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
+        splitLine: {
+          show: false,
+        },
+      },
+      radiusAxis: {
+        type: "category",
+        axisLabel: {
+          show: false,
+        },
+        axisLine: {
+          show: false,
+        },
+        axisTick: {
+          show: false,
+        },
+      },
+      polar: {
+        radius: [50, "100%"],
+      },
+      series: [
+        {
+          type: "bar",
+          data: [resolvedValue],
+          coordinateSystem: "polar",
+          name: "Resolved",
+          color: "green", // Choose your desired color
+          showBackground: true,
+          backgroundStyle: {
+            color: "rgba(180, 180, 180, 0.2)",
+          },
+          itemStyle: {
+            borderRadius: [20, 20, 20, 20],
+          },
+          emphasis: {
+            focus: "series",
+          },
+        },
+      ],
+      graphic: [
+        {
+          type: "text",
+          left: "center",
+          top: "center",
+          style: {
+            text: `${resolvedValue}%`,
+            fill: "black",
+            fontSize: 24,
+            fontWeight: "bold",
+          },
+        },
+      ],
+      legend: {
+        show: true,
+        data: ["Resolved"],
+        icon: "none",
+        y: "bottom",
+        align: "center",
+        textStyle: {
+          fontWeight: "bold",
+        },
+      },
+    };
+
+    resolvedChart.setOption(resolvedOption);
+
+    return () => {
+      notResolvedChart.dispose();
+      resolvedChart.dispose();
+    };
+  }, [data]);
+
+  return (
+    <>
+      <div id="notresolved" style={{ width: "50%", height: "300px" }} />
+      <div id="resolved" style={{ width: "50%", height: "300px" }} />
+    </>
+  );
 };
 
 export default DNSChart;

@@ -1,27 +1,46 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsMutation } from "../../../store/features/autoDiscoveryModule/discovery/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/autoDiscoveryModule/discovery/selectors";
+import {
+  useGetAllAutoDiscoveryDiscoveredDevicesLazyQuery,
+  useFetchRecordsMutation,
+  useGetAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation,
+} from "../../../store/features/autoDiscoveryModule/discovery/apis";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import FunctionCounts from "./functionCounts";
+import StartScanningBar from "./startScanningBar";
 import {
   PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  ALL,
+  indexColumnNameConstants,
+  PAGE_PATH,
 } from "./constants";
-import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
@@ -51,11 +70,29 @@ const Index = () => {
       isError: isFetchRecordsError,
       error: fetchRecordsError,
     },
+  ] = useGetAllAutoDiscoveryDiscoveredDevicesLazyQuery();
+
+  const [
+    fetchRecordsMutation,
+    {
+      data: fetchRecordsMutationData,
+      isSuccess: isFetchRecordsMutationSuccess,
+      isLoading: isFetchRecordsMutationLoading,
+      isError: isFetchRecordsMutationError,
+      error: fetchRecordsMutationError,
+    },
   ] = useFetchRecordsMutation();
 
-  useEffect(() => {
-    fetchRecords({ subnet: "All" });
-  }, []);
+  const [
+    fetchFunctionCounts,
+    {
+      data: fetchFunctionCountsData,
+      isSuccess: isFetchFunctionCountsSuccess,
+      isLoading: isFetchFunctionCountsLoading,
+      isError: isFetchFunctionCountsError,
+      error: fetchFunctionCountsError,
+    },
+  ] = useGetAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation();
 
   // error handling custom hooks
   useErrorHandling({
@@ -66,18 +103,56 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: fetchFunctionCountsData,
+    isSuccess: isFetchFunctionCountsSuccess,
+    isError: isFetchFunctionCountsError,
+    error: fetchFunctionCountsError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchRecordsMutationData,
+    isSuccess: isFetchRecordsMutationSuccess,
+    isError: isFetchRecordsMutationError,
+    error: fetchRecordsMutationError,
+    type: TYPE_FETCH,
+  });
+
+  // effects
+  useEffect(() => {
+    fetchRecords();
+    fetchFunctionCounts({ subnet: ALL });
+  }, []);
+
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
     setTableConfigurationsOpen(true);
   }
 
+  function handleSubnetChange(data) {
+    if (data[indexColumnNameConstants.SUBNET] === ALL) {
+      fetchRecords();
+      fetchFunctionCounts({ subnet: ALL });
+    } else {
+      fetchRecordsMutation(data);
+      fetchFunctionCounts(data);
+    }
+  }
+
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner
+      spinning={
+        isFetchRecordsLoading ||
+        isFetchRecordsMutationLoading ||
+        isFetchFunctionCountsLoading
+      }
+    >
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -91,6 +166,12 @@ const Index = () => {
         />
       ) : null}
 
+      <FunctionCounts />
+
+      {pageEditable ? (
+        <StartScanningBar handleChange={handleSubnetChange} />
+      ) : null}
+
       <DefaultPageTableSection
         PAGE_NAME={PAGE_NAME}
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
@@ -98,7 +179,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

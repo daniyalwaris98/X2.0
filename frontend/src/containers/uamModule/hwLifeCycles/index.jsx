@@ -1,6 +1,6 @@
-import React, { useState, useEffect, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import React, { useState, useRef } from "react";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/uamModule/hwLifeCycles/selectors";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
@@ -8,41 +8,58 @@ import {
   useSyncFromInventoryLazyQuery,
   useSyncToInventoryLazyQuery,
 } from "../../../store/features/uamModule/hwLifeCycles/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/hwLifeCycles/selectors";
 import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
   generateObject,
 } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import Modal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   FILE_NAME_EXPORT_ALL_DATA,
   FILE_NAME_EXPORT_TEMPLATE,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
 
-  // states required in hooks
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
@@ -52,10 +69,14 @@ const Index = () => {
       template_export: { handleClick: handleExport },
       default_delete: {
         handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
+        visible: selectedRowKeys.length > 0 && pageEditable,
       },
-      inventory_sync: { handleClick: handleSync, namePostfix: PAGE_NAME },
-      default_import: { handleClick: handleInputClick },
+      inventory_sync: {
+        handleClick: handleSync,
+        namePostfix: PAGE_NAME,
+        visible: pageEditable,
+      },
+      default_import: { handleClick: handleInputClick, visible: pageEditable },
     });
 
   // refs
@@ -68,25 +89,8 @@ const Index = () => {
   const [columns, setColumns] = useState(generatedColumns);
   const [availableColumns, setAvailableColumns] = useState([]);
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
-  const [initialRender, setInitialRender] = useState(true);
-
-  // effects
-  // useEffect(() => {
-  //   // skip the first render
-  //   if (initialRender) {
-  //     setInitialRender(false);
-  //     return;
-  //   }
-  // }, []);
 
   // selectors
-  // const dataSource = [
-  //   {
-  //     pn_code: "10.20.23.71",
-  //     hw_eos_date: "2023-09-07",
-  //     hw_eol_date: "2023-09-07",
-  //   },
-  // ];
   const dataSource = useSelector(selectTableData);
 
   // apis
@@ -204,12 +208,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -242,7 +243,7 @@ const Index = () => {
       jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
     }
 
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -250,12 +251,12 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading ||
         isAddRecordsLoading ||
         isDeleteRecordsLoading ||
-        // isSyncFromInventoryLoading ||
+        isSyncFromInventoryLoading ||
         isSyncToInventoryLoading
       }
     >
@@ -292,10 +293,10 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        selectedRowKeys={selectedRowKeys}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

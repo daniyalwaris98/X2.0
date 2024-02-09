@@ -8,9 +8,9 @@ export const extendedApi = monetxApi.injectEndpoints({
 
     getAlertsHistoryByIpAddress: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/ipam/ipam_device/delete_dns_servers",
+        url: "/api/v1/monitoring/alerts/get_ip_alerts",
         method: "POST",
-        body: data,
+        body: data, //{ip_address:""}
       }),
     }),
   }),

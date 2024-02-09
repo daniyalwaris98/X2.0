@@ -1,43 +1,55 @@
-import React, { useState, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
-import AddModal from "./addModal";
-import UpdateModal from "./updateModal";
-import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/devices/apis";
+import React, { useState } from "react";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/monitoringModule/devices/selectors";
+import { setSelectedDevice } from "../../../store/features/monitoringModule/devices";
+import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features/dropDowns/apis";
+import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/devices/apis";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import DefaultPageTableSection from "../../../components/pageSections";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../devicesLanding/summary/constants";
+import { LANDING_PAGE_PATH } from "../devicesLanding";
+import AddModal from "./addModal";
+import UpdateModal from "./updateModal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
+  PAGE_PATH,
 } from "./constants";
-import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setSelectedDevice } from "../../../store/features/monitoringModule/devices";
-import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../devicesLanding/summary/constants";
-import { LANDING_PAGE_PATH } from "../devicesLanding";
-import { MODULE_PATH } from "../index";
-import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features/dropDowns/apis";
+import { MODULE_PATH } from "..";
+import { MAIN_LAYOUT_PATH } from "../../../layouts/mainLayout";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
     handleIpAddressClick,
   });
@@ -45,8 +57,12 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    start_monitoring: { handleClick: handleAdd },
-    default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
+    start_monitoring: { handleClick: handleAdd, visible: pageEditable },
+    default_add: {
+      handleClick: handleAdd,
+      namePostfix: ELEMENT_NAME,
+      visible: pageEditable,
+    },
   });
 
   // states
@@ -59,7 +75,6 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  // const dataSource = [{ ip_address: "123" }];
   const dataSource = useSelector(selectTableData);
 
   // apis
@@ -72,8 +87,11 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   const {
-    error: monitoringCredentialsNamesError,
+    data: monitoringCredentialsNamesData,
+    isSuccess: isMonitoringCredentialsNamesSuccess,
     isLoading: isMonitoringCredentialsNamesLoading,
+    isError: isMonitoringCredentialsNamesError,
+    error: monitoringCredentialsNamesError,
   } = useFetchMonitoringCredentialsNamesQuery();
 
   // error handling custom hooks
@@ -85,10 +103,20 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: monitoringCredentialsNamesData,
+    isSuccess: isMonitoringCredentialsNamesSuccess,
+    isError: isMonitoringCredentialsNamesError,
+    error: monitoringCredentialsNamesError,
+    type: TYPE_FETCH,
+  });
+
   // handlers
   function handleIpAddressClick(record) {
     dispatch(setSelectedDevice(record));
-    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`);
+    navigate(
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`
+    );
   }
 
   function handleEdit(record) {
@@ -110,7 +138,7 @@ const Index = () => {
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -118,9 +146,12 @@ const Index = () => {
   }
 
   return (
-    // <Spin spinning={false}>
-    <Spin
-      spinning={isFetchRecordsLoading || isMonitoringCredentialsNamesLoading}
+    <DefaultSpinner
+      spinning={
+        isFetchRecordsLoading ||
+        isMonitoringCredentialsNamesLoading ||
+        isMonitoringCredentialsNamesLoading
+      }
     >
       {openAddModal ? (
         <AddModal handleClose={handleCloseAdd} open={openAddModal} />
@@ -154,7 +185,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

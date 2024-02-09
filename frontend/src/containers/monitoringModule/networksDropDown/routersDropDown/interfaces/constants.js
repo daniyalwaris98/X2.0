@@ -1,8 +1,8 @@
 export const DESCRIPTIVE_PAGE_NAME = "Routers Interfaces";
 export const PAGE_NAME = "Interfaces";
 export const ELEMENT_NAME = "Interface";
-export const PAGE_PATH = "network_all_devices_interfaces";
-export const FILE_NAME_EXPORT_ALL_DATA = "network_all_devices_interfaces";
+export const PAGE_PATH = "routers_interfaces";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_routers_interfaces";
 export const TABLE_DATA_UNIQUE_ID = "interface_id";
 export const indexColumnNameConstants = {
   INTERFACE_ID: TABLE_DATA_UNIQUE_ID,

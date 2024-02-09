@@ -27,8 +27,8 @@ export default function DefaultPageHeader({ pageName, buttons }) {
             gap: "10px",
           }}
         >
-          {buttons.map((button) => {
-            return buttonGenerator(button);
+          {buttons.map((button, index) => {
+            return buttonGenerator(button, index);
           })}
         </Typography>
       </Typography>

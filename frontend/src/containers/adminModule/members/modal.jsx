@@ -1,41 +1,54 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
-import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
-import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
+import { yupResolver } from "@hookform/resolvers/yup";
+import Grid from "@mui/material/Grid";
+import { useSelector } from "react-redux";
+import {
+  useFetchAccountTypeNamesQuery,
+  useFetchActiveStatusNamesQuery,
+  useFetchUserRoleNamesQuery,
+} from "../../../store/features/dropDowns/apis";
+import {
+  selectAccountTypeNames,
+  selectActiveStatusNames,
+  selectUserRoleNames,
+} from "../../../store/features/dropDowns/selectors";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
-} from "../../../store/features/atomModule/passwordGroups/apis";
-import {
-  useFetchPasswordGroupNamesQuery,
-  useFetchPasswordGroupTypeNamesQuery,
-} from "../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
-} from "../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+} from "../../../store/features/adminModule/members/apis";
 import { formSetter, getTitle } from "../../../utils/helpers";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
-import { PAGE_NAME, TELNET } from "./constants";
-import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit, { SelectFormUnit } from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
+import {
+  PAGE_NAME,
+  TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+} from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.USER_NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
+  [indexColumnNameConstants.PASSWORD]: yup
+    .string()
+    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
   [indexColumnNameConstants.EMAIL_ADDRESS]: yup
     .string()
     .required(
       `${getTitle(indexColumnNameConstants.EMAIL_ADDRESS)} is required`
     ),
+  [indexColumnNameConstants.PASSWORD]: yup
+    .string()
+    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
   [indexColumnNameConstants.NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.NAME)} is required`),
@@ -45,28 +58,23 @@ const schema = yup.object().shape({
   [indexColumnNameConstants.STATUS]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.STATUS)} is required`),
-  [indexColumnNameConstants.COMPANY_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.COMPANY_NAME)} is required`),
   [indexColumnNameConstants.ACCOUNT_TYPE]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.ACCOUNT_TYPE)} is required`),
-  [indexColumnNameConstants.LAST_LOGIN]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.LAST_LOGIN)} is required`),
   [indexColumnNameConstants.TEAM]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.TEAM)} is required`),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken } = useAuthorization();
 
-  // states
-  const [isSecretPasswordDisable, setIsSecretPasswordDisable] = useState(false);
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
 
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -100,9 +108,28 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // fetching dropdowns data from backend using apis
   const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
+    data: fetchAccountTypeNamesData,
+    isSuccess: isFetchAccountTypeNamesSuccess,
+    isLoading: isFetchAccountTypeNamesLoading,
+    isError: isFetchAccountTypeNamesError,
+    error: fetchAccountTypeNamesError,
+  } = useFetchAccountTypeNamesQuery();
+
+  const {
+    data: fetchActiveStatusNamesData,
+    isSuccess: isFetchActiveStatusNamesSuccess,
+    isLoading: isFetchActiveStatusNamesLoading,
+    isError: isFetchActiveStatusNamesError,
+    error: fetchActiveStatusNamesError,
+  } = useFetchActiveStatusNamesQuery();
+
+  const {
+    data: fetchUserRoleNamesData,
+    isSuccess: isFetchUserRoleNamesSuccess,
+    isLoading: isFetchUserRoleNamesLoading,
+    isError: isFetchUserRoleNamesError,
+    error: fetchUserRoleNamesError,
+  } = useFetchUserRoleNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -123,8 +150,34 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: fetchAccountTypeNamesData,
+    isSuccess: isFetchAccountTypeNamesSuccess,
+    isError: isFetchAccountTypeNamesError,
+    error: fetchAccountTypeNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchActiveStatusNamesData,
+    isSuccess: isFetchActiveStatusNamesSuccess,
+    isError: isFetchActiveStatusNamesError,
+    error: fetchActiveStatusNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchUserRoleNamesData,
+    isSuccess: isFetchUserRoleNamesSuccess,
+    isError: isFetchUserRoleNamesError,
+    error: fetchUserRoleNamesError,
+    type: TYPE_FETCH,
+  });
+
   // getting dropdowns data from the store
-  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
+  const accountTypeNames = useSelector(selectAccountTypeNames);
+  const activeStatusNames = useSelector(selectActiveStatusNames);
+  const userRoleNames = useSelector(selectUserRoleNames);
 
   // on form submit
   const onSubmit = (data) => {
@@ -132,72 +185,79 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
+      data[indexColumnNameConstants.END_USER_ID] =
+        userInfo[indexColumnNameConstants.END_USER_ID];
       addRecord(data);
     }
   };
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={5}>
-          <Grid item xs={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.USER_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ROLE}
-              required
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={4}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.USER_NAME}
+                required
+              />
+              <DefaultFormUnit
+                type="password"
+                control={control}
+                dataKey={indexColumnNameConstants.PASSWORD}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.NAME}
+                required
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.STATUS}
+                options={activeStatusNames}
+                spinning={isFetchActiveStatusNamesLoading}
+                required
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ROLE}
+                options={userRoleNames}
+                spinning={isFetchUserRoleNamesLoading}
+                required
+              />
+            </Grid>
+            <Grid item xs={4}>
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ACCOUNT_TYPE}
+                options={accountTypeNames}
+                spinning={isFetchAccountTypeNamesLoading}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.TEAM}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.STATUS}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.COMPANY_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ACCOUNT_TYPE}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.LAST_LOGIN}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.TEAM}
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

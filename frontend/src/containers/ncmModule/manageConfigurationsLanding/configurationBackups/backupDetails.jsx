@@ -1,27 +1,29 @@
 import React, { useRef, useEffect } from "react";
-import { useTheme } from "@mui/material/styles";
+import Highlighter from "react-highlight-words";
+import { useSelector } from "react-redux";
+import { selectConfigurationBackupDetails } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
 import {
   useDeleteRecordsMutation,
   useGetNcmConfigurationBackupDetailsByNcmHistoryIdMutation,
 } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
-import { useSelector } from "react-redux";
-import { selectConfigurationBackupDetails } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
 import { jsonToExcel } from "../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_SINGLE,
+  TYPE_BULK,
+} from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
-import { FILE_NAME_EXPORT_ALL_DATA, TABLE_DATA_UNIQUE_ID } from "./constants";
-import { TYPE_SINGLE, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import DefaultCard from "../../../../components/cards";
-import Highlighter from "react-highlight-words";
 import DefaultPageHeader from "../../../../components/pageHeaders";
 import { FloatingHighlighterSearch } from "../../../../components/search";
+import DefaultSpinner from "../../../../components/spinners";
+import { FILE_NAME_EXPORT_ALL_DATA, TABLE_DATA_UNIQUE_ID } from "./constants";
+import {
+  DELETE_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../../utils/constants";
 
-const Index = ({ ncmHistoryId }) => {
-  // theme
-  const theme = useTheme();
-
+const Index = ({ ncmHistoryId, pageEditable }) => {
   // selectors
   const dataSource = useSelector(selectConfigurationBackupDetails);
 
@@ -32,7 +34,7 @@ const Index = ({ ncmHistoryId }) => {
   const { handleSuccessAlert, handleCallbackAlert } = useSweetAlert();
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_export: { handleClick: handleDefaultExport },
-    default_delete: { handleClick: handleDelete },
+    default_delete: { handleClick: handleDelete, visible: pageEditable },
   });
 
   // apis
@@ -59,13 +61,13 @@ const Index = ({ ncmHistoryId }) => {
   ] = useDeleteRecordsMutation();
 
   // error handling custom hooks
-  // useErrorHandling({
-  //   data: getBackupDetailsData,
-  //   isSuccess: isGetBackupDetailsSuccess,
-  //   isError: isGetBackupDetailsError,
-  //   error: getBackupDetailsError,
-  //   type: TYPE_SINGLE,
-  // });
+  useErrorHandling({
+    data: getBackupDetailsData,
+    isSuccess: isGetBackupDetailsSuccess,
+    isError: isGetBackupDetailsError,
+    error: getBackupDetailsError,
+    type: TYPE_SINGLE,
+  });
 
   useErrorHandling({
     data: deleteRecordsData,
@@ -90,19 +92,18 @@ const Index = ({ ncmHistoryId }) => {
   }
 
   function handleDelete() {
-    handleCallbackAlert(
-      "Are you sure you want delete this record?",
-      deleteData
-    );
+    handleCallbackAlert(DELETE_PROMPT, deleteData);
   }
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   return (
-    <Spin spinning={isGetBackupDetailsLoading || isDeleteRecordsLoading}>
+    <DefaultSpinner
+      spinning={isGetBackupDetailsLoading || isDeleteRecordsLoading}
+    >
       {dataSource ? (
         <DefaultCard sx={{ paddingBottom: "50px" }}>
           <DefaultPageHeader
@@ -134,7 +135,7 @@ const Index = ({ ncmHistoryId }) => {
           </div>
         </DefaultCard>
       ) : null}
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

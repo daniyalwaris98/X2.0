@@ -1,8 +1,13 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { getDefaultPagePath } from "../../utils/helpers";
+import { useAuthorization } from "../../hooks/useAuth";
 import Card from "../../components/cards";
 import HorizontalMenu from "../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../utils/helpers";
+import {
+  PAGE_NAME as PAGE_NAME_DASHBOARD,
+  PAGE_PATH as PAGE_PATH_DASHBOARD,
+} from "./dashboard/constants";
 import {
   PAGE_NAME as PAGE_NAME_MEMBERS,
   PAGE_PATH as PAGE_PATH_MEMBERS,
@@ -16,23 +21,47 @@ import {
   PAGE_PATH as PAGE_PATH_ROLES,
 } from "./roles/constants";
 
+export const MODULE_NAME = "Admin";
 export const MODULE_PATH = "admin_module";
 
-const menuItems = [
-  { id: PAGE_PATH_MEMBERS, name: PAGE_NAME_MEMBERS, path: PAGE_PATH_MEMBERS },
-  {
-    id: LANDING_PAGE_PATH_FAILED_DEVICE,
-    name: LANDING_PAGE_NAME_FAILED_DEVICE,
-    path: LANDING_PAGE_PATH_FAILED_DEVICE,
-  },
-  { id: PAGE_PATH_ROLES, name: PAGE_NAME_ROLES, path: PAGE_PATH_ROLES },
-];
-
 function Index(props) {
-  let pagePath = getPathAllSegments();
-  if (pagePath.length === 2 && pagePath[1] === MODULE_PATH) {
-    pagePath = [PAGE_PATH_MEMBERS];
-  } else pagePath = pagePath.splice(2);
+  let menuItems = [
+    {
+      id: PAGE_PATH_DASHBOARD,
+      name: PAGE_NAME_DASHBOARD,
+      path: PAGE_PATH_DASHBOARD,
+      icon: "ic:outline-dashboard",
+    },
+    {
+      id: PAGE_PATH_MEMBERS,
+      name: PAGE_NAME_MEMBERS,
+      path: PAGE_PATH_MEMBERS,
+      icon: "tdesign:member",
+    },
+    {
+      id: LANDING_PAGE_PATH_FAILED_DEVICE,
+      name: LANDING_PAGE_NAME_FAILED_DEVICE,
+      path: LANDING_PAGE_PATH_FAILED_DEVICE,
+      icon: "ic:outline-sms-failed",
+    },
+    {
+      id: PAGE_PATH_ROLES,
+      name: PAGE_NAME_ROLES,
+      path: PAGE_PATH_ROLES,
+      icon: "oui:app-users-roles",
+    },
+  ];
+
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
+  const defaultPagePath = getDefaultPagePath(MODULE_PATH, menuItems);
 
   return (
     <>
@@ -42,7 +71,10 @@ function Index(props) {
           height: "50px",
         }}
       >
-        <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
+        <HorizontalMenu
+          menuItems={menuItems}
+          defaultPagePath={defaultPagePath}
+        />
       </Card>
       <Outlet />
     </>

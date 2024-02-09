@@ -1,3 +1,5 @@
+import traceback
+
 from app.api.v1.ipam.routes.device_routes import *
 from app.models.ipam_models import *
 from app.models.atom_models import *
@@ -122,10 +124,8 @@ def validate_atom(device, update):
             return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
         atom = configs.db.query(AtomTable).filter_by(ip_address = device["ip_address"]).first()
-        print("atom is::::::::::::::::::::::::::::::",atom,file=sys.stderr)
         if atom is not None:
             atom_device_name = atom.device_name
-            print("atom_device_name is::::::::::", atom_device_name, file=sys.stderr)
             if atom_device_name:
                 if atom_device_name != device['device_name']:
                     print(f"{device['ip_address']}: already assigned with the {device['device_name']}", file=sys.stderr)
@@ -189,9 +189,8 @@ def validate_atom(device, update):
 
 def add_complete_atom(device, update):
     try:
+        attributes_dict = {}
         response, status = validate_atom(device, update)
-        print("response is add complete atom is:::::::::::::",response,file=sys.stderr)
-        print("status in add complete atom is:::::::::::::::",status,file=sys.stderr)
         response_message = response
         response_status = status
         if status != 200:
@@ -265,11 +264,44 @@ def add_complete_atom(device, update):
             status = UpdateDBData(atom)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Updated Successfully"
+                inspector = inspect(atom.__class__)
+                columns = inspector.columns
+
+                # Iterate through columns and fetch values
+                for column in columns:
+                    column_name = column.key
+                    print("column name is::::::::::", column_name, file=sys.stderr)
+                    # Exclude 'creation_date' and 'modification_date'
+                    if column_name not in ['creation_date', 'modification_date']:
+                        value = getattr(atom, column_name, None)
+                        attributes_dict[column_name] = value
+                        if column_name == 'rack_id':
+                            rack = configs.db.query(RackTable).filter_by(rack_id=value).first()
+                            if rack:
+                                attributes_dict['rack_name'] = rack.rack_name
+                                if rack.site_id:
+                                    site = configs.db.query(SiteTable).filter_by(site_id=rack.site_id).first()
+                                    attributes_dict['site_name'] = site.site_name
+
+                            # Special handling for password_group_id
+                        elif column_name == 'password_group_id':
+                            password_group = configs.db.query(PasswordGroupTable).filter_by(
+                                password_group_id=value).first()
+                            if password_group:
+                                attributes_dict['password_group'] = password_group.password_group
+                        elif column_name == 'onboard_status' or column_name == "":
+                            if value:
+                                attributes_dict['onboard_status'] = 'True'
+                            elif value is None:
+                                attributes_dict['onboard_status'] = 'False'
+                            else:
+                                attributes_dict['onboard_status'] = 'False'
+                        else:
+                            attributes_dict[column_name] = value
                 devices_data = dict(device)
                 devices_data['atom_id'] = atom.atom_id
-                print("devices data for atom is:::::::::::::::::::::::::::::::",devices_data,file=sys.stderr)
                 atom_data = {
-                    "data":devices_data,
+                    "data":attributes_dict,
                     "message":msg
                 }
                 # print(msg, file=sys.stderr)
@@ -279,11 +311,43 @@ def add_complete_atom(device, update):
             status = InsertDBData(atom)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Inserted Successfully"
+                inspector = inspect(atom.__class__)
+                columns = inspector.columns
+
+                # Iterate through columns and fetch values
+                for column in columns:
+                    column_name = column.key
+                    # Exclude 'creation_date' and 'modification_date'
+                    if column_name not in ['creation_date', 'modification_date']:
+                        value = getattr(atom, column_name, None)
+                        attributes_dict[column_name] = value
+                        if column_name == 'rack_id':
+                            rack = configs.db.query(RackTable).filter_by(rack_id=value).first()
+                            if rack:
+                                attributes_dict['rack_name'] = rack.rack_name
+                                if rack.site_id:
+                                    site = configs.db.query(SiteTable).filter_by(site_id=rack.site_id).first()
+                                    attributes_dict['site_name'] = site.site_name
+
+                            # Special handling for password_group_id
+                        elif column_name == 'password_group_id':
+                            password_group = configs.db.query(PasswordGroupTable).filter_by(
+                                password_group_id=value).first()
+                            if password_group:
+                                attributes_dict['password_group'] = password_group.password_group
+                        elif column_name == 'onboard_status' or column_name == "":
+                            if value:
+                                attributes_dict['onboard_status'] = 'True'
+                            elif value is None:
+                                attributes_dict['onboard_status'] = 'False'
+                            else:
+                                attributes_dict['onboard_status'] = 'False'
+                        else:
+                            attributes_dict[column_name] = value
                 devices_data = dict(device)
                 devices_data['atom_id'] = atom.atom_id
-                print("devices data for atom is:::::::::::::::::::::::::::::::",devices_data,file=sys.stderr)
                 atom_data = {
-                    "data":devices_data,
+                    "data":attributes_dict,
                     "message":msg
                 }
             else:
@@ -313,8 +377,6 @@ def add_complete_atom(device, update):
 
 def add_transition_atom(device, update):
     try:
-        # print("device in atom tranistion is::::::::::::::::::::::::::::::",device,file=sys.stderr)
-        # print("update is::::::::::::::::::::::::::::::::::::::::::::::::",update,file=sys.stderr)
         device["ip_address"] = device["ip_address"].strip()
 
         if device["ip_address"] == "" or device['ip_address'] == 'string':
@@ -364,12 +426,6 @@ def add_transition_atom(device, update):
             status = UpdateDBData(trans_obj)
             if status == 200:
                 msg = f"{device['ip_address']} : Atom Updated Successfully"
-                # devices = device
-                # data = []
-                # devices_data =dict(devices)
-                # devices_data['atom_transition_id'] = trans_obj.atom_transition_id
-                # data.append(devices_data)
-                # attributes_dict = {}
 
                 # Check if trans_obj exists
                 if trans_obj:
@@ -380,19 +436,38 @@ def add_transition_atom(device, update):
                     # Iterate through columns and fetch values
                     for column in columns:
                         column_name = column.key
-                        
                         # Exclude 'creation_date' and 'modification_date'
                         if column_name not in ['creation_date', 'modification_date']:
                             value = getattr(trans_obj, column_name, None)
                             attributes_dict[column_name] = value
+                            if column_name == 'rack_id':
+                                rack = configs.db.query(RackTable).filter_by(rack_id=value).first()
+                                if rack:
+                                    attributes_dict['rack_name'] = rack.rack_name
+                                    if rack.site_id:
+                                        site = configs.db.query(SiteTable).filter_by(site_id=rack.site_id).first()
+                                        attributes_dict['site_name'] = site.site_name
+
+                                # Special handling for password_group_id
+                            elif column_name == 'password_group_id':
+                                password_group = configs.db.query(PasswordGroupTable).filter_by(
+                                    password_group_id=value).first()
+                                if password_group:
+                                    attributes_dict['password_group'] = password_group.password_group
+                            elif column_name == 'onboard_status' or column_name=="":
+                                if value:
+                                    attributes_dict['onboard_status'] = 'True'
+                                elif value is None:
+                                    attributes_dict['onboard_status'] = 'False'
+                                else:
+                                    attributes_dict['onboard_status'] = 'False'
+                            else:
+                                attributes_dict[column_name] = value
                             
-                # print("attribute dict isssssssssssssssssssssssssssssssssssssssssss",attributes_dict,file=sys.stderr)
                 transition_data = {
                         "data":attributes_dict,
                         "message":str(msg)
                 }
-                # print("transition data is::::::::::::::::::::::::::::::::::::::",transition_data,file=sys.stderr)
-                    # print(msg, file=sys.stderr)
                 return (transition_data), 200
             else:
                 msg = f"{device['ip_address']} : Error While Updating Atom"
@@ -404,21 +479,32 @@ def add_transition_atom(device, update):
             if status == 200:
                 msg = f"{device['ip_address']} :Transition Atom Inserted Successfully"
 
-                
-                # print('data in atom tranistion while inserting is:::::::::::::::::',data,file=sys.stderr)
                 devices = device
-                devices_data =dict(devices)
-                devices_data['atom_transition_id'] = trans_obj.atom_transition_id
-
-                # print("devices data is:::::::::::::::::::::::::::",devices_data,file=sys.stderr)
+                onboard_status = None
+                if trans_obj.onboard_status is None:
+                    onboard_status = False
+                devices_data ={
+                    "atom_transition_id":trans_obj.atom_transition_id,
+                    "ip_address":trans_obj.ip_address,
+                    "rack_name":trans_obj.rack_name,
+                    "device_name":trans_obj.device_name,
+                    "vendor":trans_obj.vendor,
+                    "device_ru":trans_obj.device_ru,
+                    "department":trans_obj.department,
+                    "section":trans_obj.section,
+                    "criticality":trans_obj.criticality,
+                    "function":trans_obj.function,
+                    "domain":trans_obj.domain,
+                    "virtual":trans_obj.virtual,
+                    "device_type":trans_obj.device_type,
+                    "password_group":trans_obj.password_group,
+                    "onboard_status":onboard_status
+                }
                 data = {"transition id":trans_obj.atom_transition_id}
                 transition_data = {
                     "data":devices_data,
                     "message":msg
                 }
-                
-                # print("atom transition id is:::::::::::::::::::::::::::",transition_id,file=sys.stderr)
-                # print("data is:::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
                 # print(msg, file=sys.stderr)
                 return (transition_data), 200
             else:
@@ -428,15 +514,12 @@ def add_transition_atom(device, update):
 
     except Exception:
         error = f"Error : Exception Occurred"
-        # print(error, file=sys.stderr)
         traceback.print_exc()
         return error, 500
 
 
 def fill_transition_data(device, trans_obj):
     try:
-        # print("device in fill tranistion data is:::::::::::::::::::",device,file=sys.stderr)
-        # print("trans obj error in fill tranistion data is::::::::::::::::::::::::",trans_obj,file=sys.stderr)
         if device["device_name"] is not None:
             if device["device_name"].strip() != "":
                 trans_obj.device_name = device["device_name"].strip()
@@ -553,6 +636,26 @@ def edit_atom_util(device):
                 if column_name not in ['creation_date', 'modification_date']:
                     value = getattr(object_to_inspect, column_name, None)
                     attributes_dict[column_name] = value
+                    if column_name == 'rack_id':
+                        rack = configs.db.query(RackTable).filter_by(rack_id=value).first()
+                        if rack:
+                            attributes_dict['rack_name'] = rack.rack_name
+                            if rack.site_id:
+                                site = configs.db.query(SiteTable).filter_by(site_id=rack.site_id).first()
+                                attributes_dict['site_name'] = site.site_name
+
+                        # Special handling for password_group_id
+                    elif column_name == 'password_group_id':
+                        password_group = configs.db.query(PasswordGroupTable).filter_by(password_group_id=value).first()
+                        if password_group:
+                            attributes_dict['password_group'] = password_group.password_group
+                    elif column_name == 'onboard_status':
+                        if value:
+                            attributes_dict['onboard_status'] = 'True'
+                        else:
+                            attributes_dict['onboard_status'] = 'False'
+                    else:
+                        attributes_dict[column_name] = value
 
         print("Attributes dict:", attributes_dict, file=sys.stderr)
 
@@ -689,7 +792,6 @@ def get_transition_atoms():
         results = configs.db.query(AtomTransitionTable).all()
 
         for result in results:
-            # print(result.as_dict(), file=sys.stderr)
             obj_dict = result.as_dict()
 
             msg, status = add_complete_atom(obj_dict, True)
@@ -724,53 +826,48 @@ def validate_password_group_name(pass_obj):
 
 
 def validate_password_group_credentials(pass_obj, password_exist):
-    print("pass obj is::::::::::::::::::::::::::::::::::;",pass_obj,file=sys.stderr)
-    print("password exsist is::::::::::::::::::::::::::::::::::::",password_exist,file=sys.stderr)
-    pass_obj["username"] = pass_obj["username"].strip()
-    if pass_obj["username"] == "":
-        return (
-            f"{pass_obj['password_group']} : Username Field Can Not Be Empty",
-            400,
-        )
-    password_exist.username = pass_obj["username"]
-    if pass_obj['password_group_type'] is None or pass_obj['password_group_type'] == '':
-        return f"Password Group Type cannot be empty",400
+    try:
+        print("pass obj is::::::::::::::::::::::::::::::::::;", pass_obj, file=sys.stderr)
+        print("password exist is::::::::::::::::::::::::::::::::::::", password_exist, file=sys.stderr)
+        pass_obj["username"] = pass_obj["username"].strip()
 
-    if pass_obj['password_group_type'] == 'telnet' or pass_obj['password_group_type'] == 'Telnet':
-        print("passowrd gorup type is::::::::::::::::::::::::::;telnet",file=sys.stderr)
-        if pass_obj['secret_password'] is None or pass_obj['secret_password'] == '':
-            return f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",400
-            # print("password cannot be emoty for telnet:::::::::::::::::::",file=sys.stderr)
+        if pass_obj["username"] == "":
+            return f"{pass_obj['password_group']} : Username Field Can Not Be Empty", 400
 
-    pass_obj["password"] = pass_obj["password"].strip()
-    if pass_obj["password"] == "":
-        return f"{pass_obj['password_group']} : Password Field Can Not be Empty", 400
-    
-    password_exist.password = pass_obj["password"]
-    
+        password_exist.username = pass_obj["username"]
 
-    if pass_obj["password_group_type"] == PasswordGroupTypeEnum.telnet:
-        password_exist.password_group_type = "Telnet"
-        print("password group type is password exsit.password_group_type============",file=sys.stderr)
-        if pass_obj["secret_password"] is None:
-            return (
-                f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
-                
-            ),400
+        if pass_obj['password_group_type'] is None or pass_obj['password_group_type'] == '':
+            return f"Password Group Type cannot be empty", 400
 
-        pass_obj["secret_password"] = pass_obj["secret_password"].strip()
+        pass_obj["password"] = pass_obj["password"].strip()
 
-        if pass_obj["secret_password"].strip() == "":
-            return (
-                f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For Telnet",
-                400,
-            )
+        if pass_obj["password"] == "":
+            return f"{pass_obj['password_group']} : Password Field Can Not be Empty", 400
+
+        password_exist.password = pass_obj["password"]
+
+        if pass_obj["password_group_type"] == 'TELNET':
+                password_exist.password_group_type = "TELNET"
+
+        if pass_obj["password_group_type"]=="SSH":
+                password_exist.password_group_type = "SSH"
+
+        if "secret_password" in pass_obj and pass_obj["secret_password"]:
+                pass_obj["secret_password"] = pass_obj["secret_password"].strip()
+
+        # if pass_obj["secret_password"].strip() == "":
+        #             return f"{pass_obj['password_group']} : Secret Password Field Can Not Be Empty For SSH", 400
 
         password_exist.secret_password = pass_obj["secret_password"]
-    else:
-        password_exist.password_group_type = "SSH"
+        print("password exist for the secret password is:::", password_exist.secret_password, file=sys.stderr)
 
-    return password_exist, 200
+        # else:
+        #     return f"{pass_obj['password_group']} : Invalid Password Group Type", 400
+
+        return password_exist, 200
+    except Exception as e:
+        traceback.print_exc()
+        print("Error occurred while validating the password group", str(e))
 
 
 def add_password_group_util(pass_obj, update):
@@ -808,29 +905,21 @@ def add_password_group_util(pass_obj, update):
         if update:
             
             status = UpdateDBData(password_group)
-            # print("password group status is::::::::::::::::::::::::::::::::",status,file=sys.stderr)
             if status == 200:
                 
                 pass_data = dict(pass_obj)
                 passworg_group_update = configs.db.query(PasswordGroupTable).filter_by(password_group = pass_data['password_group']).first()
                 if passworg_group_update:
                     password_group_id = passworg_group_update.password_group_id
-                    # print("password group id is:::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::update",password_group_id,file=sys.stderr)
                     pass_data['password_group_id'] = password_group_id
-                    # print(f"{pass_data['password_group_id']} is :::::::::::::::::::::::::::::::::::::::::::::::::::", file=sys.stderr)
                     msg=   f"{pass_obj['password_group']} : Password Group Updated Successfully"
                     password_group_data = {
                         "data":pass_data,
                         "message":msg
                     }
-                    # print("password group data for update is:::::::::::::::::::::::::::::::::::::",password_group_data,file=sys.stderr)
                     return (
                         password_group_data
                     ),200
-                    # return (
-                    #     f"{pass_obj['password_group']} : Password Group Updated Successfully",
-                    #     200,
-                    # )
                 else:
                     print("error in password group updates")
         else:
@@ -845,7 +934,6 @@ def add_password_group_util(pass_obj, update):
                     "data":pass_data,
                     "message":msg
                 }
-                # print("passwprd group for insertation is:::::::::::::::::::::::::::::::::::::::",password_group_data,file=sys.stderr)
                 return (
                     password_group_data
                 ),200
@@ -870,6 +958,7 @@ def edit_password_group_util(pass_obj):
             return f"Password Group (default_password) Is Not Editable", 400
 
         name_response, status = validate_password_group_name(pass_obj)
+        print("validate passsword group staus is::::::::::",status,file=sys.stderr)
 
         if status != 200:
             return name_response, status
@@ -892,10 +981,12 @@ def edit_password_group_util(pass_obj):
 
         status = UpdateDBData(password_exist)
         if status == 200:
+            configs.db.merge(password_exist)
+            configs.db.commit()
             pass_data = dict(pass_obj)
             password_group_id = password_group.password_group_id
             pass_data['password_group_id'] = password_group_id
-            msg=   f"{pass_obj['password_group']} : Password Group Updated Successfully"
+            msg=f"{pass_obj['password_group']} : Password Group Updated Successfully"
             password_group_data = {
                     "data":pass_data,
                     "message":msg

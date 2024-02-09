@@ -1,16 +1,32 @@
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 
+export function isFirstLetterVowel(str) {
+  // Convert the string to lowercase to handle both uppercase and lowercase vowels
+  const firstLetter = str.charAt(0).toLowerCase();
+
+  // Check if the first letter is a vowel
+  return ["a", "e", "i", "o", "u"].includes(firstLetter);
+}
+
+export function getDefaultPagePath(MODULE_PATH, menuItems) {
+  let pagePath = getPathAllSegments();
+  if (pagePath.length === 3 && pagePath[2] === MODULE_PATH) {
+    pagePath = [menuItems.length > 0 ? menuItems[0].path : ""];
+  } else pagePath = pagePath.splice(3);
+  return pagePath;
+}
+
 export function getPathLastSegment() {
   const path = window.location.pathname;
   const segments = path.split("/");
   return segments[segments.length - 1];
 }
 
-export function getPathSecondSegment() {
+export function getPathSegment(position) {
   const path = window.location.pathname;
   const segments = path.split("/");
-  return segments[1];
+  return segments[position - 1];
 }
 
 export function getPathAllSegments() {
@@ -125,8 +141,6 @@ export function transformDateTimeToDate(originalValue, originalObject) {
 }
 
 export function deepEqual(obj1, obj2) {
-  // console.log("obj1", obj1);
-  // console.log("obj2", obj2);
   // Check if both objects are objects
   if (obj1 !== null && obj2 !== null) {
     if (typeof obj1 !== "object" || typeof obj2 !== "object") {

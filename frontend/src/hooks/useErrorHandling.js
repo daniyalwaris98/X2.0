@@ -25,7 +25,6 @@ export default function useErrorHandling({
     if (type === TYPE_FETCH) {
       if (isSuccess) {
         // handleSuccessAlert("Data Fetched Successfully");
-        console.log("Data Fetched Successfully");
       } else if (isError) {
         if (error?.status === 400) {
           handleErrorAlert(error?.data);

@@ -90,7 +90,7 @@ export function LoginDialogFooter({ handleClose, sx, ...rest }) {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_login: {
       handleClick: handleClose,
-      sx: { width: "100%", backgroundColor: "#66B127" },
+      sx: { width: "150px", backgroundColor: "#66B127" },
     },
   });
   const buttonGenerator = useButtonGenerator();
@@ -99,7 +99,7 @@ export function LoginDialogFooter({ handleClose, sx, ...rest }) {
     <div
       style={{
         display: "flex",
-        justifyContent: "left",
+        justifyContent: "center",
         padding: "20px 0",
         ...sx,
       }}
@@ -147,6 +147,82 @@ export function UpdateDialogFooter({
       {...rest}
     >
       {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}
+
+export function CompanyDialogFooter({ handleBack, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_back: {
+      handleClick: handleBack,
+      sx: { width: "100%", backgroundColor: "#66B127" },
+    },
+    default_next: {
+      sx: { width: "100%", backgroundColor: "#66B127" },
+    },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "right",
+        padding: "20px 0",
+        ...sx,
+      }}
+      {...rest}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "10px",
+          ...sx,
+        }}
+        {...rest}
+      >
+        {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+      </div>
+    </div>
+  );
+}
+
+export function UserDialogFooter({ handleBack, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_back: {
+      handleClick: handleBack,
+      sx: { backgroundColor: "#66B127" },
+    },
+    default_register: {
+      sx: { backgroundColor: "#66B127" },
+    },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "right",
+        padding: "20px 0",
+        ...sx,
+      }}
+      {...rest}
+    >
+      <div
+        style={{
+          display: "flex",
+          justifyContent: "center",
+          gap: "10px",
+          ...sx,
+        }}
+        {...rest}
+      >
+        {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+      </div>
     </div>
   );
 }

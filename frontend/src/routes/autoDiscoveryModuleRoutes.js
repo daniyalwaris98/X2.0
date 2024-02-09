@@ -10,6 +10,9 @@ import ManageDevices from "../containers/autoDiscoveryModule/manageDevices";
 import ManageCredentialsDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown";
 import LoginCredentials from "../containers/autoDiscoveryModule//manageCredentialsDropDown/loginCredentials";
 
+import Dashboard from "../containers/autoDiscoveryModule/dashboard";
+import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../containers/autoDiscoveryModule/dashboard/constants";
+
 import SNMPDropDown from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown";
 import V1V2Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v1V2Credentials";
 import V3Credentials from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v3Credentials";
@@ -26,14 +29,13 @@ import { PAGE_PATH as PAGE_PATH_V1_V2_CREDENTIALS } from "../containers/autoDisc
 import { PAGE_PATH as PAGE_PATH_V3_CREDENTIALS } from "../containers/autoDiscoveryModule/manageCredentialsDropDown/snmpDropDown/v3Credentials/constants";
 
 import { MODULE_PATH } from "../containers/autoDiscoveryModule";
+import { MAIN_LAYOUT_PATH } from "../layouts/mainLayout";
 
-const routes = {
-  path: MODULE_PATH,
-  element: <AutoDiscoveryModule />,
-  children: [
+export default function moduleRoutes(roleConfigurations, authorizePageRoutes) {
+  const routes = [
     {
-      path: `/${MODULE_PATH}`,
-      element: <Navigate to={PAGE_PATH_MANAGE_NETWORKS} replace />,
+      path: PAGE_PATH_DASHBOARD,
+      element: <Dashboard />,
     },
     {
       path: PAGE_PATH_MANAGE_NETWORKS,
@@ -71,7 +73,19 @@ const routes = {
         },
       ],
     },
-  ],
-};
+  ];
 
-export default routes;
+  // Authorize module page routes
+  const authorizedPageRoutes = authorizePageRoutes({
+    module: MODULE_PATH,
+    pageRoutes: routes,
+    roleConfigurations,
+    defaultPagePath: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}`,
+  });
+
+  return {
+    path: MODULE_PATH,
+    element: <AutoDiscoveryModule />,
+    children: authorizedPageRoutes,
+  };
+}

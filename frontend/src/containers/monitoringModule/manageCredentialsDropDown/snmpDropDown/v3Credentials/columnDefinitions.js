@@ -1,20 +1,27 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
+import { DefaultTextWithSwitch } from "../../../../../components/textWithSwitch";
 import { indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({
+  pageEditable,
+  handleEdit,
+} = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.PROFILE_NAME,
     indexColumnNameConstants.USER_NAME,
     indexColumnNameConstants.DESCRIPTION,
     indexColumnNameConstants.PORT,
-    indexColumnNameConstants.AUTHENTICATION_PROTOCOL,
-    indexColumnNameConstants.AUTHENTICATION_PASSWORD,
+    indexColumnNameConstants.AUTHORIZATION_PROTOCOL,
+    {
+      data_key: indexColumnNameConstants.AUTHORIZATION_PASSWORD,
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
+    },
     indexColumnNameConstants.ENCRYPTION_PROTOCOL,
-    indexColumnNameConstants.ENCRYPTION_PASSWORD,
+    {
+      data_key: indexColumnNameConstants.ENCRYPTION_PASSWORD,
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
+    },
     {
       data_key: indexColumnNameConstants.ACTIONS,
       search: false,
@@ -38,7 +45,17 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         </div>
       ),
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const dataKeys = columnDefinitions
     .map((item) => {

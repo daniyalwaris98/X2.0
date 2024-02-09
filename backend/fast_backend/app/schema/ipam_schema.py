@@ -1,6 +1,6 @@
 from datetime import datetime
 from app.schema.base_schema import *
-from typing import List
+from typing import List ,Union
 
 
 
@@ -170,8 +170,8 @@ class IPDetailScehma(BaseSchema):
     modification_date:datetime
     ip_address:str
 
-class ScanSubnetSchema(BaseModel):
-    subnet: List[int]
+class ScanSubnetSchema(BaseSchema):
+    subnet_id: List[int]
     port_scan: bool
     dns_scan: bool
 
@@ -204,3 +204,48 @@ class EditDnsSchema(BaseSchema):
     server_name:str
     user_name:str
     password:str
+class IpDetailBySubnetResponseSchema(BaseSchema):
+    subnet_address:str
+
+class IpHistoryResponseSchema(BaseSchema):
+    ip_address:str
+
+
+
+class PortsValue(BaseSchema):
+    ports: List[Union[str, None]]
+    counts: List[int]
+
+
+class Ip_Address_counts(BaseSchema):
+    total_ip : int
+    used_ip : int 
+    available_ip : int 
+
+
+class SubnetIPUsage(BaseSchema):
+    subnet_address : str
+    subnet_usage : str
+
+
+'''class ResponseDNSSummary(BaseSchema):
+    Not_Resolved : int
+    Resolved : int'''
+
+class ResponseDNSSummary(BaseSchema):
+    name : str
+    value : int
+
+
+
+class SubnetSummaryResponse(BaseSchema):
+    #total_count : int
+    name : str 
+    value : int
+
+class DnsZoneByServerID(BaseSchema):
+    dns_server_id:int
+
+class TypeSummaryResponse(BaseSchema):
+    vender : str
+    counts : int     

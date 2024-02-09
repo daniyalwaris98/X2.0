@@ -67,7 +67,7 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
     400: {"model": str},
     500: {"model": str}
 })
-async def add_snmp_v3_credentials(credential_obj: SnmpV3CredentialsRequestSchema):
+async def add_snmp_v3_credentials(credential_obj: AddMonitoringSnmpV3CredentialsRequestSchema):
     try:
         data = {}
         if (configs.db.query(Monitoring_Credentails_Table).filter(
@@ -85,9 +85,9 @@ async def add_snmp_v3_credentials(credential_obj: SnmpV3CredentialsRequestSchema
                 credential_obj.description = credential_obj["description"]
 
             credential.username = credential_obj["username"]
-            credential.password = credential_obj["authentication_password"]
+            credential.password = credential_obj["authorization_password"]
             credential.encryption_password = credential_obj["encryption_password"]
-            credential.authentication_method = credential_obj["authentication_protocol"]
+            credential.authentication_method = credential_obj["authorization_protocol"]
             credential.encryption_method = credential_obj["encryption_protocol"]
 
 
@@ -99,8 +99,10 @@ async def add_snmp_v3_credentials(credential_obj: SnmpV3CredentialsRequestSchema
                     "username": credential.username,
                     "password": credential.password,
                     "encryption_password": credential.encryption_password,
-                    "authentication_method": credential.authentication_method,
-                    "encryption_method": credential.encryption_method
+                    "authorization_protocol": credential.authentication_method,
+                    "encryption_protocol": credential.encryption_method,
+                    "authorization_password":credential.password,
+                    "description":credential.description
                 }
                 data['data'] = v3_dict
                 data['message'] =  f"Inserted {credential.monitoring_credentials_id} Credentials Successfully"
@@ -370,24 +372,25 @@ def edit_snmp_v1_v2_credentials(v2_data:EditSnmpV2Credentials):
     try:
         data_dict = {}
         v2_data = dict(v2_data)
-        v2_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = v2_data['credentials_id']).first()
+        print("v2 data is::::",v2_data,file=sys.stderr)
+        v2_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = v2_data['monitoring_credentials_id']).first()
         if v2_exsists:
             v2_exsists.profile_name = v2_data['profile_name']
             v2_exsists.description = v2_data['description']
-            v2_exsists.port = v2_exsists.port
+            v2_exsists.snmp_port = v2_data['port']
             v2_exsists.snmp_read_community = v2_data['community']
             data ={
-                "credentials_id":v2_exsists.monitoring_credentials_id,
+                "monitoring_credentials_id":v2_exsists.monitoring_credentials_id,
                 "profile_name":v2_exsists.profile_name,
                 "description":v2_exsists.description,
-                "port":v2_exsists.port,
+                "port":v2_exsists.snmp_port,
                 "community":v2_exsists.snmp_read_community,
-                "monitoring_credentials_id":v2_exsists.monitoring_credentials_id
             }
-            message = f"{v2_exsists.profile_name} : Updated Successfully"
+            data_dict['message'] = f"{v2_exsists.profile_name} : Updated Successfully"
             data_dict['data'] = data
+            return  data_dict
         else:
-            return JSONResponse(content=f"{v2_data['credentials_id']} : Not Found",status_code=400)
+            return JSONResponse(content=f"{v2_data['monitoring_credentials_id']} : Not Found",status_code=400)
 
     except Exception as e:
         traceback.print_exc()
@@ -402,31 +405,80 @@ def edit_snmp_v1_v2_credentials(v2_data:EditSnmpV2Credentials):
 description="API to edit the  snmp v1_v2 credentials",
 summary="API to edit the  snmp v1_v2 credentials"
 )
-def edit_snmp_v3_credentials(v3_data:EditSnmpV3CredentialsResponseSchema):
+def edit_snmp_v3_credentials(v3_data:MonitoringSnmpV3CredentialsRequestSchema):
     try:
         data_dict = {}
         v3_data = dict(v3_data)
-        v3_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = v3_data['credentials_id']).first()
+        v3_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = v3_data['monitoring_credentials_id']).first()
         if v3_exsists:
             v3_exsists.username = v3_data['username']
-            v3_exsists.authentication_password = v3_data['authentication_password']
+            v3_exsists.authentication_password = v3_data['authorization_password']
             v3_exsists.encryption_password = v3_data['encryption_password']
-            v3_exsists.authentication_protocol = v3_data['authentication_protocol']
+            v3_exsists.authentication_protocol = v3_data['authorization_password']
             v3_exsists.encryption_protocol = v3_data['encryption_protocol']
+            v3_exsists.description = v3_data['description']
+            v3_exsists.profile_name = v3_data['profile_name']
+            v3_exsists.snmp_port = v3_data['port']
+            v3_exsists.username = v3_data['username']
             data ={
-                "credentials_id":v3_exsists.monitoring_credentials_id,
-                "username":v3_exsists.username,
-                "authentication_password":v3_exsists.authentication_password,
-                "encryption_password":v3_exsists.encryption_password,
-                "authentication_protocol":v3_exsists.authentication_protocol,
-                "encryption_protocol":v3_exsists.encryption_protocol
+                "monitoring_credentials_id": v3_exsists.monitoring_credentials_id,
+                    "profile_name": v3_exsists.profile_name,
+                    "port": v3_exsists.snmp_port,
+                    "username": v3_exsists.username,
+                    "password": v3_exsists.password,
+                    "encryption_password": v3_exsists.encryption_password,
+                    "authorization_protocol": v3_exsists.authentication_method,
+                    "encryption_protocol": v3_exsists.encryption_method,
+                    "authorization_password":v3_exsists.password,
+                    "description":v3_exsists.description
             }
             message = f"{v3_exsists.profile_name} : Updated Successfully"
             data_dict['data'] = data
             data_dict['messgae'] = message
+
+            return data_dict
         else:
             return JSONResponse(content=f"{v3_exsists['credentials_id']} : Not Found",status_code=400)
 
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Updting the SNMP v1_v2 credentials",status_code=500)
+
+
+
+
+@router.post('/edit_WMI_credentials',
+             responses={
+                 200:{"model":Response200},
+                 400:{"model":str},
+                 500:{"model":str}
+             },
+             summary="use this api to add the WMI credentials",
+             description="Use this api to add the WMI credentials"
+             )
+def edit_wmi_credentials(wmiObj:WMIMonitoringCredentialSchema):
+    try:
+        data_dict_wmi = {}
+        wmiObj = dict(wmiObj)
+        credentials = configs.db.query(Monitoring_Credentails_Table).filter_by(profile_name=wmiObj['profile_name']).first()
+        if credentials:
+            credentials.username = wmiObj['username']
+            credentials.profile_name = wmiObj['profile_name']
+            credentials.password = wmiObj['password']
+            credentials.category = "wmi"
+            UpdateDBData(credentials)
+            data_dict = {
+                "monitoring_credentials_id":credentials.monitoring_credentials_id,
+                "username":credentials.username,
+                "password":credentials.password,
+                "profile_name":credentials.profile_name,
+                "category":credentials.category
+            }
+            data_dict_wmi['data'] = data_dict
+            data_dict_wmi['message'] = f"{credentials.profile_name} : Updated Successfully"
+            return JSONResponse(content=data_dict_wmi,status_code=200)
+        else:
+            return JSONResponse(content=f"Credentials Not Found",status_code=400)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while adding wmi credentials",status_code=500)

@@ -1,26 +1,35 @@
 import React, { useState, useRef } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
 } from "../../../store/features/atomModule/passwordGroups/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/atomModule/passwordGroups/selectors";
 import {
   jsonToExcel,
   convertToJson,
   handleFileChange,
   generateObject,
 } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import Modal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
   ELEMENT_NAME,
@@ -29,34 +38,47 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
   DEFAULT_PASSWORD,
+  PAGE_PATH,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
 
-  // states required in hooks
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
   const { columnDefinitions, dataKeys } = useIndexTableColumnDefinitions({
+    pageEditable,
     handleEdit,
   });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { dropdownButtonOptionsConstants, buttonsConfigurationList } =
     useButtonsConfiguration({
       configure_table: { handleClick: handleTableConfigurationsOpen },
-      template_export: { handleClick: handleExport },
+      template_export: { handleClick: handleExport, visible: pageEditable },
+      default_export: { handleClick: handleExport, visible: !pageEditable },
       default_delete: {
         handleClick: handleDelete,
-        visible: selectedRowKeys.length > 0,
+        visible: selectedRowKeys.length > 0 && pageEditable,
       },
-      default_add: { handleClick: handleAdd, namePostfix: ELEMENT_NAME },
-      default_import: { handleClick: handleInputClick },
+      default_add: {
+        handleClick: handleAdd,
+        namePostfix: ELEMENT_NAME,
+        visible: pageEditable,
+      },
+      default_import: { handleClick: handleInputClick, visible: pageEditable },
     });
 
   // refs
@@ -151,12 +173,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -187,8 +206,10 @@ const Index = () => {
       jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     } else if (optionType === TEMPLATE) {
       jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
+    } else {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
     }
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -203,7 +224,7 @@ const Index = () => {
   }
 
   return (
-    <Spin
+    <DefaultSpinner
       spinning={
         isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
       }
@@ -244,11 +265,11 @@ const Index = () => {
           displayColumns={displayColumns}
           dataSource={dataSource}
           getCheckboxProps={getCheckboxProps}
-          selectedRowKeys={selectedRowKeys}
+          selectedRowKeys={pageEditable ? selectedRowKeys : null}
           setSelectedRowKeys={setSelectedRowKeys}
         />
       </div>
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

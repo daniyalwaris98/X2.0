@@ -1,55 +1,75 @@
-import React, { useState, useEffect } from "react";
-import { useTheme } from "@mui/material/styles";
-import Modal from "./modal";
+import React, { useState } from "react";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/uamModule/sites/selectors";
 import {
   useFetchRecordsQuery,
   useDeleteRecordsMutation,
 } from "../../../store/features/uamModule/sites/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/sites/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultSpinner from "../../../components/spinners";
+import Modal from "./modal";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   ELEMENT_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
   DEFAULT_SITE,
 } from "./constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
-import withDefaultDelete from "../../../hoc/withDefaultDelete";
-import DefaultPageTableSection from "../../../components/pageSections";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
 
-  // states required in hooks
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    pageEditable,
+    handleEdit,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
     default_delete: {
       handleClick: handleDelete,
-      visible: selectedRowKeys.length > 0,
+      visible: selectedRowKeys.length > 0 && pageEditable,
     },
-    default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
+    default_add: {
+      handleClick: handleDefaultAdd,
+      namePostfix: ELEMENT_NAME,
+      visible: pageEditable,
+    },
   });
-
-  // refs
 
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -100,8 +120,6 @@ const Index = () => {
     callback: handleEmptySelectedRowKeys,
   });
 
-  // effects
-
   // handlers
   function handleEmptySelectedRowKeys() {
     setSelectedRowKeys([]);
@@ -117,12 +135,9 @@ const Index = () => {
 
   function handleDelete() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want delete these records?",
-        deleteData
-      );
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
     } else {
-      handleInfoAlert("No record has been selected to delete!");
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
     }
   }
 
@@ -142,7 +157,7 @@ const Index = () => {
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -156,7 +171,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
       {open ? (
         <Modal
           handleClose={handleClose}
@@ -185,36 +200,11 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
         getCheckboxProps={getCheckboxProps}
-        selectedRowKeys={selectedRowKeys}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 
-// function IndexWithHOC(props) {
-//   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
-
-//   // Wrap the Index component with the withDefaultDelete HOC
-//   const IndexWithDelete = withDefaultDelete({
-//     Component: Index,
-//     useDeleteRecordsMutation,
-//     selectedRowKeys,
-//     setSelectedRowKeys,
-//   });
-
-//   return IndexWithDelete;
-// }
-
-// export default IndexWithHOC;
-
-// Wrap the Index component with the withDefaultDelete HOC
-// const IndexWithDelete = withDefaultDelete({
-//   Component: Index,
-//   useDeleteRecordsMutation,
-//   selectedRowKeys,
-//   setSelectedRowKeys,
-// });
-
-// export default IndexWithDelete;
 export default Index;

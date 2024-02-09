@@ -1,33 +1,49 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../store/features/uamModule/devices/selectors";
 import {
   useFetchRecordsQuery,
   useDismantleRecordsMutation,
 } from "../../../store/features/uamModule/devices/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../store/features/uamModule/devices/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling, { TYPE_BULK } from "../../../hooks/useErrorHandling";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import {
+  DISMANTLE_PROMPT,
+  DISMANTLE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
+import DetailsByIPAdressModal from "./modal";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
-import DetailsByIPAdressModal from "./modal";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
 
-  // states required in hooks
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
@@ -42,7 +58,7 @@ const Index = () => {
     default_export: { handleClick: handleDefaultExport },
     default_dismantle: {
       handleClick: handleDismantle,
-      visible: selectedRowKeys.length > 0,
+      visible: selectedRowKeys.length > 0 && pageEditable,
     },
   });
 
@@ -56,7 +72,6 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  // const dataSource = [{ ip_address: "10.20.23.71" }];
   const dataSource = useSelector(selectTableData);
 
   // apis
@@ -121,18 +136,15 @@ const Index = () => {
 
   function handleDismantle() {
     if (selectedRowKeys.length > 0) {
-      handleCallbackAlert(
-        "Are you sure you want dismantle these records?",
-        dismantleData
-      );
+      handleCallbackAlert(DISMANTLE_PROMPT, dismantleData);
     } else {
-      handleInfoAlert("No record has been selected to dismantle!");
+      handleInfoAlert(DISMANTLE_SELECTION_PROMPT);
     }
   }
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -140,7 +152,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {openDetailsByIPAddressModal ? (
         <DetailsByIPAdressModal
           handleClose={handleDetailsByIPAddressModalClose}
@@ -168,10 +180,10 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
-        selectedRowKeys={selectedRowKeys}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

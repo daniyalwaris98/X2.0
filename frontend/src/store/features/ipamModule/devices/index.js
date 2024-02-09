@@ -8,7 +8,6 @@ import {
 const initialState = {
   all_data: [],
   atoms_to_add_in_ipam_devices: [],
-  ipam_devices_fetch_dates: [],
 };
 
 const defaultSlice = createSlice({
@@ -24,15 +23,9 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.getIpamDevicesFetchDates.matchFulfilled,
-        (state, action) => {
-          // state.ipam_devices_fetch_dates = action.payload;
-        }
-      )
-      .addMatcher(
         extendedApi.endpoints.getIpamDevicesByFetchDate.matchFulfilled,
         (state, action) => {
-          // state.all_data = action.payload;
+          state.all_data = action.payload;
         }
       )
       .addMatcher(
@@ -51,20 +44,6 @@ const defaultSlice = createSlice({
               state.all_data = [responseItem, ...state.all_data];
             }
           });
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.deleteIpamDevices.matchFulfilled,
-        (state, action) => {
-          const deletedIds = action.payload?.data || [];
-          if (deletedIds.length > 0) {
-            state.all_data = state.all_data.filter((item) => {
-              const shouldKeepItem = deletedIds.some((deletedId) => {
-                return deletedId === item[TABLE_DATA_UNIQUE_ID];
-              });
-              return !shouldKeepItem;
-            });
-          }
         }
       )
       .addMatcher(

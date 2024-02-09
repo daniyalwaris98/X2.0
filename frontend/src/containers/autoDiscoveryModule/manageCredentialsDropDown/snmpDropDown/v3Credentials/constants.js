@@ -13,5 +13,6 @@ export const indexColumnNameConstants = {
   AUTHENTICATION_PASSWORD: "authentication_password",
   ENCRYPTION_PROTOCOL: "encryption_protocol",
   ENCRYPTION_PASSWORD: "encryption_password",
+  COMMUNITY: "community",
   ACTIONS: "actions",
 };

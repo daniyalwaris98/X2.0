@@ -102,6 +102,7 @@ class XRPuller(object):
                 try:
                     print("show inventory", file=sys.stderr)
                     inv = device.send_command('show inventory', use_textfsm=True, delay_factor=5)
+                    print("inv is:::::::::::::::::",inv,file=sys.stderr)
                     if isinstance(inv, str): 
                         print("Send show inventory all", file=sys.stderr)
                         inv = device.send_command('show inventory all', use_textfsm=True)
@@ -120,7 +121,9 @@ class XRPuller(object):
                         self.inv_data[host['ip_address']].update({'device':
                                                     {'ip_addr': host['ip_address'], 
                                                     'serial_number': data['sn'], 
-                                                    'pn_code': data['pid'], 
+                                                    'pn_code': data['pid'],
+                                                    'chasis_name': data['name'],
+                                                    "desc": data['descr'],
                                                     'hw_version': data['vid'], 
                                                     "software_version": version, 
                                                     "desc": data['descr'], 
@@ -138,7 +141,9 @@ class XRPuller(object):
                                                         {'ip_addr': host['ip_address'], 
                                                     'serial_number': data['sn'], 
                                                     'pn_code': data['pid'], 
-                                                    'hw_version': data['vid'], 
+                                                    'hw_version': data['vid'],
+                                                    'chasis_name': data['name'],
+                                                    "desc": data['descr'],
                                                     "software_version": version, 
                                                     "desc": data['descr'], 
                                                     "max_power": None if not max_power else max_power, 

@@ -50,6 +50,7 @@ class IOSPuller(object):
                 # device = ConnectHandler(**host)
                 # device.enable()
                 self.is_login = True
+                self.inv_data[host['ip_address']] = {"success": "success"}
                 print("devices are:::::::::::",device, file=sys.stderr)
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
                 break
@@ -62,6 +63,7 @@ class IOSPuller(object):
             self.inv_data[host['ip_address']] = {"error": "Login Failed"}
             date = datetime.now()
             self.failed = True
+            self.inv_data['status'] = "error"
             # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
 
             # file_name = time.strftime("%d-%m-%Y")+".txt"
@@ -148,10 +150,11 @@ class IOSPuller(object):
                         self.inv_data[host['ip_address']].update({'device':
                                                                       {'ip_addr': host['ip_address'],
                                                                        'serial_number': data['sn'],
+                                                                       'chasis_name': data['name'],
+                                                                       "desc": data['descr'],
                                                                        'pn_code': data['pid'],
                                                                        'hw_version': data['vid'],
                                                                        "software_version": version,
-                                                                       "desc": data['descr'],
                                                                        "max_power": None if not max_power else max_power,
                                                                        "manufecturer": "Cisco",
                                                                        "status": "Production",
@@ -167,10 +170,11 @@ class IOSPuller(object):
                     self.inv_data[host['ip_address']].update({'device':
                                                                   {'ip_addr': host['ip_address'],
                                                                    'serial_number': data['sn'],
+                                                                   'chasis_name': data['name'],
+                                                                    "desc": data['descr'],
                                                                    'pn_code': data['pid'],
                                                                    'hw_version': data['vid'],
                                                                    "software_version": version,
-                                                                   "desc": data['descr'],
                                                                    "max_power": None if not max_power else max_power,
                                                                    "manufecturer": "Cisco",
                                                                    "status": "Production",

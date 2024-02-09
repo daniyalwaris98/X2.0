@@ -6,16 +6,17 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/ipam/ipam_device/get_all_ip_details",
     }),
 
-    getIpDetailsBySubnetAddress: builder.query({
-      query: (params) => ({
-        url: `/api/v1/ipam/ipam_device/get_ip_detail_by_subnet`,
-        params,
+    getIpDetailsBySubnetAddress: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/ipam/ipam_device/get_ip_detail_by_subnet",
+        method: "POST",
+        body: data,
       }),
     }),
   }),
 });
 
-export const {
-  useGetAllIpamIPDetailsQuery: useFetchRecordsQuery,
-  useGetIpDetailsBySubnetAddressQuery,
-} = extendedApi;
+export const { useGetIpDetailsBySubnetAddressMutation } = extendedApi;
+
+export const useFetchRecordsLazyQuery =
+  extendedApi.endpoints.getAllIpamIPDetails.useLazyQuery;

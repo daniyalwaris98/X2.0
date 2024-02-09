@@ -1,12 +1,12 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
-import { DEFAULT_PASSWORD, indexColumnNameConstants } from "./constants";
 import { DefaultTextWithSwitch } from "../../../components/textWithSwitch";
+import { DEFAULT_PASSWORD, indexColumnNameConstants } from "./constants";
 
-export function useIndexTableColumnDefinitions({ handleEdit }) {
-  const theme = useTheme();
-
+export function useIndexTableColumnDefinitions({
+  pageEditable,
+  handleEdit,
+} = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.PASSWORD_GROUP,
     indexColumnNameConstants.PASSWORD_GROUP_TYPE,
@@ -45,7 +45,17 @@ export function useIndexTableColumnDefinitions({ handleEdit }) {
         ) : null;
       },
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const dataKeys = columnDefinitions
     .map((item) => {

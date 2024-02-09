@@ -219,7 +219,7 @@ def get_top_interfaces():
         |> yield(name: "unique")'
         result = query_api.query(org="monetx", query=query)
         results = []
-
+        print(result)
         for table in result:
             for record in table.records:
                 obj_dict = {}
@@ -260,8 +260,9 @@ def get_top_interfaces():
                         continue
 
                     results.append(obj_dict)
-
+        print(results)
         sorted_list = sorted(results, key=lambda k: k["download_speed"], reverse=True)
+        print(sorted_list)
         output = {}
         for v in sorted_list:
             if "interface_name" in v:
@@ -269,7 +270,7 @@ def get_top_interfaces():
                 output[interface_name] = v
 
         output = list(output.values())
-
+        print(output)
         if len(output) > 9:
             return JSONResponse(content=output[0:9], status_code=200)
         else:

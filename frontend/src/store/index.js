@@ -1,9 +1,18 @@
 import { configureStore } from "@reduxjs/toolkit";
 import { monetxApi } from "./features/apiSlice";
 
+// login
+import loginReducer, { logout } from "./features/login";
+
 // admin module
+import adminFailedDevicesLandingReducer from "./features/adminModule/failedDevices/landing";
 import adminAutoDiscoveryFailedDevicesReducer from "./features/adminModule/failedDevices/autoDiscovery";
+import adminIpamFailedDevicesReducer from "./features/adminModule/failedDevices/ipam";
+import adminMonitoringFailedDevicesReducer from "./features/adminModule/failedDevices/monitoring";
+import adminNcmFailedDevicesReducer from "./features/adminModule/failedDevices/ncm";
+import adminUamFailedDevicesReducer from "./features/adminModule/failedDevices/uam";
 import adminRolesReducer from "./features/adminModule/roles";
+import adminMembersReducer from "./features/adminModule/members";
 
 // atom module
 import atomAtomsReducer from "./features/atomModule/atoms";
@@ -99,6 +108,14 @@ import dropDownsReducer from "./features/dropDowns";
 import { persistStore, persistReducer } from "redux-persist";
 import storage from "redux-persist/lib/storage";
 import { combineReducers } from "redux";
+import {
+  FLUSH,
+  REHYDRATE,
+  PAUSE,
+  PERSIST,
+  PURGE,
+  REGISTER,
+} from "redux-persist";
 
 const persistConfig = {
   key: "root", // key for the localStorage object
@@ -108,9 +125,18 @@ const persistConfig = {
 };
 
 const rootReducer = combineReducers({
+  // login
+  login: loginReducer,
+
   // admin module
+  admin_failed_devices_landing: adminFailedDevicesLandingReducer,
   admin_auto_discovery_failed_devices: adminAutoDiscoveryFailedDevicesReducer,
+  admin_ipam_failed_devices: adminIpamFailedDevicesReducer,
+  admin_monitoring_failed_devices: adminMonitoringFailedDevicesReducer,
+  admin_ncm_failed_devices: adminNcmFailedDevicesReducer,
+  admin_uam_failed_devices: adminUamFailedDevicesReducer,
   admin_roles: adminRolesReducer,
+  admin_members: adminMembersReducer,
 
   // atom module
   atom_atoms: atomAtomsReducer,
@@ -211,7 +237,24 @@ const persistedReducer = persistReducer(persistConfig, rootReducer);
 export const store = configureStore({
   reducer: persistedReducer,
   middleware: (getDefaultMiddleware) =>
-    getDefaultMiddleware().concat(monetxApi.middleware),
+    getDefaultMiddleware({
+      serializableCheck: {
+        // Ignore these action types
+        ignoredActions: [FLUSH, REHYDRATE, PAUSE, PERSIST, PURGE, REGISTER],
+      },
+    }).concat(monetxApi.middleware),
 });
 
 export const persistor = persistStore(store);
+
+// Define the function to clear local storage on logout
+export const clearLocalStorageOnLogout = () => {
+  console.log("in clearLocalStorageOnLogout");
+  // Dispatch the logout action for the login slice
+  store.dispatch(logout());
+
+  // Repeat the above line for other slices if you have more
+
+  // Clear the local storage using persister.purge()
+  persistor.purge();
+};

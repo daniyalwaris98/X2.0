@@ -610,26 +610,30 @@ description="API to use in the manage configuration to get the backup on the bul
 def get_true_backup():
     try:
         backups_list = []
-        backups = configs.db.query(NcmDeviceTable).filter_by(backup_state = 'True').all()
-        print("backups are :::::::::::::::::::::::::",backups,file=sys.stderr)
+        backups = configs.db.query(NcmDeviceTable).filter_by(backup_state='True').all()
+        print("backups are :::::::::::::::::::::::::", backups, file=sys.stderr)
+
         for backup in backups:
-            atom_exsist = configs.db.query(AtomTable).filter_by(atom_id = backup.atom_id).first()
-            backup_dict = {
-                "ncm_device_id": backup.ncm_device_id,
-                "status":backup.status,
-                "config_change_date": backup.config_change_date,
-                "ip_address":atom_exsist.ip_address
-            }
-            backups_list.append(backup_dict)
-            backup.backup_state = 'False'
-            configs.db.merge(backup)
-            configs.db.commit()
+            if backup:
+                atom_exist = configs.db.query(AtomTable).filter_by(atom_id=backup.atom_id).first()
+                backup_dict = {
+                    "ncm_device_id": backup.ncm_device_id,
+                    "status": backup.status,
+                    "config_change_date": backup.config_change_date,
+                    "ip_address": atom_exist.ip_address
+                }
+                backups_list.append(backup_dict)
+                backup.backup_state = 'False'
+                configs.db.merge(backup)
+                configs.db.commit()
+                print("backup state set to false ::::::::::::::", file=sys.stderr)
+
+        # Move the return statement outside the loop
         return backups_list
 
     except Exception as e:
         traceback.print_exc()
-        return JSONResponse(content="Error Occured While Getting the true backup",status_code=500)
-
+        return JSONResponse(content="Error Occurred While Getting the true backup", status_code=500)
 
 @router.post('/delete_configuration',
              responses={
@@ -1458,5 +1462,11 @@ def restore_configuration(ncm_history_id:list[int]):
 #         return "Server Error While Fetching Configuration Dates", 500
 #
 #
+
+
+
+
+
+
 
 

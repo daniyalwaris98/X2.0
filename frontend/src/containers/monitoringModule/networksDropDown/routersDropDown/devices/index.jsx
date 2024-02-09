@@ -1,37 +1,50 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/networksDropDown/routers/devices/apis";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../../store/features/monitoringModule/networksDropDown/routers/devices/selectors";
+import { setSelectedDevice } from "../../../../../store/features/monitoringModule/devices";
+import { useFetchRecordsQuery } from "../../../../../store/features/monitoringModule/networksDropDown/routers/devices/apis";
 import { jsonToExcel } from "../../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../../hooks/useErrorHandling";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../../utils/constants";
+import { useAuthorization } from "../../../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../../components/spinners";
+import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../../../devicesLanding/summary/constants";
+import { LANDING_PAGE_PATH } from "../../../devicesLanding";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import {
+  PAGE_PATH,
   DESCRIPTIVE_PAGE_NAME,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../../components/pageSections";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
-import { setSelectedDevice } from "../../../../../store/features/monitoringModule/devices";
-import { PAGE_PATH as PAGE_PATH_SUMMARY } from "../../../devicesLanding/summary/constants";
-import { LANDING_PAGE_PATH } from "../../../devicesLanding";
-import { MODULE_PATH } from "../../../index";
+import { MODULE_PATH } from "../../..";
+import { MAIN_LAYOUT_PATH } from "../../../../../layouts/mainLayout";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
     handleIpAddressClick,
@@ -72,12 +85,14 @@ const Index = () => {
   // handlers
   function handleIpAddressClick(record) {
     dispatch(setSelectedDevice(record));
-    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`);
+    navigate(
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`
+    );
   }
 
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -85,7 +100,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -106,7 +121,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

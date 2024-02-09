@@ -29,7 +29,7 @@ export default function Actions() {
           <IconButton
             onClick={() => {
               // Handle edit button click for this row
-              console.log("Edit button clicked for row", rowIndex);
+              // console.log("Edit button clicked for row", rowIndex);
             }}
           >
             <EditIcon />
@@ -37,7 +37,7 @@ export default function Actions() {
           <IconButton
             onClick={() => {
               // Handle delete button click for this row
-              console.log("Delete button clicked for row", rowIndex);
+              // console.log("Delete button clicked for row", rowIndex);
             }}
           >
             <DeleteIcon />

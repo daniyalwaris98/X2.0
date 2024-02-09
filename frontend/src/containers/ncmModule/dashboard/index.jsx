@@ -5,19 +5,25 @@ import ConfigurationBackupSummary from "./components/ConfigurationBackupSummary"
 import Compliance from "./components/Compliance";
 import ChangeByTimeChart from "./components/ChangeByTimeChart";
 import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
+import RcmAlarms from "../../../components/charts/RcmAlarms";
+
 import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
-import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
-import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
+import ConfigurationChangeByVendor from "./components/ConfigurationChangeByVendor";
+import {
+  selectConfigurationBackupSummary,
+  selectConfigurationChangeByDevice,
+  selectNcmChangeByVendor,
+} from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
 
 import {
   useGetConfigurationChangeByDeviceQuery,
-  useDeleteRecordsMutation,
-  useBulkBackupNcmConfigurationsByDeviceIdsMutation,
+  useGetConfigurationBackupSummaryQuery,
+  useGetNcmChangeByVendorQuery,
 } from "../../../store/features/ncmModule/dashboard/apis";
 import "./index.css";
 import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
-
+import RcmAlarmDeviceTable from "./components/RcmAlarmDeviceTable";
 
 function Index() {
   const {
@@ -28,11 +34,37 @@ function Index() {
     error: fetchRecordsError,
   } = useGetConfigurationChangeByDeviceQuery();
 
-  // console.log("data", fetchRecordsData)
+  const {
+    data: backupSummaryData,
+    isSuccess: isBackupSummarySuccess,
+    isLoading: isBackupSummaryLoading,
+    isError: isBackupSummaryError,
+    error: backupSummaryError,
+  } = useGetConfigurationBackupSummaryQuery();
+  const {
+    data: vendorData,
+    isSuccess: isVendorSuccess,
+    isLoading: isVendorLoading,
+    isError: isVendorError,
+    error: vendorError,
+  } = useGetConfigurationBackupSummaryQuery();
+  const {
+    data: ncmData,
+    isSuccess: isNcmSuccess,
+    isLoading: isNcmLoading,
+    isError: isNcmError,
+    error: ncmError,
+  } = useGetNcmChangeByVendorQuery();
 
-  const dataSource = useSelector(selectTableData);
+  console.log("vendor data ", vendorData);
 
-  console.log("dataaaaaaaaa", dataSource);
+  const backupSummary = useSelector(selectConfigurationBackupSummary);
+  const timeLineChart = useSelector(selectConfigurationChangeByDevice);
+  const graph = useSelector(selectNcmChangeByVendor);
+
+  console.log("backupSummaryhusnain", backupSummaryData);
+  // console.log("timeLineChart", timeLineChart);
+
   const companyData = {
     Cisco: 50,
     Fortinet: 10,
@@ -43,69 +75,72 @@ function Index() {
     Hp: 20,
     Juniper: 10,
   };
+  const backsummary = {
+    backupSuccess: 4.2,
+    backupFailure: 2,
+    notBackup: 1,
+  };
   return (
     <>
-   <Row gutter={[32, 32]} justify="space-between">
-  <Col span={8}>
-    <div className="container">
-      <h6 className="heading">
-        Configuration Backup Summary
-      </h6>
-      <ConfigurationBackupSummary />
-    </div>
-  </Col>
+      <Row gutter={[32, 32]} justify="space-between">
+        <Col span={8}>
+          <div className="container">
+            <h6 className="heading">Configuration Backup Summary</h6>
+            <ConfigurationBackupSummary data={backsummary} />
+          </div>
+        </Col>
 
-  <Col span={16}>
-    <div className="container">
-      <h6 className="heading">
-        Configuration Change by Device
-      </h6>
-      {/* <ChangeByTimeChart /> */}
-      <ConfigurationByTimeLineChart  companyData={dataSource}/>
-    </div>
-  </Col>
-</Row>
+        <Col span={16}>
+          <div className="container">
+            <h6 className="heading">Configuration Change by Device</h6>
+            {/* <ChangeByTimeChart /> */}
+            <ConfigurationByTimeLineChart companyData={timeLineChart} />
+          </div>
+        </Col>
+      </Row>
 
-<Row gutter={[24, 24]} justify="space-between" className="page_row">
-  <Col span={14}>
-    <div className="container">
-      <h6 className="heading">
-        Recent RCM Alarms
-      </h6>
-      <RecentRcmAlarmsChart />
-    </div>
-  </Col>
+      <Row gutter={[24, 24]} justify="space-between" className="page_row">
+        <Col span={14}>
+          <div className="container">
+            <h6 className="heading">Recent RCM Alarms</h6>
 
-  <Col span={10}>
-    <div className="container">
-      <h6 className="heading">
-        Compliance
-      </h6>
-      <Compliance />
-    </div>
-  </Col>
-</Row>
+            <RecentRcmAlarmsChart />
+          </div>
+        </Col>
 
-<Row gutter={[24, 24]} justify="space-between" className="page_row">
-  <Col span={12}>
-    <div className="container">
-      <h6 className="heading">
-        Configuration Change by Vendor
-      </h6>
-      <ConfigurationChangeByVendor />
-    </div>
-  </Col>
+        <Col span={10}>
+          <div className="container">
+            <h6 className="heading">Compliance</h6>
+            <Compliance />
+          </div>
+        </Col>
+      </Row>
 
-  <Col span={12}>
-    <div className="container">
-      <h6 className="heading">
-        NCM Device Summary
-      </h6>
-      <NcmDeviceSummaryTable />
-    </div>
-  </Col>
-</Row>
+      <Row gutter={[24, 24]} justify="space-between" className="page_row">
+        <Col span={12}>
+          <div className="container">
+            <h6 className="heading">Configuration Change by Vendor</h6>
+            <ConfigurationChangeByVendor
+              deviceNames={[
+                "Cisco",
+                "Fortinet",
+                "Citrix",
+                "PaloAlto",
+                "NetScaler",
+              ]}
+              time={["11:00", "11:30", "12:00", "12:30", "01:00"]}
+              values={[5, 10, 6]}
+            />
+          </div>
+        </Col>
 
+        <Col span={12}>
+          <div className="container">
+            <h6 className="heading">NCM Device Summary</h6>
+            <NcmDeviceSummaryTable />
+          </div>
+        </Col>
+      </Row>
     </>
   );
 }

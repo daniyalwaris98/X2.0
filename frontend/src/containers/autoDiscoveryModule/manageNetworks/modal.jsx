@@ -1,21 +1,25 @@
 import React, { useEffect } from "react";
-import { useForm } from "react-hook-form";
-import FormModal from "../../../components/dialogs";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../components/formUnits";
-import { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import { selectActiveStatusNames } from "../../../store/features/dropDowns/selectors";
+import { useFetchActiveStatusNamesQuery } from "../../../store/features/dropDowns/apis";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../store/features/autoDiscoveryModule/manageNetworks/apis";
-import { useSelector } from "react-redux";
-import useErrorHandling from "../../../hooks/useErrorHandling";
 import { formSetter, getTitle } from "../../../utils/helpers";
-import { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
+import FormModal from "../../../components/dialogs";
+import DefaultFormUnit from "../../../components/formUnits";
+import { SelectFormUnit } from "../../../components/formUnits";
+import DefaultDialogFooter from "../../../components/dialogFooters";
+import DefaultSpinner from "../../../components/spinners";
 import { ELEMENT_NAME } from "./constants";
 import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
 
@@ -37,8 +41,6 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
   // useForm hook
   const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
@@ -72,6 +74,15 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     },
   ] = useUpdateRecordMutation();
 
+  // fetching dropdowns data from backend using apis
+  const {
+    data: fetchActiveStatusNamesData,
+    isSuccess: isFetchActiveStatusNamesSuccess,
+    isLoading: isFetchActiveStatusNamesLoading,
+    isError: isFetchActiveStatusNamesError,
+    error: fetchActiveStatusNamesError,
+  } = useFetchActiveStatusNamesQuery();
+
   // error handling custom hooks
   useErrorHandling({
     data: addRecordData,
@@ -91,6 +102,17 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: fetchActiveStatusNamesData,
+    isSuccess: isFetchActiveStatusNamesSuccess,
+    isError: isFetchActiveStatusNamesError,
+    error: fetchActiveStatusNamesError,
+    type: TYPE_FETCH,
+  });
+
+  // getting dropdowns data from the store
+  const activeStatusNames = useSelector(selectActiveStatusNames);
+
   // on form submit
   const onSubmit = (data) => {
     if (recordToEdit) {
@@ -103,40 +125,42 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container>
-          <Grid item xs={12}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.NETWORK_NAME}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SUBNET}
-              required
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.SCAN_STATUS}
-              options={["Active", "InActive"]}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.EXCLUDED_IP_RANGE}
-              required
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={12}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.NETWORK_NAME}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SUBNET}
+                required
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.SCAN_STATUS}
+                options={activeStatusNames ? activeStatusNames : []}
+                spinning={isFetchActiveStatusNamesLoading}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.EXCLUDED_IP_RANGE}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

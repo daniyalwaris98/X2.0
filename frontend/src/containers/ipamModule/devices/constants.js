@@ -1,8 +1,7 @@
 export const PAGE_NAME = "Devices";
 export const ELEMENT_NAME = "Device";
 export const PAGE_PATH = "devices";
-export const FILE_NAME_EXPORT_ALL_DATA = "all_devices";
-export const FILE_NAME_EXPORT_TEMPLATE = "devices_template";
+export const FILE_NAME_EXPORT_ALL_DATA = "all_ipam_devices";
 export const TABLE_DATA_UNIQUE_ID = "ipam_device_id";
 export const indexColumnNameConstants = {
   IPAM_DEVICE_ID: TABLE_DATA_UNIQUE_ID,

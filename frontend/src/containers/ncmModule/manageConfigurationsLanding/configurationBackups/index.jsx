@@ -1,41 +1,52 @@
 import React, { useEffect, useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import CompareModal from "./compareModal";
-import RestoreModal from "./restoreModal";
+import { Grid } from "@mui/material";
+import { useSelector } from "react-redux";
+import { selectTableData } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
+import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
 import {
   useFetchRecordsMutation,
   useBackupSingleNcmConfigurationByNcmDeviceIdMutation,
 } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/apis";
-import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/ncmModule/manageConfigurations/configurationBackups/selectors";
-import { selectSelectedDevice } from "../../../../store/features/ncmModule/manageConfigurations/selectors";
+import { useAuthorization } from "../../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_SINGLE,
+  TYPE_FETCH,
 } from "../../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
-import { PAGE_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
-import { TABLE_DATA_UNIQUE_ID as MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID } from "../../manageConfigurations/constants";
-import { TYPE_FETCH, TYPE_BULK } from "../../../../hooks/useErrorHandling";
 import DefaultPageTableSection from "../../../../components/pageSections";
-import { Grid } from "@mui/material";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../components/spinners";
+import { TABLE_DATA_UNIQUE_ID as MANAGE_CONFIGURATIONS_TABLE_DATA_UNIQUE_ID } from "../../manageConfigurations/constants";
+import CompareModal from "./compareModal";
+import RestoreModal from "./restoreModal";
 import BackupDetails from "./backupDetails";
-import { Spin } from "antd";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import { PAGE_NAME, PAGE_PATH, TABLE_DATA_UNIQUE_ID } from "./constants";
+import { MODULE_PATH } from "../..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const selectedDevice = useSelector(selectSelectedDevice);
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
-  const { columnDefinitions } = useIndexTableColumnDefinitions({});
+  const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
-    default_restore: { handleClick: handleRestoreModalOpen },
-    default_backup: { handleClick: handleSingleBackup },
+    default_restore: {
+      handleClick: handleRestoreModalOpen,
+    },
+    default_backup: { handleClick: handleSingleBackup, visible: pageEditable },
     default_compare: { handleClick: handleCompareModalOpen },
   });
 
@@ -49,11 +60,8 @@ const Index = () => {
   const [selectedRowKey, setSelectedRowKey] = useState(null);
 
   // selectors
-  // const dataSource = [
-  //   { ncm_history_id: 1, ip_address: "452" },
-  //   { ncm_history_id: 2, ip_address: "312" },
-  // ];
   const dataSource = useSelector(selectTableData);
+  const selectedDevice = useSelector(selectSelectedDevice);
 
   // apis
   const [
@@ -134,8 +142,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading || isSingleBackupLoading}>
-      {/* <Spin spinning={false}> */}
+    <DefaultSpinner spinning={isFetchRecordsLoading || isSingleBackupLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -162,6 +169,7 @@ const Index = () => {
           handleClose={handleRestoreModalClose}
           open={restoreModalOpen}
           ncmDeviceId={selectedDevice?.ncm_device_id}
+          pageEditable={pageEditable}
         />
       ) : null}
 
@@ -174,18 +182,21 @@ const Index = () => {
             displayColumns={displayColumns}
             dataSource={dataSource}
             rowClickable={true}
-            selectedRowKey={selectedRowKey}
+            selectedRowKey={pageEditable ? selectedRowKey : null}
             setSelectedRowKey={setSelectedRowKey}
             dynamicWidth={false}
             scroll={false}
           />
         </Grid>
         <Grid item xs={12}>
-          <BackupDetails ncmHistoryId={selectedRowKey} />
+          <BackupDetails
+            ncmHistoryId={selectedRowKey}
+            pageEditable={pageEditable}
+          />
         </Grid>
       </Grid>
       <br />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

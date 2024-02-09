@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../containers/atomModule/passwordGroups/constants";
+} from "../../../../containers/adminModule/members/constants";
 
 const initialState = {
   all_data: [],
@@ -16,31 +16,13 @@ const defaultSlice = createSlice({
   extraReducers(builder) {
     builder
       .addMatcher(
-        extendedApi.endpoints.fetchAtomPasswordGroups.matchFulfilled,
+        extendedApi.endpoints.getAllAdminMembers.matchFulfilled,
         (state, action) => {
           state.all_data = action.payload;
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addAtomPasswordGroups.matchFulfilled,
-        (state, action) => {
-          action.payload.data.forEach((responseItem) => {
-            const indexToUpdate = state.all_data.findIndex((tableItem) => {
-              return (
-                tableItem[TABLE_DATA_UNIQUE_ID] ===
-                responseItem[TABLE_DATA_UNIQUE_ID]
-              );
-            });
-            if (indexToUpdate !== -1) {
-              state.all_data[indexToUpdate] = responseItem;
-            } else {
-              state.all_data = [responseItem, ...state.all_data];
-            }
-          });
-        }
-      )
-      .addMatcher(
-        extendedApi.endpoints.deleteAtomPasswordGroups.matchFulfilled,
+        extendedApi.endpoints.deleteAdminMembers.matchFulfilled,
         (state, action) => {
           const deletedIds = action.payload?.data || [];
           if (deletedIds.length > 0) {
@@ -54,13 +36,13 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.addAtomPasswordGroup.matchFulfilled,
+        extendedApi.endpoints.addAdminMember.matchFulfilled,
         (state, action) => {
           state.all_data = [action.payload.data, ...state.all_data];
         }
       )
       .addMatcher(
-        extendedApi.endpoints.updateAtomPasswordGroup.matchFulfilled,
+        extendedApi.endpoints.updateAdminMember.matchFulfilled,
         (state, action) => {
           let objectToReplace = action.payload.data;
           state.all_data = state.all_data.map((item) => {

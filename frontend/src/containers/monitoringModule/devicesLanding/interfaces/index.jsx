@@ -1,39 +1,52 @@
 import React, { useState, useEffect } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/apis";
-import { setSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces";
-import { jsonToExcel } from "../../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../../hooks/useErrorHandling";
-import useSweetAlert from "../../../../hooks/useSweetAlert";
-import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
-import DefaultTableConfigurations from "../../../../components/tableConfigurations";
-import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
-import {
-  PAGE_NAME,
-  FILE_NAME_EXPORT_ALL_DATA,
-  TABLE_DATA_UNIQUE_ID,
-} from "./constants";
-import { TYPE_FETCH } from "../../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../../components/pageSections";
+import { useNavigate } from "react-router-dom";
+import { useDispatch } from "react-redux";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/selectors";
 import { selectSelectedDevice } from "../../../../store/features/monitoringModule/devices/selectors";
-import { IP_ADDRESS as DEVICE_IP_ADDRESS } from "../../devices/constants";
+import { setSelectedInterface } from "../../../../store/features/monitoringModule/devicesLanding/interfaces";
+import { useFetchRecordsMutation } from "../../../../store/features/monitoringModule/devicesLanding/interfaces/apis";
+import { jsonToExcel } from "../../../../utils/helpers";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
+import { useAuthorization } from "../../../../hooks/useAuth";
+import useErrorHandling, {
+  TYPE_FETCH,
+} from "../../../../hooks/useErrorHandling";
+import useSweetAlert from "../../../../hooks/useSweetAlert";
+import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
+import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
+import DefaultPageTableSection from "../../../../components/pageSections";
+import DefaultTableConfigurations from "../../../../components/tableConfigurations";
+import DefaultSpinner from "../../../../components/spinners";
 import { PAGE_PATH as PAGE_PATH_BANDWIDTHS } from "../bandwidths/constants";
 import { LANDING_PAGE_PATH } from "../../devicesLanding";
-import { MODULE_PATH } from "../../index";
-import { useNavigate } from "react-router-dom";
-import { useDispatch } from "react-redux";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import {
+  PAGE_NAME,
+  PAGE_PATH,
+  FILE_NAME_EXPORT_ALL_DATA,
+  TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+} from "./constants";
+import { MODULE_PATH } from "../..";
+import { MAIN_LAYOUT_PATH } from "../../../../layouts/mainLayout";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
-  const navigate = useNavigate();
-  const dispatch = useDispatch();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
+  const navigate = useNavigate();
+  const dispatch = useDispatch();
   const { handleSuccessAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
     handleIpAddressClick,
@@ -51,8 +64,7 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  // const dataSource = useSelector(selectTableData);
-  const dataSource = [{ ip_address: "1234567" }];
+  const dataSource = useSelector(selectTableData);
   const selectedDevice = useSelector(selectSelectedDevice);
 
   // apis
@@ -80,7 +92,8 @@ const Index = () => {
   useEffect(() => {
     if (selectedDevice) {
       fetchRecords({
-        [DEVICE_IP_ADDRESS]: selectedDevice[DEVICE_IP_ADDRESS],
+        [indexColumnNameConstants.IP_ADDRESS]:
+          selectedDevice[indexColumnNameConstants.IP_ADDRESS],
       });
     }
   }, []);
@@ -88,7 +101,7 @@ const Index = () => {
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -97,11 +110,13 @@ const Index = () => {
 
   function handleIpAddressClick(record) {
     dispatch(setSelectedInterface(record));
-    navigate(`/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_BANDWIDTHS}`);
+    navigate(
+      `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_BANDWIDTHS}`
+    );
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {tableConfigurationsOpen ? (
         <DefaultTableConfigurations
           columns={columns}
@@ -122,7 +137,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

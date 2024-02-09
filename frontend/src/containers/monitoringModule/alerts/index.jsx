@@ -1,28 +1,39 @@
 import React, { useState } from "react";
-import { useTheme } from "@mui/material/styles";
-import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/alerts/apis";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/monitoringModule/alerts/selectors";
+import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/alerts/apis";
 import { jsonToExcel } from "../../../utils/helpers";
-import { Spin } from "antd";
-import useErrorHandling from "../../../hooks/useErrorHandling";
-import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
-import { useIndexTableColumnDefinitions } from "./columnDefinitions";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
+import { useIndexTableColumnDefinitions } from "./columnDefinitions";
+import DefaultTableConfigurations from "../../../components/tableConfigurations";
+import DefaultPageTableSection from "../../../components/pageSections";
+import DefaultSpinner from "../../../components/spinners";
+import AlertHistoryModal from "./alertHistoryModal";
 import {
   PAGE_NAME,
+  PAGE_PATH,
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
 } from "./constants";
-import { TYPE_FETCH } from "../../../hooks/useErrorHandling";
-import DefaultPageTableSection from "../../../components/pageSections";
-import AlertHistoryModal from "./alertHistoryModal";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // theme
-  const theme = useTheme();
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
 
   // hooks
   const { handleSuccessAlert } = useSweetAlert();
@@ -44,8 +55,7 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = [{ ip_address: "123" }];
-  // const dataSource = useSelector(selectTableData);
+  const dataSource = useSelector(selectTableData);
 
   // apis
   const {
@@ -68,7 +78,7 @@ const Index = () => {
   // handlers
   function handleDefaultExport() {
     jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert("File exported successfully.");
+    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {
@@ -85,7 +95,7 @@ const Index = () => {
   }
 
   return (
-    <Spin spinning={isFetchRecordsLoading}>
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
       {openAlertHistoryModal ? (
         <AlertHistoryModal
           handleClose={handleCloseAlertHistoryModal}
@@ -114,7 +124,7 @@ const Index = () => {
         displayColumns={displayColumns}
         dataSource={dataSource}
       />
-    </Spin>
+    </DefaultSpinner>
   );
 };
 

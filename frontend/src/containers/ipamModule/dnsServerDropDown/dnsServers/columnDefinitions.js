@@ -1,18 +1,16 @@
 import React from "react";
 import { Icon } from "@iconify/react";
-import { useTheme } from "@mui/material/styles";
-import { indexColumnNameConstants } from "./constants";
 import Tooltip from "@mui/material/Tooltip";
 import DefaultAnchor from "../../../../components/anchor";
 import { DefaultTextWithSwitch } from "../../../../components/textWithSwitch";
+import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({
+  pageEditable,
   handleEdit,
   handleScan,
   handleIpAddressClick,
-}) {
-  const theme = useTheme();
-
+} = {}) {
   const columnDefinitions = [
     {
       data_key: indexColumnNameConstants.IP_ADDRESS,
@@ -63,7 +61,17 @@ export function useIndexTableColumnDefinitions({
         </div>
       ),
     },
-  ];
+  ].filter((item) => {
+    if (typeof item === "object") {
+      if (pageEditable) {
+        return true;
+      } else {
+        return item.data_key !== indexColumnNameConstants.ACTIONS;
+      }
+    } else {
+      return true;
+    }
+  });
 
   const dataKeys = columnDefinitions
     .map((item) => {

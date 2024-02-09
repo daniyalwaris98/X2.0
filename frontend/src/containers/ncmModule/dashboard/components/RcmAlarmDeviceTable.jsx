@@ -1,13 +1,7 @@
 import React from 'react';
 import RcmAlarmTableData from './rcmAlarmTable/RcmAlarmTableData';
 
-function RcmAlarmDeviceTable() {
-  const data = [
-    { Title: "Device Configuration Backup Failed", Description: "Nets - DMZ - C367-Nets- International", label: "09:43:21", date: "01-Jan-2024" },
-    { Title: "Device Configuration Backup Failed", Description: "Nets - DMZ - C367-Nets- International", label: "09:43:21", date: "01-Jan-2024" },
-    { Title: "Device Configuration Backup Failed", Description: "Nets - DMZ - C367-Nets- International", label: "09:43:21", date: "01-Jan-2024" },
-
-  ];
+function RcmAlarmDeviceTable({ data }) {
 
   return (
     <div style={{ display: "flex", justifyContent: "center", overflowY: "auto" }}>
@@ -19,10 +13,10 @@ function RcmAlarmDeviceTable() {
           {data.map((item, index) => (
             <RcmAlarmTableData
               key={index}
-              Title={item.Title}
-              Description={item.Description}
-              label={item.label}
-              date={item.date}
+              Title={item.alarm_title}
+              Description={item.alarm_description}
+              label={item.modification_date}
+              date={item.creation_date}
             />
           ))}
         </div>

@@ -1,16 +1,36 @@
-export const PAGE_NAME = "Password Groups";
-export const ELEMENT_NAME = "Password Group";
-export const PAGE_PATH = "password_groups";
-export const FILE_NAME_EXPORT_ALL_DATA = "all_password_groups";
-export const FILE_NAME_EXPORT_TEMPLATE = "password_groups_template";
-export const TABLE_DATA_UNIQUE_ID = "password_group_id";
-export const DEFAULT_PASSWORD = "default_password";
-export const TELNET = "TELNET";
+export const PAGE_NAME = "Login";
+export const PAGE_PATH = "login";
+export const ACCESS_TOKEN = "monetx_access_token";
+export const LOGIN = "login";
+export const COMPANY = "company";
+export const USER = "user";
 export const indexColumnNameConstants = {
-  PASSWORD_GROUP: "password_group",
-  PASSWORD_GROUP_TYPE: "password_group_type",
-  USER_NAME: "username",
+  USER_NAME: "user_name",
   PASSWORD: "password",
-  SECRET_PASSWORD: "secret_password",
-  ACTIONS: "actions",
+};
+export const companyConstants = {
+  COMPANY_NAME: "company_name",
+  PO_BOX: "po_box",
+  ADDRESS: "address",
+  STREET_NAME: "street_name",
+  CITY: "city",
+  COUNTRY: "country",
+  CONTACT_PERSON: "contact_person",
+  CONTACT_NUMBER: "contact_number",
+  EMAIL: "email",
+  DOMAIN_NAME: "domain_name",
+  INDUSTRY_TYPE: "industry_type",
+  LICENSE_START_DATE: "license_start_date",
+  LICENSE_END_DATE: "license_end_date",
+  DEVICE_ONBOARD_LIMIT: "device_onboard_limit",
+};
+export const userConstants = {
+  USER_NAME: "user_name",
+  EMAIL_ADDRESS: "email_address",
+  PASSWORD: "password",
+  NAME: "name",
+  ROLE: "role",
+  STATUS: "status",
+  TEAM: "team",
+  ACCOUNT_TYPE: "account_type",
 };

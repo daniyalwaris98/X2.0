@@ -1,32 +1,36 @@
-import React, { useEffect, useState } from "react";
-import { useForm } from "react-hook-form";
-import FormModal from "../../../../../components/dialogs";
+import React, { useEffect } from "react";
 import Grid from "@mui/material/Grid";
-import DefaultFormUnit from "../../../../../components/formUnits";
-import { SelectFormUnit } from "../../../../../components/formUnits";
-import DefaultDialogFooter from "../../../../../components/dialogFooters";
+import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useTheme } from "@mui/material/styles";
+import { useSelector } from "react-redux";
+import {
+  selectV3CredentialsAuthorizationProtocolNames,
+  selectV3CredentialsEncryptionProtocolNames,
+} from "../../../../../store/features/dropDowns/selectors";
+import {
+  useFetchV3CredentialsAuthorizationProtocolNamesQuery,
+  useFetchV3CredentialsEncryptionProtocolNamesQuery,
+} from "../../../../../store/features/dropDowns/apis";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../../../store/features/monitoringModule/manageCredentials/snmpCredentials/v3Credentials/apis";
+import { formSetter, getTitle } from "../../../../../utils/helpers";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../../../hooks/useErrorHandling";
+import FormModal from "../../../../../components/dialogs";
+import DefaultFormUnit from "../../../../../components/formUnits";
+import { SelectFormUnit } from "../../../../../components/formUnits";
+import DefaultDialogFooter from "../../../../../components/dialogFooters";
+import DefaultSpinner from "../../../../../components/spinners";
 import {
-  useFetchPasswordGroupNamesQuery,
-  useFetchPasswordGroupTypeNamesQuery,
-} from "../../../../../store/features/dropDowns/apis";
-import { useSelector } from "react-redux";
-import {
-  selectPasswordGroupNames,
-  selectPasswordGroupTypeNames,
-} from "../../../../../store/features/dropDowns/selectors";
-import useErrorHandling from "../../../../../hooks/useErrorHandling";
-import { formSetter } from "../../../../../utils/helpers";
-import { TYPE_SINGLE } from "../../../../../hooks/useErrorHandling";
-import { ELEMENT_NAME } from "./constants";
-import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
-import { getTitle } from "../../../../../utils/helpers";
+  ELEMENT_NAME,
+  TABLE_DATA_UNIQUE_ID,
+  indexColumnNameConstants,
+} from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.PROFILE_NAME]: yup
@@ -41,24 +45,20 @@ const schema = yup.object().shape({
   [indexColumnNameConstants.PORT]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.PORT)} is required`),
-  [indexColumnNameConstants.AUTHENTICATION_PROTOCOL]: yup
+  [indexColumnNameConstants.AUTHORIZATION_PROTOCOL]: yup
     .string()
     .required(
-      `${getTitle(
-        indexColumnNameConstants.AUTHENTICATION_PROTOCOL
-      )} is required`
+      `${getTitle(indexColumnNameConstants.AUTHORIZATION_PROTOCOL)} is required`
     ),
   [indexColumnNameConstants.ENCRYPTION_PROTOCOL]: yup
     .string()
     .required(
       `${getTitle(indexColumnNameConstants.ENCRYPTION_PROTOCOL)} is required`
     ),
-  [indexColumnNameConstants.AUTHENTICATION_PASSWORD]: yup
+  [indexColumnNameConstants.AUTHORIZATION_PASSWORD]: yup
     .string()
     .required(
-      `${getTitle(
-        indexColumnNameConstants.AUTHENTICATION_PASSWORD
-      )} is required`
+      `${getTitle(indexColumnNameConstants.AUTHORIZATION_PASSWORD)} is required`
     ),
   [indexColumnNameConstants.ENCRYPTION_PASSWORD]: yup
     .string()
@@ -68,10 +68,8 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
-  const theme = useTheme();
-
   // useForm hook
-  const { handleSubmit, control, setValue, watch, trigger } = useForm({
+  const { handleSubmit, control, setValue } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -105,9 +103,20 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // fetching dropdowns data from backend using apis
   const {
-    error: passwordGroupTypeNamesError,
-    isLoading: isPasswordGroupTypeNamesLoading,
-  } = useFetchPasswordGroupTypeNamesQuery();
+    data: authorizationProtocolData,
+    isSuccess: isAuthorizationProtocolSuccess,
+    isLoading: isAuthorizationProtocolLoading,
+    isError: isAuthorizationProtocolError,
+    error: authorizationProtocolError,
+  } = useFetchV3CredentialsAuthorizationProtocolNamesQuery();
+
+  const {
+    data: encryptionProtocolData,
+    isSuccess: isEncryptionProtocolSuccess,
+    isLoading: isEncryptionProtocolLoading,
+    isError: isEncryptionProtocolError,
+    error: encryptionProtocolError,
+  } = useFetchV3CredentialsEncryptionProtocolNamesQuery();
 
   // error handling custom hooks
   useErrorHandling({
@@ -128,8 +137,29 @@ const Index = ({ handleClose, open, recordToEdit }) => {
     callback: handleClose,
   });
 
+  useErrorHandling({
+    data: authorizationProtocolData,
+    isSuccess: isAuthorizationProtocolSuccess,
+    isError: isAuthorizationProtocolError,
+    error: authorizationProtocolError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: encryptionProtocolData,
+    isSuccess: isEncryptionProtocolSuccess,
+    isError: isEncryptionProtocolError,
+    error: encryptionProtocolError,
+    type: TYPE_FETCH,
+  });
+
   // getting dropdowns data from the store
-  const passwordGroupTypeNames = useSelector(selectPasswordGroupTypeNames);
+  const authorizationProtocolNames = useSelector(
+    selectV3CredentialsAuthorizationProtocolNames
+  );
+  const encryptionProtocolNames = useSelector(
+    selectV3CredentialsEncryptionProtocolNames
+  );
 
   // on form submit
   const onSubmit = (data) => {
@@ -143,63 +173,68 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      sx={{ zIndex: "999" }}
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <Grid container spacing={5}>
-          <Grid item xs={12} md={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PROFILE_NAME}
-              required
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.AUTHENTICATION_PROTOCOL}
-              options={passwordGroupTypeNames}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.AUTHENTICATION_PASSWORD}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.DESCRIPTION}
-              required
-            />
+      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+        <form onSubmit={handleSubmit(onSubmit)}>
+          <Grid container spacing={5}>
+            <Grid item xs={12} md={6}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.PROFILE_NAME}
+                required
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.AUTHORIZATION_PROTOCOL}
+                options={
+                  authorizationProtocolNames ? authorizationProtocolNames : []
+                }
+                spinning={isAuthorizationProtocolLoading}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.AUTHORIZATION_PASSWORD}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DESCRIPTION}
+                required
+              />
+            </Grid>
+            <Grid item xs={12} md={6}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.USER_NAME}
+                required
+              />
+              <SelectFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ENCRYPTION_PROTOCOL}
+                options={encryptionProtocolNames ? encryptionProtocolNames : []}
+                spinning={isEncryptionProtocolLoading}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.ENCRYPTION_PASSWORD}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.PORT}
+                required
+              />
+            </Grid>
+            <Grid item xs={12}>
+              <DefaultDialogFooter handleClose={handleClose} />
+            </Grid>
           </Grid>
-          <Grid item xs={12} md={6}>
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.USER_NAME}
-              required
-            />
-            <SelectFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ENCRYPTION_PROTOCOL}
-              options={passwordGroupTypeNames}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.ENCRYPTION_PASSWORD}
-              required
-            />
-            <DefaultFormUnit
-              control={control}
-              dataKey={indexColumnNameConstants.PORT}
-              required
-            />
-          </Grid>
-          <Grid item xs={12}>
-            <DefaultDialogFooter handleClose={handleClose} />
-          </Grid>
-        </Grid>
-      </form>
+        </form>
+      </DefaultSpinner>
     </FormModal>
   );
 };

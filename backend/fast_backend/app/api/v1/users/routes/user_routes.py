@@ -1,5 +1,5 @@
 import json
-
+import asyncio
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 import sys
@@ -9,7 +9,8 @@ from app.models.users_models import *
 from app.schema.users_schema import *
 from app.utils.db_utils import *
 from app.api.v1.users.utils.user_utils import *
-
+#from app.models.users_models import *
+from app.api.v1.users.routes.license_routes import generate_license
 router = APIRouter(
     prefix="/user",
     tags=["admin_routes"]
@@ -26,8 +27,12 @@ summary="API to add the end user"
 )
 def add_end_user(Userobj:EndUserResponseScehma):
     try:
+        users_dict = {}
         users = EndUserTable()
         end_user = dict(Userobj)
+        end_user_exsists = configs.db.query(EndUserTable).filter_by(company_name=Userobj.company_name).first()
+        if end_user_exsists:
+            return JSONResponse(content="End User Already Exsists",status_code=400)
         for key,value in end_user.items():
             print("key in end user is:::::::::::::",key,file=sys.stderr)
             print("value in end user is::::::::::::",value,file=sys.stderr)
@@ -37,8 +42,36 @@ def add_end_user(Userobj:EndUserResponseScehma):
                 print("set attribute is true for the table")
                 InsertDBData(users)
                 print("Data Inserted into the end user table is:::::::::::::::",file=sys.stderr)
+                data = {
+                    "end_user_id":users.end_user_id,
+                    "company_name":users.company_name,
+                    "po_box":users.po_box,
+                    "email":users.email,
+                    "address":users.address,
+                    "street_name":users.street_name,
+                    "city":users.city,
+                    "country":users.country,
+                    "contact_person":users.contact_person
+                }
+                users_dict['data']= data
+                users_dict['message']  =f"End user Inserted"
             else:
                 print("has attribute false for the end user model and the key not found",file=sys.stderr)
+            end_user_verify = configs.db.query(EndUserTable).filter_by(company_name=Userobj.company_name).first()
+            if end_user_verify:
+                if key =='liscence_statrt_date' or key=="liscence_end_date" or key =="device_onboard_limit":
+                    license_data = {
+                        "start_date":Userobj.license_start_date,
+                        "end_date":Userobj.license_end_date,
+                        "device_onboard_limit":Userobj.device_onboard_limit,
+                        "end_user_id":end_user_verify.end_user_id,
+                        "company_name":Userobj.company_name
+                    }
+                    result = asyncio.run(generate_license(license_data))
+                    print("Result of generate_license:", result)
+            else:
+                return JSONResponse(content="Company Didnt Exsists",status_code=400)
+        return users_dict
     except Exception as e:
         traceback.print_exc()
 
@@ -152,11 +185,16 @@ def get_all_users():
         for user in users:
             print("user is::::::::::::::::::",user,file=sys.stderr)
             user_dict = {
-                "user_id":user.user_id,
+                "user_id":user.id,
                 "user_name":user.name,
-                "email":user.email,
+                "email_address":user.email,
                 "status":user.status,
-                "account_type":user.account_type
+                "account_type":user.account_type,
+                "team":user.teams,
+                "role":user.role,
+                "name":user.name,
+                "password":user.password
+
             }
             user_list.append(user_dict)
         return JSONResponse(content=user_list,status_code=200)
@@ -283,13 +321,82 @@ def delete_user(user_id :list[int]):
         error_list = []
         for data in user_id:
             print("data is ::::::::::::::::::;",data,file=sys.stderr)
-            user_exsist = configs.db.query(UserTableModel).filter_by(user_id=data).first()
+            user_exsist = configs.db.query(UserTableModel).filter_by(id=data).first()
             if user_exsist:
                 deleted_ids.append(data)
                 DeleteDBData(user_exsist)
                 success_list.append(f"{data} : Is deleted")
             else:
                 error_list.append(f"{data} : Not Found")
+        responses = {
+            "data":deleted_ids,
+            "suucess_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Deleting the User",status_code=500)
+
+
+@router.post('/edit_user',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to add the updated the user",
+description="API to add updated the user"
+)
+def edit_user_db(user_data:AddUserSchema):
+    try:
+        data,status = EditUserInDB(user_data)
+        return JSONResponse(content=data,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
+
+@router.get('/get_user_role_dropdown',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to get_user_role_dropdown",
+description="API to get_user_role_dropdown "
+)
+def get_user_role():
+    try:
+        user_list = []
+        user_role_exsists = configs.db.query(UserRoleTableModel).all()
+        for data in user_role_exsists:
+            user_list.append(data.role)
+        return JSONResponse(content=user_list,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While getting the user_role from  db",status_code=500)
+    
+
+
+@router.get('/get_user_company_dropdown',responses={
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to get_user_company_dropdown",
+description="API to get_user_company_dropdown"
+)
+def get_user_company():
+    try:
+        user_list = []
+        user_role_exsists = configs.db.query(EndUserTable).all()
+        for data in user_role_exsists:
+            user_dict = {
+                "end_user_id":data.end_user_id,
+                "company_name":data.company_name
+            }
+            user_list.append(data.company_name)
+        return JSONResponse(content=user_list,status_code=200)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While extracting data from the user in db",status_code=500)

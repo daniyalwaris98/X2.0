@@ -1,8 +1,15 @@
 import React from "react";
 import { Outlet } from "react-router-dom";
+import { useSelector } from "react-redux";
+import { selectFailedDevicesCounts } from "../../../store/features/adminModule/failedDevices/landing/selectors";
+import { useFetchRecordsQuery } from "../../../store/features/adminModule/failedDevices/landing/apis";
+import { getPathAllSegments } from "../../../utils/helpers";
+import { useAuthorization } from "../../../hooks/useAuth";
+import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import DefaultDetailCards from "../../../components/detailCards";
 import Card from "../../../components/cards";
 import HorizontalMenu from "../../../components/horizontalMenu/index";
-import { getPathAllSegments } from "../../../utils/helpers";
+import DefaultSpinner from "../../../components/spinners";
 import {
   PAGE_NAME as PAGE_NAME_AUTO_DISCOVERY,
   PAGE_PATH as PAGE_PATH_AUTO_DISCOVERY,
@@ -23,42 +30,73 @@ import {
   PAGE_NAME as PAGE_NAME_UAM,
   PAGE_PATH as PAGE_PATH_UAM,
 } from "./uam/constants";
-import { useSelector } from "react-redux";
-import { selectSelectedDevice } from "../../../store/features/monitoringModule/devices/selectors";
+import { MODULE_PATH } from "..";
 
 export const LANDING_PAGE_NAME = "Failed Devices";
 export const LANDING_PAGE_PATH = "failed_devices_landing";
 
-const menuItems = [
-  {
-    id: PAGE_PATH_AUTO_DISCOVERY,
-    name: PAGE_NAME_AUTO_DISCOVERY,
-    path: PAGE_PATH_AUTO_DISCOVERY,
-  },
-  {
-    id: PAGE_PATH_IPAM,
-    name: PAGE_NAME_IPAM,
-    path: PAGE_PATH_IPAM,
-  },
-  {
-    id: PAGE_PATH_MONITORING,
-    name: PAGE_NAME_MONITORING,
-    path: PAGE_PATH_MONITORING,
-  },
-  {
-    id: PAGE_PATH_NCM,
-    name: PAGE_NAME_NCM,
-    path: PAGE_PATH_NCM,
-  },
-  {
-    id: PAGE_PATH_UAM,
-    name: PAGE_NAME_UAM,
-    path: PAGE_PATH_UAM,
-  },
-];
-
 function Index(props) {
-  const selectedDevice = useSelector(selectSelectedDevice);
+  let menuItems = [
+    {
+      id: PAGE_PATH_AUTO_DISCOVERY,
+      name: PAGE_NAME_AUTO_DISCOVERY,
+      path: PAGE_PATH_AUTO_DISCOVERY,
+      icon: "iconamoon:discover-light",
+    },
+    {
+      id: PAGE_PATH_IPAM,
+      name: PAGE_NAME_IPAM,
+      path: PAGE_PATH_IPAM,
+      icon: "carbon:kubernetes-ip-address",
+    },
+    {
+      id: PAGE_PATH_MONITORING,
+      name: PAGE_NAME_MONITORING,
+      path: PAGE_PATH_MONITORING,
+      icon: "eos-icons:monitoring",
+    },
+    {
+      id: PAGE_PATH_NCM,
+      name: PAGE_NAME_NCM,
+      path: PAGE_PATH_NCM,
+      icon: "carbon:network-2",
+    },
+    {
+      id: PAGE_PATH_UAM,
+      name: PAGE_NAME_UAM,
+      path: PAGE_PATH_UAM,
+      icon: "icon-park-outline:category-management",
+    },
+  ];
+
+  // hooks
+  const { getUserInfoFromAccessToken, filterPageMenus } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  menuItems = filterPageMenus(menuItems, roleConfigurations, MODULE_PATH);
+
+  const selectedFailedDevicesCounts = useSelector(selectFailedDevicesCounts);
+
+  // apis
+  const {
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isLoading: isFetchRecordsLoading,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+  } = useFetchRecordsQuery();
+
+  // error handling custom hooks
+  useErrorHandling({
+    data: fetchRecordsData,
+    isSuccess: isFetchRecordsSuccess,
+    isError: isFetchRecordsError,
+    error: fetchRecordsError,
+    type: TYPE_FETCH,
+  });
 
   let pagePath = getPathAllSegments();
   if (pagePath.length === 4 && pagePath[3] === LANDING_PAGE_PATH) {
@@ -66,91 +104,35 @@ function Index(props) {
   } else pagePath = pagePath.splice(4);
 
   return (
-    <>
-      <Card
-        sx={{
-          marginBottom: "10px",
-        }}
-      >
-        <div
-          style={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "14px",
-            height: "90px",
+    <DefaultSpinner spinning={isFetchRecordsLoading}>
+      {selectedFailedDevicesCounts ? (
+        <DefaultDetailCards
+          data={{
+            [PAGE_PATH_AUTO_DISCOVERY]:
+              selectedFailedDevicesCounts[PAGE_PATH_AUTO_DISCOVERY],
+            [PAGE_PATH_IPAM]: selectedFailedDevicesCounts[PAGE_PATH_IPAM],
+            [PAGE_PATH_MONITORING]:
+              selectedFailedDevicesCounts[PAGE_PATH_MONITORING],
+            [PAGE_PATH_NCM]: selectedFailedDevicesCounts[PAGE_PATH_NCM],
+            [PAGE_PATH_UAM]: selectedFailedDevicesCounts[PAGE_PATH_UAM],
           }}
-        >
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>Auto Discovery: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.ip_address}</div>
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>IPAM: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.device_name}</div>
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>Monitoring: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.device_type}</div>
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>NCM: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.function}</div>
-          </div>
-          &nbsp; &nbsp;
-          <div
-            style={{
-              border: "1px solid #DBDBDB",
-              borderRadius: "7px",
-              width: "20%",
-              backgroundColor: "#FAFAFA",
-              padding: "10px",
-            }}
-          >
-            <div style={{ marginBottom: "15px" }}>UAM: </div>
-            <div style={{ color: "green" }}>{selectedDevice?.vendor}</div>
-          </div>
-        </div>
-      </Card>
+          icons={[
+            "iconamoon:discover-light",
+            "carbon:kubernetes-ip-address",
+            "eos-icons:monitoring",
+            "carbon:network-2",
+            "icon-park-outline:category-management",
+          ]}
+        />
+      ) : null}
       <Card>
         <HorizontalMenu menuItems={menuItems} defaultPagePath={pagePath} />
       </Card>
       <Outlet />
-    </>
+      <br />
+      <br />
+      <br />
+    </DefaultSpinner>
   );
 }
 

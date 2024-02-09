@@ -1,5 +1,5 @@
-export const PAGE_NAME = "Alerts";
-export const ELEMENT_NAME = "Alert";
+export const PAGE_NAME = "Summary";
+export const ELEMENT_NAME = "Summary";
 export const PAGE_PATH = "devices_summary";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_alerts";
 export const TABLE_DATA_UNIQUE_ID = "alarm_id";

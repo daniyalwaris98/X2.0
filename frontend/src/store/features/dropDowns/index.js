@@ -9,10 +9,15 @@ const initialState = {
   device_type_names: [],
   password_group_names: [],
   password_group_type_names: [],
-  status_names: [],
-  subnets_names: [],
+  production_status_names: [],
+  subnet_names: [],
   active_status_names: [],
   monitoring_credentials_names: [],
+  v3_credentials_authorization_protocols: [],
+  v3_credentials_encryption_protocols: [],
+  ipam_devices_fetch_dates: [],
+  account_type_names: [],
+  user_roles_names: [],
 };
 
 const dropDownsSlice = createSlice({
@@ -64,9 +69,15 @@ const dropDownsSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.fetchStatusNames.matchFulfilled,
+        extendedApi.endpoints.fetchProductionStatusNames.matchFulfilled,
         (state, action) => {
-          state.status_names = action.payload;
+          state.production_status_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchSubnetNames.matchFulfilled,
+        (state, action) => {
+          state.subnet_names = action.payload;
         }
       )
       .addMatcher(
@@ -79,6 +90,38 @@ const dropDownsSlice = createSlice({
         extendedApi.endpoints.fetchMonitoringCredentialsNames.matchFulfilled,
         (state, action) => {
           state.monitoring_credentials_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchV3CredentialsAuthorizationProtocolNames
+          .matchFulfilled,
+        (state, action) => {
+          state.v3_credentials_authorization_protocols = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchV3CredentialsEncryptionProtocolNames
+          .matchFulfilled,
+        (state, action) => {
+          state.v3_credentials_encryption_protocols = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchIpamDevicesFetchDates.matchFulfilled,
+        (state, action) => {
+          state.ipam_devices_fetch_dates = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchAccountTypeNames.matchFulfilled,
+        (state, action) => {
+          state.account_type_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchUserRoleNames.matchFulfilled,
+        (state, action) => {
+          state.user_role_names = action.payload;
         }
       );
   },
