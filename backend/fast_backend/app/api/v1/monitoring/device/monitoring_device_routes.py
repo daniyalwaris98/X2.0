@@ -244,8 +244,11 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
 
         for ip in ip_list:
             atom_id = ip.atom_id
+            credentials_category = ""
             credentials_id = ip.monitoring_credentials_id
-
+            credentials_exsists = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = credentials_id).first()
+            if credentials_exsists:
+                credentials_category = credentials_exsists.category+"-"+credentials_exsists.profile_name
             print(f"Processing atom_id: {atom_id}, credentials_id: {credentials_id}", file=sys.stderr)
 
             atom = configs.db.query(AtomTable).filter_by(atom_id=atom_id).first()
@@ -267,6 +270,7 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
                 monitoringDevice.monitoring_credentials_id = credentials_id
                 monitoringDevice.snmp_status = "Active"
                 monitoringDevice.active = "Active"
+                monitoringDevice.source = 'Atom'
 
                 if InsertDBData(monitoringDevice) == 200:
                     print("Data Inserted to the DB", file=sys.stderr)
@@ -281,7 +285,10 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
                         "snmp_status": monitoringDevice.snmp_status,
                         "ip_address":atom.ip_address,
                         "vendor":atom.vendor,
-                        "function":atom.function
+                        "function":atom.function,
+                        "device_name":atom.device_name,
+                        "device_type":atom.device_type,
+                        "category":credentials_category
                     }
                     data.append(monitoring_device_dict)
                     success_msg = f"{atom_id} : Device Added Successfully"

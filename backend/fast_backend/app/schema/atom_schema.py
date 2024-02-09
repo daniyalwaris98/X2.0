@@ -19,6 +19,11 @@ class AddAtomRequestSchema(BaseSchema):
     domain: str | None = None
     virtual: str | None = None
 
+    @validator('device_ru', pre=True, always=True)
+    def validate_device_ru(cls, v):
+        if v == "":
+            return None
+        return v
 
 class EditAtomRequestSchema(AddAtomRequestSchema):
     atom_id: int | None = None

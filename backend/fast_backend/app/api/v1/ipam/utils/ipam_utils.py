@@ -137,6 +137,24 @@ def FetchIpamDevices(atom):
                     password_group_id=data.password_group_id).first()
                 ipam_f5_dict['username'] = pwd_group_query.username
                 ipam_f5_dict['password'] = pwd_group_query.password
+                if pwd_group_query:
+                    try:
+                        print("f5 list is::::::::::::::::::::::", ipam_f5_dict, file=sys.stderr)
+                        print("f5 dict is::::::::::::::::::::::", f5_lst, file=sys.stderr)
+                        # Check if f5_lst is not empty
+                        if f5_lst:
+                                print("F5 is being executed:::::::::", file=sys.stderr)
+                                f5 = load_balancer_f5()
+                                # Iterate over each item in f5_lst
+                                for host in f5_lst:
+                                    if 'device_type' in host and host['device_type'] == 'f5_ltm':
+                                        print("Processing F5 host:", host, file=sys.stderr)
+                                        f5.poll(host)
+                                print("F5 execution ended:::::::::::::::::::::::::::", f5, file=sys.stderr)
+
+                    except Exception as e:
+                        traceback.print_exc()
+                        print("Exception Occurred in F5:", str(e), file=sys.stderr)
 
             # if data.source == "Devices":
             #     pwd_grp_dev = configs.db.query(PasswordGroupTable).filter_by(
@@ -160,6 +178,21 @@ def FetchIpamDevices(atom):
                 query1 = configs.db.query(PasswordGroupTable).filter_by(password_group_id=data.password_group_id).first()
                 fortinet_dict['username'] = query1.username
                 fortinet_dict['password'] = query1.password
+                if query1:
+                    try:
+                        print("fortinet list is::::::::::::::::::::::", fortinet_lst, file=sys.stderr)
+                        print("fortinet dict is::::::::::::::::::::::", fortinet_dict, file=sys.stderr)
+                        if fortinet_lst:
+                                fortigate = FORTIGATEVIP()
+                                # Iterate over each item in fortinet_lst
+                                for host in fortinet_lst:
+                                    if 'sw_type' in host and host['sw_type'] == 'fortinet':
+                                        print("Processing Fortigate host:", host, file=sys.stderr)
+                                        fortigate.poll(host)
+                                fortinet_lst.append(fortinet_dict)
+                    except Exception as e:
+                        traceback.print_exc()
+                        print("Error Occurred in Fortigate VIP:", str(e), file=sys.stderr)
 
             # if data.source == 'Devices':
             #     query2 = configs.db.query(PasswordGroupTable).filter_by(
@@ -167,7 +200,7 @@ def FetchIpamDevices(atom):
             #     fortinet_dict['username'] = query2.username
             #     fortinet_dict['password'] = query2.password
 
-            fortinet_lst.append(fortinet_dict)
+
 
         try:
             print("IPAM is being xecuted::::::::::::::::::::::::::::::::::",file=sys.stderr)
@@ -176,46 +209,16 @@ def FetchIpamDevices(atom):
             print("ipam data in fetch ipam devices is::::::::",ipam_data,file=sys.stderr)
             # IPAM(host,ipam_data)
             ipam_instance = IPAM()
-            ipam_instance.poll(ipam_dict)
-            print("ipam ended execution:::::::::::::::::::::::::::::::::",file=sys.stderr)
+            result = ipam_instance.poll(ipam_dict)
+            print("ipam ended execution:::::::::::::::::::::::::::::::::",result,file=sys.stderr)
 
         except Exception as e:
             traceback.print_exc()
             print("Error occurred in IPAM:", file=sys.stderr)
             return {"Response": "Error Occurred In IPAM"}
 
-        try:
-            print("f5 list is::::::::::::::::::::::", ipam_f5_dict, file=sys.stderr)
-            print("f5 dict is::::::::::::::::::::::", f5_lst, file=sys.stderr)
-            # Check if f5_lst is not empty
-            if f5_lst:
-                print("F5 is being executed:::::::::", file=sys.stderr)
-                f5 = load_balancer_f5()
-                # Iterate over each item in f5_lst
-                for host in f5_lst:
-                    if 'device_type' in host and host['device_type'] == 'f5_ltm':
-                        print("Processing F5 host:", host, file=sys.stderr)
-                        f5.poll(host)
-                print("F5 execution ended:::::::::::::::::::::::::::", f5, file=sys.stderr)
 
-        except Exception as e:
-            traceback.print_exc()
-            print("Exception Occurred in F5:", str(e), file=sys.stderr)
 
-        try:
-            print("fortinet list is::::::::::::::::::::::",fortinet_lst,file=sys.stderr)
-            print("fortinet dict is::::::::::::::::::::::", fortinet_dict, file=sys.stderr)
-            if fortinet_lst:
-                print("Fortigate is being executed::::::::::::", file=sys.stderr)
-                fortigate = FORTIGATEVIP()
-                # Iterate over each item in fortinet_lst
-                for host in fortinet_lst:
-                    if 'sw_type' in host and host['sw_type'] == 'fortinet':
-                        print("Processing Fortigate host:", host, file=sys.stderr)
-                        fortigate.poll(host)
-        except Exception as e:
-            traceback.print_exc()
-            print("Error Occurred in Fortigate VIP:", str(e), file=sys.stderr)
 
         return {
             "ipam_devices": ipam_lst,
@@ -595,12 +598,14 @@ def getPhysicalMapping(subnet_list):
         physical_mapping = IPAMPM()
         password=""
         hosts = []
+        host= {}
         for subnet in subnet_list:
 
             result1 = configs.db.query(subnet_table).filter_by(subnet_address=subnet).all()
             for row in result1:
                 print('row is>>>>>>>', row, file=sys.stderr)
-                atom_exsist = configs.db.query(AtomTable).filter_by(device_name = row.discovered_from).first()
+                print("row discovered from is::::::::::::::::::::::::",row.subnet_name,file=sys.stderr)
+                atom_exsist = configs.db.query(AtomTable).filter_by(device_name = row.subnet_name).first()
                 device_name = atom_exsist.device_name
                 password=""
                 ip_address = atom_exsist.ip_address
@@ -625,7 +630,7 @@ def getPhysicalMapping(subnet_list):
                     }
                     hosts.append(host)
                     print(f"Host is {host}:::::", file=sys.stderr)
-        physical_mapping.get_inventory_data(hosts)
+        physical_mapping.poll(host)
         # physical_mapping.poll(host)
 
 
@@ -705,7 +710,7 @@ def MultiPurpose(options):
                                 for row in get_ip:
                                     row.ip_address = ip
                                     row.subnet_id = subnet1.subnet_id
-                                InsertDBData(row)
+                                    InsertDBData(row)
                         print("data inserted to ip tabl::::::", file=sys.stderr)
                     except Exception as e:
                         for row in get_subnet_scan:
@@ -1043,4 +1048,12 @@ def scan_dns(ip_address):
         return data
     except Exception as e:
         traceback.print_exc()
+
+
+
+
+
+
+
+
 

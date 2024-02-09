@@ -187,9 +187,14 @@ def get_all_users():
             user_dict = {
                 "user_id":user.id,
                 "user_name":user.name,
-                "email":user.email,
+                "email_address":user.email,
                 "status":user.status,
-                "account_type":user.account_type
+                "account_type":user.account_type,
+                "team":user.teams,
+                "role":user.role,
+                "name":user.name,
+                "password":user.password
+
             }
             user_list.append(user_dict)
         return JSONResponse(content=user_list,status_code=200)

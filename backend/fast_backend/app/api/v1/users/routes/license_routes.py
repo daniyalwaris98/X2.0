@@ -22,7 +22,7 @@ router = APIRouter(
 )
 
 
-async def Hashing(string):
+def Hashing(string):
     try:
         length = 20
         #conversion of string to bytes
@@ -128,32 +128,38 @@ async def LicenseDaysLeft(date_string):
 # summary="API to Generate the license",
 # description="API to generate the license"
 # )
-async def generate_license(license_data):
+def generate_license(license_data):
     try:
+        print("liscence data is being executed::::::",file=sys.stderr)
         objDict = {}
         license_data = dict(license_data)
         end_user_id = ""
         print("license data is:::::::::::::::::::::", license_data, file=sys.stderr)
-        # end_user_exsists = configs.db.query(EndUserTable).filter_by(company_name = license_data['company_name']).first()
-        end_user_id = license_data['end_user_id']
+        end_user_exsists = configs.db.query(EndUserTable).filter_by(company_name = license_data['company_name']).first()
+        if end_user_exsists:
+            end_user_id = license_data['end_user_id']
         # Verify required fields
         required_fields = ['company_name', 'start_date', 'end_date', 'device_onboard_limit']
         for field in required_fields:
             if field not in license_data:
                 return JSONResponse(content=f"{field} Is Missing", status_code=400)
+        start_date_obj = datetime.strptime(license_data['start_date'], '%a, %d %b %Y %H:%M:%S GMT')
+        end_date_obj = datetime.strptime(license_data['end_date'], '%a, %d %b %Y %H:%M:%S GMT')
+        print("start date obj is::::::::::::::::::::",start_date_obj,file=sys.stderr)
+        print("end dateobj is::::::::::::::::::::::::",end_date_obj,file=sys.stderr)
 
         objDict['company_name'] = license_data['company_name']
-        objDict['start_date'] = license_data['start_date']
-        objDict['end_date'] = license_data['end_date']
+        objDict['start_date'] = start_date_obj
+        objDict['end_date'] = end_date_obj
         objDict['device_onboard_limit'] = license_data['device_onboard_limit']
         objDict['middleware'] = 'Monetx'
-
+        print("setting attrbute to the object::::::::::::")
         strDict = str(objDict)
         res = bytes(strDict, 'utf-8')
         final = base64.b64encode(res)
         encoded_data = final.decode("utf-8")
 
-        hashedString = await Hashing(encoded_data) if asyncio.iscoroutinefunction(Hashing) else Hashing(encoded_data)
+        hashedString = Hashing(encoded_data) if asyncio.iscoroutinefunction(Hashing) else Hashing(encoded_data)
         hashDict = {
             "hashed_string": hashedString,
             "encoded_data": encoded_data
@@ -164,8 +170,8 @@ async def generate_license(license_data):
         print("encoded data is:::::::::::::::::::",encoded_data,file=sys.stderr)
         license_tab = LicenseVerfificationModel()
         license_tab.end_user_id = end_user_id
-        license_tab.start_date = license_data['start_date']
-        license_tab.end_date = license_data['end_date']
+        license_tab.start_date = start_date_obj
+        license_tab.end_date = end_date_obj
         license_tab.license_generate_key = encoded_data
         license_tab.license_verfification_key = encoded_data
         license_tab.device_onboard_limit = license_data['device_onboard_limit']
@@ -175,7 +181,7 @@ async def generate_license(license_data):
         print("Data Inserted to the DB for the license verification", file=sys.stderr)
 
         data_license = {'encoded': encoded_data}
-        return data_license
+        return {'encoded': encoded_data}
 
     except Exception as e:
         traceback.print_exc()
@@ -205,7 +211,28 @@ async def liscence_expiry():
                 liscence.verfication ='Expired'
                 UpdateDBData(liscences)
 
-
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Liscence Expiry",status_code=500)
+
+def check_license_expiration(license_id):
+    try:
+        # Assuming 'license_id' is the identifier to find the specific license
+        license = configs.db.query(LicenseVerfificationModel).filter_by(license_verfification_id=license_id).first()
+        if license:
+            current_date = datetime.now()
+            if license.end_date < current_date:
+                license.verfication = 'Expired'
+                configs.db.merge(license)
+                configs.db.commit()
+                print("db updated for liscence vification:::::::::::::::",file=sys.stderr)
+                return 'Expired'
+            else:
+                return license.verfication
+        else:
+            return 'License Not Found'
+    except Exception as e:
+        # Handle any exceptions that occur
+        print(f"An error occurred: {e}")
+        traceback.print_exc()
+        return 'Error Checking License'

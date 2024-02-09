@@ -2,6 +2,9 @@ from fastapi import FastAPI,APIRouter
 from fastapi.responses import JSONResponse
 import sys
 import traceback
+
+from sqlalchemy.exc import SQLAlchemyError
+
 from app.models.users_models import *
 from app.utils.db_utils import *
 from app.core.config import *
@@ -95,13 +98,15 @@ def AddUserInDB(user_data):
 
         # Construct the response data
         data = {
-            "user_id": user.id,
-            "name": user.name,
-            "password": user.password,
-            "role": role_exsist.role,
-            "company_name": end_user_exsist.company_name,
-            "status": user.status,
-            "teams": user.teams
+            "user_id":user.id,
+            "user_name":user.name,
+            "email_address":user.email,
+            "status":user.status,
+            "account_type":user.account_type,
+            "team":user.teams,
+            "role":user.role,
+            "name":user.name,
+            "password":user.password
         }
         data_dict = {'data': data, 'message': message}
         return data_dict, 200
@@ -118,34 +123,36 @@ def EditUserInDB(user_data):
     try:
         user_data_dict = user_data.dict()
         user = UserTableModel()
-        end_user_exsist = configs.db.query(EndUserTable).filter_by(company_name=user_data_dict['company_name']).first()
-        if not end_user_exsist:
-            return "End User Not Found", 400
-        end_user_id = end_user_exsist.end_user_id
+        # end_user_exsist = configs.db.query(EndUserTable).filter_by(company_name=user_data_dict['company_name']).first()
+        # if not end_user_exsist:
+        #     return "End User Not Found", 400
+        # end_user_id = end_user_exsist.end_user_id
 
         role_exsist = configs.db.query(UserRoleTableModel).filter_by(role=user_data_dict['role']).first()
         if not role_exsist:
             return "Role Not Found", 400
         role_id = role_exsist.role_id
 
-        user_name_exsist = configs.db.query(UserTableModel).filter_by(user_name=user_data_dict['user_name']).first()
+        user_name_exsist = configs.db.query(UserTableModel).filter_by(user_name=user_data_dict['name']).first()
         if user_name_exsist:
             for key, value in user_data_dict.items():
                 setattr(user_name_exsist, key, value)
-            user_name_exsist.end_user_id = end_user_id
+            # user_name_exsist.end_user_id = end_user_id
             user_name_exsist.role_id = role_id
             UpdateDBData(user_name_exsist)
             message = f"{user_name_exsist.user_name} : Updated Successfully"
 
         # Construct the response data
         data = {
-            "user_id": user.user_id,
-            "name": user.name,
-            "password": user.password,
-            "role": role_exsist.role,
-            "company_name": end_user_exsist.company_name,
-            "status": user.status,
-            "teams": user.teams
+            "user_id":user.id,
+            "user_name":user.name,
+            "email_address":user.email,
+            "status":user.status,
+            "account_type":user.account_type,
+            "team":user.teams,
+            "role":user.role,
+            "name":user.name,
+            "password":user.password
         }
         data_dict = {'data': data, 'message': message}
         return data_dict, 200
@@ -157,52 +164,47 @@ def EditUserInDB(user_data):
 
 
 
-def add_end_user_registration(Userobj):
+def add_end_user_registration(user_obj: dict):
     try:
-        users_dict = {}
-        users = EndUserTable()
-        end_user = dict(Userobj)
-        end_user_exsists = configs.db.query(EndUserTable).filter_by(company_name=Userobj['company_name']).first()
-        if end_user_exsists:
+        print("user obj is::::::::::::::::::::",user_obj,file=sys.stderr)
+        # Check if the end user already exists
+        company_name = user_obj['company_name']
+        license_data = {}
+        print("company_name:::::::::::::::::::::::::", company_name,file=sys.stderr)
+        end_user_exists = configs.db.query(EndUserTable).filter_by(company_name=company_name).first()
+        if end_user_exists:
+            print("end user exsist is:::::::::::::::::",file=sys.stderr)
             return JSONResponse(content="End User Already Exsists",status_code=400)
-        for key,value in end_user.items():
-            print("key in end user is:::::::::::::",key,file=sys.stderr)
-            print("value in end user is::::::::::::",value,file=sys.stderr)
-            if hasattr(users,key):
-                print("has attribute true for the end user model",file=sys.stderr)
-                setattr(users,key,value)
-                print("set attribute is true for the table")
-                InsertDBData(users)
-                print("Data Inserted into the end user table is:::::::::::::::",file=sys.stderr)
-                data = {
-                    "end_user_id":users.end_user_id,
-                    "company_name":users.company_name,
-                    "po_box":users.po_box,
-                    "email":users.email,
-                    "address":users.address,
-                    "street_name":users.street_name,
-                    "city":users.city,
-                    "country":users.country,
-                    "contact_person":users.contact_person
-                }
-                users_dict['data']= data
-                users_dict['message']  =f"End user Inserted"
-            else:
-                print("has attribute false for the end user model and the key not found",file=sys.stderr)
-            end_user_verify = configs.db.query(EndUserTable).filter_by(company_name=Userobj['company_name']).first()
-            if end_user_verify:
-                if key =='liscence_statrt_date' or key=="liscence_end_date" or key =="device_onboard_limit":
-                    license_data = {
-                        "start_date":Userobj.license_start_date,
-                        "end_date":Userobj.license_end_date,
-                        "device_onboard_limit":Userobj['device_onboard_limit'],
-                        "end_user_id":end_user_verify.end_user_id,
-                        "company_name":Userobj.company_name
-                    }
-                    result = asyncio.run(generate_license(license_data))
-                    print("Result of generate_license:", result)
-            else:
-                return JSONResponse(content="Company Didnt Exsists",status_code=400)
-        return users_dict
+
+        # Create a new EndUserTable instance and populate it
+        new_end_user = EndUserTable()
+        for key, value in user_obj.items():
+            if hasattr(new_end_user, key):
+                setattr(new_end_user, key, value)
+            if key=='license_start_date':
+                license_data['start_date'] = value
+            if key=='license_end_date':
+                license_data['end_date'] =value
+            if key=='device_onboard_limit':
+                license_data['device_onboard_limit'] = value
+
+        # Insert the new end user into the database
+        InsertDBData(new_end_user)
+        print("data inserted for the end user::",file=sys.stderr)
+        print("step 2 liscence generation :::::::::::::::::::",file=sys.stderr)
+        # Prepare the data for the license generation if needed
+        license_data['end_user_id'] = new_end_user.end_user_id
+        license_data['company_name'] = new_end_user.company_name
+        generate_license(license_data)
+
+        # Construct and return the response data
+        data = {
+            "end_user_id": new_end_user.end_user_id,
+            "company_name": new_end_user.company_name,
+            # Include other fields as necessary
+        }
+        return {"data": data, "message": "End user inserted successfully"}
+
     except Exception as e:
         traceback.print_exc()
+        return JSONResponse(status_code=500, content="An unexpected error occurred")

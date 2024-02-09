@@ -34,6 +34,7 @@ class Payload(BaseModel):
     end_user_id:int
     configuration:str
     role:str
+    liscence_verification:str
 
     def to_dict(self):
         return {
