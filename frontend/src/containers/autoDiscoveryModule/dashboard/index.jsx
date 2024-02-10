@@ -7,27 +7,24 @@ import { useSelector } from "react-redux";
 import {
   selectSnmpStatus,
   selectCredentialsSummary,
-  selectConfigurationChangeByDevice
+  selectTopVendorForDiscovery,
+  selectTopOs
 } from "../../../store/features/autoDiscoveryModule/dashboard/selectors";
 import {
   useGetSnmpStatusQuery,
   useGetCredentialsSummaryQuery,
-  useGetConfigurationChangeByDeviceQuery
+  useGetTopVendorForDiscoveryQuery,
+  useGetTopOsQuery
 } from "../../../store/features/autoDiscoveryModule/dashboard/apis";
 import "./index.css";
 import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
 import CredentialSummary from "./components/CredentialSummary";
 import SnmpStatus from "./components/SnmpStatus";
 import TopOsAutoDiscovery from "./components/TopOsAutoDiscovery";
+import TopVendorForDiscovery from "./components/TopVendorForDiscovery";
 
 function Index() {
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useGetConfigurationChangeByDeviceQuery();
+  
 
   const {
     data: snmpStatusData,
@@ -43,8 +40,27 @@ function Index() {
     isError: isCredentialsSummaryError,
     error: credentialsSummaryError,
   } = useGetCredentialsSummaryQuery();
-  console.log("snmpStatusData",snmpStatusData)
+  const {
+    data: topVendorData,
+    isSuccess: isTopVendorSuccess,
+    isLoading: isTopVendorLoading,
+    isError: isTopVendorError,
+    error: topVendorError,
+  } = useGetTopVendorForDiscoveryQuery();
+  const {
+    data: topOsData,
+    isSuccess: isTopOsSuccess,
+    isLoading: isTopOsLoading,
+    isError: isTopOsError,
+    error: topOsError,
+  } = useGetTopOsQuery();
+
+  console.log("snmpStatusDataHUnsain",snmpStatusData)
   console.log("credentialsSummaryData",credentialsSummaryData)
+  console.log("topVendorData",topVendorData)
+  console.log("topOsData",topOsData)
+
+  
 
   const companyData = {
     Cisco: 50,
@@ -60,29 +76,28 @@ function Index() {
 
   const apiResponse = [
     {
-      "name": "Sales",
-      "value": 4200
+      name: "Sales",
+      value: 4200
     },
     {
-      "name": "Admin",
-      "value": 3000
+      name: "Admin",
+      value: 3000
     },
     {
-      "name": "Inform",
-      "value": 20000
+      name: "Inform",
+      value: 20000
     },
     {
-      "name": "Customer",
-      "value": 35000
+      name : "Customer",
+      value: 35000
     },
-    {
-      "name": "Develop",
-      "value": 50000
-    },
-    {
-      "name": "Market",
-      "value": 0
-    }
+   
+  ];
+  const data=[
+    { name: "Windows_1", value: 4200 },
+    { name: "Linux_1", value: 8200 },
+    { name: "IOS_1", value: 3200 },
+ 
   ];
   return (
     <>
@@ -91,7 +106,8 @@ function Index() {
           <div className="container">
             <h6 className="heading">SNMP Status </h6>
             <SnmpStatus
-             responseData={apiResponse} 
+             responseData={snmpStatusData !== undefined? snmpStatusData:[]} 
+            // responseData={apiResponse}
              /> 
                       </div>
         </Col>
@@ -105,7 +121,7 @@ function Index() {
         <Col span={7}>
           <div className="container">
             <h6 className="heading">Top Vendors For Discovery</h6>
-            {/* <ConfigurationBackupSummary /> */}
+            <TopVendorForDiscovery/>
           </div>
         </Col>
       </Row>
@@ -114,7 +130,10 @@ function Index() {
         <Col span={16}>
           <div className="container">
             <h6 className="heading">Top OS in Auto Discovery</h6>
-            <TopOsAutoDiscovery/>
+            <TopOsAutoDiscovery data={data !== undefined? data:[]}
+ 
+/>
+
           </div>
         </Col>
 
