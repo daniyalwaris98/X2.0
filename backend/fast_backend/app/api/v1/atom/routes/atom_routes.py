@@ -288,7 +288,7 @@ async def get_atoms():
     200: {"model": DeleteResponseSchema},
     500: {"model": str}
 })
-def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
+async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
     try:
         success_list = []
         error_list = []

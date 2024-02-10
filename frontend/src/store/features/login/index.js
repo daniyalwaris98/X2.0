@@ -4,6 +4,7 @@ import { createSlice } from "@reduxjs/toolkit";
 const initialState = {
   company_details: null,
   user_details: null,
+  is_valid_access_token: false,
 };
 
 const defaultSlice = createSlice({
@@ -21,15 +22,22 @@ const defaultSlice = createSlice({
     },
   },
   extraReducers(builder) {
-    builder.addMatcher(
-      extendedApi.endpoints.login.matchFulfilled,
-      (state, action) => {
-        localStorage.setItem(
-          "monetx_access_token",
-          action.payload.data.access_token
-        );
-      }
-    );
+    builder
+      .addMatcher(
+        extendedApi.endpoints.login.matchFulfilled,
+        (state, action) => {
+          localStorage.setItem(
+            "monetx_access_token",
+            action.payload.data.access_token
+          );
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.validateToken.matchFulfilled,
+        (state, action) => {
+          state.is_valid_access_token = action.payload.token.access_token;
+        }
+      );
   },
 });
 

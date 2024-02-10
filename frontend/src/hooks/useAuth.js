@@ -13,12 +13,14 @@ export function useAuthorization() {
     const accessToken = localStorage.getItem(ACCESS_TOKEN);
     if (accessToken) {
       let userInfo = jwt.decode(accessToken);
-      userInfo = {
-        ...userInfo,
-        configuration: JSON.parse(userInfo.configuration),
-        // configuration: defaultConfiguration,
-      };
-      return userInfo;
+      if (userInfo) {
+        userInfo = {
+          ...userInfo,
+          configuration: JSON.parse(userInfo?.configuration),
+          // configuration: defaultConfiguration,
+        };
+        return userInfo;
+      } else return null;
     } else {
       return null;
     }
@@ -202,25 +204,14 @@ export function useAuthentication() {
     navigate(`/${MAIN_LAYOUT_PATH}`);
   }
 
-  function checkTokenAndNavigate() {
-    const token = localStorage.getItem(ACCESS_TOKEN);
-    if (!token) {
-      navigate("/");
-    } else {
-      // Token is not valid, navigate to login page
-    }
-  }
-
   function handleLogout() {
     localStorage.removeItem(ACCESS_TOKEN);
     clearLocalStorageOnLogout();
     navigate("/");
-    // window.location.reload();
   }
 
   return {
     onSuccessfulLogin,
-    checkTokenAndNavigate,
     handleLogout,
   };
 }

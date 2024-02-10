@@ -291,11 +291,11 @@ def add_complete_atom(device, update):
                                 attributes_dict['password_group'] = password_group.password_group
                         elif column_name == 'onboard_status' or column_name == "":
                             if value:
-                                attributes_dict['onboard_status'] = 'True'
+                                attributes_dict['onboard_status'] = True
                             elif value is None:
-                                attributes_dict['onboard_status'] = 'False'
+                                attributes_dict['onboard_status'] = False
                             else:
-                                attributes_dict['onboard_status'] = 'False'
+                                attributes_dict['onboard_status'] = False
                         else:
                             attributes_dict[column_name] = value
                 devices_data = dict(device)
@@ -337,11 +337,11 @@ def add_complete_atom(device, update):
                                 attributes_dict['password_group'] = password_group.password_group
                         elif column_name == 'onboard_status' or column_name == "":
                             if value:
-                                attributes_dict['onboard_status'] = 'True'
+                                attributes_dict['onboard_status'] = True
                             elif value is None:
-                                attributes_dict['onboard_status'] = 'False'
+                                attributes_dict['onboard_status'] = False
                             else:
-                                attributes_dict['onboard_status'] = 'False'
+                                attributes_dict['onboard_status'] = False
                         else:
                             attributes_dict[column_name] = value
                 devices_data = dict(device)
@@ -456,11 +456,11 @@ def add_transition_atom(device, update):
                                     attributes_dict['password_group'] = password_group.password_group
                             elif column_name == 'onboard_status' or column_name=="":
                                 if value:
-                                    attributes_dict['onboard_status'] = 'True'
+                                    attributes_dict['onboard_status'] = True
                                 elif value is None:
-                                    attributes_dict['onboard_status'] = 'False'
+                                    attributes_dict['onboard_status'] = False
                                 else:
-                                    attributes_dict['onboard_status'] = 'False'
+                                    attributes_dict['onboard_status'] = False
                             else:
                                 attributes_dict[column_name] = value
                             
