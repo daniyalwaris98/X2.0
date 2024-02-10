@@ -1,3 +1,7 @@
+// dashboard module
+import { MODULE_PATH as MODULE_PATH_DASHBOARD } from "../../dashboardModule";
+import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../../dashboardModule/dashboard/constants";
+
 // admin module
 import { MODULE_PATH as MODULE_PATH_ADMIN } from "..";
 import { PAGE_PATH as PAGE_PATH_ADMIN_DASHBOARD } from "../dashboard/constants";
@@ -93,6 +97,12 @@ import { PAGE_PATH as PAGE_PATH_UAM_SITES } from "../../uamModule/sites/constant
 import { PAGE_PATH as PAGE_PATH_UAM_SUB_BOARDS } from "../../uamModule/subBoards/constants";
 
 export const defaultConfiguration = {
+  [MODULE_PATH_DASHBOARD]: {
+    view: true,
+    pages: {
+      [PAGE_PATH_DASHBOARD]: { view: true, read_only: false },
+    },
+  },
   [MODULE_PATH_ADMIN]: {
     view: true,
     pages: {

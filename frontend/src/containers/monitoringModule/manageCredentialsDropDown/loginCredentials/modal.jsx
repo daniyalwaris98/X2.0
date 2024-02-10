@@ -16,27 +16,21 @@ import DefaultFormUnit from "../../../../components/formUnits";
 import DefaultDialogFooter from "../../../../components/dialogFooters";
 import DefaultSpinner from "../../../../components/spinners";
 import {
-  PAGE_NAME,
+  ELEMENT_NAME,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
 
 const schema = yup.object().shape({
-  [indexColumnNameConstants.ACCOUNT_LABEL]: yup
+  [indexColumnNameConstants.USER_NAME]: yup
     .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.ACCOUNT_LABEL)} is required`
-    ),
-  [indexColumnNameConstants.AWS_ACCESS_KEY]: yup
+    .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
+  [indexColumnNameConstants.PROFILE_NAME]: yup
     .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.AWS_ACCESS_KEY)} is required`
-    ),
-  [indexColumnNameConstants.AWS_SECRET_ACCESS_KEY]: yup
+    .required(`${getTitle(indexColumnNameConstants.PROFILE_NAME)} is required`),
+  [indexColumnNameConstants.PASSWORD]: yup
     .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.AWS_SECRET_ACCESS_KEY)} is required`
-    ),
+    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
@@ -104,7 +98,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
       <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
@@ -113,19 +107,18 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <Grid item xs={12}>
               <DefaultFormUnit
                 control={control}
-                dataKey={indexColumnNameConstants.ACCOUNT_LABEL}
+                dataKey={indexColumnNameConstants.PROFILE_NAME}
+                required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.USER_NAME}
                 required
               />
               <DefaultFormUnit
                 type="password"
                 control={control}
-                dataKey={indexColumnNameConstants.AWS_ACCESS_KEY}
-                required
-              />
-              <DefaultFormUnit
-                type="password"
-                control={control}
-                dataKey={indexColumnNameConstants.AWS_SECRET_ACCESS_KEY}
+                dataKey={indexColumnNameConstants.PASSWORD}
                 required
               />
             </Grid>

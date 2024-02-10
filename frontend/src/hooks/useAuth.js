@@ -16,8 +16,8 @@ export function useAuthorization() {
       if (userInfo) {
         userInfo = {
           ...userInfo,
-          configuration: JSON.parse(userInfo?.configuration),
-          // configuration: defaultConfiguration,
+          // configuration: JSON.parse(userInfo?.configuration),
+          configuration: defaultConfiguration,
         };
         return userInfo;
       } else return null;

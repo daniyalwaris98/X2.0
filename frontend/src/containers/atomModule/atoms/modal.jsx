@@ -44,7 +44,7 @@ import DefaultSpinner from "../../../components/spinners";
 import {
   ATOM_ID,
   ATOM_TRANSITION_ID,
-  PAGE_NAME,
+  ELEMENT_NAME,
   indexColumnNameConstants,
 } from "./constants";
 
@@ -254,7 +254,7 @@ const Index = ({
 
   return (
     <FormModal
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
       <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>

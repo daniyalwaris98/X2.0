@@ -15,14 +15,14 @@ import Tooltip from "@mui/material/Tooltip";
 import { AppContext } from "../context/appContext";
 import dashboardInactiveIcon from "../resources/svgs/dashboardInactiveIcon.svg";
 import dashboardActiveIcon from "../resources/svgs/dashboardActiveIcon.svg";
+import adminInactiveIcon from "../resources/svgs/adminInActiveIcon.svg";
+import adminActiveIcon from "../resources/svgs/adminActiveIcon.svg";
 import monitoringInactiveIcon from "../resources/svgs/monitoringInactiveIcon.svg";
 import monitoringActiveIcon from "../resources/svgs/monitoringActiveIcon.svg";
 import atomInactiveIcon from "../resources/svgs/atomInactiveIcon.svg";
 import atomActiveIcon from "../resources/svgs/atomActiveIcon.svg";
 import ipamInactiveIcon from "../resources/svgs/ipamInactiveIcon.svg";
 import ipamActiveIcon from "../resources/svgs/ipamActiveIcon.svg";
-import networkMappingInactiveIcon from "../resources/svgs/networkMappingInactiveIcon.svg";
-import networkMappingActiveIcon from "../resources/svgs/networkMappingActiveIcon.svg";
 import autoDiscoveryInactiveIcon from "../resources/svgs/autoDiscoveryInactiveIcon.svg";
 import autoDiscoveryActiveIcon from "../resources/svgs/autoDiscoveryActiveIcon.svg";
 import uamInactiveIcon from "../resources/svgs/uamInactiveIcon.svg";
@@ -35,9 +35,13 @@ import nightModeIcon from "../resources/svgs/nightModeIcon.svg";
 import { useSelector } from "react-redux/es/hooks/useSelector";
 import { selectIsValidAccessToken } from "../store/features/login/selectors";
 import { useValidateTokenMutation } from "../store/features/login/apis";
-import useErrorHandling, { TYPE_SINGLE } from "../hooks/useErrorHandling";
-import { useAuthentication, useAuthorization } from "../hooks/useAuth";
 import { getPathSegment } from "../utils/helpers";
+import { useAuthentication, useAuthorization } from "../hooks/useAuth";
+import { ProfilePicturePopup } from "../components/popups";
+import {
+  MODULE_PATH as MODULE_PATH_DASHBOARD,
+  MODULE_NAME as MODULE_NAME_DASHBOARD,
+} from "../containers/dashboardModule";
 import {
   MODULE_PATH as MODULE_PATH_ADMIN,
   MODULE_NAME as MODULE_NAME_ADMIN,
@@ -178,9 +182,17 @@ export default function Index() {
 
   const drawerMenuItems = [
     {
+      name: MODULE_NAME_DASHBOARD,
+      inActiveIcon: (
+        <img src={dashboardInactiveIcon} alt={MODULE_NAME_DASHBOARD} />
+      ),
+      activeIcon: <img src={dashboardActiveIcon} alt={MODULE_NAME_DASHBOARD} />,
+      path: MODULE_PATH_DASHBOARD,
+    },
+    {
       name: MODULE_NAME_ADMIN,
-      inActiveIcon: <img src={dashboardInactiveIcon} alt={MODULE_NAME_ADMIN} />,
-      activeIcon: <img src={dashboardActiveIcon} alt={MODULE_NAME_ADMIN} />,
+      inActiveIcon: <img src={adminInactiveIcon} alt={MODULE_NAME_ADMIN} />,
+      activeIcon: <img src={adminActiveIcon} alt={MODULE_NAME_ADMIN} />,
       path: MODULE_PATH_ADMIN,
     },
     {
@@ -319,7 +331,7 @@ export default function Index() {
                   )}
                 </div>
                 &nbsp; &nbsp;
-                <ProfileContainer onClick={handleLogout}></ProfileContainer>
+                <ProfilePicturePopup handleLogout={handleLogout} />
                 &nbsp; &nbsp;
                 <div>
                   <div
@@ -350,11 +362,3 @@ export default function Index() {
     </>
   );
 }
-
-// Define your styled component using the `styled` function
-const ProfileContainer = styled("div")(({ theme }) => ({
-  borderRadius: "100px",
-  width: "35px",
-  height: "35px",
-  backgroundColor: theme?.palette?.main_layout?.profile_picture_background,
-}));
