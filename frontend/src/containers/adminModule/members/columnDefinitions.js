@@ -1,17 +1,20 @@
 import React from "react";
 import { Icon } from "@iconify/react";
+import { DefaultTextWithSwitch } from "../../../components/textWithSwitch";
 import { indexColumnNameConstants } from "./constants";
 
 export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.USER_NAME,
+    {
+      data_key: indexColumnNameConstants.PASSWORD,
+      render: (text, record) => <DefaultTextWithSwitch text={text} />,
+    },
     indexColumnNameConstants.EMAIL_ADDRESS,
     indexColumnNameConstants.NAME,
     indexColumnNameConstants.ROLE,
     indexColumnNameConstants.STATUS,
-    indexColumnNameConstants.COMPANY_NAME,
     indexColumnNameConstants.ACCOUNT_TYPE,
-    indexColumnNameConstants.LAST_LOGIN,
     indexColumnNameConstants.TEAM,
 
     {

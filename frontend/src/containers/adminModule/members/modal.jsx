@@ -212,6 +212,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 required
               />
               <DefaultFormUnit
+                type="email"
                 control={control}
                 dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
                 required
