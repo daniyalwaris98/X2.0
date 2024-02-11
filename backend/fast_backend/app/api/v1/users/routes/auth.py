@@ -100,12 +100,12 @@ def validate_sign_in_token(token:VerifyAccessTokenResponseSchema):
         status = JWTBearer.verify_jwt(jwt_token)
         print("staus is:::::::::::::::::::::::::",status,file=sys.stderr)
         if status:
-            data["token"] ={
+            data["data"] ={
                 "access_token": status
             }
             data['message'] = f"Token validated"
         else:
-            data["token"] = {
+            data["data"] = {
                 "access_token": status
             }
             data['message'] = f"Token Not Invalidated"
