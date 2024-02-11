@@ -1,5 +1,6 @@
 import React, { useState } from "react";
-import loginPageLeftImage from "../../resources/svgs/loginPageLeftImage.svg";
+import LoginPageLeftImage from "../../resources/svgs/loginPageLeftImage.svg";
+import MonetxLogo from "../../resources/svgs/monetxLogo.svg";
 import Form from "./form";
 import CompanyForm from "./companyForm";
 import UserForm from "./userForm";
@@ -10,9 +11,15 @@ function Index(props) {
   const [currentForm, setCurrentForm] = useState(LOGIN);
 
   return (
-    <div>
+    <div style={{ backgroundColor: "white" }}>
       {currentForm === COMPANY || currentForm === USER ? (
-        <div style={{ padding: "5%" }}>
+        <div
+          style={{
+            padding: "5%",
+            backgroundColor: "#F7F7F7",
+            minHeight: "79vh",
+          }}
+        >
           <DefaultCard sx={{ padding: "20px" }}>
             <div style={{ marginBottom: "15px" }}>
               Please add your details to first time setup the Monetx platform.
@@ -30,7 +37,7 @@ function Index(props) {
         <div style={{ height: "96vh", display: "flex", padding: "2vh" }}>
           <div style={{ position: "relative", width: "50%" }}>
             <img
-              src={loginPageLeftImage}
+              src={LoginPageLeftImage}
               alt="theme"
               height={"100%"}
               width={"100%"}
@@ -70,9 +77,26 @@ function Index(props) {
               }}
             >
               <div>
+                <img src={MonetxLogo} alt="logo" />
+                <br />
+                <br />
+                <p>Sign in to your account</p>
+                <br />
                 <Form setCurrentForm={setCurrentForm} />
               </div>
             </div>
+            <p
+              style={{
+                position: "absolute",
+                bottom: "3px",
+                right: "15px",
+                padding: "5px",
+                fontSize: "12px",
+                color: "#949494",
+              }}
+            >
+              &copy; 2023 All rights reserved
+            </p>
           </div>
         </div>
       ) : null}

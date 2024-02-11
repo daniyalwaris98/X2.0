@@ -76,6 +76,7 @@ const Index = ({ setCurrentForm }) => {
               control={control}
               dataKey={indexColumnNameConstants.USER_NAME}
               required
+              icon="ph:user"
             />
             <DefaultFormUnit
               type="password"
