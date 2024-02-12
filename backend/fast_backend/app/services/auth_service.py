@@ -270,6 +270,7 @@ class AuthService(BaseService):
                             name=name,
                             user_name=user_name
                         )
+                        schema = AddUserSchema
                         password = value.get('password')
                         user.password = get_password_hash(password)
                         created_user = self.user_repository.create(user)
@@ -284,5 +285,70 @@ class AuthService(BaseService):
         try:
             blacklisted_token = BlacklistedToken(email=email, token=token)
             self.blacklisted_token_repository.create(blacklisted_token)
+        except Exception as e:
+            traceback.print_exc()
+
+    def add_user(self, user_info: AddUserSchema):
+        try:
+            user_token = get_rand_hash()
+            user_data = user_info.dict(exclude_none=True)
+            print("user data is:::::::::", user_data, file=sys.stderr)
+            # role = user_data.pop('role', 'user')
+            company_dict = {}
+            response = None  # Initialize response variable
+            company_name = user_data.get('compnay_name')
+            print("company name in user data is:::::", user_data, file=sys.stderr)
+            user_name = user_data.get('role')
+            user_exist = configs.db.query(UserTableModel).filter_by(user_name=user_name).first()
+            if user_exist:
+                response = JSONResponse(content=f"{user_name} Already Exists", status_code=400)
+            else:
+                # Access attributes using dot notation
+                end_user_id = None
+                print("company name for the user attribute is:::::", company_name, file=sys.stderr)
+                end_user_exist = configs.db.query(EndUserTable).filter_by(company_name=company_name).first()
+                if end_user_exist:
+                    end_user_id = end_user_exist.end_user_id
+                    print("end user id is:::::::::::::::", end_user_id, file=sys.stderr)
+                else:
+                    return JSONResponse(content="Company Detail Not found", status_code=400)
+
+                role_id = None
+                role = user_data.get('role')
+                print("role is:::::::::::::::", role, file=sys.stderr)
+                role_exists = configs.db.query(UserRoleTableModel).filter_by(role=role).first()
+
+                if role_exists:
+                    role_id = role_exists.role_id
+                else:
+                    return JSONResponse(content="User Role Not found", status_code=500)
+                    # Remove fields from user_data if they are being set explicitly
+                    # For example, if 'team', 'account_type', and 'status' are set explicitly, pop them from user_data
+                team = user_data.pop('team', None)
+                account_type = user_data.pop('account_type', None)
+                status = user_data.pop('status', None)
+                name = user_data.pop('name', None)
+                user_name = user_data.pop('user_name', None)
+
+                # Ensure all required fields are set correctly
+                user = UserTableModel(
+                    is_active=True,
+                    is_superuser=False,
+                    user_token=user_token,
+                    role=role,
+                    teams=team,  # Set explicitly here
+                    account_type=account_type,
+                    status=status,
+                    end_user_id=end_user_id,
+                    name=name,
+                    user_name=user_name
+                )
+                password = user_data.get('password')
+                user.password = get_password_hash(password)
+                schema = AddUserSchema
+                created_user = self.user_repository.create(user)
+                delattr(created_user, "password")
+                print("created user is::::::::::::::;", created_user, file=sys.stderr)
+            return created_user
         except Exception as e:
             traceback.print_exc()

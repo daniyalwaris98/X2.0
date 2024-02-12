@@ -25,6 +25,7 @@ class Container(containers.DeclarativeContainer):
             # "app.api.v1.endpoints.tag",
             "app.api.v1.users.routes.auth",
             "app.api.v1.routes",
+            "app.api.v1.users.routes.user_routes",
             # "app.api.v2.endpoints.auth",
             # "app.api.v2.endpoints.site",
             #"app.api.v2.endpoints.rack",

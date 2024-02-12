@@ -30,6 +30,8 @@ def create_access_token(subject: dict, expires_delta: timedelta = None) -> (str,
 
 
 def verify_password(plain_password: str, hashed_password: str) -> bool:
+    print("plain password in verify_password:::::::::", plain_password,file=sys.stderr)
+    print("hashed passwrd is::::::::::::::::::::::::", hashed_password,file=sys.stderr)
     return pwd_context.verify(plain_password, hashed_password)
 
 
