@@ -51,7 +51,7 @@ import {
   ELEMENT_NAME,
   indexColumnNameConstants,
 } from "./constants";
-import { atomAddUpdateFormSchema as schema } from "./schemas";
+import { defaultFormSchema as schema } from "./schemas";
 
 const Index = ({
   handleClose,
@@ -62,7 +62,7 @@ const Index = ({
   handleOpenPasswordGroupModal,
 }) => {
   // useForm hook
-  const { handleSubmit, control, setValue, watch, reset } = useForm({
+  const { handleSubmit, control, setValue, watch } = useForm({
     resolver: yupResolver(schema),
   });
 

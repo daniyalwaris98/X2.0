@@ -2,12 +2,10 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Grid from "@mui/material/Grid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import {
   useUpdateRecordMutation,
   useAddRecordMutation,
 } from "../../../../../store/features/monitoringModule/manageCredentials/snmpCredentials/v1V2Credentials/apis";
-import { getTitle } from "../../../../../utils/helpers";
 import useErrorHandling from "../../../../../hooks/useErrorHandling";
 import { formSetter } from "../../../../../utils/helpers";
 import { TYPE_SINGLE } from "../../../../../hooks/useErrorHandling";
@@ -21,21 +19,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.DESCRIPTION]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.DESCRIPTION)} is required`),
-  [indexColumnNameConstants.PORT]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PORT)} is required`),
-  [indexColumnNameConstants.PROFILE_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PROFILE_NAME)} is required`),
-  [indexColumnNameConstants.COMMUNITY]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.COMMUNITY)} is required`),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook
@@ -111,16 +95,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <Grid item xs={12}>
               <DefaultFormUnit
                 control={control}
-                dataKey={indexColumnNameConstants.DESCRIPTION}
-                required
-              />
-              <DefaultFormUnit
-                control={control}
-                dataKey={indexColumnNameConstants.PORT}
-                required
-              />
-              <DefaultFormUnit
-                control={control}
                 dataKey={indexColumnNameConstants.PROFILE_NAME}
                 required
               />
@@ -128,6 +102,15 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 control={control}
                 dataKey={indexColumnNameConstants.COMMUNITY}
                 required
+              />
+              <DefaultFormUnit
+                type="number"
+                control={control}
+                dataKey={indexColumnNameConstants.PORT}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DESCRIPTION}
               />
             </Grid>
             <Grid item xs={12}>

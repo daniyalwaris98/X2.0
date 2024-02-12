@@ -20,18 +20,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.USER_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
-  [indexColumnNameConstants.PROFILE_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PROFILE_NAME)} is required`),
-  [indexColumnNameConstants.PASSWORD]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook

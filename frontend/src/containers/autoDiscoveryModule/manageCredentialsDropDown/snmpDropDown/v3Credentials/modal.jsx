@@ -31,48 +31,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.PROFILE_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PROFILE_NAME)} is required`),
-  [indexColumnNameConstants.USER_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
-  [indexColumnNameConstants.DESCRIPTION]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.DESCRIPTION)} is required`),
-  [indexColumnNameConstants.PORT]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PORT)} is required`),
-  [indexColumnNameConstants.AUTHENTICATION_PROTOCOL]: yup
-    .string()
-    .required(
-      `${getTitle(
-        indexColumnNameConstants.AUTHENTICATION_PROTOCOL
-      )} is required`
-    ),
-  [indexColumnNameConstants.AUTHENTICATION_PASSWORD]: yup
-    .string()
-    .required(
-      `${getTitle(
-        indexColumnNameConstants.AUTHENTICATION_PASSWORD
-      )} is required`
-    ),
-  [indexColumnNameConstants.ENCRYPTION_PROTOCOL]: yup
-    .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.ENCRYPTION_PROTOCOL)} is required`
-    ),
-  [indexColumnNameConstants.ENCRYPTION_PASSWORD]: yup
-    .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.ENCRYPTION_PASSWORD)} is required`
-    ),
-  [indexColumnNameConstants.COMMUNITY]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.COMMUNITY)} is required`),
-});
+import { defaultFormSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook
@@ -192,20 +151,22 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 dataKey={indexColumnNameConstants.PROFILE_NAME}
                 required
               />
-
+              <DefaultFormUnit
+                type="number"
+                control={control}
+                dataKey={indexColumnNameConstants.PORT}
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DESCRIPTION}
+              />
+            </Grid>
+            <Grid item xs={12} md={4}>
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.USER_NAME}
                 required
               />
-
-              <DefaultFormUnit
-                control={control}
-                dataKey={indexColumnNameConstants.DESCRIPTION}
-                required
-              />
-            </Grid>
-            <Grid item xs={12} md={4}>
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.AUTHENTICATION_PROTOCOL}
@@ -213,39 +174,28 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                   authorizationProtocolNames ? authorizationProtocolNames : []
                 }
                 spinning={isAuthorizationProtocolLoading}
-                required
               />
               <DefaultFormUnit
                 type="password"
                 control={control}
                 dataKey={indexColumnNameConstants.AUTHENTICATION_PASSWORD}
-                required
-              />
-              <DefaultFormUnit
-                control={control}
-                dataKey={indexColumnNameConstants.PORT}
-                required
               />
             </Grid>
             <Grid item xs={12} md={4}>
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.COMMUNITY}
+              />
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.ENCRYPTION_PROTOCOL}
                 options={encryptionProtocolNames ? encryptionProtocolNames : []}
                 spinning={isEncryptionProtocolLoading}
-                required
               />
               <DefaultFormUnit
                 type="password"
                 control={control}
                 dataKey={indexColumnNameConstants.ENCRYPTION_PASSWORD}
-                required
-              />
-
-              <DefaultFormUnit
-                control={control}
-                dataKey={indexColumnNameConstants.COMMUNITY}
-                required
               />
             </Grid>
             <Grid item xs={12}>

@@ -22,23 +22,7 @@ import DefaultDialogFooter from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
 import { ELEMENT_NAME } from "./constants";
 import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.NETWORK_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.NETWORK_NAME)} is required`),
-  [indexColumnNameConstants.SUBNET]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.SUBNET)} is required`),
-  [indexColumnNameConstants.SCAN_STATUS]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.SCAN_STATUS)} is required`),
-  [indexColumnNameConstants.EXCLUDED_IP_RANGE]: yup
-    .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.EXCLUDED_IP_RANGE)} is required`
-    ),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook
@@ -152,7 +136,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.EXCLUDED_IP_RANGE}
-                required
               />
             </Grid>
             <Grid item xs={12}>

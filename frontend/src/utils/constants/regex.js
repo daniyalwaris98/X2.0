@@ -7,5 +7,6 @@
 export const ALPHA_NUMERIC_REGEX =
   /^(?! )(?=[a-zA-Z])[a-zA-Z0-9]*(?:[ _-][a-zA-Z0-9]+)*$/;
 
-// can start with alpha or numeric + the above conditions
-// /^(?! )(?=.*[a-zA-Z])[a-zA-Z0-9]*(?:[ _-][a-zA-Z0-9]+)*$/;
+export const ALPHA_NUMERIC_REGEX_WITH_AT_THE_RATE =
+  /^(?! )(?=[a-zA-Z])[a-zA-Z0-9]*(?:[ @_-][a-zA-Z0-9]+)*$/;
+export const NO_LEADING_TRAILING_WHITESPACE_REGEX = /^(?!\s)(?!.*\s$).+$/;

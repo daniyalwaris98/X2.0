@@ -1,6 +1,36 @@
 import * as XLSX from "xlsx";
 import dayjs from "dayjs";
 
+// Function to validate if a string is a valid IP address
+export function isValidSubnet(value) {
+  if (!value) return false; // Return false if value is empty
+  const subnetRegex = /^(?:\d{1,3}\.){3}\d{1,3}\/\d{1,2}$/;
+  if (!subnetRegex.test(value)) return false; // Check if subnet matches the format
+
+  const [ip, mask] = value.split("/");
+
+  if (!isValidIPAddress(ip)) {
+    return false;
+  }
+
+  const maskValue = +mask;
+  if (maskValue < 0 || maskValue > 32) return false; // Check if subnet mask is valid
+
+  return true; // Return true if all checks pass
+}
+
+export function isValidIPAddress(ip) {
+  // Valid Zero IP
+  if (ip === "0.0.0.0") return true;
+
+  // Loopback Address
+  if (ip === "127.0.0.1") return true;
+  const ipRegex = /^(\d{1,3})\.(\d{1,3})\.(\d{1,3})\.(\d{1,3})$/;
+  if (!ipRegex.test(ip)) return false;
+  const parts = ip.split(".").map(Number);
+  return parts.every((part) => part >= 0 && part <= 255);
+}
+
 export function isFirstLetterVowel(str) {
   // Convert the string to lowercase to handle both uppercase and lowercase vowels
   const firstLetter = str.charAt(0).toLowerCase();

@@ -36,28 +36,7 @@ import DefaultDialogFooter from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
 import { ELEMENT_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { indexColumnNameConstants } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.RACK_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.RACK_NAME)} is required`)
-    .matches(
-      ALPHA_NUMERIC_REGEX,
-      `Invalid characters in ${getTitle(indexColumnNameConstants.RACK_NAME)}`
-    ),
-  [indexColumnNameConstants.SITE_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.SITE_NAME)} is required`),
-  [indexColumnNameConstants.STATUS]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.STATUS)} is required`),
-  [indexColumnNameConstants.MANUFACTURE_DATE]: yup
-    .string()
-    .transform(transformDateTimeToDate),
-  [indexColumnNameConstants.RFS_DATE]: yup
-    .string()
-    .transform(transformDateTimeToDate),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({
   handleClose,
@@ -236,14 +215,17 @@ const Index = ({
                 />
               )}
               <DefaultFormUnit
+                type="number"
                 control={control}
                 dataKey={indexColumnNameConstants.HEIGHT}
               />
               <DefaultFormUnit
+                type="number"
                 control={control}
                 dataKey={indexColumnNameConstants.WIDTH}
               />
               <DefaultFormUnit
+                type="number"
                 control={control}
                 dataKey={indexColumnNameConstants.DEPTH}
               />
@@ -269,6 +251,7 @@ const Index = ({
                 dataKey={indexColumnNameConstants.RACK_MODEL}
               />
               <DefaultFormUnit
+                type="number"
                 control={control}
                 dataKey={indexColumnNameConstants.FLOOR}
               />
