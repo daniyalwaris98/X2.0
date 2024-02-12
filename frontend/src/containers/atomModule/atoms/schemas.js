@@ -3,7 +3,7 @@ import { getTitle, isValidIPAddress } from "../../../utils/helpers";
 import { indexColumnNameConstants } from "./constants";
 import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
 
-export const defaultFormSchema = yup.object().shape({
+export const defaultSchema = yup.object().shape({
   [indexColumnNameConstants.IP_ADDRESS]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.IP_ADDRESS)} is required`)

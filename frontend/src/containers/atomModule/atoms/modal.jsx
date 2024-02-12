@@ -51,7 +51,7 @@ import {
   ELEMENT_NAME,
   indexColumnNameConstants,
 } from "./constants";
-import { defaultFormSchema as schema } from "./schemas";
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({
   handleClose,

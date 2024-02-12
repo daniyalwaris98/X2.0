@@ -20,7 +20,6 @@ export const defaultFormSchema = yup.object().shape({
     }),
   [indexColumnNameConstants.COMMUNITY]: yup
     .string()
-    .required(`${getTitle(indexColumnNameConstants.COMMUNITY)} is required`)
     .matches(ALPHA_NUMERIC_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,

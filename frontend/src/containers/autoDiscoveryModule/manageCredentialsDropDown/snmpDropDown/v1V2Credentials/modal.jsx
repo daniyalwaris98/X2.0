@@ -103,7 +103,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.DESCRIPTION}
-                required
               />
               <DefaultFormUnit
                 type="number"

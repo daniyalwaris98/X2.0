@@ -15,11 +15,17 @@ export const defaultSchema = yup.object().shape({
   [indexColumnNameConstants.SERVER_NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.SERVER_NAME)} is required`)
-    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters found"),
+    .matches(ALPHA_NUMERIC_REGEX, {
+      message: "Invalid characters found",
+      excludeEmptyString: true,
+    }),
   [indexColumnNameConstants.USER_NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`)
-    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters found"),
+    .matches(ALPHA_NUMERIC_REGEX, {
+      message: "Invalid characters found",
+      excludeEmptyString: true,
+    }),
   [indexColumnNameConstants.PASSWORD]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
