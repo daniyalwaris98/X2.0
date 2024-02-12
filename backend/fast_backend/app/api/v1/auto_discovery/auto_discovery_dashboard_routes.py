@@ -31,6 +31,10 @@ async def get_top_os_for_discovery():
             print("results is::::::::::::::::::::::::",  row[1], file=sys.stderr)
 
             obj_list.append({"name": row[0], "value": row[1]})
+        if  len(obj_list) <=0:
+            obj_list=[{"name": "os_type", "value": 0}]
+            print("obj_list is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+            return   JSONResponse(content=obj_list, status_code=200)  
 
         return JSONResponse(content=obj_list, status_code=200)
 
@@ -55,7 +59,16 @@ async def get_top_vendors_for_discovery():
 
         obj_list = []
         for row in result:
+            #print(row[0])
+            #print(row[1])
             obj_list.append({"name": row[0], "value": row[1]})
+        print("objlist is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+
+        if  len(obj_list) <=0:
+            obj_list=[{"name": "vender", "value": 0}]
+            print("obj_list is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+
+            return   JSONResponse(content=obj_list, status_code=200)  
 
         return JSONResponse(content=obj_list, status_code=200)
 
