@@ -244,7 +244,7 @@ import {
 
 import {
   useGetTopTenSubnetQuery,
-  useGetNcmChangeByVendorQuery,
+  // useGetNcmChangeByVendorQuery,
   useGetIpAvailibilityQuery,
   useGetTypeSummaryQuery,
   useGetSubnetSummaryQuery,
