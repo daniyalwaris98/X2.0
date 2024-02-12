@@ -6,9 +6,6 @@ import { MAIN_LAYOUT_PATH } from "../layouts/mainLayout";
 import AdminModule from "../containers/adminModule";
 import { MODULE_PATH } from "../containers/adminModule";
 
-import Dashboard from "../containers/adminModule/dashboard";
-import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../containers/adminModule/dashboard/constants";
-
 import Members from "../containers/adminModule/members";
 import { PAGE_PATH as PAGE_PATH_MEMBERS } from "../containers/adminModule/members/constants";
 
@@ -30,17 +27,11 @@ import { PAGE_PATH as PAGE_PATH_MONITORING } from "../containers/adminModule/fai
 import NCM from "../containers/adminModule/failedDevicesLanding/ncm";
 import { PAGE_PATH as PAGE_PATH_NCM } from "../containers/adminModule/failedDevicesLanding/ncm/constants";
 
-
-
 import UAM from "../containers/adminModule/failedDevicesLanding/uam";
 import { PAGE_PATH as PAGE_PATH_UAM } from "../containers/adminModule/failedDevicesLanding/uam/constants";
 
 export default function moduleRoutes(roleConfigurations, authorizePageRoutes) {
   const routes = [
-    {
-      path: PAGE_PATH_DASHBOARD,
-      element: <Dashboard />,
-    },
     {
       path: PAGE_PATH_MEMBERS,
       element: <Members />,

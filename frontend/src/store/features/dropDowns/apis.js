@@ -71,6 +71,14 @@ export const extendedApi = monetxApi.injectEndpoints({
     fetchUserRoleNames: builder.query({
       query: () => "/api/v1/users/user/get_user_role_dropdown",
     }),
+
+    fetchAtomCriticalityNames: builder.query({
+      query: () => "/api/v1/atom/static_list/get_criticality_values_dropdown",
+    }),
+
+    fetchAtomVirtualNames: builder.query({
+      query: () => "/api/v1/users/user/get_user_role_dropdown",
+    }),
   }),
 });
 
@@ -90,6 +98,8 @@ export const {
   useFetchV3CredentialsEncryptionProtocolNamesQuery,
   useFetchAccountTypeNamesQuery,
   useFetchUserRoleNamesQuery,
+  useFetchAtomCriticalityNamesQuery,
+  useFetchAtomVirtualNamesQuery,
 } = extendedApi;
 
 export const useFetchIpamDevicesFetchDatesLazyQuery =
