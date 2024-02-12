@@ -9,6 +9,24 @@ from app.models.users_models import *
 from app.schema.users_schema import *
 from app.utils.db_utils import *
 from app.api.v1.users.utils.user_utils import *
+import traceback
+import sys
+from dependency_injector.wiring import Provide, inject
+from fastapi import APIRouter, Depends, Response, status, HTTPException
+from fastapi.responses import JSONResponse
+from app.core.container import Container
+from app.core.dependencies import get_current_active_user
+from app.models.users_models import UserTableModel as User
+from app.schema.auth_schema import SignIn, SignUp, SignInResponse, SignInNew,VerifyAccessTokenResponseSchema
+from app.schema.users_schema import User as UserSchema
+from app.services.auth_service import AuthService
+
+
+
+
+
+
+
 #from app.models.users_models import *
 from app.api.v1.users.routes.license_routes import generate_license
 router = APIRouter(
@@ -154,22 +172,38 @@ def get_all_end_users():
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting end users",status_code=500)
 
-
-@router.post('/add_user',responses={
-    200:{"model":str},
-    400:{"model":str},
-    500:{"model":str}
-},
-summary="API to add the user and updated the user",
-description="API to add the user and updated the user"
-)
-def add_user_db(user_data:AddUserSchema):
+@router.post("/add_user",  responses = {
+                    200:{"model":UserSchema},
+                    400:{"model":str},
+                    500:{"model":str}
+                  },)
+@inject
+async def add_user(user_info: AddUserSchema
+                  ,service: AuthService = Depends(Provide[Container.auth_service])):
     try:
-        data,status = AddUserInDB(user_data)
-        return JSONResponse(content=data,status_code=200)
-    except Exception as e:
+        print("user infor for signup is::::::::::::",user_info,file=sys.stderr)
+        #print("provider is::::",Provide,file=sys.stderr)
+        return service.add_user(user_info)
+    except Exception as e :
         traceback.print_exc()
-        return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
+        return JSONResponse(content="Error Occured while Sign in ",status_code=500)
+# @router.post('/add_user',responses={
+#     200:{"model":str},
+#     400:{"model":str},
+#     500:{"model":str}
+# },
+# summary="API to add the user and updated the user",
+# description="API to add the user and updated the user"
+# )
+# def add_user_db(user_data:AddUserSchema):
+#     try:
+#         print("user data in add user db is:::::",user_data,file=sys.stderr)
+#         created_user= sign_up(user_data)
+#         print("data us\is  ::::::::::::",created_user,file=sys.stderr)
+#         return created_user
+#     except Exception as e:
+#         traceback.print_exc()
+#         return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
 
 @router.get('/get_all_users',responses={
     200:{"model":list[GetUserResponseScehma]},

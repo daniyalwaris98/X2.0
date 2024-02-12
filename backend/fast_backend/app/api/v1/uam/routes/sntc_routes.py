@@ -46,6 +46,7 @@ async def get_all_sntcs():
         return JSONResponse(content =sorted_list,status_code=200)
     except Exception as e:
         traceback.print_exc()
+        configs.db.rollback()
         return JSONResponse(content = "Error Occured while fetching SNTC",status_code = 500)
         
 
@@ -191,7 +192,7 @@ async def sync_to_inventory():
                             "data": updated_fields.copy()  # Create a copy to append distinct dictionary objects
                         }
                         print("updates uam object is::",uam_updated_object,file=sys.stderr)
-                        data_lst.append(uam_updated_object)
+                        data_lst.append(updated_fields.copy())
                         success_list.append(f"{uam.uam_id} : UAM Updated Successfully")
                     else:
                         error_list.append("UAM Not updated")
@@ -218,7 +219,7 @@ async def sync_to_inventory():
                         UpdateDBData(board)
                         updated_fields['board_id'] = board.board_id
                         board_updated_object = {"data": updated_fields.copy()}
-                        data_lst.append(board_updated_object)
+                        data_lst.append(updated_fields.copy())
                         success_list.append(f"{board.board_id} : Board Updated Successfully")
                     else:
                         error_list.append("Board Not Updated")
@@ -245,7 +246,7 @@ async def sync_to_inventory():
                         UpdateDBData(subboard)
                         updated_fields['subboard_id'] = subboard.subboard_id
                         subboard_updated_object = {"data": updated_fields.copy()}
-                        data_lst.append(subboard_updated_object)
+                        data_lst.append(updated_fields.copy())
                         success_list.append(f"{subboard.subboard_id} : Subboard Updated Successfully")
                     else:
                         error_list.append("Subboard Not Updated")
@@ -269,7 +270,7 @@ async def sync_to_inventory():
                         UpdateDBData(sfp)
                         updated_fields['sfp_id'] = sfp.sfp_id
                         sfp_updated_object = {"data": updated_fields.copy()}
-                        data_lst.append(sfp_updated_object)
+                        data_lst.append(updated_fields.copy())
                         success_list.append(f"{sfp.sfp_id} : SFP Updated Successfully")
                     else:
                         error_list.append("SFP Not Updated")
