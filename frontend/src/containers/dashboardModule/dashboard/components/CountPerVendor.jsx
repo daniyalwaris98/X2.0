@@ -1,7 +1,7 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const CountPerVendors = ({ data }) => {
+const CountPerVendor = ({ data }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
@@ -13,7 +13,7 @@ const CountPerVendors = ({ data }) => {
       dataset: {
         source: [
           ['product', 'score', 'amount', 'color'],
-          ...data.map((device, index) => [device.vendor, device.counts, index, colors[index]])
+          ...data.map((device, index) => [device.vender, device.counts, index, colors[index]])
         ],
       },
       yAxis: { type: 'category' },
@@ -46,4 +46,4 @@ const CountPerVendors = ({ data }) => {
   return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
 };
 
-export default CountPerVendors;
+export default CountPerVendor;

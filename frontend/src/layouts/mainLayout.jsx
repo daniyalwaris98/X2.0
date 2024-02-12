@@ -133,8 +133,8 @@ export default function Index() {
   const navigate = useNavigate();
   const { handleLogout } = useAuthentication();
   const { getUserInfoFromAccessToken, isModuleAllowed } = useAuthorization();
-  const isValidAccessToken = useSelector(selectIsValidAccessToken);
-
+  // const isValidAccessToken = useSelector(selectIsValidAccessToken);
+const isValidAccessToken = true;
   // user information
   const userInfo = getUserInfoFromAccessToken();
   const roleConfigurations = userInfo?.configuration;

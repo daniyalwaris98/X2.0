@@ -19,8 +19,8 @@ state.ipam_dashboard.dns_data;
 // state.ncm_dashboard.recent_rcm_alarms_count_data;
 // export const selectNcmDeviceSummaryTable = (state) =>
 // state.ncm_dashboard.ncm_device_summary_data;
-export const selectNcmChangeByVendor = (state) =>
-state.ncm_dashboard.ncm_change_by_vendor_data;
+// export const selectNcmChangeByVendor = (state) =>
+// state.ncm_dashboard.ncm_change_by_vendor_data;
 
 
 
