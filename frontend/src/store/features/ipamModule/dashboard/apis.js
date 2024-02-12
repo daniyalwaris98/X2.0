@@ -15,9 +15,9 @@ export const extendedApi = monetxApi.injectEndpoints({
     getSubnetSummary: builder.query({           
       query: () => "/api/v1/ipam/ipam_dashboard/subnet_summary",
     }),
-     getNcmChangeByVendor: builder.query({           
-      query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
-    }),
+    //  getNcmChangeByVendor: builder.query({           
+    //   query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
+    // }),
 
 
 

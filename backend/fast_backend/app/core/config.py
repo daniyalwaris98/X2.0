@@ -70,19 +70,20 @@ class Configs:
     client: InfluxDBClient = InfluxDBClient(url=IN_URL, token=IN_TOKEN)
 
     templates = Jinja2Templates(directory="/app/templates")
-
-    @contextmanager
-    def session_scope():
-        """Provide a transactional scope around a series of operations."""
-        session = Configs.db()
-        try:
-            yield session
-            session.commit()
-        except Exception as e:
-            session.rollback()
-            raise e
-        finally:
-            session.remove()
+    with db() as db:
+        db =db
+        @contextmanager
+        def session_scope(self):
+            """Provide a transactional scope around a series of operations."""
+            session = Configs.db()
+            try:
+                yield session
+                session.commit()
+            except Exception as e:
+                session.rollback()
+                raise e
+            finally:
+                session.remove()
 
 class Config:
     case_sensitive = True

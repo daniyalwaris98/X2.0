@@ -13,11 +13,11 @@ import { UserDialogFooter } from "../../components/dialogFooters";
 import DefaultSpinner from "../../components/spinners";
 import { COMPANY, USER, userConstants } from "./constants";
 import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
+import { useSelector } from "react-redux/es/hooks/useSelector";
 import {
   selectCompanyDetails,
   selectUserDetails,
 } from "../../store/features/login/selectors";
-import { useSelector } from "react-redux/es/hooks/useSelector";
 import { setCompanyDetails, setUserDetails } from "../../store/features/login";
 
 const schema = yup.object().shape({

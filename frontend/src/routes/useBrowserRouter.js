@@ -4,6 +4,7 @@ import { createBrowserRouter } from "react-router-dom";
 import { useAuthorization } from "../hooks/useAuth";
 import Login from "../containers/login";
 import MainLayout from "../layouts/mainLayout";
+import dashboardModuleRoutes from "./dashboardModuleRoutes";
 import adminModuleRoutes from "./adminModuleRoutes";
 import atomModuleRoutes from "./atomModuleRoutes";
 import uamModuleRoutes from "./uamModuleRoutes";
@@ -28,6 +29,7 @@ export default function useBrowserRouter() {
         path: MAIN_LAYOUT_PATH,
         element: <MainLayout />,
         children: [
+          dashboardModuleRoutes(roleConfigurations, authorizePageRoutes),
           adminModuleRoutes(roleConfigurations, authorizePageRoutes),
           atomModuleRoutes(roleConfigurations, authorizePageRoutes),
           autoDiscoveryModuleRoutes(roleConfigurations, authorizePageRoutes),

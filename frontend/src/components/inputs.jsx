@@ -12,26 +12,71 @@ export default function DefaultInput({
   const theme = useTheme();
 
   return (
-    <input
-      {...field}
-      type={type}
-      style={{
-        borderStyle: "solid",
-        color: theme?.palette?.default_input?.primary_text,
-        backgroundColor: rest.disabled
-          ? "#F6F6F6"
-          : theme?.palette?.default_input?.background,
-        borderColor: theme?.palette?.default_input?.border,
-        borderRadius: "5px",
-        padding: "7px 10px",
-        width: "100%",
-        outline: "none",
-        ...sx,
-      }}
-      {...rest}
-    >
-      {children}
-    </input>
+    <>
+      {rest?.icon ? (
+        <>
+          <input
+            {...field}
+            type={type}
+            style={{
+              borderStyle: "solid",
+              color: theme?.palette?.default_input?.primary_text,
+              backgroundColor: theme?.palette?.default_input?.background,
+              borderColor: theme?.palette?.default_input?.border,
+              borderRadius: "5px 0px 0px 5px",
+              padding: "7px 10px",
+              width: "100%",
+              borderRight: "none",
+              outline: "none",
+              ...sx,
+            }}
+            {...rest}
+          >
+            {children}
+          </input>
+          <div
+            style={{
+              display: "flex",
+              flexDirection: "column",
+              justifyContent: "center",
+              backgroundColor: theme?.palette?.default_input?.background,
+              border: `2px solid ${theme?.palette?.default_input?.border}`,
+              borderRadius: "0px 5px 5px 0px",
+              borderLeft: "none",
+              paddingRight: "5px",
+              outline: "none",
+            }}
+          >
+            <Icon
+              fontSize={"18px"}
+              icon={rest.icon}
+              style={{ cursor: "pointer" }}
+            />
+          </div>
+        </>
+      ) : (
+        <input
+          {...field}
+          type={type}
+          style={{
+            borderStyle: "solid",
+            color: theme?.palette?.default_input?.primary_text,
+            backgroundColor: rest.disabled
+              ? "#F6F6F6"
+              : theme?.palette?.default_input?.background,
+            borderColor: theme?.palette?.default_input?.border,
+            borderRadius: "5px",
+            padding: "7px 10px",
+            width: "100%",
+            outline: "none",
+            ...sx,
+          }}
+          {...rest}
+        >
+          {children}
+        </input>
+      )}
+    </>
   );
 }
 

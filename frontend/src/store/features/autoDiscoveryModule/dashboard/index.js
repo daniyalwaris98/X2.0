@@ -7,7 +7,8 @@ import {
 
 import {
   useGetCredentialsSummaryQuery,
-  useGetSnmpStatusQuery
+  useGetSnmpStatusQuery,
+  useGetTopVendorForDiscoveryQuery,
 } from "../../autoDiscoveryModule/dashboard/apis";
 
 import { useSelector } from "react-redux";
@@ -38,11 +39,18 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
-        extendedApi.endpoints.getConfigurationChangeByDevice.matchFulfilled,
+        extendedApi.endpoints.getTopVendorForDiscovery.matchFulfilled,
         (state, action) => {
-          state.configuration_change_by_device_data = action.payload;
+          state.top_vendor_for_discovery_data = action.payload;
         }
       )
+      .addMatcher(
+        extendedApi.endpoints.getTopOs.matchFulfilled,
+        (state, action) => {
+          state.top_os_data = action.payload;
+        }
+      )
+     
   },
 });
 

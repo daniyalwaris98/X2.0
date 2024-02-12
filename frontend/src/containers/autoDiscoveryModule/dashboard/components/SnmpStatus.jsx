@@ -5,6 +5,11 @@ const SnmpStatus = ({ responseData }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
+    if (!responseData || responseData.length === 0) {
+      // Handle empty data
+      return;
+    }
+
     if (chartRef.current) {
       const myChart = echarts.init(chartRef.current);
 
@@ -17,15 +22,18 @@ const SnmpStatus = ({ responseData }) => {
         },
         series: [
           {
-            name: 'Budget vs spending',
+            name: 'SNMP Status',
             type: 'radar',
             areaStyle: {
-              color: '#E34444', // Color for 'Allocated Budget'
+              color: 'rgba(67, 160, 71, 0.3)', // Green color with opacity
+            },
+            lineStyle: {
+              color: '#43A047' // Adjust radar line color
             },
             data: [
               {
                 value: responseData.map(item => item.value),
-                name: 'Allocated Budget'
+                name: 'SNMP Status'
               }
             ]
           }
@@ -37,7 +45,7 @@ const SnmpStatus = ({ responseData }) => {
   }, [responseData]);
 
   return (
-    <div ref={chartRef} id="snmpStatusChart" style={{ width: '80%', height: '400px', margin: "0 0 0 30px" }} />
+    <div ref={chartRef} id="snmpStatusChart" style={{ width: '100%', height: '400px' }} />
   );
 };
 

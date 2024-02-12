@@ -29,12 +29,12 @@ import DefaultFormUnit, { SelectFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
 import {
-  PAGE_NAME,
+  ELEMENT_NAME,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
 
-const schema = yup.object().shape({
+const baseSchema = yup.object().shape({
   [indexColumnNameConstants.USER_NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
@@ -46,9 +46,6 @@ const schema = yup.object().shape({
     .required(
       `${getTitle(indexColumnNameConstants.EMAIL_ADDRESS)} is required`
     ),
-  [indexColumnNameConstants.PASSWORD]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
   [indexColumnNameConstants.NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.NAME)} is required`),
@@ -67,6 +64,19 @@ const schema = yup.object().shape({
 });
 
 const Index = ({ handleClose, open, recordToEdit }) => {
+  // schema
+  const schema = recordToEdit
+    ? baseSchema
+    : baseSchema.concat(
+        yup.object().shape({
+          [indexColumnNameConstants.PASSWORD]: yup
+            .string()
+            .required(
+              `${getTitle(indexColumnNameConstants.PASSWORD)} is required`
+            ),
+        })
+      );
+
   // hooks
   const { getUserInfoFromAccessToken } = useAuthorization();
 
@@ -193,36 +203,39 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
       <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={5}>
-            <Grid item xs={4}>
+            <Grid item xs={6}>
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.USER_NAME}
                 required
               />
               <DefaultFormUnit
-                type="password"
-                control={control}
-                dataKey={indexColumnNameConstants.PASSWORD}
-                required
-              />
-              <DefaultFormUnit
+                type="email"
                 control={control}
                 dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
                 required
               />
-            </Grid>
-            <Grid item xs={4}>
+              {recordToEdit ? null : (
+                <DefaultFormUnit
+                  type="password"
+                  control={control}
+                  dataKey={indexColumnNameConstants.PASSWORD}
+                  required
+                />
+              )}
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.NAME}
                 required
               />
+            </Grid>
+            <Grid item xs={6}>
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.STATUS}
@@ -237,8 +250,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 spinning={isFetchUserRoleNamesLoading}
                 required
               />
-            </Grid>
-            <Grid item xs={4}>
               <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.ACCOUNT_TYPE}

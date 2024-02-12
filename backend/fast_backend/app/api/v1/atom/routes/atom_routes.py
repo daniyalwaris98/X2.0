@@ -1,9 +1,11 @@
+from fastapi import Depends
+
 from app.api.v1.atom.utils.atom_utils import *
 from app.schema.validation_schema import Validator
 from app.schema.response_schema import Response200
 from app.api.v1.atom.utils.atom_import import *
-
-
+from app.core.dependencies import get_db, get_current_active_user
+from app.models.users_models import UserTableModel as User
 # from app.api.v1.atom.utils.atom_import import APIRouter,JSONResponse
 
 
@@ -16,7 +18,8 @@ router = APIRouter(
 @router.post("/add_atom_device", responses={
     200: {"model": Response200},
     400: {"model": str},
-    500: {"model": str}
+    500: {"model": str},
+
 })
 async def add_atom(atom: AddAtomRequestSchema):
     try:
@@ -205,7 +208,7 @@ async def edit_atom(atom: EditAtomRequestSchema):
         traceback.print_exc()
         return "Error Occurred While Updating Atom Device", 500
 
-
+#current_user: User = Depends(get_current_active_user)
 @router.get("/get_atoms", responses={
     200: {"model": list[GetAtomResponseSchema]},
     500: {"model": str}
@@ -234,7 +237,7 @@ async def get_atoms():
             .join(SiteTable, RackTable.site_id == SiteTable.site_id)
             .all()
         )
-        
+
         for atomObj, rackObj, siteObj, passObj in result:
             try:
                 atom_data_dict = {
@@ -304,6 +307,8 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                 atoms = configs.db.query(AtomTable).filter_by(atom_id=atom_obj['atom_id']).all()
                 if atoms:
                     for atom in atoms:
+                        if atom.onboard_status == True:
+                            return JSONResponse(content="Cannot delete onboarded device. Please Dismantel the device from active usage before deleting.",status_code=400)
                         atom_found = True
                         deleted_atom_id = atom.atom_id
                         atom_ip_address = atom.ip_address

@@ -59,12 +59,12 @@ const defaultSlice = createSlice({
           state.dns_data = action.payload;
         }
       )
-      .addMatcher(
-        extendedApi.endpoints.getNcmChangeByVendor.matchFulfilled,
-        (state, action) => {
-          state.ncm_change_by_vendor_data = action.payload;
-        }
-      )
+      // .addMatcher(
+      //   extendedApi.endpoints.getNcmChangeByVendor.matchFulfilled,
+      //   (state, action) => {
+      //     state.ncm_change_by_vendor_data = action.payload;
+      //   }
+      // )
     //   .addMatcher(
     //     extendedApi.endpoints.getConfigurationChangeByDevice.matchFulfilled,
     //     (state, action) => {

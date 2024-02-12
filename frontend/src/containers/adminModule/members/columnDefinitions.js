@@ -9,9 +9,7 @@ export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
     indexColumnNameConstants.NAME,
     indexColumnNameConstants.ROLE,
     indexColumnNameConstants.STATUS,
-    indexColumnNameConstants.COMPANY_NAME,
     indexColumnNameConstants.ACCOUNT_TYPE,
-    indexColumnNameConstants.LAST_LOGIN,
     indexColumnNameConstants.TEAM,
 
     {

@@ -16,7 +16,18 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
+    validateToken: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/users/auth/validate_sign_in_token",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
-export const { useLoginMutation, useRegisterMutation } = extendedApi;
+export const {
+  useLoginMutation,
+  useRegisterMutation,
+  useValidateTokenMutation,
+} = extendedApi;

@@ -291,11 +291,11 @@ def add_complete_atom(device, update):
                                 attributes_dict['password_group'] = password_group.password_group
                         elif column_name == 'onboard_status' or column_name == "":
                             if value:
-                                attributes_dict['onboard_status'] = 'True'
+                                attributes_dict['onboard_status'] = True
                             elif value is None:
-                                attributes_dict['onboard_status'] = 'False'
+                                attributes_dict['onboard_status'] = False
                             else:
-                                attributes_dict['onboard_status'] = 'False'
+                                attributes_dict['onboard_status'] = False
                         else:
                             attributes_dict[column_name] = value
                 devices_data = dict(device)
@@ -337,11 +337,11 @@ def add_complete_atom(device, update):
                                 attributes_dict['password_group'] = password_group.password_group
                         elif column_name == 'onboard_status' or column_name == "":
                             if value:
-                                attributes_dict['onboard_status'] = 'True'
+                                attributes_dict['onboard_status'] = True
                             elif value is None:
-                                attributes_dict['onboard_status'] = 'False'
+                                attributes_dict['onboard_status'] = False
                             else:
-                                attributes_dict['onboard_status'] = 'False'
+                                attributes_dict['onboard_status'] = False
                         else:
                             attributes_dict[column_name] = value
                 devices_data = dict(device)
@@ -456,11 +456,11 @@ def add_transition_atom(device, update):
                                     attributes_dict['password_group'] = password_group.password_group
                             elif column_name == 'onboard_status' or column_name=="":
                                 if value:
-                                    attributes_dict['onboard_status'] = 'True'
+                                    attributes_dict['onboard_status'] = True
                                 elif value is None:
-                                    attributes_dict['onboard_status'] = 'False'
+                                    attributes_dict['onboard_status'] = False
                                 else:
-                                    attributes_dict['onboard_status'] = 'False'
+                                    attributes_dict['onboard_status'] = False
                             else:
                                 attributes_dict[column_name] = value
                             
@@ -852,6 +852,9 @@ def validate_password_group_credentials(pass_obj, password_exist):
         if pass_obj["password_group_type"]=="SSH":
                 password_exist.password_group_type = "SSH"
 
+        if pass_obj["password_group_type"] not in ['SSH', 'TELNET']:
+            error_message = f"Invalid password group type for '{pass_obj['password_group']}'. Please select either 'SSH' or 'TELNET' from the password group dropdown."
+            return error_message, 400
         if "secret_password" in pass_obj and pass_obj["secret_password"]:
                 pass_obj["secret_password"] = pass_obj["secret_password"].strip()
 
