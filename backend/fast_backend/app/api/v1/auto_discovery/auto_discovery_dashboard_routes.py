@@ -32,7 +32,7 @@ async def get_top_os_for_discovery():
 
             obj_list.append({"name": row[0], "value": row[1]})
         if  len(obj_list) <=0:
-            obj_list=[{"name": "os_type", "value": 0}]
+            obj_list=[{"name": "os", "value": 0}]
             print("obj_list is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
             return   JSONResponse(content=obj_list, status_code=200)  
 
@@ -149,6 +149,7 @@ description = "API to get credentials graph"
 )
 async def get_credentials_graph():
     try:
+        obj_list=[]
         obj_dict = {
             "name": ["SNMP V1/V2", "SNMP V3", "SSH Login"],
             "value": [0, 0, 0],
@@ -171,8 +172,15 @@ async def get_credentials_graph():
         for row in result:
             if (row[0]) == "True":
                 obj_dict["value"][2] = row[1]
-
-        return JSONResponse(content=obj_dict, status_code=200)
+        
+        if  len(obj_dict) <=0:
+            obj_list=[{
+            "name": ["SNMP V1/V2", "SNMP V3", "SSH Login"],
+            "value": [0, 0, 0]}]
+            print("obj_list is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+            return   JSONResponse(content=obj_list, status_code=200)  
+        obj_list=[obj_dict]
+        return JSONResponse(content=obj_list, status_code=200)
 
     except Exception:
         traceback.print_exc()
