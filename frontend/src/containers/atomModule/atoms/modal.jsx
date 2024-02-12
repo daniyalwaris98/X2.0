@@ -15,6 +15,8 @@ import {
   useFetchFunctionNamesQuery,
   useFetchDeviceTypeNamesQuery,
   useFetchPasswordGroupNamesQuery,
+  useFetchAtomCriticalityNamesQuery,
+  useFetchAtomVirtualNamesQuery,
 } from "../../../store/features/dropDowns/apis";
 import {
   selectSiteNames,
@@ -23,6 +25,8 @@ import {
   selectFunctionNames,
   selectDeviceTypeNames,
   selectPasswordGroupNames,
+  selectAtomCriticalityNames,
+  selectAtomVirtualNames,
 } from "../../../store/features/dropDowns/selectors";
 import {
   formSetter,
@@ -66,14 +70,6 @@ const Index = ({
   useEffect(() => {
     formSetter(recordToEdit, setValue);
   }, []);
-
-  // // Watch the site name value
-  // const siteName = watch(indexColumnNameConstants.SITE_NAME);
-
-  // // Reset the rack value to null when the site changes
-  // useEffect(() => {
-  //   reset({ [indexColumnNameConstants.RACK_NAME]: null });
-  // }, [siteName, reset]);
 
   // fetching dropdowns data from backend using apis
   const {
@@ -128,6 +124,22 @@ const Index = ({
     isError: isFetchPasswordGroupNamesError,
     error: fetchPasswordGroupNamesError,
   } = useFetchPasswordGroupNamesQuery();
+
+  const {
+    data: fetchAtomCriticalityNamesData,
+    isSuccess: isFetchAtomCriticalityNamesSuccess,
+    isLoading: isFetchAtomCriticalityNamesLoading,
+    isError: isFetchAtomCriticalityNamesError,
+    error: fetchAtomCriticalityNamesError,
+  } = useFetchAtomCriticalityNamesQuery();
+
+  const {
+    data: fetchAtomVirtualNamesData,
+    isSuccess: isFetchAtomVirtualNamesSuccess,
+    isLoading: isFetchAtomVirtualNamesLoading,
+    isError: isFetchAtomVirtualNamesError,
+    error: fetchAtomVirtualNamesError,
+  } = useFetchAtomVirtualNamesQuery();
 
   // post api for the form
   const [
@@ -219,6 +231,22 @@ const Index = ({
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: fetchAtomCriticalityNamesData,
+    isSuccess: isFetchAtomCriticalityNamesSuccess,
+    isError: isFetchAtomCriticalityNamesError,
+    error: fetchAtomCriticalityNamesError,
+    type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: fetchAtomVirtualNamesData,
+    isSuccess: isFetchAtomVirtualNamesSuccess,
+    isError: isFetchAtomVirtualNamesError,
+    error: fetchAtomVirtualNamesError,
+    type: TYPE_FETCH,
+  });
+
   // getting dropdowns data from the store
   const siteNames = useSelector(selectSiteNames);
   const rackNames = useSelector(selectRackNames);
@@ -226,6 +254,8 @@ const Index = ({
   const functionNames = useSelector(selectFunctionNames);
   const deviceTypeNames = useSelector(selectDeviceTypeNames);
   const passwordGroupNames = useSelector(selectPasswordGroupNames);
+  const atomCriticalityNames = useSelector(selectAtomCriticalityNames);
+  const atomVirtualNames = useSelector(selectAtomVirtualNames);
 
   // on form submit
   const onSubmit = (data) => {
@@ -321,13 +351,17 @@ const Index = ({
                 onAddClick={handleOpenPasswordGroupModal}
                 spinning={isFetchPasswordGroupNamesLoading}
               />
-              <DefaultFormUnit
+              <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.CRITICALITY}
+                options={atomCriticalityNames ? atomCriticalityNames : []}
+                spinning={isFetchAtomCriticalityNamesLoading}
               />
-              <DefaultFormUnit
+              <SelectFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.VIRTUAL}
+                options={atomVirtualNames ? atomVirtualNames : []}
+                spinning={isFetchAtomVirtualNamesLoading}
               />
               <DefaultFormUnit
                 control={control}

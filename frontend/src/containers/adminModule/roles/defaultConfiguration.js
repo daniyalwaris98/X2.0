@@ -4,7 +4,6 @@ import { PAGE_PATH as PAGE_PATH_DASHBOARD } from "../../dashboardModule/dashboar
 
 // admin module
 import { MODULE_PATH as MODULE_PATH_ADMIN } from "..";
-import { PAGE_PATH as PAGE_PATH_ADMIN_DASHBOARD } from "../dashboard/constants";
 import { PAGE_PATH as PAGE_PATH_ADMIN_MEMBERS } from "../members/constants";
 import { PAGE_PATH as PAGE_PATH_ADMIN_FAILED_DEVICES_AUTO_DISCOVERY } from "../failedDevicesLanding/autoDiscovery/constants";
 import { PAGE_PATH as PAGE_PATH_ADMIN_FAILED_DEVICES_IPAM } from "../failedDevicesLanding/ipam/constants";
@@ -106,7 +105,6 @@ export const defaultConfiguration = {
   [MODULE_PATH_ADMIN]: {
     view: true,
     pages: {
-      [PAGE_PATH_ADMIN_DASHBOARD]: { view: true, read_only: false },
       [PAGE_PATH_ADMIN_MEMBERS]: { view: true, read_only: false },
       [PAGE_PATH_ADMIN_ROLES]: { view: true, read_only: false },
       [PAGE_PATH_ADMIN_FAILED_DEVICES_AUTO_DISCOVERY]: {

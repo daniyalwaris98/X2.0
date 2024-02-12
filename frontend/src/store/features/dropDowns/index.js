@@ -17,7 +17,9 @@ const initialState = {
   v3_credentials_encryption_protocols: [],
   ipam_devices_fetch_dates: [],
   account_type_names: [],
-  user_roles_names: [],
+  user_role_names: [],
+  atom_criticality_names: [],
+  atom_virtual_names: [],
 };
 
 const dropDownsSlice = createSlice({
@@ -122,6 +124,18 @@ const dropDownsSlice = createSlice({
         extendedApi.endpoints.fetchUserRoleNames.matchFulfilled,
         (state, action) => {
           state.user_role_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchAtomCriticalityNames.matchFulfilled,
+        (state, action) => {
+          state.atom_criticality_names = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.fetchAtomVirtualNames.matchFulfilled,
+        (state, action) => {
+          state.atom_virtual_names = action.payload;
         }
       );
   },
