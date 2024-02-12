@@ -1,4 +1,5 @@
-import React, { useState, useContext } from "react";
+import React, { useState, useContext, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import { Link } from "react-router-dom";
 import { styled, useTheme } from "@mui/material/styles";
 import Box from "@mui/material/Box";
@@ -14,14 +15,14 @@ import Tooltip from "@mui/material/Tooltip";
 import { AppContext } from "../context/appContext";
 import dashboardInactiveIcon from "../resources/svgs/dashboardInactiveIcon.svg";
 import dashboardActiveIcon from "../resources/svgs/dashboardActiveIcon.svg";
+import adminInactiveIcon from "../resources/svgs/adminInActiveIcon.svg";
+import adminActiveIcon from "../resources/svgs/adminActiveIcon.svg";
 import monitoringInactiveIcon from "../resources/svgs/monitoringInactiveIcon.svg";
 import monitoringActiveIcon from "../resources/svgs/monitoringActiveIcon.svg";
 import atomInactiveIcon from "../resources/svgs/atomInactiveIcon.svg";
 import atomActiveIcon from "../resources/svgs/atomActiveIcon.svg";
 import ipamInactiveIcon from "../resources/svgs/ipamInactiveIcon.svg";
 import ipamActiveIcon from "../resources/svgs/ipamActiveIcon.svg";
-import networkMappingInactiveIcon from "../resources/svgs/networkMappingInactiveIcon.svg";
-import networkMappingActiveIcon from "../resources/svgs/networkMappingActiveIcon.svg";
 import autoDiscoveryInactiveIcon from "../resources/svgs/autoDiscoveryInactiveIcon.svg";
 import autoDiscoveryActiveIcon from "../resources/svgs/autoDiscoveryActiveIcon.svg";
 import uamInactiveIcon from "../resources/svgs/uamInactiveIcon.svg";
@@ -31,8 +32,16 @@ import ncmActiveIcon from "../resources/svgs/ncmActiveIcon.svg";
 import logo from "../resources/svgs/logo.svg";
 import dayModeIcon from "../resources/svgs/dayModeIcon.svg";
 import nightModeIcon from "../resources/svgs/nightModeIcon.svg";
-import { useAuthentication, useAuthorization } from "../hooks/useAuth";
+import { useSelector } from "react-redux/es/hooks/useSelector";
+import { selectIsValidAccessToken } from "../store/features/login/selectors";
+import { useValidateTokenMutation } from "../store/features/login/apis";
 import { getPathSegment } from "../utils/helpers";
+import { useAuthentication, useAuthorization } from "../hooks/useAuth";
+import { ProfilePicturePopup } from "../components/popups";
+import {
+  MODULE_PATH as MODULE_PATH_DASHBOARD,
+  MODULE_NAME as MODULE_NAME_DASHBOARD,
+} from "../containers/dashboardModule";
 import {
   MODULE_PATH as MODULE_PATH_ADMIN,
   MODULE_NAME as MODULE_NAME_ADMIN,
@@ -61,6 +70,7 @@ import {
   MODULE_PATH as MODULE_PATH_UAM,
   MODULE_NAME as MODULE_NAME_UAM,
 } from "../containers/uamModule";
+import { ACCESS_TOKEN } from "../containers/login/constants";
 
 export const MAIN_LAYOUT_PATH = "monetx";
 const drawerWidth = 240;
@@ -120,10 +130,10 @@ const Drawer = styled(MuiDrawer, {
 }));
 
 export default function Index() {
-  const { checkTokenAndNavigate, handleLogout } = useAuthentication();
+  const navigate = useNavigate();
+  const { handleLogout } = useAuthentication();
   const { getUserInfoFromAccessToken, isModuleAllowed } = useAuthorization();
-
-  checkTokenAndNavigate();
+  const isValidAccessToken = useSelector(selectIsValidAccessToken);
 
   // user information
   const userInfo = getUserInfoFromAccessToken();
@@ -134,15 +144,55 @@ export default function Index() {
   const { isDarkMode, setDarkMode } = useContext(AppContext);
   const [open, setOpen] = useState(false);
 
+  // post api for the form
+  const [
+    validateToken,
+    {
+      data: validateTokenData,
+      isSuccess: isValidateTokenSuccess,
+      isLoading: isValidateTokenLoading,
+      isError: isValidateTokenError,
+      error: validateTokenError,
+    },
+  ] = useValidateTokenMutation();
+
+  // effects
+  useEffect(() => {
+    const token = localStorage.getItem(ACCESS_TOKEN);
+    if (!token) {
+      navigate("/");
+    } else {
+      validateToken({ access_token: token });
+    }
+  }, []);
+
+  useEffect(() => {
+    console.log("validateTokenData", validateTokenData);
+    if (validateTokenData) {
+      if (!validateTokenData.token.access_token) {
+        console.log("validateTokenData", validateTokenData.token.access_token);
+        navigate("/");
+      }
+    }
+  }, [validateTokenData]);
+
   const toggleTheme = () => {
     setDarkMode(!isDarkMode);
   };
 
   const drawerMenuItems = [
     {
+      name: MODULE_NAME_DASHBOARD,
+      inActiveIcon: (
+        <img src={dashboardInactiveIcon} alt={MODULE_NAME_DASHBOARD} />
+      ),
+      activeIcon: <img src={dashboardActiveIcon} alt={MODULE_NAME_DASHBOARD} />,
+      path: MODULE_PATH_DASHBOARD,
+    },
+    {
       name: MODULE_NAME_ADMIN,
-      inActiveIcon: <img src={dashboardInactiveIcon} alt={MODULE_NAME_ADMIN} />,
-      activeIcon: <img src={dashboardActiveIcon} alt={MODULE_NAME_ADMIN} />,
+      inActiveIcon: <img src={adminInactiveIcon} alt={MODULE_NAME_ADMIN} />,
+      activeIcon: <img src={adminActiveIcon} alt={MODULE_NAME_ADMIN} />,
       path: MODULE_PATH_ADMIN,
     },
     {
@@ -196,118 +246,119 @@ export default function Index() {
   );
 
   return (
-    <Box sx={{ display: "flex", zIndex: "9", position: "relative" }}>
-      <Drawer variant="permanent" open={open}>
-        <DrawerHeader>
-          <img src={logo} alt="Montex" />
-        </DrawerHeader>
-        <Divider />
+    <>
+      {isValidAccessToken ? (
+        <Box sx={{ display: "flex", zIndex: "9", position: "relative" }}>
+          <Drawer variant="permanent" open={open}>
+            <DrawerHeader>
+              <img src={logo} alt="Montex" />
+            </DrawerHeader>
+            <Divider />
 
-        <List style={{ padding: 0 }}>
-          {drawerMenuItems?.map((item, index) => (
-            <Tooltip key={item.name} title={item.name} placement="right">
-              <Link to={item.path}>
-                <ListItem
-                  key={item.name}
-                  disablePadding
-                  onClick={() => setSelectedModule(item)}
-                >
-                  <ListItemButton
-                    sx={{
-                      justifyContent: open ? "initial" : "center",
-                      padding: 0,
+            <List style={{ padding: 0 }}>
+              {drawerMenuItems?.map((item, index) => (
+                <Tooltip key={item.name} title={item.name} placement="right">
+                  <Link to={item.path}>
+                    <ListItem
+                      key={item.name}
+                      disablePadding
+                      onClick={() => setSelectedModule(item)}
+                    >
+                      <ListItemButton
+                        sx={{
+                          justifyContent: open ? "initial" : "center",
+                          padding: 0,
+                        }}
+                      >
+                        <ListItemIcon
+                          sx={{
+                            minWidth: 0,
+                            justifyContent: "center",
+                          }}
+                        >
+                          {selectedModule?.path === item.path
+                            ? item.activeIcon
+                            : item.inActiveIcon}
+                        </ListItemIcon>
+                        <ListItemText
+                          primary={item.name}
+                          sx={{ opacity: open ? 1 : 0 }}
+                        />
+                      </ListItemButton>
+                    </ListItem>
+                  </Link>
+                </Tooltip>
+              ))}
+            </List>
+          </Drawer>
+
+          <Box
+            component="main"
+            sx={{
+              flexGrow: 1,
+              p: 0,
+              border: "0px solid red",
+              minHeight: "100vh",
+            }}
+          >
+            <DrawerHeader
+              sx={{
+                display: "flex",
+                justifyContent: "space-between",
+                padding: "0 20px",
+                borderBottom: `0.5px solid ${theme?.palette?.main_layout?.border_bottom}`,
+              }}
+            >
+              <div style={{ color: theme?.palette?.main_layout?.primary_text }}>
+                {selectedModule?.name}
+              </div>
+              <div style={{ display: "flex" }}>
+                <div style={{ cursor: "pointer" }}>
+                  {isDarkMode ? (
+                    <img
+                      src={dayModeIcon}
+                      alt="theme"
+                      onClick={toggleTheme}
+                      height={35}
+                    />
+                  ) : (
+                    <img
+                      src={nightModeIcon}
+                      alt="theme"
+                      onClick={toggleTheme}
+                      height={35}
+                    />
+                  )}
+                </div>
+                &nbsp; &nbsp;
+                <ProfilePicturePopup handleLogout={handleLogout} />
+                &nbsp; &nbsp;
+                <div>
+                  <div
+                    style={{
+                      color: theme?.palette?.main_layout?.primary_text,
+                      fontSize: theme.typography.textSize.medium,
                     }}
                   >
-                    <ListItemIcon
-                      sx={{
-                        minWidth: 0,
-                        justifyContent: "center",
-                      }}
-                    >
-                      {selectedModule?.path === item.path
-                        ? item.activeIcon
-                        : item.inActiveIcon}
-                    </ListItemIcon>
-                    <ListItemText
-                      primary={item.name}
-                      sx={{ opacity: open ? 1 : 0 }}
-                    />
-                  </ListItemButton>
-                </ListItem>
-              </Link>
-            </Tooltip>
-          ))}
-        </List>
-      </Drawer>
-
-      <Box
-        component="main"
-        sx={{ flexGrow: 1, p: 0, border: "0px solid red", minHeight: "100vh" }}
-      >
-        <DrawerHeader
-          sx={{
-            display: "flex",
-            justifyContent: "space-between",
-            padding: "0 20px",
-            borderBottom: `0.5px solid ${theme?.palette?.main_layout?.border_bottom}`,
-          }}
-        >
-          <div style={{ color: theme?.palette?.main_layout?.primary_text }}>
-            {selectedModule?.name}
-          </div>
-          <div style={{ display: "flex" }}>
-            <div style={{ cursor: "pointer" }}>
-              {isDarkMode ? (
-                <img
-                  src={dayModeIcon}
-                  alt="theme"
-                  onClick={toggleTheme}
-                  height={35}
-                />
-              ) : (
-                <img
-                  src={nightModeIcon}
-                  alt="theme"
-                  onClick={toggleTheme}
-                  height={35}
-                />
-              )}
-            </div>
-            &nbsp; &nbsp;
-            <ProfileContainer onClick={handleLogout}></ProfileContainer>
-            &nbsp; &nbsp;
-            <div>
-              <div
-                style={{
-                  color: theme?.palette?.main_layout?.primary_text,
-                  fontSize: theme.typography.textSize.medium,
-                }}
-              >
-                Hassaan Akbar
+                    Hassaan Akbar
+                  </div>
+                  <div
+                    style={{
+                      color: theme?.palette?.main_layout?.secondary_text,
+                      fontSize: theme.typography.textSize.small,
+                    }}
+                  >
+                    Solution Architect
+                  </div>
+                </div>
               </div>
-              <div
-                style={{
-                  color: theme?.palette?.main_layout?.secondary_text,
-                  fontSize: theme.typography.textSize.small,
-                }}
-              >
-                Solution Architect
-              </div>
+            </DrawerHeader>
+            <div style={{ padding: "10px 20px" }}>
+              <Outlet />
             </div>
-          </div>
-        </DrawerHeader>
-        <div style={{ padding: "10px 20px" }}>
-          <Outlet />
-        </div>
-      </Box>
-    </Box>
+          </Box>
+        </Box>
+      ) : null}
+    </>
   );
 }
-
-// Define your styled component using the `styled` function
-const ProfileContainer = styled("div")(({ theme }) => ({
-  borderRadius: "100px",
-  width: "35px",
-  height: "35px",
-  backgroundColor: theme?.palette?.main_layout?.profile_picture_background,
-}));

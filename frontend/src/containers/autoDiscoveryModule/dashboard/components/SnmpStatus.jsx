@@ -1,45 +1,39 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const SnmpStatus = () => {
+const SnmpStatus = ({ responseData }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
+    if (!responseData || responseData.length === 0) {
+      // Handle empty data
+      return;
+    }
+
     if (chartRef.current) {
       const myChart = echarts.init(chartRef.current);
 
       const option = {
         legend: {
-          data: ['Allocated Budget', 'Actual Spending']
+          data: responseData.map(item => item.name)
         },
         radar: {
-          indicator: [
-            { name: 'Sales', max: 6500 },
-            { name: 'Admin', max: 16000 },
-            { name: 'Inform', max: 30000 },
-            { name: 'Customer', max: 38000 },
-            { name: 'Develop', max: 52000 },
-            { name: 'Market', max: 25000 }
-          ]
+          indicator: responseData.map(item => ({ name: item.name, max: item.value }))
         },
         series: [
           {
-            name: 'Budget vs spending',
+            name: 'SNMP Status',
             type: 'radar',
             areaStyle: {
-              color: '#E34444', // Color for 'Allocated Budget'
+              color: 'rgba(67, 160, 71, 0.3)', // Green color with opacity
+            },
+            lineStyle: {
+              color: '#43A047' // Adjust radar line color
             },
             data: [
               {
-                value: [4200, 3000, 20000, 35000, 50000, 18000],
-                name: 'Allocated Budget'
-              },
-              {
-                value: [5000, 14000, 28000, 26000, 42000, 21000],
-                name: 'Actual Spending',
-                areaStyle: {
-                  color: '#3D9E47', // Color for 'Actual Spending'
-                },
+                value: responseData.map(item => item.value),
+                name: 'SNMP Status'
               }
             ]
           }
@@ -48,10 +42,10 @@ const SnmpStatus = () => {
 
       myChart.setOption(option);
     }
-  }, []);
+  }, [responseData]);
 
   return (
-    <div ref={chartRef} id="snmpStatusChart" style={{ width: '80%', height: '400px', margin: "0 0 0 30px" }} />
+    <div ref={chartRef} id="snmpStatusChart" style={{ width: '100%', height: '400px' }} />
   );
 };
 

@@ -1,43 +1,67 @@
 import React, { useEffect } from "react";
 import { Row, Col } from "antd";
-// import ConfigurationBackupSummary from "./components/ConfigurationBackupSummary";
-// import ConfigurationByTimeLineChart from './ConfigurationByTimeLineChart';
-// import Compliance from "./components/Compliance";
-// import ChangeByTimeChart from "./components/ChangeByTimeChart";
-// import RecentRcmAlarmsChart from "./components/RecentRcmAlarmsChart";
-// import NcmDeviceSummaryTable from "./components/NcmDeviceSummaryTable";
+
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
 // import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
-
 import {
-  useGetConfigurationChangeByDeviceQuery,
-  useDeleteRecordsMutation,
-  useBulkBackupNcmConfigurationsByDeviceIdsMutation,
-} from "../../../store/features/ncmModule/dashboard/apis";
+  selectSnmpStatus,
+  selectCredentialsSummary,
+  selectTopVendorForDiscovery,
+  selectTopOs
+} from "../../../store/features/autoDiscoveryModule/dashboard/selectors";
+import {
+  useGetSnmpStatusQuery,
+  useGetCredentialsSummaryQuery,
+  useGetTopVendorForDiscoveryQuery,
+  useGetTopOsQuery
+} from "../../../store/features/autoDiscoveryModule/dashboard/apis";
 import "./index.css";
-import ConfigurationByTimeLineChart from "../../../components/charts/ConfigurationByTimeLineChart";
-import ConfigurationBackupSummary from "../../ncmModule/dashboard/components/ConfigurationBackupSummary";
-import TopSubnet from "../../ipamModule/dashboard/components/TopSubnet";
 import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
 import CredentialSummary from "./components/CredentialSummary";
 import SnmpStatus from "./components/SnmpStatus";
 import TopOsAutoDiscovery from "./components/TopOsAutoDiscovery";
+import TopVendorForDiscovery from "./components/TopVendorForDiscovery";
 
 function Index() {
+  
+
   const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useGetConfigurationChangeByDeviceQuery();
+    data: snmpStatusData,
+    isSuccess: isSnmpStatusSuccess,
+    isLoading: isSnmpStatusLoading,
+    isError: isSnmpStatusError,
+    error: SnmpStatusError,
+  } = useGetSnmpStatusQuery();
+  const {
+    data: credentialsSummaryData,
+    isSuccess: isCredentialsSummarySuccess,
+    isLoading: isCredentialsSummaryLoading,
+    isError: isCredentialsSummaryError,
+    error: credentialsSummaryError,
+  } = useGetCredentialsSummaryQuery();
+  const {
+    data: topVendorData,
+    isSuccess: isTopVendorSuccess,
+    isLoading: isTopVendorLoading,
+    isError: isTopVendorError,
+    error: topVendorError,
+  } = useGetTopVendorForDiscoveryQuery();
+  const {
+    data: topOsData,
+    isSuccess: isTopOsSuccess,
+    isLoading: isTopOsLoading,
+    isError: isTopOsError,
+    error: topOsError,
+  } = useGetTopOsQuery();
 
+  console.log("snmpStatusDataHUnsain",snmpStatusData)
+  console.log("credentialsSummaryData",credentialsSummaryData)
+  console.log("topVendorData",topVendorData)
+  console.log("topOsData",topOsData)
 
+  
 
-  // const dataSource = useSelector(selectTableData);
-
-  // console.log("dataaaaaaaaa", dataSource);
   const companyData = {
     Cisco: 50,
     Fortinet: 10,
@@ -48,14 +72,44 @@ function Index() {
     Hp: 20,
     Juniper: 10,
   };
+
+
+  const apiResponse = [
+    {
+      name: "Sales",
+      value: 4200
+    },
+    {
+      name: "Admin",
+      value: 3000
+    },
+    {
+      name: "Inform",
+      value: 20000
+    },
+    {
+      name : "Customer",
+      value: 35000
+    },
+   
+  ];
+  const data=[
+    { name: "Windows_1", value: 4200 },
+    { name: "Linux_1", value: 8200 },
+    { name: "IOS_1", value: 3200 },
+ 
+  ];
   return (
     <>
       <Row gutter={[32, 32]} justify="space-between">
         <Col span={7}>
           <div className="container">
             <h6 className="heading">SNMP Status </h6>
-            <SnmpStatus />
-          </div>
+            <SnmpStatus
+             responseData={snmpStatusData !== undefined? snmpStatusData:[]} 
+            // responseData={apiResponse}
+             /> 
+                      </div>
         </Col>
 
         <Col span={10}>
@@ -67,7 +121,7 @@ function Index() {
         <Col span={7}>
           <div className="container">
             <h6 className="heading">Top Vendors For Discovery</h6>
-            {/* <ConfigurationBackupSummary /> */}
+            <TopVendorForDiscovery/>
           </div>
         </Col>
       </Row>
@@ -76,7 +130,10 @@ function Index() {
         <Col span={16}>
           <div className="container">
             <h6 className="heading">Top OS in Auto Discovery</h6>
-            <TopOsAutoDiscovery/>
+            <TopOsAutoDiscovery data={data !== undefined? data:[]}
+ 
+/>
+
           </div>
         </Col>
 

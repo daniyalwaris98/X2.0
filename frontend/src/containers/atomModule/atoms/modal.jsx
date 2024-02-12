@@ -44,14 +44,48 @@ import DefaultSpinner from "../../../components/spinners";
 import {
   ATOM_ID,
   ATOM_TRANSITION_ID,
-  PAGE_NAME,
+  ELEMENT_NAME,
   indexColumnNameConstants,
 } from "./constants";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.IP_ADDRESS]: yup
     .string()
-    .required(`${getTitle(indexColumnNameConstants.IP_ADDRESS)} is required`),
+    .required(`${getTitle(indexColumnNameConstants.IP_ADDRESS)} is required`)
+    .matches(
+      /^(?:(?:^|\.)(?:2(?:5[0-5]|[0-4]\d)|1?\d{1,2})){4}$/,
+      "Invalid IP Address format"
+    )
+    .test("valid-ip", "Invalid IP Address", (value) => {
+      // Split IP address into octets
+      const octets = value.split(".");
+
+      // Check for exactly four octets
+      if (octets.length !== 4) return false;
+
+      // Check numeric range, no leading zeros, and no trailing zeros
+      for (let octet of octets) {
+        // Check numeric range
+        if (isNaN(octet) || octet < 0 || octet > 255) return false;
+
+        // No leading zeros unless the value is zero itself
+        if (octet.length > 1 && octet[0] === "0") return false;
+
+        // No trailing zeros
+        if (octet !== "0" && octet.endsWith("0")) return false;
+      }
+
+      // Valid separator
+      if (!value.match(/^([0-9]+\.){3}[0-9]+$/)) return false;
+
+      // Valid Zero IP
+      if (value === "0.0.0.0") return true;
+
+      // Loopback Address
+      if (value === "127.0.0.1") return true;
+
+      return true;
+    }),
 });
 
 const Index = ({
@@ -254,7 +288,7 @@ const Index = ({
 
   return (
     <FormModal
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
       <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>

@@ -23,7 +23,7 @@ import DefaultFormUnit from "../../../components/formUnits";
 import { SelectFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
-import { PAGE_NAME, TELNET } from "./constants";
+import { ELEMENT_NAME, TELNET } from "./constants";
 import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
 
 const schema = yup.object().shape({
@@ -142,7 +142,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
       <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>

@@ -13,7 +13,7 @@ from app.services.user_service import UserService
 from fastapi import Depends
 from sqlalchemy.orm import Session
 from app.core.database import Database
-
+from fastapi.responses import JSONResponse
 
 @inject
 def get_current_user(
@@ -25,7 +25,7 @@ def get_current_user(
         token_data = Payload(**payload)
         print("token data for the payload is:::::::::::::::",token_data,file=sys.stderr)
     except (jwt.JWTError, ValidationError):
-        raise AuthError(detail="Could not validate credentials")
+        return JSONResponse(status_code=403, content="Could not validate credentials")
     id = token_data.user_id
     current_user: User = service.get_by_id(id)
     if not current_user:
@@ -69,7 +69,7 @@ def get_current_super_admin_user(current_user: User = Depends(get_current_user))
 
 
 def get_current_admin_user(current_user: User = Depends(get_current_user)) -> User:
-    if not current_user.is_active or current_user.role != 'admin':
+    if not current_user.is_active or current_user.role != 'Admin':
         raise AuthError("Access denied")
     return current_user
 

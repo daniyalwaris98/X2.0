@@ -29,7 +29,7 @@ import DefaultFormUnit, { SelectFormUnit } from "../../../components/formUnits";
 import DefaultDialogFooter from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
 import {
-  PAGE_NAME,
+  ELEMENT_NAME,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
@@ -193,7 +193,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   return (
     <FormModal
-      title={`${recordToEdit ? "Edit" : "Add"} ${PAGE_NAME}`}
+      title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
       <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
@@ -212,6 +212,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 required
               />
               <DefaultFormUnit
+                type="email"
                 control={control}
                 dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
                 required
