@@ -22,6 +22,7 @@ import CredentialSummary from "./components/CredentialSummary";
 import SnmpStatus from "./components/SnmpStatus";
 import TopOsAutoDiscovery from "./components/TopOsAutoDiscovery";
 import TopVendorForDiscovery from "./components/TopVendorForDiscovery";
+import CountPerFuntion from "./components/CountPerFuntion";
 
 function Index() {
   
@@ -99,6 +100,14 @@ function Index() {
     { name: "IOS_1", value: 3200 },
  
   ];
+
+
+  const chartData = {
+    ports: ['Port 1', 'Port 2', 'Port 3', 'Port 4'],
+    counts: [10, 20, 15, 30],
+  };
+
+  
   return (
     <>
       <Row gutter={[32, 32]} justify="space-between">
@@ -127,7 +136,7 @@ function Index() {
       </Row>
 
       <Row gutter={[24, 24]} justify="space-between" className="page_row">
-        <Col span={16}>
+        <Col span={16} xs={24} sm={24} md={16} lg={16} xl={16}>
           <div className="container">
             <h6 className="heading">Top OS in Auto Discovery</h6>
             <TopOsAutoDiscovery data={data !== undefined? data:[]}
@@ -137,10 +146,13 @@ function Index() {
           </div>
         </Col>
 
-        <Col span={8}>
+        <Col span={8} xs={24} sm={24} md={16} lg={8} xl={8}>
           <div className="container">
             <h6 className="heading">Count Per Function</h6>
-            <TopOpenPorts/>
+            <TopOpenPorts chartData={chartData}/>
+            
+
+            {/* <CountPerFuntion chartData={chartData} /> */}
           </div>
         </Col>
       </Row>
