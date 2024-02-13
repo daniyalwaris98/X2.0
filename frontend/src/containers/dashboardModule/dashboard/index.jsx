@@ -12,8 +12,59 @@ import Compliance from "../../ncmModule/dashboard/components/Compliance";
 import TopVendorForDiscovery from "../../autoDiscoveryModule/dashboard/components/TopVendorForDiscovery";
 import {Progress }from "antd";
 import MainTable from "./components/MainTable";
+import TypeSummaryChart from "../../ipamModule/dashboard/components/TypeSummaryChart";
+import TopSubnet from "../../ipamModule/dashboard/components/TopSubnet";
+
+
+import {
+  useGetTypeSummaryQuery,
+  useGetSubnetSummaryQuery,
+} from "../../../store/features/ipamModule/dashboard/apis";
+import {
+ useGetTopVendorForDiscoveryQuery,
+ useGetCredentialsSummaryQuery,
+ useGetSnmpStatusQuery
+} from "../../../store/features/autoDiscoveryModule/dashboard/apis";
 
 function Index() {
+  const {
+    data: typeSummaryData,
+    isSuccess: isTypeSummarySuccess,
+    isLoading: isTypeSummaryLoading,
+    isError: isTypeSummaryError,
+    error: typeSummaryError,
+  } = useGetTypeSummaryQuery();
+
+  // console.log("typeSummaryData", typeSummaryData)
+  const {
+    data: subnetSummaryData,
+    isSuccess: isSubnetSummarySuccess,
+    isLoading: isSubnetSummaryLoading,
+    isError: isSubnetSummaryError,
+    error: subnetSummaryError,
+  } = useGetSubnetSummaryQuery();
+  const {
+    data: topVendorData,
+    isSuccess: isTopVendorSuccess,
+    isLoading: isTopVendorLoading,
+    isError: isTopVendorError,
+    error: topVendorError,
+  } = useGetTopVendorForDiscoveryQuery();
+
+  const {
+    data: credentialsSummaryData,
+    isSuccess: isCredentialsSummarySuccess,
+    isLoading: isCredentialsSummaryLoading,
+    isError: isCredentialsSummaryError,
+    error: credentialsSummaryError,
+  } = useGetCredentialsSummaryQuery();
+  const {
+    data: snmpStatusData,
+    isSuccess: isSnmpStatusSuccess,
+    isLoading: isSnmpStatusLoading,
+    isError: isSnmpStatusError,
+    error: SnmpStatusError,
+  } = useGetSnmpStatusQuery();
   const colStyle = {
     backgroundColor: "#FFFFFF", // Grey background color
     borderRadius: "8px",
@@ -218,21 +269,24 @@ function Index() {
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Count Per Vendors</h5>
-            <CountPerVendors data={data}/>
+            {/* <CountPerVendors data={typeSummaryData}/> */}
+            <TypeSummaryChart  data={typeSummaryData !== undefined ? typeSummaryData:[]}/>
                       </div>
         </Col>
 
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Subnet Summary</h5>
-            <SubnetSummary />
+            <TopSubnet
+              data={subnetSummaryData !== undefined ? subnetSummaryData : []}
+            />
           </div>
         </Col>
 
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Top Vendors For Discovery</h5>
-            {/* <TopVendorForDiscovery/> */}
+            <TopVendorForDiscovery data={topVendorData !== undefined? topVendorData:[]} />
           </div>
         </Col>
       </Row>
@@ -248,14 +302,14 @@ function Index() {
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Credentials Summary</h5>
-            <CredentialSummary />
+            <CredentialSummary data={credentialsSummaryData !== undefined? credentialsSummaryData:[]} />
           </div>
         </Col>
 
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>SNMP Status</h5>
-            <SnmpStatus  responseData={apiResponse}/>
+            <SnmpStatus  responseData={snmpStatusData}/>
           </div>
         </Col>
       </Row>
