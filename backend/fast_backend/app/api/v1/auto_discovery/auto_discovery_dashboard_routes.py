@@ -113,7 +113,7 @@ async def get_snmp_status_graph():
 
 
 @router.get("/get_top_functions_for_discovery", responses={
-    200: {"model": list[NameValueDictResponseSchema]},
+    200: {"model": NameValueDictResponseSchema},
     500: {"model": str}
 },
 summary ="API to get get top functions for discovery ",
@@ -131,10 +131,20 @@ async def get_top_functions_for_discovery():
             obj_dict["value"].append(row[1])
 
         return JSONResponse(content=obj_dict, status_code=200)'''
-        obj_list = []
+        obj_list = {}
+        name=[]
+        value=[]
         for row in result:
-            obj_list.append({"name": (row[0].capitalize()), "value": row[1]})
-        print("result..................",obj_list,file=sys.stderr)
+            name.append(row[0].capitalize())
+            value.append(row[1])
+        obj_list = {"name": name, "value": value}
+
+        print("result..................",obj_list,file=sys.stderr)    
+        if len(obj_list)<=0:
+            obj_list={{"name": "port", "value": 0}}
+            return JSONResponse(content=obj_list, status_code=200)
+
+        #print("result..................",obj_list,file=sys.stderr)
         return JSONResponse(content=obj_list, status_code=200)
     except Exception:
         traceback.print_exc()
