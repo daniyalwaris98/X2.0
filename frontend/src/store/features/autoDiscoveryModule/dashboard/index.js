@@ -50,6 +50,12 @@ const defaultSlice = createSlice({
           state.top_os_data = action.payload;
         }
       )
+      .addMatcher(
+        extendedApi.endpoints.getCountPerFunction.matchFulfilled,
+        (state, action) => {
+          state.count_per_function_data = action.payload;
+        }
+      )
      
   },
 });

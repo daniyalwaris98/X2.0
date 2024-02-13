@@ -1,22 +1,17 @@
 import React, { useEffect } from 'react';
 import * as echarts from 'echarts';
 
-const CredentialSummary = () => {
+const CredentialSummary = ({ data }) => {
   useEffect(() => {
-    // Your ECharts code
-    var chartDom = document.getElementById('credentialSummaryChart');
-    var myChart = echarts.init(chartDom);
-    var option;
+    const chartDom = document.getElementById('credentialSummaryChart');
+    const myChart = echarts.init(chartDom);
 
-    option = {
-    //   title: {
-    //     text: 'Step Line'
-    //   },
+    const option = {
       tooltip: {
         trigger: 'axis'
       },
       legend: {
-        data: ['Step Start', 'Step Middle', 'Step End']
+        data: data?.name
       },
       grid: {
         left: '3%',
@@ -31,40 +26,26 @@ const CredentialSummary = () => {
       },
       xAxis: {
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        data: data?.name
       },
       yAxis: {
         type: 'value'
       },
       series: [
         {
-          name: 'Step Start',
+          name: data?.name,
           type: 'line',
-          step: 'start',
-          data: [120, 132, 101, 134, 90, 230, 210]
-        },
-        {
-          name: 'Step Middle',
-          type: 'line',
-          step: 'middle',
-          data: [220, 282, 201, 234, 290, 430, 410]
-        },
-        {
-          name: 'Step End',
-          type: 'line',
-          step: 'end',
-          data: [450, 432, 401, 454, 590, 530, 510]
+          data: data?.value
         }
       ]
     };
 
     option && myChart.setOption(option);
 
-    // Clean up ECharts instance on component unmount
     return () => {
       myChart.dispose();
     };
-  }, []); // Empty dependency array to run effect only once on mount
+  }, [data]);
 
   return (
     <div id="credentialSummaryChart" style={{ width: '100%', height: '400px' }}>
