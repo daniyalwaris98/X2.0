@@ -200,8 +200,10 @@ class AuthService(BaseService):
             #     "user_info": found_user,
             print("sign in data::::::::::::;",sign_in_data,file=sys.stderr)
             # }
+            configs.db.close()
             return sign_in_data
         except Exception as e:
+            configs.db.rollback()
             traceback.print_exc()
             print("error occured while signin")
     def sign_up(self, user_info: SignUp):
@@ -276,9 +278,10 @@ class AuthService(BaseService):
                         created_user = self.user_repository.create(user)
                         delattr(created_user, "password")
                         response = created_user  # Update response with created_user
-
+            configs.db.close()
             return response
         except Exception as e:
+            configs.db.close()
             traceback.print_exc()
             print("error while sign in",str(e),file=sys.stderr)
     def blacklist_token(self, email: str, token: str):
