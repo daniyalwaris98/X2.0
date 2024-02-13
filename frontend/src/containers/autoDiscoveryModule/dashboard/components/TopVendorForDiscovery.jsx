@@ -3,13 +3,21 @@ import * as echarts from "echarts";
 
 const TopVendorForDiscovery = ({ data }) => {
   useEffect(() => {
+    if (!data || !data.length) {
+      console.error("Invalid data:", data);
+      return;
+    }
+
     const chartDom = document.getElementById("main");
     const myChart = echarts.init(chartDom);
+
+    // Define colors array
+    const colors = ["#63ABFD", "#84CC7D", "#3D9E47", "#5F83CA", "#E69B43", "#9E00D5"];
+
     const option = {
       tooltip: {
-        label: {
-          show: false,
-        },
+        show: true,
+        trigger: "item",
       },
       angleAxis: {
         type: "category",
@@ -38,48 +46,41 @@ const TopVendorForDiscovery = ({ data }) => {
         },
       },
       polar: {
-        radius: [2, "80%"],
+        radius: [2, "70%"],
       },
-      series: [
-        {
-          type: "bar",
-          data: data.map(item => item.value),
-          coordinateSystem: "polar",
-          name: "Backup Successful",
-          color: "green",
+      series: data.map((item, index) => ({
+        type: "bar",
+        data: [item.value],
+        coordinateSystem: "polar",
+        name: item.name,
+        color: colors[index % colors.length], // Use colors from the array
+        label: {
+          show: true,
+          position: "inside", // Adjust label position as needed
+          formatter: "{c}", // Display data value as label
         },
-        {
-          type: "bar",
-          data: data.map(item => item.value / 2), // Just for example purposes
-          coordinateSystem: "polar",
-          name: "Backup Failure",
-          color: "red",
-        },
-        {
-          type: "bar",
-          data: data.map(item => item.value / 3), // Just for example purposes
-          coordinateSystem: "polar",
-          name: "Not Backup",
-          color: "orange",
-        },
-      ],
+      })),
       legend: {
         show: true,
         y: "bottom",
         icon: "circle",
+        
       },
       emphasis: {
         focus: "series",
       },
-      barGap: "3%",
+      barGap: "13%",
+     
     };
+
     option && myChart.setOption(option);
+
     return () => {
       myChart.dispose();
     };
   }, [data]);
 
-  return <div id="main" style={{ width: "100%", height: "400px" }}></div>;
+  return <div id="main" style={{ width: "100%", height: "350px" }}></div>;
 };
 
 export default TopVendorForDiscovery;

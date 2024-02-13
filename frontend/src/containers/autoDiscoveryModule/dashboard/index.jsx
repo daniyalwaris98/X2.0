@@ -8,13 +8,15 @@ import {
   selectSnmpStatus,
   selectCredentialsSummary,
   selectTopVendorForDiscovery,
-  selectTopOs
+  selectTopOs,
+  selectCountPerFunction
 } from "../../../store/features/autoDiscoveryModule/dashboard/selectors";
 import {
   useGetSnmpStatusQuery,
   useGetCredentialsSummaryQuery,
   useGetTopVendorForDiscoveryQuery,
-  useGetTopOsQuery
+  useGetTopOsQuery,
+  useGetCountPerFunctionQuery
 } from "../../../store/features/autoDiscoveryModule/dashboard/apis";
 import "./index.css";
 import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
@@ -55,11 +57,19 @@ function Index() {
     isError: isTopOsError,
     error: topOsError,
   } = useGetTopOsQuery();
+  const {
+    data: countPerFunctionData,
+    isSuccess: isCountPerFunctionSuccess,
+    isLoading: isCountPerFunctionLoading,
+    isError: isCountPerFunctionError,
+    error: countPerFunctionError,
+  } = useGetCountPerFunctionQuery();
 
   console.log("snmpStatusDataHUnsain",snmpStatusData)
   console.log("credentialsSummaryData",credentialsSummaryData)
   console.log("topVendorData",topVendorData)
   console.log("topOsData",topOsData)
+  console.log("countPerFunctionData",countPerFunctionData)
 
   
 
@@ -113,9 +123,29 @@ function Index() {
   };
  
   
-
-  const apiData =[{"name":["SNMP V1/V2","SNMP V3","SSH Login"],"value":[3,0,23]}]
-  return (
+ const count= [
+    {
+        "name": "Router",
+        "value": 29
+    },
+    {
+        "name": "General purpose",
+        "value": 20
+    },
+    {
+        "name": "Specialized",
+        "value": 2
+    },
+    {
+        "name": "Firewall",
+        "value": 1
+    },
+    {
+        "name": "Remote management",
+        "value": 1
+    }
+] ;
+ return (
     <>
       <Row gutter={[32, 32]} justify="space-between">
         <Col span={7}>
@@ -133,7 +163,7 @@ function Index() {
             <h6 className="heading">Credentials Summary </h6>
             <CredentialSummary 
     data={credentialsSummaryData !== undefined ? credentialsSummaryData : []} 
-    // data={sampleData}
+
 />
           </div>
         </Col>
@@ -159,10 +189,10 @@ function Index() {
         <Col span={8} xs={24} sm={24} md={16} lg={8} xl={8}>
           <div className="container">
             <h6 className="heading">Count Per Function</h6>
-            <TopOpenPorts chartData={chartData}/>
+           
             
 
-            {/* <CountPerFuntion chartData={chartData} /> */}
+            <CountPerFuntion chartData={countPerFunctionData} />
           </div>
         </Col>
       </Row>
