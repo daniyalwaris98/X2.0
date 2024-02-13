@@ -3,6 +3,8 @@ from starlette.responses import Response
 from fastapi.responses import JSONResponse
 import traceback
 import sys
+from decimal import Decimal
+import json
 from sqlalchemy import text
 from datetime import datetime, timedelta
 from app.core.config import configs
@@ -206,7 +208,7 @@ async def get_snmp_status_graph():
     
 
 @router.get("/main_credentials_graph", responses={
-    200: {"model": list[NameValueDictResponseSchema]},
+    200: {"model": NameValueDictResponseSchema},
     500: {"model": str}
 },
 summary="API to get credentials graph",
@@ -214,7 +216,7 @@ description="API to get credentials graph"
 )
 async def get_credentials_graph():
     try:
-        obj_list = []
+       # obj_list = []
 
         obj_dict = {
             "name": ["SNMP V1/V2", "SNMP V3", "SSH Login"],
@@ -236,12 +238,12 @@ async def get_credentials_graph():
         v3_result = configs.db.execute(v3_query).scalar()
         obj_dict["value"][1] = v3_result
 
-        obj_list.append(obj_dict)
+        #obj_list.append(obj_dict)
 
-        if len(obj_list) <= 0:
-            return JSONResponse(content=obj_list, status_code=200)
+        if len(obj_dict) <= 0:
+            return JSONResponse(content=obj_dict, status_code=200)
 
-        return JSONResponse(content=obj_list, status_code=200)
+        return JSONResponse(content=obj_dict, status_code=200)
 
     except Exception as e:
         traceback.print_exc()
@@ -521,4 +523,138 @@ def get_top_interfaces():
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
+    
 
+
+
+'''@router.get("/main_location", responses={
+    200: {"model": List[getLocationDevice]},
+    500: {"model": str}
+},
+summary="API to get location devices ",
+description="API to get location devices"
+)
+async def type_summary():
+    try:
+        query = (
+                f"SELECT "
+                f"site_table.site_id"
+                f"rack_table.rack_id "
+                f"atom_table.device_name "
+                f"atom_table.onboard_status "
+                f"atom_table.virtual  "  # Remove this line
+                f"atom_table.device_name COUNT(*) AS device_counts "  # Add a comma after 'virtual'
+                f"SUM(CASE WHEN atom_table.onboard_status = True THEN 1 ELSE 0 END) AS onboard_counts "
+                f"SUM(CASE WHEN atom_table.virtual = 'virtual' THEN 1 ELSE 0 END) AS virtual_counts "
+                f"SUM(CASE WHEN atom_table.virtual = 'non-virtual' THEN 1 ELSE 0 END) AS physical_counts "
+                f"FROM atom_table "
+                f"LEFT JOIN rack_table ON atom_table.atom_id = rack_table.atom_id "
+                f"LEFT JOIN site_table ON rack_table.rack_id = site_table.rack_id "
+                f"GROUP BY  site_table.site_id , rack_table.rack_id, atom_table.device_name, atom_table.onboard_status, atom_table.virtual;"
+            )
+                
+        #print("query string is::::::::::::::::::::::::",query=sys.stderr)
+        result = configs.db.execute(query)
+        print("reuslt is:::::::::::",result,file=sys.stderr)
+        objt_list=[]
+
+        for row in result:
+            print("row is::::::::::::::::::::::", row, file=sys.stderr)
+            print("row [0] is:::::::::::::::", row[0], file=sys.stderr)
+            print("row[1] is:::::::::::::::::::", row[1], file=sys.stderr)
+            print("row[2] is:::::::::::::::::::", row[2], file=sys.stderr)
+            print("row[3] is:::::::::::::::::::", row[3], file=sys.stderr)
+            objt_dict = {{"name": "total_devices","values": row[0]}, {"name": "onboard_devices","values": row[1]},
+                         {"name": "virtual","values": row[2]},{"name": "physical","values": row[3]}}
+            print("obj dict is::::::::::::::::::::", objt_dict, file=sys.stderr)
+            objt_list.append(objt_dict)
+
+
+        if len(objt_list)<=0:
+            objt_dict = {{"name": "total_devices","values": 0 }, {"name": "onboard_devices","values": 0},
+                         {"name": "virtual","values": 0 },{"name": "physical","values": 0 }}
+            objt_list.append(objt_dict)
+            return  JSONResponse(content=objt_list, status_code = 200)
+
+
+        print("objlist is:::::::::::::::::", objt_list, file=sys.stderr)
+        return  JSONResponse(content=objt_list, status_code = 200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(
+            content = "Error While Fetching subnet_state Counts from subnet_table",
+            status_code = 500,
+        )'''
+    
+    
+
+
+@router.get("/main_location", responses={
+    200: {"model": List[getLocationDevice]},
+    500: {"model": str}
+},
+summary="API to get location devices",
+description="API to get location devices"
+)
+async def type(site_id: int = Query(..., description="Site ID for filtering")):
+    try:
+        query = (
+            f"SELECT "
+            f"rack_table.rack_id, "
+            f"atom_table.virtual, "
+            f"atom_table.onboard_status, "
+            f"atom_table.device_name, "
+            f"COUNT(*) AS device_counts, "
+            f"SUM(CASE WHEN atom_table.onboard_status = True THEN 1 ELSE 0 END) AS onboard_counts, "
+            f"SUM(CASE WHEN atom_table.virtual = 'virtual' THEN 1 ELSE 0 END) AS virtual_counts, "
+            f"SUM(CASE WHEN atom_table.virtual = 'non-virtual' THEN 1 ELSE 0 END) AS physical_counts "
+            f"FROM atom_table "
+            f"LEFT JOIN rack_table ON atom_table.rack_id = rack_table.rack_id "
+            f"LEFT JOIN site_table ON rack_table.site_id = site_table.site_id "
+            f"WHERE site_table.site_id = :site_id "  
+            f"GROUP BY rack_table.rack_id, atom_table.device_name, atom_table.onboard_status, atom_table.virtual;"
+        )
+
+        result = configs.db.execute(query, {"site_id": site_id})
+        objt_list = []
+
+        for row in result:
+            objt_dict = {
+                "name": "total_devices",
+                "values": float(row[4]),  
+            }, {
+                "name": "onboard_devices",
+                "values": float(row[5]),  
+            }, {
+                "name": "virtual",
+                "values": float(row[6]),  
+            }, {
+                "name": "physical",
+                "values": float(row[7]),  
+            }
+            objt_list.append(objt_dict)
+
+        if not objt_list:
+            objt_dict = {
+                "name": "total_devices",
+                "values": 0,
+            }, {
+                "name": "onboard_devices",
+                "values": 0,
+            }, {
+                "name": "virtual",
+                "values": 0,
+            }, {
+                "name": "physical",
+                "values": 0,
+            }
+            objt_list.extend(objt_dict)
+            return JSONResponse(content=objt_list, status_code=200)
+
+        return JSONResponse(content=objt_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(
+            content="server error ",
+            status_code=500,
+        )
