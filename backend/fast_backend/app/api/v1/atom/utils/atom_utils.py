@@ -807,7 +807,9 @@ def get_transition_atoms():
                 obj_list.append(obj_dict)
             
             count +=1
+        configs.db.close()
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
 
     return obj_list

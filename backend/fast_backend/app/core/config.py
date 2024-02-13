@@ -1,5 +1,5 @@
 import traceback
-
+import logging
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -9,7 +9,7 @@ from dotenv import load_dotenv
 from typing import List
 from starlette.templating import Jinja2Templates
 from influxdb_client import InfluxDBClient
-
+import sys
 # Load environment variables
 load_dotenv()
 ENV: str = ""
@@ -54,8 +54,8 @@ class Configs:
 
     DATABASE_URL = "mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB"
 
-    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    engine = create_engine(DATABASE_URL, query_cache_size=0, pool_size=30, max_overflow=0, pool_pre_ping=True, echo=True, echo_pool=True,pool_recycle=1800)
+    SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
     db = scoped_session(SessionLocal)
     metadata = MetaData()
 
@@ -79,7 +79,7 @@ class Configs:
         return Configs.db
 
     @contextmanager
-    def session_scope(self, refresh_all: bool = False, instances: list = None):
+    def session_scope(self, refresh_all: bool = True, instances: list = None):
         """
         Provide a transactional scope around a series of operations.
 
@@ -123,6 +123,7 @@ class Configs:
 
 class Config:
     case_sensitive = True
+    orm_mode = True
 
 # Additional Configurations for Testing
 class TestConfigs(Configs):
@@ -138,4 +139,7 @@ elif ENV == "stage":
 elif ENV == "test":
     setting = TestConfigs()
 
-
+# print("logger staterd for sqlalchemy engine:::::::::::::::::::",file=sys.stderr)
+# logging.basicConfig(level=logging.DEBUG)
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+# print("logger ended for sqlalchemy engine:::::::::::::::::::::",file=sys.stderr)

@@ -2,6 +2,7 @@ from app.models.atom_models import *
 from app.models.site_rack_models import *
 from app.utils.db_utils import *
 from sqlalchemy import and_
+from geopy.geocoders import Nominatim
 
 def FormatDate(date):
     result = datetime(2000, 1, 1)
@@ -11,6 +12,8 @@ def FormatDate(date):
         traceback.print_exc()
 
     return result
+
+
 
 
 def check_site_name(site_obj):
@@ -64,6 +67,7 @@ def check_site_optional_data(site_obj, site_exist):
 
 def add_site_util(site_obj):
     try:
+        print("site obj is:::::::::::::::::",site_obj,file=sys.stderr)
         site_group_data = {}
         site_exist, status = check_site_name(site_obj)
 
@@ -72,6 +76,8 @@ def add_site_util(site_obj):
 
         if site_exist is not None:
             return "Site Name Is Already Assigned", 400
+
+
 
         site_exist = SiteTable()
         site_exist.site_name = site_obj["site_name"]

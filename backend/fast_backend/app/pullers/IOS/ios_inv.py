@@ -15,12 +15,18 @@ class IOSPuller(object):
         self.stack_priority = 0
         self.stack_switch = ""
         self.failed = False
+        self.results = []
+        self.lock = threading.Lock()
 
 
     def get_inventory_data(self, hosts):
         threads = []
         print('THIS IS INVENTIRY DATA', file=sys.stderr)
+        print("self.inventory data is:::::::::::::::::::::::",self.inv_data,file=sys.stderr)
+        with self.lock:
+            self.results.clear()
         for host in hosts:
+            print("host is:::::::::::::::::::",host,file=sys.stderr)
             th = threading.Thread(target=self.poll, args=(host,))
             th.start()
             threads.append(th)
@@ -33,7 +39,7 @@ class IOSPuller(object):
             for t in threads:  # if request is less than connections_limit then join the threads and then return data
                 t.join()
 
-            return self.failed
+            return self.results
 
     def poll(self, host):
         print('HOST IS :', type(host), file=sys.stderr)
@@ -44,26 +50,34 @@ class IOSPuller(object):
         login_exception = None
         while c < login_tries:
             try:
+                device_info = {"ip_address": host['ip_address'], "status": "error", "message": ""}
                 device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'],
                                  device_type=host['device_type'], timeout=600, global_delay_factor=2,
                                  banner_timeout=300)
                 # device = ConnectHandler(**host)
                 # device.enable()
                 self.is_login = True
-                self.inv_data[host['ip_address']] = {"success": "success"}
-                print("devices are:::::::::::",device, file=sys.stderr)
+                # self.inv_data[host['ip_address']] = {"success": "success"}
+                # print("devices are:::::::::::",device, file=sys.stderr)
+                # self.inv_data['status'] = "success"
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
+                device_info["status"] = "success"
+                device_info["message"] = "Inventory fetched successfully"
                 break
             except Exception as e:
                 c += 1
                 print(f"Failed to login {host['ip_address']}", file=sys.stderr)
+                device_info["message"] = f"{host['ip_address']} Failed to login"
                 traceback.print_exc()
                 login_exception = str(e)
+        with self.lock:
+            self.results.append(device_info)
         if self.is_login == False:
             self.inv_data[host['ip_address']] = {"error": "Login Failed"}
             date = datetime.now()
             self.failed = True
             self.inv_data['status'] = "error"
+
             # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
 
             # file_name = time.strftime("%d-%m-%Y")+".txt"
@@ -196,7 +210,9 @@ class IOSPuller(object):
                 self.inv_data[host['ip_address']].update({'status': 'success'})
                 print("self inventory data is::::::::::::::::::::::",self.inv_data, file=sys.stderr)
 
-                self.failed = uam_inventory_data(self.inv_data)
+                self.failed,response = uam_inventory_data(self.inv_data)
+                print("self.failed is::::::::::::::::::::",self.failed,file=sys.stderr)
+                print("repsonse is::::::::::::::::::::::::::",response,file=sys.stderr)
                 if self.failed != True:
                     self.failed = False
                 else:

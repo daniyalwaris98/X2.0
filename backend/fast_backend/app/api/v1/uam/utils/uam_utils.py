@@ -2,7 +2,7 @@ from app.utils.db_utils import *
 from app.models.uam_models import *
 from app.models.atom_models import *
 from app.models.site_rack_models import *
-
+from fastapi.responses import JSONResponse
 
 def FormatDate(date):
     print(f"String Date : {date}", file=sys.stderr)
@@ -113,7 +113,7 @@ def delete_uam_device_util(ip_address):
             if uam.status == "Production":
                 return (
                     f"{ip_address} : Device Is In Production Therefore Can Not Be Deleted"
-                    
+
                 ),400
         devices_id = uam.uam_id
         if DeleteDBData(uam) == 200:
@@ -157,7 +157,7 @@ def edit_uam_device_util(device_obj, uam_id):
             print("if uam is not none device id found is::::::::::::::::::::::::::::::",device,file=sys.stderr)
             if device is None:
                 return "Device Not Found In UAM", 500
-            
+
             exits = True
             print("after edvice id is not none exist value so:::::::::::::::::::::::::",exits,file=sys.stderr)
         else:
@@ -385,8 +385,8 @@ def update_uam_status_utils(ip, status):
 #                 values = [getattr(uam, column) for column in columns]  # Get corresponding values
 #                 print("Values: is:::::::::::::::::::::::::::::::::::::::", values, file=sys.stderr)
 #                 attributes_dict = dict(zip(columns, values))  # Combine columns and values into a dictionary
-                
-                
+
+
 #                 print("Attributes dictionary:", attributes_dict, file=sys.stderr)
 #                 print(
 #                     f"{ip} : {atom.device_name} : Device Status Updated Successfully",
@@ -579,3 +579,43 @@ def update_uam_status_utils(ip, status):
 #     except Exception:
 #         traceback.print_exc()
 #         return "Exception Occurred", 500
+
+
+def onboard_devices_data_fetch(ip):
+    try:
+        data = {}
+        atom_exsist = configs.db.query(AtomTable).filter_by(ip_address = ip).first()
+        if atom_exsist:
+            password_group_exsist = configs.db.query(PasswordGroupTable).filter_by(password_group_id = atom_exsist.password_group_id).first()
+            if password_group_exsist:
+                data['password_group'] = password_group_exsist.password_group
+            else:
+                print("Password Group Not Found",file=sys.stderr)
+            rack_exsist = configs.db.query(RackTable).filter_by(rack_id=atom_exsist.rack_id).first()
+            if rack_exsist:
+                    data['rack_name'] = rack_exsist.rack_name
+                    site_exsist = configs.db.query(SiteTable).filter_by(site_id = rack_exsist.site_id).first()
+                    if site_exsist:
+                        data['site_name'] = site_exsist.site_name
+
+            else:
+                print("rack name not found")
+
+            data['ip_address'] = atom_exsist.ip_address
+            data['device_type'] = atom_exsist.device_type
+            data['vendor'] = atom_exsist.vendor
+            data['device_ru'] = atom_exsist.device_ru
+            data['department'] = atom_exsist.department
+            data['section'] = atom_exsist.section
+            data['criticality'] = atom_exsist.criticality
+            data['domain'] = atom_exsist.domain
+            data['virtual'] = atom_exsist.virtual
+            if atom_exsist.onboard_status == True:
+                data['onboard_status'] = True
+            else:
+                data['onboard_status'] = False
+            data['scop'] = atom_exsist.scop
+        return data
+    except Exception as e:
+        traceback.print_exc()
+        return "Error while fetching the devices data fetch",500
