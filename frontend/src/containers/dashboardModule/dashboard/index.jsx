@@ -232,7 +232,7 @@ function Index() {
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Top Vendors For Discovery</h5>
-            <TopVendorForDiscovery/>
+            {/* <TopVendorForDiscovery/> */}
           </div>
         </Col>
       </Row>

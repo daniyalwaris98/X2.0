@@ -1,15 +1,11 @@
 import React, { useEffect } from "react";
 import * as echarts from "echarts";
-const TopVendorForDiscovery = () => {
+
+const TopVendorForDiscovery = ({ data }) => {
   useEffect(() => {
     const chartDom = document.getElementById("main");
     const myChart = echarts.init(chartDom);
     const option = {
-    //   title: [
-    //     {
-    //       text: "Configuration Backup Summary",
-    //     },
-    //   ],
       tooltip: {
         label: {
           show: false,
@@ -47,21 +43,21 @@ const TopVendorForDiscovery = () => {
       series: [
         {
           type: "bar",
-          data: [10],
+          data: data.map(item => item.value),
           coordinateSystem: "polar",
           name: "Backup Successful",
           color: "green",
         },
         {
           type: "bar",
-          data: [5],
+          data: data.map(item => item.value / 2), // Just for example purposes
           coordinateSystem: "polar",
           name: "Backup Failure",
           color: "red",
         },
         {
           type: "bar",
-          data: [7],
+          data: data.map(item => item.value / 3), // Just for example purposes
           coordinateSystem: "polar",
           name: "Not Backup",
           color: "orange",
@@ -81,7 +77,9 @@ const TopVendorForDiscovery = () => {
     return () => {
       myChart.dispose();
     };
-  }, []);
+  }, [data]);
+
   return <div id="main" style={{ width: "100%", height: "400px" }}></div>;
 };
+
 export default TopVendorForDiscovery;

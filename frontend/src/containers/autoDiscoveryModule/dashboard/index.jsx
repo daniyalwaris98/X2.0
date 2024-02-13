@@ -107,7 +107,12 @@ function Index() {
     counts: [10, 20, 15, 30],
   };
 
-  
+  const sampleData = {
+    name: ['SNMP V1/V2', 'SNMP V3', 'SSH Login'],
+    value: [3, 0, 23]
+  };
+
+  const apiData =[{"name":["SNMP V1/V2","SNMP V3","SSH Login"],"value":[3,0,23]}]
   return (
     <>
       <Row gutter={[32, 32]} justify="space-between">
@@ -124,13 +129,16 @@ function Index() {
         <Col span={10}>
           <div className="container">
             <h6 className="heading">Credentials Summary </h6>
-            <CredentialSummary />
+            <CredentialSummary 
+            // data={credentialsSummaryData !== undefined? credentialsSummaryData :[]} 
+            data={sampleData}
+            />
           </div>
         </Col>
         <Col span={7}>
           <div className="container">
             <h6 className="heading">Top Vendors For Discovery</h6>
-            <TopVendorForDiscovery/>
+            <TopVendorForDiscovery data={topVendorData !== undefined? topVendorData:[]} />
           </div>
         </Col>
       </Row>
