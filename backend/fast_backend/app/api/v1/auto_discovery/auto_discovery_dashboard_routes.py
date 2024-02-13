@@ -1,5 +1,6 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
+from sqlalchemy import text
 
 from app.api.v1.auto_discovery.auto_discovery_utils import *
 from app.schema.base_schema import NameValueListOfDictResponseSchema, NameValueDictResponseSchema
@@ -31,6 +32,10 @@ async def get_top_os_for_discovery():
             print("results is::::::::::::::::::::::::",  row[1], file=sys.stderr)
 
             obj_list.append({"name": row[0], "value": row[1]})
+        if  len(obj_list) <=0:
+            obj_list=[{"name": "os", "value": 0}]
+            print("obj_list is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+            return   JSONResponse(content=obj_list, status_code=200)  
 
         return JSONResponse(content=obj_list, status_code=200)
 
@@ -55,7 +60,16 @@ async def get_top_vendors_for_discovery():
 
         obj_list = []
         for row in result:
+            #print(row[0])
+            #print(row[1])
             obj_list.append({"name": row[0], "value": row[1]})
+        print("objlist is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+
+        if  len(obj_list) <=0:
+            obj_list=[{"name": "vender", "value": 0}]
+            print("obj_list is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+
+            return   JSONResponse(content=obj_list, status_code=200)  
 
         return JSONResponse(content=obj_list, status_code=200)
 
@@ -127,40 +141,46 @@ async def get_top_functions_for_discovery():
         return JSONResponse(content="Server Error", status_code=500)
 
 
+
 @router.get("/get_credentials_graph", responses={
     200: {"model": list[NameValueDictResponseSchema]},
     500: {"model": str}
 },
-summary ="API to get credentials graph ",
-description = "API to get credentials graph"
+summary="API to get credentials graph",
+description="API to get credentials graph"
 )
 async def get_credentials_graph():
     try:
+        obj_list = []
+
         obj_dict = {
             "name": ["SNMP V1/V2", "SNMP V3", "SSH Login"],
             "value": [0, 0, 0],
         }
 
-        query_string = (f"SELECT snmp_version, COUNT(snmp_version) FROM "
-                        f"auto_discovery_table GROUP BY snmp_version;")
-        result = configs.db.execute(query_string)
+       
+        ssh_query = text("SELECT count(*) FROM password_group_table WHERE password_group_type='SSH';")
+        ssh_result = configs.db.execute(ssh_query).scalar()
+        obj_dict["value"][2] = ssh_result
 
-        for row in result:
-            if (row[0]) == "SNMPv2-MIB":
-                obj_dict["value"][0] = row[1]
-            elif (row[0]) == "SNMPv3-MIB":
-                obj_dict["value"][1] = row[1]
+        
+        v1_v2_query = text("SELECT count(*) FROM snmp_credentials_table WHERE category='v1/v2';")
+        v1_v2_result = configs.db.execute(v1_v2_query).scalar()
+        obj_dict["value"][0] = v1_v2_result
 
-        query_string = (f"SELECT ssh_status, COUNT(ssh_status) FROM "
-                        f"auto_discovery_table GROUP BY ssh_status;")
-        result = configs.db.execute(query_string)
+        
+        v3_query = text("SELECT count(*) FROM snmp_credentials_table WHERE category='v3';")
+        v3_result = configs.db.execute(v3_query).scalar()
+        obj_dict["value"][1] = v3_result
 
-        for row in result:
-            if (row[0]) == "True":
-                obj_dict["value"][2] = row[1]
+        obj_list.append(obj_dict)
 
-        return JSONResponse(content=obj_dict, status_code=200)
+        if len(obj_list) <= 0:
+            return JSONResponse(content=obj_list, status_code=200)
 
-    except Exception:
+        return JSONResponse(content=obj_list, status_code=200)
+
+    except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
+
