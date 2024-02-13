@@ -11,7 +11,7 @@ const CredentialSummary = ({ data }) => {
         trigger: 'axis'
       },
       legend: {
-        data: data.name
+        data: data?.name
       },
       grid: {
         left: '3%',
@@ -26,16 +26,16 @@ const CredentialSummary = ({ data }) => {
       },
       xAxis: {
         type: 'category',
-        data: data.name
+        data: data?.name
       },
       yAxis: {
         type: 'value'
       },
       series: [
         {
-          name: data.name[0],
+          name: data?.name,
           type: 'line',
-          data: data.value
+          data: data?.value
         }
       ]
     };

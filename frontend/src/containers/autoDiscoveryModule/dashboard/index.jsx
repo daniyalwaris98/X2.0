@@ -111,6 +111,8 @@ function Index() {
     name: ['SNMP V1/V2', 'SNMP V3', 'SSH Login'],
     value: [3, 0, 23]
   };
+ 
+  
 
   const apiData =[{"name":["SNMP V1/V2","SNMP V3","SSH Login"],"value":[3,0,23]}]
   return (
@@ -130,9 +132,9 @@ function Index() {
           <div className="container">
             <h6 className="heading">Credentials Summary </h6>
             <CredentialSummary 
-            // data={credentialsSummaryData !== undefined? credentialsSummaryData :[]} 
-            data={sampleData}
-            />
+    data={credentialsSummaryData !== undefined ? credentialsSummaryData : []} 
+    // data={sampleData}
+/>
           </div>
         </Col>
         <Col span={7}>
