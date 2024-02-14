@@ -286,6 +286,7 @@ class AuthService(BaseService):
             print("error while sign in",str(e),file=sys.stderr)
     def blacklist_token(self, email: str, token: str):
         try:
+            add_user_dict = {}
             blacklisted_token = BlacklistedToken(email=email, token=token)
             self.blacklisted_token_repository.create(blacklisted_token)
         except Exception as e:
@@ -293,6 +294,7 @@ class AuthService(BaseService):
 
     def add_user(self, user_info: AddUserSchema):
         try:
+            add_user_dict = {}
             user_token = get_rand_hash()
             user_data = user_info.dict(exclude_none=True)
             print("user data is:::::::::", user_data, file=sys.stderr)
@@ -332,6 +334,7 @@ class AuthService(BaseService):
                 status = user_data.pop('status', None)
                 name = user_data.pop('name', None)
                 user_name = user_data.pop('user_name', None)
+                email_address = user_data.get('email_address',None)
 
                 # Ensure all required fields are set correctly
                 user = UserTableModel(
@@ -344,16 +347,20 @@ class AuthService(BaseService):
                     status=status,
                     end_user_id=end_user_id,
                     name=name,
-                    user_name=user_name
+                    user_name=user_name,
+                    email = email_address
                 )
                 password = user_data.get('password')
                 user.password = get_password_hash(password)
                 schema = AddUserSchema
                 created_user = self.user_repository.create(user)
+
                 delattr(created_user, "password")
                 print("created user is::::::::::::::;", created_user, file=sys.stderr)
 
             configs.db.close()
-            return created_user
+            add_user_dict['data'] = created_user
+            add_user_dict['message'] = f"User Added Successfully"
+            return add_user_dict
         except Exception as e:
             traceback.print_exc()
