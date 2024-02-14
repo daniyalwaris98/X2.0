@@ -173,7 +173,7 @@ def get_all_end_users():
         return JSONResponse(content="Error Occured While Getting end users",status_code=500)
 
 @router.post("/add_user",  responses = {
-                    200:{"model":UserSchema},
+                    200:{"model":SignInResponse},
                     400:{"model":str},
                     500:{"model":str}
                   },)
@@ -264,6 +264,7 @@ def edit_user_role(user_data:EditUserRoleScehma):
             message = f"{user_role_exsist.role} : Updated Successfully"
             users_role_data['data'] = data
             users_role_data['message'] = message
+            configs.db.close()
             return JSONResponse(content=users_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
@@ -296,6 +297,7 @@ def edit_user_role(user_data:EditConfigurationRoleScehma):
             message = f"{user_role_exsist.role} : Updated Successfully"
             user_role_data['data'] = data
             user_role_data['message'] = message
+            configs.db.close()
             return JSONResponse(content=user_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
