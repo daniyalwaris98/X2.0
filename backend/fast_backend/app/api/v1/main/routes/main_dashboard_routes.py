@@ -312,54 +312,6 @@ async def phy_leaflet():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.post("/main_device_status", responses={
-    200: {"model": list[NameValueListOfDictResponseSchema]},
-    500: {"model": str}
-},
-summary = "Use this API in UAM Devices pAge in device status overview to display the count of Production,Dismantled,Undefined devices ",
-description = "Use this API in UAM Devices pAge in device status overview to display the count of Production,Dismantled,Undefined devices ")
-async def device_status():
-    try:
-        obj_list = [
-            {"name": "Production", "value": 0},
-            {"name": "Dismantled", "value": 0},
-            {"name": "Maintenance", "value": 0},
-            {"name": "Undefined", "value": 0},
-        ]
-
-        query = f"select count(*) from uam_device_table;"
-        result0 = configs.db.execute(query).scalar()
-        if result0 != 0:
-            query_string = (
-                f"select count(status) from uam_device_table where STATUS='Production';"
-            )
-            result = configs.db.execute(query_string).scalar()
-
-            query_string1 = (
-                f"select count(status) from uam_device_table where STATUS='Dismantled';"
-            )
-            result1 = configs.db.execute(query_string1).scalar()
-
-            query_string2 = f"select count(status) from uam_device_table where STATUS='Maintenance';"
-            result2 = configs.db.execute(query_string2).scalar()
-
-            query_string3 = (
-                f"select count(status) from uam_device_table where STATUS='Undefined';"
-            )
-            result3 = configs.db.execute(query_string3).scalar()
-            obj_list = [
-                {"name": "Production", "value": round(((result / result0) * 100), 2)},
-                {"name": "Dismantled", "value": round(((result1 / result0) * 100), 2)},
-                {"name": "Maintenance", "value": round(((result2 / result0) * 100), 2)},
-                {"name": "Undefined", "value": round(((result3 / result0) * 100), 2)},
-            ]
-
-        print(obj_list, file=sys.stderr)
-
-        return JSONResponse(content=obj_list, status_code=200)
-    except Exception:
-        traceback.print_exc()
-        return JSONResponse(content="Error Occurred Fetching Uam Data", status_code=500)
 
 
 
@@ -644,4 +596,52 @@ async def type(region_name: str = Query(..., description="Region Name for filter
         return JSONResponse(content="Error Occurred Fetching Site Data", status_code=500)
 
 
-        
+ @router.get("/main_device_status", responses={
+    200: {"model": list[NameValueListOfDictResponseSchema]},
+    500: {"model": str}
+},
+summary = "Use this API in UAM Devices pAge in device status overview to display the count of Production,Dismantled,Undefined devices ",
+description = "Use this API in UAM Devices pAge in device status overview to display the count of Production,Dismantled,Undefined devices ")
+async def device_status():
+    try:
+        obj_list = [
+            {"name": "Production", "value": 0},
+            {"name": "Dismantled", "value": 0},
+            {"name": "Maintenance", "value": 0},
+            {"name": "Undefined", "value": 0},
+        ]
+
+        query = f"select count(*) from uam_device_table;"
+        result0 = configs.db.execute(query).scalar()
+        if result0 != 0:
+            query_string = (
+                f"select count(status) from uam_device_table where STATUS='Production';"
+            )
+            result = configs.db.execute(query_string).scalar()
+
+            query_string1 = (
+                f"select count(status) from uam_device_table where STATUS='Dismantled';"
+            )
+            result1 = configs.db.execute(query_string1).scalar()
+
+            query_string2 = f"select count(status) from uam_device_table where STATUS='Maintenance';"
+            result2 = configs.db.execute(query_string2).scalar()
+
+            query_string3 = (
+                f"select count(status) from uam_device_table where STATUS='Undefined';"
+            )
+            result3 = configs.db.execute(query_string3).scalar()
+            obj_list = [
+                {"name": "Production", "value": round(((result / result0) * 100), 2)},
+                {"name": "Dismantled", "value": round(((result1 / result0) * 100), 2)},
+                {"name": "Maintenance", "value": round(((result2 / result0) * 100), 2)},
+                {"name": "Undefined", "value": round(((result3 / result0) * 100), 2)},
+            ]
+
+        print(obj_list, file=sys.stderr)
+
+        return JSONResponse(content=obj_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred Fetching Uam Data", status_code=500)
+       

@@ -42,3 +42,10 @@ class GetSfp(BaseSchema):
     ip_address : str
     device_name : str
     sfps : int    
+
+class GetEol(BaseSchema):
+    #eol_devices : int
+    #eol_data_not_available : int 
+    #eol_announcements : int
+    name : str
+    values : int  
