@@ -133,13 +133,14 @@ export default function Index() {
   const navigate = useNavigate();
   const { handleLogout } = useAuthentication();
   const { getUserInfoFromAccessToken, isModuleAllowed } = useAuthorization();
-  // const isValidAccessToken = useSelector(selectIsValidAccessToken);
-const isValidAccessToken = true;
+  const isValidAccessToken = useSelector(selectIsValidAccessToken);
+
   // user information
   const userInfo = getUserInfoFromAccessToken();
   const roleConfigurations = userInfo?.configuration;
 
   const modulePath = getPathSegment(3);
+  console.log("modulePath", modulePath);
   const theme = useTheme();
   const { isDarkMode, setDarkMode } = useContext(AppContext);
   const [open, setOpen] = useState(false);
@@ -169,8 +170,8 @@ const isValidAccessToken = true;
   useEffect(() => {
     console.log("validateTokenData", validateTokenData);
     if (validateTokenData) {
-      if (!validateTokenData.token.access_token) {
-        console.log("validateTokenData", validateTokenData.token.access_token);
+      if (!validateTokenData.data.access_token) {
+        console.log("validateTokenData", validateTokenData.data.access_token);
         navigate("/");
       }
     }
