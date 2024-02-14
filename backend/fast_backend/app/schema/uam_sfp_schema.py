@@ -42,3 +42,7 @@ class GetSfp(BaseSchema):
     ip_address : str
     device_name : str
     sfps : int    
+
+class GetEol(BaseSchema):
+    name : str
+    values : int  
