@@ -1,6 +1,9 @@
 import * as yup from "yup";
 import { getTitle, isValidSubnet } from "../../../../utils/helpers";
-import { ALPHA_NUMERIC_REGEX } from "../../../../utils/constants/regex";
+import {
+  ALPHA_NUMERIC_REGEX,
+  ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS,
+} from "../../../../utils/constants/regex";
 import { indexColumnNameConstants } from "./constants";
 
 export const defaultSchema = yup.object().shape({
@@ -17,7 +20,10 @@ export const defaultSchema = yup.object().shape({
   [indexColumnNameConstants.SUBNET_NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.SUBNET_NAME)} is required`)
-    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters found"),
+    .matches(
+      ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS,
+      "Invalid characters found"
+    ),
   [indexColumnNameConstants.SUBNET_MASK]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.SUBNET_MASK)} is required`)
@@ -27,7 +33,7 @@ export const defaultSchema = yup.object().shape({
     ),
   [indexColumnNameConstants.SUBNET_LOCATION]: yup
     .string()
-    .matches(ALPHA_NUMERIC_REGEX, {
+    .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),

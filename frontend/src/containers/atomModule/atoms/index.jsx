@@ -205,7 +205,7 @@ const Index = () => {
   function shouldOnboardBeVisible() {
     if (selectedRowKeys.length > 0) {
       return selectedRowKeys.some((key) => {
-        let atom = fetchRecordsData?.find((item) => item.atom_table_id === key);
+        let atom = dataSource?.find((item) => item.atom_table_id === key);
         return atom && atom.atom_id;
       });
     }

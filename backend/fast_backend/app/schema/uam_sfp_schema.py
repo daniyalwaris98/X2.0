@@ -36,3 +36,9 @@ class SfpsModeSchema(BaseSchema):
     base_1000_lx: int
     not_available: int
     transceiver_not_detected: int
+
+
+class GetSfp(BaseSchema):
+    ip_address : str
+    device_name : str
+    sfps : int    

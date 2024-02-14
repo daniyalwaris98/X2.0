@@ -239,6 +239,7 @@ const Index = ({
                 required
               />
               <DefaultFormUnit
+                type="number"
                 control={control}
                 dataKey={indexColumnNameConstants.RU}
               />

@@ -1,13 +1,13 @@
 import * as yup from "yup";
 import { getTitle } from "../../../../../utils/helpers";
-import { ALPHA_NUMERIC_REGEX } from "../../../../../utils/constants/regex";
+import { ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS } from "../../../../../utils/constants/regex";
 import { indexColumnNameConstants } from "./constants";
 
 export const defaultSchema = yup.object().shape({
   [indexColumnNameConstants.ACCOUNT_LABEL]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.ACCOUNT_LABEL)} is required`)
-    .matches(ALPHA_NUMERIC_REGEX, {
+    .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),

@@ -1,13 +1,16 @@
 import * as yup from "yup";
-import { getTitle, transformDateTimeToDate } from "../../../utils/helpers";
+import { getTitle } from "../../../utils/helpers";
 import { indexColumnNameConstants } from "./constants";
-import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
+import {
+  ALPHA_NUMERIC_REGEX,
+  ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS,
+} from "../../../utils/constants/regex";
 
 export const defaultSchema = yup.object().shape({
   [indexColumnNameConstants.SITE_NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.SITE_NAME)} is required`)
-    .matches(ALPHA_NUMERIC_REGEX, {
+    .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
@@ -17,7 +20,13 @@ export const defaultSchema = yup.object().shape({
 
   [indexColumnNameConstants.REGION_NAME]: yup
     .string()
-    .matches(ALPHA_NUMERIC_REGEX, {
+    .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
+      message: "Invalid characters found",
+      excludeEmptyString: true,
+    }),
+  [indexColumnNameConstants.CITY]: yup
+    .string()
+    .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
@@ -27,10 +36,6 @@ export const defaultSchema = yup.object().shape({
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
-  [indexColumnNameConstants.CITY]: yup.string().matches(ALPHA_NUMERIC_REGEX, {
-    message: "Invalid characters found",
-    excludeEmptyString: true,
-  }),
   [indexColumnNameConstants.LONGITUDE]: yup
     .string()
     .matches(ALPHA_NUMERIC_REGEX, {
