@@ -43,7 +43,7 @@ def check_subnet(network_obj):
         return f"{network_obj['network_name']} : Subnet Can Not Be Empty", 400
 
     if validate_subnet(network_obj['subnet']) is False:
-        return f"{network_obj['network_name']} : Subnet Pattern Is Not Valid", 400
+        return f"{network_obj['subnet']} : Subnet Pattern Is Not Valid", 400
 
     subnet_exist = configs.db.query(AutoDiscoveryNetworkTable).filter(
         AutoDiscoveryNetworkTable.subnet == network_obj['subnet']).first()

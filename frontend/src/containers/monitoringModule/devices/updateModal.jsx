@@ -24,12 +24,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.IP_ADDRESS]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.IP_ADDRESS)} is required`),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook

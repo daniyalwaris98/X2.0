@@ -1,11 +1,11 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const CountPerFuntion = ({ chartData }) => {
+const CountPerFunction = ({ chartData }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
-    if (!chartData || !chartData.ports || !chartData.counts) {
+    if (!chartData || !chartData.name || !chartData.value) {
       console.error('Invalid chart data:', chartData);
       return;
     }
@@ -13,15 +13,24 @@ const CountPerFuntion = ({ chartData }) => {
     const option = {
       xAxis: {
         type: 'category',
-        data: chartData.ports,
+        data: chartData.name,
+        axisLabel: {
+          interval: 0, // Adjust the label display interval if necessary
+          rotate: 0, // Set to 0 to align labels straight
+          fontSize: 10, // Adjust font size of the labels
+        },
       },
       yAxis: {
         type: 'value',
+        axisLabel: {
+          fontSize: 10, // Adjust font size of the labels
+        },
       },
       series: [
         {
-          data: chartData.counts,
+          data: chartData.value,
           type: 'bar',
+          barMaxWidth: '50%', // Adjust the maximum width of bars if necessary
           showBackground: true,
           backgroundStyle: {
             color: '#F4F8F3',
@@ -52,4 +61,4 @@ const CountPerFuntion = ({ chartData }) => {
   return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
 };
 
-export default CountPerFuntion;
+export default CountPerFunction;

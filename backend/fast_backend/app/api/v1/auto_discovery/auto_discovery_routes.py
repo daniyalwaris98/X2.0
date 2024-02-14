@@ -66,7 +66,10 @@ async def add_networks(network_objs: list[AddDiscoveryNetworkRequestSchema]):
         data = []
         error_list = []
         success_list = []
-
+        print("network obj len is::::::::::::::",len(network_objs),file
+              =sys.stderr)
+        if len(network_objs)==0:
+            error_list.append(f"No matching data found.")
         for networkObj in network_objs:
             response, status = add_networks_util(networkObj, True)
             print("repsosne is::::::::",response,file=sys.stderr)

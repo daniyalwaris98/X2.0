@@ -1,7 +1,7 @@
 import * as yup from "yup";
-import { getTitle, isValidIPAddress } from "../../../utils/helpers";
+import { getTitle, isValidIPAddress } from "../../../../utils/helpers";
+import { ALPHA_NUMERIC_REGEX } from "../../../../utils/constants/regex";
 import { indexColumnNameConstants } from "./constants";
-import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
 
 export const defaultSchema = yup.object().shape({
   [indexColumnNameConstants.IP_ADDRESS]: yup
@@ -12,20 +12,21 @@ export const defaultSchema = yup.object().shape({
       `Invalid ${getTitle(indexColumnNameConstants.IP_ADDRESS)}`,
       (value) => isValidIPAddress(value)
     ),
-  [indexColumnNameConstants.SECTION]: yup
+  [indexColumnNameConstants.SERVER_NAME]: yup
     .string()
+    .required(`${getTitle(indexColumnNameConstants.SERVER_NAME)} is required`)
     .matches(ALPHA_NUMERIC_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
-  [indexColumnNameConstants.DEPARTMENT]: yup
+  [indexColumnNameConstants.USER_NAME]: yup
     .string()
+    .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`)
     .matches(ALPHA_NUMERIC_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
-  [indexColumnNameConstants.DOMAIN]: yup.string().matches(ALPHA_NUMERIC_REGEX, {
-    message: "Invalid characters found",
-    excludeEmptyString: true,
-  }),
+  [indexColumnNameConstants.PASSWORD]: yup
+    .string()
+    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
 });

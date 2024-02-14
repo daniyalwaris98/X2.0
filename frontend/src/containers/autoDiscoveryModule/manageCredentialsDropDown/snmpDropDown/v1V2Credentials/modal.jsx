@@ -16,21 +16,7 @@ import DefaultDialogFooter from "../../../../../components/dialogFooters";
 import DefaultSpinner from "../../../../../components/spinners";
 import { ELEMENT_NAME } from "./constants";
 import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.DESCRIPTION]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.DESCRIPTION)} is required`),
-  [indexColumnNameConstants.PORT]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PORT)} is required`),
-  [indexColumnNameConstants.PROFILE_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PROFILE_NAME)} is required`),
-  [indexColumnNameConstants.COMMUNITY]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.COMMUNITY)} is required`),
-});
+import { defaultFormSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook
@@ -106,16 +92,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
             <Grid item xs={12}>
               <DefaultFormUnit
                 control={control}
-                dataKey={indexColumnNameConstants.DESCRIPTION}
-                required
-              />
-              <DefaultFormUnit
-                control={control}
-                dataKey={indexColumnNameConstants.PORT}
-                required
-              />
-              <DefaultFormUnit
-                control={control}
                 dataKey={indexColumnNameConstants.PROFILE_NAME}
                 required
               />
@@ -123,6 +99,15 @@ const Index = ({ handleClose, open, recordToEdit }) => {
                 control={control}
                 dataKey={indexColumnNameConstants.COMMUNITY}
                 required
+              />
+              <DefaultFormUnit
+                control={control}
+                dataKey={indexColumnNameConstants.DESCRIPTION}
+              />
+              <DefaultFormUnit
+                type="number"
+                control={control}
+                dataKey={indexColumnNameConstants.PORT}
               />
             </Grid>
             <Grid item xs={12}>

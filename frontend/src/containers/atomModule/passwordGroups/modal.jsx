@@ -25,25 +25,7 @@ import DefaultDialogFooter from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
 import { ELEMENT_NAME, TELNET } from "./constants";
 import { indexColumnNameConstants, TABLE_DATA_UNIQUE_ID } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.PASSWORD_GROUP]: yup
-    .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.PASSWORD_GROUP)} is required`
-    ),
-  [indexColumnNameConstants.USER_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
-  [indexColumnNameConstants.PASSWORD]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
-  [indexColumnNameConstants.PASSWORD_GROUP_TYPE]: yup
-    .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.PASSWORD_GROUP_TYPE)} is required`
-    ),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook

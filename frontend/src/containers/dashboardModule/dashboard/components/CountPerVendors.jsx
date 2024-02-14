@@ -13,7 +13,7 @@ const CountPerVendors = ({ data }) => {
       dataset: {
         source: [
           ['product', 'score', 'amount', 'color'],
-          ...data.map((device, index) => [device.vendor, device.counts, index, colors[index]])
+          ...data.map((device, index) => [device.vender, device.counts, index, colors[index]])
         ],
       },
       yAxis: { type: 'category' },

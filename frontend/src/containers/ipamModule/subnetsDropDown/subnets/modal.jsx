@@ -19,25 +19,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.SUBNET_ADDRESS]: yup
-    .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.SUBNET_ADDRESS)} is required`
-    ),
-  [indexColumnNameConstants.SUBNET_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.SUBNET_NAME)} is required`),
-  [indexColumnNameConstants.SUBNET_MASK]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.SUBNET_MASK)} is required`),
-  [indexColumnNameConstants.SUBNET_LOCATION]: yup
-    .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.SUBNET_LOCATION)} is required`
-    ),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook
@@ -129,7 +111,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.SUBNET_LOCATION}
-                required
               />
             </Grid>
             <Grid item xs={12}>

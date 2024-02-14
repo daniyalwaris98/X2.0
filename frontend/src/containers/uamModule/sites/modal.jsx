@@ -27,27 +27,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.SITE_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.SITE_NAME)} is required`)
-    .matches(
-      ALPHA_NUMERIC_REGEX,
-      `Invalid characters in ${getTitle(
-        indexColumnNameConstants.SITE_NAME
-      )} is required`
-    ),
-  [indexColumnNameConstants.STATUS]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.STATUS)} is required`),
-  [indexColumnNameConstants.CITY]: yup
-    .string()
-    .matches(
-      /^[A-Za-z]+$/,
-      `${getTitle(indexColumnNameConstants.CITY)} must contain only alphabets`
-    ),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook

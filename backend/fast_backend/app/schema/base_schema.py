@@ -46,8 +46,8 @@ class NameValueListOfDictResponseSchema(BaseSchema):
 
 
 class NameValueDictResponseSchema(BaseSchema):
-    name: list[str | int | None]
-    value: list[str | int | None]
+    name: list[str  | None]
+    value: list[int| None]
 
 
 class IpAddressRequestSchema(BaseSchema):

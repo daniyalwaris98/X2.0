@@ -1,14 +1,9 @@
 import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import Grid from "@mui/material/Grid";
 import { useUpdateRecordMutation } from "../../../store/features/uamModule/hwLifeCycles/apis";
-import {
-  formSetter,
-  getTitle,
-  transformDateTimeToDate,
-} from "../../../utils/helpers";
+import { formSetter } from "../../../utils/helpers";
 import useErrorHandling, { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import FormModal from "../../../components/dialogs";
 import DefaultFormUnit, { DateFormUnit } from "../../../components/formUnits";
@@ -19,27 +14,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
 } from "./constants";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.PN_CODE]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PN_CODE)} is required`),
-  [indexColumnNameConstants.HW_EOS_DATE]: yup
-    .string()
-    .transform(transformDateTimeToDate),
-  [indexColumnNameConstants.HW_EOL_DATE]: yup
-    .string()
-    .transform(transformDateTimeToDate),
-  [indexColumnNameConstants.SW_EOS_DATE]: yup
-    .string()
-    .transform(transformDateTimeToDate),
-  [indexColumnNameConstants.SW_EOL_DATE]: yup
-    .string()
-    .transform(transformDateTimeToDate),
-  [indexColumnNameConstants.MANUFACTURE_DATE]: yup
-    .string()
-    .transform(transformDateTimeToDate),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook
