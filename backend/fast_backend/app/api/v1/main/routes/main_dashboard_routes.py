@@ -644,7 +644,7 @@ async def type(region_name: str = Query(..., description="Region Name for filter
         return JSONResponse(content="Error Occurred Fetching Site Data", status_code=500)
 
 
- @router.get("/main_device_status", responses={
+@router.get("/main_device_status", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 },
