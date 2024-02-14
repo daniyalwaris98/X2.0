@@ -5,13 +5,16 @@ import {
   isValidSubnet,
 } from "../../../utils/helpers";
 import { indexColumnNameConstants } from "./constants";
-import { ALPHA_NUMERIC_REGEX } from "../../../utils/constants/regex";
+import { ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS } from "../../../utils/constants/regex";
 
 export const defaultSchema = yup.object().shape({
   [indexColumnNameConstants.NETWORK_NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.NETWORK_NAME)} is required`)
-    .matches(ALPHA_NUMERIC_REGEX, "Invalid characters found"),
+    .matches(
+      ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS,
+      "Invalid characters found"
+    ),
 
   [indexColumnNameConstants.SUBNET]: yup
     .string()
