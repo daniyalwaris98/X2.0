@@ -314,7 +314,7 @@ function Index() {
             <h5 style={title}>Configuration Change by Time</h5>
             <TopOpenPorts
              chartData={configurationByTimeData !== undefined? configurationByTimeData:[] } 
-            //  chartData={chartData}
+            //  chartData={chartData}//
              
              />
           </div>
