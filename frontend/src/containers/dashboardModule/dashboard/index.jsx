@@ -14,6 +14,9 @@ import {Progress }from "antd";
 import MainTable from "./components/MainTable";
 import TypeSummaryChart from "../../ipamModule/dashboard/components/TypeSummaryChart";
 import TopSubnet from "../../ipamModule/dashboard/components/TopSubnet";
+import {
+  useGetConfigurationByTimeQuery,
+} from "../../../store/features/dashboardModule/dashboard/apis";
 
 
 import {
@@ -65,6 +68,16 @@ function Index() {
     isError: isSnmpStatusError,
     error: SnmpStatusError,
   } = useGetSnmpStatusQuery();
+
+
+  const {
+    data: configurationByTimeData,
+    isSuccess: isConfigurationByTimeSuccess,
+    isLoading: isConfigurationByTimeLoading,
+    isError: isConfigurationByTimeError,
+    error: configurationByTimeError,
+  } = useGetConfigurationByTimeQuery();
+  console.log("configurationByTimeData",configurationByTimeData)
   const colStyle = {
     backgroundColor: "#FFFFFF", // Grey background color
     borderRadius: "8px",
