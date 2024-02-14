@@ -5,7 +5,7 @@ import traceback
 import sys
 from decimal import Decimal
 import json
-from sqlalchemy import text
+from sqlalchemy import text , func
 from datetime import datetime, timedelta
 from app.core.config import configs
 from app.models.ipam_models import *
@@ -92,7 +92,7 @@ def top_10_subnet_ip_used():
 
 
 @router.get("/main_change-configuration-by-time", responses={
-    200: {"model": list[NameValueDictResponseSchema]},
+    200: {"model": NameValueDictResponseSchema},
     500: {"model": str}
 },
 summary="API to get change-configuration-by-time",
@@ -127,7 +127,7 @@ async def ncm_change_summary_by_time():
             name_list.append((current_time - timedelta(days=30)).strftime('%m'))
             value_list.append(0)
 
-        obj_dict = [{"name": name_list, "value": value_list}]
+        obj_dict = {"name": name_list, "value": value_list}
 
         return JSONResponse(content=obj_dict, status_code=200)
     except Exception:
@@ -596,65 +596,52 @@ async def type_summary():
 summary="API to get location devices",
 description="API to get location devices"
 )
-async def type(site_id: int = Query(..., description="Site ID for filtering")):
+async def type(region_name: str = Query(..., description="Region Name for filtering")):
     try:
-        query = (
-            f"SELECT "
-            f"rack_table.rack_id, "
-            f"atom_table.virtual, "
-            f"atom_table.onboard_status, "
-            f"atom_table.device_name, "
-            f"COUNT(*) AS device_counts, "
-            f"SUM(CASE WHEN atom_table.onboard_status = True THEN 1 ELSE 0 END) AS onboard_counts, "
-            f"SUM(CASE WHEN atom_table.virtual = 'virtual' THEN 1 ELSE 0 END) AS virtual_counts, "
-            f"SUM(CASE WHEN atom_table.virtual = 'non-virtual' THEN 1 ELSE 0 END) AS physical_counts "
-            f"FROM atom_table "
-            f"LEFT JOIN rack_table ON atom_table.rack_id = rack_table.rack_id "
-            f"LEFT JOIN site_table ON rack_table.site_id = site_table.site_id "
-            f"WHERE site_table.site_id = :site_id "  
-            f"GROUP BY rack_table.rack_id, atom_table.device_name, atom_table.onboard_status, atom_table.virtual;"
+        result = (
+            configs.db.query(SiteTable.site_id, SiteTable.region_name)
+            .filter(SiteTable.region_name == region_name)
+            .first() .scalar() 
         )
 
-        result = configs.db.execute(query, {"site_id": site_id})
-        objt_list = []
+        if not result:
+            return JSONResponse(content="Invalid region_name", status_code=400)
 
-        for row in result:
-            objt_dict = {
-                "name": "total_devices",
-                "values": float(row[4]),  
-            }, {
-                "name": "onboard_devices",
-                "values": float(row[5]),  
-            }, {
-                "name": "virtual",
-                "values": float(row[6]),  
-            }, {
-                "name": "physical",
-                "values": float(row[7]),  
-            }
-            objt_list.append(objt_dict)
 
-        if not objt_list:
-            objt_dict = {
-                "name": "total_devices",
-                "values": 0,
-            }, {
-                "name": "onboard_devices",
-                "values": 0,
-            }, {
-                "name": "virtual",
-                "values": 0,
-            }, {
-                "name": "physical",
-                "values": 0,
-            }
-            objt_list.extend(objt_dict)
-            return JSONResponse(content=objt_list, status_code=200)
+        print('site_id...............',site_id, file =sys.stderr)
+        site_id = result.site_id
+        obj_list = {}
+        result = (
+                configs.db.query(
+                    AtomTable,
+                    RackTable,
+                    SiteTable,
+                    func.count(AtomTable.device_name).label("total_device_count"),
+                    func.sum(func.case([(AtomTable.onboard_status == 1, 1)], else_=0)).label("onboard_status_count"),
+                    func.sum(func.case([(AtomTable.virtual == 'virtual', 1)], else_=0)).label("virtual_count"),
+                    func.sum(func.case([(AtomTable.virtual != 'virtual', 1)], else_=0)).label("non_virtual_count")
+                )
+                .join(RackTable, AtomTable.rack_id == RackTable.rack_id)
+                .join(SiteTable, RackTable.site_id == SiteTable.site_id)
+                .filter(SiteTable.site_id == site_id)
+                .group_by(AtomTable.device_name, AtomTable.rack_id, AtomTable.onboard_status, AtomTable.virtual)
+                .first()
+            )
 
-        return JSONResponse(content=objt_list, status_code=200)
+
+        if result is None:
+            return "No Site Found", 500
+
+        atom_table_instance, rack_table_instance, site_table_instance, total_device_count, onboard_status_count, virtual_count, non_virtual_count = result
+        obj_dict = {{"total_devices":total_device_count},
+                    {"onboard_devices":onboard_status_count},
+                    {"virtual":virtual_count},
+                    {"physical":non_virtual_count}}
+        return JSONResponse(content=obj_dict, status_code=200)
+
     except Exception:
         traceback.print_exc()
-        return JSONResponse(
-            content="server error ",
-            status_code=500,
-        )
+        return JSONResponse(content="Error Occurred Fetching Site Data", status_code=500)
+
+
+        
