@@ -1,29 +1,27 @@
 import React from 'react';
 
-function HeatMap() {
-  const data = [
-    ["#59A861", "#59A861", "#E7900C", "#8F37FF","#59A861", "#E7900C", "#59A861"],
-    ["#8F37FF", "#59A861", "#8F37FF", "#E7900C","#E7900C", "#DBDBDB", "#E7900C"],
+function HeatMap({ data }) {
+  const rows = Math.ceil(data.length / 7);
 
-    ["#59A861", "#DBDBDB", "#59A861", "#8F37FF","#59A861", "#59A861", "#59A861"],
-
-    ["#8F37FF", "#59A861", "#E7900C", "#DF4300","#E7900C", "#DF4300", "#E7900C"],
-
-   
-
-   
-  ];
+  const createRows = () => {
+    const rowsArray = [];
+    for (let i = 0; i < rows; i++) {
+      const rowData = data.slice(i * 7, (i + 1) * 7);
+      rowsArray.push(
+        <div key={i} style={{ display: "flex", justifyContent: "start", margin: "20px 0 20px 50px" }}>
+          {rowData.map((item, index) => (
+            <div key={index} style={{ width: "63px", height: "60px", backgroundColor: item.fill, borderRadius: "2px", marginRight: "20px", borderRadius:"7px" }}></div>
+          ))}
+        </div>
+      );
+    }
+    return rowsArray;
+  };
 
   return (
-    <>
-      {data.map((row, rowIndex) => (
-        <article key={rowIndex} style={{ display: "flex", gap: "20px", flexBasis: "50%", padding: "10px 40px" }}>
-          {row.map((color, colIndex) => (
-            <div key={colIndex} style={{ width: "63px", height: "60px", backgroundColor: color, borderRadius: "2px" }}></div>
-          ))}
-        </article>
-      ))}
-    </>
+    <div>
+      {createRows()}
+    </div>
   );
 }
 
