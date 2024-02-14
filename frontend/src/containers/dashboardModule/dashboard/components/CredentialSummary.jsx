@@ -1,12 +1,17 @@
 import React, { useEffect } from "react";
 import * as echarts from "echarts";
-const CredentialSummary = () => {
+
+const CredentialSummary = ({ data }) => {
   useEffect(() => {
-    var chartDom = document.getElementById("Credential Summary");
+    if (!data || !data.name || !data.value || data.name.length !== data.value.length) {
+      console.error("Invalid data:", data);
+      return;
+    }
+
+    var chartDom = document.getElementById("CredentialSummary");
     var myChart = echarts.init(chartDom);
     var option;
     option = {
-     
       tooltip: {
         trigger: "axis",
         axisPointer: {
@@ -34,6 +39,7 @@ const CredentialSummary = () => {
         axisLabel: {
           show: false,
         },
+        data: data.name,
       },
       yAxis: {
         type: "value",
@@ -41,59 +47,31 @@ const CredentialSummary = () => {
       legend: {
         y: "bottom",
         icon: "circle",
+        data: data.name,
       },
-      series: [
-        {
-          name: "SNMP V1/V2",
-          data: [-100, 142, -190, 234, 490, 230],
-          type: "line",
-          symbol: "none",
-          smooth: true,
-          itemStyle: {
-            color: "green",
-          },
-          emphasis: {
-            focus: "series",
-          },
+      series: data.name.map((name, index) => ({
+        name: name,
+        data: [data.value[index]],
+        type: "line",
+        symbol: "none",
+        smooth: true,
+        itemStyle: {
+          color: index === 0 ? "green" : index === 1 ? "blue" : "grey", // Setting colors based on index
         },
-        {
-          name: "SNMP V3",
-          data: [32, 62, 901, 94, 1290, 130],
-          type: "line",
-          symbol: "none",
-          smooth: true,
-          itemStyle: {
-            color: "blue",
-          },
-          emphasis: {
-            focus: "series",
-          },
+        emphasis: {
+          focus: "series",
         },
-        {
-          name: "SSH Login",
-          data: [-55, 532, 301, 794, 190, 1130],
-          type: "line",
-          symbol: "none",
-          smooth: true,
-          itemStyle: {
-            color: "grey",
-          },
-          emphasis: {
-            focus: "series",
-          },
-        },
-      ],
+      })),
     };
     option && myChart.setOption(option);
     return () => {
       myChart.dispose();
     };
-  }, []);
+  }, [data]);
+
   return (
-    <div
-      id="Credential Summary"
-      style={{ width: "100%", height: "400px" }}
-    ></div>
+    <div id="CredentialSummary" style={{ width: "100%", height: "400px" }}></div>
   );
 };
+
 export default CredentialSummary;

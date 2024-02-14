@@ -1,3 +1,5 @@
+import traceback
+import logging
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -7,7 +9,7 @@ from dotenv import load_dotenv
 from typing import List
 from starlette.templating import Jinja2Templates
 from influxdb_client import InfluxDBClient
-
+import sys
 # Load environment variables
 load_dotenv()
 ENV: str = ""
@@ -52,8 +54,8 @@ class Configs:
 
     DATABASE_URL = "mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB"
 
-    engine = create_engine(DATABASE_URL, pool_pre_ping=True)
-    SessionLocal = sessionmaker(autocommit=False, autoflush=False, bind=engine)
+    engine = create_engine(DATABASE_URL, query_cache_size=0, pool_size=30, max_overflow=0, pool_pre_ping=True, echo=True, echo_pool=True,pool_recycle=1800)
+    SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
     db = scoped_session(SessionLocal)
     metadata = MetaData()
 
@@ -70,23 +72,58 @@ class Configs:
     client: InfluxDBClient = InfluxDBClient(url=IN_URL, token=IN_TOKEN)
 
     templates = Jinja2Templates(directory="/app/templates")
-    with db() as db:
-        db =db
-        @contextmanager
-        def session_scope(self):
-            """Provide a transactional scope around a series of operations."""
-            session = Configs.db()
-            try:
-                yield session
-                session.commit()
-            except Exception as e:
-                session.rollback()
-                raise e
-            finally:
-                session.remove()
+
+    @staticmethod
+    def get_db_session():
+        """Retrieve the database session."""
+        return Configs.db
+
+    @contextmanager
+    def session_scope(self, refresh_all: bool = True, instances: list = None):
+        """
+        Provide a transactional scope around a series of operations.
+
+        Parameters:
+        - refresh_all: If True, refreshes all persistent instances in the session.
+        - instances: Optional list of specific instances to refresh. This is ignored if refresh_all is True.
+        """
+        session = Configs.db()  # Assuming Configs.db is a scoped_session
+        try:
+            yield session
+            if refresh_all:
+                # Assuming `session` is an actual Session instance here
+                for instance in session:
+                    session.refresh(instance)
+            elif instances:
+                for instance in instances:
+                    session.refresh(instance)
+            session.commit()
+        except Exception as e:
+            session.rollback()
+            traceback.print_exc()
+            raise e
+        finally:
+            # Scoped_session's remove() method is intended to clear the session
+            # for the current scope/thread, not necessarily to close it immediately.
+            # Use it if you're done with the session in this context.
+            # session.close()  # Typically, you don't close a scoped session here
+            Configs.db.remove()
+
+    @staticmethod
+    def init_app(app):
+            """
+            Initialize the application with configurations for SQLAlchemy.
+            This method should be called with your Flask or other framework's app instance.
+            """
+
+            @app.teardown_appcontext
+            def cleanup_context(exception=None):
+                Configs.db.remove()  # Clean up the session at the end of each request
+
 
 class Config:
     case_sensitive = True
+    orm_mode = True
 
 # Additional Configurations for Testing
 class TestConfigs(Configs):
@@ -101,3 +138,8 @@ elif ENV == "stage":
     pass
 elif ENV == "test":
     setting = TestConfigs()
+
+# print("logger staterd for sqlalchemy engine:::::::::::::::::::",file=sys.stderr)
+# logging.basicConfig(level=logging.DEBUG)
+# logging.getLogger('sqlalchemy.engine').setLevel(logging.INFO)
+# print("logger ended for sqlalchemy engine:::::::::::::::::::::",file=sys.stderr)

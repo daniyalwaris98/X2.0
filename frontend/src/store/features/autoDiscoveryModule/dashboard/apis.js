@@ -21,35 +21,14 @@ export const extendedApi = monetxApi.injectEndpoints({
         
       }),
    
-
-    // getSubnetSummary: builder.query({           
-    //   query: () => "/api/v1/ipam/ipam_dashboard/subnet_summary",
-    // }),
-    //  getNcmChangeByVendor: builder.query({           
-    //   query: () => "/api/v1/ncm/ncm_dashboard/get_vendors_in_ncm",
-    // }),
-
-
-
-    // getIpAvailibility: builder.query({           
-    //   query: () => "/api/v1/ipam/ipam_dashboard/ip_availability_summary",
-    // }),
-
-    
-    // getTopTenOpenPorts: builder.query({           
-    //   query: () => "/api/v1/ipam/ipam_dashboard/tcp_open_ports",
-    // }),
-    // getDns: builder.query({           
-    //   query: () => "/api/v1/ipam/ipam_dashboard/dns_summary",
-    // }),
-
-
-  
-
+      getCountPerFunction: builder.query({
+        query: () => "/api/v1/auto_discovery_dashboard/get_top_functions_for_discovery",
+        
+      }),
 
   }),
 });
 
 export const {
-  useGetSnmpStatusQuery, useGetCredentialsSummaryQuery, useGetTopVendorForDiscoveryQuery, useGetTopOsQuery
+  useGetSnmpStatusQuery, useGetCredentialsSummaryQuery, useGetTopVendorForDiscoveryQuery, useGetTopOsQuery, useGetCountPerFunctionQuery
 } = extendedApi;

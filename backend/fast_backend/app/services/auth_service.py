@@ -200,8 +200,10 @@ class AuthService(BaseService):
             #     "user_info": found_user,
             print("sign in data::::::::::::;",sign_in_data,file=sys.stderr)
             # }
+            configs.db.close()
             return sign_in_data
         except Exception as e:
+            configs.db.rollback()
             traceback.print_exc()
             print("error occured while signin")
     def sign_up(self, user_info: SignUp):
@@ -276,9 +278,10 @@ class AuthService(BaseService):
                         created_user = self.user_repository.create(user)
                         delattr(created_user, "password")
                         response = created_user  # Update response with created_user
-
+            configs.db.close()
             return response
         except Exception as e:
+            configs.db.close()
             traceback.print_exc()
             print("error while sign in",str(e),file=sys.stderr)
     def blacklist_token(self, email: str, token: str):
@@ -296,7 +299,7 @@ class AuthService(BaseService):
             # role = user_data.pop('role', 'user')
             company_dict = {}
             response = None  # Initialize response variable
-            company_name = user_data.get('compnay_name')
+            compnay_end_user_id = user_data.get('end_user_id')
             print("company name in user data is:::::", user_data, file=sys.stderr)
             user_name = user_data.get('role')
             user_exist = configs.db.query(UserTableModel).filter_by(user_name=user_name).first()
@@ -305,8 +308,8 @@ class AuthService(BaseService):
             else:
                 # Access attributes using dot notation
                 end_user_id = None
-                print("company name for the user attribute is:::::", company_name, file=sys.stderr)
-                end_user_exist = configs.db.query(EndUserTable).filter_by(company_name=company_name).first()
+                print("company name for the user attribute is:::::", compnay_end_user_id, file=sys.stderr)
+                end_user_exist = configs.db.query(EndUserTable).filter_by(end_user_id=compnay_end_user_id).first()
                 if end_user_exist:
                     end_user_id = end_user_exist.end_user_id
                     print("end user id is:::::::::::::::", end_user_id, file=sys.stderr)
@@ -349,6 +352,8 @@ class AuthService(BaseService):
                 created_user = self.user_repository.create(user)
                 delattr(created_user, "password")
                 print("created user is::::::::::::::;", created_user, file=sys.stderr)
+
+            configs.db.close()
             return created_user
         except Exception as e:
             traceback.print_exc()
