@@ -178,3 +178,15 @@ user_account_type_list = [
     "Permanent",
     "Not Permanent"
 ]
+
+
+virutal_list = [
+    'Virtual',
+    'Not-Virtual'
+]
+
+criticality_list = [
+    'low',
+    'medium',
+    'high'
+]

@@ -65,7 +65,7 @@ class AddUserSchema(BaseSchema):
     team:str |None = None
     account_type:str |None = None
     role:str |None = None
-    compnay_name:str |None = None
+    end_user_id:int |None = None
 
 class GetUserResponseScehma(BaseSchema):
     user_id:int

@@ -44,7 +44,7 @@ async def onboard_devices(ip_list: list[str]):
                 print("password is::::::::::::::::::::::::::::::::::::::::::::::::::::::",password_group,file=sys.stderr)
                 atom_password_dict = {**atom, **password_group}
                 print("atom password dict is::::::::::::::::::::::::::::::::::::::::",atom_password_dict,file=sys.stderr)
-                data.append(atom_password_dict)
+                # data.append(atom_password_dict)
                 atom.update(password_group)
 
                 if atom["device_type"] in onboard_dict:
@@ -54,10 +54,17 @@ async def onboard_devices(ip_list: list[str]):
                         hosts = [atom]
                         response = puller.get_inventory_data(hosts)
                         print("repsones of the puller is:::::::::::::::::::::::",response,file=sys.stderr)
-                        if response == True:
-                            error_list.append(f"{ip} : Error While Onboarding")
-                        else:
-                            success_list.append(f"{ip} : Device Onboarded Successfully")
+                        for response in response:
+                            ip_address = response.get('ip_address')
+                            if response.get('status') == 'error':
+                                error_message = response.get('message', 'Login or inventory retrieval failed.')
+                                error_list.append(error_message)
+                            else:
+                                response = onboard_devices_data_fetch(ip)
+                                print("resposne of the atom fetch utils function is:::",response,file=sys.stderr)
+                                data.append(response)
+                                success_list.append(f"{ip_address} : Device Onboarded Successfully")
+
 
                     except Exception:
                         traceback.print_exc()
@@ -72,10 +79,11 @@ async def onboard_devices(ip_list: list[str]):
             'success_list': success_list,
             'error_list': error_list
         }
-
+        configs.db.close()
         return JSONResponse(content=response_dict, status_code=200)
 
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Onboarding", status_code=500)
 

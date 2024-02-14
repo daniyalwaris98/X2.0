@@ -66,3 +66,27 @@ def status_dropdown():
         return JSONResponse(content =status_list,status_code = 200 )
     except Exception as e:
         traceback.print_exc()
+
+
+
+
+@router.get('/get_virutal_values_dropdown',responses={
+                    200: {"model": list[str]},
+                    500: {"model": str}})
+def virtual_dropdown():
+    try:
+        return JSONResponse(content =virutal_list,status_code = 200 )
+    except Exception as e:
+        traceback.print_exc()
+
+
+
+
+@router.get('/get_criticality_values_dropdown',responses={
+                    200: {"model": list[str]},
+                    500: {"model": str}})
+def criticality_dropdown():
+    try:
+        return JSONResponse(content =criticality_list,status_code = 200 )
+    except Exception as e:
+        traceback.print_exc()

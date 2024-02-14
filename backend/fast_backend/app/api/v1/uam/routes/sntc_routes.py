@@ -379,104 +379,109 @@ async def AddSntc(sntc_obj: list[AddSntcRequestSchema]):
         error_list = []
         success_list = []
         data_lst = []
+
+
         sntc_obj_list = sntc_obj if isinstance(sntc_obj, list) else [sntc_obj]
         print("sntc obj is:::::::::::::::::::::::::", sntc_obj_list, file=sys.stderr)
-
+        if len(sntc_obj_list)==0:
+            error_list.append(f"No matching data found.")
         for sntcObj in sntc_obj_list:
-            sntc = SntcTable()
+            if sntcObj is not None:
+                sntc = SntcTable()
 
-            print(sntcObj, file=sys.stderr)
-            sntc.pn_code = sntcObj.pn_code
+                print(sntcObj, file=sys.stderr)
+                sntc.pn_code = sntcObj.pn_code
 
-            if sntcObj.hw_eos_date is not None and sntcObj.hw_eos_date != "NA":
-                try:
-                    sntc.hw_eos_date = sntcObj.hw_eos_date
-                except ValueError:
-                    print("Incorrect formatting in hw_eos_date", file=sys.stderr)
-                    error_list.append("Incorrect formatting in hw_eos_date")
-                    traceback.print_exc()
+                if sntcObj.hw_eos_date is not None and sntcObj.hw_eos_date != "NA":
+                    try:
+                        sntc.hw_eos_date = sntcObj.hw_eos_date
+                    except ValueError:
+                        print("Incorrect formatting in hw_eos_date", file=sys.stderr)
+                        error_list.append("Incorrect formatting in hw_eos_date")
+                        traceback.print_exc()
 
-            if sntcObj.hw_eol_date is not None and sntcObj.hw_eol_date != "NA":
-                try:
-                    sntc.hw_eol_date = sntcObj.hw_eol_date
-                except ValueError:
-                    print("Incorrect formatting in hw_eol_date", file=sys.stderr)
-                    error_list.append("Incorrect formatting in hw_eol_date")
-                    traceback.print_exc()
+                if sntcObj.hw_eol_date is not None and sntcObj.hw_eol_date != "NA":
+                    try:
+                        sntc.hw_eol_date = sntcObj.hw_eol_date
+                    except ValueError:
+                        print("Incorrect formatting in hw_eol_date", file=sys.stderr)
+                        error_list.append("Incorrect formatting in hw_eol_date")
+                        traceback.print_exc()
 
-            if sntcObj.sw_eos_date is not None and sntcObj.sw_eos_date != "NA":
-                try:
-                    sntc.sw_eos_date = sntcObj.sw_eos_date
-                except ValueError:
-                    print("Incorrect formatting in sw_eos_date", file=sys.stderr)
-                    traceback.print_exc()
+                if sntcObj.sw_eos_date is not None and sntcObj.sw_eos_date != "NA":
+                    try:
+                        sntc.sw_eos_date = sntcObj.sw_eos_date
+                    except ValueError:
+                        print("Incorrect formatting in sw_eos_date", file=sys.stderr)
+                        traceback.print_exc()
 
-            if sntcObj.sw_eol_date is not None and sntcObj.sw_eol_date != "NA":
-                try:
-                    sntc.sw_eol_date = sntcObj.sw_eol_date
-                except ValueError:
-                    print("Incorrect formatting in sw_eol_date", file=sys.stderr)
-                    error_list.append("Incorrect formatting in sw_eol_date")
-                    traceback.print_exc()
+                if sntcObj.sw_eol_date is not None and sntcObj.sw_eol_date != "NA":
+                    try:
+                        sntc.sw_eol_date = sntcObj.sw_eol_date
+                    except ValueError:
+                        print("Incorrect formatting in sw_eol_date", file=sys.stderr)
+                        error_list.append("Incorrect formatting in sw_eol_date")
+                        traceback.print_exc()
 
-            if sntcObj.manufacture_date is not None and sntcObj.manufacture_date != "NA":
-                try:
-                    sntc.manufacture_date = sntcObj.manufacture_date
-                except ValueError:
-                    print("Incorrect formatting in manufacture_date", file=sys.stderr)
-                    error_list.append("Incorrect formatting in manufacture_date")
-                    traceback.print_exc()
+                if sntcObj.manufacture_date is not None and sntcObj.manufacture_date != "NA":
+                    try:
+                        sntc.manufacture_date = sntcObj.manufacture_date
+                    except ValueError:
+                        print("Incorrect formatting in manufacture_date", file=sys.stderr)
+                        error_list.append("Incorrect formatting in manufacture_date")
+                        traceback.print_exc()
 
-            if (
-                    configs.db.query(SntcTable)
-                            .with_entities(SntcTable.sntc_id)
-                            .filter_by(pn_code=sntcObj.pn_code)
-                            .first() is not None
-            ):
-                sntc.sntc_id = (
-                    configs.db.query(SntcTable)
-                    .with_entities(SntcTable.sntc_id)
-                    .filter_by(pn_code=sntcObj.pn_code)
-                    .first()[0]
-                )
-                print("Updated " + sntcObj.pn_code, file=sys.stderr)
-                sntc.modification_date = datetime.now()
-                UpdateDBData(sntc)
-                sntc_updated_object = {
-                    "sntc_id":sntc.sntc_id,
-                    "pn_code":sntc.pn_code,
-                    "hw_eos_date":sntc.hw_eos_date,
-                    "hw_eol_date":sntc.hw_eol_date,
-                    "sw_eos_date":sntc.sw_eos_date,
-                    "sw_eol_date":sntc.sw_eol_date,
-                    "manufacture_date":sntc.manufacture_date
-                }
-                data_lst.append(sntc_updated_object)
-                success_list.append(f"{sntcObj.pn_code} : Updated Successfully")
+                if (
+                        configs.db.query(SntcTable)
+                                .with_entities(SntcTable.sntc_id)
+                                .filter_by(pn_code=sntcObj.pn_code)
+                                .first() is not None
+                ):
+                    sntc.sntc_id = (
+                        configs.db.query(SntcTable)
+                        .with_entities(SntcTable.sntc_id)
+                        .filter_by(pn_code=sntcObj.pn_code)
+                        .first()[0]
+                    )
+                    print("Updated " + sntcObj.pn_code, file=sys.stderr)
+                    sntc.modification_date = datetime.now()
+                    UpdateDBData(sntc)
+                    sntc_updated_object = {
+                        "sntc_id":sntc.sntc_id,
+                        "pn_code":sntc.pn_code,
+                        "hw_eos_date":sntc.hw_eos_date,
+                        "hw_eol_date":sntc.hw_eol_date,
+                        "sw_eos_date":sntc.sw_eos_date,
+                        "sw_eol_date":sntc.sw_eol_date,
+                        "manufacture_date":sntc.manufacture_date
+                    }
+                    data_lst.append(sntc_updated_object)
+                    success_list.append(f"{sntcObj.pn_code} : Updated Successfully")
+                else:
+                    print("Inserted " + sntcObj.pn_code, file=sys.stderr)
+                    sntc.creation_date = datetime.now()
+                    sntc.modification_date = datetime.now()
+                    InsertDBData(sntc)
+                    sntc_insted_object = {
+                        "sntc_id": sntc.sntc_id,
+                        "pn_code": sntc.pn_code,
+                        "hw_eos_date": sntc.hw_eos_date,
+                        "hw_eol_date": sntc.hw_eol_date,
+                        "sw_eos_date": sntc.sw_eos_date,
+                        "sw_eol_date": sntc.sw_eol_date,
+                        "manufacture_date": sntc.manufacture_date
+                    }
+                    data_lst.append(sntc_insted_object)
+                    success_list.append(f"{sntcObj.pn_code} : Inserted Successfully")
             else:
-                print("Inserted " + sntcObj.pn_code, file=sys.stderr)
-                sntc.creation_date = datetime.now()
-                sntc.modification_date = datetime.now()
-                InsertDBData(sntc)
-                sntc_insted_object = {
-                    "sntc_id": sntc.sntc_id,
-                    "pn_code": sntc.pn_code,
-                    "hw_eos_date": sntc.hw_eos_date,
-                    "hw_eol_date": sntc.hw_eol_date,
-                    "sw_eos_date": sntc.sw_eos_date,
-                    "sw_eol_date": sntc.sw_eol_date,
-                    "manufacture_date": sntc.manufacture_date
-                }
-                data_lst.append(sntc_insted_object)
-                success_list.append(f"{sntcObj.pn_code} : Inserted Successfully")
-        response = SummeryResponseSchema(
-            data=data_lst,
-            success=len(success_list),
-            error=len(error_list),
-            success_list=success_list,
-            error_list=error_list
-        )
-        return response ,200
+                error_list.append(f"No matching data found.")
+        response_dict = {
+            "data": data_lst,
+            "success_list": success_list,
+            "error": len(error_list),
+            "error_list": error_list
+        }
+        return response_dict
     except Exception as e:
         traceback.print_exc()
         return "Failed To Update Data", 500

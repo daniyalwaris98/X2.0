@@ -35,7 +35,7 @@ async def add_atom(atom: AddAtomRequestSchema):
                 else:
                     message = f"{transition_message} and Note: ({atom_response})"
                     response['message'] = message
-             
+
                 return JSONResponse(content=response, status_code=status)
             else:
                 return JSONResponse(content=response, status_code=status)
@@ -45,6 +45,7 @@ async def add_atom(atom: AddAtomRequestSchema):
             return JSONResponse(content = response,status_code = status)
 
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Atom Device", status_code=500)
 
@@ -188,6 +189,7 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
         return response
 
     except Exception:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Adding Atom Devices", status_code=500)
 
@@ -278,7 +280,7 @@ async def get_atoms():
         sorted_list = sorted(atom_obj_list, key=lambda x: x['creation_date'], reverse=True)
         if len(atom_obj_list) <= 0:
             atom_obj_list = None
-
+        configs.db.close()
         return JSONResponse(content=sorted_list, status_code=200)
 
     except Exception:

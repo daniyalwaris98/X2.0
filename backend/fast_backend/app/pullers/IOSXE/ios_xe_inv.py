@@ -14,23 +14,30 @@ class XEPuller(object):
         self.stack_priority= 0
         self.stack_switch= ""
         self.failed = False
-        
+        self.results = []
+        self.lock = threading.Lock()
+
     def get_inventory_data(self, hosts):
-        threads =[]
+        threads = []
+        print('THIS IS INVENTIRY DATA', file=sys.stderr)
+        print("self.inventory data is:::::::::::::::::::::::", self.inv_data, file=sys.stderr)
+        with self.lock:
+            self.results.clear()
         for host in hosts:
+            print("host is:::::::::::::::::::", host, file=sys.stderr)
             th = threading.Thread(target=self.poll, args=(host,))
             th.start()
             threads.append(th)
-            if len(threads) == self.connections_limit: 
+            if len(threads) == self.connections_limit:
                 for t in threads:
                     t.join()
-                threads =[]
-        
+                threads = []
+
         else:
-            for t in threads: # if request is less than connections_limit then join the threads and then return data
+            for t in threads:  # if request is less than connections_limit then join the threads and then return data
                 t.join()
-            # print("IN FAILED FUNC", file=sys.stderr)
-            return self.failed 
+
+            return self.results
 
         
 
@@ -41,23 +48,29 @@ class XEPuller(object):
         c = 0
         is_login = False
         login_exception = None
-
+        device_info = {"ip_address": host['ip_address'], "status": "error", "message": ""}
         while c < login_tries :
             try:
                 device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'], device_type=host['device_type'],global_delay_factor=2, timeout=600)
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
                 print('DEVICE TYPE IS:',host['device_type'],file=sys.stderr)
                 is_login = True
+                print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
+                device_info["status"] = "success"
+                device_info["message"] = "Inventory fetched successfully"
                 break
             except Exception as e:
                 c +=1
                 print(f"Falied to login {host['ip_address']}", file=sys.stderr)
+                device_info["message"] = f"{host['ip_address']} Failed to login"
                 login_exception = str(e)
                 print(login_exception,file=sys.stderr)
+        with self.lock:
+            self.results.append(device_info)
         if is_login==False:
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
             date = datetime.now()
-            addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
             self.failed = True
             # file_name = time.strftime("%d-%m-%Y")+".txt"
             # failed_device=[]
