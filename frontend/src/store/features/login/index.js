@@ -35,7 +35,7 @@ const defaultSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.validateToken.matchFulfilled,
         (state, action) => {
-          state.is_valid_access_token = action.payload.token.access_token;
+          state.is_valid_access_token = action.payload.data.access_token;
         }
       );
   },

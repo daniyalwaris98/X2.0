@@ -228,7 +228,7 @@ def check_license_expiration(license_id):
                 print("db updated for liscence vification:::::::::::::::",file=sys.stderr)
                 return 'Expired'
             else:
-                return license.verfication
+                return "Verified"
         else:
             return 'License Not Found'
     except Exception as e:

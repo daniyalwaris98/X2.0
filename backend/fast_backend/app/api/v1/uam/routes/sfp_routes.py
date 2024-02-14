@@ -1,9 +1,9 @@
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
-
+from datetime import datetime, timedelta
 import traceback
 import sys
-
+from sqlalchemy import func;
 from app.core.config import configs
 from app.schema.uam_sfp_schema import *
 from fastapi import FastAPI, Query
@@ -184,8 +184,6 @@ def get_all_sfps():
 #         return "Server Error", 500
 
 
-
-
 @router.get("/get_devices_most_unused_sfps", responses={
     200: {"model": list[GetSfp]},
     400: {"model": str},
@@ -226,5 +224,63 @@ async def get_unused_sfps():
         print(f"Error: {e}")
         return JSONResponse(content="Server error", status_code=500)
 
-       
+
+
+
+@router.get("/get_EOL_Summary", responses={
+    200: {"model": list[GetEol]},
+    500: {"model": str}
+},
+summary="API to get EOL summary",
+description="Api to get EOL summary")
+async def get_eol():
+    try:
+        
+        obj_list = []
+
+        total_eol_count = (
+                        configs.db.query(func.count())
+                        .filter(UamDeviceTable.hw_eol_date.isnot(None))
+                        .scalar()
+                        )
+
+
+        if not total_eol_count:
+            total_eol_count=0
+        
+        null_eol_count = (
+                        configs.db.query(func.count())
+                        .filter(UamDeviceTable.hw_eol_date.is_(None))
+                        .scalar()
+                        )
+
+        if not null_eol_count:
+           null_eol_count=0
+        
+        uam_hweol = (
+                    configs.db.query(UamDeviceTable.hw_eol_date)
+                    .filter(UamDeviceTable.hw_eol_date.isnot(None))  # Exclude rows where hw_eol is None
+                    .distinct()
+                    .all()
+                )
+        not_expired =0
+        expired =0
+        for exp in uam_hweol:
+            current_date = datetime.now().date()
+            buffer_date = current_date + timedelta(days=30)
+            if (exp[0])>= buffer_date:
+                not_expired = not_expired+1
+            else:
+                expired = expired+1
+
+        obj_list =[{ "name":"eol_devices","values":total_eol_count},
+                   {"name":"eol_data_not_available","values":null_eol_count },
+                   { "name":"eol_announcements","values":expired}]
+        
+        return JSONResponse(content=obj_list, status_code=200)
+    except Exception as e:
+        print(f"Error: {e}")
+        return JSONResponse(content="Server error", status_code=500)
+
+      
 

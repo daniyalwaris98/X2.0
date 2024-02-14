@@ -173,7 +173,7 @@ def get_all_end_users():
         return JSONResponse(content="Error Occured While Getting end users",status_code=500)
 
 @router.post("/add_user",  responses = {
-                    200:{"model":UserSchema},
+                    200:{"model":SignInResponse},
                     400:{"model":str},
                     500:{"model":str}
                   },)
@@ -183,6 +183,7 @@ async def add_user(user_info: AddUserSchema
     try:
         print("user infor for signup is::::::::::::",user_info,file=sys.stderr)
         #print("provider is::::",Provide,file=sys.stderr)
+
         return service.add_user(user_info)
     except Exception as e :
         traceback.print_exc()
@@ -264,6 +265,7 @@ def edit_user_role(user_data:EditUserRoleScehma):
             message = f"{user_role_exsist.role} : Updated Successfully"
             users_role_data['data'] = data
             users_role_data['message'] = message
+            configs.db.close()
             return JSONResponse(content=users_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
@@ -296,6 +298,7 @@ def edit_user_role(user_data:EditConfigurationRoleScehma):
             message = f"{user_role_exsist.role} : Updated Successfully"
             user_role_data['data'] = data
             user_role_data['message'] = message
+            configs.db.close()
             return JSONResponse(content=user_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
@@ -321,6 +324,9 @@ def user_role(role_data : list[int]):
             print("role is::::::::::::::::::::::",role,file=sys.stderr)
             role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id=role).first()
             if role_exsist:
+                # if role_exsist.role == 'Admin':
+                #     error_list.append(f"{role_exsist.role} : Cannot Be Deleted Set As An Defualt Role")
+                # else:
                 data_list.append(role)
                 DeleteDBData(role_exsist)
                 success_list.append(f"{role_exsist.role} : Deleted Successfully")
@@ -385,7 +391,9 @@ description="API to add updated the user"
 )
 def edit_user_db(user_data:AddUserSchema):
     try:
-        data,status = EditUserInDB(user_data)
+
+        data= EditUserInDB(user_data)
+        print("data in end user dict is:::::::::edit user:::",data,file=sys.stderr)
         return JSONResponse(content=data,status_code=200)
     except Exception as e:
         traceback.print_exc()
@@ -434,3 +442,5 @@ def get_user_company():
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While extracting data from the user in db",status_code=500)
+
+

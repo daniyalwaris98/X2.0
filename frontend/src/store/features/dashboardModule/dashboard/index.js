@@ -32,6 +32,24 @@ const defaultSlice = createSlice({
         state.configuration_by_time_data = action.payload;
       }
     )     
+    .addMatcher(
+      extendedApi.endpoints.getDeviceStatusOverview.matchFulfilled,
+      (state, action) => {
+        state.device_status_overview_data = action.payload;
+      }
+    ) 
+    .addMatcher(
+      extendedApi.endpoints.getUnusedSfps.matchFulfilled,
+      (state, action) => {
+        state.unused_sfps_data = action.payload;
+      }
+    )
+    .addMatcher(
+      extendedApi.endpoints.getEol.matchFulfilled,
+      (state, action) => {
+        state.eol_data = action.payload;
+      }
+    ) 
   },
 });
 

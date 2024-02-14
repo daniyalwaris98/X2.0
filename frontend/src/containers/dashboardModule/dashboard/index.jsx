@@ -16,6 +16,9 @@ import TypeSummaryChart from "../../ipamModule/dashboard/components/TypeSummaryC
 import TopSubnet from "../../ipamModule/dashboard/components/TopSubnet";
 import {
   useGetConfigurationByTimeQuery,
+  useGetDeviceStatusOverviewQuery,
+  useGetUnusedSfpsQuery,
+ useGetEolQuery
   
 } from "../../../store/features/dashboardModule/dashboard/apis";
 
@@ -78,11 +81,33 @@ function Index() {
     isError: isConfigurationByTimeError,
     error: configurationByTimeError,
   } = useGetConfigurationByTimeQuery();
-  
-  console.log("configurationByTimeData", configurationByTimeData)
+
+  const {
+    data: deviceStatusOverviewData,
+    isSuccess: isDeviceStatusOverviewSuccess,
+    isLoading: isDeviceStatusOverviewLoading,
+    isError: isDeviceStatusOverviewError,
+    error: DeviceStatusOverviewError,
+  } = useGetDeviceStatusOverviewQuery();
+  const {
+    data: unusedSfpsData,
+    isSuccess: isUnusedSfpsSuccess,
+    isLoading: isUnusedSfpsLoading,
+    isError: isUnusedSfpsError,
+    error: unusedSfpsError,
+  } = useGetUnusedSfpsQuery();
+  const {
+    data: eolData,
+    isSuccess: isEolSuccess,
+    isLoading: isEolLoading,
+    isError: isEolError,
+    error: eolError,
+  } = useGetEolQuery();
+
+  console.log("eolData", eolData)
 
   const colStyle = {
-    backgroundColor: "#FFFFFF", // Grey background color
+    backgroundColor: "#FFFFFF", 
     borderRadius: "8px",
     height: "100%",
     padding: "10px",
@@ -146,6 +171,7 @@ function Index() {
       value: 60
     },
   ];
+ 
 
   const tableColumns = [
     {
@@ -170,56 +196,58 @@ function Index() {
     },
   ];
 
-  const tableDataSFPS = [
-    {
-      key: '1',
-      subnet: '10.66.211.141',
-      DeviceName:"ASR1006",
-      value: 50
-    },
-    {
-      key: '2',
-      subnet: '10.66.211.141',
-      DeviceName:"ASR1006",
-      value: 10
-    },
-    {
-      key: '3',
-      subnet: '1',
-      DeviceName:"ASR1006",
-      value: 60
-    },
-  ];
+ const tableDataSFPS = [
+  {
+    key: '1',
+    ip_address: '1',
+    device_name: "ASR1006",
+    sfps: 60
+  },
+  {
+    key: '2',
+    ip_address: '1',
+    device_name: "ASR1006",
+    sfps: 60
+  },
+  {
+    key: '3',
+    ip_address: '1',
+    device_name: "ASR1006",
+    sfps: 60
+  },
+];
 
-  const tableColumnsSFPS = [
-    {
-      title: 'Subnet',
-      dataIndex: 'subnet',
-      key: 'subnet',
-      align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
-    },
-    {
-      title: 'Device Name',
-      dataIndex: 'DeviceName',
-      key: 'DeviceName',
-      align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
-    },
-    {
-      title: 'Progress',
-      dataIndex: 'value',
-      key: 'value',
-      align: 'center',
-        render: (_, record) => (
-          <Progress
-            percent={record.value}
-            status="active"
-            strokeColor={record.value > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
-          />
-        ),
-    },
-  ];
+
+const tableColumnsSFPS = [
+  {
+    title: 'Subnet',
+    dataIndex: 'ip_address',
+    key: 'ip_address',
+    align: 'start',
+    render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
+  },
+  {
+    title: 'Device Name',
+    dataIndex: 'device_name',
+    key: 'device_name',
+    align: 'start',
+    render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
+  },
+  {
+    title: 'SFPS',
+    dataIndex: 'sfps',
+    key: 'sfps',
+    align: 'center',
+   
+    render: (_, record) => (
+      <Progress
+        percent={record.sfps}
+        status="active"
+        strokeColor={record.sfps > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
+      />
+    ),
+  },
+];
   const tableDataCPU = [
     {
       key: '1',
@@ -280,6 +308,13 @@ function Index() {
       align: 'start',
       render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
     }];
+
+    const categories = [
+      { name: "Dismantle", value: 35},
+      { name: "Undefined", value: 70},
+      { name: "Production", value: 65},
+      { name: "Maintenance", value: 50},
+    ];
   return (
     <>
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
@@ -353,7 +388,7 @@ function Index() {
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Devices with most unused SFPs</h5>
-            <MainTable tableData={tableDataSFPS} tableColumns={tableColumnsSFPS} />
+            <MainTable tableData={unusedSfpsData !== undefined ? unusedSfpsData:[]} tableColumns={tableColumnsSFPS} />
           </div>
         </Col>
       </Row>
@@ -369,7 +404,8 @@ function Index() {
         <Col span={16}>
           <div style={colStyle}>
             <h5 style={title}>Device Status Overview</h5>
-            <DeviceStatus />
+            {/* <DeviceStatus /> */}
+            <DeviceStatus categories={deviceStatusOverviewData !== undefined? deviceStatusOverviewData :[] } />
           </div>
         </Col>
       </Row>

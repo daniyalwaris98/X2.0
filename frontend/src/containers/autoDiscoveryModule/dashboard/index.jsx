@@ -16,7 +16,8 @@ import {
   useGetCredentialsSummaryQuery,
   useGetTopVendorForDiscoveryQuery,
   useGetTopOsQuery,
-  useGetCountPerFunctionQuery
+  useGetCountPerFunctionQuery,
+  
 } from "../../../store/features/autoDiscoveryModule/dashboard/apis";
 import "./index.css";
 import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
@@ -25,6 +26,7 @@ import SnmpStatus from "./components/SnmpStatus";
 import TopOsAutoDiscovery from "./components/TopOsAutoDiscovery";
 import TopVendorForDiscovery from "./components/TopVendorForDiscovery";
 import CountPerFuntion from "./components/CountPerFuntion";
+import { useGetEolQuery } from "../../../store/features/dashboardModule/dashboard/apis";
 
 function Index() {
   
@@ -57,6 +59,8 @@ function Index() {
     isError: isTopOsError,
     error: topOsError,
   } = useGetTopOsQuery();
+
+
   const {
     data: countPerFunctionData,
     isSuccess: isCountPerFunctionSuccess,
@@ -64,7 +68,6 @@ function Index() {
     isError: isCountPerFunctionError,
     error: countPerFunctionError,
   } = useGetCountPerFunctionQuery();
-
   console.log("snmpStatusDataHUnsain",snmpStatusData)
   console.log("credentialsSummaryData",credentialsSummaryData)
   console.log("topVendorData",topVendorData)
