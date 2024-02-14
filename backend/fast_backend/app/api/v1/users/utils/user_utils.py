@@ -125,6 +125,7 @@ def AddUserInDB(user_data):
 def EditUserInDB(user_data):
     try:
         user_data_dict = user_data.dict()
+        print("user data dict is:::::::::::::::",user_data_dict,file=sys.stderr)
         user = UserTableModel()
         # end_user_exsist = configs.db.query(EndUserTable).filter_by(company_name=user_data_dict['company_name']).first()
         # if not end_user_exsist:
@@ -136,29 +137,34 @@ def EditUserInDB(user_data):
             return "Role Not Found", 400
         role_id = role_exsist.role_id
 
-        user_name_exsist = configs.db.query(UserTableModel).filter_by(user_name=user_data_dict['name']).first()
+        user_name_exsist = configs.db.query(UserTableModel).filter_by(id=user_data_dict['user_id']).first()
+        print("user name exsist:::::::::::::::",user_name_exsist,file=sys.stderr)
         if user_name_exsist:
-            for key, value in user_data_dict.items():
-                setattr(user_name_exsist, key, value)
-            # user_name_exsist.end_user_id = end_user_id
-            user_name_exsist.role_id = role_id
-            UpdateDBData(user_name_exsist)
-            message = f"{user_name_exsist.user_name} : Updated Successfully"
+           print("user name exsists is:::",file=sys.stderr)
+           user_name_exsist.name = user_data_dict['name']
+           user_name_exsist.user_name = user_data_dict['user_name']
+           user_name_exsist.email  = user_data_dict['email_address']
+           user_name_exsist.account_type = user_data_dict['account_type']
+           user_name_exsist.role_id = role_id
+           UpdateDBData(user_name_exsist)
+           print("DB updated successfully::::::::",file=sys.stderr)
+           message = f"{user_name_exsist.user_name} : Updated Successfully"
 
-        # Construct the response data
-        data = {
-            "user_id":user.id,
-            "user_name":user.name,
-            "email_address":user.email,
-            "status":user.status,
-            "account_type":user.account_type,
-            "team":user.teams,
-            "role":user.role,
-            "name":user.name,
-            "password":user.password
-        }
-        data_dict = {'data': data, 'message': message}
-        return data_dict, 200
+           # Construct the response data
+           data = {
+                "user_id":user_name_exsist.id,
+                "user_name":user_name_exsist.name,
+                "email_address":user_name_exsist.email,
+                "status":user_name_exsist.status,
+                "account_type":user_name_exsist.account_type,
+                "team":user_name_exsist.teams,
+                "role":user_name_exsist.role,
+                "name":user_name_exsist.name,
+                "password":user_name_exsist.password
+           }
+           data_dict = {'data': data, 'message': message}
+           print("data dict is::::::::::::::::::::::::::::",data_dict,file=sys.stderr)
+           return data_dict
 
     except Exception as e:
         print("error in Add user in DB is:", str(e))
