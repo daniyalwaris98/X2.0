@@ -324,12 +324,12 @@ def user_role(role_data : list[int]):
             print("role is::::::::::::::::::::::",role,file=sys.stderr)
             role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id=role).first()
             if role_exsist:
-                # if role_exsist.role == 'Admin':
-                #     error_list.append(f"{role_exsist.role} : Cannot Be Deleted Set As An Defualt Role")
-                # else:
-                data_list.append(role)
-                DeleteDBData(role_exsist)
-                success_list.append(f"{role_exsist.role} : Deleted Successfully")
+                if role_exsist.role == 'Admin':
+                    error_list.append(f"{role_exsist.role} : Cannot Be Deleted Set As An Defualt Role")
+                else:
+                    data_list.append(role)
+                    DeleteDBData(role_exsist)
+                    success_list.append(f"{role_exsist.role} : Deleted Successfully")
             else:
                 error_list.append(f"Role {role} does not Exists")
         responses = {
