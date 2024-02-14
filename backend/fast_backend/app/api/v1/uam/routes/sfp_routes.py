@@ -182,52 +182,6 @@ def get_all_sfps():
 #     except Exception as e:
 #         traceback.print_exc()
 #         return "Server Error", 500
-
-
-
-
-@router.get("/get_devices_most_unused_sfps", responses={
-    200: {"model": list[GetSfp]},
-    400: {"model": str},
-    500: {"model": str}
-},
-summary="API to get most unused sfps",
-description="Api to get most unused sfps")
-async def get_unused_sfps():
-    try:
-        ip_address = []
-        device_name = []
-        sfps_data = []
-
-        atoms = (
-            configs.db.query(AtomTable, UamDeviceTable)
-            .join(AtomTable, UamDeviceTable.atom_id == AtomTable.atom_id)
-            .all()
-        )
-
-        if not atoms:
-            return JSONResponse(content="No devices found in AtomTable", status_code=400)
-
-        for atom, uam in atoms:
-            ip_address.append(atom.ip_address)
-            device_name.append(atom.device_name)
-
-            sfps = (
-                configs.db.query(SfpsTable)
-                .filter(SfpsTable.uam_id == uam.uam_id)
-                .count()
-            )
-
-            sfps_data.append({"ip_address": atom.ip_address, "device_name": atom.device_name, "sfps": sfps})
-
-        return JSONResponse(content=sfps_data, status_code=200)
-
-    except Exception as e:
-        print(f"Error: {e}")
-        return JSONResponse(content="Server error", status_code=500)
-
-       
-
 @router.get("/get_EOL_Summary", responses={
     200: {"model": list[GetEol]},
     400: {"model": str},
@@ -283,3 +237,48 @@ async def get_eol():
     except Exception as e:
         print(f"Error: {e}")
         return JSONResponse(content="Server error", status_code=500)
+
+
+
+@router.get("/get_devices_most_unused_sfps", responses={
+    200: {"model": list[GetSfp]},
+    400: {"model": str},
+    500: {"model": str}
+},
+summary="API to get most unused sfps",
+description="Api to get most unused sfps")
+async def get_unused_sfps():
+    try:
+        ip_address = []
+        device_name = []
+        sfps_data = []
+
+        atoms = (
+            configs.db.query(AtomTable, UamDeviceTable)
+            .join(AtomTable, UamDeviceTable.atom_id == AtomTable.atom_id)
+            .all()
+        )
+
+        if not atoms:
+            return JSONResponse(content="No devices found in AtomTable", status_code=400)
+
+        for atom, uam in atoms:
+            ip_address.append(atom.ip_address)
+            device_name.append(atom.device_name)
+
+            sfps = (
+                configs.db.query(SfpsTable)
+                .filter(SfpsTable.uam_id == uam.uam_id)
+                .count()
+            )
+
+            sfps_data.append({"ip_address": atom.ip_address, "device_name": atom.device_name, "sfps": sfps})
+
+        return JSONResponse(content=sfps_data, status_code=200)
+
+    except Exception as e:
+        print(f"Error: {e}")
+        return JSONResponse(content="Server error", status_code=500)
+
+       
+
