@@ -18,7 +18,7 @@ import {
   useGetConfigurationByTimeQuery,
   useGetDeviceStatusOverviewQuery,
   useGetUnusedSfpsQuery,
- useGetEolQuery
+ useGetEolQuery,
   
 } from "../../../store/features/dashboardModule/dashboard/apis";
 
@@ -112,9 +112,10 @@ function Index() {
     height: "100%",
     padding: "10px",
   };
+ 
 
   const rowStyle = {
-    marginBottom: "40px", // Add margin between rows
+    marginBottom: "40px", 
   };
   const title = {
     margin:"0px",
