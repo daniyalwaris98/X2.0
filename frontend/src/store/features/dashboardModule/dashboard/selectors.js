@@ -1,10 +1,2 @@
 export const selectConfigurationByTime = (state) =>
-state.dashboard_dashboard.configuration_by_time_data;
-
-
-
-
-
-
-
-
+  state.dashboard_dashboard.configuration_by_time_data;

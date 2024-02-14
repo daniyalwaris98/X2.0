@@ -10,7 +10,7 @@ import {
   useGetCredentialsSummaryQuery,
   useGetSnmpStatusQuery,
   useGetTopVendorForDiscoveryQuery,
-} from "../../autoDiscoveryModule/dashboard/apis";
+} from "../../dashboardModule/dashboard/apis";
 
 import { useSelector } from "react-redux";
 
@@ -29,7 +29,7 @@ const defaultSlice = createSlice({
     .addMatcher(
       extendedApi.endpoints.getConfigurationByTime.matchFulfilled,
       (state, action) => {
-        state.configration_by_time__data = action.payload;
+        state.configuration_by_time_data = action.payload;
       }
     )     
   },

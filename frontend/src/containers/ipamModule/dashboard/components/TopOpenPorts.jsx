@@ -5,7 +5,7 @@ const TopOpenPorts = ({ chartData }) => {
   const chartRef = useRef(null);
 
   useEffect(() => {
-    if (!chartData || !chartData.ports || !chartData.counts) {
+    if (!chartData || !chartData.name || !chartData.value) {
       console.error('Invalid chart data:', chartData);
       return;
     }
@@ -13,14 +13,14 @@ const TopOpenPorts = ({ chartData }) => {
     const option = {
       xAxis: {
         type: 'category',
-        data: chartData.ports,
+        data: chartData.name,
       },
       yAxis: {
         type: 'value',
       },
       series: [
         {
-          data: chartData.counts,
+          data: chartData.value,
           type: 'bar',
           showBackground: true,
           backgroundStyle: {

@@ -6,13 +6,9 @@ export const extendedApi = monetxApi.injectEndpoints({
       query: () => "/api/v1/main_dashboard/main_change-configuration-by-time",
     }),
 
-
-    
-   
-
   }),
 });
 
 export const {
-  useGetConfigurationByTimeQuery
+  useGetConfigurationByTimeQuery,
 } = extendedApi;

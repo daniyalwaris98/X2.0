@@ -16,6 +16,7 @@ import TypeSummaryChart from "../../ipamModule/dashboard/components/TypeSummaryC
 import TopSubnet from "../../ipamModule/dashboard/components/TopSubnet";
 import {
   useGetConfigurationByTimeQuery,
+  
 } from "../../../store/features/dashboardModule/dashboard/apis";
 
 
@@ -38,7 +39,7 @@ function Index() {
     error: typeSummaryError,
   } = useGetTypeSummaryQuery();
 
-  // console.log("typeSummaryData", typeSummaryData)
+  console.log("typeSummaryData", typeSummaryData)
   const {
     data: subnetSummaryData,
     isSuccess: isSubnetSummarySuccess,
@@ -77,7 +78,9 @@ function Index() {
     isError: isConfigurationByTimeError,
     error: configurationByTimeError,
   } = useGetConfigurationByTimeQuery();
-  console.log("configurationByTimeData",configurationByTimeData)
+  
+  console.log("configurationByTimeData", configurationByTimeData)
+
   const colStyle = {
     backgroundColor: "#FFFFFF", // Grey background color
     borderRadius: "8px",
@@ -105,6 +108,7 @@ function Index() {
     ports: ['Port 1', 'Port 2', 'Port 3', 'Port 4'],
     counts: [10, 20, 15, 30],
   };
+ 
   const apiResponse = [
     {
       name: "Sales",
@@ -308,7 +312,11 @@ function Index() {
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Configuration Change by Time</h5>
-            <TopOpenPorts chartData={chartData} />
+            <TopOpenPorts
+             chartData={configurationByTimeData !== undefined? configurationByTimeData:[] } 
+            //  chartData={chartData}
+             
+             />
           </div>
         </Col>
 
