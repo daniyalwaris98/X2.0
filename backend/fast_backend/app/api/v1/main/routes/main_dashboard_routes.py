@@ -312,7 +312,7 @@ async def phy_leaflet():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.post("/main_device_status", responses={
+@router.get("/main_device_status", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},
     500: {"model": str}
 },
