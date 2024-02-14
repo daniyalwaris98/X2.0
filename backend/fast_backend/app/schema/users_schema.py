@@ -57,6 +57,7 @@ class AddUserRoleScehma(BaseSchema):
     configuration:str
 
 class AddUserSchema(BaseSchema):
+    user_id:int
     name:str
     email_address:str
     password:str |None = None

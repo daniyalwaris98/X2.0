@@ -183,6 +183,7 @@ async def add_user(user_info: AddUserSchema
     try:
         print("user infor for signup is::::::::::::",user_info,file=sys.stderr)
         #print("provider is::::",Provide,file=sys.stderr)
+
         return service.add_user(user_info)
     except Exception as e :
         traceback.print_exc()
@@ -323,6 +324,9 @@ def user_role(role_data : list[int]):
             print("role is::::::::::::::::::::::",role,file=sys.stderr)
             role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id=role).first()
             if role_exsist:
+                # if role_exsist.role == 'Admin':
+                #     error_list.append(f"{role_exsist.role} : Cannot Be Deleted Set As An Defualt Role")
+                # else:
                 data_list.append(role)
                 DeleteDBData(role_exsist)
                 success_list.append(f"{role_exsist.role} : Deleted Successfully")
@@ -387,7 +391,9 @@ description="API to add updated the user"
 )
 def edit_user_db(user_data:AddUserSchema):
     try:
-        data,status = EditUserInDB(user_data)
+
+        data= EditUserInDB(user_data)
+        print("data in end user dict is:::::::::edit user:::",data,file=sys.stderr)
         return JSONResponse(content=data,status_code=200)
     except Exception as e:
         traceback.print_exc()
@@ -436,3 +442,5 @@ def get_user_company():
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While extracting data from the user in db",status_code=500)
+
+
