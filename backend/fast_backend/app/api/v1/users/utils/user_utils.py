@@ -145,7 +145,7 @@ def EditUserInDB(user_data):
            user_name_exsist.user_name = user_data_dict['user_name']
            user_name_exsist.email  = user_data_dict['email']
            user_name_exsist.account_type = user_data_dict['account_type']
-           user_name_exsist.role_id = role_id
+           user_name_exsist.role = role_exsist.role
            configs.db.merge(user_name_exsist)
            configs.db.commit()
            print("DB updated successfully::::::::",file=sys.stderr)
