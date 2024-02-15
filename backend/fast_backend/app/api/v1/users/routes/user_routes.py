@@ -389,7 +389,7 @@ def delete_user(user_id :list[int]):
 summary="API to add the updated the user",
 description="API to add updated the user"
 )
-def edit_user_db(user_data:AddUserSchema):
+def edit_user_db(user_data:EditUserSchema):
     try:
 
         data= EditUserInDB(user_data)
