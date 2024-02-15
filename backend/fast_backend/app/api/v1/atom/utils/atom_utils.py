@@ -855,7 +855,7 @@ def validate_password_group_credentials(pass_obj, password_exist):
                 password_exist.password_group_type = "SSH"
 
         if pass_obj["password_group_type"] not in ['SSH', 'TELNET']:
-            error_message = f"Invalid password group type for '{pass_obj['password_group']}'. Please select either 'SSH' or 'TELNET' from the password group dropdown."
+            error_message = f"Invalid password group type for '{pass_obj['password_group']}'. Please select either 'SSH' or 'TELNET'."
             return error_message, 400
         if "secret_password" in pass_obj and pass_obj["secret_password"]:
                 pass_obj["secret_password"] = pass_obj["secret_password"].strip()

@@ -222,7 +222,7 @@ def get_all_users():
             user_dict = {
                 "user_id":user.id,
                 "user_name":user.name,
-                "email_address":user.email,
+                "email":user.email,
                 "status":user.status,
                 "account_type":user.account_type,
                 "team":user.teams,
@@ -389,7 +389,7 @@ def delete_user(user_id :list[int]):
 summary="API to add the updated the user",
 description="API to add updated the user"
 )
-def edit_user_db(user_data:AddUserSchema):
+def edit_user_db(user_data:EditUserSchema):
     try:
 
         data= EditUserInDB(user_data)
@@ -444,3 +444,41 @@ def get_user_company():
         return JSONResponse(content="Error Occured While extracting data from the user in db",status_code=500)
 
 
+
+
+
+@router.get('/check_end_user_existence',
+            responses = {
+                200:{"model":str},
+                500:{"model":str}
+            },
+summary="API to check the existence of user",
+description="API to check the existence of the end user"
+)
+def check_end_user_exsistence():
+    try:
+        compnay_dict = {}
+        is_any_company_registered = False
+        end_user_existance = configs.db.query(EndUserTable).all()
+        print("end user exsitance is:::::::::::::::::::::::",end_user_existance,file=sys.stderr)
+        for existance in end_user_existance:
+            print("existance is:::::::::::::::::::::::",existance,file=sys.stderr)
+            if existance:
+                is_any_company_registered = True
+                data = {
+                    "is_any_company_registered":is_any_company_registered
+                }
+                compnay_dict['data'] = data
+                compnay_dict['message'] = f"Company Already Registered"
+            else:
+                is_any_company_registered = False
+                data = {
+                    "is_any_company_registered": is_any_company_registered
+                }
+                compnay_dict['data'] = data
+                compnay_dict['message'] = f"Company Not Registered"
+        return compnay_dict
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse()

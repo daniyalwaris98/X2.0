@@ -19,6 +19,7 @@ import {
 
 export const MODULE_NAME = "Admin";
 export const MODULE_PATH = "admin_module";
+// ...
 
 function Index(props) {
   let menuItems = [
