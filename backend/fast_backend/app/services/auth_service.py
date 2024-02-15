@@ -307,7 +307,7 @@ class AuthService(BaseService):
             user_name = user_data.get('role')
             user_exist = configs.db.query(UserTableModel).filter_by(user_name=user_name).first()
             if user_exist:
-                response = JSONResponse(content=f"{user_name} Already Exists", status_code=400)
+                return  JSONResponse(content=f"{user_name} Already Exists", status_code=400)
             else:
                 # Access attributes using dot notation
                 end_user_id = None

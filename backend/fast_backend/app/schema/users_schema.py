@@ -143,3 +143,8 @@ class FailedDevicesCountResponseSchema(BaseSchema):
     monitoring_failed_devices:int |None = None
     ncm_failed_devices:int |None = None
     uam_failed_devices:int |None = None
+
+
+
+class ForgotUserSchema(BaseSchema):
+    user_name:str
