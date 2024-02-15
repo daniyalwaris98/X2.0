@@ -143,7 +143,7 @@ def EditUserInDB(user_data):
            print("user name exsists is:::",file=sys.stderr)
            user_name_exsist.name = user_data_dict['name']
            user_name_exsist.user_name = user_data_dict['user_name']
-           user_name_exsist.email  = user_data_dict['email_address']
+           user_name_exsist.email  = user_data_dict['email']
            user_name_exsist.account_type = user_data_dict['account_type']
            user_name_exsist.role_id = role_id
            UpdateDBData(user_name_exsist)

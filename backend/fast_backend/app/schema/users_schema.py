@@ -58,7 +58,7 @@ class AddUserRoleScehma(BaseSchema):
 
 class AddUserSchema(BaseSchema):
     name:str
-    email_address:str
+    email:str
     password:str |None = None
     status:str |None = None
     user_name:str |None = None
@@ -71,7 +71,7 @@ class AddUserSchema(BaseSchema):
 class EditUserSchema(BaseSchema):
     user_id:int
     name:str
-    email_address:str
+    email:str
     password:str |None = None
     status:str |None = None
     user_name:str |None = None

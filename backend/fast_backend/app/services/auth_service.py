@@ -258,6 +258,7 @@ class AuthService(BaseService):
                         status = value.pop('status', None)
                         name = value.pop('name', None)
                         user_name = value.pop('user_name', None)
+                        email = value.get('email',None)
 
                         # Ensure all required fields are set correctly
                         user = UserTableModel(
@@ -270,7 +271,8 @@ class AuthService(BaseService):
                             status=status,
                             end_user_id=end_user_id,
                             name=name,
-                            user_name=user_name
+                            user_name=user_name,
+                            email = email
                         )
                         schema = AddUserSchema
                         password = value.get('password')
@@ -333,7 +335,7 @@ class AuthService(BaseService):
                 status = user_data.pop('status', None)
                 name = user_data.pop('name', None)
                 user_name = user_data.pop('user_name', None)
-                email_address1 = user_data.get('email_address',None)
+                email_address1 = user_data.get('email',None)
 
                 # Ensure all required fields are set correctly
                 user = UserTableModel(
