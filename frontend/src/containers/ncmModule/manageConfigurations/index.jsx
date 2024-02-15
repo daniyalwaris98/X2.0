@@ -9,6 +9,8 @@ import {
   useDeleteRecordsMutation,
   useBulkBackupNcmConfigurationsByDeviceIdsMutation,
   useGetAllCompletedBackupsLazyQuery,
+  useGetSeverityQuery,
+  useGetDeviceTypeQuery,
 } from "../../../store/features/ncmModule/manageConfigurations/apis";
 import { jsonToExcel } from "../../../utils/helpers";
 import {
@@ -41,6 +43,10 @@ import {
 } from "./constants";
 import { MODULE_PATH } from "..";
 import { MAIN_LAYOUT_PATH } from "../../../layouts/mainLayout";
+import { Row, Col } from "antd";
+import SortBySeverity from "./charts/SortBySeverity";
+import DeviceType from "./charts/DeviceType";
+
 
 const Index = () => {
   // hooks
@@ -109,6 +115,23 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
+
+  const {
+    data: severityData,
+    isSuccess: isSeveritySuccess,
+    isLoading: isSeverityLoading,
+    isError: isSeverityError,
+    error: severityError,
+  } = useGetSeverityQuery();
+  console.log("severityData",severityData)
+  const {
+    data: deviceTypeData,
+    isSuccess: isDeviceTypeSuccess,
+    isLoading: isDeviceTypeLoading,
+    isError: isDeviceTypeError,
+    error: deviceTypeError,
+  } = useGetDeviceTypeQuery();
+  console.log("deviceTypeData",deviceTypeData)
 
   const [
     deleteRecords,
@@ -262,6 +285,29 @@ const Index = () => {
         isFetchRecordsLoading || isDeleteRecordsLoading || isBulkBackupLoading
       }
     >
+      <Row gutter={[32, 32]} justify="space-between" style={{padding:"0 0 20px 0"}}>
+        <Col span={8}>
+          <div className="container">
+            <h6 className="heading">Sort by Severity</h6>
+            <SortBySeverity 
+  data={severityData !== undefined? severityData:[]}
+/>
+          </div>
+        </Col>
+
+        <Col span={16}>
+          <div className="container">
+            <h6 className="heading">Device Type</h6>
+            <DeviceType 
+  data={deviceTypeData!==undefined? deviceTypeData:[]}
+/>
+          </div>
+        </Col>
+      </Row>
+
+
+      {/* <h1>husnain</h1> */}
+
       {addModalOpen ? (
         <AddModal handleClose={handleAddClose} open={addModalOpen} />
       ) : null}

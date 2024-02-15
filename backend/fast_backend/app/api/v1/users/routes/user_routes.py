@@ -109,7 +109,6 @@ def add_user_role(role:AddUserRoleScehma):
         print("type of user role is::",type(response),file=sys.stderr)
         print("status is :::::::::",type(status),file=sys.stderr)
         if status == 200:
-            configs.db.close()
             return JSONResponse(content=response,status_code=200)
             print("respinse of the add user is:::::::::::::;",response,file=sys.stderr)
             print("response of the add user role is::::::::::::::::;;",status,file=sys.stderr)
@@ -140,7 +139,6 @@ def get_all_users_role():
                 "configuration":role.configuration
             }
             role_list.append(role_dict)
-            configs.db.close()
         return role_list
     except Exception as e:
         configs.db.rollback()
@@ -190,23 +188,6 @@ async def add_user(user_info: AddUserSchema
     except Exception as e :
         traceback.print_exc()
         return JSONResponse(content="Error Occured while Sign in ",status_code=500)
-# @router.post('/add_user',responses={
-#     200:{"model":str},
-#     400:{"model":str},
-#     500:{"model":str}
-# },
-# summary="API to add the user and updated the user",
-# description="API to add the user and updated the user"
-# )
-# def add_user_db(user_data:AddUserSchema):
-#     try:
-#         print("user data in add user db is:::::",user_data,file=sys.stderr)
-#         created_user= sign_up(user_data)
-#         print("data us\is  ::::::::::::",created_user,file=sys.stderr)
-#         return created_user
-#     except Exception as e:
-#         traceback.print_exc()
-#         return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
 
 @router.get('/get_all_users',responses={
     200:{"model":list[GetUserResponseScehma]},
@@ -329,6 +310,8 @@ def user_role(role_data : list[int]):
             if role_exsist:
                 if role_exsist.role == 'Admin':
                     error_list.append(f"{role_exsist.role} : Cannot Be Deleted Set As An Defualt Role")
+                elif configs.db.query(UserTableModel).filter(UserTableModel.role == role_exsist.role).first():
+                    error_list.append(f"{role_exsist.role} : Cannot be deleted, associated with a user.")
                 else:
                     data_list.append(role)
                     DeleteDBData(role_exsist)

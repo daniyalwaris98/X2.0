@@ -34,7 +34,7 @@ import {
   DEFAULT_SITE,
 } from "./constants";
 import { MODULE_PATH } from "..";
-
+import DataCenterStatusChart from "./chartsComponents/dataCenterStatusChart";
 const Index = () => {
   // hooks
   const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
@@ -172,6 +172,17 @@ const Index = () => {
 
   return (
     <DefaultSpinner spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+
+
+    
+
+
+<DataCenterStatusChart/>
+
+
+
+
+
       {open ? (
         <Modal
           handleClose={handleClose}
