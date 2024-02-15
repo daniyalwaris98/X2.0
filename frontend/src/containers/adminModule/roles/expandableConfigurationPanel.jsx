@@ -12,7 +12,7 @@ import {
 } from "../../../store/features/adminModule/roles";
 import { useDispatch } from "react-redux";
 
-function Index({ moduleKey, moduleConfigurations }) {
+function Index({ moduleKey, moduleConfigurations, pageEditable }) {
   const [isActive, setIsActive] = useState(false);
   const dispatch = useDispatch();
 
@@ -96,6 +96,7 @@ function Index({ moduleKey, moduleConfigurations }) {
                   >
                     <Checkbox
                       checked={pageData.view}
+                      disabled={!pageEditable}
                       onChange={(e) => {
                         dispatch(togglePageView({ moduleKey, pageKey }));
                       }}
@@ -110,7 +111,7 @@ function Index({ moduleKey, moduleConfigurations }) {
                   >
                     <Checkbox
                       checked={pageData.read_only}
-                      disabled={!pageData.view}
+                      disabled={!pageData.view || !pageEditable}
                       onChange={(e) => {
                         dispatch(togglePageReadOnly({ moduleKey, pageKey }));
                       }}
@@ -139,6 +140,7 @@ function Index({ moduleKey, moduleConfigurations }) {
         >
           <Checkbox
             checked={moduleConfigurations.view}
+            disabled={!pageEditable}
             onChange={(e) => {
               dispatch(toggleModuleView(moduleKey));
             }}

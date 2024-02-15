@@ -32,6 +32,7 @@ function Index(props) {
     isError: isCheckIsAnyCompanyRegisteredError,
     error: checkIsAnyCompanyRegisteredError,
     type: TYPE_SINGLE,
+    showMessage: false,
   });
 
   return (

@@ -176,6 +176,29 @@ export function UpdateDialogFooter({
   );
 }
 
+export function UpdateSubmitDialogFooter({
+  handleCancel,
+  handleUpdate,
+  sx,
+  ...rest
+}) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_cancel: { handleClick: handleCancel },
+    default_submit_update: null,
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{ display: "flex", justifyContent: "center", gap: "10px", ...sx }}
+      {...rest}
+    >
+      {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}
+
 export function CompanyDialogFooter({ handleBack, sx, ...rest }) {
   const theme = useTheme();
   const { buttonsConfigurationList } = useButtonsConfiguration({

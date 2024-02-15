@@ -34,3 +34,7 @@ export const userConstants = {
   TEAM: "team",
   ACCOUNT_TYPE: "account_type",
 };
+export const updatePasswordConstants = {
+  OTP: "otp",
+  NEW_PASSWORD: "new_password",
+};

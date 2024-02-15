@@ -385,6 +385,14 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
+    default_submit_update: {
+      name: "Update",
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
     start_monitoring: {
       name: "Start Monitoring",
       icon: <Icon fontSize="16px" icon="eos-icons:monitoring" />,

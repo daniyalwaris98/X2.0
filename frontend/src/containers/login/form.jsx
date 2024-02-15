@@ -1,10 +1,13 @@
-import React, { useEffect } from "react";
+import React, { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { useForm } from "react-hook-form";
 import Grid from "@mui/material/Grid";
 import { yupResolver } from "@hookform/resolvers/yup";
 import * as yup from "yup";
-import { useLoginMutation } from "../../store/features/login/apis";
+import {
+  useLoginMutation,
+  useForgotPasswordMutation,
+} from "../../store/features/login/apis";
 import { getTitle } from "../../utils/helpers";
 import useErrorHandling, { TYPE_SINGLE } from "../../hooks/useErrorHandling";
 import DefaultFormUnit from "../../components/formUnits";
@@ -16,6 +19,7 @@ import DefaultSpinner from "../../components/spinners";
 import { COMPANY, indexColumnNameConstants } from "./constants";
 import { MAIN_LAYOUT_PATH } from "../../layouts/mainLayout";
 import MonetxLogo from "../../resources/svgs/monetxLogo.svg";
+import UpdatePasswordModal from "./updatePasswordModal";
 
 const schema = yup.object().shape({
   [indexColumnNameConstants.USER_NAME]: yup
@@ -31,9 +35,12 @@ const Index = ({
   isAnyCompanyRegistered,
   isCheckIsAnyCompanyRegisteredLoading,
 }) => {
+  // states
+  const [open, setOpen] = useState(false);
+
   // hooks
   const navigate = useNavigate();
-  const { handleSubmit, control } = useForm({
+  const { handleSubmit, control, watch, trigger } = useForm({
     resolver: yupResolver(schema),
   });
 
@@ -49,12 +56,31 @@ const Index = ({
     },
   ] = useLoginMutation();
 
+  const [
+    forgotPassword,
+    {
+      data: forgotPasswordData,
+      isSuccess: isForgotPasswordSuccess,
+      isLoading: isForgotPasswordLoading,
+      isError: isForgotPasswordError,
+      error: forgotPasswordError,
+    },
+  ] = useForgotPasswordMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: loginData,
     isSuccess: isLoginSuccess,
     isError: isLoginError,
     error: addLoginError,
+    type: TYPE_SINGLE,
+  });
+
+  useErrorHandling({
+    data: forgotPasswordData,
+    isSuccess: isForgotPasswordSuccess,
+    isError: isForgotPasswordError,
+    error: forgotPasswordError,
     type: TYPE_SINGLE,
   });
 
@@ -65,9 +91,31 @@ const Index = ({
     }
   }, [navigate, isLoginSuccess]);
 
+  useEffect(() => {
+    if (forgotPasswordData?.data?.is_user_exists) {
+      setOpen(true);
+    }
+  }, [forgotPasswordData, isForgotPasswordLoading]);
+
   // handlers
   function handleRegister() {
     setCurrentForm(COMPANY);
+  }
+
+  function handleClose() {
+    setOpen(false);
+  }
+
+  function handleForgotPassword() {
+    let userName = watch(indexColumnNameConstants.USER_NAME);
+    if (userName) {
+      trigger(indexColumnNameConstants.USER_NAME);
+      forgotPassword({
+        [indexColumnNameConstants.USER_NAME]: userName,
+      });
+    } else {
+      trigger(indexColumnNameConstants.USER_NAME);
+    }
   }
 
   // on form submit
@@ -77,6 +125,9 @@ const Index = ({
 
   return (
     <>
+      {open ? (
+        <UpdatePasswordModal open={open} handleClose={handleClose} />
+      ) : null}
       {!isCheckIsAnyCompanyRegisteredLoading ? (
         <>
           {isAnyCompanyRegistered ? (
@@ -109,7 +160,7 @@ const Index = ({
                           color: "#66B127",
                           cursor: "pointer",
                         }}
-                        // onClick={handleRegister}
+                        onClick={handleForgotPassword}
                       >
                         Forgot password?
                       </div>
