@@ -184,14 +184,14 @@ def add_wmi_credentials(wmiObj:WMIMonitoringCredentialSchema):
         credentials = Monitoring_Credentails_Table()
         if configs.db.query(Monitoring_Credentails_Table).filter_by(profile_name=wmiObj['profile_name']).first():
             return JSONResponse(content={"message": "Duplicate Entry"}, status_code=400)
-        credentials.username = wmiObj['username']
+        credentials.username = wmiObj['user_name']
         credentials.profile_name = wmiObj['profile_name']
         credentials.password = wmiObj['password']
         credentials.category = "wmi"
         InsertDBData(credentials)
         data_dict = {
             "monitoring_credentials_id":credentials.monitoring_credentials_id,
-            "username":credentials.username,
+            "user_name":credentials.username,
             "password":credentials.password,
             "profile_name":credentials.profile_name,
             "category":credentials.category

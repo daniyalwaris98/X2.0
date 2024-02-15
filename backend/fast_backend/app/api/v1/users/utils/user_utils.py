@@ -164,6 +164,7 @@ def EditUserInDB(user_data):
            }
            data_dict = {'data': data, 'message': message}
            print("data dict is::::::::::::::::::::::::::::",data_dict,file=sys.stderr)
+           configs.db.close()
            return data_dict
 
     except Exception as e:
