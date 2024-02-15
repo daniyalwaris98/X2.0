@@ -46,3 +46,4 @@ class GetSfp(BaseSchema):
 class GetEol(BaseSchema):
     name : str
     values : int  
+
