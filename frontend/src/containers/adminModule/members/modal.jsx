@@ -41,11 +41,9 @@ const baseSchema = yup.object().shape({
   [indexColumnNameConstants.PASSWORD]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
-  [indexColumnNameConstants.EMAIL_ADDRESS]: yup
+  [indexColumnNameConstants.EMAIL]: yup
     .string()
-    .required(
-      `${getTitle(indexColumnNameConstants.EMAIL_ADDRESS)} is required`
-    ),
+    .required(`${getTitle(indexColumnNameConstants.EMAIL)} is required`),
   [indexColumnNameConstants.NAME]: yup
     .string()
     .required(`${getTitle(indexColumnNameConstants.NAME)} is required`),
@@ -218,7 +216,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <DefaultFormUnit
                 type="email"
                 control={control}
-                dataKey={indexColumnNameConstants.EMAIL_ADDRESS}
+                dataKey={indexColumnNameConstants.EMAIL}
                 required
               />
               {recordToEdit ? null : (

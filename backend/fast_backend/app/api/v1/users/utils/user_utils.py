@@ -143,10 +143,11 @@ def EditUserInDB(user_data):
            print("user name exsists is:::",file=sys.stderr)
            user_name_exsist.name = user_data_dict['name']
            user_name_exsist.user_name = user_data_dict['user_name']
-           user_name_exsist.email  = user_data_dict['email_address']
+           user_name_exsist.email  = user_data_dict['email']
            user_name_exsist.account_type = user_data_dict['account_type']
            user_name_exsist.role_id = role_id
-           UpdateDBData(user_name_exsist)
+           configs.db.merge(user_name_exsist)
+           configs.db.commit()
            print("DB updated successfully::::::::",file=sys.stderr)
            message = f"{user_name_exsist.user_name} : Updated Successfully"
 
@@ -154,7 +155,7 @@ def EditUserInDB(user_data):
            data = {
                 "user_id":user_name_exsist.id,
                 "user_name":user_name_exsist.name,
-                "email_address":user_name_exsist.email,
+                "email":user_name_exsist.email,
                 "status":user_name_exsist.status,
                 "account_type":user_name_exsist.account_type,
                 "team":user_name_exsist.teams,
@@ -166,6 +167,8 @@ def EditUserInDB(user_data):
            print("data dict is::::::::::::::::::::::::::::",data_dict,file=sys.stderr)
            configs.db.close()
            return data_dict
+        else:
+            return "User Not Found"
 
     except Exception as e:
         print("error in Add user in DB is:", str(e))
@@ -283,3 +286,20 @@ def add_user_in_db(user_info):
             return created_user
         except Exception as e:
             traceback.print_exc()
+
+def generate_otp():
+    try:
+        otp_value = int.__rand__(6)
+        print("Genrated OTP value:::::::::::::::::",otp_value)
+        return otp_value
+    except Exception as e:
+        traceback.print_exc()
+        return "Error While Generating OTP"
+
+
+def send_mail(to,subject,body):
+    try:
+        pass
+    except Exception as e:
+        traceback.print_exc()
+        print("Error While Sending the MAil",str(e))

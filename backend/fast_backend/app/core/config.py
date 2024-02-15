@@ -9,13 +9,17 @@ from dotenv import load_dotenv
 from typing import List
 from starlette.templating import Jinja2Templates
 from influxdb_client import InfluxDBClient
+from app.core.database import Database  # Ensure this path matches your project structure
 import sys
+
 # Load environment variables
 load_dotenv()
-ENV: str = ""
+
+ENV: str = os.getenv("ENV", "dev")
+
 class Configs:
     # Base configuration
-    ENV: str = os.getenv("ENV", "dev")
+    ENV: str = ENV
     API: str = "/api"
     API_V1_STR: str = "/api/v1"
     API_V2_STR: str = "/api/v2"
@@ -30,18 +34,11 @@ class Configs:
         "postgresql": "postgresql",
         "mysql": "mysql+pymysql",
     }
-
     PROJECT_ROOT: str = os.path.dirname(os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
-
-    # Date format configuration
     DATETIME_FORMAT: str = "%Y-%m-%dT%H:%M:%S"
     DATE_FORMAT: str = "%Y-%m-%d"
-
-    # Authentication configuration
     SECRET_KEY: str = os.getenv("SECRET_KEY", "")
     ACCESS_TOKEN_EXPIRE_MINUTES: int = 60 * 24 * 30  # 30 days
-
-    # CORS configuration
     BACKEND_CORS_ORIGINS: List[str] = ["*"]
 
     # Database configuration
@@ -51,12 +48,11 @@ class Configs:
     DB_HOST: str = os.getenv("DB_HOST")
     DB_PORT: str = os.getenv("DB_PORT", "3306")
     DB_ENGINE: str = DB_ENGINE_MAPPER.get(DB, "mysql")
-
+    # DATABASE_URL = f"{DB_ENGINE}://{DB_USER}:{DB_PASSWORD}@{DB_HOST}:{DB_PORT}/{ENV_DATABASE_MAPPER[ENV]}"
     DATABASE_URL = "mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB"
-
-    engine = create_engine(DATABASE_URL, query_cache_size=0, pool_size=30, max_overflow=0, pool_pre_ping=True, echo=True, echo_pool=True,pool_recycle=1800)
+    engine = create_engine(DATABASE_URL, query_cache_size=0, pool_size=30, max_overflow=0, pool_pre_ping=True, echo=False, echo_pool=False, pool_recycle=1800, isolation_level="READ COMMITTED")
     SessionLocal = sessionmaker(bind=engine, autocommit=False, autoflush=False)
-    db = scoped_session(SessionLocal)
+    db_session = scoped_session(SessionLocal)
     metadata = MetaData()
 
     # Pagination configuration
@@ -73,53 +69,29 @@ class Configs:
 
     templates = Jinja2Templates(directory="/app/templates")
 
-    @staticmethod
-    def get_db_session():
-        """Retrieve the database session."""
-        return Configs.db
-
-    @contextmanager
-    def session_scope(self, refresh_all: bool = True, instances: list = None):
-        """
-        Provide a transactional scope around a series of operations.
-
-        Parameters:
-        - refresh_all: If True, refreshes all persistent instances in the session.
-        - instances: Optional list of specific instances to refresh. This is ignored if refresh_all is True.
-        """
-        session = Configs.db()  # Assuming Configs.db is a scoped_session
+    @property
+    def db(self):
+        """Property to get the scoped session for database operations."""
         try:
-            yield session
-            if refresh_all:
-                # Assuming `session` is an actual Session instance here
-                for instance in session:
-                    session.refresh(instance)
-            elif instances:
-                for instance in instances:
-                    session.refresh(instance)
-            session.commit()
+            return self.db_session()
         except Exception as e:
-            session.rollback()
-            traceback.print_exc()
+            self.db_session.remove()
             raise e
-        finally:
-            # Scoped_session's remove() method is intended to clear the session
-            # for the current scope/thread, not necessarily to close it immediately.
-            # Use it if you're done with the session in this context.
-            # session.close()  # Typically, you don't close a scoped session here
-            Configs.db.remove()
 
-    @staticmethod
-    def init_app(app):
-            """
-            Initialize the application with configurations for SQLAlchemy.
-            This method should be called with your Flask or other framework's app instance.
-            """
+    @db.setter
+    def db(self, value):
+        raise RuntimeError("Operation not allowed.")
 
-            @app.teardown_appcontext
-            def cleanup_context(exception=None):
-                Configs.db.remove()  # Clean up the session at the end of each request
+    @classmethod
+    def init_app(cls, app):
+        """
+        Initialize the application with configurations for SQLAlchemy.
+        This method should be called with your Flask or other framework's app instance.
+        """
 
+        @app.teardown_appcontext
+        def shutdown_session(exception=None):
+            cls.db_session.remove()  # Ensure the session is removed at the end of each request
 
 class Config:
     case_sensitive = True
@@ -131,6 +103,20 @@ class TestConfigs(Configs):
 
 configs = Configs()
 Base = declarative_base()
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 if ENV == "prod":
     pass
