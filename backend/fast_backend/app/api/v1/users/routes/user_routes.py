@@ -222,7 +222,7 @@ def get_all_users():
             user_dict = {
                 "user_id":user.id,
                 "user_name":user.name,
-                "email_address":user.email,
+                "email":user.email,
                 "status":user.status,
                 "account_type":user.account_type,
                 "team":user.teams,

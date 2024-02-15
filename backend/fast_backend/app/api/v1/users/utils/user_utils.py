@@ -154,7 +154,7 @@ def EditUserInDB(user_data):
            data = {
                 "user_id":user_name_exsist.id,
                 "user_name":user_name_exsist.name,
-                "email_address":user_name_exsist.email,
+                "email":user_name_exsist.email,
                 "status":user_name_exsist.status,
                 "account_type":user_name_exsist.account_type,
                 "team":user_name_exsist.teams,
