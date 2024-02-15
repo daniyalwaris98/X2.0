@@ -30,6 +30,18 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
+        extendedApi.endpoints.getSeverity.matchFulfilled,
+        (state, action) => {
+          state.severity_data = action.payload;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.getDeviceType.matchFulfilled,
+        (state, action) => {
+          state.device_type_data = action.payload;
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.getAtomsToAddInNcmDevices.matchFulfilled,
         (state, action) => {
           state.atoms_to_add_in_ncm_devices = action.payload;

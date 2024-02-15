@@ -34,6 +34,9 @@ import {
   DEFAULT_SITE,
 } from "./constants";
 import { MODULE_PATH } from "..";
+import DataCenterStatusChart from "./chartsComponents/DataCenterStatusChart";
+import { Row, Col } from "antd";
+import TopSites from "./chartsComponents/TopSites";
 
 const Index = () => {
   // hooks
@@ -172,6 +175,27 @@ const Index = () => {
 
   return (
     <DefaultSpinner spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+      <Row
+        gutter={[32, 32]}
+        justify="space-between"
+        style={{ padding: "0 0 20px 0" }}
+      >
+        <Col span={8}>
+          <div className="container">
+            <h6 className="heading">Data Center Status</h6>
+            {/* <DataCenterStatusChart /> */}
+          </div>
+        </Col>
+
+        <Col span={16}>
+          <div className="container">
+            <h6 className="heading">Top Sites</h6>
+            <TopSites />
+
+          </div>
+        </Col>
+      </Row>
+
       {open ? (
         <Modal
           handleClose={handleClose}
