@@ -1081,10 +1081,12 @@ def add_subnets(subnetObj: list[AddSubnetManually]):
 
                 if subnet_existing:
                     # Update existing subnet details
+                    subnet_existing.subnet_address = obj.subnet_address
                     subnet_existing.subnet_mask = obj.subnet_mask
                     subnet_existing.subnet_name = obj.subnet_name
                     subnet_existing.location = obj.subnet_location
                     subnet_existing.discovered = 'Not Discovered'
+                    subnet_existing.subnet_state = 'Not Discovered'
                     UpdateDBData(subnet_existing)
                     configs.db.commit()
 
@@ -1099,11 +1101,12 @@ def add_subnets(subnetObj: list[AddSubnetManually]):
                     success_list.append(f"{subnet_existing.subnet_address} : Updated Successfully")
                 else:
                     subnet_tab = subnet_table()
-                    subnet_tab.subnet_address = obj.subnet
+                    subnet_tab.subnet_address = obj.subnet_address
                     subnet_tab.subnet_mask = obj.subnet_mask
                     subnet_tab.subnet_name = obj.subnet_name
-                    subnet_tab.location = obj.location
+                    subnet_tab.location = obj.subnet_location
                     subnet_tab.discovered = 'Not Discovered'
+                    subnet_tab.subnet_state = 'Not Discovered'
                     InsertDBData(subnet_tab)
                     subnet_dict = {
                         "subnet_id": subnet_tab.subnet_id,

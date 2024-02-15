@@ -229,7 +229,7 @@ class DeleteResponseSchema(BaseSchema):
     error_list: list[str]
 
 class WMIMonitoringCredentialSchema(BaseSchema):
-    username:str
+    user_name:str
     profile_name:str
     password:str
 

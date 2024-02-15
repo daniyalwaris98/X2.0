@@ -1,6 +1,9 @@
 import React, { useState } from "react";
 import LoginPageLeftImage from "../../resources/svgs/loginPageLeftImage.svg";
-import MonetxLogo from "../../resources/svgs/monetxLogo.svg";
+import { useSelector } from "react-redux/es/hooks/useSelector";
+import { selectIsAnyCompanyRegistered } from "../../store/features/login/selectors";
+import { useCheckIsAnyCompanyRegisteredQuery } from "../../store/features/login/apis";
+import useErrorHandling, { TYPE_SINGLE } from "../../hooks/useErrorHandling";
 import Form from "./form";
 import CompanyForm from "./companyForm";
 import UserForm from "./userForm";
@@ -9,6 +12,27 @@ import { LOGIN, COMPANY, USER } from "./constants";
 
 function Index(props) {
   const [currentForm, setCurrentForm] = useState(LOGIN);
+
+  // selectors
+  const isAnyCompanyRegistered = useSelector(selectIsAnyCompanyRegistered);
+
+  // apis
+  const {
+    data: checkIsAnyCompanyRegisteredData,
+    isSuccess: isCheckIsAnyCompanyRegisteredSuccess,
+    isLoading: isCheckIsAnyCompanyRegisteredLoading,
+    isError: isCheckIsAnyCompanyRegisteredError,
+    error: checkIsAnyCompanyRegisteredError,
+  } = useCheckIsAnyCompanyRegisteredQuery();
+
+  // error handling custom hooks
+  useErrorHandling({
+    data: checkIsAnyCompanyRegisteredData,
+    isSuccess: isCheckIsAnyCompanyRegisteredSuccess,
+    isError: isCheckIsAnyCompanyRegisteredError,
+    error: checkIsAnyCompanyRegisteredError,
+    type: TYPE_SINGLE,
+  });
 
   return (
     <div style={{ backgroundColor: "white" }}>
@@ -76,14 +100,13 @@ function Index(props) {
                 justifyContent: "center",
               }}
             >
-              <div>
-                <img src={MonetxLogo} alt="logo" />
-                <br />
-                <br />
-                <p>Sign in to your account</p>
-                <br />
-                <Form setCurrentForm={setCurrentForm} />
-              </div>
+              <Form
+                setCurrentForm={setCurrentForm}
+                isAnyCompanyRegistered={isAnyCompanyRegistered}
+                isCheckIsAnyCompanyRegisteredLoading={
+                  isCheckIsAnyCompanyRegisteredLoading
+                }
+              />
             </div>
             <p
               style={{

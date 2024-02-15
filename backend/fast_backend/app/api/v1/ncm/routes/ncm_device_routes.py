@@ -2,6 +2,7 @@ import os
 import threading
 import traceback
 from pathlib import Path
+from sqlalchemy import func
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -745,12 +746,92 @@ def restore_configuration(ncm_history_id:list[int]):
 
 
 
+@router.get('/sort_by_severity',
+             responses={
+                 200:{"model":list[SortSeverity]},
+                 500:{"model":str}
+             },summary= "Api to get completd and failed devices counting",
+             description ="Api to  get completd and failed devices counting"
+             )
+def sort_severity():
+    try:
+        obj_list =[]
+        total_count = (
+                        configs.db.query(func.count())
+                        .filter(NcmDeviceTable.configuration_status.isnot(None))
+                        .scalar()
+                        )
+        if not total_count:
+            total_count=0
+        
+        completed_count = (
+                        configs.db.query(func.count())
+                        .filter(NcmDeviceTable.configuration_status=='completed')
+                        .scalar()
+                        )
+        if not completed_count:
+            completed_count=0
 
 
+        failed_count = (
+                        configs.db.query(func.count())
+                        .filter(NcmDeviceTable.configuration_status=='failed')
+                        .scalar()
+                        )
+        if not failed_count:
+            failed_count=0
 
+        obj_list = [{
+                    "name":"total",
+                     "value":total_count},
+                     {
+                      "name":"completed",
+                      "value":completed_count
+                      },
+                        {
+                            "name":"failed",
+                            "value":failed_count
+                        }
 
+                    ]
 
+        return  JSONResponse(content=obj_list , status_code=200)
+    except Exception as e:
+        traceback.print_exc()
 
+@router.get('/device_type_counting',
+             responses={
+                 200: {"model": list[DeviceType]},
+                 500: {"model": str}
+             },
+             summary="Api to get device_type counting from AtomTable",
+             description="Api to get device_type counting from AtomTable"
+             )
+def device_counting():
+    try:
+        obj_list = []
+        obj_dict = {}
+        device_values = (
+            configs.db.query(AtomTable.device_type, func.count().label("device_type_count"))
+            .filter(AtomTable.device_type.isnot(None))
+            .join(NcmDeviceTable, NcmDeviceTable.atom_id == AtomTable.atom_id)
+            .group_by(AtomTable.device_type)
+            .all()
+        )
+
+        for device_type, device_type_count in device_values:
+            print(f"Device Type: {device_type}, Count: {device_type_count}")
+            obj_dict = {"name": device_type, "value": device_type_count}
+            obj_list.append(obj_dict)
+
+        if not obj_list:
+            obj_list = [{"name": "No Device Type", "value": 0}]
+
+        return JSONResponse(content=obj_list, status_code=200)
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred While Fetching Device Type Counts", status_code=500)
 
 
 

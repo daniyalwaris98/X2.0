@@ -5,6 +5,7 @@ const initialState = {
   company_details: null,
   user_details: null,
   is_valid_access_token: false,
+  is_any_company_registered: false,
 };
 
 const defaultSlice = createSlice({
@@ -36,6 +37,13 @@ const defaultSlice = createSlice({
         extendedApi.endpoints.validateToken.matchFulfilled,
         (state, action) => {
           state.is_valid_access_token = action.payload.data.access_token;
+        }
+      )
+      .addMatcher(
+        extendedApi.endpoints.checkIsAnyCompanyRegistered.matchFulfilled,
+        (state, action) => {
+          state.is_any_company_registered =
+            action.payload.data.is_any_company_registered;
         }
       );
   },

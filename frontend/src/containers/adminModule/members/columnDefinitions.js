@@ -5,7 +5,7 @@ import { indexColumnNameConstants } from "./constants";
 export function useIndexTableColumnDefinitions({ handleEdit } = {}) {
   const columnDefinitions = [
     indexColumnNameConstants.USER_NAME,
-    indexColumnNameConstants.EMAIL_ADDRESS,
+    indexColumnNameConstants.EMAIL,
     indexColumnNameConstants.NAME,
     indexColumnNameConstants.ROLE,
     indexColumnNameConstants.STATUS,
