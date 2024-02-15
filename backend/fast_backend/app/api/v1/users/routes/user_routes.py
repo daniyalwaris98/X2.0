@@ -444,3 +444,41 @@ def get_user_company():
         return JSONResponse(content="Error Occured While extracting data from the user in db",status_code=500)
 
 
+
+
+
+@router.get('/check_end_user_existence',
+            responses = {
+                200:{"model":str},
+                500:{"model":str}
+            },
+summary="API to check the existence of user",
+description="API to check the existence of the end user"
+)
+def check_end_user_exsistence():
+    try:
+        compnay_dict = {}
+        is_any_company_registered = False
+        end_user_existance = configs.db.query(EndUserTable).all()
+        print("end user exsitance is:::::::::::::::::::::::",end_user_existance,file=sys.stderr)
+        for existance in end_user_existance:
+            print("existance is:::::::::::::::::::::::",existance,file=sys.stderr)
+            if existance:
+                is_any_company_registered = True
+                data = {
+                    "is_any_company_registered":is_any_company_registered
+                }
+                compnay_dict['data'] = data
+                compnay_dict['message'] = f"Company Already Registered"
+            else:
+                is_any_company_registered = False
+                data = {
+                    "is_any_company_registered": is_any_company_registered
+                }
+                compnay_dict['data'] = data
+                compnay_dict['message'] = f"Company Not Registered"
+        return compnay_dict
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse()
