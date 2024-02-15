@@ -6,7 +6,7 @@ export const TABLE_DATA_UNIQUE_ID = "user_id";
 export const indexColumnNameConstants = {
   END_USER_ID: "end_user_id",
   USER_NAME: "user_name",
-  EMAIL_ADDRESS: "email_address",
+  EMAIL: "email",
   PASSWORD: "password",
   NAME: "name",
   ROLE: "role",

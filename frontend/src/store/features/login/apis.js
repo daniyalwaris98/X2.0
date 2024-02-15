@@ -23,6 +23,9 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
+    checkIsAnyCompanyRegistered: builder.query({
+      query: () => "/api/v1/users/user/check_end_user_existence",
+    }),
   }),
 });
 
@@ -30,4 +33,5 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useValidateTokenMutation,
+  useCheckIsAnyCompanyRegisteredQuery,
 } = extendedApi;
