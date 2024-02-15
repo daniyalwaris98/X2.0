@@ -9,6 +9,7 @@ import Popper from "@mui/material/Popper";
 import Grow from "@mui/material/Grow";
 import Paper from "@mui/material/Paper";
 import ClickAwayListener from "@mui/material/ClickAwayListener";
+import { Icon } from "@iconify/react";
 
 export function ProfilePicturePopup({ handleLogout, sx, children }) {
   const theme = useTheme();
@@ -40,8 +41,20 @@ export function ProfilePicturePopup({ handleLogout, sx, children }) {
             theme?.palette?.main_layout?.profile_picture_background,
           cursor: "pointer",
           marginBottom: "10px", // Adjust the margin bottom to add space
+          display: "flex",
+          justifyContent: "center",
         }}
-      ></div>
+      >
+        <div
+          style={{
+            display: "flex",
+            flexDirection: "column",
+            justifyContent: "center",
+          }}
+        >
+          <Icon fontSize={"20px"} icon="ph:user" style={{ color: "white" }} />
+        </div>
+      </div>
       <Popper
         open={open}
         anchorEl={anchorRef.current}
@@ -82,9 +95,6 @@ export function ProfilePicturePopup({ handleLogout, sx, children }) {
               ></div>
               <ClickAwayListener onClickAway={handleClose}>
                 <MenuList autoFocusItem={false} id="menu-list-grow">
-                  {/* <MenuItem onClick={handleClose} style={{ color: "grey" }}>
-                    Profile
-                  </MenuItem> */}
                   <MenuItem onClick={handleLogout} style={{ color: "grey" }}>
                     Logout
                   </MenuItem>

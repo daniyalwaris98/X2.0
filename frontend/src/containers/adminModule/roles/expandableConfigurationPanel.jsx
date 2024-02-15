@@ -82,41 +82,72 @@ function Index({ moduleKey, moduleConfigurations, pageEditable }) {
                   <div
                     style={{
                       display: "flex",
+                      width: "50%",
                     }}
                   >
                     <img src={dcm} alt="" />
                     &nbsp; &nbsp;
                     <p>{getTitle(pageKey)}</p>
                   </div>
-
                   <div
                     style={{
                       display: "flex",
+                      justifyContent: "space-between",
+                      width: "50%",
+                      paddingRight: "5%",
                     }}
                   >
-                    <Checkbox
-                      checked={pageData.view}
-                      disabled={!pageEditable}
-                      onChange={(e) => {
-                        dispatch(togglePageView({ moduleKey, pageKey }));
+                    <div
+                      style={{
+                        display: "flex",
                       }}
-                    />
-                    &nbsp; &nbsp; View
-                  </div>
+                    >
+                      <Checkbox
+                        checked={pageData.view}
+                        disabled={!pageEditable}
+                        onChange={(e) => {
+                          dispatch(togglePageView({ moduleKey, pageKey }));
+                        }}
+                      />
+                      &nbsp; &nbsp;
+                      <div
+                        style={{
+                          marginTop: "-5px",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        View
+                      </div>
+                    </div>
 
-                  <div
-                    style={{
-                      display: "flex",
-                    }}
-                  >
-                    <Checkbox
-                      checked={pageData.read_only}
-                      disabled={!pageData.view || !pageEditable}
-                      onChange={(e) => {
-                        dispatch(togglePageReadOnly({ moduleKey, pageKey }));
+                    <div
+                      style={{
+                        display: "flex",
                       }}
-                    />
-                    &nbsp; &nbsp; Read Only
+                    >
+                      <Checkbox
+                        checked={pageData.read_only}
+                        disabled={!pageData.view || !pageEditable}
+                        onChange={(e) => {
+                          dispatch(togglePageReadOnly({ moduleKey, pageKey }));
+                        }}
+                      />
+                      &nbsp; &nbsp;
+                      <div
+                        style={{
+                          marginTop: "-5px",
+                          display: "flex",
+                          flexDirection: "column",
+                          justifyContent: "center",
+                          whiteSpace: "nowrap",
+                        }}
+                      >
+                        Read Only
+                      </div>
+                    </div>
                   </div>
                 </div>
               );
@@ -129,7 +160,7 @@ function Index({ moduleKey, moduleConfigurations, pageEditable }) {
           display: "flex",
           flexDirection: "column",
           justifyContent: "center",
-          width: "30%",
+          width: "15%",
           padding: "15px",
         }}
       >
@@ -145,7 +176,8 @@ function Index({ moduleKey, moduleConfigurations, pageEditable }) {
               dispatch(toggleModuleView(moduleKey));
             }}
           />
-          &nbsp; &nbsp; View Module
+          &nbsp; &nbsp;{" "}
+          <span style={{ whiteSpace: "nowrap" }}>View Module</span>
         </div>
       </div>
     </div>
