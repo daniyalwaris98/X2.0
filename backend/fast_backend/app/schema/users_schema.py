@@ -57,6 +57,18 @@ class AddUserRoleScehma(BaseSchema):
     configuration:str
 
 class AddUserSchema(BaseSchema):
+    name:str
+    email_address:str
+    password:str |None = None
+    status:str |None = None
+    user_name:str |None = None
+    team:str |None = None
+    account_type:str |None = None
+    role:str |None = None
+    end_user_id:int |None = None
+
+
+class EditUserSchema(BaseSchema):
     user_id:int
     name:str
     email_address:str
@@ -67,6 +79,9 @@ class AddUserSchema(BaseSchema):
     account_type:str |None = None
     role:str |None = None
     end_user_id:int |None = None
+
+
+
 
 class GetUserResponseScehma(BaseSchema):
     user_id:int
