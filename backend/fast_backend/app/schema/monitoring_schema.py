@@ -161,10 +161,8 @@ class GetFunctionDataSchema(BaseSchema):
 
 
 class AlertStatusSchema(BaseSchema):
-    total: int
-    critical: int
-    informational: int
-    device_down: int
+    name : str
+    value : int 
 
 
 class SnmpCredentialsSchema(BaseSchema):
