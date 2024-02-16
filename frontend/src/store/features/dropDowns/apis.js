@@ -77,7 +77,7 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     fetchAtomVirtualNames: builder.query({
-      query: () => "/api/v1/users/user/get_user_role_dropdown",
+      query: () => "/api/v1/atom/static_list/get_virutal_values_dropdown",
     }),
   }),
 });

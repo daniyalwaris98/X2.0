@@ -246,6 +246,11 @@ export default function Index() {
     drawerMenuItems.find((item) => item.path === modulePath)
   );
 
+  // effects
+  useEffect(() => {
+    setSelectedModule(drawerMenuItems.find((item) => item.path === modulePath));
+  }, [validateTokenData]);
+
   return (
     <>
       {isValidAccessToken ? (
@@ -292,7 +297,6 @@ export default function Index() {
               ))}
             </List>
           </Drawer>
-
           <Box
             component="main"
             sx={{
