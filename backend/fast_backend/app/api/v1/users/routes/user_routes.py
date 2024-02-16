@@ -466,8 +466,9 @@ def check_end_user_exsistence():
         return compnay_dict
 
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
-        return JSONResponse()
+        return JSONResponse(content="Error while checking compnay",status_code=500)
 
 
 @router.post('/forgot_password',responses = {
@@ -480,8 +481,28 @@ description="API to use on forgot password"
 )
 def forgot_passowrd(user_name:ForgotUserSchema):
     try:
+        otp = password_reset_otp_table()
+        is_user_exists = False
+        data = {}
         user_exsist = configs.db.query(UserTableModel).filter_by(user_name = user_name.user_name).first()
         if user_exsist:
+            is_user_exists = True
+            result = generate_otp()
+            try:
+                otp.user_name = user_name.user_name
+                otp.generated_otp_code = result
+                otp.otp_status = 'send'
+                InsertDBData(otp)
+
+            except Exception as e:
+                traceback.print_exc()
+                print("Error while adding otp in db",str(e))
+            user_dict = {
+                "is_user_exists":is_user_exists
+            }
+            data['data'] = user_dict
+            data['message'] = f"OTP Is Generated And Send To your Registered Email"
+
             pass
         else:
             return JSONResponse(content=f"{user_name.user_name} : Not Found")
