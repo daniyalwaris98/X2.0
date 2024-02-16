@@ -12,6 +12,7 @@ export default function useErrorHandling({
   error,
   type,
   setSelectedRowKeys = null,
+  showMessage = true,
   callback = () => {},
 }) {
   const {
@@ -46,27 +47,29 @@ export default function useErrorHandling({
         }
       }
     } else if (type === TYPE_SINGLE) {
-      if (isSuccess) {
-        handleCallbackAlert(data?.message, callback, "success");
-        // handleSuccessAlert(data?.message);
-      } else if (isError) {
-        if (error?.status === 400) {
-          handleErrorAlert(error?.data);
-        } else if (error?.status === 404) {
-          handleErrorAlert(error?.data?.detail);
-        } else if (error?.status === 422) {
-          handleErrorAlert(
-            error?.data?.detail
-              .map(
-                (item) =>
-                  `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
-              )
-              .join("<br>")
-          );
-        } else if (error?.status === 500) {
-          handleErrorAlert(error?.data);
-        } else {
-          console.log(error);
+      if (showMessage) {
+        if (isSuccess) {
+          handleCallbackAlert(data?.message, callback, "success");
+          // handleSuccessAlert(data?.message);
+        } else if (isError) {
+          if (error?.status === 400) {
+            handleErrorAlert(error?.data);
+          } else if (error?.status === 404) {
+            handleErrorAlert(error?.data?.detail);
+          } else if (error?.status === 422) {
+            handleErrorAlert(
+              error?.data?.detail
+                .map(
+                  (item) =>
+                    `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+                )
+                .join("<br>")
+            );
+          } else if (error?.status === 500) {
+            handleErrorAlert(error?.data);
+          } else {
+            console.log(error);
+          }
         }
       }
     } else if (type === TYPE_BULK) {
