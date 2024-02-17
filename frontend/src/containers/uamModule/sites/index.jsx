@@ -37,6 +37,8 @@ import { MODULE_PATH } from "..";
 import DataCenterStatusChart from "./chartsComponents/DataCenterStatusChart";
 import { Row, Col } from "antd";
 import TopSites from "./chartsComponents/TopSites";
+import DefaultCard from "../../../components/cards";
+import { CardHeader } from "../../../components/pageHeaders";
 
 const Index = () => {
   // hooks
@@ -175,26 +177,22 @@ const Index = () => {
 
   return (
     <DefaultSpinner spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
-      <Row
-        gutter={[32, 32]}
-        justify="space-between"
-        style={{ padding: "0 0 20px 0" }}
-      >
+      <Row gutter={[16, 16]}>
         <Col span={8}>
-          <div className="container">
-            <h6 className="heading">Data Center Status</h6>
+          <DefaultCard>
+            <CardHeader cardName="Data Center Status" />
             {/* <DataCenterStatusChart /> */}
-          </div>
+          </DefaultCard>
         </Col>
-
         <Col span={16}>
-          <div className="container">
-            <h6 className="heading">Top Sites</h6>
+          <DefaultCard>
+            <CardHeader cardName="Top Sites" />
             <TopSites />
-
-          </div>
+          </DefaultCard>
         </Col>
       </Row>
+
+      <br />
 
       {open ? (
         <Modal
@@ -227,6 +225,10 @@ const Index = () => {
         selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
+
+      <br />
+      <br />
+      <br />
     </DefaultSpinner>
   );
 };
