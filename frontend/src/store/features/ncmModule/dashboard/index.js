@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../containers/atomModule/passwordGroups/constants";
+} from "../../../../containers/ncmModule/dashboard/constants";
 
 import {
   useGetConfigurationBackupSummaryQuery,
@@ -14,9 +14,9 @@ import { useSelector } from "react-redux";
 
 const initialState = {
   configuration_change_by_device_data: [],
-  configuration_backup_summary_data: [], 
-  recent_rcm_alarms_data:[],
-  recent_rcm_alarms_count_data:[],
+  configuration_backup_summary_data: [],
+  recent_rcm_alarms_data: [],
+  recent_rcm_alarms_count_data: [],
   configuration_change_by_vendor_data: [],
 };
 
@@ -67,8 +67,7 @@ const defaultSlice = createSlice({
         (state, action) => {
           state.ncm_change_by_vendor_data = action.payload;
         }
-      )
-      ;
+      );
   },
 });
 

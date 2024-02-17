@@ -1,10 +1,9 @@
-
 import { extendedApi } from "./apis";
 import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../containers/atomModule/passwordGroups/constants";
+} from "../../../../containers/monitoringModule/dashboard/constants";
 
 import {
   useGetCredentialsSummaryQuery,
@@ -15,9 +14,7 @@ import {
 import { useSelector } from "react-redux";
 
 const initialState = {
-    configuration_by_time_data:[],
-
-
+  configuration_by_time_data: [],
 };
 
 const defaultSlice = createSlice({
@@ -26,37 +23,36 @@ const defaultSlice = createSlice({
   reducers: {},
   extraReducers(builder) {
     builder
-    .addMatcher(
-      extendedApi.endpoints.getHeatMap.matchFulfilled,
-      (state, action) => {
-        state.heat_map_data = action.payload;
-      }
-    )   
-    .addMatcher(
+      .addMatcher(
+        extendedApi.endpoints.getHeatMap.matchFulfilled,
+        (state, action) => {
+          state.heat_map_data = action.payload;
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.getMemory.matchFulfilled,
         (state, action) => {
           state.memory_data = action.payload;
         }
-      )  
+      )
       .addMatcher(
         extendedApi.endpoints.getCpu.matchFulfilled,
         (state, action) => {
           state.cpu_data = action.payload;
         }
-      ) 
+      )
       .addMatcher(
         extendedApi.endpoints.getTopInterfaces.matchFulfilled,
         (state, action) => {
           state.top_interfaces_data = action.payload;
         }
-      ) 
+      )
       .addMatcher(
         extendedApi.endpoints.getSnapshot.matchFulfilled,
         (state, action) => {
           state.snapshot_data = action.payload;
         }
-      ) 
-   
+      );
   },
 });
 
