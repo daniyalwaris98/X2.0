@@ -50,7 +50,8 @@ const Index = ({ open, handleClose, userName }) => {
 
   // on form submit
   const onSubmit = (data) => {
-    data[indexColumnNameConstants.USER_NAME] = "hamza";
+    // data[indexColumnNameConstants.USER_NAME] = "hamza";
+    data[indexColumnNameConstants.USER_NAME] = userName;
     verifyOtpAndUpdateUserPassword(data);
   };
 
