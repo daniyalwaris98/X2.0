@@ -21,7 +21,7 @@ const schema = yup.object().shape({
     .required(`${getTitle(updatePasswordConstants.NEW_PASSWORD)} is required`),
 });
 
-const Index = ({ open, handleClose }) => {
+const Index = ({ open, handleClose, userName }) => {
   // hooks
   const { handleSubmit, control } = useForm({
     resolver: yupResolver(schema),
@@ -50,6 +50,7 @@ const Index = ({ open, handleClose }) => {
 
   // on form submit
   const onSubmit = (data) => {
+    data[indexColumnNameConstants.USER_NAME] = userName;
     verifyOtpAndUpdateUserPassword(data);
   };
 
