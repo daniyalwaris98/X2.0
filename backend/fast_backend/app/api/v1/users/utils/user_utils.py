@@ -2,6 +2,9 @@ from fastapi import FastAPI,APIRouter
 from fastapi.responses import JSONResponse
 import sys
 import traceback
+
+from fastapi_mail import FastMail,MessageSchema
+import random
 from app.utils.hash import *
 from sqlalchemy.exc import SQLAlchemyError
 from app.core.security import *
@@ -12,7 +15,6 @@ import asyncio
 from app.api.v1.users.routes.license_routes import generate_license
 from app.repository.user_repository import UserRepository as user_repository
 from app.schema.users_schema import AddUserSchema
-
 
 def add_user_role_to_db(role):
     try:
@@ -289,17 +291,25 @@ def add_user_in_db(user_info):
 
 def generate_otp():
     try:
-        otp_value = int.__rand__(6)
-        print("Genrated OTP value:::::::::::::::::",otp_value)
+        # Generate a random number between 100000 and 999999
+        otp_value = random.randint(100000, 999999)
+        print(f"Generated OTP value: {otp_value}")
         return otp_value
     except Exception as e:
-        traceback.print_exc()
+        print(f"Error While Generating OTP: {e}")
         return "Error While Generating OTP"
 
 
-def send_mail(to,subject,body):
+async def send_mail(to, subject, body):
     try:
-        pass
+        message = MessageSchema(
+            subject=subject,
+            recipients=[to],  # Make sure this is a list
+            body=body,
+        )
+        fm = FastMail(configs.conf)
+        await fm.send_message(message)  # Use await for async operation
+        return {"message": "email has been sent"}
     except Exception as e:
         traceback.print_exc()
-        print("Error While Sending the MAil",str(e))
+        print("Error While Sending the Mail", str(e))
