@@ -24,14 +24,14 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
             status = ping(atom_id_exsist.ip_address)[0]
             print("status is:::::::::::::::::::::::::::",file=sys.stderr)
             monitoring_id_exsist.atom_id = atom_id
-            monitoring_id_exsist.active = MonitoringObj["active"]
+            monitoring_id_exsist.active ='Active'
 
             # print("monitoring active is::::::::::::::::::::::::::::::::::;", Monitoringdb.active, file=sys.stderr)
-            monitoring_id_exsist.device_heatmap = MonitoringObj["active"]
+            monitoring_id_exsist.device_heatmap = 'Active'
             if MonitoringObj["active"] == "Active":
                     monitoring_id_exsist.status = status
             else:
-                    monitoring_id_exsist.status = "NA"
+                    monitoring_id_exsist.status = ""
             UpdateDBData(monitoring_id_exsist)
             monitoring_device_object = {
                     "monitoring_device_if":monitoring_id_exsist.monitoring_device_id,
