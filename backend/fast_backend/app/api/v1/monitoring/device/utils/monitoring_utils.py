@@ -28,7 +28,7 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
 
             # print("monitoring active is::::::::::::::::::::::::::::::::::;", Monitoringdb.active, file=sys.stderr)
             monitoring_id_exsist.device_heatmap = 'Active'
-            if MonitoringObj["active"] == "Active":
+            if monitoring_id_exsist.active == "Active":
                     monitoring_id_exsist.status = status
             else:
                     monitoring_id_exsist.status = ""
