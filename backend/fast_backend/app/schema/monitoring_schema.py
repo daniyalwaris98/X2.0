@@ -127,7 +127,7 @@ class InterfaceBandwidthSchema(BaseSchema):
 
 
 class MonitoringDeviceSchema(BaseSchema):
-    monitoring_id: int
+    monitoring_device_id: int
     ip_address: str
     device_type: str
     device_name: str
@@ -143,7 +143,7 @@ class MonitoringDeviceSchema(BaseSchema):
     # creation_date: datetime
     # modification_date: datetime
 class UpdateMonitoringDeviceSchema(BaseSchema):
-    monitoring_id: int
+    monitoring_device_id: int
     monitoring_credentials_id: str | None
 
 

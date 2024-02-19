@@ -162,7 +162,7 @@ async def get_all_monitoring_devices():
                         credentials_str = snmp_cred
 
             monitoring_data_dict = {
-                "monitoring_id": MonitoringObj.monitoring_device_id,
+                "monitoring_device_id": MonitoringObj.monitoring_device_id,
                 "ip_address": atom.ip_address,
                 "device_type": atom.device_type,
                 "device_name": atom.device_name,
@@ -288,7 +288,7 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
                         "function":atom.function,
                         "device_name":atom.device_name,
                         "device_type":atom.device_type,
-                        "category":credentials_category
+                        "credentials":credentials_category
                     }
                     data.append(monitoring_device_dict)
                     success_msg = f"{atom_id} : Device Added Successfully"
