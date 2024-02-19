@@ -224,39 +224,39 @@ def add_complete_atom(device, update):
         atom.device_ru = device["device_ru"]
 
         if device["department"] is None:
-            atom.department = "N/A"
+            atom.department = ""
         elif device["department"].strip() != "":
             atom.department = device["department"].strip()
         else:
-            atom.department = "N/A"
+            atom.department = ""
 
         if device["section"] is None:
-            atom.section = "N/A"
+            atom.section = ""
         elif device["section"].strip() != "":
             atom.section = device["section"].strip()
         else:
-            atom.section = "N/A"
+            atom.section = ""
 
         if device["criticality"] is None:
-            atom.criticality = "N/A"
+            atom.criticality = ""
         elif device["criticality"].strip() != "":
             atom.criticality = device["criticality"].strip()
         else:
-            atom.criticality = "N/A"
+            atom.criticality = ""
 
         if device["domain"] is None:
-            atom.domain = "N/A"
+            atom.domain = ""
         elif device["domain"].strip() != "":
             atom.domain = device["domain"].strip()
         else:
-            atom.domain = "N/A"
+            atom.domain = ""
 
         if device["virtual"] is None:
-            atom.virtual = "N/A"
+            atom.virtual = ""
         elif device["virtual"].strip() != "":
             atom.virtual = device["virtual"].strip()
         else:
-            atom.virtual = "N/A"
+            atom.virtual = ""
         atom_data = {}
         msg = ""
         status = 500

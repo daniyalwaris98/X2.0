@@ -204,7 +204,12 @@ async def edit_atom(atom: EditAtomRequestSchema):
 
         atom = atom.dict()
         response, status = edit_atom_util(atom)
-        return JSONResponse(response)
+        print("response is::::::::::::::::::",response,file=sys.stderr)
+        print("status is::::::::::::::::::::::",status,file=sys.stderr)
+        if status == 200:
+            return JSONResponse(content=response,status_code=200)
+        elif status==400:
+            return  JSONResponse(content=response,status_code=400)
 
     except Exception:
         traceback.print_exc()
