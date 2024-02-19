@@ -8,7 +8,7 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
         credentials = ''
         MonitoringObj = dict(MonitoringObj)
         print("MOnitoring object is::::::::::::::::::::::::::;",MonitoringObj,file=sys.stderr)
-        monitoring_id_exsist = configs.db.query(Monitoring_Devices_Table).filter_by(monitoring_device_id = MonitoringObj['monitoring_id']).first()
+        monitoring_id_exsist = configs.db.query(Monitoring_Devices_Table).filter_by(monitoring_device_id = MonitoringObj['monitoring_device_id']).first()
         if monitoring_id_exsist:
             print("Monitoring device id exsist:::::::::::::::::::")
             print("procedding to next step")
@@ -141,9 +141,9 @@ def AddMonitoringDevice(MonitoringObj, row, update):
         print("Inserted ", MonitoringObj["ip_address"], file=sys.stderr)
         return "Inserted Successfully", 200
     else:
-        Monitoringdb.monitoring_id = id
+        Monitoringdb.monitoring_device_id = id
         UpdateDBData(Monitoringdb)
-        print("Updated ", MonitoringObj["monitoring_id"], file=sys.stderr)
+        print("Updated ", MonitoringObj["monitoring_device_id"], file=sys.stderr)
 
         return "Updated Successfully", 200
 
