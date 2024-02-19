@@ -162,7 +162,7 @@ async def get_all_monitoring_devices():
                         credentials_str = snmp_cred
 
             monitoring_data_dict = {
-                "monitoring_id": MonitoringObj.monitoring_device_id,
+                "monitoring_device_id": MonitoringObj.monitoring_device_id,
                 "ip_address": atom.ip_address,
                 "device_type": atom.device_type,
                 "device_name": atom.device_name,
