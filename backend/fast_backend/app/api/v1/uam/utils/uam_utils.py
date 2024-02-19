@@ -613,6 +613,7 @@ def onboard_devices_data_fetch(ip):
             data['virtual'] = atom_exsist.virtual
             data['onboard_status'] = atom_exsist.onboard_status
             data['scop'] = atom_exsist.scop
+            data['atom_id'] = atom_exsist.atom_id
         configs.db.close()
         return data
     except Exception as e:
