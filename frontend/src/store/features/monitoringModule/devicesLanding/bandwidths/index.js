@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../../containers/monitoringModule/devicesLanding/interfaces/constants";
+} from "../../../../../containers/monitoringModule/devicesLanding/bandwidths/constants";
 
 const initialState = {
   all_data: [],

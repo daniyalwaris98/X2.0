@@ -144,8 +144,8 @@ class MonitoringDeviceSchema(BaseSchema):
     # modification_date: datetime
 class UpdateMonitoringDeviceSchema(BaseSchema):
     monitoring_id: int
-    credentials: str | None
-    active: str | None
+    monitoring_credentials_id: str | None
+
 
 
 class AtomInMonitoringSchema(BaseSchema):

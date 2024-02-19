@@ -33,33 +33,7 @@ import {
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
 } from "./constants";
-
-const baseSchema = yup.object().shape({
-  [indexColumnNameConstants.USER_NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.USER_NAME)} is required`),
-  [indexColumnNameConstants.PASSWORD]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.PASSWORD)} is required`),
-  [indexColumnNameConstants.EMAIL]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.EMAIL)} is required`),
-  [indexColumnNameConstants.NAME]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.NAME)} is required`),
-  [indexColumnNameConstants.ROLE]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.ROLE)} is required`),
-  [indexColumnNameConstants.STATUS]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.STATUS)} is required`),
-  [indexColumnNameConstants.ACCOUNT_TYPE]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.ACCOUNT_TYPE)} is required`),
-  [indexColumnNameConstants.TEAM]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.TEAM)} is required`),
-});
+import { defaultSchema as baseSchema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // schema
@@ -258,7 +232,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               <DefaultFormUnit
                 control={control}
                 dataKey={indexColumnNameConstants.TEAM}
-                required
               />
             </Grid>
             <Grid item xs={12}>

@@ -1,5 +1,7 @@
 import traceback
 import logging
+
+from fastapi_mail import ConnectionConfig
 from sqlalchemy import create_engine, MetaData
 from sqlalchemy.ext.declarative import declarative_base
 from sqlalchemy.orm import sessionmaker, scoped_session
@@ -11,6 +13,7 @@ from starlette.templating import Jinja2Templates
 from influxdb_client import InfluxDBClient
 from app.core.database import Database  # Ensure this path matches your project structure
 import sys
+
 
 # Load environment variables
 load_dotenv()
@@ -24,6 +27,7 @@ class Configs:
     API_V1_STR: str = "/api/v1"
     API_V2_STR: str = "/api/v2"
     PROJECT_NAME: str = "MonetX 2.0"
+    arbitrary_types_allowed = True
     ENV_DATABASE_MAPPER: dict = {
         "prod": "fca",
         "stage": "stage-fca",
@@ -68,6 +72,26 @@ class Configs:
     client: InfluxDBClient = InfluxDBClient(url=IN_URL, token=IN_TOKEN)
 
     templates = Jinja2Templates(directory="/app/templates")
+
+    MAIL_SERVER = os.getenv("MAIL_SERVER")
+    MAIL_PORT = os.getenv("MAIL_PORT")
+    MAIL_USERNAME = os.getenv("MAIL_USERNAME")
+    MAIL_DEFAULT_SENDER = os.getenv("MAIL_DEFAULT_SENDER")
+    MAIL_PASSWORD = os.getenv("MAIL_PASSWORD")
+    MAIL_TLS =True
+    MAIL_DEBUG = True
+
+    conf = ConnectionConfig(
+        MAIL_USERNAME=MAIL_USERNAME,
+        MAIL_PASSWORD=MAIL_PASSWORD,
+        MAIL_FROM=MAIL_DEFAULT_SENDER,
+        MAIL_PORT=MAIL_PORT,
+        MAIL_SERVER=MAIL_SERVER,
+        MAIL_TLS=True,
+        MAIL_SSL=False,
+        USE_CREDENTIALS=True,
+        VALIDATE_CERTS=True
+    )
 
     @property
     def db(self):

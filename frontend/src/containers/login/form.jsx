@@ -126,7 +126,11 @@ const Index = ({
   return (
     <>
       {open ? (
-        <UpdatePasswordModal open={open} handleClose={handleClose} />
+        <UpdatePasswordModal
+          open={open}
+          handleClose={handleClose}
+          userName={watch(indexColumnNameConstants.USER_NAME)}
+        />
       ) : null}
       {!isCheckIsAnyCompanyRegisteredLoading ? (
         <>

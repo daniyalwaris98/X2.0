@@ -35,3 +35,15 @@ export default function DefaultPageHeader({ pageName, buttons }) {
     </div>
   );
 }
+
+export function CardHeader({ cardName }) {
+  const theme = useTheme();
+
+  return (
+    <div style={{ padding: "10px" }}>
+      <Typography sx={{ color: theme?.palette?.page_header?.primary_text }}>
+        {cardName}
+      </Typography>
+    </div>
+  );
+}

@@ -7,12 +7,12 @@ export const extendedApi = monetxApi.injectEndpoints({
     }),
 
     getAtomsDevicesFromDiscovery: builder.query({
-      query: () => "/api/v1/atom/atom/get_atoms_devices_from_discovery",
+      query: () => "/api/v1/auto_discovery/get_discovery_data_in_atom",
     }),
 
     addAtomsDevicesFromDiscovery: builder.mutation({
       query: (data) => ({
-        url: "/api/v1/atom/atom/add_atom_devices_from_discovery",
+        url: "/api/v1/auto_discovery/add_discovery_devices",
         method: "POST",
         body: data,
       }),

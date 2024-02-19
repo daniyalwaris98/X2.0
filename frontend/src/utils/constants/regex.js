@@ -15,3 +15,5 @@ export const ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS =
 
 export const ALPHA_NUMERIC_WITH_FOUR_EXTRA_CHARACTERS_REGEX_STARTING_WITH_ALPHABETS =
   /^(?! )(?=[a-zA-Z])[a-zA-Z0-9]*(?:[ @._-][a-zA-Z0-9]+)*$/;
+
+export const ONLY_ALPHABETS = /^(?! )(?=[a-zA-Z])[a-zA-Z]*(?:[ ][a-zA-Z]+)*$/;

@@ -5,11 +5,17 @@ import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/monitoringModule/devices/selectors";
 import { setSelectedDevice } from "../../../store/features/monitoringModule/devices";
 import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features/dropDowns/apis";
-import { useFetchRecordsQuery } from "../../../store/features/monitoringModule/devices/apis";
+import {
+  useFetchRecordsQuery,
+  useStartMonitoringQuery,
+} from "../../../store/features/monitoringModule/devices/apis";
 import { jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
 import { useAuthorization } from "../../../hooks/useAuth";
-import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_BULK,
+  TYPE_FETCH,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import DefaultPageTableSection from "../../../components/pageSections";
@@ -57,7 +63,10 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
-    start_monitoring: { handleClick: handleAdd, visible: pageEditable },
+    start_monitoring: {
+      handleClick: handleStartMonitoring,
+      visible: pageEditable,
+    },
     default_add: {
       handleClick: handleAdd,
       namePostfix: ELEMENT_NAME,
@@ -87,6 +96,14 @@ const Index = () => {
   } = useFetchRecordsQuery();
 
   const {
+    data: startMonitoringData,
+    isSuccess: isStartMonitoringSuccess,
+    isLoading: isStartMonitoringLoading,
+    isError: isStartMonitoringError,
+    error: startMonitoringError,
+  } = useStartMonitoringQuery();
+
+  const {
     data: monitoringCredentialsNamesData,
     isSuccess: isMonitoringCredentialsNamesSuccess,
     isLoading: isMonitoringCredentialsNamesLoading,
@@ -101,6 +118,14 @@ const Index = () => {
     isError: isFetchRecordsError,
     error: fetchRecordsError,
     type: TYPE_FETCH,
+  });
+
+  useErrorHandling({
+    data: startMonitoringData,
+    isSuccess: isStartMonitoringSuccess,
+    isError: isStartMonitoringError,
+    error: startMonitoringError,
+    type: TYPE_BULK,
   });
 
   useErrorHandling({
@@ -128,6 +153,10 @@ const Index = () => {
     setOpenAddModal(true);
   }
 
+  function handleStartMonitoring() {
+    setOpenAddModal(true);
+  }
+
   function handleCloseAdd() {
     setOpenAddModal(false);
   }
@@ -150,7 +179,8 @@ const Index = () => {
       spinning={
         isFetchRecordsLoading ||
         isMonitoringCredentialsNamesLoading ||
-        isMonitoringCredentialsNamesLoading
+        isMonitoringCredentialsNamesLoading ||
+        isStartMonitoringLoading
       }
     >
       {openAddModal ? (
