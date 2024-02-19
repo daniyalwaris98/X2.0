@@ -585,6 +585,7 @@ def onboard_devices_data_fetch(ip):
     try:
         data = {}
         atom_exsist = configs.db.query(AtomTable).filter_by(ip_address = ip).first()
+        configs.db.refresh(atom_exsist)
         if atom_exsist:
             password_group_exsist = configs.db.query(PasswordGroupTable).filter_by(password_group_id = atom_exsist.password_group_id).first()
             if password_group_exsist:
