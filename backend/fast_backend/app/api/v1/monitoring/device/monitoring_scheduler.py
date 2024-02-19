@@ -38,11 +38,14 @@ def create_monitoring_poll(devicePoll):
     try:
         threads = []
         for host in devicePoll:
+            print("host in create monitoring poll is:::::::::::::",host,file=sys.stderr)
             Obj = CommonPuller()
+            print("Obj for the monitoring poll is::::::::::::::::::::",Obj,file=sys.stderr)
             thread = threading.Thread(
                 target=Obj.poll,
                 args=(host,)
             )
+            print("thread is:::::::::::::::::",thread,file=sys.stderr)
             thread.start()
             threads.append(thread)
 
@@ -50,17 +53,18 @@ def create_monitoring_poll(devicePoll):
             th.join()
     except Exception as e:
         traceback.print_exc()
+        print("Error While Creating Monitoring POll",str(e))
 
 
 def monitoring_operations():
     try:
-        iterations= 1
-        while True:
-            print(f"Iteration : {iterations}",file=sys.stderr)
-            iterations = iterations + 1
-
-            if iterations == 100000:
-                iterations = 1
+        # iterations= 1
+        # while True:
+        #     print(f"Iteration : {iterations}",file=sys.stderr)
+        #     iterations = iterations + 1
+        #
+        #     if iterations == 100000:
+        #         iterations = 1
 
         # Generating Alerts
         print(f"Running Monitoring Scheduler::",file=sys.stderr)
@@ -80,6 +84,7 @@ def monitoring_operations():
             for result in results:
                 atom, monitoring_device, credentials = result
                 print("result is::::::::::::::::",result,file=sys.stderr)
+                print(f"Atom Is:: {atom}, MOnitoring device is {monitoring_device},credentials are {credentials}",file=sys.stderr)
                 try:
                     if credentials is None:
                         print(
@@ -109,6 +114,7 @@ def running_active_devices():
         monitoringThread.start()
     except Exception as e:
         traceback.print_exc()
+        print("Error WHile running active devices",str(e))
 
 
 @router.get('/run_active',
@@ -127,6 +133,7 @@ async def run_active_devices():
     except Exception as e:
         print("Error Occured While Monitoring Active",str(e),file=sys.stderr)
         traceback.print_exc()
+        print("Error oCcured while run active devices",str(e))
         return JSONResponse(content="Error While Monitoring Startup",status_code=500)
 
 # host = ['0', '192.168.0.2', 'fortinet', '3', '4', '5', '6', '7', '8', '9', '10',

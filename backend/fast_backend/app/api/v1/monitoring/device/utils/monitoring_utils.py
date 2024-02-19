@@ -13,7 +13,7 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
             print("procedding to next step")
             atom_id_in_monitoring = monitoring_id_exsist.atom_id
             atom_id_exsist = configs.db.query(AtomTable).filter_by(atom_id = atom_id_in_monitoring).first()
-            monitoring_credential_exsist = configs.db.query(Monitoring_Credentails_Table).filter_by(profile_name = MonitoringObj['credentials']).first()
+            monitoring_credential_exsist = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = MonitoringObj['monitoring_credentials_id']).first()
             if monitoring_credential_exsist:
                 monitoring_id_exsist.monitoring_credentials_id = monitoring_credential_exsist.monitoring_credentials_id
             if atom_id_exsist:

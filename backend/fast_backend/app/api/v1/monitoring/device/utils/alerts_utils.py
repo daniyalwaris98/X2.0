@@ -5,7 +5,7 @@ from app.utils.db_utils import *
 
 def snmp_alert(monitoring_device_id, flag):
     try:
-        alert = Monitoring_Alerts_Table.query.filter(
+        alert = configs.db.query(Monitoring_Alerts_Table).filter(
             Monitoring_Alerts_Table.monitoring_device_id
             == monitoring_device_id,
             Monitoring_Alerts_Table.category == "snmp",
@@ -44,7 +44,7 @@ def status_alert(monitoring_device, status):
 
     alert = None
     try:
-        alert = Monitoring_Alerts_Table.query.filter(
+        alert = configs.db.query(Monitoring_Alerts_Table).filter(
             Monitoring_Alerts_Table.monitoring_device_id
             == monitoring_device.monitoring_device_id,
             Monitoring_Alerts_Table.category == "device_down",
@@ -119,7 +119,7 @@ def cpu_null_alert(host, cpu_threshold):
 def cpu_utilization_alert(monitoring_device_id, alert_type, cpu_util, cpu_threshold):
     try:
 
-        alert = Monitoring_Alerts_Table.query.filter(
+        alert = configs.db.query(Monitoring_Alerts_Table).filter(
             Monitoring_Alerts_Table.monitoring_device_id
             == monitoring_device_id,
             Monitoring_Alerts_Table.category == "cpu",
@@ -243,7 +243,7 @@ def memory_null_alert(host, memory_threshold):
 def memory_utilization_alert(monitoring_device_id, alert_type, memory_util, memory_threshold):
     try:
 
-        alert = Monitoring_Alerts_Table.query.filter(
+        alert = configs.db.query(Monitoring_Alerts_Table).filter(
             Monitoring_Alerts_Table.monitoring_device_id
             == monitoring_device_id,
             Monitoring_Alerts_Table.category == "memory",
