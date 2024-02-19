@@ -651,9 +651,9 @@ def edit_atom_util(device):
                             attributes_dict['password_group'] = password_group.password_group
                     elif column_name == 'onboard_status':
                         if value:
-                            attributes_dict['onboard_status'] = 'True'
+                            attributes_dict['onboard_status'] = True
                         else:
-                            attributes_dict['onboard_status'] = 'False'
+                            attributes_dict['onboard_status'] = False
                     else:
                         attributes_dict[column_name] = value
 
@@ -742,39 +742,39 @@ def edit_complete_atom(device, atom):
     atom.device_ru = device["device_ru"]
 
     if device["department"] is None:
-        atom.department = "N/A"
+        atom.department = ""
     elif device["department"].strip() != "":
         atom.department = device["department"].strip()
     else:
-        atom.department = "N/A"
+        atom.department = ""
 
     if device["section"] is None:
-        atom.section = "N/A"
+        atom.section = ""
     elif device["section"].strip() != "":
         atom.section = device["section"].strip()
     else:
-        atom.section = "N/A"
+        atom.section = ""
 
     if device["criticality"] is None:
-        atom.criticality = "N/A"
+        atom.criticality = ""
     elif device["criticality"].strip() != "":
         atom.criticality = device["criticality"].strip()
     else:
-        atom.criticality = "N/A"
+        atom.criticality = ""
 
     if device["domain"] is None:
-        atom.domain = "N/A"
+        atom.domain = ""
     elif device["domain"].strip() != "":
         atom.domain = device["domain"].strip()
     else:
-        atom.domain = "N/A"
+        atom.domain = ""
 
     if device["virtual"] is None:
-        atom.virtual = "N/A"
+        atom.virtual = ""
     elif device["virtual"].strip() != "":
         atom.virtual = device["virtual"].strip()
     else:
-        atom.virtual = "N/A"
+        atom.virtual = ""
 
     if "vendor" in device.keys():
         if device["vendor"] is not None:
