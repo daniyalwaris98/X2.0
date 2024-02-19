@@ -52,7 +52,7 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
                 }
             data = {
                 "data":monitoring_device_object,
-                "message":f"{monitoring_id_exsist.monitoring_device_id} : Updated successfully"
+                "message":f"{atom_id_exsist.device_name} : Updated successfully"
             }
             print("data is:::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
             return data
