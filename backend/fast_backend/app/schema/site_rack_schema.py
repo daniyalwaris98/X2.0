@@ -86,3 +86,8 @@ class GetRackByRackNameRequestSchema(BaseSchema):
 class getLocationDevice(BaseSchema):
     name : str
     value : int
+
+
+class location(BaseSchema):
+    name : str
+    value : str
