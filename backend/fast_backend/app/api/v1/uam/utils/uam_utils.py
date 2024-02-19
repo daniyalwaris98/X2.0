@@ -600,7 +600,7 @@ def onboard_devices_data_fetch(ip):
 
             else:
                 print("rack name not found")
-
+            print("atom_exsists onboard status is:::::::::::::::",atom_exsist.onboard_status,file=sys.stderr)
             data['ip_address'] = atom_exsist.ip_address
             data['device_type'] = atom_exsist.device_type
             data['vendor'] = atom_exsist.vendor
@@ -610,11 +610,9 @@ def onboard_devices_data_fetch(ip):
             data['criticality'] = atom_exsist.criticality
             data['domain'] = atom_exsist.domain
             data['virtual'] = atom_exsist.virtual
-            if atom_exsist.onboard_status == True:
-                data['onboard_status'] = True
-            else:
-                data['onboard_status'] = False
+            data['onboard_status'] = atom_exsist.onboard_status
             data['scop'] = atom_exsist.scop
+        configs.db.close()
         return data
     except Exception as e:
         traceback.print_exc()
