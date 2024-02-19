@@ -621,9 +621,15 @@ def edit_atom_util(device):
 
             trans_atom.ip_address = device['ip_address']
             trans_atom = fill_transition_data(device, trans_atom)
+            print("trans atom is:::::::::::::::::::::::::tranistion atom",trans_atom,file=sys.stderr)
+            msg, status = add_complete_atom(device, True)
+            if status==200:
+                return msg,status
+            print("message for the add compelte atom is in tranistions",msg,file=sys.stderr)
+            print("status for the add compelte atom is:::::::::::::::",status,file=sys.stderr)
             status = UpdateDBData(trans_atom)
-            object_to_inspect = trans_atom
 
+            object_to_inspect = trans_atom
         else:
             return "Device Not Found", 400
 
