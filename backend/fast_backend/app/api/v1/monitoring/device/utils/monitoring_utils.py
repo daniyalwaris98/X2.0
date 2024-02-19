@@ -5,6 +5,7 @@ from ping3 import ping,verbose_ping
 
 def UpdateMonitoringDevice(MonitoringObj, row, update):
     try:
+        credentials = ''
         MonitoringObj = dict(MonitoringObj)
         print("MOnitoring object is::::::::::::::::::::::::::;",MonitoringObj,file=sys.stderr)
         monitoring_id_exsist = configs.db.query(Monitoring_Devices_Table).filter_by(monitoring_device_id = MonitoringObj['monitoring_id']).first()
@@ -15,6 +16,9 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
             atom_id_exsist = configs.db.query(AtomTable).filter_by(atom_id = atom_id_in_monitoring).first()
             monitoring_credential_exsist = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = MonitoringObj['monitoring_credentials_id']).first()
             if monitoring_credential_exsist:
+                monitoring_category = monitoring_credential_exsist.category
+                monitoring_crednetials_profile_name = monitoring_credential_exsist.profile_name
+                credentials = monitoring_category+"-"+monitoring_crednetials_profile_name
                 monitoring_id_exsist.monitoring_credentials_id = monitoring_credential_exsist.monitoring_credentials_id
             if atom_id_exsist:
                 atom_id = atom_id_exsist.atom_id
@@ -34,7 +38,7 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
                     monitoring_id_exsist.status = ""
             UpdateDBData(monitoring_id_exsist)
             monitoring_device_object = {
-                    "monitoring_device_if":monitoring_id_exsist.monitoring_device_id,
+                    "monitoring_device_id":monitoring_id_exsist.monitoring_device_id,
                     "ip_address":atom_id_exsist.ip_address,
                     "device_name":atom_id_exsist.device_name,
                     "device_type":atom_id_exsist.device_type,
@@ -42,7 +46,9 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
                     "function":atom_id_exsist.function,
                     "active":monitoring_id_exsist.active,
                     "status":monitoring_id_exsist.status,
-                    "credentials":monitoring_credential_exsist.profile_name
+                    "credentials":credentials,
+                    "ping_status":monitoring_id_exsist.ping_status,
+                    "snmp_status":monitoring_id_exsist.snmp_status
                 }
             data = {
                 "data":monitoring_device_object,
