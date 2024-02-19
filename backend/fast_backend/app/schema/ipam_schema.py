@@ -249,3 +249,8 @@ class DnsZoneByServerID(BaseSchema):
 class TypeSummaryResponse(BaseSchema):
     vender : str
     counts : int     
+
+class IpAddressobjlist(BaseSchema):
+        total_ip: int
+        used_ip :int
+        available_ip:int 
