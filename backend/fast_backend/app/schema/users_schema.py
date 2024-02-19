@@ -148,3 +148,9 @@ class FailedDevicesCountResponseSchema(BaseSchema):
 
 class ForgotUserSchema(BaseSchema):
     user_name:str
+
+
+class UserSchemaForgotSchema(BaseSchema):
+    user_name:str
+    otp:str
+    new_password:str

@@ -170,6 +170,9 @@ class EditSnmpV3RequestSchema(AddSnmpV3Schema):
     credentials_id:int
 
 
+
+
+
 class DiscoveryDataSchema(BaseSchema):
     ip_address:str
     os_type:str | None = None

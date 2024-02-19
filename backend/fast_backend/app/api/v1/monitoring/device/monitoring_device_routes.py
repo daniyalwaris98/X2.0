@@ -79,7 +79,7 @@ async def get_all_monitoring_functions():
 summary= "Use this API in motioring device table to edit the device based on the monitoring_device_id",
 description="Use this API in motioring device table to edit the device based on the monitoring_device_id"
              )
-def add_monitoring_device(monitoring_obj:UpdateMonitoringDeviceSchema):
+async def add_monitoring_device(monitoring_obj:UpdateMonitoringDeviceSchema):
     try:
 
         msg = UpdateMonitoringDevice(monitoring_obj, 0, False)

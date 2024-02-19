@@ -1333,12 +1333,12 @@ async def get_discovery_data_in_atom():
             transition_atom_exsist = configs.db.query(AtomTransitionTable).filter_by(ip_address = data.ip_address).first()
             if not transition_atom_exsist:
                 discovery_dict = {
-                    "discovery_id":discovery_exsist.discovery_id,
-                    "ip_address":discovery_exsist.ip_address,
-                    "os_type":discovery_exsist.os_type,
-                    "subnet":discovery_exsist.subnet,
-                    "make_model":discovery_exsist.make_model,
-                    "vendor":discovery_exsist.vendor
+                    "discovery_id":data.discovery_id,
+                    "ip_address":data.ip_address,
+                    "os_type":data.os_type,
+                    "subnet":data.subnet,
+                    "make_model":data.make_model,
+                    "vendor":data.vendor
                 }
                 discovery_list.append(discovery_dict)
         return discovery_list
@@ -1352,7 +1352,7 @@ async def get_discovery_data_in_atom():
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
-async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
+async def add_atoms(atom_objs: list[GetDiscoveryDataSchema]):
     try:
         print("atom objs is:::::::::::::::::::::::::::::::::::::::::::::::", atom_objs, file=sys.stderr)
         row = 0

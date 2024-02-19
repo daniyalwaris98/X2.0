@@ -3,7 +3,7 @@ import { createSlice } from "@reduxjs/toolkit";
 import {
   TABLE_DATA_UNIQUE_ID,
   ELEMENT_NAME,
-} from "../../../../../containers/ipamModule/subnetsDropDown/subnets/constants";
+} from "../../../../../containers/ipamModule/dnsServerDropDown/dnsServers/constants";
 import { persistReducer } from "redux-persist";
 import persistConfig from "./persistConfig";
 

@@ -1,1 +1,1 @@
-export const selectTableData = (state) => state.monitoring_summary.all_data;
+export const selectTableData = (state) => state.monitoring_summary?.all_data;

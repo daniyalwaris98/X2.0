@@ -17,12 +17,7 @@ import DefaultSpinner from "../../../components/spinners";
 import { ELEMENT_NAME, TABLE_DATA_UNIQUE_ID } from "./constants";
 import { indexColumnNameConstants } from "./constants";
 import { defaultConfiguration } from "./defaultConfiguration";
-
-const schema = yup.object().shape({
-  [indexColumnNameConstants.ROLE]: yup
-    .string()
-    .required(`${getTitle(indexColumnNameConstants.ROLE)} is required`),
-});
+import { defaultSchema as schema } from "./schemas";
 
 const Index = ({ handleClose, open, recordToEdit }) => {
   // useForm hook

@@ -106,3 +106,15 @@ class Login_Activity_Table(Base):
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
+
+
+class password_reset_otp_table(Base):
+    __tablename__ = 'password_reset_otp_table'
+
+    otp_id = Column(Integer,primary_key=True,autoincrement=True)
+    generated_otp_code = Column(String(15),nullable=False)
+    user_otp_code = Column(String(15),nullable=True)
+    user_name = Column(String(55),nullable=False)
+    otp_status = Column(String(45))
+    creation_date = Column(DateTime,default=datetime.now())
+    modification_date = Column(DateTime,default=datetime.now())
