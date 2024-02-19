@@ -818,7 +818,7 @@ async def get_all_details():
             if subnet_exsist:
                 subnet_address = subnet_exsist.subnet_address
             ip_dict = {
-                "ip_id": ip.ip_address,
+                "ip_id": ip.ip_id,
                 "mac_address": ip.mac_address,
                 "status": ip.status,
                 "vip": ip.vip,
@@ -913,7 +913,7 @@ def scan_subnets(subnets: ScanSubnetSchema):
              summary="Use this API in the subnet page on a scan subnet button to scan all the option this API accepts the dns_scan or port_scan in  a boolean.This API is of post method",
              description = 'Use this API in the subnet page on a scan subnet button to scan all the option this API accepts the dns_scan or port_scan in  a boolean.This API is of post method'
              )
-def scan_all_subnets(subnet: ScanAllSubnetSchema):
+async def scan_all_subnets(subnet: ScanAllSubnetSchema):
     try:
         data_dict = {}
         success_list = []
@@ -971,7 +971,7 @@ def scan_all_subnets(subnet: ScanAllSubnetSchema):
 
 
         stat = Thread(target=MultiPurpose, args=(option_dict.get('options'),)).start()
-        print("threading is being executed::", file=sys.stderr)
+        print("threading is being executed::",stat,file=sys.stderr)
         if stat == "success":
             responses = {
                 "data":data_dict,
