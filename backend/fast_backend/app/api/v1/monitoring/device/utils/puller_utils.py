@@ -742,7 +742,7 @@ def dumpDeviceData(atom, output):
 
         print(f"{atom.ip_address}: Dumping Device Data", file=sys.stderr)
         write_api = configs.client.write_api(write_options=SYNCHRONOUS)
-        print("write API in device dump data is:::::::::::",write_api,file=ys.stderr)
+        print("write API in device dump data is:::::::::::",write_api,file=sys.stderr)
         dictionary = [
             {
                 "measurement": "Devices",

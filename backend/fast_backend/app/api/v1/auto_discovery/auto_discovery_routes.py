@@ -1330,9 +1330,9 @@ async def get_discovery_data_in_atom():
         discovery_list =[]
         discovery_exsist = configs.db.query(AutoDiscoveryTable).all()
         for data in discovery_exsist:
-            transition_atom_exsist = configs.db.query(AtomTransitionTable).filter_by(ip_address = data.ip_address).first()
-            if not transition_atom_exsist:
-                discovery_dict = {
+            transition_atom_exist = configs.db.query(AtomTransitionTable).filter_by(ip_address = data.ip_address).first()
+            if not transition_atom_exist:
+                discovery_data = {
                     "discovery_id":data.discovery_id,
                     "ip_address":data.ip_address,
                     "os_type":data.os_type,
@@ -1340,7 +1340,7 @@ async def get_discovery_data_in_atom():
                     "make_model":data.make_model,
                     "vendor":data.vendor
                 }
-                discovery_list.append(discovery_dict)
+                discovery_list.append(discovery_data)
         return discovery_list
 
     except Exception as e:

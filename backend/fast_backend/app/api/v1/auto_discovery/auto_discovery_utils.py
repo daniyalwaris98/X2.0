@@ -54,6 +54,7 @@ def check_subnet(network_obj):
 def add_network_util(network_obj, update):
     try:
         data = {}
+        scan_status_list = ['Active','In Active']
         network, status = check_network_name(network_obj)
 
         if status != 200:
@@ -80,6 +81,9 @@ def add_network_util(network_obj, update):
             network.network_name = network_obj['network_name']
 
         network.subnet = network_obj['subnet']
+
+        if network_obj['scan_status'] not in scan_status_list:
+            return f"{network_obj['scan_status'] : Is Unknown} ", 400
 
         if network_obj['scan_status'] is None:
             network_obj['scan_status'] = "InActive"

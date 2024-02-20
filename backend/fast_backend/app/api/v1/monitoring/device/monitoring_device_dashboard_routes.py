@@ -152,9 +152,10 @@ async def get_monitoring_devices_availability(ip: str = Query(..., description="
                 # Create a dictionary for each device
             obj_dict = {
                 "availability": device['availability'],
-                "packets": device["packets"],
+                "packets": int(device["packets"]),
                 "cpu": device["cpu"],
-                "memory": device["memory"]
+                "memory": device["memory"],
+                "response_time":int(device['response'])
             }
 
             # Append each device's data to the list
