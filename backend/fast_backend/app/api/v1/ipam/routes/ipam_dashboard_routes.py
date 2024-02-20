@@ -24,15 +24,15 @@ router = APIRouter(
     200: {"model": PortsValue},
     500: {"model": str}
 },
-summary="API to get all ports and their counts from ip_table",
-description="API to get all ports and their counts from ip_table"
+summary="API to get all ports and their obj_list from ip_table",
+description="API to get all ports and their obj_list from ip_table"
 )
 async def tcp_open_ports():
     
 
     try:
         port_list = []
-        port_counts =[]
+        port_obj_list =[]
         
         query = (
             "SELECT open_ports, COUNT(open_ports) AS frequency "
@@ -51,15 +51,15 @@ async def tcp_open_ports():
             port = "None" if row[0] is None or row[0] == "" else row[0]
 
             port_list.append(port)
-            port_counts.append(int(row[1]))
+            port_obj_list.append(int(row[1]))
 
         print("port list is::::::::::::::::::::::::::::", port_list, file=sys.stderr)
 
         if len(port_list) <= 0:
             port_list = ["PortA", "PortB", "PortC", "Other"]
-            port_counts = [0, 0, 0, 0]
+            port_obj_list = [0, 0, 0, 0]
 
-        obj_dict = {"ports": port_list, "counts": port_counts}
+        obj_dict = {"ports": port_list, "obj_list": port_obj_list}
         print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
 
         return JSONResponse(content=obj_dict, status_code=200)
@@ -76,11 +76,11 @@ async def tcp_open_ports():
 
 
 @router.get("/ip_availability_summary", responses={
-    200: {"model": Ip_Address_counts},
+    200: {"model": IpAddressobjlist},
     500: {"model": str}
 },
-summary="API to get status counts from ip_table",
-description="API to get status counts from ip_table"
+summary="API to get status obj_list from ip_table",
+description="API to get status obj_list from ip_table"
 )
 async def ip_availability_summary():
     try:
@@ -103,24 +103,24 @@ async def ip_availability_summary():
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
 
-            # Update the counts by adding the values from the current row
+            # Update the obj_list by adding the values from the current row
             available_ip += row[0]
             used_ip += row[1]
             total_ip += row[2]
         
-        counts = {
+        obj_list = {
             "total_ip": total_ip,
             "used_ip": used_ip,
             "available_ip": available_ip,
         }
 
-        print("status counts are::::::::::::::::::::::::::::", counts, file=sys.stderr)
+        print("status obj_list are::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
 
-        return JSONResponse(content=counts, status_code =200)
+        return JSONResponse(content=obj_list, status_code =200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-            content = "Error While Fetching Status Counts from ip_table",
+            content = "Error While Fetching Status obj_list from ip_table",
             status_code = 500,
         )
 
@@ -157,31 +157,31 @@ async def DNS_Summary():
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
 
-            # Update the counts by adding the values from the current row
+            # Update the obj_list by adding the values from the current row
             not_resolved_ip += row[0]
             resolved_ip += row[1]
             # total_ip += row["total_ip"]
 
 
-        counts =[ 
+        obj_list =[ 
             {"not_resolved_ip": not_resolved_ip},
             {"resolved_ip": resolved_ip}]
     
 
-        print("status counts are::::::::::::::::::::::::::::", counts, file=sys.stderr)
+        print("status obj_list are::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
 
-        return JSONResponse(content=counts, status_code =200)
+        return JSONResponse(content=obj_list, status_code =200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-            content = "Error While Fetching Status Counts from ip_table",
+            content = "Error While Fetching Status obj_list from ip_table",
             status_code = 500,
         )
 
 
 
 @router.get("/subnet_summary", responses={
-    200: {"model": SubnetSummaryResponse},
+    200: {"model": list[SubnetSummaryResponse]},
     500: {"model": str}
 },
 summary="API to get subnet_summary",
@@ -200,6 +200,7 @@ async def subnet_summary():
         print("Executing query:", query, file=sys.stderr)
         result = configs.db.execute(query)
         print("results is::::::::::::::::::::::::", result, file=sys.stderr)
+        obj_list =[]
 
         manually_added = 0
         discovered_added = 0
@@ -208,24 +209,22 @@ async def subnet_summary():
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
 
-            # Update the counts by adding the values from the current row
+            # Update the obj_list by adding the values from the current row
             manually_added += row[0]
             discovered_added += row[1]
             #total_count += row[2]
             
             
-        counts = {
-            "manually_added": manually_added ,
-            "discovered_added" : discovered_added,
-            
-        }
+        obj_list = [{
+            "name":"manually_added","value": manually_added},{
+            "name":"discovered_added" ,"value": discovered_added} ]
        
-        print("subnet_state counts are::::::::::::::::::::::::::::", counts, file=sys.stderr)
-        return JSONResponse(content=counts, status_code = 200)
+        print("subnet_state obj_list are::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+        return JSONResponse(content=obj_list, status_code = 200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-            content = "Error While Fetching subnet_state Counts from subnet_table",
+            content = "Error While Fetching subnet_state obj_list from subnet_table",
             status_code = 500,
         )
 
@@ -240,7 +239,7 @@ description="API to get type_summary"
 async def type_summary():
     try:
         query = (
-                f"SELECT atom_table.vendor, COUNT(*) AS counts "
+                f"SELECT atom_table.vendor, COUNT(*) AS obj_list "
                 f"FROM  ipam_devices_fetch_table "
                 f"INNER JOIN atom_table ON ipam_devices_fetch_table.atom_id = atom_table.atom_id "
                 f"GROUP BY vendor;")
@@ -255,7 +254,7 @@ async def type_summary():
             print("row is::::::::::::::::::::::", row, file=sys.stderr)
             print("row [0] is:::::::::::::::", row[0], file=sys.stderr)
             print("row[1] is:::::::::::::::::::", row[1], file=sys.stderr)
-            objt_dict = {"vender": row[0],"counts": row[1]}
+            objt_dict = {"vender": row[0],"obj_list": row[1]}
             print("obj dict is::::::::::::::::::::", objt_dict, file=sys.stderr)
             objt_list.append(objt_dict)
    
@@ -265,7 +264,7 @@ async def type_summary():
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-            content = "Error While Fetching subnet_state Counts from subnet_table",
+            content = "Error While Fetching subnet_state obj_list from subnet_table",
             status_code = 500,
         )
     

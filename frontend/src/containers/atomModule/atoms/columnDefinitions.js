@@ -1,16 +1,49 @@
 import React from "react";
 import { Icon } from "@iconify/react";
+import Tooltip from "@mui/material/Tooltip";
 import { useTheme } from "@mui/material/styles";
 import DefaultSelect from "../../../components/selects";
 import DefaultOption from "../../../components/options";
 import { ATOM_ID, indexColumnNameConstants } from "./constants";
 import { MONITORING_CREDENTIALS_ID } from "../../monitoringModule/devices/constants";
+import { getTitle } from "../../../utils/helpers";
 
 export function useIndexTableColumnDefinitions({
   pageEditable,
   handleEdit = null,
   dropDowns = null,
 } = {}) {
+  function getRequiredFieldsTitle(record) {
+    let title = "";
+    if (!record[indexColumnNameConstants.IP_ADDRESS]) {
+      title += `${getTitle(indexColumnNameConstants.IP_ADDRESS)}, `;
+    }
+    if (!record[indexColumnNameConstants.FUNCTION]) {
+      title += `${getTitle(indexColumnNameConstants.FUNCTION)}, `;
+    }
+    if (!record[indexColumnNameConstants.VENDOR]) {
+      title += `${getTitle(indexColumnNameConstants.VENDOR)}, `;
+    }
+    if (!record[indexColumnNameConstants.PASSWORD_GROUP]) {
+      title += `${getTitle(indexColumnNameConstants.PASSWORD_GROUP)}, `;
+    }
+    if (!record[indexColumnNameConstants.DEVICE_NAME]) {
+      title += `${getTitle(indexColumnNameConstants.DEVICE_NAME)}`;
+    }
+
+    // Remove the last comma if it exists
+    if (title.endsWith(", ")) {
+      title = title.slice(0, -2); // Remove the last two characters (comma and space)
+    }
+
+    // Append period if title is not empty
+    if (title !== "") {
+      title += ".";
+    }
+
+    return title;
+  }
+
   const theme = useTheme();
 
   const monitoringCredentialsOptions =
@@ -30,11 +63,18 @@ export function useIndexTableColumnDefinitions({
             icon="ep:success-filled"
           />
         ) : (
-          <Icon
-            fontSize={"23px"}
-            color={theme?.palette?.icon?.incomplete}
-            icon="material-symbols:info"
-          />
+          <Tooltip
+            title={`Following fields are required to complete the atom: ${getRequiredFieldsTitle(
+              record
+            )} `}
+          >
+            <Icon
+              fontSize={"23px"}
+              color={theme?.palette?.icon?.incomplete}
+              icon="material-symbols:info"
+              style={{ cursor: "pointer" }}
+            />
+          </Tooltip>
         );
 
         return <div style={{ textAlign: "center" }}>{icon}</div>;
