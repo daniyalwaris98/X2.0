@@ -41,6 +41,7 @@ function Index() {
     isError: isBackupSummaryError,
     error: backupSummaryError,
   } = useGetConfigurationBackupSummaryQuery();
+  console.log("backupSummaryData",backupSummaryData)
   const {
     data: vendorData,
     isSuccess: isVendorSuccess,
@@ -80,21 +81,33 @@ function Index() {
     backupFailure: 2,
     notBackup: 1,
   };
+
+  const deviceType=[
+  {name: 'cisco_ios_xe', value: 1},
+{name: 'cisco_ftd', value: 1},
+{name: 'cisco_ios', value: 4},
+{name: 'huawei', value: 1}]
   return (
     <>
       <Row gutter={[32, 32]} justify="space-between">
         <Col span={8}>
           <div className="container">
             <h6 className="heading">Configuration Backup Summary</h6>
-            <ConfigurationBackupSummary data={backsummary} />
+            <ConfigurationBackupSummary data={backupSummaryData !==undefined? backupSummaryData:[]} />
           </div>
         </Col>
 
-        <Col span={16}>
+        <Col span={8}>
           <div className="container">
             <h6 className="heading">Configuration Change by Device</h6>
             {/* <ChangeByTimeChart /> */}
-            <ConfigurationByTimeLineChart companyData={timeLineChart} />
+            <ConfigurationByTimeLineChart  data={deviceType}/>
+          </div>
+        </Col>
+        <Col span={8}>
+          <div className="container">
+            <h6 className="heading">Compliance</h6>
+            <Compliance />
           </div>
         </Col>
       </Row>
@@ -107,17 +120,17 @@ function Index() {
             <RecentRcmAlarmsChart />
           </div>
         </Col>
-
         <Col span={10}>
           <div className="container">
-            <h6 className="heading">Compliance</h6>
-            <Compliance />
+            <h6 className="heading">NCM Device Summary</h6>
+            <NcmDeviceSummaryTable />
           </div>
         </Col>
+      
       </Row>
 
       <Row gutter={[24, 24]} justify="space-between" className="page_row">
-        <Col span={12}>
+        <Col span={24}>
           <div className="container">
             <h6 className="heading">Configuration Change by Vendor</h6>
             <ConfigurationChangeByVendor
@@ -128,18 +141,13 @@ function Index() {
                 "PaloAlto",
                 "NetScaler",
               ]}
-              time={["11:00", "11:30", "12:00", "12:30", "01:00"]}
+              // time={["11:00", "11:30", "12:00", "12:30", "01:00"]}
               values={[5, 10, 6]}
             />
           </div>
         </Col>
 
-        <Col span={12}>
-          <div className="container">
-            <h6 className="heading">NCM Device Summary</h6>
-            <NcmDeviceSummaryTable />
-          </div>
-        </Col>
+       
       </Row>
     </>
   );

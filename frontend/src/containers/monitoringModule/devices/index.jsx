@@ -36,6 +36,8 @@ import {
 } from "./constants";
 import { MODULE_PATH } from "..";
 import { MAIN_LAYOUT_PATH } from "../../../layouts/mainLayout";
+import {Row,Col} from "antd"
+import ResponseTimeChart from "./Component/ResponseTimeChart";
 
 const Index = () => {
   // hooks
@@ -186,6 +188,21 @@ const Index = () => {
         isStartMonitoringLoading
       }
     >
+      <Row
+        gutter={[32, 32]}
+        justify="space-between"
+        style={{ padding: "0 0 20px 0" }}
+      >
+        <Col span={24}>
+          <div className="container">
+            <h6 className="heading"></h6>
+          <ResponseTimeChart/>
+          </div>
+        </Col>
+
+        
+      </Row>
+
       {openAddModal ? (
         <AddModal handleClose={handleCloseAdd} open={openAddModal} />
       ) : null}

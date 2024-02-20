@@ -11,6 +11,7 @@ function RcmAlarmDeviceTable({ data }) {
         </div>
         <div style={{ display: "flex", justifyContent: "center", flexDirection: "column", padding: "0px 0px 0px 20px", gap: "10px" }}>
           {data.map((item, index) => (
+            <div key={index} style={{ borderLeft: '2px solid #E34444' } }>
             <RcmAlarmTableData
               key={index}
               Title={item.alarm_title}
@@ -18,6 +19,7 @@ function RcmAlarmDeviceTable({ data }) {
               label={item.modification_date}
               date={item.creation_date}
             />
+            </div>
           ))}
         </div>
       </div>

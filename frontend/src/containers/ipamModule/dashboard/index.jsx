@@ -57,6 +57,7 @@ function Index() {
     isError: isTopTenOpenPortsError,
     error: topTenOpenPortsError,
   } = useGetTopTenOpenPortsQuery();
+  console.log("topTenOpenPortsData",topTenOpenPortsData)
   const {
     data: dnsData,
     isSuccess: isDnsSuccess,
@@ -64,6 +65,7 @@ function Index() {
     isError: isDnsError,
     error: dnsError,
   } = useGetDnsQuery();
+  console.log("dnsData",dnsData)
   const apiResponse = {
     total_ip: 1048,
     used_ip: 580,

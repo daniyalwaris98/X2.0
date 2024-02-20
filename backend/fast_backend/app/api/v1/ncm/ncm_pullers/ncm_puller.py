@@ -295,7 +295,7 @@ class NCMPuller(object):
             data = {
                 "ncm_history_id":ncm_history.ncm_history_id,
                 "date":ncm_history.configuration_date,
-                "ncm_history":ncm_history.file_name
+                "file_name":ncm_history.file_name
             }
             print(
                 f"{file_name} INSERTED SUCCESSFULLY TO THE NCM HISTORY TABLE AT {current_time}",

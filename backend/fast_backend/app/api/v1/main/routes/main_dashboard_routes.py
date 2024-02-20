@@ -114,19 +114,26 @@ async def ncm_change_summary_by_time():
         month_names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         for row in result:
-            current_month_value = int(current_time.strftime('%m'))
-            month_name = month_names[current_month_value]
+            print("row",row)
+            
+            #current_month_value = int(current_time.strftime('%m'))
+            month_value =int(row[1])
+            print("current_month", month_value)
+            month_name = month_names[month_value]
+            print("month_name",month_name)
             name_list.append(month_name)
+            print(name_list)
             value_list.append(int(row[0]))
+            print(value_list)
         
         
         if len(name_list) <= 0:
             # Adjust this logic based on your requirements
             # Here, it adds the current month and the previous month
-            name_list.append(current_time.strftime('%m'))
+            name_list.append('month')
             value_list.append(0)
-            name_list.append((current_time - timedelta(days=30)).strftime('%m'))
-            value_list.append(0)
+            #name_list.append((current_time - timedelta(days=30)).strftime('%m'))
+            #value_list.append(0)
 
         obj_dict = {"name": name_list, "value": value_list}
 
