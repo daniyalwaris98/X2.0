@@ -28,11 +28,7 @@ import {
   selectAtomCriticalityNames,
   selectAtomVirtualNames,
 } from "../../../store/features/dropDowns/selectors";
-import {
-  formSetter,
-  generateNumbersArray,
-  getTitle,
-} from "../../../utils/helpers";
+import { formSetter, generateNumbersArray } from "../../../utils/helpers";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_SINGLE,
@@ -43,7 +39,10 @@ import {
   SelectFormUnit,
   AddableSelectFormUnit,
 } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
+import {
+  AddSubmitDialogFooter,
+  UpdateSubmitDialogFooter,
+} from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
 import {
   ATOM_ID,
@@ -375,7 +374,11 @@ const Index = ({
               />
             </Grid>
             <Grid item xs={12}>
-              <DefaultDialogFooter handleClose={handleClose} />
+              {recordToEdit ? (
+                <UpdateSubmitDialogFooter handleCancel={handleClose} />
+              ) : (
+                <AddSubmitDialogFooter handleCancel={handleClose} />
+              )}
             </Grid>
           </Grid>
         </form>
