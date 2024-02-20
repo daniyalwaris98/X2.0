@@ -89,7 +89,13 @@ function Index() {
       { name: "not_resolved_ip", value: 30 },
       { name: "resolved_ip", value: 70 }
     ];
-  
+    const deviceType=[
+      {name: 'cisco_ios_xe', value: 1},
+    {name: 'cisco_ftd', value: 1},
+    {name: 'cisco_ios', value: 4},
+    {name: 'huawei', value: 1}]
+
+    const data1=[{"name":[null,"22","23","26","29","34","110"],"value":[0,6,6,13,13,27,27]}]
 
   return (
     <div
@@ -148,13 +154,13 @@ function Index() {
           </div>
         </Col>
       </Row>
-      <Row gutter={[16, 16]} justify="space-between" style={{ marginBottom: "20px" }}>
+      <Row gutter={[16, 16]} justify="space-between" style={{ marginBottom: "20px", height:"100%" }}>
         <Col span={7}>
           <div
             style={{
               backgroundColor: "#FFFFFF",
               borderRadius: "8px",
-              height: "100%",
+              height: "400px",
             }}
           >
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
@@ -172,16 +178,17 @@ function Index() {
             style={{
               backgroundColor: "#FFFFFF",
               borderRadius: "8px",
-              height: "100%",
+              height: "400px",
             }}
           >
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
               Top 10 Open Ports
             </h5>
             <TopOpenPorts
-              chartData={
+              data={
                 topTenOpenPortsData !== undefined ? topTenOpenPortsData : []
               }
+            
             />{" "}
           </div>
         </Col>
@@ -190,7 +197,7 @@ function Index() {
             style={{
               backgroundColor: "#FFFFFF",
               borderRadius: "8px",
-              height: "100%",
+              height: "400px",
             }}
           >
             <h5 style={{ padding: "10px", margin: "0px", fontSize: "16px" }}>
