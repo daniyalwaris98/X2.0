@@ -72,8 +72,8 @@ const ConfigurationBackupSummary = ({ data }) => {
         legend: {
           show: true,
           data: ["Backup Successful", "Backup Failure", "Not Backup"],
-          y: "top",
-          padding: [10, 0],
+          bottom: 5,
+          padding: [10, 20],
         },
       };
 

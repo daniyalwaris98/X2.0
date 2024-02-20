@@ -57,6 +57,7 @@ function Index() {
     isError: isTopTenOpenPortsError,
     error: topTenOpenPortsError,
   } = useGetTopTenOpenPortsQuery();
+  console.log("topTenOpenPortsData",topTenOpenPortsData)
   const {
     data: dnsData,
     isSuccess: isDnsSuccess,
