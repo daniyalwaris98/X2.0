@@ -72,8 +72,8 @@ const ConfigurationBackupSummary = ({ data }) => {
         legend: {
           show: true,
           data: ["Backup Successful", "Backup Failure", "Not Backup"],
-          bottom: 5,
-          padding: [10, 20],
+          bottom: -20, // Adjust this value to position the legend at the bottom
+          padding: [20, 0], // Increase the padding between the legend and the chart
         },
       };
 
@@ -86,16 +86,16 @@ const ConfigurationBackupSummary = ({ data }) => {
   }, [data]);
 
   return (
-    <div id="backupSummaryChart" style={{ width: "100%", height: "400px" }}></div>
+    <div id="backupSummaryChart" style={{ width: "100%", height: "370px" }}></div>
   );
 };
 
-ConfigurationBackupSummary.propTypes = {
-  data: PropTypes.shape({
-    backup_successful: PropTypes.number.isRequired,
-    backup_failure: PropTypes.number.isRequired,
-    not_backup: PropTypes.number.isRequired,
-  }).isRequired,
-};
+// ConfigurationBackupSummary.propTypes = {
+//   data: PropTypes.shape({
+//     backup_successful: PropTypes.number.isRequired,
+//     backup_failure: PropTypes.number.isRequired,
+//     not_backup: PropTypes.number.isRequired,
+//   }).isRequired,
+// };
 
 export default ConfigurationBackupSummary;

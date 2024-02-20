@@ -100,7 +100,6 @@ function Index() {
         <Col span={8}>
           <div className="container">
             <h6 className="heading">Configuration Change by Device</h6>
-            {/* <ChangeByTimeChart /> */}
             <ConfigurationByTimeLineChart  data={deviceType}/>
           </div>
         </Col>
@@ -141,7 +140,7 @@ function Index() {
                 "PaloAlto",
                 "NetScaler",
               ]}
-              // time={["11:00", "11:30", "12:00", "12:30", "01:00"]}
+              time={["11:00", "11:30", "12:00", "12:30", "01:00"]}
               values={[5, 10, 6]}
             />
           </div>
