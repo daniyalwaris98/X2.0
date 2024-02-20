@@ -1,5 +1,5 @@
 from netmiko import Netmiko, ConnectHandler
-
+from app.api.v1.ipam.utils.ipam_db_utils import *
 from app.api.v1.ncm.utils.ncm_alarm_utils import *
 from app.models.atom_models import *
 from app.utils.db_utils import *
@@ -83,7 +83,7 @@ class NCMPuller(object):
         ssh_tries = 0
         login = False
         connection = None
-
+        login_exception=''
         # Telnet Connect
         if self.credential.password_group_type == "Telnet" or self.credential.password_group_type == "TELNET":
             if self.atom.device_type not in device_type_telnet_dictionary.keys():
@@ -158,6 +158,9 @@ class NCMPuller(object):
             self.status = 500
             self.response = f"{self.atom.ip_address} : Failed To Login"
             login_alarm(self.atom, self.ncm, login=False)
+            date = datetime.now()
+            device_type = self.atom.device_type
+            addFailedDevice(self.atom.ip_address, date, device_type, login_exception, 'IPAM')
             return
 
             # addFailedDevice(
