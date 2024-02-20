@@ -22,6 +22,8 @@ import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_DELETE,
+  TYPE_BULK_BACKUP,
 } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
@@ -46,7 +48,6 @@ import { MAIN_LAYOUT_PATH } from "../../../layouts/mainLayout";
 import { Row, Col } from "antd";
 import SortBySeverity from "./charts/SortBySeverity";
 import DeviceType from "./charts/DeviceType";
-
 
 const Index = () => {
   // hooks
@@ -123,7 +124,7 @@ const Index = () => {
     isError: isSeverityError,
     error: severityError,
   } = useGetSeverityQuery();
-  console.log("severityData",severityData)
+  console.log("severityData", severityData);
   const {
     data: deviceTypeData,
     isSuccess: isDeviceTypeSuccess,
@@ -131,7 +132,7 @@ const Index = () => {
     isError: isDeviceTypeError,
     error: deviceTypeError,
   } = useGetDeviceTypeQuery();
-  console.log("deviceTypeData",deviceTypeData)
+  console.log("deviceTypeData", deviceTypeData);
 
   const [
     deleteRecords,
@@ -180,7 +181,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -189,7 +190,7 @@ const Index = () => {
     isSuccess: isBulkBackupSuccess,
     isError: isBulkBackupError,
     error: bulkBackupError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_BACKUP,
   });
 
   // effects
@@ -271,8 +272,12 @@ const Index = () => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   function handleTableConfigurationsOpen() {
@@ -285,26 +290,29 @@ const Index = () => {
         isFetchRecordsLoading || isDeleteRecordsLoading || isBulkBackupLoading
       }
     >
-      <Row gutter={[32, 32]} justify="space-between" style={{padding:"0 0 20px 0"}}>
+      <Row
+        gutter={[32, 32]}
+        justify="space-between"
+        style={{ padding: "0 0 20px 0" }}
+      >
         <Col span={8}>
           <div className="container">
             <h6 className="heading">Sort by Severity</h6>
-            <SortBySeverity 
-  data={severityData !== undefined? severityData:[]}
-/>
+            <SortBySeverity
+              data={severityData !== undefined ? severityData : []}
+            />
           </div>
         </Col>
 
         <Col span={16}>
           <div className="container">
             <h6 className="heading">Device Type</h6>
-            <DeviceType 
-  data={deviceTypeData!==undefined? deviceTypeData:[]}
-/>
+            <DeviceType
+              data={deviceTypeData !== undefined ? deviceTypeData : []}
+            />
           </div>
         </Col>
       </Row>
-
 
       {/* <h1>husnain</h1> */}
 

@@ -110,8 +110,6 @@ def add_user_role(role:AddUserRoleScehma):
         print("status is :::::::::",type(status),file=sys.stderr)
         if status == 200:
             return JSONResponse(content=response,status_code=200)
-            print("respinse of the add user is:::::::::::::;",response,file=sys.stderr)
-            print("response of the add user role is::::::::::::::::;;",status,file=sys.stderr)
         elif status ==400:
             return JSONResponse(content=response,status_code=400)
     except Exception as e:
@@ -525,7 +523,7 @@ async def forgot_passowrd(user_name:ForgotUserSchema):
             data['data'] = user_dict
             data['message'] = f"OTP Is Generated And Send To your Registered Email"
 
-            pass
+            return data
         else:
             return JSONResponse(content=f"{user_name.user_name} : Not Found")
     except Exception as e:
@@ -533,7 +531,12 @@ async def forgot_passowrd(user_name:ForgotUserSchema):
         return JSONResponse(content="Error Occured While Forgot Password",status_code=500)
 
 
-@router.post('/verify_otp_and_update_user_password')
+@router.post('/verify_otp_and_update_user_password',
+             responses = {
+                 200:{"model":str},
+                 400:{"model":str},
+                 500:{"model":str}
+             })
 async def verify_user_and_update(obj:UserSchemaForgotSchema):
     try:
         user_dict = {}
@@ -547,44 +550,45 @@ async def verify_user_and_update(obj:UserSchemaForgotSchema):
                 current_time = datetime.utcnow().replace(tzinfo=pytz.utc)
                 otp_creation_time = otp_exists.creation_date.replace(tzinfo=pytz.utc) if otp_exists.creation_date.tzinfo is None else otp_exists.creation_date
 
-
-                # Assuming creation_date is a datetime object
-
                 print(f"Current Time (UTC): {current_time}",file=sys.stderr)
                 print(f"OTP Creation Time (UTC): {otp_creation_time}",file=sys.stderr)
 
                 # Example of logging the OTP creation moment in UTC
                 otp_creation_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
                 print(f"OTP Created At (UTC): {otp_creation_utc.isoformat()}")
-                time_diff = current_time - otp_creation_utc
-                print(f"Time Difference: {time_diff}", file=sys.stderr)
-                # Assuming this is close to the validation logic
                 current_time_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
                 print(f"Validating OTP At (UTC): {current_time_utc.isoformat()}")
+                time_diff = current_time_utc - otp_creation_utc
+                print(f"Time Difference: {time_diff}", file=sys.stderr)
                 # Check if the OTP is within the valid time window (10 minutes)
                 if time_diff <= timedelta(minutes=10):
-                    print("otp is valid wiht in 10 minutes::::::::::::::::::",file=sys.stderr)
+                    print("otp is valid within 10 minutes", file=sys.stderr)
                     otp = obj.otp
-                    print("otp is:::::::::::::::::::",otp,file=sys.stderr)
-                    generted_otp_code = otp_exists.generated_otp_code
-                    print("generated otp code is",generted_otp_code,file=sys.stderr)
-                    if otp_exists.generated_otp_code == obj.otp:  # Assuming 'obj' is an object with attribute access
+                    print("otp is:", otp, file=sys.stderr)
+                    generated_otp_code = otp_exists.generated_otp_code
+                    print("generated otp code is", generated_otp_code, file=sys.stderr)
+
+                    user_otp_code = obj.otp
+                    if otp_exists.generated_otp_code == user_otp_code and otp_exists.otp_status != 'Expired':
                         # Proceed with password update
                         is_otp_valid = True
                         hashed_password = get_password_hash(obj.new_password)
-                        print('hashed password is::::::::::::::::',hashed_password,file=sys.stderr)
+                        print('hashed password is:', hashed_password, file=sys.stderr)
                         user_check.password = hashed_password
                         UpdateDBData(user_check)
+                        otp_exists.otp_status = 'Expired'  # Set the OTP status to 'Expired' after validation checks
                         DeleteDBData(otp_exists)
-                        data = {
-                            'is_otp_valid':is_otp_valid
-                        }
+                        data = {'is_otp_valid': is_otp_valid}
                         user_dict['data'] = data
-                        user_dict['message'] = f"Passowrd Updated"
+                        user_dict['message'] = "Password Updated"
                         return user_dict
                     else:
+                        otp_exists.otp_status = 'Expired'
+                        UpdateDBData(otp_exists)
                         return JSONResponse(content="OTP not valid", status_code=400)
                 else:
+                    otp_exists.otp_status='Expired'
+                    UpdateDBData(otp_exists)
                     return JSONResponse(content="OTP is expired", status_code=400)
             else:
                 return JSONResponse(content="No OTP found for user", status_code=404)

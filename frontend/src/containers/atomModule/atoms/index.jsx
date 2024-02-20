@@ -26,6 +26,9 @@ import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_ADD_UPDATE,
+  TYPE_BULK_DELETE,
+  TYPE_BULK_ONBOARD,
 } from "../../../hooks/useErrorHandling";
 import { useAuthorization } from "../../../hooks/useAuth";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
@@ -176,7 +179,7 @@ const Index = () => {
     isSuccess: isAddRecordsSuccess,
     isError: isAddRecordsError,
     error: addRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ADD_UPDATE,
   });
 
   useErrorHandling({
@@ -184,7 +187,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -193,7 +196,7 @@ const Index = () => {
     isSuccess: isOnBoardRecordsSuccess,
     isError: isOnBoardRecordsError,
     error: OnBoardRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ONBOARD,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -339,24 +342,29 @@ const Index = () => {
   function handleExport(optionType) {
     const { ALL_DATA, TEMPLATE, COMPLETE, INCOMPLETE } =
       dropdownButtonOptionsConstants.atom_export;
-    if (optionType === ALL_DATA) {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+    if (dataSource?.length > 0) {
+      if (optionType === ALL_DATA) {
+        jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      } else if (optionType === COMPLETE) {
+        jsonToExcel(
+          dataSource.filter((item) => item.hasOwnProperty(ATOM_ID)),
+          FILE_NAME_EXPORT_COMPLETE_DATA
+        );
+      } else if (optionType === INCOMPLETE) {
+        jsonToExcel(
+          dataSource.filter((item) => item.hasOwnProperty(ATOM_TRANSITION_ID)),
+          FILE_NAME_EXPORT_INCOMPLETE_DATA
+        );
+      } else {
+        jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      }
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
     } else if (optionType === TEMPLATE) {
       jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
-    } else if (optionType === COMPLETE) {
-      jsonToExcel(
-        dataSource.filter((item) => item.hasOwnProperty(ATOM_ID)),
-        FILE_NAME_EXPORT_COMPLETE_DATA
-      );
-    } else if (optionType === INCOMPLETE) {
-      jsonToExcel(
-        dataSource.filter((item) => item.hasOwnProperty(ATOM_TRANSITION_ID)),
-        FILE_NAME_EXPORT_INCOMPLETE_DATA
-      );
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
     } else {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleInfoAlert("No data to export.");
     }
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleEdit(record) {
