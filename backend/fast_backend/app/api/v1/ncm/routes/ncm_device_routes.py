@@ -671,7 +671,7 @@ def delete_configuration(ncm_history_id:list[int]):
             "success_list":success_list,
             "error_list":error_list,
             "success":len(success_list),
-            "errors":len(error_list)
+            "error":len(error_list)
         }
         return responses
     except Exception as e:
