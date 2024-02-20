@@ -271,6 +271,12 @@ const Index = ({
       recordToEdit &&
       (recordToEdit[ATOM_ID] || recordToEdit[ATOM_TRANSITION_ID])
     ) {
+      if (recordToEdit[ATOM_TRANSITION_ID]) {
+        localStorage.setItem(
+          ATOM_TRANSITION_ID,
+          recordToEdit[ATOM_TRANSITION_ID]
+        );
+      }
       updateRecord(data);
     } else {
       addRecord(data);

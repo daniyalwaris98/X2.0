@@ -143,7 +143,8 @@ async def ncm_alarm_summery():
                         "alarm_description": alarm.alarm_description,
                         "alarm_status": alarm.alarm_status, "creation_date": alarm.creation_date.isoformat(),
                         "modification_date": alarm.modification_date.isoformat(),
-                        "resolve_remarks": alarm.resolve_remarks, "mail_status": alarm.mail_status}
+                        "resolve_remarks": alarm.resolve_remarks, "mail_status": alarm.mail_status ,"date": alarm.creation_date.date().isoformat(),
+"time": alarm.creation_date.time().isoformat()}
 
             objList.append(obj_dict)
         print("obj list is::::::::::::::::::::::::::: ",objList,file=sys.stderr)
