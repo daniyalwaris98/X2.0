@@ -15,7 +15,9 @@ function RcmAlarmTableData(props) {
       </div>
       </div>
       <p style={{ padding: "5px 15px", margin: "0px" }}>{Description}</p>
-      <label style={{ padding: "5px 15px", margin: "0px", backgroundColor:"#EEEEEE", borderRadius:"115px" ,margin:"5px"}}>{label}</label>
+      <div style={{paddingTop:"10px"}}>
+      <label style={{ padding: "5px 15px", margin: "0px", backgroundColor:"#EEEEEE", borderRadius:"115px" ,margin:"10px"}}>{label}</label>
+      </div>
     </div>
   );
 }
