@@ -37,6 +37,15 @@ def get_monitoring_devices_cards(ip: str = Query(..., description="IP address of
             |> highestMax(n:1,column: "_time")'
 
             global_dict["device"] = get_device_influx_data(query)
+            for device in global_dict['device']:
+                # Check if 'device' is a dictionary and contains 'status'
+                if isinstance(device, dict) and 'status' in device:
+                    if device['status'] == 'Up':
+                        device['availability'] = 100
+                    else:
+                        device['availability'] = 0
+                else:
+                    print("No valid device status data available", file=sys.stderr)
             print('query is::::::::::::::::::::::::::::::::::::::::::',query,file=sys.stderr)
         except Exception:
             traceback.print_exc()
