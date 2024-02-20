@@ -17,7 +17,7 @@ const IpAvailable = ({ data }) => {
         trigger: 'item',
       },
       legend: {
-        top: '5%',
+        top: '90%',
         left: 'center',
       },
       series: [
