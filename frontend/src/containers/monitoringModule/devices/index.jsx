@@ -55,7 +55,7 @@ const Index = () => {
   // hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { handleSuccessAlert } = useSweetAlert();
+  const { handleSuccessAlert, handleInfoAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
     pageEditable,
     handleEdit,
@@ -171,8 +171,12 @@ const Index = () => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   function handleTableConfigurationsOpen() {

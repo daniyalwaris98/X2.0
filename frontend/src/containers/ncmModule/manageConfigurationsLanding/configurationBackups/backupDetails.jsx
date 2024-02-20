@@ -32,7 +32,8 @@ const Index = ({ ncmHistoryId, pageEditable }) => {
   const targetRef = useRef(null);
 
   // hooks
-  const { handleSuccessAlert, handleCallbackAlert } = useSweetAlert();
+  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
+    useSweetAlert();
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_export: { handleClick: handleDefaultExport },
     default_delete: { handleClick: handleDelete, visible: pageEditable },
@@ -97,8 +98,12 @@ const Index = ({ ncmHistoryId, pageEditable }) => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   return (

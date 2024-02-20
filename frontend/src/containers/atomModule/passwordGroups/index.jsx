@@ -204,14 +204,17 @@ const Index = () => {
   function handleExport(optionType) {
     const { ALL_DATA, TEMPLATE } =
       dropdownButtonOptionsConstants.template_export;
-    if (optionType === ALL_DATA) {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+    if (dataSource?.length > 0) {
+      if (optionType === ALL_DATA) {
+        jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      }
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
     } else if (optionType === TEMPLATE) {
       jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
     } else {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleInfoAlert("No data to export.");
     }
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {

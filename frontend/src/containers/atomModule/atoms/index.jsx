@@ -342,24 +342,29 @@ const Index = () => {
   function handleExport(optionType) {
     const { ALL_DATA, TEMPLATE, COMPLETE, INCOMPLETE } =
       dropdownButtonOptionsConstants.atom_export;
-    if (optionType === ALL_DATA) {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+    if (dataSource?.length > 0) {
+      if (optionType === ALL_DATA) {
+        jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      } else if (optionType === COMPLETE) {
+        jsonToExcel(
+          dataSource.filter((item) => item.hasOwnProperty(ATOM_ID)),
+          FILE_NAME_EXPORT_COMPLETE_DATA
+        );
+      } else if (optionType === INCOMPLETE) {
+        jsonToExcel(
+          dataSource.filter((item) => item.hasOwnProperty(ATOM_TRANSITION_ID)),
+          FILE_NAME_EXPORT_INCOMPLETE_DATA
+        );
+      } else {
+        jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      }
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
     } else if (optionType === TEMPLATE) {
       jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
-    } else if (optionType === COMPLETE) {
-      jsonToExcel(
-        dataSource.filter((item) => item.hasOwnProperty(ATOM_ID)),
-        FILE_NAME_EXPORT_COMPLETE_DATA
-      );
-    } else if (optionType === INCOMPLETE) {
-      jsonToExcel(
-        dataSource.filter((item) => item.hasOwnProperty(ATOM_TRANSITION_ID)),
-        FILE_NAME_EXPORT_INCOMPLETE_DATA
-      );
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
     } else {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleInfoAlert("No data to export.");
     }
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleEdit(record) {

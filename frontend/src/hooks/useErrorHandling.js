@@ -40,7 +40,8 @@ export default function useErrorHandling({
             error?.data?.detail
               .map(
                 (item) =>
-                  `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+                  // `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+                  `${item?.msg}}`
               )
               .join("<br>")
           );
@@ -64,7 +65,8 @@ export default function useErrorHandling({
               error?.data?.detail
                 .map(
                   (item) =>
-                    `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+                    // `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+                    `${item?.msg}}`
                 )
                 .join("<br>")
             );
@@ -117,7 +119,8 @@ export default function useErrorHandling({
             error?.data?.detail
               .map(
                 (item) =>
-                  `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+                  // `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+                  `${item?.msg}`
               )
               .join("<br>"),
             callback,
