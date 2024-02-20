@@ -26,6 +26,9 @@ import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_ADD_UPDATE,
+  TYPE_BULK_DELETE,
+  TYPE_BULK_ONBOARD,
 } from "../../../hooks/useErrorHandling";
 import { useAuthorization } from "../../../hooks/useAuth";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
@@ -176,7 +179,7 @@ const Index = () => {
     isSuccess: isAddRecordsSuccess,
     isError: isAddRecordsError,
     error: addRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ADD_UPDATE,
   });
 
   useErrorHandling({
@@ -184,7 +187,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -193,7 +196,7 @@ const Index = () => {
     isSuccess: isOnBoardRecordsSuccess,
     isError: isOnBoardRecordsError,
     error: OnBoardRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ONBOARD,
     callback: handleEmptySelectedRowKeys,
   });
 

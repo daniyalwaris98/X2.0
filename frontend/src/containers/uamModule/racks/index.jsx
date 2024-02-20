@@ -12,7 +12,9 @@ import {
   SUCCESSFUL_FILE_EXPORT_MESSAGE,
 } from "../../../utils/constants";
 import { useAuthorization } from "../../../hooks/useAuth";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_BULK_DELETE,
+} from "../../../hooks/useErrorHandling";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -116,7 +118,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 

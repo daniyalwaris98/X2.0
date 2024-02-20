@@ -10,6 +10,7 @@ import { jsonToExcel } from "../../../../utils/helpers";
 import useErrorHandling, {
   TYPE_SINGLE,
   TYPE_BULK,
+  TYPE_BULK_DELETE,
 } from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
@@ -74,7 +75,7 @@ const Index = ({ ncmHistoryId, pageEditable }) => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
   });
 
   // effects

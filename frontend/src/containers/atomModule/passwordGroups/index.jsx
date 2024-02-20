@@ -21,6 +21,8 @@ import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_DELETE,
+  TYPE_BULK_ADD_UPDATE,
 } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -140,7 +142,7 @@ const Index = () => {
     isSuccess: isAddRecordsSuccess,
     isError: isAddRecordsError,
     error: addRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ADD_UPDATE,
   });
 
   useErrorHandling({
@@ -148,7 +150,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 

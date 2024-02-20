@@ -13,6 +13,7 @@ import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_FETCH,
 } from "../../../hooks/useErrorHandling";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useSweetAlert from "../../../hooks/useSweetAlert";
@@ -126,7 +127,7 @@ const Index = () => {
     isSuccess: isFetchIpamDevicesSuccess,
     isError: isFetchIpamDevicesError,
     error: fetchIpamDevicesError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_FETCH,
   });
 
   useErrorHandling({
@@ -142,7 +143,7 @@ const Index = () => {
     isSuccess: isGetIpamDevicesByFetchDateSuccess,
     isError: isGetIpamDevicesByFetchDateError,
     error: getIpamDevicesByFetchDateError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_FETCH,
   });
 
   // effects

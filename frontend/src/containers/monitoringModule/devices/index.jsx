@@ -13,7 +13,7 @@ import { jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
 import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
-  TYPE_BULK,
+  TYPE_BULK_MONITORING,
   TYPE_FETCH,
 } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
@@ -36,7 +36,7 @@ import {
 } from "./constants";
 import { MODULE_PATH } from "..";
 import { MAIN_LAYOUT_PATH } from "../../../layouts/mainLayout";
-import {Row,Col} from "antd"
+import { Row, Col } from "antd";
 import ResponseTimeChart from "./Component/ResponseTimeChart";
 
 const Index = () => {
@@ -130,7 +130,7 @@ const Index = () => {
     isSuccess: isStartMonitoringSuccess,
     isError: isStartMonitoringError,
     error: startMonitoringError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_MONITORING,
   });
 
   useErrorHandling({
@@ -196,11 +196,9 @@ const Index = () => {
         <Col span={24}>
           <div className="container">
             <h6 className="heading"></h6>
-          <ResponseTimeChart/>
+            <ResponseTimeChart />
           </div>
         </Col>
-
-        
       </Row>
 
       {openAddModal ? (

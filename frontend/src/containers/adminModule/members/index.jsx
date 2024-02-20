@@ -6,11 +6,13 @@ import {
 } from "../../../store/features/adminModule/members/apis";
 import { selectTableData } from "../../../store/features/adminModule/members/selectors";
 import { jsonToExcel } from "../../../utils/helpers";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_BULK_DELETE,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
-import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
 import { useAuthorization } from "../../../hooks/useAuth";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import DefaultPageTableSection from "../../../components/pageSections";
@@ -107,7 +109,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 

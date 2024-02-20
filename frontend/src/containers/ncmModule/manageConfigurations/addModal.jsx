@@ -6,7 +6,9 @@ import {
   useGetAtomsToAddInNcmDevicesQuery,
   useAddAtomsInNcmDevicesMutation,
 } from "../../../store/features/ncmModule/manageConfigurations/apis";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_BULK_ADD,
+} from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import { TYPE_FETCH, TYPE_BULK } from "../../../hooks/useErrorHandling";
@@ -76,7 +78,7 @@ const Index = ({ handleClose, open }) => {
     isSuccess: isAddAtomsInNcmDevicesSuccess,
     isError: isAddAtomsInNcmDevicesError,
     error: addAtomsInNcmDevicesError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ADD,
     callback: handleClose,
   });
 
