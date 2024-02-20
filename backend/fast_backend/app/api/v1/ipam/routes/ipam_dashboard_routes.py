@@ -168,9 +168,9 @@ async def DNS_Summary():
             # total_ip += row["total_ip"]
 
 
-        obj_list =[ 
-            {"not_resolved_ip": not_resolved_ip},
-            {"resolved_ip": resolved_ip}]
+        obj_list =[
+            {"name":"not_resolved_ip","value":not_resolved_ip},
+            {"name":"resolved_ip","value": resolved_ip}]
     
 
         print("status obj_list are::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
