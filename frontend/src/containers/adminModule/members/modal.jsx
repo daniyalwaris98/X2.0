@@ -26,7 +26,10 @@ import useErrorHandling, {
 } from "../../../hooks/useErrorHandling";
 import FormModal from "../../../components/dialogs";
 import DefaultFormUnit, { SelectFormUnit } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
+import {
+  AddSubmitDialogFooter,
+  UpdateSubmitDialogFooter,
+} from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
 import {
   ELEMENT_NAME,
@@ -235,7 +238,11 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <DefaultDialogFooter handleClose={handleClose} />
+              {recordToEdit ? (
+                <UpdateSubmitDialogFooter handleCancel={handleClose} />
+              ) : (
+                <AddSubmitDialogFooter handleCancel={handleClose} />
+              )}
             </Grid>
           </Grid>
         </form>

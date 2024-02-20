@@ -266,7 +266,12 @@ class MonitoringAlertsByIpAddress(BaseSchema):
     ip_address:str
 
 class NewInterfaceCardResponse(BaseSchema):
-    availability: str
-    packets : str
+    availability: int
+    packets : int
     cpu: int 
-    memory: int  
+    memory: int
+    response_time : int
+
+
+# class DeleteMonitoringSchema(BaseSchema):
+#     ip_address:str

@@ -20,24 +20,28 @@ export const defaultSchema = yup.object().shape({
 
   [indexColumnNameConstants.REGION_NAME]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.CITY]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.LATITUDE]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.LONGITUDE]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,

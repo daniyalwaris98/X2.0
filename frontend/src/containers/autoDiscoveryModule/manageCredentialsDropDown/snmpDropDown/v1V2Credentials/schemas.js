@@ -23,6 +23,7 @@ export const defaultFormSchema = yup.object().shape({
     }),
   [indexColumnNameConstants.DESCRIPTION]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_WITH_EXTRA_CHARACTERS_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,

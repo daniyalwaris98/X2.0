@@ -140,9 +140,9 @@ export default function useSweetAlert() {
   return {
     sweetAlertWrapper,
     handleSuccessAlert,
+    handleInfoAlert,
     handleErrorAlert,
     handleWarningAlert,
-    handleInfoAlert,
     handleCustomAlert,
     handleCallbackAlert,
   };

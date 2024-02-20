@@ -161,6 +161,8 @@ def validate_atom(device, update):
 
         if device["vendor"] is None:
             return f"Vendor Can Not be Empty", 400 #{device['ip_address']} :
+        if device['vendor'] not in vendor_list:
+            return f"{device['ip_address']} : Device Vendor Is Unknown",400
 
         device["vendor"] = str(device["vendor"]).strip().capitalize()
         if device["vendor"] not in vendor_list:

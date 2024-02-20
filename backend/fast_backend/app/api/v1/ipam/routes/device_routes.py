@@ -1573,3 +1573,38 @@ async def get_ipam_by_date(date:str):
         return objList
     except Exception as e:
         traceback.print_exc()
+
+
+@router.post('/delete_ipam_devices',
+             responses={
+                 200:{"model":str},
+                 400:{"model":str},
+                 500:{"model":str}
+             }
+             )
+def delete_ipam_device(ipam_data:list[int]):
+    try:
+        data = []
+        success_list = []
+        error_list = []
+        for ipam_id in ipam_data:
+            print("ipam_id:::::::::::::::",ipam_id,file=sys.stderr)
+            is_ipam_device_exsists = configs.db.query(IpamDevicesFetchTable).filter_by(ipam_device_id = ipam_id).first()
+            if is_ipam_device_exsists:
+                data.append(is_ipam_device_exsists.ipam_device_id)
+                DeleteDBData(is_ipam_device_exsists)
+                success_list.append(f"IPAM devices deleted successfully")
+            else:
+                error_list.append("IPAM device id not found")
+        responses = {
+            "data":data,
+            "success":len(success_list),
+            "error":len(error_list),
+            "success_list":success_list,
+            "error_list":error_list
+        }
+
+        return responses
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while deleteing ipam device",status_code=500)

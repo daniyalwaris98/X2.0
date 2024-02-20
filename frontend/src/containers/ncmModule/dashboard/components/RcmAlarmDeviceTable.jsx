@@ -16,8 +16,8 @@ function RcmAlarmDeviceTable({ data }) {
               key={index}
               Title={item.alarm_title}
               Description={item.alarm_description}
-              label={item.modification_date}
-              date={item.creation_date}
+              label={item.time  }
+              date={item.date}
             />
             </div>
           ))}

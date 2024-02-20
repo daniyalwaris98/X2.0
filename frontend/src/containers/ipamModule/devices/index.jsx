@@ -13,6 +13,7 @@ import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_FETCH,
 } from "../../../hooks/useErrorHandling";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useSweetAlert from "../../../hooks/useSweetAlert";
@@ -46,7 +47,7 @@ const Index = () => {
   );
 
   // hooks
-  const { handleSuccessAlert } = useSweetAlert();
+  const { handleSuccessAlert, handleInfoAlert } = useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
@@ -126,7 +127,7 @@ const Index = () => {
     isSuccess: isFetchIpamDevicesSuccess,
     isError: isFetchIpamDevicesError,
     error: fetchIpamDevicesError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_FETCH,
   });
 
   useErrorHandling({
@@ -142,7 +143,7 @@ const Index = () => {
     isSuccess: isGetIpamDevicesByFetchDateSuccess,
     isError: isGetIpamDevicesByFetchDateError,
     error: getIpamDevicesByFetchDateError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_FETCH,
   });
 
   // effects
@@ -164,8 +165,12 @@ const Index = () => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   function handleTableConfigurationsOpen() {
