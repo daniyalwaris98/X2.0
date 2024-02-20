@@ -27,12 +27,14 @@ export const defaultFormSchema = yup.object().shape({
     }),
   [indexColumnNameConstants.COMMUNITY]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.DESCRIPTION]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_WITH_EXTRA_CHARACTERS_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,

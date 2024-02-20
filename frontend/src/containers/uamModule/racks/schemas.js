@@ -32,24 +32,28 @@ export const defaultSchema = yup.object().shape({
     .transform(transformDateTimeToDate),
   [indexColumnNameConstants.PN_CODE]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.RACK_MODEL]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.SERIAL_NUMBER]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.UNIT_POSITION]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,

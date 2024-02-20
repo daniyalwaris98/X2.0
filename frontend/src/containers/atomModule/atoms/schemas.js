@@ -17,18 +17,21 @@ export const defaultSchema = yup.object().shape({
     ),
   [indexColumnNameConstants.SECTION]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.DEPARTMENT]: yup
     .string()
-    .matches(ALPHA_NUMERIC_REGEX, {
+    .nullable()
+    .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
     }),
   [indexColumnNameConstants.DOMAIN]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,
