@@ -16,6 +16,13 @@ const TypeSummaryChart = ({ data }) => {
           ...data.map((device, index) => [device.vender, device.counts, index, colors[index]])
         ],
       },
+      grid: {
+        left: '1%', // Adjust left margin
+        right: '10%', // Adjust right margin
+        top: '5%', // Adjust top margin
+        bottom: '5%', // Adjust bottom margin
+        containLabel: true, // Ensure labels are contained within the grid area
+      },
       yAxis: { type: 'category' },
       xAxis: { type: 'value' },
       series: [
