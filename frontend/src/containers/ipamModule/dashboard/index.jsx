@@ -57,7 +57,7 @@ function Index() {
     isError: isTopTenOpenPortsError,
     error: topTenOpenPortsError,
   } = useGetTopTenOpenPortsQuery();
-  console.log("topTenOpenPortsData",topTenOpenPortsData)
+  console.log("topTenOpenPortsData1",topTenOpenPortsData)
   const {
     data: dnsData,
     isSuccess: isDnsSuccess,
@@ -84,6 +84,12 @@ function Index() {
     ports: ["Port 1", "Port 2", "Port 3", "Port 4", "Port 5", "Port 6"],
     values: [10, 20, 15, 10, 20, 15],
   };
+
+  const dns=[
+      { name: "not_resolved_ip", value: 30 },
+      { name: "resolved_ip", value: 70 }
+    ];
+  
 
   return (
     <div
