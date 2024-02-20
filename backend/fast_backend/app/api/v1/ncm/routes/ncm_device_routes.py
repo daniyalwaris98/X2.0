@@ -670,7 +670,7 @@ def delete_configuration(ncm_history_id:list[int]):
             "data":deleted_ids,
             "success_list":success_list,
             "error_list":error_list,
-            "succes":len(success_list),
+            "success":len(success_list),
             "errors":len(error_list)
         }
         return responses
