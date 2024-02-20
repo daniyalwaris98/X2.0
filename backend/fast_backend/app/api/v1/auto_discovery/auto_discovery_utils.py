@@ -91,9 +91,9 @@ def add_network_util(network_obj, update):
         network.scan_status = network_obj['scan_status']
 
         if network_obj['excluded_ip_range'] is None:
-            network.excluded_ip_range = "No Exclusion"
+            network.excluded_ip_range = ""
         elif network_obj['excluded_ip_range'].strip() == "":
-            network.excluded_ip_range = "No Exclusion"
+            network.excluded_ip_range = ""
         else:
             network.excluded_ip_range = network_obj['excluded_ip_range'].strip()
 
