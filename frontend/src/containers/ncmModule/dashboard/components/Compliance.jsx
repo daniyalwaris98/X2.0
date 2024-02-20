@@ -28,7 +28,7 @@ const Compliance = () => {
         {
           type: 'pie',
           radius: '65%',
-          center: ['50%',"45%","50%", '50%'],
+          center: ['50%',"40%","50%", '50%'],
           selectedMode: 'single',
           data: [
             { value: 735, name: 'Complaint' },
