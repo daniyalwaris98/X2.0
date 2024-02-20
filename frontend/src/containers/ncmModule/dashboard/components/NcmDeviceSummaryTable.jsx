@@ -28,7 +28,7 @@ function NcmDeviceSummaryTable() {
 
   return (
     <div style={{ padding: "0px 15px" }}>
-      <Table dataSource={dataSource} columns={columns} />
+      <Table dataSource={dataSource} columns={columns}  />
     </div>
   );
 }

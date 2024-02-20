@@ -1,6 +1,6 @@
 export const PAGE_NAME = "WMI";
-export const ELEMENT_NAME = "SSH";
-export const PAGE_PATH = "ssh";
+export const ELEMENT_NAME = "WMI";
+export const PAGE_PATH = "wmi";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_managed_v1_v2_credentials";
 export const TABLE_DATA_UNIQUE_ID = "monitoring_credentials_id";
 export const indexColumnNameConstants = {

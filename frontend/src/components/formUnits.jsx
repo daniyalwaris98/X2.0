@@ -160,10 +160,11 @@ export function SelectFormUnitWithHiddenValues({
   required = false,
   label = true,
   spinning = false,
+  optionalTitle = null,
   ...rest
 }) {
   const theme = useTheme();
-  const title = getTitle(dataKey);
+  const title = getTitle(optionalTitle ? optionalTitle : dataKey);
   return (
     <Controller
       name={dataKey}

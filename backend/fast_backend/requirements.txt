@@ -125,3 +125,5 @@ websockets==10.3
 xmltodict==0.13.0
 yarl==1.9.4
 zipp==3.8.0
+fastapi-mail==0.4.1
+geopy==2.4.1

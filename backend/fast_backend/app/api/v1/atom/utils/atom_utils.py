@@ -224,39 +224,39 @@ def add_complete_atom(device, update):
         atom.device_ru = device["device_ru"]
 
         if device["department"] is None:
-            atom.department = "N/A"
+            atom.department = ""
         elif device["department"].strip() != "":
             atom.department = device["department"].strip()
         else:
-            atom.department = "N/A"
+            atom.department = ""
 
         if device["section"] is None:
-            atom.section = "N/A"
+            atom.section = ""
         elif device["section"].strip() != "":
             atom.section = device["section"].strip()
         else:
-            atom.section = "N/A"
+            atom.section = ""
 
         if device["criticality"] is None:
-            atom.criticality = "N/A"
+            atom.criticality = ""
         elif device["criticality"].strip() != "":
             atom.criticality = device["criticality"].strip()
         else:
-            atom.criticality = "N/A"
+            atom.criticality = ""
 
         if device["domain"] is None:
-            atom.domain = "N/A"
+            atom.domain = ""
         elif device["domain"].strip() != "":
             atom.domain = device["domain"].strip()
         else:
-            atom.domain = "N/A"
+            atom.domain = ""
 
         if device["virtual"] is None:
-            atom.virtual = "N/A"
+            atom.virtual = ""
         elif device["virtual"].strip() != "":
             atom.virtual = device["virtual"].strip()
         else:
-            atom.virtual = "N/A"
+            atom.virtual = ""
         atom_data = {}
         msg = ""
         status = 500
@@ -621,9 +621,15 @@ def edit_atom_util(device):
 
             trans_atom.ip_address = device['ip_address']
             trans_atom = fill_transition_data(device, trans_atom)
+            print("trans atom is:::::::::::::::::::::::::tranistion atom",trans_atom,file=sys.stderr)
+            msg, status = add_complete_atom(device, True)
+            if status==200:
+                return msg,status
+            print("message for the add compelte atom is in tranistions",msg,file=sys.stderr)
+            print("status for the add compelte atom is:::::::::::::::",status,file=sys.stderr)
             status = UpdateDBData(trans_atom)
-            object_to_inspect = trans_atom
 
+            object_to_inspect = trans_atom
         else:
             return "Device Not Found", 400
 
@@ -651,9 +657,9 @@ def edit_atom_util(device):
                             attributes_dict['password_group'] = password_group.password_group
                     elif column_name == 'onboard_status':
                         if value:
-                            attributes_dict['onboard_status'] = 'True'
+                            attributes_dict['onboard_status'] = True
                         else:
-                            attributes_dict['onboard_status'] = 'False'
+                            attributes_dict['onboard_status'] = False
                     else:
                         attributes_dict[column_name] = value
 
@@ -742,39 +748,39 @@ def edit_complete_atom(device, atom):
     atom.device_ru = device["device_ru"]
 
     if device["department"] is None:
-        atom.department = "N/A"
+        atom.department = ""
     elif device["department"].strip() != "":
         atom.department = device["department"].strip()
     else:
-        atom.department = "N/A"
+        atom.department = ""
 
     if device["section"] is None:
-        atom.section = "N/A"
+        atom.section = ""
     elif device["section"].strip() != "":
         atom.section = device["section"].strip()
     else:
-        atom.section = "N/A"
+        atom.section = ""
 
     if device["criticality"] is None:
-        atom.criticality = "N/A"
+        atom.criticality = ""
     elif device["criticality"].strip() != "":
         atom.criticality = device["criticality"].strip()
     else:
-        atom.criticality = "N/A"
+        atom.criticality = ""
 
     if device["domain"] is None:
-        atom.domain = "N/A"
+        atom.domain = ""
     elif device["domain"].strip() != "":
         atom.domain = device["domain"].strip()
     else:
-        atom.domain = "N/A"
+        atom.domain = ""
 
     if device["virtual"] is None:
-        atom.virtual = "N/A"
+        atom.virtual = ""
     elif device["virtual"].strip() != "":
         atom.virtual = device["virtual"].strip()
     else:
-        atom.virtual = "N/A"
+        atom.virtual = ""
 
     if "vendor" in device.keys():
         if device["vendor"] is not None:

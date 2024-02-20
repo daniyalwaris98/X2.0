@@ -10,8 +10,7 @@ const CredentialSummary = ({ data }) => {
 
     var chartDom = document.getElementById("CredentialSummary");
     var myChart = echarts.init(chartDom);
-    var option;
-    option = {
+    var option = {
       tooltip: {
         trigger: "axis",
         axisPointer: {
@@ -20,7 +19,7 @@ const CredentialSummary = ({ data }) => {
             color: "orange",
           },
         },
-        Label: {
+        label: {
           show: false,
         },
       },
@@ -51,12 +50,11 @@ const CredentialSummary = ({ data }) => {
       },
       series: data.name.map((name, index) => ({
         name: name,
-        data: [data.value[index]],
+        data: [data.value[index]], // Corrected this line
         type: "line",
-        symbol: "none",
         smooth: true,
         itemStyle: {
-          color: index === 0 ? "green" : index === 1 ? "blue" : "grey", // Setting colors based on index
+          color: index === 0 ? "green" : index === 1 ? "blue" : "grey",
         },
         emphasis: {
           focus: "series",

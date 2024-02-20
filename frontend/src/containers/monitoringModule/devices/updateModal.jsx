@@ -105,7 +105,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               />
               <SelectFormUnitWithHiddenValues
                 control={control}
-                dataKey={indexColumnNameConstants.CREDENTIALS}
+                optionalTitle={indexColumnNameConstants.CREDENTIALS}
+                dataKey={MONITORING_CREDENTIALS_ID}
                 options={
                   monitoringCredentialsNames
                     ? monitoringCredentialsNames?.map((item) => ({

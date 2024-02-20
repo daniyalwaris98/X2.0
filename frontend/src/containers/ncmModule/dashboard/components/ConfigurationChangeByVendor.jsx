@@ -7,7 +7,7 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
   useEffect(() => {
     const myChart = echarts.init(chartRef.current);
 
-    const categories = time;
+    const categories = deviceNames; // Use deviceNames instead of time for x-axis categories
 
     const option = {
       tooltip: {
@@ -19,19 +19,25 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
           },
         },
       },
-      legend: {},
       toolbox: {
         show: true,
         feature: {
-          dataView: { readOnly: false },
-          restore: {},
-          saveAsImage: {},
+          // dataView: { readOnly: false },
+          // restore: {},
+          // saveAsImage: {},
         },
       },
       dataZoom: {
         show: false,
         start: 0,
         end: 100,
+      },
+      grid: {  // Add grid configuration to stretch chart to full width
+        left: 30,
+        right: 30,
+        bottom: 0,
+        top: 30, // Adjust top margin as needed
+        containLabel: true
       },
       xAxis: [
         {
@@ -42,7 +48,7 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
         {
           type: 'category',
           boundaryGap: true,
-          data: deviceNames,
+          // data: categories, // Use deviceNames for the second x-axis as well
         },
       ],
       yAxis: [
@@ -103,7 +109,7 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
             data: categories,
           },
           {
-            data: deviceNames,
+            data: categories,
           },
         ],
         series: [
