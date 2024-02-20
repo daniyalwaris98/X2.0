@@ -6,8 +6,12 @@ export const TABLE_DATA_UNIQUE_ID = "manage_device_id";
 export const indexColumnNameConstants = {
   MANAGE_NETWORK_ID: TABLE_DATA_UNIQUE_ID,
   IP_ADDRESS: "ip_address",
+  SUBNET: "subnet",
   OS_TYPE: "os_type",
+  MAKE_MODEL: "make_model",
   FUNCTION: "function",
-  SNMP: "snmp",
-  LOGIN: "login",
+  VENDOR: "vendor",
+  SNMP_STATUS: "snmp_status",
+  SNMP_VERSION: "snmp_version",
+  SSH_STATUS: "ssh_status",
 };

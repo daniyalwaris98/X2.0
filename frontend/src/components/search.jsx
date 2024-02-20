@@ -22,8 +22,8 @@ export function FloatingHighlighterSearch({ sx, ...rest }) {
       const scrollY = window.scrollY || document.documentElement.scrollTop;
       const scrollHeight = document.documentElement.scrollHeight;
       const windowHeight = window.innerHeight;
-      const findInputRect = findInput.current.getBoundingClientRect();
-      const findInputCenter = findInputRect.top + findInputRect.height / 2;
+      const findInputRect = findInput.current?.getBoundingClientRect();
+      const findInputCenter = findInputRect?.top + findInputRect?.height / 2;
       if (scrollY < 560) {
         setIsFixed(false);
       } else {
@@ -31,9 +31,9 @@ export function FloatingHighlighterSearch({ sx, ...rest }) {
       }
     };
 
-    const findInputInitialRect = findInput.current.getBoundingClientRect();
+    const findInputInitialRect = findInput.current?.getBoundingClientRect();
     const findInputInitialCenter =
-      findInputInitialRect.top + findInputInitialRect.height / 2;
+      findInputInitialRect?.top + findInputInitialRect?.height / 2;
 
     window.addEventListener("scroll", () =>
       handleScroll(findInputInitialCenter)
