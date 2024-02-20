@@ -126,9 +126,13 @@ async def ncm_alarm_summery():
             configs.db.query(NCM_Alarm_Table, NcmDeviceTable, AtomTable)
             .join(
                 NcmDeviceTable,
-                NcmDeviceTable.ncm_device_id == NCM_Alarm_Table.ncm_alarm_id,
+                NcmDeviceTable.ncm_device_id == NCM_Alarm_Table.ncm_alarm_id
             )
-            .join(AtomTable, AtomTable.atom_id == NcmDeviceTable.atom_id)
+            .join(
+                AtomTable,
+                AtomTable.atom_id == NcmDeviceTable.atom_id
+            )
+            .filter(NCM_Alarm_Table.alarm_status == "Open")
             .all()
         )
         print("results are::::::::::::::::::::::::::::",results,file=sys.stderr)
