@@ -32,7 +32,8 @@ async def tcp_open_ports():
 
     try:
         port_list = []
-        port_obj_list =[]
+        port_value =[]
+        obj_list=[]
         
         query = (
             "SELECT open_ports, COUNT(open_ports) AS frequency "
@@ -48,21 +49,25 @@ async def tcp_open_ports():
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
 
             # If the open_ports is None or an empty string, consider it as "None"
-            port = "None" if row[0] is None or row[0] == "" else row[0]
+            #port = "None" if row[0] is None or row[0] == "" else row[0]
 
-            port_list.append(port)
-            port_obj_list.append(int(row[1]))
+            port_list.append(row[0])
+            port_value.append(int(row[1]))
 
         print("port list is::::::::::::::::::::::::::::", port_list, file=sys.stderr)
-
+        print("port value is::::::::::::::::::::::::::::", port_value, file=sys.stderr)
         if len(port_list) <= 0:
             port_list = ["PortA", "PortB", "PortC", "Other"]
-            port_obj_list = [0, 0, 0, 0]
+            port_value = [0, 0, 0, 0]
 
-        obj_dict = {"ports": port_list, "obj_list": port_obj_list}
-        print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
 
-        return JSONResponse(content=obj_dict, status_code=200)
+        obj_list=[{"name":port_list,
+                   "value":port_value}]    
+
+        
+        print("obj dict is:::::::::::::::::::::::::", obj_list, file=sys.stderr)
+
+        return JSONResponse(content=obj_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
@@ -152,7 +157,7 @@ async def DNS_Summary():
 
         not_resolved_ip = 0
         resolved_ip = 0
-        count_list =[]
+        obj_list =[]
 
         for row in result:
             print("row in result is::::::::::::::::::", row, file=sys.stderr)
@@ -163,9 +168,9 @@ async def DNS_Summary():
             # total_ip += row["total_ip"]
 
 
-        obj_list =[ 
-            {"not_resolved_ip": not_resolved_ip},
-            {"resolved_ip": resolved_ip}]
+        obj_list =[
+            {"name":"not_resolved_ip","value":not_resolved_ip},
+            {"name":"resolved_ip","value": resolved_ip}]
     
 
         print("status obj_list are::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
