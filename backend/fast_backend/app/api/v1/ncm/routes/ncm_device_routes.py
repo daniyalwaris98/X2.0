@@ -226,12 +226,16 @@ async def add_ncm_from_atom(atom_ids: list[int]):
         data =[]
         success_list = []
         error_list = []
-
+        password_group_attribute = ""
         for atom_id in atom_ids:
             print("atom id is:::::::::::::::::",atom_id,file=sys.stderr)
             atom = configs.db.query(AtomTable).filter(AtomTable.atom_id == atom_id).first()
             if atom is not None:
                 print("atom is not none::::::::::::",atom,file=sys.stderr)
+                queried_password_group = configs.db.query(PasswordGroupTable).filter(
+                    PasswordGroupTable.password_group_id == atom.password_group_id).first()
+                if queried_password_group is not None:
+                    password_group_attribute = queried_password_group.password_group
                 ncm = NcmDeviceTable()
                 ncm.atom_id = atom.atom_id
                 ncm.status = "Active"
@@ -243,11 +247,12 @@ async def add_ncm_from_atom(atom_ids: list[int]):
                         "device_name":atom.device_name,
                         "vendor":atom.vendor,
                         "device_type":atom.device_type,
-                        "fucntion":atom.function,
+                        "function":atom.function,
                         "ncm_device_id":ncm.ncm_device_id,
                         "status":ncm.status,
                         "config_change_date":ncm.config_change_date,
-                        "backup_status":ncm.backup_status
+                        "backup_status":ncm.backup_status,
+                        "password_group":password_group_attribute
                     }
                     print("data dict is::::::::::::::",data_dict,file=sys.stderr)
                     data.append(data_dict)
