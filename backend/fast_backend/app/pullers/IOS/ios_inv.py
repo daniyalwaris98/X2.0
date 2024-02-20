@@ -158,7 +158,8 @@ class IOSPuller(object):
                 if host['ip_address'] not in self.inv_data:
                     self.inv_data[host['ip_address']] = {}
                 for index, data in enumerate(inv):
-
+                    print("index in inventory is::::::::::::::::::",index,file=sys.stderr)
+                    print("datain inventory is::::::::::::::::::::::",data,file=sys.stderr)
                     if ('chassis' in data['descr'].lower()) or ('chassis' in data['name'].lower()):
                         print("CHASSIS FOUND", file=sys.stderr)
                         self.inv_data[host['ip_address']].update({'device':
@@ -302,6 +303,7 @@ class IOSPuller(object):
             sfps_data = []
             print(f"Getting sfp data...", file=sys.stderr)
             for inv in inventory:
+                print("inv in inventory is::::::::::::::::::::::::::::::::::::::",inv,file=sys.stderr)
                 is_sfp = False
                 # for sfp in sfps:
                 #    pid = inv['pid'].lower()
@@ -317,6 +319,8 @@ class IOSPuller(object):
                              'GLR': 'single-mode', 'WF-SFP': 'multimode', '5798LP': "single-mode"}
                     mode = ''
                     for key, value in modes.items():
+                        print("key in modes are:::::::::::::::::::::::::::",key,file=sys.stderr)
+                        print("values in modes are::::::::::::::::::::::::::::::::::::",value,file=sys.stderr)
                         if key in inv['pid']:
                             mode = value
                             break
@@ -329,6 +333,7 @@ class IOSPuller(object):
                         port_type = re.findall(r'(\S*)', inv['descr'])
 
                     optics_data = self.get_sfp_optics_data(device, inv)
+                    print("optics data is::::::::::::::::::::::::::::::::::",optics_data,file=sys.stderr)
                     speed = self.get_speed(port_name[0] if len(port_name) > 0 else "")
 
                     sfp_data = {'port_name': port_name[0] if len(port_name) > 0 else "",

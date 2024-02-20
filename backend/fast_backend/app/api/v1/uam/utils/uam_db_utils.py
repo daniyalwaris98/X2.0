@@ -321,6 +321,7 @@ def insert_uam_device_subboard_data(uam_id, data):
 
 def insert_uam_device_sfp_data(uam_id, data):
     for sfp in data["sfp"]:
+        print("sfp in insert uam device data is::::::::::::::::::::::::::::",sfp,file=sys.stderr)
         try:
             if "serial_number" not in sfp:
                 continue

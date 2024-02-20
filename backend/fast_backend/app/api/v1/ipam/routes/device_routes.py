@@ -252,7 +252,7 @@ def add_subnet(subnetObj:AddSubnetManually):
         print("subnet obj is :::::",file=sys.stderr)
         subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address = subnet_obj['subnet_address']).first()
         if subnet_exsist:
-            return JSONResponse(content=f"{subnet_obj['subnet_address']} : Already Exists",status_code=400)
+            return JSONResponse(content=f"{subnet_obj['subnet_address']} : Already Exist",status_code=400)
         else:
             subnet_tab = subnet_table()
             subnet_tab.subnet_address = subnet_obj['subnet_address']
@@ -812,28 +812,29 @@ async def get_all_details():
         ip_detail = configs.db.query(IpTable).all()
         for ip in ip_detail:
             subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_id = ip.subnet_id).first()
-            print("ip is::", ip, file=sys.stderr)
-            print("ip is::", ip, file=sys.stderr)
-            subnet_address = None
-            if subnet_exsist:
-                subnet_address = subnet_exsist.subnet_address
-            ip_dict = {
-                "ip_id": ip.ip_address,
-                "mac_address": ip.mac_address,
-                "status": ip.status,
-                "vip": ip.vip,
-                "asset_tag": ip.asset_tag,
-                "configuration_switch": ip.configuration_switch,
-                "configuration_interface": ip.configuration_interface,
-                "open_ports": ip.open_ports,
-                "ip_dns": ip.ip_dns,
-                "dns_ip": ip.dns_ip,
-                "creation_date": ip.creation_date,
-                "modification_date": ip.modification_date,
-                "ip_address": ip.ip_address,
-                "subnet_address":subnet_address
-            }
-            ip_list.append(ip_dict)
+            if ip.ip_address is not None:
+                print("ip is::", ip, file=sys.stderr)
+                print("ip is::", ip, file=sys.stderr)
+                subnet_address = None
+                if subnet_exsist and subnet_exsist.subnet_address is not None :
+                    subnet_address = subnet_exsist.subnet_address
+                ip_dict = {
+                    "ip_id": ip.ip_id,
+                    "mac_address": ip.mac_address,
+                    "status": ip.status,
+                    "vip": ip.vip,
+                    "asset_tag": ip.asset_tag,
+                    "configuration_switch": ip.configuration_switch,
+                    "configuration_interface": ip.configuration_interface,
+                    "open_ports": ip.open_ports,
+                    "ip_dns": ip.ip_dns,
+                    "dns_ip": ip.dns_ip,
+                    "creation_date": ip.creation_date,
+                    "modification_date": ip.modification_date,
+                    "ip_address": ip.ip_address,
+                    "subnet_address":subnet_address
+                }
+                ip_list.append(ip_dict)
         return ip_list
     except Exception as e:
         traceback.print_exc()
@@ -913,7 +914,7 @@ def scan_subnets(subnets: ScanSubnetSchema):
              summary="Use this API in the subnet page on a scan subnet button to scan all the option this API accepts the dns_scan or port_scan in  a boolean.This API is of post method",
              description = 'Use this API in the subnet page on a scan subnet button to scan all the option this API accepts the dns_scan or port_scan in  a boolean.This API is of post method'
              )
-def scan_all_subnets(subnet: ScanAllSubnetSchema):
+async def scan_all_subnets(subnet: ScanAllSubnetSchema):
     try:
         data_dict = {}
         success_list = []
@@ -971,7 +972,7 @@ def scan_all_subnets(subnet: ScanAllSubnetSchema):
 
 
         stat = Thread(target=MultiPurpose, args=(option_dict.get('options'),)).start()
-        print("threading is being executed::", file=sys.stderr)
+        print("threading is being executed::",stat,file=sys.stderr)
         if stat == "success":
             responses = {
                 "data":data_dict,

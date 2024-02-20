@@ -7,7 +7,7 @@ import { setSelectedDevice } from "../../../store/features/monitoringModule/devi
 import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features/dropDowns/apis";
 import {
   useFetchRecordsQuery,
-  useStartMonitoringQuery,
+  useStartMonitoringLazyQuery,
 } from "../../../store/features/monitoringModule/devices/apis";
 import { jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
@@ -95,13 +95,16 @@ const Index = () => {
     error: fetchRecordsError,
   } = useFetchRecordsQuery();
 
-  const {
-    data: startMonitoringData,
-    isSuccess: isStartMonitoringSuccess,
-    isLoading: isStartMonitoringLoading,
-    isError: isStartMonitoringError,
-    error: startMonitoringError,
-  } = useStartMonitoringQuery();
+  const [
+    startMonitoring,
+    {
+      data: startMonitoringData,
+      isSuccess: isStartMonitoringSuccess,
+      isLoading: isStartMonitoringLoading,
+      isError: isStartMonitoringError,
+      error: startMonitoringError,
+    },
+  ] = useStartMonitoringLazyQuery();
 
   const {
     data: monitoringCredentialsNamesData,
@@ -154,7 +157,7 @@ const Index = () => {
   }
 
   function handleStartMonitoring() {
-    setOpenAddModal(true);
+    startMonitoring();
   }
 
   function handleCloseAdd() {

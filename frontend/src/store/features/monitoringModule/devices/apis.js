@@ -37,5 +37,7 @@ export const {
   useUpdateMonitoringDeviceMutation: useUpdateRecordMutation,
   useGetAtomsToAddInMonitoringDevicesQuery,
   useAddAtomsInMonitoringDevicesMutation,
-  useStartMonitoringQuery,
 } = extendedApi;
+
+export const useStartMonitoringLazyQuery =
+  extendedApi.endpoints.startMonitoring.useLazyQuery;
