@@ -30,7 +30,8 @@ async def add_atom(atom: AddAtomRequestSchema):
             if isinstance(response,dict):
                 transition_message = response.get('message', '')
                 if re.search(r"Can Not be Empty$", atom_response):
-                    message = f"{transition_message} and Note: (To complete the atom following fields are required: Device Name, Function, device type, vendor)"
+                   #message = f"{transition_message} and Note: (To complete the atom following fields are required: Device Name, Function, device type, vendor)"
+                    message = f"Atom Added Successfully"
                     response['message'] = message
                 else:
                     message = f"{transition_message} and Note: ({atom_response})"

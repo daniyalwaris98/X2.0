@@ -252,7 +252,7 @@ def add_subnet(subnetObj:AddSubnetManually):
         print("subnet obj is :::::",file=sys.stderr)
         subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address = subnet_obj['subnet_address']).first()
         if subnet_exsist:
-            return JSONResponse(content=f"{subnet_obj['subnet_address']} : ALready Exsists",status_code=400)
+            return JSONResponse(content=f"{subnet_obj['subnet_address']} : Already Exists",status_code=400)
         else:
             subnet_tab = subnet_table()
             subnet_tab.subnet_address = subnet_obj['subnet_address']
