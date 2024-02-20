@@ -139,24 +139,60 @@ const defaultSlice = createSlice({
           state.all_data = [action.payload.data, ...state.all_data];
         }
       )
+      // .addMatcher(
+      //   extendedApi.endpoints.updateAtom.matchFulfilled,
+      //   (state, action) => {
+      //     let objectToReplace = action.payload.data;
+      //     state.all_data = state.all_data.map((item) => {
+      //       const atomId = item[ATOM_ID];
+      //       const transitionId = item[ATOM_TRANSITION_ID];
+      //       if (atomId && atomId === objectToReplace[ATOM_ID]) {
+      //         return { ...item, ...objectToReplace };
+      //       } else if (
+      //         transitionId &&
+      //         transitionId === objectToReplace[ATOM_TRANSITION_ID]
+      //       ) {
+      //         return { ...item, ...objectToReplace };
+      //       } else {
+      //         return item;
+      //       }
+      //     });
+      //   }
+      // )
       .addMatcher(
         extendedApi.endpoints.updateAtom.matchFulfilled,
         (state, action) => {
+          let storedAtomTransitionId = localStorage.getItem(ATOM_TRANSITION_ID);
           let objectToReplace = action.payload.data;
-          state.all_data = state.all_data.map((item) => {
-            const atomId = item[ATOM_ID];
-            const transitionId = item[ATOM_TRANSITION_ID];
-            if (atomId && atomId === objectToReplace[ATOM_ID]) {
-              return { ...item, ...objectToReplace };
-            } else if (
-              transitionId &&
-              transitionId === objectToReplace[ATOM_TRANSITION_ID]
-            ) {
-              return { ...item, ...objectToReplace };
-            } else {
-              return item;
-            }
-          });
+          if (storedAtomTransitionId && objectToReplace[ATOM_ID]) {
+            const uniqueId = uuidv4();
+            objectToReplace[TABLE_DATA_UNIQUE_ID] = uniqueId;
+            state.all_data = [objectToReplace, ...state.all_data];
+            state.all_data = state.all_data.filter((item) => {
+              const transitionId = item[ATOM_TRANSITION_ID];
+              if (transitionId && transitionId == storedAtomTransitionId) {
+                return false;
+              } else {
+                return true;
+              }
+            });
+            localStorage.removeItem(ATOM_TRANSITION_ID);
+          } else {
+            state.all_data = state.all_data.map((item) => {
+              const atomId = item[ATOM_ID];
+              const transitionId = item[ATOM_TRANSITION_ID];
+              if (atomId && atomId === objectToReplace[ATOM_ID]) {
+                return { ...item, ...objectToReplace };
+              } else if (
+                transitionId &&
+                transitionId === objectToReplace[ATOM_TRANSITION_ID]
+              ) {
+                return { ...item, ...objectToReplace };
+              } else {
+                return item;
+              }
+            });
+          }
         }
       );
   },

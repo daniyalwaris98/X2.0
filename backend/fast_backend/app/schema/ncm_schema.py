@@ -45,6 +45,8 @@ class NcmAlarmSchema(BaseSchema):
     modification_date: datetime
     resolve_remarks: str | None
     mail_status: str
+    date : str
+    time : str
 
 
 class NcmConfigHistorySchema(BaseSchema):
@@ -115,3 +117,7 @@ class GetNcmVendorSchema(BaseSchema):
     config_change_time : list[str] 
     config_date : list[str]
     value : list[int]
+
+class DeviceType(BaseSchema):
+    name : str
+    value : int    

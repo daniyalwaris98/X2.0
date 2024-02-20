@@ -93,6 +93,8 @@ class GetMonitoringDevicesCardsResponseSchema(BaseSchema):
     alerts: list[MonitoringAlertSchema]
 
 
+
+
 class TopItemDashboardSchema(BaseSchema):
     ip_address: str
     device_name: str
@@ -262,3 +264,9 @@ class EditSnmpV3CredentialsResponseSchema(MonitoringSnmpV3CredentialsRequestSche
 
 class MonitoringAlertsByIpAddress(BaseSchema):
     ip_address:str
+
+class NewInterfaceCardResponse(BaseSchema):
+    availability: str
+    packets : str
+    cpu: int 
+    memory: int  

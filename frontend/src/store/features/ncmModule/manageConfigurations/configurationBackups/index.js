@@ -78,17 +78,7 @@ const defaultSlice = createSlice({
         extendedApi.endpoints.backupSingleNcmConfigurationByNcmDeviceId
           .matchFulfilled,
         (state, action) => {
-          let objectToReplace = action.payload.data;
-          state.all_data = state.all_data.map((item) => {
-            if (
-              item[TABLE_DATA_UNIQUE_ID] ===
-              objectToReplace[TABLE_DATA_UNIQUE_ID]
-            ) {
-              return { ...item, ...objectToReplace };
-            } else {
-              return item;
-            }
-          });
+          state.all_data = [action.payload.data, ...state.all_data];
         }
       );
   },

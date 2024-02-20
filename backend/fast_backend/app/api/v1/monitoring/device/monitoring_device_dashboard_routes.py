@@ -115,6 +115,74 @@ def get_monitoring_devices_cards(ip: str = Query(..., description="IP address of
 
 
 
+@router.post("/get_devices_availability_utilisation", responses={
+    200: {"model":list[NewInterfaceCardResponse]},
+    500: {"model": str}
+},
+summary= "Api to get availability, packet_loss , cpu ,memory utilisation ",
+description = "Api to get availability, packet_loss , cpu ,memory utilisation"
+)
+def get_monitoring_devices_availability(ip: str = Query(..., description="IP address of the device")):
+    try:
+        global_dict = {"device": []}
+        obj_list = []
+        obj_dict ={}
+        query = f'import "strings"\
+        import "influxdata/influxdb/schema"\
+        from(bucket: "monitoring")\
+        |> range(start:-60d)\
+        |> filter(fn: (r) => r["_measurement"] == "Devices")\
+        |> filter(fn: (r) => r["IP_ADDRESS"] == "{ip}")\
+        |> last()\
+        |> schema.fieldsAsCols()\
+        |> highestMax(n:1,column: "_time")'
+
+        global_dict["device"] = get_device_influx_data(query)
+        print("global_dict............",global_dict,file=sys.stderr)
+        
+        for device in global_dict['device']:
+            # Check if 'device' is a dictionary and contains 'status'
+            if isinstance(device, dict) and 'status' in device:
+                if device['status'] == 'Up':
+                    device['availability'] = 100
+                else:
+                    device['availability'] = 0
+            else:
+                print("No valid device status data available", file=sys.stderr)
+
+            obj_dict = {
+                "availability": device['availability'],
+                "packets": device["packets"],
+                "cpu": device["cpu"],
+                "memory": device["memory"]
+            }
+        if len(obj_dict)<=0:
+            obj_dict={
+            "availability": "0",
+            "packets": "string",
+            "cpu": 0,
+            "memory": 0}
+            
+
+
+            obj_list.append(obj_dict)
+
+        print('query is::::::::::::::::::::::::::::::::::::::::::', query, file=sys.stderr)
+        print(" obj_list are::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+
+        return JSONResponse(content=obj_list, status_code=200)
+    except Exception:
+        traceback.print_exc()
+        return JSONResponse(content="Server Error While Fetching Monitoring Data", status_code=500)
+
+
+
+
+
+
+
+
+
 @router.get('/get_device_details_by_ip_address',responses={
     200:{"model":list[DeviceCardDataSchema]},
     500:{"model":str}

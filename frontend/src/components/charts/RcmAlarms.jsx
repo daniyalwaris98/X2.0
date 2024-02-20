@@ -10,6 +10,7 @@ const RcmAlarms = ({ data }) => {
     const option = {
       tooltip: {
         trigger: 'item',
+        formatter: '{b}: {c}', // Custom formatter to show name and count
       },
       series: [
         {
@@ -32,7 +33,7 @@ const RcmAlarms = ({ data }) => {
             show: false,
           },
           color: ['#E34444'],
-          data: data, // Use the data passed through props
+          data: data,
         },
       ],
     };
@@ -51,7 +52,7 @@ const RcmAlarms = ({ data }) => {
       window.removeEventListener('resize', resizeHandler);
       myChart.dispose();
     };
-  }, [data]); // Include 'data' in the dependency array to re-run the effect when 'data' changes
+  }, [data]);
 
   return (
     <div ref={chartRef} className="chart-container" style={{ width: '100%', height: '400px' }} />
