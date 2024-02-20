@@ -181,7 +181,7 @@ const Index = () => {
         <Col span={8}>
           <DefaultCard>
             <CardHeader cardName="Data Center Status" />
-            {/* <DataCenterStatusChart /> */}
+            <DataCenterStatusChart />
           </DefaultCard>
         </Col>
         <Col span={16}>
