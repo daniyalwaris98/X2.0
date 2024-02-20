@@ -122,11 +122,12 @@ description="API to show the NCM alarm summary"
 )
 async def ncm_alarm_summery():
     try:
+        # Execute the query
         results = (
             configs.db.query(NCM_Alarm_Table, NcmDeviceTable, AtomTable)
             .join(
                 NcmDeviceTable,
-                NcmDeviceTable.ncm_device_id == NCM_Alarm_Table.ncm_alarm_id
+                NCM_Alarm_Table.ncm_device_id == NcmDeviceTable.ncm_device_id
             )
             .join(
                 AtomTable,
@@ -135,27 +136,51 @@ async def ncm_alarm_summery():
             .filter(NCM_Alarm_Table.alarm_status == "Open")
             .all()
         )
-        print("results are::::::::::::::::::::::::::::",results,file=sys.stderr)
-        objList = []
-        for alarm, ncm, atom in results:
-            print("ALarm is::::::::::::::::::::::::;",alarm,file=sys.stderr)
-            print("ncm is::::::::::::::::::::::::::::",ncm,file=sys.stderr)
-            print("atom is:::::::::::::::::::::::::::",atom,file=sys.stderr)
-            obj_dict = {"ip_address": atom.ip_address, "device_name": atom.device_name,
-                        "alarm_category": alarm.alarm_category, "alarm_title": alarm.alarm_title,
-                        "alarm_description": alarm.alarm_description,
-                        "alarm_status": alarm.alarm_status, "creation_date": alarm.creation_date.isoformat(),
-                        "modification_date": alarm.modification_date.isoformat(),
-                        "resolve_remarks": alarm.resolve_remarks, "mail_status": alarm.mail_status ,"date": alarm.creation_date.date().isoformat(),
-                        "time": alarm.creation_date.time().isoformat()}
 
-            objList.append(obj_dict)
-        print("obj list is::::::::::::::::::::::::::: ",objList,file=sys.stderr)
+        # Check the number of results
+        print(f"Number of alarms fetched: {len(results)}", file=sys.stderr)
+
+        objList = []
+        alarm_count = 0
+        for alarm, ncm, atom in results:
+            try:
+                alarm_count += 1
+                print(f"Processing alarm #{alarm_count}", file=sys.stderr)
+
+                # Create a dictionary for the current alarm
+                obj_dict = {
+                    "ip_address": atom.ip_address,
+                    "device_name": atom.device_name,
+                    "alarm_category": alarm.alarm_category,
+                    "alarm_title": alarm.alarm_title,
+                    "alarm_description": alarm.alarm_description,
+                    "alarm_status": alarm.alarm_status,
+                    "creation_date": alarm.creation_date.isoformat(),
+                    "modification_date": alarm.modification_date.isoformat(),
+                    "resolve_remarks": alarm.resolve_remarks,
+                    "mail_status": alarm.mail_status,
+                    "date": alarm.creation_date.date().isoformat(),
+                    "time": alarm.creation_date.time().isoformat()
+                }
+
+                objList.append(obj_dict)
+
+            except Exception as e:
+                print(f"Error processing alarm #{alarm_count}: {e}", file=sys.stderr)
+
+        print(f"Total alarms processed: {alarm_count}", file=sys.stderr)
+
+        # Check if all alarms are processed
+        if alarm_count != len(results):
+            print(f"Warning: Not all alarms were processed. Processed: {alarm_count}, Fetched: {len(results)}", file=sys.stderr)
+
         return JSONResponse(content=objList, status_code=200)
-    except Exception:
+
+    except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(
-            "Error While Fetching The Data\nFor Configuration Change Count By Time Graph",
+            f"Error While Fetching The Data\nFor Configuration Change Count By Time Graph: {e}",
             500,
         )
 

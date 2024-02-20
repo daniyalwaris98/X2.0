@@ -1,7 +1,7 @@
 import sys
 import traceback
 
-
+from app.utils.date import get_date_helper
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from influxdb_client.client.write_api import SYNCHRONOUS, ASYNCHRONOUS
@@ -10,6 +10,7 @@ from app.api.v1.monitoring.device.utils.monitoring_utils import *
 from app.models.monitoring_models import *
 from app.schema.monitoring_schema import *
 from influxdb_client.client.util.date_utils import *
+from datetime import datetime
 router = APIRouter(
     prefix="/devices",
     tags=["monitoring_devices"],
@@ -137,6 +138,7 @@ async def get_all_monitoring_devices():
         results = (
             configs.db.query(Monitoring_Devices_Table, AtomTable)
             .join(AtomTable, Monitoring_Devices_Table.atom_id == AtomTable.atom_id)
+            .order_by(Monitoring_Devices_Table.creation_date.desc())  # Sorting added here
             .all()
         )
 
@@ -324,6 +326,46 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
         return JSONResponse(content="Server Error While Fetching Atom Data",
                             status_code=500)
 
+@router.post('/delete_device_in_monitoring')
+async def delete_device_in_monitoring(ips: List[str]):
+    try:
+        data = []
+        success_list = []
+        error_list = []
+
+
+
+        org = os.getenv("INFLUXDB_ORG", "monetx")
+        bucket = os.getenv("INFLUXDB_BUCKET", "monitoring")
+        delete_api = configs.client.delete_api()
+
+        date_helper = get_date_helper()
+        start = "1970-01-01T00:00:00Z"
+        stop = date_helper.to_utc(datetime.now())
+        for ip in ips:
+            is_device_exsists = configs.db.query(AtomTable).filter_by(ip_address=ip).first()
+            if is_device_exsists:
+                monitoring_device_query = configs.db.query(Monitoring_Devices_Table).filter_by(atom_id = is_device_exsists.atom_id).first()
+                if monitoring_device_query:
+                    for measurement in ["Devices", "Interfaces"]:
+                        predicate = f'_measurement="{measurement}" AND IP_ADDRESS="{ip}"'
+                        delete_api.delete(start, stop, bucket=bucket, org=org, predicate=predicate)
+                    data.append(monitoring_device_query.monitoring_device_id)
+                    DeleteDBData(monitoring_device_query)
+                    success_list.append("Device Delete successfully")
+                else:
+                    error_list.append("No device IP found")
+
+        responses = {
+            "data":data,
+            "success_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
+    except Exception as e :
+        traceback.print_exc()
 
 #
 # @app.route("/deleteDeviceInMonitoring", methods=["POST"])
@@ -374,7 +416,7 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
 #         except Exception as e:
 #             traceback.print_exc()
 #             return "Something Went Wrong!", 500
-#
+
 #
 @router.post("/get_device_filter_date", responses={})
 async def get_device_filter_date(data_list: list[GetFunctionDataSchema]):

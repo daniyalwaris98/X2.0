@@ -70,8 +70,6 @@ class UserRoleTableModel(Base):
 
 class UserTableModel(BaseModel):
     __tablename__ = 'user_table'
-    # user_id = Column(Integer,primary_key=True,autoincrement=True)
-    #role_id = Column(Integer,ForeignKey('user_role_table.role_id',onupdate='CASCADE',ondelete='CASCADE'),nullable=False,)
     role = Column(String(255), nullable=True)
     end_user_id = Column(Integer,ForeignKey('end_user_table.end_user_id',onupdate='CASCADE',ondelete='CASCADE'),nullable=False)
     name = Column(String(500),nullable=True)
@@ -85,10 +83,6 @@ class UserTableModel(BaseModel):
     user_token = Column(String(255), unique=True, index=True)
     is_active = Column(Boolean, default=True)
     is_superuser = Column(Boolean, default=False)
-    # creation_date = Column(DateTime, default=datetime.now())
-    # modification_date = Column(
-    #     DateTime, default=datetime.now(), onupdate=datetime.now()
-    # )
 
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
