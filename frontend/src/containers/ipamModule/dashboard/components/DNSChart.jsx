@@ -82,7 +82,7 @@ const DNSChart = ({ data }) => {
         show: true,
         data: ["Not Resolved"],
         icon: "none",
-        y: "bottom",
+        bottom:10,
         align: "center",
         textStyle: {
           fontWeight: "bold",
@@ -163,7 +163,7 @@ const DNSChart = ({ data }) => {
         show: true,
         data: ["Resolved"],
         icon: "none",
-        y: "bottom",
+        bottom:10,
         align: "center",
         textStyle: {
           fontWeight: "bold",
@@ -181,8 +181,8 @@ const DNSChart = ({ data }) => {
 
   return (
     <>
-      <div id="notresolved" style={{ width: "50%", height: "300px" }} />
-      <div id="resolved" style={{ width: "50%", height: "300px" }} />
+      <div id="notresolved" style={{ width: "50%", height: "350px" }} />
+      <div id="resolved" style={{ width: "50%", height: "350px" }} />
     </>
   );
 };
