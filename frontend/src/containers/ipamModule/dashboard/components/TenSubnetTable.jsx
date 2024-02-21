@@ -28,7 +28,7 @@ const columns = [
     title: 'Progress',
     dataIndex: 'value',
     key: 'value',
-    align: 'center',
+    align: 'start',
     render: (_, record) => (
       <Progress
         percent={record.value}  // Use the actual percentage value from your data
@@ -82,7 +82,7 @@ const TenSubnetTable = () => {
     pagination={false}
     bordered={false}
     rowClassName={getRowClassName}
-    style={{ border: 'none', overflow: "scroll", height: "400px" }}
+    style={{ border: 'none', overflow: "scroll", height: "400px",padding:"0 20px" }}
     headerStyle={{ background: 'black', color: 'white' }}
   />
   

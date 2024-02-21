@@ -10,6 +10,7 @@ import { jsonToExcel } from "../../../../utils/helpers";
 import useErrorHandling, {
   TYPE_SINGLE,
   TYPE_BULK,
+  TYPE_BULK_DELETE,
 } from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
@@ -31,7 +32,8 @@ const Index = ({ ncmHistoryId, pageEditable }) => {
   const targetRef = useRef(null);
 
   // hooks
-  const { handleSuccessAlert, handleCallbackAlert } = useSweetAlert();
+  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
+    useSweetAlert();
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_export: { handleClick: handleDefaultExport },
     default_delete: { handleClick: handleDelete, visible: pageEditable },
@@ -74,7 +76,7 @@ const Index = ({ ncmHistoryId, pageEditable }) => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
   });
 
   // effects
@@ -96,8 +98,12 @@ const Index = ({ ncmHistoryId, pageEditable }) => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   return (

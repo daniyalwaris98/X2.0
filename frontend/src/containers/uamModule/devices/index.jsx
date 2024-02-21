@@ -15,6 +15,7 @@ import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_DISMANTLE,
 } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -108,7 +109,7 @@ const Index = () => {
     isSuccess: isDismantleRecordsSuccess,
     isError: isDismantleRecordsError,
     error: dismantleRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DISMANTLE,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -143,8 +144,12 @@ const Index = () => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   function handleTableConfigurationsOpen() {

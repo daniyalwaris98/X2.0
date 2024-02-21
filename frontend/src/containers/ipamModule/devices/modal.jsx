@@ -6,7 +6,9 @@ import {
   useGetAtomsToAddInIpamDevicesQuery,
   useAddAtomsInIpamDevicesMutation,
 } from "../../../store/features/ipamModule/devices/apis";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_BULK_ADD,
+} from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
@@ -76,7 +78,7 @@ const Index = ({ handleClose, open }) => {
     isSuccess: isAddAtomsInIpamDevicesSuccess,
     isError: isAddAtomsInIpamDevicesError,
     error: addAtomsInIpamDevicesError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ADD,
     callback: handleClose,
   });
 

@@ -15,7 +15,9 @@ import {
 import { setSelectedRole } from "../../../store/features/adminModule/roles";
 import { deepEqual, jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_BULK_DELETE,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
@@ -145,7 +147,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -212,8 +214,12 @@ const Index = () => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   function handleCancel() {
