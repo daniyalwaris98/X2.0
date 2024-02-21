@@ -22,6 +22,14 @@ export const extendedApi = monetxApi.injectEndpoints({
       }),
     }),
 
+    deleteMonitoringDevices: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/monitoring/devices/delete_monitoring_devices",
+        method: "POST",
+        body: data,
+      }),
+    }),
+
     updateMonitoringDevice: builder.mutation({
       query: (data) => ({
         url: "/api/v1/monitoring/devices/add_monitoring_device",
@@ -35,6 +43,7 @@ export const extendedApi = monetxApi.injectEndpoints({
 export const {
   useGetAllMonitoringDevicesQuery: useFetchRecordsQuery,
   useUpdateMonitoringDeviceMutation: useUpdateRecordMutation,
+  useDeleteMonitoringDevicesMutation: useDeleteRecordsMutation,
   useGetAtomsToAddInMonitoringDevicesQuery,
   useAddAtomsInMonitoringDevicesMutation,
 } = extendedApi;
