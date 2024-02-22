@@ -382,7 +382,7 @@ const Index = () => {
         isFetchRecordsLoading ||
         isAddRecordsLoading ||
         isDeleteRecordsLoading ||
-        isOnBoardRecordsLoading
+        // isOnBoardRecordsLoading
       }
     >
       <input
