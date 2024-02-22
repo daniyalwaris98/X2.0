@@ -4,7 +4,8 @@ import sys, json
 import threading
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 from app.utils.failed_utils import addFailedDevice
-
+from app.api.v1.ipam.utils.ipam_db_utils import *
+from app.utils.failed_utils import addFailedDevice
 
 class A10Puller(object):
     
@@ -16,6 +17,7 @@ class A10Puller(object):
         threads =[]
         
         for host in hosts:
+            print("host is get_inventory_data:::::::::::::::::::",host,file=sys.stderr)
             th = threading.Thread(target=self.poll, args=(host,))
             th.start()
             threads.append(th)
@@ -51,7 +53,10 @@ class A10Puller(object):
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
             date = datetime.now()
             self.failed = True
-            addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+
             # file_name = time.strftime("%d-%m-%Y")+".txt"
             # failed_device=[]
             #Read existing file
