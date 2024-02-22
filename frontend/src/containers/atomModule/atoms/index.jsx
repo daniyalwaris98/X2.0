@@ -276,6 +276,9 @@ const Index = () => {
 
       if (ipAddressesToOnBoard.length > 0) {
         onBoardRecords(ipAddressesToOnBoard);
+        handleInfoAlert(
+          "Onboarding has started! it may take a while to complete."
+        );
       }
     } else {
       setSelectedRowKeys([]);
