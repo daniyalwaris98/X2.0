@@ -379,10 +379,8 @@ const Index = () => {
   return (
     <DefaultSpinner
       spinning={
-        isFetchRecordsLoading ||
-        isAddRecordsLoading ||
-        isDeleteRecordsLoading ||
-        // isOnBoardRecordsLoading
+        isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
+        // || isOnBoardRecordsLoading
       }
     >
       <input
