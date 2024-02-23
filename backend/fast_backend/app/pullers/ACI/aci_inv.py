@@ -8,6 +8,9 @@ requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
+#from app.utils.failed_utils import addFailedDevice
+
 
 
 
@@ -75,8 +78,8 @@ class ACIPuller(object):
                 login_exception = str(e)
         if is_login==False:
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
-            date = datetime.now()
-            addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            #date = datetime.now()
+            #addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
             # file_name = time.strftime("%d-%m-%Y")+".txt"
             # failed_device=[]
             # #Read existing file
@@ -96,6 +99,10 @@ class ACIPuller(object):
             #     print(e)
             #     print("Failed to update failed devices list", file=sys.stderr)
             self.failed = True
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+
         if is_login==True:  
             try:
                 all_nodes_ver=[]

@@ -3,6 +3,9 @@ import paramiko
 import traceback
 import time, os , datetime, sys
 import textfsm, json
+from app.api.v1.ipam.utils.ipam_db_utils import *
+from app.utils.failed_utils import addFailedDevice
+
 
 
 class Parse(object):
@@ -35,8 +38,11 @@ class Parse(object):
                     raise e
                 except Exception as e:
                     print('Connect Failed on 3rd try for ip: ' +ip+' Error:'+ str(e))
+                    #date = datetime.now()
+                    #addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
                     date = datetime.now()
-                    addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
+                    device_type = host['device_type']
+                    addFailedDevice(host['ip_address'], date, device_type, str(e), 'UAM')
                     # file_name = time.strftime("%d-%m-%Y")+".txt"
                     # failed_device=[]
                     # #Read existing file

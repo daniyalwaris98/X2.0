@@ -4,6 +4,10 @@ from datetime import datetime
 import re, sys, time, json
 import threading
 import pandas as pd
+from app.utils.failed_utils import addFailedDevice
+#from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
+
 
 class IOSPuller(object):
     
@@ -58,6 +62,10 @@ class IOSPuller(object):
                 
         if is_login==False:
             print(f"Falied to login {host['host']}")
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+
             
         if is_login==True:    
             try:
@@ -237,6 +245,7 @@ class IOSPuller(object):
                     c +=1
                     
             if is_login==False:print(f"Device B {ip} Login failed ")
+            
             
             if is_login:
                 intf_output = []

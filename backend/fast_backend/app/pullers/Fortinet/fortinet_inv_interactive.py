@@ -2,7 +2,8 @@
 from datetime import datetime
 import re, sys, time, json
 import threading
-
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 
 # from app.pullers.Prime.parsing import Parse
