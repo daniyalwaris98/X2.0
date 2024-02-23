@@ -244,7 +244,12 @@ class IOSPuller(object):
                 except Exception as e:
                     c +=1
                     
-            if is_login==False:print(f"Device B {ip} Login failed ")
+            if is_login==False:
+                print(f"Device B {ip} Login failed ")
+                date = datetime.now()
+                device_type = host['device_type']
+                addFailedDevice(host['ip_address'], date, device_type, str(e), 'UAM')
+
             
             
             if is_login:
