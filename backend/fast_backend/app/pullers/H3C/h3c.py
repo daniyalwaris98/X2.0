@@ -5,6 +5,8 @@ import re, sys, time
 import threading
 from dateutil.parser import parse
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 class H3CPuller(object):
     
@@ -30,7 +32,7 @@ class H3CPuller(object):
         
 
     def poll(self, host):
-        atom['device_type'] = 'hp_comware'
+        host['device_type'] = 'hp_comware'
         print(f"Connecting to {host['ip_address']}",  file=sys.stderr)
         login_tries = 3
         c = 0
@@ -51,7 +53,11 @@ class H3CPuller(object):
         if is_login==False:
             print(f"Failed to login {host['ip_address']}",  file=sys.stderr)
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
+            #date = datetime.now()
             date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+            
             # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
             self.failed = True
             

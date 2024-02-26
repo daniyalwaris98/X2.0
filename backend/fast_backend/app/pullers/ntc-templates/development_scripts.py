@@ -8,6 +8,8 @@ import argparse
 from ruamel.yaml import YAML
 from ruamel.yaml.scalarstring import DoubleQuotedScalarString as DQ
 from ntc_templates.parse import parse_output
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 
 FILE_PATH = os.path.abspath(__file__)

@@ -6,6 +6,8 @@ from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import pandas as pd
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 class MacAddressPuller(object):
     
@@ -78,6 +80,9 @@ class MacAddressPuller(object):
             if is_login==False:
                 self.inv_data[host['host']] = {"error":"Login Failed"}
                 print(f"Failed to login {host['host']}", file=sys.stderr)
+                date = datetime.now()
+                device_type = host['device_type']
+                addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
                 self.add_to_failed_devices(host['host'], "(LLDP MAC) Failed to login to host" + login_exception)    
                 continue
             try:

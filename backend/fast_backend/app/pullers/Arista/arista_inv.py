@@ -4,6 +4,8 @@ import re, sys, time, json
 import threading
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 from app.utils.failed_utils import addFailedDevice
+#from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 
 class AristaPuller(object):

@@ -5,6 +5,8 @@ import threading
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 
 from app.pullers.Fireeye.parsing import Parse
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 # from parsing import Parse
 
 class FireEyePuller(object):

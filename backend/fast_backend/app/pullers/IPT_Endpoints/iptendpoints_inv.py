@@ -9,6 +9,8 @@ import pandas as pd
 from xml.etree import ElementTree
 import requests
 from app.monitoring.common_utils.utils import *
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 class IPTENDPOINTSPuller(object):
     
     def __init__(self):
@@ -163,9 +165,12 @@ class IPTENDPOINTSPuller(object):
             return ip_telephones_data
         except Exception as e:
             traceback.print_exc()
-            date = datetime.now()
+            #date = datetime.now()
             print(f"Ip Telephones not found Exception detail==>{e}", file=sys.stderr)
-            addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, str(e), 'UAM')
+            #addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
                
     def get_oid_data(self, engn, community, transport, cnxt, oid):
         try:

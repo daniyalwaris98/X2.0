@@ -10,6 +10,10 @@ import re, sys, json, time
 from time import datetime
 import pandas as pd
 from pandas import read_excel
+from app.utils.failed_utils import addFailedDevice
+#from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
+
 
 dfFW = read_excel('EDN_SEC_IPs_Puller.xlsx', sheet_name = 'SW')
 
@@ -71,6 +75,9 @@ for index, frame in dfFW['FW IP-Address'].iteritems():
             login_exception= str(e)
     if is_login==False:
         print(f"Falied to login {host['host']} {host['type']}")
+        date = datetime.now()
+        device_type = host['device_type']
+        addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
         
     if is_login==True:
         

@@ -4,6 +4,10 @@ from datetime import datetime
 from time import time
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import pandas as pd
+from app.utils.failed_utils import addFailedDevice
+#from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
+
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 
 from ldp_cdp import ACIServicePuller
@@ -50,6 +54,10 @@ class ACIPhysicalMapPuller(object):
                     
             if is_login==False:
                 self.inv_data[host['host']] = {"error":"Login Failed"}
+                date = datetime.now()
+                device_type = host['device_type']
+                addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+
                 continue
             
             try:
