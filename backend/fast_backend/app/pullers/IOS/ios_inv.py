@@ -75,7 +75,7 @@ class IOSPuller(object):
             self.results.append(device_info)
         if self.is_login == False:
             self.inv_data[host['ip_address']] = {"error": "Login Failed"}
-            date = datetime.now()
+            #date = datetime.now()
             self.failed = True
             self.inv_data['status'] = "error"
             date = datetime.now()
