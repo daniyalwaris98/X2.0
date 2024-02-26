@@ -5,6 +5,10 @@ import mac_arp_nxox
 from pandas import read_excel
 import queue
 import pandas as pd
+from app.utils.failed_utils import addFailedDevice
+#from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
+
 
 dfFW = read_excel('EDN_NE_IPs_Puller.xlsx', sheet_name = 'EDN_NE')
 

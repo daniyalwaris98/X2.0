@@ -3,6 +3,10 @@ from datetime import datetime
 import re, sys, json, time
 import pandas as pd
 import threading
+from app.utils.failed_utils import addFailedDevice
+#from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
+
 
 class FWPuller(object):
     
@@ -58,6 +62,10 @@ class FWPuller(object):
         if is_login==False:
             print(f"Falied to login {host['host']}")
             self.inv_data[host['host']] = {"error":"Login Failed"}
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+
             
         if is_login==True:
             

@@ -5,7 +5,8 @@ import threading
 from app.pullers.Symantec.parsing import Parse
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 #from parsing import Parse
-
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 class SymantecPuller(object):
     
     def __init__(self):
