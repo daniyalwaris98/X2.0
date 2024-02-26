@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-import { selectTableData } from "../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/s3/selectors";
-import {
-  useFetchRecordsQuery,
-  useChangeS3StatusMutation,
-} from "../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/s3/apis";
+// import { selectTableData } from "../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/s3/selectors";
+// import {
+//   useFetchRecordsQuery,
+//   useChangeS3StatusMutation,
+// } from "../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/s3/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
 import useErrorHandling, {
@@ -45,16 +45,16 @@ const Index = () => {
   const [displayColumns, setDisplayColumns] = useState(generatedColumns);
 
   // selectors
-  const dataSource = useSelector(selectTableData);
+  // const dataSource = useSelector(selectTableData);
 
   // apis
-  const {
-    data: fetchRecordsData,
-    isSuccess: isFetchRecordsSuccess,
-    isLoading: isFetchRecordsLoading,
-    isError: isFetchRecordsError,
-    error: fetchRecordsError,
-  } = useFetchRecordsQuery();
+  // const {
+  //   data: fetchRecordsData,
+  //   isSuccess: isFetchRecordsSuccess,
+  //   isLoading: isFetchRecordsLoading,
+  //   isError: isFetchRecordsError,
+  //   error: fetchRecordsError,
+  // } = useFetchRecordsQuery();
 
   const [
     changeStatus,

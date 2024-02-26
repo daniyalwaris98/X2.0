@@ -34,24 +34,24 @@ function Index(props) {
       path: PAGE_PATH_RUNNING_SERVICES,
       icon: "tdesign:device",
     },
-    {
-      id: PAGE_PATH_EC2,
-      name: PAGE_NAME_EC2,
-      path: PAGE_PATH_EC2,
-      icon: "ic:outline-dashboard",
-    },
-    {
-      id: PAGE_PATH_ELB,
-      name: PAGE_NAME_ELB,
-      path: PAGE_PATH_ELB,
-      icon: "tdesign:device",
-    },
-    {
-      id: PAGE_PATH_S3,
-      name: PAGE_NAME_S3,
-      path: PAGE_PATH_S3,
-      icon: "tdesign:device",
-    },
+    // {
+    //   id: PAGE_PATH_EC2,
+    //   name: PAGE_NAME_EC2,
+    //   path: PAGE_PATH_EC2,
+    //   icon: "ic:outline-dashboard",
+    // },
+    // {
+    //   id: PAGE_PATH_ELB,
+    //   name: PAGE_NAME_ELB,
+    //   path: PAGE_PATH_ELB,
+    //   icon: "tdesign:device",
+    // },
+    // {
+    //   id: PAGE_PATH_S3,
+    //   name: PAGE_NAME_S3,
+    //   path: PAGE_PATH_S3,
+    //   icon: "tdesign:device",
+    // },
   ];
 
   // hooks
