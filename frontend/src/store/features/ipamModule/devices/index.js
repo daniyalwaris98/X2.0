@@ -53,6 +53,20 @@ const defaultSlice = createSlice({
         }
       )
       .addMatcher(
+        extendedApi.endpoints.deleteIpamDevices.matchFulfilled,
+        (state, action) => {
+          const deletedIds = action.payload?.data || [];
+          if (deletedIds.length > 0) {
+            state.all_data = state.all_data.filter((item) => {
+              const shouldKeepItem = deletedIds.some((deletedId) => {
+                return deletedId === item[TABLE_DATA_UNIQUE_ID];
+              });
+              return !shouldKeepItem;
+            });
+          }
+        }
+      )
+      .addMatcher(
         extendedApi.endpoints.addAtomsInIpamDevices.matchFulfilled,
         (state, action) => {
           action.payload.data.forEach((responseItem) => {

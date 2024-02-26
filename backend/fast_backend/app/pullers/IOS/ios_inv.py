@@ -5,7 +5,8 @@ import re, sys, time
 import threading
 # from app import app
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
-
+from app.api.v1.ipam.utils.ipam_db_utils import *
+from app.utils.failed_utils import addFailedDevice
 
 class IOSPuller(object):
 
@@ -77,6 +78,9 @@ class IOSPuller(object):
             date = datetime.now()
             self.failed = True
             self.inv_data['status'] = "error"
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
 
             # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
 

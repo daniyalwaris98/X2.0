@@ -8,11 +8,17 @@ import { useFetchMonitoringCredentialsNamesQuery } from "../../../store/features
 import {
   useFetchRecordsQuery,
   useStartMonitoringLazyQuery,
+  useDeleteRecordsMutation,
 } from "../../../store/features/monitoringModule/devices/apis";
 import { jsonToExcel } from "../../../utils/helpers";
-import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
 import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
+  TYPE_BULK_DELETE,
   TYPE_BULK_MONITORING,
   TYPE_FETCH,
 } from "../../../hooks/useErrorHandling";
@@ -33,6 +39,7 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   PAGE_PATH,
+  indexColumnNameConstants,
 } from "./constants";
 import { MODULE_PATH } from "..";
 import { MAIN_LAYOUT_PATH } from "../../../layouts/mainLayout";
@@ -51,11 +58,13 @@ const Index = () => {
   const [pageEditable, setPageEditable] = useState(
     isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
   );
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const navigate = useNavigate();
   const dispatch = useDispatch();
-  const { handleSuccessAlert, handleInfoAlert } = useSweetAlert();
+  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
+    useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions({
     pageEditable,
     handleEdit,
@@ -65,6 +74,10 @@ const Index = () => {
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
+    default_delete: {
+      handleClick: handleDelete,
+      visible: selectedRowKeys.length > 0 && pageEditable,
+    },
     start_monitoring: {
       handleClick: handleStartMonitoring,
       visible: pageEditable,
@@ -116,6 +129,17 @@ const Index = () => {
     error: monitoringCredentialsNamesError,
   } = useFetchMonitoringCredentialsNamesQuery();
 
+  const [
+    deleteRecords,
+    {
+      data: deleteRecordsData,
+      isSuccess: isDeleteRecordsSuccess,
+      isLoading: isDeleteRecordsLoading,
+      isError: isDeleteRecordsError,
+      error: deleteRecordsError,
+    },
+  ] = useDeleteRecordsMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -141,12 +165,44 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: deleteRecordsData,
+    isSuccess: isDeleteRecordsSuccess,
+    isError: isDeleteRecordsError,
+    error: deleteRecordsError,
+    type: TYPE_BULK_DELETE,
+    callback: handleEmptySelectedRowKeys,
+  });
+
   // handlers
   function handleIpAddressClick(record) {
     dispatch(setSelectedDevice(record));
     navigate(
       `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${LANDING_PAGE_PATH}/${PAGE_PATH_SUMMARY}`
     );
+  }
+
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
+  }
+
+  function deleteData(allowed) {
+    if (allowed) {
+      const ipAddresses = dataSource
+        .filter((obj) => selectedRowKeys.includes(obj[TABLE_DATA_UNIQUE_ID]))
+        .map((obj) => obj[indexColumnNameConstants.IP_ADDRESS]);
+      deleteRecords(ipAddresses);
+    } else {
+      setSelectedRowKeys([]);
+    }
+  }
+
+  function handleDelete() {
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
+    } else {
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
+    }
   }
 
   function handleEdit(record) {
@@ -236,7 +292,12 @@ const Index = () => {
         buttonsConfigurationList={buttonsConfigurationList}
         displayColumns={displayColumns}
         dataSource={dataSource}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
+        setSelectedRowKeys={setSelectedRowKeys}
       />
+      <br />
+      <br />
+      <br />
     </DefaultSpinner>
   );
 };

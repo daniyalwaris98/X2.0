@@ -248,8 +248,12 @@ export default function Index() {
 
   // effects
   useEffect(() => {
-    setSelectedModule(drawerMenuItems.find((item) => item.path === modulePath));
-  }, [validateTokenData]);
+    if (validateTokenData && drawerMenuItems.length > 0) {
+      setSelectedModule(
+        drawerMenuItems.find((item) => item.path === modulePath)
+      );
+    }
+  }, [validateTokenData, drawerMenuItems]);
 
   return (
     <>
@@ -345,7 +349,7 @@ export default function Index() {
                       fontSize: theme.typography.textSize.medium,
                     }}
                   >
-                    Hassaan Akbar
+                    {userInfo?.name}
                   </div>
                   <div
                     style={{
@@ -353,7 +357,7 @@ export default function Index() {
                       fontSize: theme.typography.textSize.small,
                     }}
                   >
-                    Solution Architect
+                    {userInfo?.role}
                   </div>
                 </div>
               </div>
