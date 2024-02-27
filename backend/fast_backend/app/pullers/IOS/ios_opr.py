@@ -2,6 +2,8 @@ import sys
 from netmiko import Netmiko
 from datetime import datetime
 import re, json,time
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 class IOSPullerOpr(object):
     
@@ -28,6 +30,9 @@ class IOSPullerOpr(object):
 
             if is_login==False:
                 self.inv_data[host['host']] = {"error":"Login Failed"}
+                date = datetime.now()
+                device_type = host['device_type']
+                addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
                 file_name = time.strftime("%d-%m-%Y")+".txt"
                 failed_device=[]
                 #Read existing file

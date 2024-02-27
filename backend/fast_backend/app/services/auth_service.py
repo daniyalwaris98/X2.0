@@ -173,7 +173,7 @@ class AuthService(BaseService):
                 end_user_id = end_user_id,
                 configuration = configuration,
                 role = role,
-                liscence_verification = liscence_verification
+                liscence_verification = liscence_verification,
             )
             print("payload is::::::::::::::",payload,file=sys.stderr)
             # encrypted_result = encrypt_data(payload)

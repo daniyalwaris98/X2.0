@@ -23,10 +23,19 @@ import atomInactiveIcon from "../resources/svgs/atomInactiveIcon.svg";
 import atomActiveIcon from "../resources/svgs/atomActiveIcon.svg";
 import ipamInactiveIcon from "../resources/svgs/ipamInactiveIcon.svg";
 import ipamActiveIcon from "../resources/svgs/ipamActiveIcon.svg";
+
+
+
 import autoDiscoveryInactiveIcon from "../resources/svgs/autoDiscoveryInactiveIcon.svg";
 import autoDiscoveryActiveIcon from "../resources/svgs/autoDiscoveryActiveIcon.svg";
 import uamInactiveIcon from "../resources/svgs/uamInactiveIcon.svg";
 import uamActiveIcon from "../resources/svgs/uamActiveIcon.svg";
+
+
+import cloudInactiveIcon from "../resources/svgs/uamInactiveIcon.svg";
+import cloudctActiveIcon from "../resources/svgs/uamActiveIcon.svg";
+
+
 import ncmInactiveIcon from "../resources/svgs/ncmInactiveIcon.svg";
 import ncmActiveIcon from "../resources/svgs/ncmActiveIcon.svg";
 import logo from "../resources/svgs/logo.svg";
@@ -70,6 +79,10 @@ import {
   MODULE_PATH as MODULE_PATH_UAM,
   MODULE_NAME as MODULE_NAME_UAM,
 } from "../containers/uamModule";
+import {
+  MODULE_PATH as MODULE_PATH_CLOUD,
+  MODULE_NAME as MODULE_NAME_CLOUD,
+} from "../containers/cloudMonitoringModule";
 import { ACCESS_TOKEN } from "../containers/login/constants";
 
 export const MAIN_LAYOUT_PATH = "monetx";
@@ -235,10 +248,17 @@ export default function Index() {
       path: MODULE_PATH_NCM,
     },
     {
-      name: MODULE_NAME_UAM,
+      name: MODULE_NAME_UAM
+      ,
       inActiveIcon: <img src={uamInactiveIcon} alt={MODULE_NAME_UAM} />,
       activeIcon: <img src={uamActiveIcon} alt={MODULE_NAME_UAM} />,
       path: MODULE_PATH_UAM,
+    },
+    {
+      name: MODULE_NAME_CLOUD,
+      inActiveIcon: <img src={cloudInactiveIcon} alt={MODULE_NAME_CLOUD} />,
+      activeIcon: <img src={cloudctActiveIcon} alt={MODULE_NAME_CLOUD} />,
+      path: MODULE_PATH_CLOUD,
     },
   ].filter((item) => isModuleAllowed(roleConfigurations, item.path));
 
@@ -248,8 +268,12 @@ export default function Index() {
 
   // effects
   useEffect(() => {
-    setSelectedModule(drawerMenuItems.find((item) => item.path === modulePath));
-  }, [validateTokenData]);
+    if (validateTokenData && drawerMenuItems.length > 0) {
+      setSelectedModule(
+        drawerMenuItems.find((item) => item.path === modulePath)
+      );
+    }
+  }, [validateTokenData, drawerMenuItems]);
 
   return (
     <>
@@ -345,7 +369,7 @@ export default function Index() {
                       fontSize: theme.typography.textSize.medium,
                     }}
                   >
-                    Hassaan Akbar
+                    {userInfo?.name}
                   </div>
                   <div
                     style={{
@@ -353,7 +377,7 @@ export default function Index() {
                       fontSize: theme.typography.textSize.small,
                     }}
                   >
-                    Solution Architect
+                    {userInfo?.role}
                   </div>
                 </div>
               </div>

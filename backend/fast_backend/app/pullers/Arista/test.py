@@ -2,6 +2,9 @@ from netmiko import Netmiko
 from datetime import datetime
 import re, sys, time, json
 import threading
+from app.api.v1.ipam.utils.ipam_db_utils import *
+from app.utils.failed_utils import addFailedDevice
+
 
 class AristaPuller(object):
     
@@ -46,6 +49,9 @@ class AristaPuller(object):
             self.inv_data[host['host']] = {"error":"Login Failed"}
             file_name = time.strftime("%d-%m-%Y")+".txt"
             failed_device=[]
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
             #Read existing file
             try:
                 with open('app/failed/ims/'+file_name,'r', encoding='utf-8') as fd:

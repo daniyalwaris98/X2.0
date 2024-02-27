@@ -176,7 +176,7 @@ def get_failed_devices_count():
         monitoring_query = f"SELECT count(*) FROM failed_devices_table WHERE module='Monitoring';"
         monitoring_result = configs.db.execute(monitoring_query).scalar()
 
-        uam_query = f"SELECT count(*) FROM failed_devices_table WHERE module='Monitoring';"
+        uam_query = f"SELECT count(*) FROM failed_devices_table WHERE module='UAM';"
         uam_result = configs.db.execute(uam_query).scalar()
 
         failed_dict = {

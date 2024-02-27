@@ -154,15 +154,13 @@ const Index = () => {
     callback: handleEmptySelectedRowKeys,
   });
 
-  // effects
-
   // handlers
-  function handleEmptySelectedRowKeys() {
-    setSelectedRowKeys([]);
-  }
-
   function handlePostSeed(data) {
     addRecords(data);
+  }
+
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
   }
 
   function deleteData(allowed) {

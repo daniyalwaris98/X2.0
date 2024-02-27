@@ -11,8 +11,7 @@ from app.api.v1.uam.uam_base_router import routers as uam_router
 from app.api.v1.ipam.ipam_base_routes import routers as ipam_router
 from app.api.v1.users.user_base_router import routers as user_router
 from app.api.v1.main.routes.main_dashboard_routes import router as main_dashboard_router
-
-
+from app.api.v1.cloud_monitoring.cloud_monitoring_base_router import routers as cloud_monitoring_router
 routers = APIRouter()
 
 router_list = [
@@ -25,7 +24,8 @@ router_list = [
     # migration_router,
     ipam_router,
     user_router,
-    main_dashboard_router
+    main_dashboard_router,
+    cloud_monitoring_router
 ]
 
 for router in router_list:

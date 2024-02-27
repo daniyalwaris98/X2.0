@@ -4,6 +4,9 @@ from datetime import datetime
 import re, json,time
 
 from sqlalchemy.sql.expression import true
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
+
 
 class XRPullerOpr(object):
     
@@ -31,6 +34,9 @@ class XRPullerOpr(object):
             if is_login==False:
                 self.inv_data[host['host']] = {"error":"Login Failed"}
                 file_name = time.strftime("%d-%m-%Y")+".txt"
+                date = datetime.now()
+                device_type = host['device_type']
+                addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
                 failed_device=[]
                 #Read existing file
                         

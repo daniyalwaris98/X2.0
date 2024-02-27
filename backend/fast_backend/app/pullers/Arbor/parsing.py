@@ -39,6 +39,7 @@ class Parse(object):
                 except Exception as e:
                     print('Connect Failed on 3rd try for ip: ' +ip+' Error:'+ str(e))
                     date = datetime.now()
+                    
                     addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
                     # file_name = time.strftime("%d-%m-%Y")+".txt"
                     # failed_device=[]
