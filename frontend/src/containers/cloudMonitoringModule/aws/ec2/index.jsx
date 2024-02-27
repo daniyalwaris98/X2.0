@@ -1,10 +1,10 @@
 import React, { useState } from "react";
 import { useSelector } from "react-redux";
-// import { selectTableData } from "../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/ec2/selectors";
-  // import {
-  //   useFetchRecordsQuery,
-  //   useChangeEC2StatusMutation,
-  // } from "../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/ec2/apis";
+import { selectTableData } from "../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/ec2/selectors";
+  import {
+    useFetchRecordsQuery,
+    useChangeEC2StatusMutation,
+  } from "../../../../store/features/monitoringModule/cloudsDropDown/awsDropDown/ec2/apis";
 import { jsonToExcel } from "../../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../../utils/constants";
 import useErrorHandling, {
