@@ -340,7 +340,7 @@ async def delete_pn_code(sntc_id: List[int]):
     deleted_ids = []
     
     for obj in sntc_id:
-        posID = Configs.db.query(SntcTable).filter(SntcTable.sntc_id == obj).first()
+        posID = configs.db.query(SntcTable).filter(SntcTable.sntc_id == obj).first()
         if posID:
             print("post id is:::::::::::::::::::::::::::::",posID,file=sys.stderr)
             configs.db.delete(posID)

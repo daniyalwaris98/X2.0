@@ -186,6 +186,7 @@ def get_monitoring_data():
                 monitoring_device_data['ping_status'] = data.ping_status
                 monitoring_device_data['active'] = data.active
                 monitoring_device_data['source'] = data.source
+                monitoring_device_data['monitoring_device_id'] = data.monitoring_device_id
         return monitoring_device_data
 
 
