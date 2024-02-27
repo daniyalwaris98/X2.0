@@ -27,6 +27,7 @@ import {
   useGetTopTenOpenPortsQuery,
   useGetDnsQuery,
 } from "../../../store/features/ipamModule/dashboard/apis";
+import { useTheme } from "@emotion/react";
 
 function Index() {
   const {
@@ -96,7 +97,7 @@ function Index() {
     {name: 'huawei', value: 1}]
 
     const data1=[{"name":[null,"22","23","26","29","34","110"],"value":[0,6,6,13,13,27,27]}]
-
+const theme = useTheme()
   return (
     <div
       style={{
@@ -105,7 +106,7 @@ function Index() {
         minHeight: "100vh", // Ensure the background covers the entire viewport height
       }}
     >
-      <Row gutter={[16, 16]} justify="space-between" style={{ marginBottom: "20px" }}>
+      <Row gutter={[16, 16]} justify="space-between" style={{ marginBottom: "20px",backgroundColor: theme.palette.background.default }}>
         <Col span={8}>
           <div
             style={{

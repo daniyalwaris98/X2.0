@@ -11,6 +11,7 @@ import uamModuleRoutes from "./uamModuleRoutes";
 import monitoringModuleRoutes from "./monitoringModuleRoutes";
 import autoDiscoveryModuleRoutes from "./autoDiscoveryModuleRoutes";
 import ncmModuleRoutes from "./ncmModuleRoutes";
+import cloudMonitoringModuleRoutes from "./cloudMonitoringModuleRoutes";
 import ipamModuleRoutes from "./ipamModuleRoutes";
 import DefaultFallbackUI from "../components/fallbackUI";
 import { MAIN_LAYOUT_PATH } from "../layouts/mainLayout";
@@ -37,6 +38,7 @@ export default function useBrowserRouter() {
           monitoringModuleRoutes(roleConfigurations, authorizePageRoutes),
           ncmModuleRoutes(roleConfigurations, authorizePageRoutes),
           uamModuleRoutes(roleConfigurations, authorizePageRoutes),
+          cloudMonitoringModuleRoutes(roleConfigurations, authorizePageRoutes),
         ].filter((item) => isModuleAllowed(roleConfigurations, item.path)),
 
         errorElement: <DefaultFallbackUI />,
