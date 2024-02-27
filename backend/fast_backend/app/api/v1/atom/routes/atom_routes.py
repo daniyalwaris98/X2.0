@@ -216,7 +216,7 @@ async def edit_atom(atom: EditAtomRequestSchema):
         traceback.print_exc()
         return "Error Occurred While Updating Atom Device", 500
 
-#current_user: User = Depends(get_current_active_user)
+# current_user: User = Depends(get_current_active_user)
 @router.get("/get_atoms", responses={
     200: {"model": list[GetAtomResponseSchema]},
     500: {"model": str}

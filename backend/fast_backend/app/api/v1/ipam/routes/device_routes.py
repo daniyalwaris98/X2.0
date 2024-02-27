@@ -944,17 +944,17 @@ async def scan_all_subnets(subnet: ScanAllSubnetSchema):
                     # Update other attributes accordingly
                     configs.db.merge(obj)
                     configs.db.commit()  # Commit changes after merging
-                    ip_data = configs.db.query(IpTable).filter_by(subnet_id=obj.subnet_id).first()
-                    if ip_data:
-                        ip_data.mac_address = ''
-                        ip_data.configuration_switch = ''
-                        ip_data.configuration_interface = ''
-                        ip_data.status = ''
-                        ip_data.ip_dns = ''
-                        ip_data.dns_ip = ''
-                        ip_data.vip = ''
-                    configs.db.merge(ip_data)
-                    configs.db.commit()  # Commit changes after merging
+                    # ip_data = configs.db.query(IpTable).filter_by(subnet_id=obj.subnet_id).first()
+                    # if ip_data:
+                    #     ip_data.mac_address = ''
+                    #     ip_data.configuration_switch = ''
+                    #     ip_data.configuration_interface = ''
+                    #     ip_data.status = ''
+                    #     ip_data.ip_dns = ''
+                    #     ip_data.dns_ip = ''
+                    #     ip_data.vip = ''
+                    # configs.db.merge(ip_data)
+                    # configs.db.commit()  # Commit changes after merging
                 print("DB updated::::::::::", file=sys.stderr)
                 subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = obj.subnet_id).first()
                 subnet_data_dict = {

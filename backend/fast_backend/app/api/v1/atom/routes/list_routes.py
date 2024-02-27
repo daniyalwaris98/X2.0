@@ -52,7 +52,7 @@ async def get_function_list():
                     200: {"model": list[str]},
                     500: {"model": str}}
             )
-def password_group_type():
+async def password_group_type():
     try:
         return JSONResponse(content = password_group_types_list,status_code = 200)
     except Exception as e:
@@ -61,7 +61,7 @@ def password_group_type():
 @router.get('/get_status_dropdown',responses={
                     200: {"model": list[str]},
                     500: {"model": str}})
-def status_dropdown():
+async def status_dropdown():
     try:
         return JSONResponse(content =status_list,status_code = 200 )
     except Exception as e:
@@ -73,7 +73,7 @@ def status_dropdown():
 @router.get('/get_virutal_values_dropdown',responses={
                     200: {"model": list[str]},
                     500: {"model": str}})
-def virtual_dropdown():
+async def virtual_dropdown():
     try:
         return JSONResponse(content =virutal_list,status_code = 200 )
     except Exception as e:
@@ -85,7 +85,7 @@ def virtual_dropdown():
 @router.get('/get_criticality_values_dropdown',responses={
                     200: {"model": list[str]},
                     500: {"model": str}})
-def criticality_dropdown():
+async def criticality_dropdown():
     try:
         return JSONResponse(content =criticality_list,status_code = 200 )
     except Exception as e:

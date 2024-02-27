@@ -94,4 +94,10 @@ class SortSeverity(BaseSchema):
 
 class DeviceType(BaseSchema):
     name : str
-    value : int        
+    value : int
+
+
+
+class Response200(BaseSchema):
+    data: dict
+    message: str
