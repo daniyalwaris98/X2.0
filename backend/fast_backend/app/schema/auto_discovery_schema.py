@@ -83,7 +83,7 @@ class AddSnmpV1_V2Schema(BaseSchema):
 
 class AddSnmpV3Schema(BaseSchema):
     user_name:str
-    encryption_protocol: str
+    encryption_protocol: str | None = None
     profile_name:str | None = None
     description: str | None = None
     port:int | None = None
