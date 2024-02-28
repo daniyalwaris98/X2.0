@@ -5,6 +5,7 @@ from app.api.v1.ipam.utils.ipam_utils import *
 from app.models.common_models import *
 from sqlalchemy import desc
 import sys
+import re
 from typing import List
 import traceback
 from app.models.ipam_models import *
@@ -121,8 +122,22 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
             failed_ip = configs.db.query(FailedDevicesTable).filter_by(ip_address=ip_address).first()
             print("failed ip is::::::::::::::::::", failed_ip, file=sys.stderr)
             if failed_ip:
-                error_list.append(f"{failed_ip.ip_address} : {failed_ip.failure_reason}")
+                reason = failed_ip.failure_reason
+                words = reason.split()
+                print(words)
 
+                if "'device_type'" in words:
+                    
+                    device_type_index = words.index("'device_type'")
+
+                    error_data = ' '.join(words[:device_type_index+1]).strip()
+                    print(error_data)
+                    error_list.append(f"{failed_ip.ip_address} : {error_data}")
+                else:
+                    error_list.append(f"{failed_ip.ip_address} : {reason}")
+                            #error_list.append(f"{failed_ip.ip_address} : {data}")
+                            # error_list.append(data)'''
+                #error_list.append(f"{failed_ip.ip_address}")
             ipam_devices = configs.db.query(IpamDevicesFetchTable).filter_by(atom_id = atom_id).all()
             if ipam_devices:
                 for device in ipam_devices:
