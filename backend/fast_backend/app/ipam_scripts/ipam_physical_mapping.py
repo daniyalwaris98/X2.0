@@ -6,11 +6,14 @@ import threading
 import time
 # from app import db
 from datetime import datetime
-
+from app.ipam_scripts.utils.utils import get_vendor_information_by_mac_address,nmap_port_scanner_for_ip_address
 # from app.monitoring.common_utils.utils import addFailedDevice
 from app.utils.db_utils import *
 from netmiko import Netmiko
 from app.models.ipam_models import *
+import asyncio
+
+
 
 def FormatDate(date):
     # print(date, file=sys.stderr)
@@ -228,7 +231,8 @@ class IPAMPM(object):
                     print(":::::::::::::::::MaC Address:::::::::::::::::",mac_address,file=sys.stderr)
                     print("::::::::::::::::Interface:::::::::::::::::::::",interface,file=sys.stderr)
                     print("::::::::::::::::device_name:::::::::::::::::::",device_name,file=sys.stderr)
-
+                    asyncio.run(get_vendor_information_by_mac_address(mac_address))
+                    nmap_port_scanner_for_ip_address(ip_address)
                     print(
                         f"IP Address: {ip_address}, MAC Address: {mac_address}, Interface: {interface}, Device Name: {device_name}",
                         file=sys.stderr)

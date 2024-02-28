@@ -24,6 +24,7 @@ description="API to get the interfaces based on ip address"
 def get_interfaces_by_ip_address(ip: MonitoringAlertsByIpAddress):
     try:
         ip=ip.ip_address
+        print("ip in get interface by ip address is::::::::::::",ip,file=sys.stderr)
         interfaces_list = []
         query = f'import "strings"\
                        import "influxdata/influxdb/schema"\
@@ -35,12 +36,15 @@ def get_interfaces_by_ip_address(ip: MonitoringAlertsByIpAddress):
                        |> sort(columns: ["_time"], desc: true)\
                        |> unique(column: "Interface_Name")\
                        |> yield(name: "unique")'
+        print("query in the interfaces ip address is::::::::::::",query,file=sys.stderr)
         interfaces_dict = {
             "interfaces":get_interface_influx_data(query)
         }
+        print("interces dict is::::::::::::::::",interfaces_dict,file=sys.stderr)
         result = get_interface_influx_data(query)
         print("interfaces dict is:::::::::::::::",result,file=sys.stderr)
         interfaces_list.append(result)
+        print("interface list is::::::::::::::::::::",interfaces_list,file=sys.stderr)
         return result
     except Exception as e:
         configs.db.rollback()
