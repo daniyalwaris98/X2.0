@@ -1,4 +1,4 @@
-export const PAGE_NAME = "EC2";
+export const PAGE_NAME = "AWS";
 export const ELEMENT_NAME = "EC2";
 export const PAGE_PATH = "ec2";
 export const FILE_NAME_EXPORT_ALL_DATA = "all_ec2";
