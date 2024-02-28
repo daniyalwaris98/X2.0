@@ -34,7 +34,7 @@ def status_alert(monitoring_device, status):
     pause_min = 60
 
     heatmap = "Active"
-    if status == "down":
+    if status == "Down":
         heatmap = "Device Down"
     else:
         heatmap = "Active"
@@ -43,72 +43,83 @@ def status_alert(monitoring_device, status):
     UpdateDBData(monitoring_device)
 
     alert = None
-    try:
+    if True:
         alert = configs.db.query(Monitoring_Alerts_Table).filter(
             Monitoring_Alerts_Table.monitoring_device_id
             == monitoring_device.monitoring_device_id,
             Monitoring_Alerts_Table.category == "device_down",
             Monitoring_Alerts_Table.alert_status == "Open",
         ).first()
+        print("alert....",alert,file=sys.stderr)
 
-    except Exception as e:
-        traceback.print_exc()
+    #except Exception as e:
+        #traceback.print_exc()
 
     if alert is None:
-        if status == "down":
+        if status == "Down":
+            print("down exec.....",file=sys.stderr)
             try:
-                query = (f"INSERT INTO monitoring_alerts_table (`MONITORING_DEVICE_ID`,"
-                         f"`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`)"
+                query = (f"INSERT INTO monitoring_alerts_table (MONITORING_DEVICE_ID,"
+                         f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS)"
                          f" values ({monitoring_device.monitoring_device_id},'Device is down',"
                          f"'critical','device_down','Open','no');")
+                print("down",query,file=sys.stderr)
+                
                 configs.db.execute(query)
                 configs.db.commit()
-            except Exception as e:
-                traceback.print_exc()
-    else:
-        if status == "up":
-            try:
-                # close previous alert
-                alert.alert_status = 'Close'
-                UpdateDBData(alert)
-
-                # create new informational alert for device up
-                query = (f"INSERT INTO monitoring_alerts_table (`MONITORING_DEVICE_ID`,"
-                         f"`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`)"
-                         f" values ({monitoring_device.monitoring_device_id},'Device is now up',"
-                         f"'informational','device_up','Close','no');")
-                configs.db.execute(query)
-                configs.db.commit()
+                print("Insert down successful.", file=sys.stderr)
             except Exception as e:
                 traceback.print_exc()
         else:
-            # date_format = "%Y-%m-%d %H:%M:%S"
+            print("else exec....",file=sys.stderr)
+            if status == "Up":
+                print("up exec...",file=sys.stderr)
 
-            difference = datetime.now() - alert.modification_date
-            sec = int((difference.total_seconds()) / 60)
-            if sec < pause_min:
-                pass
-            else:
-                mins = int((datetime.now() - alert.creation_date).total_seconds() / 60)
-                hours = 0
-                days = 0
-                if mins >= 60:
-                    hours = int(mins / 60)
-                    mins = mins % 60
-
-                if hours >= 24:
-                    days = int(hours / 24)
-                    hours = hours % 24
-
-                desc = f"Device is down since {days} days, {hours} hours and {mins} minutes"
-                # close previous alert
                 try:
-                    alert.alert_status = 'Open'
-                    alert.description = desc
-                    alert.mail_status = 'no'
-                    UpdateDBData(alert)
+                    # close previous alert
+                    if alert!=None:
+                        alert.alert_status = 'Close'
+                        UpdateDBData(alert)
+
+                    # create new informational alert for device up
+                    query = (f"INSERT INTO monitoring_alerts_table (MONITORING_DEVICE_ID,"
+                            f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS)"
+                            f" values ({monitoring_device.monitoring_device_id},'Device is now up',"
+                            f"'informational','device_up','Close','no');")
+                    print("up",query,file=sys.stderr)
+                    configs.db.execute(query)
+                    configs.db.commit()
+                    print("Insert up successful.", file=sys.stderr)
                 except Exception as e:
                     traceback.print_exc()
+            else:
+                # date_format = "%Y-%m-%d %H:%M:%S"
+
+                difference = datetime.now() - alert.modification_date
+                sec = int((difference.total_seconds()) / 60)
+                if sec < pause_min:
+                    pass
+                else:
+                    mins = int((datetime.now() - alert.creation_date).total_seconds() / 60)
+                    hours = 0
+                    days = 0
+                    if mins >= 60:
+                        hours = int(mins / 60)
+                        mins = mins % 60
+
+                    if hours >= 24:
+                        days = int(hours / 24)
+                        hours = hours % 24
+
+                    desc = f"Device is down since {days} days, {hours} hours and {mins} minutes"
+                    # close previous alert
+                    try:
+                        alert.alert_status = 'Open'
+                        alert.description = desc
+                        alert.mail_status = 'no'
+                        UpdateDBData(alert)
+                    except Exception as e:
+                        traceback.print_exc()
 
 
 def cpu_null_alert(host, cpu_threshold):
