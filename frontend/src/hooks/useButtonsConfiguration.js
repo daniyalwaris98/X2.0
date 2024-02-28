@@ -280,7 +280,6 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
-
     default_login: {
       name: "Login",
       type: "submit",
@@ -289,7 +288,14 @@ export default function useButtonsConfiguration(buttonDetails) {
         color: theme?.palette?.default_button?.primary_text,
       },
     },
-
+    default_register: {
+      name: "Register",
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
     default_reset: {
       name: "Reset",
       sx: {
@@ -374,6 +380,22 @@ export default function useButtonsConfiguration(buttonDetails) {
     },
     default_update: {
       name: "Update",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_submit_update: {
+      name: "Update",
+      type: "submit",
+      sx: {
+        backgroundColor: theme?.palette?.default_button?.add_background,
+        color: theme?.palette?.default_button?.primary_text,
+      },
+    },
+    default_submit_add: {
+      name: "Add",
+      type: "submit",
       sx: {
         backgroundColor: theme?.palette?.default_button?.add_background,
         color: theme?.palette?.default_button?.primary_text,

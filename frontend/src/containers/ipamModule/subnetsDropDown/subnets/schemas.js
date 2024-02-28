@@ -33,6 +33,7 @@ export const defaultSchema = yup.object().shape({
     ),
   [indexColumnNameConstants.SUBNET_LOCATION]: yup
     .string()
+    .nullable()
     .matches(ALPHA_NUMERIC_REGEX_STARTING_WITH_ALPHABETS, {
       message: "Invalid characters found",
       excludeEmptyString: true,

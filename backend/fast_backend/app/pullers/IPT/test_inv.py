@@ -1,5 +1,7 @@
 from pysnmp.hlapi import *
 import pandas as pd
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 def snmp(ip, oids):
     print(f'Connecting to {ip}')

@@ -213,8 +213,10 @@ class IpHistoryResponseSchema(BaseSchema):
 
 
 class PortsValue(BaseSchema):
-    ports: List[Union[str, None]]
-    counts: List[int]
+    #ports: List[Union[str, None]]
+    #counts: List[int]
+    name : List[str]
+    value : List[int]
 
 
 class Ip_Address_counts(BaseSchema):
@@ -249,3 +251,8 @@ class DnsZoneByServerID(BaseSchema):
 class TypeSummaryResponse(BaseSchema):
     vender : str
     counts : int     
+
+class IpAddressobjlist(BaseSchema):
+        total_ip: int
+        used_ip :int
+        available_ip:int 

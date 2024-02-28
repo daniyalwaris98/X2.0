@@ -9,6 +9,7 @@ import {
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_RESTORE,
 } from "../../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../../hooks/useButtonsConfiguration";
@@ -81,7 +82,7 @@ const Index = ({ handleClose, open, ncmDeviceId, pageEditable }) => {
     isSuccess: isRestoreBackupsSuccess,
     isError: isRestoreBackupsError,
     error: restoreBackupsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_RESTORE,
     callback: handleClose,
   });
 

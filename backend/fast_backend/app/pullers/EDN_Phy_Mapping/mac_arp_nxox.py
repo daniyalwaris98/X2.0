@@ -9,6 +9,10 @@ from netmiko import Netmiko
 import re, sys, json,time
 import pandas as pd
 from time import datetime
+from app.utils.failed_utils import addFailedDevice
+#from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
+
 
 def mac_arp_nxos():
     login_tries = 3
@@ -59,6 +63,10 @@ def mac_arp_nxos():
                 login_exception = e
         if is_login==False:
             print(f"Failed to login {host['host']} {host['type']}")
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+
             
         if is_login==True:
             try:

@@ -4,6 +4,7 @@ import re, json, sys, time
 import difflib
 import xmltodict
 from collections import OrderedDict
+from app.utils.failed_utils import addFailedDevice
 
 class XRConfigPuller(object):
     
@@ -50,6 +51,9 @@ class XRConfigPuller(object):
                 self.inv_data[host['host']] = {"error":"Login Failed"}
                 file_name = time.strftime("%d-%m-%Y")+".txt"
                 failed_device=[]
+                date = datetime.now()
+                device_type = host['device_type']
+                addFailedDevice(host['ip_address'], date, device_type, str(e), 'UAM')
                 #Read existing file
                         
                 try:
@@ -110,6 +114,10 @@ class XRConfigPuller(object):
         device, is_login = self.connect(host)
         if is_login==False:
             self.inv_data[host['host']] = {"error":"Login Failed"}
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, "Login Failed", 'UAM')
+            #addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
             return self.inv_data
         try:
             if host['host'] not in self.inv_data:

@@ -23,6 +23,23 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
+    checkIsAnyCompanyRegistered: builder.query({
+      query: () => "/api/v1/users/user/check_end_user_existence",
+    }),
+    forgotPassword: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/users/user/forgot_password",
+        method: "POST",
+        body: data,
+      }),
+    }),
+    verifyOtpAndUpdateUserPassword: builder.mutation({
+      query: (data) => ({
+        url: "/api/v1/users/user/verify_otp_and_update_user_password",
+        method: "POST",
+        body: data,
+      }),
+    }),
   }),
 });
 
@@ -30,4 +47,7 @@ export const {
   useLoginMutation,
   useRegisterMutation,
   useValidateTokenMutation,
+  useCheckIsAnyCompanyRegisteredQuery,
+  useForgotPasswordMutation,
+  useVerifyOtpAndUpdateUserPasswordMutation,
 } = extendedApi;

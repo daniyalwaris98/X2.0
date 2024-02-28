@@ -26,6 +26,9 @@ import { useAuthorization } from "../../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_ADD_UPDATE,
+  TYPE_BULK_DELETE,
+  TYPE_BULK_SCAN,
 } from "../../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../../hooks/useColumnsGenerator";
@@ -181,7 +184,7 @@ const Index = () => {
     isSuccess: isAddRecordsSuccess,
     isError: isAddRecordsError,
     error: addRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ADD_UPDATE,
   });
 
   useErrorHandling({
@@ -189,7 +192,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -198,7 +201,7 @@ const Index = () => {
     isSuccess: isScanAllIpamSubnetsSuccess,
     isError: isScanAllIpamSubnetsError,
     error: scanAllIpamSubnetsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_SCAN,
   });
 
   useErrorHandling({
@@ -206,7 +209,7 @@ const Index = () => {
     isSuccess: isScanIpamSubnetSuccess,
     isError: isScanIpamSubnetError,
     error: scanIpamSubnetError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_SCAN,
   });
 
   // effects
@@ -279,12 +282,17 @@ const Index = () => {
   function handleExport(optionType) {
     const { ALL_DATA, TEMPLATE } =
       dropdownButtonOptionsConstants.template_export;
-    if (optionType === ALL_DATA) {
-      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+    if (dataSource?.length > 0) {
+      if (optionType === ALL_DATA) {
+        jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      }
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
     } else if (optionType === TEMPLATE) {
       jsonToExcel([generateObject(dataKeys)], FILE_NAME_EXPORT_TEMPLATE);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
     }
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
   }
 
   function handleTableConfigurationsOpen() {

@@ -58,7 +58,7 @@ class AddUserRoleScehma(BaseSchema):
 
 class AddUserSchema(BaseSchema):
     name:str
-    email_address:str
+    email:str
     password:str |None = None
     status:str |None = None
     user_name:str |None = None
@@ -66,6 +66,22 @@ class AddUserSchema(BaseSchema):
     account_type:str |None = None
     role:str |None = None
     end_user_id:int |None = None
+
+
+class EditUserSchema(BaseSchema):
+    user_id:int
+    name:str
+    email:str
+    password:str |None = None
+    status:str |None = None
+    user_name:str |None = None
+    team:str |None = None
+    account_type:str |None = None
+    role:str |None = None
+    end_user_id:int |None = None
+
+
+
 
 class GetUserResponseScehma(BaseSchema):
     user_id:int
@@ -127,3 +143,14 @@ class FailedDevicesCountResponseSchema(BaseSchema):
     monitoring_failed_devices:int |None = None
     ncm_failed_devices:int |None = None
     uam_failed_devices:int |None = None
+
+
+
+class ForgotUserSchema(BaseSchema):
+    user_name:str
+
+
+class UserSchemaForgotSchema(BaseSchema):
+    user_name:str
+    otp:str
+    new_password:str

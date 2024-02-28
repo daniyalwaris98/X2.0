@@ -10,6 +10,7 @@ import {
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_ADD,
 } from "../../../hooks/useErrorHandling";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
@@ -102,7 +103,7 @@ const Index = ({ handleClose, open }) => {
     isSuccess: isAddAtomsInMonitoringDevicesSuccess,
     isError: isAddAtomsInMonitoringDevicesError,
     error: addAtomsInMonitoringDevicesError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_ADD,
     callback: handleClose,
   });
 

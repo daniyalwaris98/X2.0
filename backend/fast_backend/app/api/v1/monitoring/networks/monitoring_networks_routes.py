@@ -24,6 +24,7 @@ description="API to get the interfaces based on ip address"
 def get_interfaces_by_ip_address(ip: MonitoringAlertsByIpAddress):
     try:
         ip=ip.ip_address
+        print("ip in get interface by ip address is::::::::::::",ip,file=sys.stderr)
         interfaces_list = []
         query = f'import "strings"\
                        import "influxdata/influxdb/schema"\
@@ -35,14 +36,18 @@ def get_interfaces_by_ip_address(ip: MonitoringAlertsByIpAddress):
                        |> sort(columns: ["_time"], desc: true)\
                        |> unique(column: "Interface_Name")\
                        |> yield(name: "unique")'
+        print("query in the interfaces ip address is::::::::::::",query,file=sys.stderr)
         interfaces_dict = {
             "interfaces":get_interface_influx_data(query)
         }
+        print("interces dict is::::::::::::::::",interfaces_dict,file=sys.stderr)
         result = get_interface_influx_data(query)
         print("interfaces dict is:::::::::::::::",result,file=sys.stderr)
         interfaces_list.append(result)
+        print("interface list is::::::::::::::::::::",interfaces_list,file=sys.stderr)
         return result
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error OCcured While Getting the interfaces by ip address",status_code=500)
 
@@ -108,6 +113,7 @@ async def get_all_devices_in_networks():
             print("final list is not none:::::::",final_list,file=sys.stderr)
         return final_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
@@ -169,6 +175,7 @@ async def get_all_interfaces_in_network():
         return final_interfaces
 
     except Exception as e:
+        configs.db.rollback()
         print(f"Error occurred: {str(e)}", file=sys.stderr)
         raise JSONResponse(status_code=500, detail="Internal Server Error")
 
@@ -229,6 +236,7 @@ def get_all_devices_in_router():
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
         return final_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
@@ -287,6 +295,7 @@ async def get_all_interfaces_in_routers():
         return JSONResponse(content = final_interfaces,status_code=200)
 
     except Exception as e:
+        configs.db.rollback()
         print("Error ",str(e),file=sys.stderr)
         traceback.print_exc()
         return JSONResponse("Error Ocucred while getting Router interfaces",status_code=500)
@@ -348,6 +357,7 @@ def get_all_devices_in_switch():
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
         return final_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting Network switch Devices",status_code=500)
 
@@ -406,6 +416,7 @@ async def get_all_interfaces_in_switch():
         return JSONResponse(content = final_interfaces,status_code=200)
 
     except Exception as e:
+        configs.db.rollback()
         print("Error ",str(e),file=sys.stderr)
         traceback.print_exc()
         return JSONResponse("Error Ocucred while getting Switch interfaces",status_code=500)
@@ -467,6 +478,7 @@ def get_all_devices_in_firewall():
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
         return final_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
@@ -525,6 +537,7 @@ async def get_all_interfaces_in_firewall():
         return JSONResponse(content = final_interfaces,status_code=200)
 
     except Exception as e:
+        configs.db.rollback()
         print("Error ",str(e),file=sys.stderr)
         traceback.print_exc()
         return JSONResponse("Error Ocucred while getting Firewall interfaces",status_code=500)
@@ -588,6 +601,7 @@ def get_all_devices_in_wireless():
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
         return final_list
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
 
@@ -646,6 +660,7 @@ async def get_all_interfaces_in_wireless():
         return JSONResponse(content = final_interfaces,status_code=200)
 
     except Exception as e:
+        configs.db.rollback()
         print("Error ",str(e),file=sys.stderr)
         traceback.print_exc()
         return JSONResponse("Error Ocucred while getting Wireless interfaces",status_code=500)

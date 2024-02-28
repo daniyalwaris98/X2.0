@@ -18,7 +18,7 @@ import {
   useGetConfigurationByTimeQuery,
   useGetDeviceStatusOverviewQuery,
   useGetUnusedSfpsQuery,
- useGetEolQuery
+ useGetEolQuery,
   
 } from "../../../store/features/dashboardModule/dashboard/apis";
 
@@ -50,6 +50,7 @@ function Index() {
     isError: isSubnetSummaryError,
     error: subnetSummaryError,
   } = useGetSubnetSummaryQuery();
+  console.log("subnetSummaryData",subnetSummaryData)
   const {
     data: topVendorData,
     isSuccess: isTopVendorSuccess,
@@ -65,6 +66,8 @@ function Index() {
     isError: isCredentialsSummaryError,
     error: credentialsSummaryError,
   } = useGetCredentialsSummaryQuery();
+  console.log("credentialsSummaryData",credentialsSummaryData)
+
   const {
     data: snmpStatusData,
     isSuccess: isSnmpStatusSuccess,
@@ -72,6 +75,7 @@ function Index() {
     isError: isSnmpStatusError,
     error: SnmpStatusError,
   } = useGetSnmpStatusQuery();
+  console.log("snmpStatusData",snmpStatusData)
 
 
   const {
@@ -81,6 +85,7 @@ function Index() {
     isError: isConfigurationByTimeError,
     error: configurationByTimeError,
   } = useGetConfigurationByTimeQuery();
+  console.log("configurationByTimeData",configurationByTimeData)
 
   const {
     data: deviceStatusOverviewData,
@@ -112,9 +117,10 @@ function Index() {
     height: "100%",
     padding: "10px",
   };
+ 
 
   const rowStyle = {
-    marginBottom: "40px", // Add margin between rows
+    marginBottom: "40px", 
   };
   const title = {
     margin:"0px",
@@ -315,6 +321,12 @@ const tableColumnsSFPS = [
       { name: "Production", value: 65},
       { name: "Maintenance", value: 50},
     ];
+    const SNMPStatus = [
+      { name: 'SNMP V1/V2', value: 8 },
+      { name: 'SNMP V3', value: 3 },
+      { name: 'SSH Login', value: 26 },
+      { name: 'SSH Logi', value: 30 }
+    ];
   return (
     <>
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
@@ -365,7 +377,7 @@ const tableColumnsSFPS = [
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>SNMP Status</h5>
-            <SnmpStatus  responseData={snmpStatusData}/>
+            <SnmpStatus  responseData={snmpStatusData !==undefined? snmpStatusData:[]}/>
           </div>
         </Col>
       </Row>

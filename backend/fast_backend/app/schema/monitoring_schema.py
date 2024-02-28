@@ -93,6 +93,8 @@ class GetMonitoringDevicesCardsResponseSchema(BaseSchema):
     alerts: list[MonitoringAlertSchema]
 
 
+
+
 class TopItemDashboardSchema(BaseSchema):
     ip_address: str
     device_name: str
@@ -127,7 +129,7 @@ class InterfaceBandwidthSchema(BaseSchema):
 
 
 class MonitoringDeviceSchema(BaseSchema):
-    monitoring_id: int
+    monitoring_device_id: int
     ip_address: str
     device_type: str
     device_name: str
@@ -143,9 +145,9 @@ class MonitoringDeviceSchema(BaseSchema):
     # creation_date: datetime
     # modification_date: datetime
 class UpdateMonitoringDeviceSchema(BaseSchema):
-    monitoring_id: int
-    credentials: str | None
-    active: str | None
+    monitoring_device_id: int
+    monitoring_credentials_id: str | None
+
 
 
 class AtomInMonitoringSchema(BaseSchema):
@@ -161,10 +163,8 @@ class GetFunctionDataSchema(BaseSchema):
 
 
 class AlertStatusSchema(BaseSchema):
-    total: int
-    critical: int
-    informational: int
-    device_down: int
+    name : str
+    value : int 
 
 
 class SnmpCredentialsSchema(BaseSchema):
@@ -229,7 +229,7 @@ class DeleteResponseSchema(BaseSchema):
     error_list: list[str]
 
 class WMIMonitoringCredentialSchema(BaseSchema):
-    username:str
+    user_name:str
     profile_name:str
     password:str
 
@@ -264,3 +264,14 @@ class EditSnmpV3CredentialsResponseSchema(MonitoringSnmpV3CredentialsRequestSche
 
 class MonitoringAlertsByIpAddress(BaseSchema):
     ip_address:str
+
+class NewInterfaceCardResponse(BaseSchema):
+    availability: int
+    packets : int
+    cpu: int 
+    memory: int
+    response_time : int
+
+
+# class DeleteMonitoringSchema(BaseSchema):
+#     ip_address:str

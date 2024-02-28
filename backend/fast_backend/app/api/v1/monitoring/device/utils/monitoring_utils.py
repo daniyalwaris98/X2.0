@@ -5,16 +5,20 @@ from ping3 import ping,verbose_ping
 
 def UpdateMonitoringDevice(MonitoringObj, row, update):
     try:
+        credentials = ''
         MonitoringObj = dict(MonitoringObj)
         print("MOnitoring object is::::::::::::::::::::::::::;",MonitoringObj,file=sys.stderr)
-        monitoring_id_exsist = configs.db.query(Monitoring_Devices_Table).filter_by(monitoring_device_id = MonitoringObj['monitoring_id']).first()
+        monitoring_id_exsist = configs.db.query(Monitoring_Devices_Table).filter_by(monitoring_device_id = MonitoringObj['monitoring_device_id']).first()
         if monitoring_id_exsist:
             print("Monitoring device id exsist:::::::::::::::::::")
             print("procedding to next step")
             atom_id_in_monitoring = monitoring_id_exsist.atom_id
             atom_id_exsist = configs.db.query(AtomTable).filter_by(atom_id = atom_id_in_monitoring).first()
-            monitoring_credential_exsist = configs.db.query(Monitoring_Credentails_Table).filter_by(profile_name = MonitoringObj['credentials']).first()
+            monitoring_credential_exsist = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = MonitoringObj['monitoring_credentials_id']).first()
             if monitoring_credential_exsist:
+                monitoring_category = monitoring_credential_exsist.category
+                monitoring_crednetials_profile_name = monitoring_credential_exsist.profile_name
+                credentials = monitoring_category+"-"+monitoring_crednetials_profile_name
                 monitoring_id_exsist.monitoring_credentials_id = monitoring_credential_exsist.monitoring_credentials_id
             if atom_id_exsist:
                 atom_id = atom_id_exsist.atom_id
@@ -24,17 +28,17 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
             status = ping(atom_id_exsist.ip_address)[0]
             print("status is:::::::::::::::::::::::::::",file=sys.stderr)
             monitoring_id_exsist.atom_id = atom_id
-            monitoring_id_exsist.active = MonitoringObj["active"]
+            monitoring_id_exsist.active ='Active'
 
             # print("monitoring active is::::::::::::::::::::::::::::::::::;", Monitoringdb.active, file=sys.stderr)
-            monitoring_id_exsist.device_heatmap = MonitoringObj["active"]
-            if MonitoringObj["active"] == "Active":
+            monitoring_id_exsist.device_heatmap = 'Active'
+            if monitoring_id_exsist.active == "Active":
                     monitoring_id_exsist.status = status
             else:
-                    monitoring_id_exsist.status = "NA"
+                    monitoring_id_exsist.status = ""
             UpdateDBData(monitoring_id_exsist)
             monitoring_device_object = {
-                    "monitoring_device_if":monitoring_id_exsist.monitoring_device_id,
+                    "monitoring_device_id":monitoring_id_exsist.monitoring_device_id,
                     "ip_address":atom_id_exsist.ip_address,
                     "device_name":atom_id_exsist.device_name,
                     "device_type":atom_id_exsist.device_type,
@@ -42,11 +46,13 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
                     "function":atom_id_exsist.function,
                     "active":monitoring_id_exsist.active,
                     "status":monitoring_id_exsist.status,
-                    "credentials":monitoring_credential_exsist.profile_name
+                    "credentials":credentials,
+                    "ping_status":monitoring_id_exsist.ping_status,
+                    "snmp_status":monitoring_id_exsist.snmp_status
                 }
             data = {
                 "data":monitoring_device_object,
-                "message":f"{monitoring_id_exsist.monitoring_device_id} : Updated successfully"
+                "message":f"{atom_id_exsist.device_name} : Updated successfully"
             }
             print("data is:::::::::::::::::::::::::::::::::::",data,file=sys.stderr)
             return data
@@ -135,9 +141,9 @@ def AddMonitoringDevice(MonitoringObj, row, update):
         print("Inserted ", MonitoringObj["ip_address"], file=sys.stderr)
         return "Inserted Successfully", 200
     else:
-        Monitoringdb.monitoring_id = id
+        Monitoringdb.monitoring_device_id = id
         UpdateDBData(Monitoringdb)
-        print("Updated ", MonitoringObj["monitoring_id"], file=sys.stderr)
+        print("Updated ", MonitoringObj["monitoring_device_id"], file=sys.stderr)
 
         return "Updated Successfully", 200
 
@@ -345,7 +351,9 @@ def get_interface_influx_data(query):
     finalList = []
     try:
         for table in result:
+            print("table in result is::::::::::::",table,file=sys.stderr)
             for record in table.records:
+                print("record is:::::::::::::::::::::::::::",record,file=sys.stderr)
                 try:
                     objDict = {}
                     objDict = {}
@@ -436,7 +444,7 @@ def get_interface_influx_data(query):
                     except Exception as e:
                         print("error", str(e), file=sys.stderr)
                         pass
-
+                    print("result list is::::::::::::::::::::::::::::",resultList,file=sys.stderr)
                     resultList.append(objDict)
 
                 except Exception:
@@ -447,6 +455,7 @@ def get_interface_influx_data(query):
                 dictionary["interface_name"]: dictionary for dictionary in resultList
             }.values()
         )
+        print("final list is::::::::::::::::::::::::::::::",finalList,file=sys.stderr)
 
     except Exception:
         traceback.print_exc()

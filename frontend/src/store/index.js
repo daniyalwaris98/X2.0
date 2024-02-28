@@ -71,6 +71,11 @@ import monitoringLoginCredentialsReducer from "./features/monitoringModule/manag
 import monitoringV1V2CredentialsReducer from "./features/monitoringModule/manageCredentials/snmpCredentials/v1V2Credentials";
 import monitoringV3CredentialsReducer from "./features/monitoringModule/manageCredentials/snmpCredentials/v3Credentials";
 
+// cloud monitoring module
+import cloudMonitoringEC2Reducer from "./features/cloudMonitoringModule/aws/ec2";
+import cloudMonitoringS3Reducer from "./features/cloudMonitoringModule/aws/s3";
+import cloudMonitoringELBReducer from "./features/cloudMonitoringModule/aws/elb";
+
 // auto discovery module
 import autoDiscoveryManageNetworksReducer from "./features/autoDiscoveryModule/manageNetworks";
 import autoDiscoveryManageDevicesReducer from "./features/autoDiscoveryModule/manageDevices";
@@ -194,6 +199,11 @@ const rootReducer = combineReducers({
   monitoring_login_credentials: monitoringLoginCredentialsReducer,
   monitoring_v1_v2_credentials: monitoringV1V2CredentialsReducer,
   monitoring_v3_credentials: monitoringV3CredentialsReducer,
+
+  // cloud monitoring module
+  cloud_monitoring_ec2: cloudMonitoringEC2Reducer,
+  cloud_monitoring_elb: cloudMonitoringELBReducer,
+  cloud_monitoring_s3: cloudMonitoringS3Reducer,
 
   // auto discovery module
   auto_discovery_manage_networks: autoDiscoveryManageNetworksReducer,

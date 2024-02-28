@@ -108,24 +108,32 @@ async def ncm_change_summary_by_time():
                      f"GROUP BY month_interval ORDER BY backup_count DESC;")
 
         result = configs.db.execute(query)
-
+        print("result......",result , file =sys.stderr)
         name_list = []
         value_list = []
         month_names = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"]
 
         for row in result:
-            current_month_value = int(current_time.strftime('%m'))
-            month_name = month_names[current_month_value]
+            print("row",row)
+            
+            #current_month_value = int(current_time.strftime('%m'))
+            month_value =int(row[1])
+            print("current_month", month_value)
+            month_name = month_names[month_value]
+            print("month_name",month_name)
             name_list.append(month_name)
+            print(name_list)
             value_list.append(int(row[0]))
-
+            print(value_list)
+        
+        
         if len(name_list) <= 0:
             # Adjust this logic based on your requirements
             # Here, it adds the current month and the previous month
-            name_list.append(current_time.strftime('%m'))
+            name_list.append('month')
             value_list.append(0)
-            name_list.append((current_time - timedelta(days=30)).strftime('%m'))
-            value_list.append(0)
+            #name_list.append((current_time - timedelta(days=30)).strftime('%m'))
+            #value_list.append(0)
 
         obj_dict = {"name": name_list, "value": value_list}
 
@@ -290,26 +298,38 @@ async def type_summary():
             status_code = 500,
         )
     
-@router.get("/main_phy_leaf_let"
+@router.get("/main_phy_leaf_let",response_model=list[location]
             ,summary="API to get phy_leaf_let",
             description="API to get phy_leaf_let")
-async def phy_leaflet():
+async def phy_leaflet(site_name : str = Query(...,description="Name of the site")):
     try:
-        result = configs.db.query(SiteTable).all()
+        result = (
+            configs.db.query(SiteTable)
+            .filter(SiteTable.site_name == site_name)
+            .all()
+        )
         print("result in py leaflet is ::::::::::::::::::::::::::::::::",result,file=sys.stderr)
-        response = list()
+        response = []
+        obj_dict ={}
 
         for site in result:
             print("site is::::::::::::::::::::::::::::::::::::::::::::::::::",site,file=sys.stderr)
-            obj_dict = {"site_name": site.site_name, "longitude": site.longitude, "latitude": site.latitude,
-                        "city": site.city}
+            obj_dict = {"name":"site_name", "value":site.site_name,
+                        "name":"city", "value":site.city}
             response.append(obj_dict)
 
-        return JSONResponse(content=response, status_code=200)
+        if not response:
+            response ={"name":"site_name", "value":"none" ,
+                        "name":"city", "value":"none"}
 
+            return JSONResponse(content=response, status_code=200)
+        
+        return JSONResponse(content=response, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
+
+
 
 
 @router.get("/main_device_status", responses={
@@ -599,19 +619,18 @@ description="API to get location devices"
 async def type(region_name: str = Query(..., description="Region Name for filtering")):
     try:
         result = (
-            configs.db.query(SiteTable.site_id, SiteTable.region_name)
+            configs.db.query(SiteTable,SiteTable.site_id)
             .filter(SiteTable.region_name == region_name)
-            .first() .scalar() 
+            .first() 
         )
+     
+            
 
-        if not result:
-            return JSONResponse(content="Invalid region_name", status_code=400)
 
-
-        print('site_id...............',site_id, file =sys.stderr)
+        print('site_id...............',result, file =sys.stderr)
         site_id = result.site_id
-        obj_list = {}
-        result = (
+        obj_list = []
+        '''result = (
                 configs.db.query(
                     AtomTable,
                     RackTable,
@@ -626,18 +645,27 @@ async def type(region_name: str = Query(..., description="Region Name for filter
                 .filter(SiteTable.site_id == site_id)
                 .group_by(AtomTable.device_name, AtomTable.rack_id, AtomTable.onboard_status, AtomTable.virtual)
                 .first()
-            )
+            )'''
+        result =(
+            configs.db.query(AtomTable,
+                    RackTable,
+                    SiteTable,func.count(AtomTable.device_name).label("total_device_count"))
+                    .join(RackTable, AtomTable.rack_id == RackTable.rack_id)
+                    .join(SiteTable, RackTable.site_id == SiteTable.site_id)
+                    .filter(SiteTable.site_id == site_id)
+                    .group_by(AtomTable.device_name.isnot(None))
+                    .first()
 
+
+        )
 
         if result is None:
-            return "No Site Found", 500
+            total_device_count=0
 
-        atom_table_instance, rack_table_instance, site_table_instance, total_device_count, onboard_status_count, virtual_count, non_virtual_count = result
-        obj_dict = {{"total_devices":total_device_count},
-                    {"onboard_devices":onboard_status_count},
-                    {"virtual":virtual_count},
-                    {"physical":non_virtual_count}}
-        return JSONResponse(content=obj_dict, status_code=200)
+        atom_table_instance, rack_table_instance, site_table_instance, total_device_count = result
+        obj_list = [{"name":"devices","value":total_device_count}
+        ]
+        return JSONResponse(content=obj_list, status_code=200)
 
     except Exception:
         traceback.print_exc()

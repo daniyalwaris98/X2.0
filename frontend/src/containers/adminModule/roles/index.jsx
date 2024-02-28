@@ -15,7 +15,9 @@ import {
 import { setSelectedRole } from "../../../store/features/adminModule/roles";
 import { deepEqual, jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
-import useErrorHandling from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_BULK_DELETE,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
@@ -24,6 +26,7 @@ import {
   TYPE_SINGLE,
   TYPE_BULK,
 } from "../../../hooks/useErrorHandling";
+import { useAuthorization } from "../../../hooks/useAuth";
 import DefaultPageTableSection from "../../../components/pageSections";
 import DefaultCard from "../../../components/cards";
 import { UpdateDialogFooter } from "../../../components/dialogFooters";
@@ -37,25 +40,44 @@ import {
   FILE_NAME_EXPORT_ALL_DATA,
   TABLE_DATA_UNIQUE_ID,
   indexColumnNameConstants,
+  PAGE_PATH,
 } from "./constants";
+import { MODULE_PATH } from "..";
 
 const Index = () => {
-  // states required in hooks
+  // hooks
+  const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
+
+  // user information
+  const userInfo = getUserInfoFromAccessToken();
+  const roleConfigurations = userInfo?.configuration;
+
+  // states
+  const [pageEditable, setPageEditable] = useState(
+    isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
+  );
   const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
   const dispatch = useDispatch();
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
     useSweetAlert();
-  const { columnDefinitions } = useIndexTableColumnDefinitions({ handleEdit });
+  const { columnDefinitions } = useIndexTableColumnDefinitions({
+    pageEditable,
+    handleEdit,
+  });
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_export: { handleClick: handleDefaultExport },
     default_delete: {
       handleClick: handleDelete,
-      visible: selectedRowKeys.length > 0,
+      visible: selectedRowKeys.length > 0 && pageEditable,
     },
-    default_add: { handleClick: handleDefaultAdd, namePostfix: ELEMENT_NAME },
+    default_add: {
+      handleClick: handleDefaultAdd,
+      namePostfix: ELEMENT_NAME,
+      visible: pageEditable,
+    },
   });
 
   // selectors
@@ -125,7 +147,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -192,8 +214,12 @@ const Index = () => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   function handleCancel() {
@@ -218,7 +244,7 @@ const Index = () => {
         isFetchRecordsLoading || isUpdateRecordLoading || isDeleteRecordsLoading
       }
     >
-      {!deepEqual(selectedRole, selectedRoleForComparison) ? (
+      {!deepEqual(selectedRole, selectedRoleForComparison) && pageEditable ? (
         <div
           style={{
             position: "fixed",
@@ -259,7 +285,7 @@ const Index = () => {
               buttonsConfigurationList={buttonsConfigurationList}
               displayColumns={displayColumns}
               dataSource={dataSource}
-              selectedRowKeys={selectedRowKeys}
+              selectedRowKeys={pageEditable ? selectedRowKeys : null}
               setSelectedRowKeys={setSelectedRowKeys}
               rowClickable={true}
               selectedRowKey={selectedRowKey}
@@ -284,6 +310,7 @@ const Index = () => {
                     <ExpandableConfigurationPanel
                       moduleKey={moduleKey}
                       moduleConfigurations={moduleConfigurations}
+                      pageEditable={pageEditable}
                     />
                   );
                 })

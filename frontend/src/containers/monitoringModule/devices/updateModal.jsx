@@ -2,20 +2,19 @@ import React, { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import Grid from "@mui/material/Grid";
 import { yupResolver } from "@hookform/resolvers/yup";
-import * as yup from "yup";
 import { useSelector } from "react-redux";
 import { selectMonitoringCredentialsNames } from "../../../store/features/dropDowns/selectors";
-import {
-  useUpdateRecordMutation,
-  useAddRecordMutation,
-} from "../../../store/features/atomModule/atoms/apis";
-import { formSetter, getTitle } from "../../../utils/helpers";
+import { useUpdateRecordMutation } from "../../../store/features/monitoringModule/devices/apis";
+import { formSetter } from "../../../utils/helpers";
 import useErrorHandling, { TYPE_SINGLE } from "../../../hooks/useErrorHandling";
 import FormModal from "../../../components/dialogs";
 import DefaultFormUnit, {
   SelectFormUnitWithHiddenValues,
 } from "../../../components/formUnits";
-import DefaultDialogFooter from "../../../components/dialogFooters";
+import {
+  AddSubmitDialogFooter,
+  UpdateSubmitDialogFooter,
+} from "../../../components/dialogFooters";
 import DefaultSpinner from "../../../components/spinners";
 import {
   ELEMENT_NAME,
@@ -39,17 +38,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
 
   // post api for the form
   const [
-    addRecord,
-    {
-      data: addRecordData,
-      isSuccess: isAddRecordSuccess,
-      isLoading: isAddRecordLoading,
-      isError: isAddRecordError,
-      error: addRecordError,
-    },
-  ] = useAddRecordMutation();
-
-  const [
     updateRecord,
     {
       data: updateRecordData,
@@ -61,15 +49,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
   ] = useUpdateRecordMutation();
 
   // error handling custom hooks
-  useErrorHandling({
-    data: addRecordData,
-    isSuccess: isAddRecordSuccess,
-    isError: isAddRecordError,
-    error: addRecordError,
-    type: TYPE_SINGLE,
-    callback: handleClose,
-  });
-
   useErrorHandling({
     data: updateRecordData,
     isSuccess: isUpdateRecordSuccess,
@@ -90,7 +69,6 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       data[TABLE_DATA_UNIQUE_ID] = recordToEdit[TABLE_DATA_UNIQUE_ID];
       updateRecord(data);
     } else {
-      addRecord(data);
     }
   };
 
@@ -99,7 +77,7 @@ const Index = ({ handleClose, open, recordToEdit }) => {
       title={`${recordToEdit ? "Edit" : "Add"} ${ELEMENT_NAME}`}
       open={open}
     >
-      <DefaultSpinner spinning={isAddRecordLoading || isUpdateRecordLoading}>
+      <DefaultSpinner spinning={isUpdateRecordLoading}>
         <form onSubmit={handleSubmit(onSubmit)}>
           <Grid container spacing={5}>
             <Grid item xs={12}>
@@ -130,7 +108,8 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               />
               <SelectFormUnitWithHiddenValues
                 control={control}
-                dataKey={indexColumnNameConstants.CREDENTIALS}
+                optionalTitle={indexColumnNameConstants.CREDENTIALS}
+                dataKey={MONITORING_CREDENTIALS_ID}
                 options={
                   monitoringCredentialsNames
                     ? monitoringCredentialsNames?.map((item) => ({
@@ -142,7 +121,11 @@ const Index = ({ handleClose, open, recordToEdit }) => {
               />
             </Grid>
             <Grid item xs={12}>
-              <DefaultDialogFooter handleClose={handleClose} />
+              {recordToEdit ? (
+                <UpdateSubmitDialogFooter handleCancel={handleClose} />
+              ) : (
+                <AddSubmitDialogFooter handleCancel={handleClose} />
+              )}
             </Grid>
           </Grid>
         </form>

@@ -224,9 +224,11 @@ async def get_unused_sfps():
         print(f"Error: {e}")
         return JSONResponse(content="Server error", status_code=500)
 
+
+
+
 @router.get("/get_EOL_Summary", responses={
     200: {"model": list[GetEol]},
-    400: {"model": str},
     500: {"model": str}
 },
 summary="API to get EOL summary",
@@ -244,7 +246,7 @@ async def get_eol():
 
 
         if not total_eol_count:
-            return JSONResponse(content="No total_eol_count  found in UamDeviceTable", status_code=400)
+            total_eol_count=0
         
         null_eol_count = (
                         configs.db.query(func.count())
@@ -252,8 +254,8 @@ async def get_eol():
                         .scalar()
                         )
 
-        if not total_eol_count:
-            return JSONResponse(content="null_eol_count  found in UamDeviceTable", status_code=400)
+        if not null_eol_count:
+           null_eol_count=0
         
         uam_hweol = (
                     configs.db.query(UamDeviceTable.hw_eol_date)

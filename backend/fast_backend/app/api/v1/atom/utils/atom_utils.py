@@ -91,6 +91,7 @@ def check_device_name_uniqueness(device_ip, device_name):
 
 def validate_atom(device, update):
     try:
+        print("device in vlidate atom is:::::::::::::::::",device,file=sys.stderr)
         if device["ip_address"].strip() == "" or device['ip_address'] == 'string':
             return f"Ip Address Can Not be Empty", 400
         if device['ip_address'] !="" or device['ip_address']!='string':
@@ -123,23 +124,23 @@ def validate_atom(device, update):
         if device["device_name"] == "":
             return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
-        atom = configs.db.query(AtomTable).filter_by(ip_address = device["ip_address"]).first()
-        if atom is not None:
-            atom_device_name = atom.device_name
-            if atom_device_name:
-                if atom_device_name != device['device_name']:
-                    print(f"{device['ip_address']}: already assigned with the {device['device_name']}", file=sys.stderr)
-                    return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
-                else:
-                    # For update, check if the device name is unique among other devices
-                    is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
-                    if not is_unique_name:
-                        return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
-        else:
-            # For new device addition, check if the device name is unique among other devices
-            is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
-            if not is_unique_name:
-                return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
+        # atom = configs.db.query(AtomTable).filter_by(ip_address = device["ip_address"]).first()
+        # if atom is not None:
+        #     atom_device_name = atom.device_name
+        #     if atom_device_name:
+        #         if atom_device_name != device['device_name']:
+        #             print(f"{device['ip_address']}: already assigned with the {device['device_name']}", file=sys.stderr)
+        #             return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
+        #         else:
+        #             # For update, check if the device name is unique among other devices
+        #             is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
+        #             if not is_unique_name:
+        #                 return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
+        # else:
+        #     # For new device addition, check if the device name is unique among other devices
+        #     is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
+        #     if not is_unique_name:
+        #         return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
 
         if device["function"] is None or device['function'] == 'string':
             return f"Function Can Not be Empty", 400 #{device['ip_address']} : 
@@ -161,6 +162,8 @@ def validate_atom(device, update):
 
         if device["vendor"] is None:
             return f"Vendor Can Not be Empty", 400 #{device['ip_address']} :
+        if device['vendor'] not in vendor_list:
+            return f"{device['ip_address']} : Device Vendor Is Unknown",400
 
         device["vendor"] = str(device["vendor"]).strip().capitalize()
         if device["vendor"] not in vendor_list:
@@ -224,39 +227,39 @@ def add_complete_atom(device, update):
         atom.device_ru = device["device_ru"]
 
         if device["department"] is None:
-            atom.department = "N/A"
+            atom.department = ""
         elif device["department"].strip() != "":
             atom.department = device["department"].strip()
         else:
-            atom.department = "N/A"
+            atom.department = ""
 
         if device["section"] is None:
-            atom.section = "N/A"
+            atom.section = ""
         elif device["section"].strip() != "":
             atom.section = device["section"].strip()
         else:
-            atom.section = "N/A"
+            atom.section = ""
 
         if device["criticality"] is None:
-            atom.criticality = "N/A"
+            atom.criticality = ""
         elif device["criticality"].strip() != "":
             atom.criticality = device["criticality"].strip()
         else:
-            atom.criticality = "N/A"
+            atom.criticality = ""
 
         if device["domain"] is None:
-            atom.domain = "N/A"
+            atom.domain = ""
         elif device["domain"].strip() != "":
             atom.domain = device["domain"].strip()
         else:
-            atom.domain = "N/A"
+            atom.domain = ""
 
         if device["virtual"] is None:
-            atom.virtual = "N/A"
+            atom.virtual = ""
         elif device["virtual"].strip() != "":
             atom.virtual = device["virtual"].strip()
         else:
-            atom.virtual = "N/A"
+            atom.virtual = ""
         atom_data = {}
         msg = ""
         status = 500
@@ -377,6 +380,7 @@ def add_complete_atom(device, update):
 
 def add_transition_atom(device, update):
     try:
+        print("device in add tranision atom is:;;;;;;;;;;;;",device,file=sys.stderr)
         device["ip_address"] = device["ip_address"].strip()
 
         if device["ip_address"] == "" or device['ip_address'] == 'string':
@@ -621,9 +625,15 @@ def edit_atom_util(device):
 
             trans_atom.ip_address = device['ip_address']
             trans_atom = fill_transition_data(device, trans_atom)
+            print("trans atom is:::::::::::::::::::::::::tranistion atom",trans_atom,file=sys.stderr)
+            msg, status = add_complete_atom(device, True)
+            if status==200:
+                return msg,status
+            print("message for the add compelte atom is in tranistions",msg,file=sys.stderr)
+            print("status for the add compelte atom is:::::::::::::::",status,file=sys.stderr)
             status = UpdateDBData(trans_atom)
-            object_to_inspect = trans_atom
 
+            object_to_inspect = trans_atom
         else:
             return "Device Not Found", 400
 
@@ -651,9 +661,9 @@ def edit_atom_util(device):
                             attributes_dict['password_group'] = password_group.password_group
                     elif column_name == 'onboard_status':
                         if value:
-                            attributes_dict['onboard_status'] = 'True'
+                            attributes_dict['onboard_status'] = True
                         else:
-                            attributes_dict['onboard_status'] = 'False'
+                            attributes_dict['onboard_status'] = False
                     else:
                         attributes_dict[column_name] = value
 
@@ -742,39 +752,39 @@ def edit_complete_atom(device, atom):
     atom.device_ru = device["device_ru"]
 
     if device["department"] is None:
-        atom.department = "N/A"
+        atom.department = ""
     elif device["department"].strip() != "":
         atom.department = device["department"].strip()
     else:
-        atom.department = "N/A"
+        atom.department = ""
 
     if device["section"] is None:
-        atom.section = "N/A"
+        atom.section = ""
     elif device["section"].strip() != "":
         atom.section = device["section"].strip()
     else:
-        atom.section = "N/A"
+        atom.section = ""
 
     if device["criticality"] is None:
-        atom.criticality = "N/A"
+        atom.criticality = ""
     elif device["criticality"].strip() != "":
         atom.criticality = device["criticality"].strip()
     else:
-        atom.criticality = "N/A"
+        atom.criticality = ""
 
     if device["domain"] is None:
-        atom.domain = "N/A"
+        atom.domain = ""
     elif device["domain"].strip() != "":
         atom.domain = device["domain"].strip()
     else:
-        atom.domain = "N/A"
+        atom.domain = ""
 
     if device["virtual"] is None:
-        atom.virtual = "N/A"
+        atom.virtual = ""
     elif device["virtual"].strip() != "":
         atom.virtual = device["virtual"].strip()
     else:
-        atom.virtual = "N/A"
+        atom.virtual = ""
 
     if "vendor" in device.keys():
         if device["vendor"] is not None:
@@ -855,7 +865,7 @@ def validate_password_group_credentials(pass_obj, password_exist):
                 password_exist.password_group_type = "SSH"
 
         if pass_obj["password_group_type"] not in ['SSH', 'TELNET']:
-            error_message = f"Invalid password group type for '{pass_obj['password_group']}'. Please select either 'SSH' or 'TELNET' from the password group dropdown."
+            error_message = f"Invalid password group type for '{pass_obj['password_group']}'. Please select either 'SSH' or 'TELNET'."
             return error_message, 400
         if "secret_password" in pass_obj and pass_obj["secret_password"]:
                 pass_obj["secret_password"] = pass_obj["secret_password"].strip()

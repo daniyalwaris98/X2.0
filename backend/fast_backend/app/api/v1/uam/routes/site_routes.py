@@ -147,23 +147,29 @@ async def get_site_dropdown():
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
 
 
-@router.get("/phy_leaf_let"
+@router.get("/phy_leaf_let",response_model=list[location]
             ,summary="API to get phy_leaf_let",
             description="API to get phy_leaf_let")
 async def phy_leaflet():
     try:
         result = configs.db.query(SiteTable).all()
         print("result in py leaflet is ::::::::::::::::::::::::::::::::",result,file=sys.stderr)
-        response = list()
+        response = []
+        obj_dict ={}
 
         for site in result:
             print("site is::::::::::::::::::::::::::::::::::::::::::::::::::",site,file=sys.stderr)
-            obj_dict = {"site_name": site.site_name, "longitude": site.longitude, "latitude": site.latitude,
-                        "city": site.city}
+            obj_dict = {"name":"site_name", "value":site.site_name,
+                        "name":"city", "value":site.city}
             response.append(obj_dict)
 
-        return JSONResponse(content=response, status_code=200)
+        if not response:
+            response ={"name":"site_name", "value":"none" ,
+                        "name":"city", "value":"none"}
 
+            return JSONResponse(content=response, status_code=200)
+        
+        return JSONResponse(content=response, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)

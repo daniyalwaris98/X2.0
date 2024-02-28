@@ -252,7 +252,7 @@ def add_subnet(subnetObj:AddSubnetManually):
         print("subnet obj is :::::",file=sys.stderr)
         subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address = subnet_obj['subnet_address']).first()
         if subnet_exsist:
-            return JSONResponse(content=f"{subnet_obj['subnet_address']} : ALready Exsists",status_code=400)
+            return JSONResponse(content=f"{subnet_obj['subnet_address']} : Already Exist",status_code=400)
         else:
             subnet_tab = subnet_table()
             subnet_tab.subnet_address = subnet_obj['subnet_address']
@@ -812,28 +812,29 @@ async def get_all_details():
         ip_detail = configs.db.query(IpTable).all()
         for ip in ip_detail:
             subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_id = ip.subnet_id).first()
-            print("ip is::", ip, file=sys.stderr)
-            print("ip is::", ip, file=sys.stderr)
-            subnet_address = None
-            if subnet_exsist:
-                subnet_address = subnet_exsist.subnet_address
-            ip_dict = {
-                "ip_id": ip.ip_address,
-                "mac_address": ip.mac_address,
-                "status": ip.status,
-                "vip": ip.vip,
-                "asset_tag": ip.asset_tag,
-                "configuration_switch": ip.configuration_switch,
-                "configuration_interface": ip.configuration_interface,
-                "open_ports": ip.open_ports,
-                "ip_dns": ip.ip_dns,
-                "dns_ip": ip.dns_ip,
-                "creation_date": ip.creation_date,
-                "modification_date": ip.modification_date,
-                "ip_address": ip.ip_address,
-                "subnet_address":subnet_address
-            }
-            ip_list.append(ip_dict)
+            if ip.ip_address is not None:
+                print("ip is::", ip, file=sys.stderr)
+                print("ip is::", ip, file=sys.stderr)
+                subnet_address = None
+                if subnet_exsist and subnet_exsist.subnet_address is not None :
+                    subnet_address = subnet_exsist.subnet_address
+                ip_dict = {
+                    "ip_id": ip.ip_id,
+                    "mac_address": ip.mac_address,
+                    "status": ip.status,
+                    "vip": ip.vip,
+                    "asset_tag": ip.asset_tag,
+                    "configuration_switch": ip.configuration_switch,
+                    "configuration_interface": ip.configuration_interface,
+                    "open_ports": ip.open_ports,
+                    "ip_dns": ip.ip_dns,
+                    "dns_ip": ip.dns_ip,
+                    "creation_date": ip.creation_date,
+                    "modification_date": ip.modification_date,
+                    "ip_address": ip.ip_address,
+                    "subnet_address":subnet_address
+                }
+                ip_list.append(ip_dict)
         return ip_list
     except Exception as e:
         traceback.print_exc()
@@ -913,7 +914,7 @@ def scan_subnets(subnets: ScanSubnetSchema):
              summary="Use this API in the subnet page on a scan subnet button to scan all the option this API accepts the dns_scan or port_scan in  a boolean.This API is of post method",
              description = 'Use this API in the subnet page on a scan subnet button to scan all the option this API accepts the dns_scan or port_scan in  a boolean.This API is of post method'
              )
-def scan_all_subnets(subnet: ScanAllSubnetSchema):
+async def scan_all_subnets(subnet: ScanAllSubnetSchema):
     try:
         data_dict = {}
         success_list = []
@@ -943,17 +944,17 @@ def scan_all_subnets(subnet: ScanAllSubnetSchema):
                     # Update other attributes accordingly
                     configs.db.merge(obj)
                     configs.db.commit()  # Commit changes after merging
-                    ip_data = configs.db.query(IpTable).filter_by(subnet_id=obj.subnet_id).first()
-                    if ip_data:
-                        ip_data.mac_address = ''
-                        ip_data.configuration_switch = ''
-                        ip_data.configuration_interface = ''
-                        ip_data.status = ''
-                        ip_data.ip_dns = ''
-                        ip_data.dns_ip = ''
-                        ip_data.vip = ''
-                    configs.db.merge(ip_data)
-                    configs.db.commit()  # Commit changes after merging
+                    # ip_data = configs.db.query(IpTable).filter_by(subnet_id=obj.subnet_id).first()
+                    # if ip_data:
+                    #     ip_data.mac_address = ''
+                    #     ip_data.configuration_switch = ''
+                    #     ip_data.configuration_interface = ''
+                    #     ip_data.status = ''
+                    #     ip_data.ip_dns = ''
+                    #     ip_data.dns_ip = ''
+                    #     ip_data.vip = ''
+                    # configs.db.merge(ip_data)
+                    # configs.db.commit()  # Commit changes after merging
                 print("DB updated::::::::::", file=sys.stderr)
                 subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = obj.subnet_id).first()
                 subnet_data_dict = {
@@ -971,7 +972,7 @@ def scan_all_subnets(subnet: ScanAllSubnetSchema):
 
 
         stat = Thread(target=MultiPurpose, args=(option_dict.get('options'),)).start()
-        print("threading is being executed::", file=sys.stderr)
+        print("threading is being executed::",stat,file=sys.stderr)
         if stat == "success":
             responses = {
                 "data":data_dict,
@@ -1081,10 +1082,12 @@ def add_subnets(subnetObj: list[AddSubnetManually]):
 
                 if subnet_existing:
                     # Update existing subnet details
+                    subnet_existing.subnet_address = obj.subnet_address
                     subnet_existing.subnet_mask = obj.subnet_mask
                     subnet_existing.subnet_name = obj.subnet_name
                     subnet_existing.location = obj.subnet_location
                     subnet_existing.discovered = 'Not Discovered'
+                    subnet_existing.subnet_state = 'Not Discovered'
                     UpdateDBData(subnet_existing)
                     configs.db.commit()
 
@@ -1099,11 +1102,12 @@ def add_subnets(subnetObj: list[AddSubnetManually]):
                     success_list.append(f"{subnet_existing.subnet_address} : Updated Successfully")
                 else:
                     subnet_tab = subnet_table()
-                    subnet_tab.subnet_address = obj.subnet
+                    subnet_tab.subnet_address = obj.subnet_address
                     subnet_tab.subnet_mask = obj.subnet_mask
                     subnet_tab.subnet_name = obj.subnet_name
-                    subnet_tab.location = obj.location
+                    subnet_tab.location = obj.subnet_location
                     subnet_tab.discovered = 'Not Discovered'
+                    subnet_tab.subnet_state = 'Not Discovered'
                     InsertDBData(subnet_tab)
                     subnet_dict = {
                         "subnet_id": subnet_tab.subnet_id,
@@ -1569,3 +1573,38 @@ async def get_ipam_by_date(date:str):
         return objList
     except Exception as e:
         traceback.print_exc()
+
+
+@router.post('/delete_ipam_devices',
+             responses={
+                 200:{"model":str},
+                 400:{"model":str},
+                 500:{"model":str}
+             }
+             )
+def delete_ipam_device(ipam_data:list[int]):
+    try:
+        data = []
+        success_list = []
+        error_list = []
+        for ipam_id in ipam_data:
+            print("ipam_id:::::::::::::::",ipam_id,file=sys.stderr)
+            is_ipam_device_exsists = configs.db.query(IpamDevicesFetchTable).filter_by(ipam_device_id = ipam_id).first()
+            if is_ipam_device_exsists:
+                data.append(is_ipam_device_exsists.ipam_device_id)
+                DeleteDBData(is_ipam_device_exsists)
+                success_list.append(f"IPAM devices deleted successfully")
+            else:
+                error_list.append("IPAM device id not found")
+        responses = {
+            "data":data,
+            "success":len(success_list),
+            "error":len(error_list),
+            "success_list":success_list,
+            "error_list":error_list
+        }
+
+        return responses
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured while deleteing ipam device",status_code=500)

@@ -2,6 +2,7 @@ import os
 import threading
 import traceback
 from pathlib import Path
+from sqlalchemy import func
 
 from fastapi import Request
 from fastapi.responses import HTMLResponse
@@ -180,38 +181,37 @@ description="Use this API to list down the Atom in NCM"
 )
 async def get_atom_in_ncm():
     try:
-        atom_ids = []
-        ncm_devices = configs.db.query(NcmDeviceTable).all()
-        for ncm in ncm_devices:
-            atom_ids.append(ncm.atom_id)
+        # Initialize a session
+        with configs.db_session() as session:
+            # Fetch atom_ids that are in NcmDeviceTable using a subquery
+            ncm_device_atom_ids_subquery = session.query(NcmDeviceTable.atom_id).subquery()
 
-        results = configs.db.query(AtomTable).all()
+            # Fetch atoms not in NcmDeviceTable with a single query
+            atoms = session.query(AtomTable).filter(AtomTable.atom_id.notin_(ncm_device_atom_ids_subquery)).all()
 
-        atom_list = []
-        for atom in results:
-            if atom.atom_id in atom_ids:
-                continue
+            # If password groups are needed, fetch them in a single query
+            if any(atom.password_group_id for atom in atoms):
+                password_groups = {pg.password_group_id: pg.password_group for pg in
+                                   session.query(PasswordGroupTable).all()}
+            else:
+                password_groups = {}
 
-            password_group = None
-            if atom.password_group_id is not None:
-                password = configs.db.query(PasswordGroupTable).filter(
-                    PasswordGroupTable.password_group_id == atom.password_group_id
-                ).first()
-
-                if password is not None:
-                    password_group = password.password_group
-
-            obj_dict = {"atom_id": atom.atom_id, "ip_address": atom.ip_address,
-                        "device_name": atom.device_name, "device_type": atom.device_type,
-                        "password_group": password_group, "vendor": atom.vendor,
-                        "function": atom.function}
-            atom_list.append(obj_dict)
+            # Construct the response list
+            atom_list = [{
+                "atom_id": atom.atom_id,
+                "ip_address": atom.ip_address,
+                "device_name": atom.device_name,
+                "device_type": atom.device_type,
+                "password_group": password_groups.get(atom.password_group_id),
+                "vendor": atom.vendor,
+                "function": atom.function
+            } for atom in atoms]
 
         return JSONResponse(content=atom_list, status_code=200)
-    except Exception:
+    except Exception as e:
+        print(f"Error: {e}")
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching Atom In NCM", status_code=500)
-
 
 @router.post("/add_ncm_from_atom", responses={
     200: {"model": SummeryResponseSchema},
@@ -225,12 +225,16 @@ async def add_ncm_from_atom(atom_ids: list[int]):
         data =[]
         success_list = []
         error_list = []
-
+        password_group_attribute = ""
         for atom_id in atom_ids:
             print("atom id is:::::::::::::::::",atom_id,file=sys.stderr)
             atom = configs.db.query(AtomTable).filter(AtomTable.atom_id == atom_id).first()
             if atom is not None:
                 print("atom is not none::::::::::::",atom,file=sys.stderr)
+                queried_password_group = configs.db.query(PasswordGroupTable).filter(
+                    PasswordGroupTable.password_group_id == atom.password_group_id).first()
+                if queried_password_group is not None:
+                    password_group_attribute = queried_password_group.password_group
                 ncm = NcmDeviceTable()
                 ncm.atom_id = atom.atom_id
                 ncm.status = "Active"
@@ -242,11 +246,12 @@ async def add_ncm_from_atom(atom_ids: list[int]):
                         "device_name":atom.device_name,
                         "vendor":atom.vendor,
                         "device_type":atom.device_type,
-                        "fucntion":atom.function,
+                        "function":atom.function,
                         "ncm_device_id":ncm.ncm_device_id,
                         "status":ncm.status,
                         "config_change_date":ncm.config_change_date,
-                        "backup_status":ncm.backup_status
+                        "backup_status":ncm.backup_status,
+                        "password_group":password_group_attribute
                     }
                     print("data dict is::::::::::::::",data_dict,file=sys.stderr)
                     data.append(data_dict)
@@ -664,8 +669,8 @@ def delete_configuration(ncm_history_id:list[int]):
             "data":deleted_ids,
             "success_list":success_list,
             "error_list":error_list,
-            "succes":len(success_list),
-            "errors":len(error_list)
+            "success":len(success_list),
+            "error":len(error_list)
         }
         return responses
     except Exception as e:
@@ -745,12 +750,92 @@ def restore_configuration(ncm_history_id:list[int]):
 
 
 
+@router.get('/sort_by_severity',
+             responses={
+                 200:{"model":list[SortSeverity]},
+                 500:{"model":str}
+             },summary= "Api to get completd and failed devices counting",
+             description ="Api to  get completd and failed devices counting"
+             )
+def sort_severity():
+    try:
+        obj_list =[]
+        total_count = (
+                        configs.db.query(func.count())
+                        .filter(NcmDeviceTable.configuration_status.isnot(None))
+                        .scalar()
+                        )
+        if not total_count:
+            total_count=0
+        
+        completed_count = (
+                        configs.db.query(func.count())
+                        .filter(NcmDeviceTable.configuration_status=='completed')
+                        .scalar()
+                        )
+        if not completed_count:
+            completed_count=0
 
 
+        failed_count = (
+                        configs.db.query(func.count())
+                        .filter(NcmDeviceTable.configuration_status=='failed')
+                        .scalar()
+                        )
+        if not failed_count:
+            failed_count=0
 
+        obj_list = [{
+                    "name":"total",
+                     "value":total_count},
+                     {
+                      "name":"completed",
+                      "value":completed_count
+                      },
+                        {
+                            "name":"failed",
+                            "value":failed_count
+                        }
 
+                    ]
 
+        return  JSONResponse(content=obj_list , status_code=200)
+    except Exception as e:
+        traceback.print_exc()
 
+@router.get('/device_type_counting',
+             responses={
+                 200: {"model": list[DeviceType]},
+                 500: {"model": str}
+             },
+             summary="Api to get device_type counting from AtomTable",
+             description="Api to get device_type counting from AtomTable"
+             )
+def device_counting():
+    try:
+        obj_list = []
+        obj_dict = {}
+        device_values = (
+            configs.db.query(AtomTable.device_type, func.count().label("device_type_count"))
+            .filter(AtomTable.device_type.isnot(None))
+            .join(NcmDeviceTable, NcmDeviceTable.atom_id == AtomTable.atom_id)
+            .group_by(AtomTable.device_type)
+            .all()
+        )
+
+        for device_type, device_type_count in device_values:
+            print(f"Device Type: {device_type}, Count: {device_type_count}")
+            obj_dict = {"name": device_type, "value": device_type_count}
+            obj_list.append(obj_dict)
+
+        if not obj_list:
+            obj_list = [{"name": "No Device Type", "value": 0}]
+
+        return JSONResponse(content=obj_list, status_code=200)
+
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occurred While Fetching Device Type Counts", status_code=500)
 
 
 

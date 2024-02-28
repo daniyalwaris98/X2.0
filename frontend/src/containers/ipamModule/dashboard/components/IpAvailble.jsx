@@ -17,7 +17,7 @@ const IpAvailable = ({ data }) => {
         trigger: 'item',
       },
       legend: {
-        top: '5%',
+        top: '80%',
         left: 'center',
       },
       series: [
@@ -25,6 +25,7 @@ const IpAvailable = ({ data }) => {
           name: 'Access From',
           type: 'pie',
           radius: ['40%', '70%'],
+          center: ['50%',"40%","50%", '50%'],
           avoidLabelOverlap: false,
           label: {
             show: false,

@@ -1,4 +1,7 @@
-from fastapi import APIRouter
+import asyncio
+import traceback
+
+from fastapi import APIRouter,BackgroundTasks
 from fastapi.responses import JSONResponse
 
 from app.schema.uam_device_schema import *
@@ -14,23 +17,19 @@ router = APIRouter(
 )
 
 
-@router.post("/on_board_device", responses={
-    200: {"model": SummeryResponseSchema},
-    500: {"model": str}
-})
-async def onboard_devices(ip_list: list[str]):
+async def onboard_devices_task(ip_list):
     try:
         success_list = []
         error_list = []
         data = []
-        print("ip list is ::::::::::::::::::::::::::::::::::",ip_list,file=sys.stderr)
+        print("ip list is ::::::::::::::::::::::::::::::::::", ip_list, file=sys.stderr)
         for ip in ip_list:
 
             result = (configs.db.query(AtomTable, PasswordGroupTable).
                       join(PasswordGroupTable, PasswordGroupTable.password_group_id == AtomTable.password_group_id).
                       filter(AtomTable.ip_address == ip).first())
 
-            print("result is:::::::::::::::::::::::::::::::::::::::::::fro onboard devices is",result,file=sys.stderr)
+            print("result is:::::::::::::::::::::::::::::::::::::::::::fro onboard devices is", result, file=sys.stderr)
             if result is None:
                 error_list.append(f"{ip} : Device or Password Group Not Found")
                 continue
@@ -39,11 +38,13 @@ async def onboard_devices(ip_list: list[str]):
                 atom, password_group = result
 
                 atom = atom.as_dict()
-                print("atom as dict is:::::::::::::::::::::::::::::::::::::::::::",atom,file=sys.stderr)
+                print("atom as dict is:::::::::::::::::::::::::::::::::::::::::::", atom, file=sys.stderr)
                 password_group = password_group.as_dict()
-                print("password is::::::::::::::::::::::::::::::::::::::::::::::::::::::",password_group,file=sys.stderr)
+                print("password is::::::::::::::::::::::::::::::::::::::::::::::::::::::", password_group,
+                      file=sys.stderr)
                 atom_password_dict = {**atom, **password_group}
-                print("atom password dict is::::::::::::::::::::::::::::::::::::::::",atom_password_dict,file=sys.stderr)
+                print("atom password dict is::::::::::::::::::::::::::::::::::::::::", atom_password_dict,
+                      file=sys.stderr)
                 # data.append(atom_password_dict)
                 atom.update(password_group)
 
@@ -52,8 +53,8 @@ async def onboard_devices(ip_list: list[str]):
 
                         puller = onboard_dict[atom['device_type']]
                         hosts = [atom]
-                        response = puller.get_inventory_data(hosts)
-                        print("repsones of the puller is:::::::::::::::::::::::",response,file=sys.stderr)
+                        response = await asyncio.to_thread(puller.get_inventory_data, hosts)
+                        print("repsones of the puller is:::::::::::::::::::::::", response, file=sys.stderr)
                         for response in response:
                             ip_address = response.get('ip_address')
                             if response.get('status') == 'error':
@@ -61,7 +62,7 @@ async def onboard_devices(ip_list: list[str]):
                                 error_list.append(error_message)
                             else:
                                 response = onboard_devices_data_fetch(ip)
-                                print("resposne of the atom fetch utils function is:::",response,file=sys.stderr)
+                                print("resposne of the atom fetch utils function is:::", response, file=sys.stderr)
                                 data.append(response)
                                 success_list.append(f"{ip_address} : Device Onboarded Successfully")
 
@@ -80,7 +81,36 @@ async def onboard_devices(ip_list: list[str]):
             'error_list': error_list
         }
         configs.db.close()
-        return JSONResponse(content=response_dict, status_code=200)
+        return response_dict
+
+    except Exception:
+        configs.db.rollback()
+        traceback.print_exc()
+        return "Error Occurred While Onboarding"
+
+
+@router.post("/on_board_device", responses={
+    200: {"model": SummeryResponseSchema},
+    500: {"model": str}
+})
+async def onboard_devices(background_tasks: BackgroundTasks,ip_list: list[str],secs: int = 10):
+    try:
+        success_list = []
+        error_list = []
+        data = []
+        background_tasks.add_task(onboard_devices_task, ip_list)
+        return {"message":"Onboard Process Is Started"}
+        print("onboard backgorun task is being executed::::::::::",file=sys.stderr)
+        # Immediate response to the client
+        success_list.append("onboard background task is being")
+        response_dict = {
+            "data": data,
+            'success': len(success_list),
+            'error': len(error_list),
+            'success_list': success_list,
+            'error_list': error_list
+        }
+        return response_dict
 
     except Exception:
         configs.db.rollback()

@@ -27,7 +27,12 @@ export const extendedApi = monetxApi.injectEndpoints({
         body: data,
       }),
     }),
-
+    getSeverity: builder.query({
+      query: () => "/api/v1/ncm/ncm_device/sort_by_severity",
+    }),
+    getDeviceType: builder.query({
+      query: () => "/api/v1/ncm/ncm_device/device_type_counting",
+    }),
     // call this api on loop when bulk backup starts, end the loop when this api returns empty array
     getAllCompletedBackups: builder.query({
       query: () => "/api/v1/ncm/ncm_device/get_all_true_backup",
@@ -50,6 +55,8 @@ export const {
   useDeleteNcmDevicesMutation: useDeleteRecordsMutation,
   // useGetAllCompletedBackupsQuery,
   useBulkBackupNcmConfigurationsByDeviceIdsMutation,
+  useGetSeverityQuery,
+  useGetDeviceTypeQuery,
 } = extendedApi;
 
 export const useGetAllCompletedBackupsLazyQuery =

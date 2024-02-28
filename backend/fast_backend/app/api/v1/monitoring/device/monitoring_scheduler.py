@@ -34,15 +34,22 @@ scheduler.add_job(
 def GenerateAlertMail():
     pass
 
+
+
+
+monitoring_status = {"is_running": False}
 def create_monitoring_poll(devicePoll):
     try:
         threads = []
         for host in devicePoll:
+            print("host in create monitoring poll is:::::::::::::",host,file=sys.stderr)
             Obj = CommonPuller()
+            print("Obj for the monitoring poll is::::::::::::::::::::",Obj,file=sys.stderr)
             thread = threading.Thread(
                 target=Obj.poll,
                 args=(host,)
             )
+            print("thread is:::::::::::::::::",thread,file=sys.stderr)
             thread.start()
             threads.append(thread)
 
@@ -50,17 +57,18 @@ def create_monitoring_poll(devicePoll):
             th.join()
     except Exception as e:
         traceback.print_exc()
+        print("Error While Creating Monitoring POll",str(e))
 
 
 def monitoring_operations():
     try:
-        iterations= 1
-        while True:
-            print(f"Iteration : {iterations}",file=sys.stderr)
-            iterations = iterations + 1
-
-            if iterations == 100000:
-                iterations = 1
+        # iterations= 1
+        # while True:
+        #     print(f"Iteration : {iterations}",file=sys.stderr)
+        #     iterations = iterations + 1
+        #
+        #     if iterations == 100000:
+        #         iterations = 1
 
         # Generating Alerts
         print(f"Running Monitoring Scheduler::",file=sys.stderr)
@@ -80,6 +88,7 @@ def monitoring_operations():
             for result in results:
                 atom, monitoring_device, credentials = result
                 print("result is::::::::::::::::",result,file=sys.stderr)
+                print(f"Atom Is:: {atom}, MOnitoring device is {monitoring_device},credentials are {credentials}",file=sys.stderr)
                 try:
                     if credentials is None:
                         print(
@@ -102,13 +111,18 @@ def monitoring_operations():
 
 
 def running_active_devices():
+    global monitoring_status
     try:
+
         monitoringThread = threading.Thread(target=monitoring_operations)
         print("Monitoring thread is::::::::::::::",monitoringThread,file=sys.stderr)
         print("thread activated::::::::::::::",file=sys.stderr)
         monitoringThread.start()
+        monitoring_status["is_running"] = True
     except Exception as e:
         traceback.print_exc()
+        print("Error WHile running active devices",str(e))
+        monitoring_status["is_running"] = False
 
 
 @router.get('/run_active',
@@ -121,13 +135,64 @@ def running_active_devices():
 )
 async def run_active_devices():
     try:
+        success_list = []
+        error_list =[]
+        data = []
         print("\n\nMonitoring Started\n\n",file=sys.stderr)
         running_active_devices()
-        return JSONResponse(content="Monitoring Has Been Started",status_code=200)
+        if monitoring_status["is_running"]:
+            result =get_monitoring_data()
+            print("result fr the run active is:::",result,file=sys.stderr)
+            data.append(result)
+            success_list.append("Monitoring Has Been Started")
+        else:
+            error_list.append("Error in start monitoring")
+        responses = {
+            "data":data,
+            "success_list":success_list,
+            "error_list":error_list,
+            "success":len(success_list),
+            "error":len(error_list)
+        }
+        return responses
+
     except Exception as e:
         print("Error Occured While Monitoring Active",str(e),file=sys.stderr)
         traceback.print_exc()
+        print("Error oCcured while run active devices",str(e))
         return JSONResponse(content="Error While Monitoring Startup",status_code=500)
+
+def get_monitoring_data():
+    try:
+        monitoring_device_data = {}
+        monitoring_device_query = configs.db.query(Monitoring_Devices_Table).all()
+        if monitoring_device_query:
+            for data in monitoring_device_query:
+                atom_device_query = configs.db.query(AtomTable).filter_by(atom_id = data.atom_id).first()
+                if atom_device_query:
+                    monitoring_device_data['ip_address'] = atom_device_query.ip_address
+                    monitoring_device_data['function'] = atom_device_query.function
+                    monitoring_device_data['vendor'] = atom_device_query.vendor
+                    monitoring_device_data['device_type'] = atom_device_query.device_type
+                    monitoring_device_data['device_name'] = atom_device_query.device_name
+                else:
+                    print("No Atom device found",file=sys.stderr)
+                monitoring_credentials_query = configs.db.query(Monitoring_Credentails_Table).filter_by(monitoring_credentials_id = data.monitoring_credentials_id).first()
+                if monitoring_credentials_query:
+                    monitoring_device_data['credentials'] = monitoring_credentials_query.category+"-"+monitoring_credentials_query.profile_name
+                else:
+                    print("Monitoring credentials notfound::::",file=sys.stderr)
+                monitoring_device_data['snmp_status'] = data.snmp_status
+                monitoring_device_data['ping_status'] = data.ping_status
+                monitoring_device_data['active'] = data.active
+                monitoring_device_data['source'] = data.source
+                monitoring_device_data['monitoring_device_id'] = data.monitoring_device_id
+        return monitoring_device_data
+
+
+    except Exception as e:
+        traceback.print_exc()
+        print("Error in get monitoring_data::::",str(e))
 
 # host = ['0', '192.168.0.2', 'fortinet', '3', '4', '5', '6', '7', '8', '9', '10',
 #         '11', '12', '13', 'v1/v2', '15', '16', '17', '18', 'public', '161']

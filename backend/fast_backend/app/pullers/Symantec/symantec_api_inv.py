@@ -4,6 +4,8 @@ from datetime import datetime
 import urllib3
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)
 requests.packages.urllib3.util.ssl_.DEFAULT_CIPHERS = 'ALL:@SECLEVEL=1'
@@ -104,8 +106,11 @@ class SymantecAPIPuller(object):
             print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
             if host['ip_address'] in self.inv_data:
                 self.inv_data[host['ip_address']].update({'status': 'error'})
+            #date = datetime.now()
+            #addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
             date = datetime.now()
-            addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, str(e), 'UAM')
             # file_name = time.strftime("%d-%m-%Y")+".txt"
             # failed_device=[]
             # #Read existing file

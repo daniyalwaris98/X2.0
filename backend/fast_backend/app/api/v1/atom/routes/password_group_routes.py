@@ -176,9 +176,11 @@ async def get_password_groups():
         results = configs.db.query(PasswordGroupTable).all()
         for result in results:
             response.append(result.as_dict())
+
+        # Sort non-default passwords, handling None in creation_date
         non_default_sorted = sorted(
             (x for x in response if x['password_group'] != 'default_password'),
-            key=lambda x: datetime.strptime(x['creation_date'], '%Y-%m-%d %H:%M:%S'),
+            key=lambda x: datetime.strptime(x['creation_date'], '%Y-%m-%d %H:%M:%S') if x['creation_date'] else datetime.min,
             reverse=True
         )
 
@@ -192,7 +194,6 @@ async def get_password_groups():
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Password Groups",
                             status_code=500)
-
 
 @router.get("/get_password_group_dropdown", responses={
     200: {"model": list[str]},

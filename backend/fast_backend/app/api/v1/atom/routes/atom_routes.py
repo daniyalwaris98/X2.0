@@ -30,10 +30,11 @@ async def add_atom(atom: AddAtomRequestSchema):
             if isinstance(response,dict):
                 transition_message = response.get('message', '')
                 if re.search(r"Can Not be Empty$", atom_response):
-                    message = f"{transition_message} and Note: (To complete the atom following fields are required: Device Name, Function, device type, vendor)"
+                   #message = f"{transition_message} and Note: (To complete the atom following fields are required: Device Name, Function, device type, vendor)"
+                    message = f"Atom Added Successfully"
                     response['message'] = message
                 else:
-                    message = f"{transition_message} and Note: ({atom_response})"
+                    message = f"{transition_message})"
                     response['message'] = message
 
                 return JSONResponse(content=response, status_code=status)
@@ -204,13 +205,18 @@ async def edit_atom(atom: EditAtomRequestSchema):
 
         atom = atom.dict()
         response, status = edit_atom_util(atom)
-        return JSONResponse(response)
+        print("response is::::::::::::::::::",response,file=sys.stderr)
+        print("status is::::::::::::::::::::::",status,file=sys.stderr)
+        if status == 200:
+            return JSONResponse(content=response,status_code=200)
+        elif status==400:
+            return  JSONResponse(content=response,status_code=400)
 
     except Exception:
         traceback.print_exc()
         return "Error Occurred While Updating Atom Device", 500
 
-#current_user: User = Depends(get_current_active_user)
+# current_user: User = Depends(get_current_active_user)
 @router.get("/get_atoms", responses={
     200: {"model": list[GetAtomResponseSchema]},
     500: {"model": str}

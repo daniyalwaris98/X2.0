@@ -40,7 +40,7 @@ async def low_alerts():
 
 
 @router.get("/alert_status", responses={
-    200: {"model": AlertStatusSchema},
+    200: {"model": list[AlertStatusSchema]},
     500: {"model": str}
 },
 summary="Use this API in the monitoring alert page to alert status count",
@@ -48,7 +48,7 @@ description= "Use this API in the monitoring alert page to alert status count"
 )
 async def alert_status():
     try:
-        MonitoringObjList = []
+        obj_list = []
         response_dict = {
             "total": 0,
             "critical": 0,
@@ -70,8 +70,14 @@ async def alert_status():
                 response_dict["informational"] = result[1]
             elif str(result[0]) == "device_down":
                 response_dict["device_down"] = result[1]
+        if not response_dict:
+            obj_list = [{"name":"total","value":0} , {"name":"critical","value":0 },{"name":"informational","value":0},{"name":"device_down","value":0}]
 
-        return JSONResponse(content=response_dict, status_code=200)
+            return JSONResponse(content=obj_list, status_code=200)
+
+        obj_list=[{"name":"total","value":response_dict["total"]} , {"name":"critical","value":response_dict["critical"] },{"name":"informational","value":response_dict["informational"]},{"name":"device_down","value":response_dict["device_down"]}]
+
+        return JSONResponse(content=obj_list, status_code=200)
 
     except Exception:
         traceback.print_exc()

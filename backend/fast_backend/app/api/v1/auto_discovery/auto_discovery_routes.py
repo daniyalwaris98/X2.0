@@ -1330,17 +1330,17 @@ async def get_discovery_data_in_atom():
         discovery_list =[]
         discovery_exsist = configs.db.query(AutoDiscoveryTable).all()
         for data in discovery_exsist:
-            transition_atom_exsist = configs.db.query(AtomTransitionTable).filter_by(ip_address = data.ip_address).first()
-            if not transition_atom_exsist:
-                discovery_dict = {
-                    "discovery_id":discovery_exsist.discovery_id,
-                    "ip_address":discovery_exsist.ip_address,
-                    "os_type":discovery_exsist.os_type,
-                    "subnet":discovery_exsist.subnet,
-                    "make_model":discovery_exsist.make_model,
-                    "vendor":discovery_exsist.vendor
+            transition_atom_exist = configs.db.query(AtomTransitionTable).filter_by(ip_address = data.ip_address).first()
+            if not transition_atom_exist:
+                discovery_data = {
+                    "discovery_id":data.discovery_id,
+                    "ip_address":data.ip_address,
+                    "os_type":data.os_type,
+                    "subnet":data.subnet,
+                    "make_model":data.make_model,
+                    "vendor":data.vendor
                 }
-                discovery_list.append(discovery_dict)
+                discovery_list.append(discovery_data)
         return discovery_list
 
     except Exception as e:
@@ -1352,7 +1352,7 @@ async def get_discovery_data_in_atom():
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
-async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
+async def add_atoms(atom_objs: list[int]):
     try:
         print("atom objs is:::::::::::::::::::::::::::::::::::::::::::::::", atom_objs, file=sys.stderr)
         row = 0
@@ -1362,22 +1362,43 @@ async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
         data_filtered_lst = []
         filtered_list = []
         unique_success_list = []
+        discovery_data_dict = {}
         for atomObj in atom_objs:
             print("step1::::::::::::::::::::::", file=sys.stderr)
             try:
+                ip_address = ""
+                check_discovery_device = configs.db.query(AutoDiscoveryTable).filter_by(discovery_id = atomObj).first()
+                if check_discovery_device:
+                    discovery_data_dict = {key: getattr(check_discovery_device, key, '') for key in
+                                           ['ip_address', 'vendor', 'domain', 'criticality']}
+
+                    # Handle special cases
+                    discovery_data_dict[
+                        'function'] = check_discovery_device.function if check_discovery_device.function in function_list else 'Other'
+                    discovery_data_dict['scope'] = 'Discovery'
+                    discovery_data_dict['device_name'] = ""
+                    discovery_data_dict['device_type'] = ""
+                    discovery_data_dict['site_name'] = ""
+                    discovery_data_dict['rack_name'] = ""
+                    discovery_data_dict['password_group'] = ""
+                    discovery_data_dict['device_ru'] = 0
+                    discovery_data_dict['department'] = ""
+                    discovery_data_dict['section'] = ""
+                    discovery_data_dict['virtual'] = ""
+                    ip_address = check_discovery_device.ip_address
                 row += 1
-                atomObj["ip_address"] = atomObj["ip_address"].strip()
-                if atomObj["ip_address"] == "":
+                ip_address = ip_address.strip()
+                if "ip_address"== "":
                     error_list.append(f"Row {row} : IP Address Can Not Be Empty")
 
                 atom = configs.db.query(AtomTable).filter(
-                    AtomTable.ip_address == atomObj["ip_address"]).first()
+                    AtomTable.ip_address == ip_address).first()
                 transit_atom = configs.db.query(AtomTransitionTable).filter(
-                    AtomTransitionTable.ip_address == atomObj["ip_address"]
+                    AtomTransitionTable.ip_address == ip_address
                 ).first()
-
+                print("discovery data dict is:::::::::::::::;",discovery_data_dict,file=sys.stderr)
                 if atom is not None:
-                    msg, status = add_complete_atom(atomObj, True)
+                    msg, status = add_complete_atom(discovery_data_dict, True)
                     print("msg in atom is ::::::::::::::::", msg, file=sys.stderr)
                     if isinstance(msg, dict):
                         for key, value in msg.items():
@@ -1393,7 +1414,7 @@ async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
                         print("atom msg ims not a dict and it is string", file=sys.stderr)
                         error_list.append(msg)
                 elif transit_atom is not None:
-                    msg, status = add_transition_atom(atomObj, True)
+                    msg, status = add_transition_atom(discovery_data_dict, True)
 
                     for key, value in msg.items():
 
@@ -1404,7 +1425,7 @@ async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
                                 # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
                                 success_list.append(value)
                 else:
-                    msg, status = add_complete_atom(atomObj, False)
+                    msg, status = add_complete_atom(discovery_data_dict, False)
                     print("msg for add complete atom is34343434343434:::::::::::::::::::::", msg, file=sys.stderr)
                     if isinstance(msg, dict):
                         for key, value in msg.items():
@@ -1419,7 +1440,7 @@ async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
                                     success_list.append(value)
 
                     if status != 200:
-                        msg, status = add_transition_atom(atomObj, False)
+                        msg, status = add_transition_atom(discovery_data_dict, False)
                         if isinstance(msg, dict):
                             for key, value in msg.items():
                                 if key == 'data':
@@ -1433,7 +1454,7 @@ async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
             except Exception:
                 traceback.print_exc()
                 status = 500
-                msg = f"{atomObj['ip_address']} : Exception Occurred"
+                msg = f"Exception Occurred"
             seen_ids = set()
             filtered_dict = {}
             for item in data_lst:
@@ -1463,9 +1484,9 @@ async def add_atoms(atom_objs: list[DiscoveryDataSchema]):
         print("step 3 is::::::::::::::::::::::::::::::::::::::::", file=sys.stderr)
         print("filtered data list is:::::::::::::::", filtered_list, file=sys.stderr)
         print("unique success liset is:::::::::::::::::::::::::::", unique_success_list, file=sys.stderr)
-        if not filtered_list:
-            print("step4::::::::::::::::::::::::::::::::::Filtered list is None")
-            error_list.append("Empty Import")
+        # if not filtered_list:
+        #     print("step4::::::::::::::::::::::::::::::::::Filtered list is None")
+        #     error_list.append("Empty Import")
         print("filtered list is:::::::::::::::::::::::::::", filtered_list, file=sys.stderr)
         response = SummeryResponseSchema(
             data=filtered_list,

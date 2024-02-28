@@ -34,7 +34,11 @@ const defaultSlice = createSlice({
             if (indexToUpdate !== -1) {
               state.all_data[indexToUpdate] = responseItem;
             } else {
-              state.all_data = [responseItem, ...state.all_data];
+              state.all_data = [
+                ...state.all_data.slice(0, 1),
+                responseItem,
+                ...state.all_data.slice(1),
+              ];
             }
           });
         }
@@ -56,7 +60,11 @@ const defaultSlice = createSlice({
       .addMatcher(
         extendedApi.endpoints.addAtomPasswordGroup.matchFulfilled,
         (state, action) => {
-          state.all_data = [action.payload.data, ...state.all_data];
+          state.all_data = [
+            ...state.all_data.slice(0, 1),
+            action.payload.data,
+            ...state.all_data.slice(1),
+          ];
         }
       )
       .addMatcher(

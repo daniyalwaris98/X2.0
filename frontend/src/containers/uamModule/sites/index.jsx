@@ -15,6 +15,7 @@ import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
   TYPE_BULK,
+  TYPE_BULK_DELETE,
 } from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
@@ -34,6 +35,11 @@ import {
   DEFAULT_SITE,
 } from "./constants";
 import { MODULE_PATH } from "..";
+import DataCenterStatusChart from "./chartsComponents/DataCenterStatusChart";
+import { Row, Col } from "antd";
+import TopSites from "./chartsComponents/TopSites";
+import DefaultCard from "../../../components/cards";
+import { CardHeader } from "../../../components/pageHeaders";
 
 const Index = () => {
   // hooks
@@ -116,7 +122,7 @@ const Index = () => {
     isSuccess: isDeleteRecordsSuccess,
     isError: isDeleteRecordsError,
     error: deleteRecordsError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_DELETE,
     callback: handleEmptySelectedRowKeys,
   });
 
@@ -156,8 +162,12 @@ const Index = () => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   function handleTableConfigurationsOpen() {
@@ -172,6 +182,23 @@ const Index = () => {
 
   return (
     <DefaultSpinner spinning={isFetchRecordsLoading || isDeleteRecordsLoading}>
+      <Row gutter={[16, 16]}>
+        <Col span={8}>
+          <DefaultCard>
+            <CardHeader cardName="Data Center Status" />
+            <DataCenterStatusChart />
+          </DefaultCard>
+        </Col>
+        <Col span={16}>
+          <DefaultCard>
+            <CardHeader cardName="Top Sites" />
+            <TopSites />
+          </DefaultCard>
+        </Col>
+      </Row>
+
+      <br />
+
       {open ? (
         <Modal
           handleClose={handleClose}
@@ -203,6 +230,10 @@ const Index = () => {
         selectedRowKeys={pageEditable ? selectedRowKeys : null}
         setSelectedRowKeys={setSelectedRowKeys}
       />
+
+      <br />
+      <br />
+      <br />
     </DefaultSpinner>
   );
 };

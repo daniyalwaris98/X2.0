@@ -6,13 +6,19 @@ import {
   useFetchRecordsQuery,
   useFetchIpamDevicesLazyQuery,
   useGetIpamDevicesByFetchDateMutation,
+  useDeleteRecordsMutation,
 } from "../../../store/features/ipamModule/devices/apis";
 import { jsonToExcel } from "../../../utils/helpers";
-import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
+import {
+  DELETE_PROMPT,
+  DELETE_SELECTION_PROMPT,
+  SUCCESSFUL_FILE_EXPORT_MESSAGE,
+} from "../../../utils/constants";
 import { useAuthorization } from "../../../hooks/useAuth";
 import useErrorHandling, {
   TYPE_FETCH,
-  TYPE_BULK,
+  TYPE_BULK_FETCH,
+  TYPE_BULK_DELETE,
 } from "../../../hooks/useErrorHandling";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
 import useSweetAlert from "../../../hooks/useSweetAlert";
@@ -44,14 +50,20 @@ const Index = () => {
   const [pageEditable, setPageEditable] = useState(
     isPageEditable(roleConfigurations, MODULE_PATH, PAGE_PATH)
   );
+  const [selectedRowKeys, setSelectedRowKeys] = useState([]);
 
   // hooks
-  const { handleSuccessAlert } = useSweetAlert();
+  const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
+    useSweetAlert();
   const { columnDefinitions } = useIndexTableColumnDefinitions();
   const generatedColumns = useColumnsGenerator({ columnDefinitions });
   const { buttonsConfigurationList } = useButtonsConfiguration({
     configure_table: { handleClick: handleTableConfigurationsOpen },
     default_export: { handleClick: handleDefaultExport },
+    default_delete: {
+      handleClick: handleDelete,
+      visible: selectedRowKeys.length > 0 && pageEditable,
+    },
     default_fetch: { handleClick: handleFetch, visible: pageEditable },
     default_add: {
       handleClick: handleAdd,
@@ -112,6 +124,17 @@ const Index = () => {
     },
   ] = useGetIpamDevicesByFetchDateMutation();
 
+  const [
+    deleteRecords,
+    {
+      data: deleteRecordsData,
+      isSuccess: isDeleteRecordsSuccess,
+      isLoading: isDeleteRecordsLoading,
+      isError: isDeleteRecordsError,
+      error: deleteRecordsError,
+    },
+  ] = useDeleteRecordsMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -126,7 +149,7 @@ const Index = () => {
     isSuccess: isFetchIpamDevicesSuccess,
     isError: isFetchIpamDevicesError,
     error: fetchIpamDevicesError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_FETCH,
   });
 
   useErrorHandling({
@@ -142,7 +165,16 @@ const Index = () => {
     isSuccess: isGetIpamDevicesByFetchDateSuccess,
     isError: isGetIpamDevicesByFetchDateError,
     error: getIpamDevicesByFetchDateError,
-    type: TYPE_BULK,
+    type: TYPE_BULK_FETCH,
+  });
+
+  useErrorHandling({
+    data: deleteRecordsData,
+    isSuccess: isDeleteRecordsSuccess,
+    isError: isDeleteRecordsError,
+    error: deleteRecordsError,
+    type: TYPE_BULK_DELETE,
+    callback: handleEmptySelectedRowKeys,
   });
 
   // effects
@@ -151,6 +183,26 @@ const Index = () => {
   }, [isFetchIpamDevicesSuccess]);
 
   // handlers
+  function handleEmptySelectedRowKeys() {
+    setSelectedRowKeys([]);
+  }
+
+  function deleteData(allowed) {
+    if (allowed) {
+      deleteRecords(selectedRowKeys);
+    } else {
+      setSelectedRowKeys([]);
+    }
+  }
+
+  function handleDelete() {
+    if (selectedRowKeys.length > 0) {
+      handleCallbackAlert(DELETE_PROMPT, deleteData);
+    } else {
+      handleInfoAlert(DELETE_SELECTION_PROMPT);
+    }
+  }
+
   function handleFetch() {
     fetchIpamDevices();
   }
@@ -164,8 +216,12 @@ const Index = () => {
   }
 
   function handleDefaultExport() {
-    jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
-    handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    if (dataSource?.length > 0) {
+      jsonToExcel(dataSource, FILE_NAME_EXPORT_ALL_DATA);
+      handleSuccessAlert(SUCCESSFUL_FILE_EXPORT_MESSAGE);
+    } else {
+      handleInfoAlert("No data to export.");
+    }
   }
 
   function handleTableConfigurationsOpen() {
@@ -211,6 +267,8 @@ const Index = () => {
         TABLE_DATA_UNIQUE_ID={TABLE_DATA_UNIQUE_ID}
         displayColumns={displayColumns}
         dataSource={dataSource}
+        selectedRowKeys={pageEditable ? selectedRowKeys : null}
+        setSelectedRowKeys={setSelectedRowKeys}
       />
     </DefaultSpinner>
   );

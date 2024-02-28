@@ -20,9 +20,9 @@ from app.models.users_models import UserTableModel as User
 from app.schema.auth_schema import SignIn, SignUp, SignInResponse, SignInNew,VerifyAccessTokenResponseSchema
 from app.schema.users_schema import User as UserSchema
 from app.services.auth_service import AuthService
-
-
-
+from textwrap import dedent
+from app.core.security import get_password_hash
+import pytz
 
 
 
@@ -110,8 +110,6 @@ def add_user_role(role:AddUserRoleScehma):
         print("status is :::::::::",type(status),file=sys.stderr)
         if status == 200:
             return JSONResponse(content=response,status_code=200)
-            print("respinse of the add user is:::::::::::::;",response,file=sys.stderr)
-            print("response of the add user role is::::::::::::::::;;",status,file=sys.stderr)
         elif status ==400:
             return JSONResponse(content=response,status_code=400)
     except Exception as e:
@@ -173,7 +171,7 @@ def get_all_end_users():
         return JSONResponse(content="Error Occured While Getting end users",status_code=500)
 
 @router.post("/add_user",  responses = {
-                    200:{"model":UserSchema},
+                    200:{"model":SignInResponse},
                     400:{"model":str},
                     500:{"model":str}
                   },)
@@ -183,27 +181,11 @@ async def add_user(user_info: AddUserSchema
     try:
         print("user infor for signup is::::::::::::",user_info,file=sys.stderr)
         #print("provider is::::",Provide,file=sys.stderr)
+
         return service.add_user(user_info)
     except Exception as e :
         traceback.print_exc()
         return JSONResponse(content="Error Occured while Sign in ",status_code=500)
-# @router.post('/add_user',responses={
-#     200:{"model":str},
-#     400:{"model":str},
-#     500:{"model":str}
-# },
-# summary="API to add the user and updated the user",
-# description="API to add the user and updated the user"
-# )
-# def add_user_db(user_data:AddUserSchema):
-#     try:
-#         print("user data in add user db is:::::",user_data,file=sys.stderr)
-#         created_user= sign_up(user_data)
-#         print("data us\is  ::::::::::::",created_user,file=sys.stderr)
-#         return created_user
-#     except Exception as e:
-#         traceback.print_exc()
-#         return JSONResponse(content="Error Occured While adding the user in db",status_code=500)
 
 @router.get('/get_all_users',responses={
     200:{"model":list[GetUserResponseScehma]},
@@ -221,7 +203,7 @@ def get_all_users():
             user_dict = {
                 "user_id":user.id,
                 "user_name":user.name,
-                "email_address":user.email,
+                "email":user.email,
                 "status":user.status,
                 "account_type":user.account_type,
                 "team":user.teams,
@@ -231,6 +213,7 @@ def get_all_users():
 
             }
             user_list.append(user_dict)
+        configs.db.close()
         return JSONResponse(content=user_list,status_code=200)
     except Exception as e:
         configs.db.rollback()
@@ -264,6 +247,7 @@ def edit_user_role(user_data:EditUserRoleScehma):
             message = f"{user_role_exsist.role} : Updated Successfully"
             users_role_data['data'] = data
             users_role_data['message'] = message
+            configs.db.close()
             return JSONResponse(content=users_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
@@ -296,6 +280,7 @@ def edit_user_role(user_data:EditConfigurationRoleScehma):
             message = f"{user_role_exsist.role} : Updated Successfully"
             user_role_data['data'] = data
             user_role_data['message'] = message
+            configs.db.close()
             return JSONResponse(content=user_role_data,status_code=200)
         else:
             return JSONResponse(content="Error Ocuured While Updating the User role",status_code=500)
@@ -321,9 +306,14 @@ def user_role(role_data : list[int]):
             print("role is::::::::::::::::::::::",role,file=sys.stderr)
             role_exsist = configs.db.query(UserRoleTableModel).filter_by(role_id=role).first()
             if role_exsist:
-                data_list.append(role)
-                DeleteDBData(role_exsist)
-                success_list.append(f"{role_exsist.role} : Deleted Successfully")
+                if role_exsist.role == 'Admin':
+                    error_list.append(f"{role_exsist.role} : Cannot Be Deleted Set As An Defualt Role")
+                elif configs.db.query(UserTableModel).filter(UserTableModel.role == role_exsist.role).first():
+                    error_list.append(f"{role_exsist.role} : Cannot be deleted, associated with a user.")
+                else:
+                    data_list.append(role)
+                    DeleteDBData(role_exsist)
+                    success_list.append(f"{role_exsist.role} : Deleted Successfully")
             else:
                 error_list.append(f"Role {role} does not Exists")
         responses = {
@@ -383,9 +373,11 @@ def delete_user(user_id :list[int]):
 summary="API to add the updated the user",
 description="API to add updated the user"
 )
-def edit_user_db(user_data:AddUserSchema):
+def edit_user_db(user_data:EditUserSchema):
     try:
-        data,status = EditUserInDB(user_data)
+
+        data= EditUserInDB(user_data)
+        print("data in end user dict is:::::::::edit user:::",data,file=sys.stderr)
         return JSONResponse(content=data,status_code=200)
     except Exception as e:
         traceback.print_exc()
@@ -434,3 +426,174 @@ def get_user_company():
     except Exception as e:
         traceback.print_exc()
         return JSONResponse(content="Error Occured While extracting data from the user in db",status_code=500)
+
+
+
+
+
+@router.get('/check_end_user_existence',
+            responses = {
+                200:{"model":str},
+                500:{"model":str}
+            },
+summary="API to check the existence of user",
+description="API to check the existence of the end user"
+)
+def check_end_user_exsistence():
+    try:
+        compnay_dict = {}
+        is_any_company_registered = False
+        end_user_existance = configs.db.query(EndUserTable).all()
+        print("end user exsitance is:::::::::::::::::::::::",end_user_existance,file=sys.stderr)
+        for existance in end_user_existance:
+            print("existance is:::::::::::::::::::::::",existance,file=sys.stderr)
+            if existance:
+                is_any_company_registered = True
+                data = {
+                    "is_any_company_registered":is_any_company_registered
+                }
+                compnay_dict['data'] = data
+                compnay_dict['message'] = f"Company Already Registered"
+            else:
+                is_any_company_registered = False
+                data = {
+                    "is_any_company_registered": is_any_company_registered
+                }
+                compnay_dict['data'] = data
+                compnay_dict['message'] = f"Company Not Registered"
+        return compnay_dict
+
+    except Exception as e:
+        configs.db.rollback()
+        traceback.print_exc()
+        return JSONResponse(content="Error while checking compnay",status_code=500)
+
+
+@router.post('/forgot_password',responses = {
+    200:{"model":str},
+    400:{"model":str},
+    500:{"model":str}
+},
+summary="API to use on forgot passowrd",
+description="API to use on forgot password"
+)
+async def forgot_passowrd(user_name:ForgotUserSchema):
+    try:
+        otp = password_reset_otp_table()
+        is_user_exists = False
+        data = {}
+        user_exsist = configs.db.query(UserTableModel).filter_by(user_name = user_name.user_name).first()
+        if user_exsist:
+            is_user_exists = True
+            result = generate_otp()
+            try:
+                otp.user_name = user_name.user_name
+                otp.generated_otp_code = result
+                otp.otp_status = 'send'
+                otp.creation_date = datetime.utcnow().replace(tzinfo=pytz.utc)
+                otp.modification_date = datetime.utcnow().replace(tzinfo=pytz.utc)
+                InsertDBData(otp)
+
+            except Exception as e:
+                traceback.print_exc()
+                print("Error while adding otp in db",str(e))
+            try:
+                subject = "Important: Your Password Reset Request"
+                body = dedent(f"""
+                Dear {user_exsist.user_name},
+
+                We received a request to reset the password for your account. To proceed with resetting your password, please use the One-Time Password (OTP) provided below:
+
+                OTP: {result}
+
+                This OTP is valid for the next 10 minutes and can be used only once. If you did not request a password reset, please ignore this email or contact our support team immediately to ensure your account's security.
+
+                Thank you for taking the steps to maintain the security of your account.
+
+                Best regards,
+                MonetX Customer Support Team
+                """)
+                to = user_exsist.email
+                await send_mail(to,subject,body)
+            except Exception as e:
+                traceback.print_exc()
+            user_dict = {
+                "is_user_exists":is_user_exists
+            }
+            data['data'] = user_dict
+            data['message'] = f"OTP Is Generated And Send To your Registered Email"
+
+            return data
+        else:
+            return JSONResponse(content=f"{user_name.user_name} : Not Found")
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error Occured While Forgot Password",status_code=500)
+
+
+@router.post('/verify_otp_and_update_user_password',
+             responses = {
+                 200:{"model":str},
+                 400:{"model":str},
+                 500:{"model":str}
+             })
+async def verify_user_and_update(obj:UserSchemaForgotSchema):
+    try:
+        user_dict = {}
+        is_otp_valid = False
+        user_check = configs.db.query(UserTableModel).filter_by(user_name=obj.user_name).first()
+        print("user check is:::::::::::::::::::::::::::::",user_check,file=sys.stderr)
+        if user_check:
+            otp_exists = configs.db.query(password_reset_otp_table).filter_by(user_name=obj.user_name).first()
+            print("opt exsist is::::::::::::::::::::::::",otp_exists,file=sys.stderr)
+            if otp_exists:
+                current_time = datetime.utcnow().replace(tzinfo=pytz.utc)
+                otp_creation_time = otp_exists.creation_date.replace(tzinfo=pytz.utc) if otp_exists.creation_date.tzinfo is None else otp_exists.creation_date
+
+                print(f"Current Time (UTC): {current_time}",file=sys.stderr)
+                print(f"OTP Creation Time (UTC): {otp_creation_time}",file=sys.stderr)
+
+                # Example of logging the OTP creation moment in UTC
+                otp_creation_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
+                print(f"OTP Created At (UTC): {otp_creation_utc.isoformat()}")
+                current_time_utc = datetime.utcnow().replace(tzinfo=pytz.utc)
+                print(f"Validating OTP At (UTC): {current_time_utc.isoformat()}")
+                time_diff = current_time_utc - otp_creation_utc
+                print(f"Time Difference: {time_diff}", file=sys.stderr)
+                # Check if the OTP is within the valid time window (10 minutes)
+                if time_diff <= timedelta(minutes=10):
+                    print("otp is valid within 10 minutes", file=sys.stderr)
+                    otp = obj.otp
+                    print("otp is:", otp, file=sys.stderr)
+                    generated_otp_code = otp_exists.generated_otp_code
+                    print("generated otp code is", generated_otp_code, file=sys.stderr)
+
+                    user_otp_code = obj.otp
+                    if otp_exists.generated_otp_code == user_otp_code and otp_exists.otp_status != 'Expired':
+                        # Proceed with password update
+                        is_otp_valid = True
+                        hashed_password = get_password_hash(obj.new_password)
+                        print('hashed password is:', hashed_password, file=sys.stderr)
+                        user_check.password = hashed_password
+                        UpdateDBData(user_check)
+                        otp_exists.otp_status = 'Expired'  # Set the OTP status to 'Expired' after validation checks
+                        DeleteDBData(otp_exists)
+                        data = {'is_otp_valid': is_otp_valid}
+                        user_dict['data'] = data
+                        user_dict['message'] = "Password Updated"
+                        return user_dict
+                    else:
+                        otp_exists.otp_status = 'Expired'
+                        UpdateDBData(otp_exists)
+                        return JSONResponse(content="OTP not valid", status_code=400)
+                else:
+                    otp_exists.otp_status='Expired'
+                    UpdateDBData(otp_exists)
+                    return JSONResponse(content="OTP is expired", status_code=400)
+            else:
+                return JSONResponse(content="No OTP found for user", status_code=404)
+        else:
+            return JSONResponse(content="User not found", status_code=404)
+    except Exception as e:
+        traceback.print_exc()
+        return JSONResponse(content="Error occurred while verifying OTP and updating password", status_code=500)

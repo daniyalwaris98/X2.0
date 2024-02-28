@@ -95,6 +95,11 @@ import { PAGE_PATH as PAGE_PATH_UAM_SFPS } from "../../uamModule/sfps/constants"
 import { PAGE_PATH as PAGE_PATH_UAM_SITES } from "../../uamModule/sites/constants";
 import { PAGE_PATH as PAGE_PATH_UAM_SUB_BOARDS } from "../../uamModule/subBoards/constants";
 
+// cloud Monitoring module
+import { MODULE_PATH as MODULE_PATH_CLOUDS } from "../../cloudMonitoringModule";
+import { PAGE_PATH as PAGE_PATH_AWS } from "../../cloudMonitoringModule/aws/runningServices/constants";
+
+
 export const defaultConfiguration = {
   [MODULE_PATH_DASHBOARD]: {
     view: true,
@@ -278,6 +283,15 @@ export const defaultConfiguration = {
       [PAGE_PATH_UAM_LICENSES]: { view: true, read_only: false },
       [PAGE_PATH_UAM_APS]: { view: true, read_only: false },
       [PAGE_PATH_UAM_SFPS]: { view: true, read_only: false },
+    },
+  },
+
+
+  [MODULE_PATH_CLOUDS]: {
+    view: true,
+    pages: {
+      [PAGE_PATH_AWS]: { view: true, read_only: false },
+     
     },
   },
 };

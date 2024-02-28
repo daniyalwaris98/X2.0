@@ -2,6 +2,9 @@ from fastapi import FastAPI,APIRouter
 from fastapi.responses import JSONResponse
 import sys
 import traceback
+
+from fastapi_mail import FastMail,MessageSchema
+import random
 from app.utils.hash import *
 from sqlalchemy.exc import SQLAlchemyError
 from app.core.security import *
@@ -12,7 +15,6 @@ import asyncio
 from app.api.v1.users.routes.license_routes import generate_license
 from app.repository.user_repository import UserRepository as user_repository
 from app.schema.users_schema import AddUserSchema
-
 
 def add_user_role_to_db(role):
     try:
@@ -125,6 +127,7 @@ def AddUserInDB(user_data):
 def EditUserInDB(user_data):
     try:
         user_data_dict = user_data.dict()
+        print("user data dict is:::::::::::::::",user_data_dict,file=sys.stderr)
         user = UserTableModel()
         # end_user_exsist = configs.db.query(EndUserTable).filter_by(company_name=user_data_dict['company_name']).first()
         # if not end_user_exsist:
@@ -136,29 +139,38 @@ def EditUserInDB(user_data):
             return "Role Not Found", 400
         role_id = role_exsist.role_id
 
-        user_name_exsist = configs.db.query(UserTableModel).filter_by(user_name=user_data_dict['name']).first()
+        user_name_exsist = configs.db.query(UserTableModel).filter_by(id=user_data_dict['user_id']).first()
+        print("user name exsist:::::::::::::::",user_name_exsist,file=sys.stderr)
         if user_name_exsist:
-            for key, value in user_data_dict.items():
-                setattr(user_name_exsist, key, value)
-            # user_name_exsist.end_user_id = end_user_id
-            user_name_exsist.role_id = role_id
-            UpdateDBData(user_name_exsist)
-            message = f"{user_name_exsist.user_name} : Updated Successfully"
+           print("user name exsists is:::",file=sys.stderr)
+           user_name_exsist.name = user_data_dict['name']
+           user_name_exsist.user_name = user_data_dict['user_name']
+           user_name_exsist.email  = user_data_dict['email']
+           user_name_exsist.account_type = user_data_dict['account_type']
+           user_name_exsist.role = role_exsist.role
+           configs.db.merge(user_name_exsist)
+           configs.db.commit()
+           print("DB updated successfully::::::::",file=sys.stderr)
+           message = f"{user_name_exsist.user_name} : Updated Successfully"
 
-        # Construct the response data
-        data = {
-            "user_id":user.id,
-            "user_name":user.name,
-            "email_address":user.email,
-            "status":user.status,
-            "account_type":user.account_type,
-            "team":user.teams,
-            "role":user.role,
-            "name":user.name,
-            "password":user.password
-        }
-        data_dict = {'data': data, 'message': message}
-        return data_dict, 200
+           # Construct the response data
+           data = {
+                "user_id":user_name_exsist.id,
+                "user_name":user_name_exsist.name,
+                "email":user_name_exsist.email,
+                "status":user_name_exsist.status,
+                "account_type":user_name_exsist.account_type,
+                "team":user_name_exsist.teams,
+                "role":user_name_exsist.role,
+                "name":user_name_exsist.name,
+                "password":user_name_exsist.password
+           }
+           data_dict = {'data': data, 'message': message}
+           print("data dict is::::::::::::::::::::::::::::",data_dict,file=sys.stderr)
+           configs.db.close()
+           return data_dict
+        else:
+            return "User Not Found"
 
     except Exception as e:
         print("error in Add user in DB is:", str(e))
@@ -276,3 +288,28 @@ def add_user_in_db(user_info):
             return created_user
         except Exception as e:
             traceback.print_exc()
+
+def generate_otp():
+    try:
+        # Generate a random number between 100000 and 999999
+        otp_value = random.randint(100000, 999999)
+        print(f"Generated OTP value: {otp_value}")
+        return otp_value
+    except Exception as e:
+        print(f"Error While Generating OTP: {e}")
+        return "Error While Generating OTP"
+
+
+async def send_mail(to, subject, body):
+    try:
+        message = MessageSchema(
+            subject=subject,
+            recipients=[to],  # Make sure this is a list
+            body=body,
+        )
+        fm = FastMail(configs.conf)
+        await fm.send_message(message)  # Use await for async operation
+        return {"message": "email has been sent"}
+    except Exception as e:
+        traceback.print_exc()
+        print("Error While Sending the Mail", str(e))

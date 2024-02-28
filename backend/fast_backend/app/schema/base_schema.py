@@ -84,3 +84,20 @@ class FindDateRange(BaseModel):
 
 class Blank(BaseModel):
     pass
+
+
+
+class SortSeverity(BaseSchema):
+    name : str
+    value : int
+
+
+class DeviceType(BaseSchema):
+    name : str
+    value : int
+
+
+
+class Response200(BaseSchema):
+    data: dict
+    message: str

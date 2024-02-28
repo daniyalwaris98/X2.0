@@ -3,7 +3,8 @@ from netmiko import Netmiko
 import re, sys, time
 import threading
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
-
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 # from app import db
 from app.models.uam_models import *
 
@@ -114,7 +115,10 @@ class WLCPuller(object):
         if is_login==False:
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
             self.failed = True
+            #date = datetime.now()
             date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
             # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
             
             

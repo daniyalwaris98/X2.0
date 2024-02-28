@@ -110,6 +110,31 @@ export function LoginDialogFooter({ handleClose, sx, ...rest }) {
   );
 }
 
+export function RegisterDialogFooter({ handleRegister, sx, ...rest }) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_register: {
+      handleClick: handleRegister,
+      sx: { width: "150px", backgroundColor: "#66B127" },
+    },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{
+        display: "flex",
+        justifyContent: "center",
+        padding: "20px 0",
+        ...sx,
+      }}
+      {...rest}
+    >
+      {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}
+
 export function CompareDialogFooter({ handleClose, sx, ...rest }) {
   const theme = useTheme();
   const { buttonsConfigurationList } = useButtonsConfiguration({
@@ -138,6 +163,52 @@ export function UpdateDialogFooter({
   const { buttonsConfigurationList } = useButtonsConfiguration({
     default_cancel: { handleClick: handleCancel },
     default_update: { handleClick: handleUpdate },
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{ display: "flex", justifyContent: "center", gap: "10px", ...sx }}
+      {...rest}
+    >
+      {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}
+
+export function UpdateSubmitDialogFooter({
+  handleCancel,
+  handleUpdate,
+  sx,
+  ...rest
+}) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_cancel: { handleClick: handleCancel },
+    default_submit_update: null,
+  });
+  const buttonGenerator = useButtonGenerator();
+
+  return (
+    <div
+      style={{ display: "flex", justifyContent: "center", gap: "10px", ...sx }}
+      {...rest}
+    >
+      {buttonsConfigurationList.map((item) => buttonGenerator(item))}
+    </div>
+  );
+}
+
+export function AddSubmitDialogFooter({
+  handleCancel,
+  handleUpdate,
+  sx,
+  ...rest
+}) {
+  const theme = useTheme();
+  const { buttonsConfigurationList } = useButtonsConfiguration({
+    default_cancel: { handleClick: handleCancel },
+    default_submit_add: null,
   });
   const buttonGenerator = useButtonGenerator();
 

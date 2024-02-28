@@ -1,11 +1,12 @@
 import traceback
-from netmiko import Netmiko
+from netmiko import Netmiko, NetMikoAuthenticationException, NetMikoTimeoutException
 from datetime import datetime
 import re, sys, time
 import threading
 # from app import app
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
-
+from app.api.v1.ipam.utils.ipam_db_utils import *
+from app.utils.failed_utils import addFailedDevice
 
 class IOSPuller(object):
 
@@ -48,35 +49,54 @@ class IOSPuller(object):
         c = 0
         self.is_login = False
         login_exception = None
+        device_info = {"ip_address": host['ip_address'], "status": "error", "message": ""}
         while c < login_tries:
             try:
-                device_info = {"ip_address": host['ip_address'], "status": "error", "message": ""}
-                device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'],
-                                 device_type=host['device_type'], timeout=600, global_delay_factor=2,
-                                 banner_timeout=300)
-                # device = ConnectHandler(**host)
-                # device.enable()
+                device = Netmiko(
+                    host=host['ip_address'],
+                    username=host['username'],
+                    password=host['password'],
+                    device_type=host['device_type'],
+                    timeout=600,
+                    global_delay_factor=2,
+                    banner_timeout=300
+                )
                 self.is_login = True
-                # self.inv_data[host['ip_address']] = {"success": "success"}
-                # print("devices are:::::::::::",device, file=sys.stderr)
-                # self.inv_data['status'] = "success"
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
                 device_info["status"] = "success"
                 device_info["message"] = "Inventory fetched successfully"
                 break
+            except NetMikoAuthenticationException as auth_err:
+                login_exception = str(auth_err)
+                device_info["message"] = f"Authentication failed for {host['ip_address']}: {auth_err}"
+            except NetMikoTimeoutException as timeout_err:
+                login_exception = str(timeout_err)
+                device_info["message"] = f"Connection timed out for {host['ip_address']}: {timeout_err}"
             except Exception as e:
-                c += 1
-                print(f"Failed to login {host['ip_address']}", file=sys.stderr)
-                device_info["message"] = f"{host['ip_address']} Failed to login"
                 traceback.print_exc()
-                login_exception = str(e)
+                device_info["message"] = f"General error for {host['ip_address']}: {e}"
+            finally:
+                c += 1
+
         with self.lock:
             self.results.append(device_info)
-        if self.is_login == False:
-            self.inv_data[host['ip_address']] = {"error": "Login Failed"}
-            date = datetime.now()
+
+        if not self.is_login:
             self.failed = True
+            self.inv_data[host['ip_address']] = {"error": "Login Failed"}
             self.inv_data['status'] = "error"
+            addFailedDevice(host['ip_address'], datetime.now(), host['device_type'], device_info["message"], 'UAM')
+
+        # with self.lock:
+        #     self.results.append(device_info)
+        # if self.is_login == False:
+        #     self.inv_data[host['ip_address']] = {"error": "Login Failed"}
+        #     date = datetime.now()
+        #     self.failed = True
+        #     self.inv_data['status'] = "error"
+        #     date = datetime.now()
+        #     device_type = host['device_type']
+        #     addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
 
             # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
 
@@ -158,7 +178,8 @@ class IOSPuller(object):
                 if host['ip_address'] not in self.inv_data:
                     self.inv_data[host['ip_address']] = {}
                 for index, data in enumerate(inv):
-
+                    print("index in inventory is::::::::::::::::::",index,file=sys.stderr)
+                    print("datain inventory is::::::::::::::::::::::",data,file=sys.stderr)
                     if ('chassis' in data['descr'].lower()) or ('chassis' in data['name'].lower()):
                         print("CHASSIS FOUND", file=sys.stderr)
                         self.inv_data[host['ip_address']].update({'device':
@@ -302,6 +323,7 @@ class IOSPuller(object):
             sfps_data = []
             print(f"Getting sfp data...", file=sys.stderr)
             for inv in inventory:
+                print("inv in inventory is::::::::::::::::::::::::::::::::::::::",inv,file=sys.stderr)
                 is_sfp = False
                 # for sfp in sfps:
                 #    pid = inv['pid'].lower()
@@ -317,6 +339,8 @@ class IOSPuller(object):
                              'GLR': 'single-mode', 'WF-SFP': 'multimode', '5798LP': "single-mode"}
                     mode = ''
                     for key, value in modes.items():
+                        print("key in modes are:::::::::::::::::::::::::::",key,file=sys.stderr)
+                        print("values in modes are::::::::::::::::::::::::::::::::::::",value,file=sys.stderr)
                         if key in inv['pid']:
                             mode = value
                             break
@@ -329,6 +353,7 @@ class IOSPuller(object):
                         port_type = re.findall(r'(\S*)', inv['descr'])
 
                     optics_data = self.get_sfp_optics_data(device, inv)
+                    print("optics data is::::::::::::::::::::::::::::::::::",optics_data,file=sys.stderr)
                     speed = self.get_speed(port_name[0] if len(port_name) > 0 else "")
 
                     sfp_data = {'port_name': port_name[0] if len(port_name) > 0 else "",

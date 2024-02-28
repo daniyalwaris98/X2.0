@@ -1,8 +1,10 @@
-from netmiko import Netmiko
+from netmiko import Netmiko, NetMikoAuthenticationException, NetMikoTimeoutException
 from datetime import datetime
 import re, sys, json, time
 import threading
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 
 class XRPuller(object):
@@ -11,8 +13,13 @@ class XRPuller(object):
         self.inv_data = {}
         self.connections_limit = 50
         self.failed = False
+        self.results = []
+        self.lock = threading.Lock()
+
     def get_inventory_data(self, hosts):
         threads =[]
+        with self.lock:
+            self.results.clear()
         for host in hosts:
             th = threading.Thread(target=self.poll, args=(host,))
             th.start()
@@ -25,7 +32,7 @@ class XRPuller(object):
         else:
             for t in threads: # if request is less than connections_limit then join the threads and then return data
                 t.join()
-            return self.failed         
+            return self.results
         
 
     def poll(self, host):
@@ -36,23 +43,47 @@ class XRPuller(object):
         is_login = False
         e_detail = ''
         login_exception = None
+        device_info = {"ip_address": host['ip_address'], "status": "error", "message": ""}
         while c < login_tries :
             try:
-                device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'], device_type=host['device_type'], global_delay_factor=2)
+                device = Netmiko(
+                    host=host['ip_address'],
+                    username=host['username'],
+                    password=host['password'],
+                    device_type=host['device_type'],
+                    timeout=600,
+                    global_delay_factor=2,
+                    banner_timeout=300
+                )
+                self.is_login = True
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
-                is_login = True
+                device_info["status"] = "success"
+                device_info["message"] = "Inventory fetched successfully"
                 break
+            except NetMikoAuthenticationException as auth_err:
+                login_exception = str(auth_err)
+                device_info["message"] = f"Authentication failed for {host['ip_address']}: {auth_err}"
+            except NetMikoTimeoutException as timeout_err:
+                login_exception = str(timeout_err)
+                device_info["message"] = f"Connection timed out for {host['ip_address']}: {timeout_err}"
             except Exception as e:
-                c +=1
-                e_detail = e
-                login_exception = str(e)
+                traceback.print_exc()
+                device_info["message"] = f"General error for {host['ip_address']}: {e}"
+            finally:
+                c += 1
                 
-                
+        with self.lock:
+            self.results.append(device_info)
         if is_login==False:
             print(f"Falied to login {host['ip_address']} \n Exception detail=>{e_detail}", file=sys.stderr)
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
+            #date = datetime.now()
+            self.inv_data['status'] = "error"
+            #addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
             date = datetime.now()
-            addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+            
             self.failed = True
             # file_name = time.strftime("%d-%m-%Y")+".txt"
             # failed_device=[]

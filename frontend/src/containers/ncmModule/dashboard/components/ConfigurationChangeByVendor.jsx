@@ -7,7 +7,8 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
   useEffect(() => {
     const myChart = echarts.init(chartRef.current);
 
-    const categories = time;
+    // Concatenate time with device names
+    const categories = deviceNames.map((device, index) => `${time[index]} - ${device}`);
 
     const option = {
       tooltip: {
@@ -19,13 +20,12 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
           },
         },
       },
-      legend: {},
       toolbox: {
         show: true,
         feature: {
-          dataView: { readOnly: false },
-          restore: {},
-          saveAsImage: {},
+          // dataView: { readOnly: false },
+          // restore: {},
+          // saveAsImage: {},
         },
       },
       dataZoom: {
@@ -33,23 +33,25 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
         start: 0,
         end: 100,
       },
+      grid: {  
+        left: 30,
+        right: 30,
+        bottom: 0,
+        top: 30, 
+        containLabel: true
+      },
       xAxis: [
         {
           type: 'category',
           boundaryGap: true,
           data: categories,
-        },
-        {
-          type: 'category',
-          boundaryGap: true,
-          data: deviceNames,
-        },
+        }
       ],
       yAxis: [
         {
           type: 'value',
           scale: true,
-          name: 'Price',
+          name: '',
           max: 30,
           min: 0,
           boundaryGap: [0.2, 0.2],
@@ -57,7 +59,7 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
         {
           type: 'value',
           scale: true,
-          name: 'Order',
+          name: '',
           max: 1200,
           min: 0,
           boundaryGap: [0.2, 0.2],
@@ -66,7 +68,6 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
       series: [
         {
           type: 'bar',
-          xAxisIndex: 1,
           yAxisIndex: 1,
           data: values,
           itemStyle: {
@@ -74,15 +75,14 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
               { offset: 0, color: '#31C7A4' },
               { offset: 1, color: '#FFFFFF' },
             ]),
-            borderRadius: [15, 15, 15, 15], // Border radius for top-left, top-right, bottom-right, bottom-left
+            borderRadius: [15, 15, 15, 15],
           },
           barCategoryGap: '80%',
         },
         {
           type: 'line',
-          xAxisIndex: 0,
           yAxisIndex: 0,
-          data: values, // Assuming values represent the line data
+          data: values,
           itemStyle: {
             color: '#31C7A4',
           },
@@ -101,10 +101,7 @@ const ConfigurationChangeByVendor = ({ deviceNames, time, values }) => {
         xAxis: [
           {
             data: categories,
-          },
-          {
-            data: deviceNames,
-          },
+          }
         ],
         series: [
           {
