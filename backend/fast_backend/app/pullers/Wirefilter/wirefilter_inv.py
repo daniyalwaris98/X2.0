@@ -6,7 +6,6 @@ import traceback
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 from app.utils.failed_utils import addFailedDevice
 from app.api.v1.ipam.utils.ipam_db_utils import *
-
 from app.pullers.Wirefilter.parsing import Parse
 # from parsing import Parse
 

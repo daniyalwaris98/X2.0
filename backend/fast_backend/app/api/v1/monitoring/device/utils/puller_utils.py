@@ -785,6 +785,7 @@ def dumpDeviceData(atom, output):
                 file=sys.stderr,
             )
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         print("Error Occured while dumpDeviceData",str(e))
 
@@ -831,6 +832,7 @@ def dumpInterfaceData(atom, output, interfaces):
                         file=sys.stderr,
                     )
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         print("error occured while dumping devices interface data")
 #
