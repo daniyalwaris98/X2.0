@@ -84,6 +84,8 @@ class IOSPuller(object):
         if not self.is_login:
             self.failed = True
             self.inv_data[host['ip_address']] = {"error": "Login Failed"}
+            #date = datetime.now()
+            self.failed = True
             self.inv_data['status'] = "error"
             addFailedDevice(host['ip_address'], datetime.now(), host['device_type'], device_info["message"], 'UAM')
 
