@@ -160,7 +160,7 @@ async def get_all_interfaces_in_network():
                         download_speed = round(float(record["Download"] or 0), 2),
                         upload_speed = round(float(record["Upload"] or 0), 2),
                         interface_name = record["Interface_Name"],
-                        interface_description = record["Interface_Des"],
+                        interface_description = record["Interface Description"],
                         date = record["Date"],
                         device_type = record["DEVICE_TYPE"]
                     )
@@ -176,6 +176,7 @@ async def get_all_interfaces_in_network():
 
     except Exception as e:
         configs.db.rollback()
+        traceback.print_exc()
         print(f"Error occurred: {str(e)}", file=sys.stderr)
         raise JSONResponse(status_code=500, detail="Internal Server Error")
 
@@ -281,7 +282,7 @@ async def get_all_interfaces_in_routers():
                         download_speed = round(float(record["Download"] or 0), 2),
                         upload_speed = round(float(record["Upload"] or 0), 2),
                         interface_name = record["Interface_Name"],
-                        interface_description = record["Interface_Des"],
+                        interface_description = record["Interface Description"],
                         date = record["Date"],
                         device_type = record["DEVICE_TYPE"]
                     )
@@ -402,7 +403,7 @@ async def get_all_interfaces_in_switch():
                         download_speed = round(float(record["Download"] or 0), 2),
                         upload_speed = round(float(record["Upload"] or 0), 2),
                         interface_name = record["Interface_Name"],
-                        interface_description = record["Interface_Des"],
+                        interface_description = record["Interface Description"],
                         date = record["Date"],
                         device_type = record["DEVICE_TYPE"]
                     )
@@ -523,7 +524,7 @@ async def get_all_interfaces_in_firewall():
                         download_speed = round(float(record["Download"] or 0), 2),
                         upload_speed = round(float(record["Upload"] or 0), 2),
                         interface_name = record["Interface_Name"],
-                        interface_description = record["Interface_Des"],
+                        interface_description = record["Interface Description"],
                         date = record["Date"],
                         device_type = record["DEVICE_TYPE"]
                     )
@@ -646,7 +647,7 @@ async def get_all_interfaces_in_wireless():
                         download_speed = round(float(record["Download"] or 0), 2),
                         upload_speed = round(float(record["Upload"] or 0), 2),
                         interface_name = record["Interface_Name"],
-                        interface_description = record["Interface_Des"],
+                        interface_description = record["Interface Description"],
                         date = record["Date"],
                         device_type = record["DEVICE_TYPE"]
                     )
