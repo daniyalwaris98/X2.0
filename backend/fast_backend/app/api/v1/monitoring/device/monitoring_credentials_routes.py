@@ -33,7 +33,8 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
             credential.profile_name = credential_obj["profile_name"]
             credential.snmp_port = credential_obj["port"]
             credential.snmp_read_community = credential_obj["community"]
-            credential_obj.description = credential_obj["description"]
+            credential.description = credential_obj["description"]
+            print("description ",credential.description,file=sys.stderr)
             print("Insertion is being executed:::::::",file=sys.stderr)
             InsertDBData(credential)
             print("Data inserted into the DB:::::::::::",file=sys.stderr)
@@ -63,13 +64,15 @@ async def add_snmp_v2_credentials(credential_obj: SnmpV2CredentialsRequestSchema
 
 
 @router.post("/add_snmp_v3_credentials", responses={
-    200: {"model": str},
+    200: {"model": Response200},
     400: {"model": str},
     500: {"model": str}
 })
 async def add_snmp_v3_credentials(credential_obj: AddMonitoringSnmpV3CredentialsRequestSchema):
+    print("Received Payload:", credential_obj, file=sys.stderr)
     try:
         data = {}
+        print("Received Payload  inner loop  try :", credential_obj, file=sys.stderr)
         if (configs.db.query(Monitoring_Credentails_Table).filter(
                 Monitoring_Credentails_Table.profile_name == credential_obj["profile_name"])
                 .first() is not None):
@@ -81,13 +84,13 @@ async def add_snmp_v3_credentials(credential_obj: AddMonitoringSnmpV3Credentials
             credential.profile_name = credential_obj["profile_name"]
             credential.snmp_port = credential_obj["port"]
 
-            if "description" in credential_obj:
-                credential_obj.description = credential_obj["description"]
+            #if "description" in credential_obj:
+            credential.description = credential_obj["description"]
 
             credential.username = credential_obj["username"]
-            credential.password = credential_obj["authorization_password"]
+            credential.password = credential_obj["authentication_password"]
             credential.encryption_password = credential_obj["encryption_password"]
-            credential.authentication_method = credential_obj["authorization_protocol"]
+            credential.authentication_method = credential_obj["authentication_protocol"]
             credential.encryption_method = credential_obj["encryption_protocol"]
 
 
@@ -97,11 +100,11 @@ async def add_snmp_v3_credentials(credential_obj: AddMonitoringSnmpV3Credentials
                     "profile_name": credential.profile_name,
                     "port": credential.snmp_port,
                     "username": credential.username,
-                    "password": credential.password,
+                    #"password": credential.password,
                     "encryption_password": credential.encryption_password,
-                    "authorization_protocol": credential.authentication_method,
+                    "authentication_protocol": credential.authentication_method,
                     "encryption_protocol": credential.encryption_method,
-                    "authorization_password":credential.password,
+                    "authentication_password":credential.password,
                     "description":credential.description
                 }
                 data['data'] = v3_dict
@@ -221,7 +224,7 @@ def get_wmi_credentials():
         for row in wmiObj:
             wmi_dict = {
             "monitoring_credentials_id":row.monitoring_credentials_id,
-            "username":row.username,
+            "user_name":row.username,
             "password":row.password,
             "profile_name":row.profile_name,
             "category":row.category

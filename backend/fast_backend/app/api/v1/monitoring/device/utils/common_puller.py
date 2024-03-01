@@ -268,11 +268,13 @@ class CommonPuller(object):
                 f"\n-------- {atom.ip_address}: Support Not Available for "
                 f"{atom.ip_address} --------\n",
                 file=sys.stderr)
+            modification = datetime.now()
+            formatted_modification_date = modification.strftime('%Y-%m-%d %H:%M:%S.%f')
             try:
                 query = (f"INSERT INTO monitoring_alerts_table (MONITORING_DEVICE_ID,"
-                         f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS)"
+                         f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS,MODIFICATION_DATE)"
                          f" values ({monitoring.monitoring_device_id},'support not available',"
-                         f"'critical','device_down','Open','no');")
+                         f"'critical','device_down','Open','no','{formatted_modification_date}');")
                 print("down",query,file=sys.stderr)
                 
                 configs.db.execute(query)

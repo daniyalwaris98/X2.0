@@ -15,7 +15,7 @@ def snmp_alert(monitoring_device_id, flag):
         if not flag:
             if alert is None:
                 query = (f"INSERT INTO monitoring_alerts_table (`monitoring_device_id`,"
-                         f"`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`)"
+                         f"`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,)"
                          f" VALUES ({monitoring_device_id},'Check SNMP Credentials Or Status',"
                          f"'informational','snmp','Open','no');")
                 configs.db.execute(query)
@@ -54,15 +54,18 @@ def status_alert(monitoring_device, status):
 
     #except Exception as e:
         #traceback.print_exc()
+    modification = datetime.now() 
+    formatted_modification_date = modification.strftime('%Y-%m-%d %H:%M:%S.%f')   
 
     if alert is None:
         if status == "Down":
             print("down exec.....",file=sys.stderr)
+            
             try:
                 query = (f"INSERT INTO monitoring_alerts_table (MONITORING_DEVICE_ID,"
-                         f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS)"
+                         f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS,MODIFICATION_DATE)"
                          f" values ({monitoring_device.monitoring_device_id},'Device is down',"
-                         f"'critical','device_down','Open','no');")
+                         f"'critical','device_down','Open','no','{formatted_modification_date}');")
                 print("down",query,file=sys.stderr)
                 
                 configs.db.execute(query)
@@ -83,9 +86,9 @@ def status_alert(monitoring_device, status):
 
                     # create new informational alert for device up
                     query = (f"INSERT INTO monitoring_alerts_table (MONITORING_DEVICE_ID,"
-                            f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS)"
+                            f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS,MODIFICATION_DATE)"
                             f" values ({monitoring_device.monitoring_device_id},'Device is now up',"
-                            f"'informational','device_up','Close','no');")
+                            f"'informational','device_up','Close','no','{formatted_modification_date}');")
                     print("up",query,file=sys.stderr)
                     configs.db.execute(query)
                     configs.db.commit()

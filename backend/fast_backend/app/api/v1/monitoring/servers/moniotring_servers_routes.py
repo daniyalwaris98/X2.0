@@ -118,7 +118,7 @@ async def get_all_interfaces_in_servers():
                         download_speed = round(float(record["Download"] or 0), 2),
                         upload_speed = round(float(record["Upload"] or 0), 2),
                         interface_name = record["Interface_Name"],
-                        interface_description = record["Interface_Des"],
+                        interface_description = record["Interface Desription"],
                         date = record["Date"],
                         device_type = record["DEVICE_TYPE"]
                     )
@@ -239,7 +239,7 @@ async def get_all_interfaces_in_windows():
                         download_speed = round(float(record["Download"] or 0), 2),
                         upload_speed = round(float(record["Upload"] or 0), 2),
                         interface_name = record["Interface_Name"],
-                        interface_description = record["Interface_Des"],
+                        interface_description = record["Interface Description"],
                         date = record["Date"],
                         device_type = record["DEVICE_TYPE"]
                     )
@@ -360,7 +360,7 @@ async def get_all_interfaces_in_linux():
                         download_speed = round(float(record["Download"] or 0), 2),
                         upload_speed = round(float(record["Upload"] or 0), 2),
                         interface_name = record["Interface_Name"],
-                        interface_description = record["Interface_Des"],
+                        interface_description = record["Interface Description"],
                         date = record["Date"],
                         device_type = record["DEVICE_TYPE"]
 

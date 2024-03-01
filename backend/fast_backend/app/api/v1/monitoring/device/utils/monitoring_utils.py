@@ -351,9 +351,7 @@ def get_interface_influx_data(query):
     finalList = []
     try:
         for table in result:
-            print("table in result is::::::::::::",table,file=sys.stderr)
             for record in table.records:
-                print("record is:::::::::::::::::::::::::::",record,file=sys.stderr)
                 try:
                     objDict = {}
                     objDict = {}
@@ -420,8 +418,8 @@ def get_interface_influx_data(query):
                         print("error", str(e), file=sys.stderr)
                         continue
                     try:
-                        if record["Interface_Des"]:
-                            objDict["interface_description"] = record["Interface_Des"]
+                        if record["Interface Description"]:
+                            objDict["interface_description"] = record["Interface Description"]
                     except Exception as e:
                         print("error", str(e), file=sys.stderr)
                         pass
@@ -444,7 +442,7 @@ def get_interface_influx_data(query):
                     except Exception as e:
                         print("error", str(e), file=sys.stderr)
                         pass
-                    print("result list is::::::::::::::::::::::::::::",resultList,file=sys.stderr)
+
                     resultList.append(objDict)
 
                 except Exception:
@@ -455,7 +453,6 @@ def get_interface_influx_data(query):
                 dictionary["interface_name"]: dictionary for dictionary in resultList
             }.values()
         )
-        print("final list is::::::::::::::::::::::::::::::",finalList,file=sys.stderr)
 
     except Exception:
         traceback.print_exc()
