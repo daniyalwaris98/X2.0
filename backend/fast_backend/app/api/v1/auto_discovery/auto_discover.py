@@ -36,7 +36,7 @@ def discover_ip_list(ip_list, results):
         print("Error while discovring IP list:::",str(e),file=sys.stderr)
         traceback.print_exc()
 
-def get_range_inventory_data(start_ip, end_ip):
+async def get_range_inventory_data(start_ip, end_ip):
     try:
         print("start ip::::::::",start_ip,file=sys.stderr)
         print("end ip::::::::",end_ip,file=sys.stderr)
