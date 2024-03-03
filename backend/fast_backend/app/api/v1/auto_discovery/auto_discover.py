@@ -9,63 +9,73 @@ from pysnmp.entity.rfc3413.oneliner import cmdgen
 from pysnmp.entity.rfc3413.cmdgen import CommandGenerator
 from pysnmp.hlapi import UsmUserData, UdpTransportTarget, getCmd, ContextData
 from pysnmp.smi.rfc1902 import ObjectIdentity, ObjectType
+import asyncio
 
 
-def discover_ip_list(ip_list, results):
+async def discover_ip_list(ip_list, results):
     try:
         for ip in ip_list:
             print(f"ip in discover ip list is:::::::::::::: {ip}", file=sys.stderr)
             try:
-                scanner = nmap.PortScanner()
-                scanner.scan(ip, arguments='-O -T5')  # Perform an OS detection scan
-                if scanner.all_hosts():  # Check if the list of all hosts is not empty
-                    host = scanner.all_hosts()[0]  # Safely access the first host
-                    udp = nmap.PortScanner()
-                    udp.scan(ip, arguments='-sU -T5')  # Perform a UDP scan
-
-                    data_list = extract_ip_data(scanner, udp, host)  # Assuming this is a function you've defined
-
-                    if data_list is not None:
-                        results.append(data_list)
-                else:
-                    print("No hosts found or they are not responding.", file=sys.stderr)
+                await asyncio.gather(*[asyncio.to_thread(scan_ip, ip, results) for ip in ip_list])
             except Exception as e:
                 traceback.print_exc()
-                print(f"Error In DiscoverIPList For",str(e),file=sys.stderr)
+                print(f"Error In DiscoverIPList For", str(e), file=sys.stderr)
     except Exception as e:
-        print("Error while discovring IP list:::",str(e),file=sys.stderr)
+        print("Error while discovring IP list:::", str(e), file=sys.stderr)
         traceback.print_exc()
 
-def get_range_inventory_data(start_ip, end_ip):
+def scan_ip(ip, results):
     try:
-        print("start ip::::::::",start_ip,file=sys.stderr)
-        print("end ip::::::::",end_ip,file=sys.stderr)
-        ip_list = get_all_ips_from_range(start_ip, end_ip)
-        print("ip list is::::::::::::::::::",ip_list,file=sys.stderr)
+        scanner = nmap.PortScanner()
+        scanner.scan(ip, arguments='-O -T5')  # Perform an OS detection scan
+        if scanner.all_hosts():  # Check if the list of all hosts is not empty
+            print("scanner is in process:::::::", file=sys.stderr)
+            host = scanner.all_hosts()[0]  # Safely access the first host
+            udp = nmap.PortScanner()
+            udp.scan(ip, arguments='-sU -T5')  # Perform a UDP scan
+
+            data_list = extract_ip_data(scanner, udp, host)  # Assuming this is a function you've defined
+
+            if data_list is not None:
+                results.append(data_list)
+        else:
+            print("No hosts found or they are not responding.", file=sys.stderr)
+    except Exception as e:
+        traceback.print_exc()
+        print(f"Error In DiscoverIPList For", str(e), file=sys.stderr)
+
+
+async def get_range_inventory_data(start_ip, end_ip):
+    try:
+        print("start ip::::::::", start_ip, file=sys.stderr)
+        print("end ip::::::::", end_ip, file=sys.stderr)
+        ip_list = await get_all_ips_from_range(start_ip, end_ip)
+        print("ip list is::::::::::::::::::", ip_list, file=sys.stderr)
 
         if len(ip_list) < 10:
             poll_size = len(ip_list)
         else:
             poll_size = 10
 
-        ip_polls = create_poll(ip_list, poll_size)
+        ip_polls = await create_poll(ip_list, poll_size)
         threads = []
         results = []
-        for poll in ip_polls:
-            th = threading.Thread(target=discover_ip_list, args=(poll, results))
-            th.start()
-            threads.append(th)
 
-        for t in threads:
-            t.join()
+        for poll in ip_polls:
+            await discover_ip_list(poll, results)
+
+        # for t in threads:
+        #     t.join()
 
         return results
     except Exception as e:
         traceback.print_exc()
-        print("Error in get range inventory data",str(e))
+        print("Error in get range inventory data", str(e))
 
-def get_subnet_inventory_data(subnet, exclude):
-    ip_list = get_all_ips_from_subnet(subnet)
+
+async def get_subnet_inventory_data(subnet, exclude):
+    ip_list = await get_all_ips_from_subnet(subnet)
 
     try:
         index1 = exclude.rfind('-')
@@ -76,7 +86,7 @@ def get_subnet_inventory_data(subnet, exclude):
         last = ip_list[end + 1:]
 
         ip_list = first + last
-        print("ip list is:::::::::::::::::::get subnet inventory data",ip_list,file=sys.stderr)
+        print("ip list is:::::::::::::::::::get subnet inventory data", ip_list, file=sys.stderr)
         # dot = subnet.rfind('.')
         # startIP = subnet[:dot+1]+str(start)
         # endIP = subnet[:dot+1]+str(end)
@@ -89,14 +99,12 @@ def get_subnet_inventory_data(subnet, exclude):
     else:
         poll_size = 10
 
-    ip_polls = create_poll(ip_list, poll_size)
+    ip_polls = await create_poll(ip_list, poll_size)
 
     threads = []
     results = []
     for poll in ip_polls:
-        th = threading.Thread(target=discover_ip_list, args=(poll, results))
-        th.start()
-        threads.append(th)
+        await discover_ip_list(poll, results)
 
     # if len(threads) == poll:
     #     for t in threads:
@@ -108,8 +116,8 @@ def get_subnet_inventory_data(subnet, exclude):
     #         t.join()
     #     return inv_data
 
-    for t in threads:
-        t.join()
+    # for t in threads:
+    #     t.join()
 
     return results
 
@@ -143,6 +151,7 @@ def snmp_enabled(ip_address):
 
 
 def extract_ip_data(scanner, udp, host):
+    print(f"scnnaer{scanner} udp is:::{udp} :::::::: host{host} ",file=sys.stderr)
     if scanner[host]['status']['state'] != 'up':
         return None
 
@@ -220,25 +229,26 @@ def extract_ip_data(scanner, udp, host):
     Device Name: {device_name}
     \n""", file=sys.stderr)
 
-    return [host, device, device_model, device_type, vendor, snmp_status, snmp_version,mac_address,device_name]
+    return [host, device, device_model, device_type, vendor, snmp_status, snmp_version, mac_address, device_name]
 
 
-def get_all_ips_from_subnet(subnet):
+async def get_all_ips_from_subnet(subnet):
     try:
         return [str(ip) for ip in ipaddress.IPv4Network(subnet)]
     except Exception as e:
         traceback.print_exc()
-        print("error in get all ips from subnet",str(e))
+        print("error in get all ips from subnet", str(e))
 
-def create_poll(ips, poll_size):
+
+async def create_poll(ips, poll_size):
     try:
         return [ips[i:i + poll_size] for i in range(0, len(ips), poll_size)]
     except Exception as e:
         traceback.print_exc()
-        print("Error in create poll",str(e),file=sys.stderr)
+        print("Error in create poll", str(e), file=sys.stderr)
 
 
-def get_all_ips_from_range(start_ip, end_ip):
+async def get_all_ips_from_range(start_ip, end_ip):
     try:
         start_ip = start_ip.split('/')[0]
         start_ip = ipaddress.IPv4Address(start_ip)
@@ -261,6 +271,8 @@ def get_all_ips_from_range(start_ip, end_ip):
     except Exception as e:
         traceback.print_exc()
         print("Exception in get_all_ips_from_range:", str(e), file=sys.stderr)
+
+
 def test_snmp_v2_credentials(ip_address, credentials):
     try:
         for credential in credentials:
@@ -270,7 +282,7 @@ def test_snmp_v2_credentials(ip_address, credentials):
             # Create an SNMP session
             cmd_generator = cmdgen.CommandGenerator()
             # print("cmd :::::::::::::::::: gen :::::::::::::::::::",cmd_generator,file=sys.stderr)
-            print("command generator is:::::::::",cmd_generator,file=sys.stderr)
+            print("command generator is:::::::::", cmd_generator, file=sys.stderr)
             # Retrieve the SNMP version from the Microsoft server
             error_indication, error_status, error_index, var_binds = cmd_generator.getCmd(
                 cmdgen.CommunityData(credential),
@@ -352,6 +364,8 @@ def test_snmp_v_credentials(ip_address, credentials):
             print('SNMPv3 connection failed: %s')
 
     return False
+
+
 def TestSNMPV3Credentials(ip_address, credentials):
     for credential in credentials:
 
@@ -376,7 +390,10 @@ def TestSNMPV3Credentials(ip_address, credentials):
                       errorIndication, file=sys.stderr)
             elif errorStatus:
                 print(f'{ip_address} : {credential} : SNMP GET request failed: %s at %s' % (errorStatus.prettyPrint(),
-                                                                                            errorIndex and varBinds[int(errorIndex) - 1][0] or '?'), file=sys.stderr)
+                                                                                            errorIndex and varBinds[
+                                                                                                int(errorIndex) - 1][
+                                                                                                0] or '?'),
+                      file=sys.stderr)
             else:
                 for varBind in varBinds:
                     print(' = '.join([x.prettyPrint()
@@ -398,7 +415,6 @@ def TestSNMPV3Credentials(ip_address, credentials):
     return False
 
 
-
 def calculate_start_ip(subnet):
     """
     Calculate the start IP address of a given subnet.
@@ -411,6 +427,7 @@ def calculate_start_ip(subnet):
     """
     network = ipaddress.ip_network(subnet, strict=False)
     return str(network.network_address)
+
 
 def calculate_end_ip(subnet):
     """

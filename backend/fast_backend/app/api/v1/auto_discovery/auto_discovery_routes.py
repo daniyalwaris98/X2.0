@@ -242,9 +242,9 @@ async def auto_discovery_background_task(subnet):
         auto_discovery_dict = {}
         data = {}
         success_list = []
-        error_lit = []
-        results_length = 0
-        actual_host = 0
+        error_list = []
+
+        update_and_add_function_state('auto_discover', 'Running')
         if str(subnet).lower() == "all":
             return JSONResponse("Select a subnet to scan", 400)
 
@@ -254,31 +254,24 @@ async def auto_discovery_background_task(subnet):
         if network is not None:
             start_ip = calculate_start_ip(subnet.subnet)
             end_ip = calculate_end_ip(subnet.subnet)
-            print("start_ip is:::",start_ip,file=sys.stderr)
-            print("end ip is::::::",end_ip,file=sys.stderr)
-            # results = get_range_inventory_data(start_ip, end_ip)
-            results = await asyncio.to_thread(get_range_inventory_data(start_ip,end_ip))
-            actual_host = len(results)
-            # results = auto_discover.get_range_inventory_data(
-            #     network.subnet, network.excluded_ip_range
-            # )
-            print("results for auto discovery inventroy data is:::::", results, file=sys.stderr)
-            results_length = len(results)
-            print("result ln is:::",len(results),file=sys.stderr)
+            print("start_ip is:::", start_ip, file=sys.stderr)
+            print("end ip is::::::", end_ip, file=sys.stderr)
+            results = await get_range_inventory_data(start_ip, end_ip)
+            print("result are:::::::::::::::", len(results), file=sys.stderr)
+            print("results for auto discovery inventory data is:::::", results, file=sys.stderr)
         else:
-            error_lit.append("Subnet doesn't exit")
-            # return JSONResponse("Subnet doesn't exit", 400)
+            error_list.append("Subnet doesn't exit")
 
         if results is None:
-            error_lit.append(f"{results} : error while scanning")
+            error_list.append(f"{results} : error while scanning")
 
         for host in results:
-            update_and_add_function_state('auto_discover', 'Running')
             print("host in result is:::::::::::::::::::", host, file=sys.stderr)
             discovery_obj = configs.db.query(AutoDiscoveryTable).filter(
                 AutoDiscoveryTable.ip_address == host[0]).first()
             print("discovered obj is:::::::::", discovery_obj, file=sys.stderr)
             if discovery_obj is None:
+                # Insert new record
                 discovery_obj = AutoDiscoveryTable()
                 discovery_obj.ip_address = host[0]
                 discovery_obj.subnet = network.subnet
@@ -337,11 +330,6 @@ async def auto_discovery_background_task(subnet):
                 print(
                     f"Successfully Updated to Database for {host[0]}", file=sys.stderr
                 )
-            #
-            # obj_dict = {"ip_address": host[0], "subnet": network.subnet, "os_type": host[1],
-            #             "make_model": host[2], "function": host[3], "vendor": host[4],
-            #             "snmp_status": host[5], "snmp_version": host[6], "ssh_status": False}
-            # response_list.append(obj_dict)
 
         result = configs.db.query(AutoDiscoveryNetworkTable).all()
         for network in result:
@@ -354,20 +342,23 @@ async def auto_discovery_background_task(subnet):
             print("network number of devices ae:::::::::::::", network.number_of_device, file=sys.stderr)
             UpdateDBData(network)
         print("data ois:::::::::::::::", data, file=sys.stderr)
-        if actual_host == results_length:
-            update_and_add_function_state('auto_discover', 'Completed')
+
+        success_list.append("All hosts processed successfully")
+        update_and_add_function_state('auto_discover', 'Completed')
+
         responses = {
             "data": auto_discovery_dict,
-            "sucess_list": success_list,
-            "error_list": error_lit,
-            "error": len(error_lit),
+            "success_list": success_list,
+            "error_list": error_list,
+            "error": len(error_list),
             "success": len(success_list)
         }
         return responses
 
     except Exception as e:
         traceback.print_exc()
-        print("error occured while auto discovery",str(e))
+        print("error occured while auto discovery", str(e))
+
 
 @router.post("/auto_discover", responses={
     200: {"model": SummeryResponseSchema},
