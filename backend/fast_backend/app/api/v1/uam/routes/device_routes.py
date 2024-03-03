@@ -10,6 +10,9 @@ from fastapi import FastAPI, Query
 from app.api.v1.uam.utils.uam_utils import *
 from app.utils.static_list import *
 from app.core.config import *
+from app.utils.common_state_utils import *
+
+
 
 router = APIRouter(
     prefix="/uam_device",
@@ -19,10 +22,12 @@ router = APIRouter(
 
 async def onboard_devices_task(ip_list):
     try:
+        print("len of the onboard devices list is:::::::::::",len(ip_list),file=sys.stderr)
         success_list = []
         error_list = []
         data = []
         print("ip list is ::::::::::::::::::::::::::::::::::", ip_list, file=sys.stderr)
+        update_and_add_function_state('on_board_device','Running')
         for ip in ip_list:
 
             result = (configs.db.query(AtomTable, PasswordGroupTable).
@@ -72,7 +77,11 @@ async def onboard_devices_task(ip_list):
                         error_list.append(f"{ip} : Error While Onboarding")
                 else:
                     error_list.append(f"{ip} : Support Not Available For Device Type - {atom['device_type']}")
-
+        error_success_length = len(success_list) + len(error_list)
+        if len(ip_list) == len(data) or len(success_list) == len(data) or len(error_list) == len(data) :
+            update_and_add_function_state('on_board_device', 'Completed')
+        elif len(ip_list) == len(error_success_length):
+            update_and_add_function_state('on_board_device', 'Completed')
         response_dict = {
             "data": data,
             'success': len(success_list),
@@ -81,6 +90,7 @@ async def onboard_devices_task(ip_list):
             'error_list': error_list
         }
         configs.db.close()
+        print("resposne dict is:::::::::::::",response_dict,file=sys.stderr)
         return response_dict
 
     except Exception:
