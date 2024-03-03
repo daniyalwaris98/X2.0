@@ -100,7 +100,7 @@ async def onboard_devices_task(ip_list):
 
 
 @router.post("/on_board_device", responses={
-    200: {"model": Response200},
+    200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
 async def onboard_devices(background_tasks: BackgroundTasks,ip_list: list[str],secs: int = 10):
@@ -115,7 +115,14 @@ async def onboard_devices(background_tasks: BackgroundTasks,ip_list: list[str],s
         success_list.append("Onboarding process has been started.")
         error_list.append("Onboarding process has been started.")
 
-        return Response200(data={},message="Onboarding process has been started.")
+        response_dict = {
+            "data": data,
+            'success': len(success_list),
+            'error': len(error_list),
+            'success_list': success_list,
+            'error_list': error_list
+        }
+        return response_dict
 
     except Exception:
         configs.db.rollback()
