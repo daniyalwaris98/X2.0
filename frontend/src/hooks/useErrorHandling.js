@@ -91,45 +91,47 @@ export default function useErrorHandling({
       type === TYPE_BULK_BACKUP ||
       type === TYPE_BULK_MONITORING
     ) {
-      if (isSuccess) {
-        if (data?.error === 0) {
-          handleCallbackAlert(`${type} Successfully.`, callback, "success");
-        } else if (data?.success === 0) {
-          handleCallbackAlert(
-            data?.error_list?.join("<br>"),
-            callback,
-            "error"
-          );
-        } else {
-          handleCallbackAlert(
-            `${type} Successfully with the following Exceptions:<br>${data?.error_list?.join(
-              "<br>"
-            )}`,
-            callback,
-            "info"
-          );
-        }
-      } else if (isError) {
-        if (error?.status === 400) {
-          handleCallbackAlert(error?.data, callback, "error");
-        } else if (error?.status === 404) {
-          handleCallbackAlert(error?.data?.detail, callback, "error");
-        } else if (error?.status === 422) {
-          handleCallbackAlert(
-            error?.data?.detail
-              .map(
-                (item) =>
-                  // `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
-                  `${item?.msg}`
-              )
-              .join("<br>"),
-            callback,
-            "error"
-          );
-        } else if (error?.status === 500) {
-          handleCallbackAlert(error?.data, callback, "error");
-        } else {
-          console.log(error);
+      if (showMessage) {
+        if (isSuccess) {
+          if (data?.error === 0) {
+            handleCallbackAlert(`${type} Successfully.`, callback, "success");
+          } else if (data?.success === 0) {
+            handleCallbackAlert(
+              data?.error_list?.join("<br>"),
+              callback,
+              "error"
+            );
+          } else {
+            handleCallbackAlert(
+              `${type} Successfully with the following Exceptions:<br>${data?.error_list?.join(
+                "<br>"
+              )}`,
+              callback,
+              "info"
+            );
+          }
+        } else if (isError) {
+          if (error?.status === 400) {
+            handleCallbackAlert(error?.data, callback, "error");
+          } else if (error?.status === 404) {
+            handleCallbackAlert(error?.data?.detail, callback, "error");
+          } else if (error?.status === 422) {
+            handleCallbackAlert(
+              error?.data?.detail
+                .map(
+                  (item) =>
+                    // `${item?.loc[2]} ${item?.msg} in ${item?.loc[0]} at index  ${item?.loc[1]}`
+                    `${item?.msg}`
+                )
+                .join("<br>"),
+              callback,
+              "error"
+            );
+          } else if (error?.status === 500) {
+            handleCallbackAlert(error?.data, callback, "error");
+          } else {
+            console.log(error);
+          }
         }
       }
     }

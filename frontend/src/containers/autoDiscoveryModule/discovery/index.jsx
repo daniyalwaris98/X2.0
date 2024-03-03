@@ -1,15 +1,20 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useState, useRef } from "react";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/autoDiscoveryModule/discovery/selectors";
+import { selectFunctionRunningStatus } from "../../../store/features/commons/selectors";
 import {
   useGetAllAutoDiscoveryDiscoveredDevicesLazyQuery,
   useFetchRecordsMutation,
   useGetAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation,
 } from "../../../store/features/autoDiscoveryModule/discovery/apis";
+import { useGetFunctionRunningStatusMutation } from "../../../store/features/commons/apis";
 import { jsonToExcel } from "../../../utils/helpers";
 import { SUCCESSFUL_FILE_EXPORT_MESSAGE } from "../../../utils/constants";
 import { useAuthorization } from "../../../hooks/useAuth";
-import useErrorHandling, { TYPE_FETCH } from "../../../hooks/useErrorHandling";
+import useErrorHandling, {
+  TYPE_FETCH,
+  TYPE_SINGLE,
+} from "../../../hooks/useErrorHandling";
 import useSweetAlert from "../../../hooks/useSweetAlert";
 import useColumnsGenerator from "../../../hooks/useColumnsGenerator";
 import useButtonsConfiguration from "../../../hooks/useButtonsConfiguration";
@@ -51,6 +56,9 @@ const Index = () => {
     default_export: { handleClick: handleDefaultExport },
   });
 
+  // refs
+  const functionRunningStatusRef = useRef(null);
+
   // states
   const [tableConfigurationsOpen, setTableConfigurationsOpen] = useState(false);
   const [columns, setColumns] = useState(generatedColumns);
@@ -59,6 +67,7 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
+  const functionRunningStatus = useSelector(selectFunctionRunningStatus);
 
   // apis
   const [
@@ -94,6 +103,17 @@ const Index = () => {
     },
   ] = useGetAutoDiscoveryDiscoveryFunctionCountsBySubnetMutation();
 
+  const [
+    getFunctionRunningStatusMutation,
+    {
+      data: getFunctionRunningStatusMutationData,
+      isSuccess: isGetFunctionRunningStatusMutationSuccess,
+      isLoading: isGetFunctionRunningStatusMutationLoading,
+      isError: isGetFunctionRunningStatusMutationError,
+      error: getFunctionRunningStatusMutationError,
+    },
+  ] = useGetFunctionRunningStatusMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -119,11 +139,54 @@ const Index = () => {
     type: TYPE_FETCH,
   });
 
+  useErrorHandling({
+    data: getFunctionRunningStatusMutationData,
+    isSuccess: isGetFunctionRunningStatusMutationSuccess,
+    isError: isGetFunctionRunningStatusMutationError,
+    error: getFunctionRunningStatusMutationError,
+    type: TYPE_SINGLE,
+    showMessage: false,
+  });
+
   // effects
   useEffect(() => {
     fetchRecords();
     fetchFunctionCounts({ subnet: ALL });
   }, []);
+
+  useEffect(() => {
+    getFunctionRunningStatusMutation({ function_name: "auto_discover" });
+
+    if (functionRunningStatus?.running && !functionRunningStatusRef.current) {
+      functionRunningStatusRef.current = setInterval(
+        () =>
+          getFunctionRunningStatusMutation({
+            function_name: "auto_discover",
+          }),
+        5000
+      );
+    }
+
+    return () => {
+      if (functionRunningStatusRef.current)
+        clearInterval(functionRunningStatusRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (functionRunningStatus?.running && !functionRunningStatusRef.current) {
+      functionRunningStatusRef.current = setInterval(
+        () =>
+          getFunctionRunningStatusMutation({
+            function_name: "on_board_device",
+          }),
+        5000
+      );
+    }
+
+    if (functionRunningStatusRef.current && !functionRunningStatus?.running)
+      clearInterval(functionRunningStatusRef.current);
+  }, [getFunctionRunningStatusMutationData]);
 
   // handlers
   function handleDefaultExport() {
@@ -173,7 +236,10 @@ const Index = () => {
       <FunctionCounts />
 
       {pageEditable ? (
-        <StartScanningBar handleChange={handleSubnetChange} />
+        <StartScanningBar
+          handleChange={handleSubnetChange}
+          scanning={functionRunningStatus?.running}
+        />
       ) : null}
 
       <DefaultPageTableSection

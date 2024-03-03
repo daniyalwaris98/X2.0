@@ -108,6 +108,7 @@ import ncmConfigurationBackupsReducer from "./features/ncmModule/manageConfigura
 import ncmRemoteCommandSenderReducer from "./features/ncmModule/manageConfigurations/remoteCommandSender";
 
 import dropDownsReducer from "./features/dropDowns";
+import commonsReducer from "./features/commons";
 
 // import necessary functions from redux-persist
 import { persistStore, persistReducer } from "redux-persist";
@@ -238,6 +239,9 @@ const rootReducer = combineReducers({
 
   // dropdowns
   drop_downs: dropDownsReducer,
+
+  //commons
+  commons: commonsReducer,
 
   [monetxApi.reducerPath]: monetxApi.reducer,
 });
