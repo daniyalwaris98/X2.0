@@ -1,5 +1,20 @@
 from app.api.v1.monitoring.device.utils.puller_utils import *
 from app.utils.db_utils import *
+import re
+import traceback
+import sys
+from datetime import datetime
+import time
+
+from pysnmp.hlapi import *
+from influxdb_client.client.write_api import SYNCHRONOUS
+
+from app.core.config import *
+from app.api.v1.monitoring.device.utils.alerts_utils import *
+from app.api.v1.monitoring.device.utils.ping_parse import *
+from app.models.common_models import *
+
+from app.models.monitoring_models import *
 
 cisco_ios_oids = {
     'device_name': '1.3.6.1.2.1.1.5',
@@ -253,3 +268,18 @@ class CommonPuller(object):
                 f"\n-------- {atom.ip_address}: Support Not Available for "
                 f"{atom.ip_address} --------\n",
                 file=sys.stderr)
+            modification = datetime.now()
+            formatted_modification_date = modification.strftime('%Y-%m-%d %H:%M:%S.%f')
+            try:
+                query = (f"INSERT INTO monitoring_alerts_table (MONITORING_DEVICE_ID,"
+                         f"DESCRIPTION,ALERT_TYPE,CATEGORY,ALERT_STATUS,MAIL_STATUS,MODIFICATION_DATE)"
+                         f" values ({monitoring.monitoring_device_id},'support not available',"
+                         f"'critical','device_down','Open','no','{formatted_modification_date}');")
+                print("down",query,file=sys.stderr)
+                
+                configs.db.execute(query)
+                configs.db.commit()
+                print("support not available ip ,down  insertion successful.", file=sys.stderr)
+
+            except Exception as e:
+                traceback.print_exc()

@@ -4,6 +4,8 @@ from datetime import datetime
 import re, sys, time, json
 import threading
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 
 class XEPuller(object):
@@ -69,8 +71,11 @@ class XEPuller(object):
             self.results.append(device_info)
         if is_login==False:
             self.inv_data[host['ip_address']] = {"error":"Login Failed"}
-            date = datetime.now()
+            #date = datetime.now()
             # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
+            date = datetime.now()
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
             self.failed = True
             # file_name = time.strftime("%d-%m-%Y")+".txt"
             # failed_device=[]

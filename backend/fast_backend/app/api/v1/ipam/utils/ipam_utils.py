@@ -293,8 +293,8 @@ def DnsName(ip):
 
         if data != 'Not Found':
             try:
-                ip_tab = IP_TABLE()
-                ip_query = configs.db.query(IP_TABLE).filter_by(ip_address=ip).first()
+                ip_tab = IpTable()
+                ip_query = configs.db.query(IpTable).filter_by(ip_address=ip).first()
                 if ip_query:
                     ip_tab.dns_to_ip = data
                 UpdateDBData(ip_tab)
@@ -304,10 +304,10 @@ def DnsName(ip):
             except Exception as e:
                 traceback.print_exc()
         elif data == "Not Found":
-            ip_query = configs.db.query(IP_TABLE).filter_by(ip_address=ip).first()
+            ip_query = configs.db.query(IpTable).filter_by(ip_address=ip).first()
             if ip_query:
-                ip_tab.dns_to_ip = data
-            UpdateDBData(ip_tab)
+                ip_query.dns_to_ip = data
+            UpdateDBData(ip_query)
     except Exception as e:
         traceback.print_exc()
         print("error occured while addingdns name", file=sys.stderr)
@@ -326,8 +326,8 @@ def DnsIP(ip):
             if data:
                 if data != 'Not Found':
                     try:
-                        ip_tab = IP_TABLE()
-                        ip_query = configs.db.query(IP_TABLE).filter_by(ip_address=ip).first()
+                        ip_tab = IpTable()
+                        ip_query = configs.db.query(IpTable).filter_by(ip_address=ip).first()
                         if ip_query:
                             ip_tab.dns_to_ip = data
                         UpdateDBData(ip_tab)
@@ -337,9 +337,9 @@ def DnsIP(ip):
                     except Exception as e:
                         traceback.print_exc()
                 elif data == "Not Found":
-                    ip_query = configs.db.query(IP_TABLE).filter_by(ip_address=ip).first()
+                    ip_query = configs.db.query(IpTable).filter_by(ip_address=ip).first()
                     if ip_query:
-                        ip_tab.dns_to_ip = data
+                        ip_query.dns_to_ip = data
             UpdateDBData(ip_tab)
 
     except Exception as e:
@@ -354,10 +354,10 @@ def nmapPortScanning(ip, port):
         print("nmap port scanning is>>>>>", scanner, file=sys.stderr)
         res = scanner.scan(ip, str(port))
         res = res['scan'][ip]['tcp'][port]['state']
-        ip_tab = IP_TABLE()
+        ip_tab = IpTable()
         if res == 'open':
             new_port = ""
-            ip_query = configs.db.query(IP_TABLE).filter_by(ip_address=ip).all()
+            ip_query = configs.db.query(IpTable).filter_by(ip_address=ip).all()
             for ips in ip_query:
                 print("ips is>>>>>>>>>.", ips, file=sys.stderr)
                 old_ports = ips.open_ports
@@ -474,51 +474,55 @@ def PingTest(host, subnet):
     try:
         parameter = '-n' if platform.system().lower() == 'windows' else '-c'
         command = ['ping', parameter, '3', host]
-        response = subprocess.call(command,shell=True)
-        print("host is:::::::at pingtest 454",host,file=sys.stderr)
-        print("subnet is::::::::::::::455",subnet,file=sys.stderr)
-        subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address=subnet).first()
-        Iptable = IpTable()
-        if response == 0:
-            upIpsQueue.append(host)
-            time = datetime.now()
-            ip_history = IP_HISTORY_TABLE()
-            ip_query = configs.db.query(IpTable).filter_by(ip_address=host, subnet_id=subnet_exsist.subnet_id).first()
-            if ip_query:
-                ip_query.status = 'Used'
-                ip_query.status_history = 'UP'
-                ip_query.last_used = time
-                # inerting ip history tbale
+        response = subprocess.call(command, shell=True)
 
-                ip_history.ip_address = host
-                ip_history.status = 'Used'
-                ip_history.date = time
-                ip_history.ip_id = ip_query.ip_id
-            UpdateDBData(Iptable)
-            print("ip table updated", file=sys.stderr)
+        print("host is:::::::at pingtest 454", host, file=sys.stderr)
+        print("subnet is::::::::::::::455", subnet, file=sys.stderr)
+
+        subnet_exist = configs.db.query(subnet_table).filter_by(subnet_address=subnet).first()
+        current_time = datetime.now()
+
+        if subnet_exist:
+            ip_query = configs.db.query(IpTable).filter_by(ip_address=host).first()
+
+            if ip_query:
+                # Update existing record
+                ip_query.status = 'Used' if response == 0 else 'Available'
+                ip_query.last_used = current_time
+
+                UpdateDBData(ip_query)
+                print(f"{host} host :::::ip table updated", file=sys.stderr)
+            else:
+                # Insert new record
+                new_ip_entry = IpTable()
+                new_ip_entry.ip_address = host
+                new_ip_entry.status = 'Used' if response == 0 else 'Available'
+                new_ip_entry.last_used = current_time
+                new_ip_entry.subnet_id = subnet_exist.subnet_id
+
+                InsertDBData(new_ip_entry)
+                print(f"New IP entry added for host {host}", file=sys.stderr)
+
+            # Add entry to IP_HISTORY_TABLE
+            ip_history = IP_HISTORY_TABLE()
+            ip_history.ip_address = host
+            ip_history.status = 'Used' if response == 0 else 'Available'
+            ip_history.date = current_time
+            ip_history.ip_id = ip_query.ip_id if ip_query else new_ip_entry.ip_id
+
             InsertDBData(ip_history)
-            print("data inserted to the IP history table::", file=sys.stderr)
+            print("Data inserted to the IP history table", file=sys.stderr)
+
+            if response == 0:
+                upIpsQueue.append(host)
         else:
-            ip_query = configs.db.query(IpTable).filter_by(ip_address=host, subnet_id=subnet_exsist.subnet_id).first()
-            ip_history = IP_HISTORY_TABLE()
-            if ip_query:
-                time = datetime.now()
-                ip_query.status = 'Available'
-                # IpTable.status_history = 'UP'
-                ip_query.last_used = time
-                # inerting ip history tbale
-
-                ip_history.ip_address = host
-                ip_history.status = 'Available'
-                ip_history.date = time
-                ip_history.ip_id = ip_query.ip_id
-            UpdateDBData(Iptable)
-            print("ip table updated", file=sys.stderr)
-            InsertDBData(ip_history)
-            print("data inserted to the IP history table::", file=sys.stderr)
+            print(f"Subnet {subnet} does not exist", file=sys.stderr)
 
     except Exception as e:
+        print(f"An error occurred: {e}", file=sys.stderr)
         traceback.print_exc()
+
+
 
 
 def CheckUpIps(subnet):
@@ -575,7 +579,7 @@ def calculateDnsIp(subnet):
         subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_address = subnet).first()
         ip_query = configs.db.query(IpTable).filter_by(status='Used', subnet_id=subnet_exsist.subnet_id).all()
         for row in ip_query:
-            print("row is>>>>>>>>>>", row, file=sys.stderr)
+            print("row in  ip query is>>>>>>>>>>at 591 in caclculate dns IP", row, file=sys.stderr)
             ip = row.ip_address
             th = threading.Threads(target=DnsIP, args=(ip))
             th.start()
@@ -593,49 +597,52 @@ def calculateDnsIp(subnet):
 
 def getPhysicalMapping(subnet_list):
     try:
-        print("physical mapping started execution::::::::::::",file=sys.stderr)
-        threads = []
-        physical_mapping = IPAMPM()
-        password=""
+        print("Physical mapping started execution", file=sys.stderr)
         hosts = []
-        host= {}
+
         for subnet in subnet_list:
+            subnet_entries = configs.db.query(subnet_table).filter_by(subnet_address=subnet).all()
+            for row in subnet_entries:
+                print(f'Processing row: {row}', file=sys.stderr)
 
-            result1 = configs.db.query(subnet_table).filter_by(subnet_address=subnet).all()
-            for row in result1:
-                print('row is>>>>>>>', row, file=sys.stderr)
-                print("row discovered from is::::::::::::::::::::::::",row.subnet_name,file=sys.stderr)
-                atom_exsist = configs.db.query(AtomTable).filter_by(device_name = row.subnet_name).first()
-                device_name = atom_exsist.device_name
-                password=""
-                ip_address = atom_exsist.ip_address
-                if device_name:
-                    password_group = device_type = user_name = password = ""
-                    print("ip address is:::::::::::::::::::::::::",ip_address,file=sys.stderr)
-                    result2 = configs.db.query(AtomTable).filter_by(ip_address=atom_exsist.ip_address).first()
-                    password_group = result2.password_group_id
-                    device_type = atom_exsist.device_type
-                    if password_group:
-                        result4 = configs.db.query(PasswordGroupTable).filter_by(
-                            password_group_id=password_group).first()
-                        user_name = result4.username
-                        password = result4.password
+                atom_entry = configs.db.query(AtomTable).filter_by(device_name=row.subnet_name).first()
+                if atom_entry:
+                    device_name = atom_entry.device_name
+                    ip_address = atom_entry.ip_address
+                    device_type = atom_entry.device_type
 
-                    host = {
-                        "ip_address": ip_address,
-                        "user": user_name,
-                        "pwd": password,
-                        "sw_type": device_type,
-                        "device_name": device_name
-                    }
-                    hosts.append(host)
-                    print(f"Host is {host}:::::", file=sys.stderr)
-        physical_mapping.poll(host)
-        # physical_mapping.poll(host)
+                    if ip_address and device_name:
+                        password_group_entry = None
+                        if atom_entry.password_group_id:
+                            password_group_entry = configs.db.query(PasswordGroupTable).filter_by(
+                                password_group_id=atom_entry.password_group_id).first()
 
+                        if password_group_entry:
+                            # Check for duplicate host before adding
+                            existing_host = next((item for item in hosts if item["ip_address"] == ip_address and item["device_name"] == device_name), None)
+                            if existing_host is None:
+                                host = {
+                                    "ip_address": ip_address,
+                                    "user": password_group_entry.username,
+                                    "pwd": password_group_entry.password,
+                                    "sw_type": device_type,
+                                    "device_name": device_name
+                                }
+                                hosts.append(host)
+                                print(f"Host added: {host}", file=sys.stderr)
+                            else:
+                                print(f"Duplicate host skipped: {host}", file=sys.stderr)
+
+        # Polling each host using physical_mapping.poll
+        print("Hosts are: ", hosts, file=sys.stderr)
+        physical_mapping = IPAMPM()
+        for data in hosts:
+            physical_mapping.poll(data)
 
     except Exception as e:
+        print(f"An error occurred: {e}", file=sys.stderr)
         traceback.print_exc()
+
 
 
 def MultiPurpose(options):
@@ -672,13 +679,15 @@ def MultiPurpose(options):
                     size = sizeCalculator(subnet)
                     print("size caluclator step1 in multipurposse is:::::::::::::::::::::::",size,file=sys.stderr)
                     try:
-                        for subnt in get_subnet:
+                        for subnet in get_subnet:
                             if get_subnet:
-                                subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnt.subnet_id).first()
-                                subnt.status = 'Scanning'
-                                subnet_usage.subnet_size = size
-                                UpdateDBData(subnt)
-                                UpdateDBData(subnet_usage)
+                                subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnet.subnet_id).first()
+                                subnet.status = 'Scanning'
+                                if subnet_usage:
+                                    subnet_usage.subnet_size = size
+                                    UpdateDBData(subnet_usage)
+
+                                UpdateDBData(subnet)
                                 print("Subnet Display Table Updated Successfully::::::", file=sys.stderr)
                             else:
                                 print("No subnet found in subnet display table:::::", file=sys.stderr)
@@ -691,6 +700,7 @@ def MultiPurpose(options):
                     traceback.print_exc()
                 for subnet in subnet_lst:
                     print("Getting IP Adress::::::::::::::::::", file=sys.stderr)
+                    print("subnet in subnet list is:::::::::::: at 712",subnet,file=sys.stderr)
                     subnet1 = configs.db.query(subnet_table).filter_by(subnet_address = subnet).first()
                     try:
                         print("subnet is::::::::::::for get ip at 649",subnet,file=sys.stderr)
@@ -700,6 +710,8 @@ def MultiPurpose(options):
                         date = datetime.now()
                         for ip in ips:
                             ipExists = False
+                            print("ip in ips are:::::::::::::::::::::::::::::::::::::::::",ip,file=sys.stderr)
+                            print("subent id is:::::::::::::::::::::::::::::::::::::::::::",subnet1.subnet_id,file=sys.stderr)
                             get_ip = configs.db.query(IpTable).filter_by(ip_address=ip, subnet_id=subnet1.subnet_id).all()
                             for row in get_ip:
                                 if ip == row.ip_address:
@@ -711,7 +723,7 @@ def MultiPurpose(options):
                                     row.ip_address = ip
                                     row.subnet_id = subnet1.subnet_id
                                     InsertDBData(row)
-                        print("data inserted to ip tabl::::::", file=sys.stderr)
+                                print("data inserted to ip tabl::::::", file=sys.stderr)
                     except Exception as e:
                         for row in get_subnet_scan:
                             print("row is::::::::::::", row, file=sys.stderr)
@@ -729,15 +741,16 @@ def MultiPurpose(options):
                             usage = UsageCalculator(len(upIpsList), sizeCalculator(subnet))
                             print("step4 usgae are:::::::::::::::::::",usage,file=sys.stderr)
                             for row in get_subnet:
+                                print("row in get subnet is:::::::::::::::::::::::::",row,file=sys.stderr)
                                 subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).first()
                                 print("row in get subnet is:::::::", file=sys.stderr)
-                                subnet_usage.subnet_usage = usage
-                                print(f"Usage {subnet_usage.subnet_usage} Upaded successfuly for subnet {subnet}:::", file=sys.stderr)
-                                UpdateDBData(row)
-                                UpdateDBData(subnet_usage)
+                                if subnet_usage:
+                                    subnet_usage.subnet_usage = usage
+                                    print(f"Usage {subnet_usage.subnet_usage} Upaded successfuly for subnet {subnet}:::", file=sys.stderr)
+                                    UpdateDBData(subnet_usage)
                         except Exception as e:
                             for row in get_subnet_scan:
-                                print("row is::::::::::::", row, file=sys.stderr)
+                                print("row in get subnet scan is at 762::::::::::::", row, file=sys.stderr)
                                 row.staus = 'Failed'
                                 row.scan_date = datetime.now()
                                 UpdateDBData(row)
@@ -752,7 +765,9 @@ def MultiPurpose(options):
                             ip_result = configs.db.query(IpTable).filter_by(subnet_id = subnet_exsist2.subnet_id).all()
                             for ips in ip_result:
                                 try:
+                                    print("ips in ip result at 777",ips,file=sys.stderr)
                                     ip = ips.ip_address
+                                    print("ip which is = ips.ipaddress::",ip,file=sys.stderr)
                                     f5_ip = configs.db.query(F5).filter_by(node=ip).all()
                                     vip = ""
                                     for row in f5_ip:
@@ -791,7 +806,7 @@ def MultiPurpose(options):
                     if "DNS Scan" in options:
                         print("step6 DNS scan is beign processing:::::::",file=sys.stderr)
                         for subnet in subnet_lst:
-                            print("Resolving Host IP::::::::::::::::", file=sys.stderr)
+                            print("Resolving Host IP:::::::::::::::: 818",subnet, file=sys.stderr)
                             try:
                                 print("calculating the dns ip")
                                 calculateDnsIp(subnet)

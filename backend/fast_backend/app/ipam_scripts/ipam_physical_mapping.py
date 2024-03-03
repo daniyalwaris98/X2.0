@@ -6,10 +6,13 @@ import threading
 import time
 # from app import db
 from datetime import datetime
-
+from app.ipam_scripts.utils.utils import get_vendor_information_by_mac_address,nmap_port_scanner_for_ip_address
 # from app.monitoring.common_utils.utils import addFailedDevice
 from app.utils.db_utils import *
 from netmiko import Netmiko
+from app.models.ipam_models import *
+import asyncio
+
 
 
 def FormatDate(date):
@@ -160,14 +163,15 @@ class IPAMPM(object):
 
                     for arp in arps:
                         print("arp is: :::::::::::::::::::::::::::::::: ",arp,file=sys.stderr)
-                        mac_address = arp.get("address")
-                        print("mac address is:::::::::::::::::",mac_address,file=sys.stderr)
-                        ip_address = arp.get("address")
-                        print("ip adress is::::::::::::::::",ip_address,file=sys.stderr)
+                        mac_address = arp['mac_address']
+                        ip_address = arp['mac_address']
+                        interface = arp['interface']
+                        print(f"IP ADDRSS::{ip_address} ::: MAC ADDRESS :::{mac_address} :::: INTERFACE {interface} ",ip_address,file=sys.stderr)
                         dic = {}
-                        dic['ip_address'] = arp.get("address")
-                        dic['mac_address'] = arp.get("mac")
-                        dic['interface'] = ""
+                        dic['ip_address'] = arp['ip_address']
+                        dic['mac_address'] = arp['mac_address']
+                        dic['interface'] = arp['interface']
+                        dic['device_name'] = host['device_name']
                         pmData.append(dic)
 
                 except Exception as e:
@@ -215,54 +219,55 @@ class IPAMPM(object):
                     self.add_to_failed_devices(host['host'], str(e))
 
             try:
-                # Updating IP Data
                 print("Populating PM data in Ip Table", file=sys.stderr)
+                print("PM data is ::::::::::::::::::",pmData,file=sys.stderr)
                 for record in pmData:
-                    print("record in pm data is::::::::::::::::::::",record,file=sys.stderr)
-                    print("RECORDDDDDDDDDDDDDDDDD IS ", record, file=sys.stderr)
-                    query = f"update ip_table set MAC_ADDRESS='{record['mac_address']}', CONFIGURATION_INTERFACE='{record['interface']}', CONFIGURATION_SWITCH='{host['device_name']}' where IP_ADDRESS='{record['ip_address']}';"
-                    try:
-                        configs.db.execute(query)
-                        configs.db.commit()
-                        print(f"Added recorded of PM for ip {arp['ip_address']}")
-                    except Exception as e:
-                        print("Exception Occured in Executing Database Query", file=sys.stderr)
+                    print("Record in PM data is: ", record, file=sys.stderr)
+                    ip_address = record['ip_address']
+                    mac_address = record['mac_address']
+                    interface = record['interface']
+                    device_name = record['device_name']
+                    print(":::::::::::::::::IP address:::::::::::::::::",ip_address,file=sys.stderr)
+                    print(":::::::::::::::::MaC Address:::::::::::::::::",mac_address,file=sys.stderr)
+                    print("::::::::::::::::Interface:::::::::::::::::::::",interface,file=sys.stderr)
+                    print("::::::::::::::::device_name:::::::::::::::::::",device_name,file=sys.stderr)
+                    asyncio.run(get_vendor_information_by_mac_address(mac_address))
+                    nmap_port_scanner_for_ip_address(ip_address)
+                    print(
+                        f"IP Address: {ip_address}, MAC Address: {mac_address}, Interface: {interface}, Device Name: {device_name}",
+                        file=sys.stderr)
 
-                    ## Update MAC Hstory
-                    tagId = None
-                    date = datetime.now()
-                    query_string = f"SELECT ASSET_TAG FROM ip_table WHERE IP_ADDRESS='{record['ip_address']}';"
-                    result3 = configs.db.execute(query_string)
-                    for row in result3:
-                        tagId = row[0]
-
-                    query_string = f"SELECT MAC_ADDRESS FROM ip_history_table WHERE IP_ADDRESS='{record['ip_address']}';"
-                    result2 = configs.db.execute(query_string)
-                    historyMacAddress = ""
-                    for row in result2:
-                        historyMacAddress = row[0]
-                    print(f"HISTORY MAC VARIABLE {historyMacAddress} {record['ip_address']}", file=sys.stderr)
-                    if historyMacAddress:
-                        if historyMacAddress != record['mac_address']:
-                            query_string = f"INSERT INTO ip_history_table (IP_ADDRESS, MAC_ADDRESS, ASSET_TAG,`DATE`) VALUES ('{record['ip_address']}','{record['mac_address']}', '{tagId}','{date}');"
-                            try:
-                                configs.db.execute(query_string)
-                                configs.db.commit()
-                                print(f"HISTORY MAC ADDRESS {historyMacAddress} {record['ip_address']}",
-                                      file=sys.stderr)
-                            except Exception as e:
-                                print(f"Exception Occured in Executing Database Query {e}", file=sys.stderr)
-                        else:
-                            pass
-
+                    # Check if IP address exists in ip_table
+                    query_check =configs.db.query(IpTable).filter_by(ip_address = ip_address).first()
+                    if query_check:
+                        # Update existing record
+                        query_check.mac_address = mac_address
+                        query_check.configuration_interface = interface
+                        query_check.configuration_switch = device_name
+                        query_check.asset_tag = 'IPAM'
+                        UpdateDBData(query_check)
+                        ip_id = query_check.ip_id  # Retrieve ip_id after update
                     else:
-                        query_string = f"INSERT INTO ip_history_table (IP_ADDRESS, MAC_ADDRESS, ASSET_TAG,`DATE`) VALUES ('{record['ip_address']}','{record['mac_address']}', '{tagId}','{date}');"
-                        try:
-                            configs.db.execute(query_string)
-                            configs.db.commit()
-                            print(f"IN ELSE CONDITION  {record['ip_address']}", file=sys.stderr)
-                        except Exception as e:
-                            print(f"Exception Occured in Executing Database Query {e}", file=sys.stderr)
+                        # Insert new record
+                        ip_data = IpTable()
+                        ip_data.ip_address = ip_address
+                        ip_data.mac_address = mac_address
+                        ip_data.configuration_interface = interface
+                        ip_data.configuration_switch = device_name
+                        ip_data.asset_tag = 'IPAM'
+                        InsertDBData(ip_data)
+                        configs.db.refresh(ip_data)  # Refresh to get the newly generated ip_id
+                        ip_id = ip_data.ip_id
+
+                    # Always insert into IP History Table
+                    ip_history = IP_HISTORY_TABLE()
+                    date = datetime.now()
+                    ip_history.ip_id = ip_id  # Use the ip_id from IpTable
+                    ip_history.ip_address = ip_address
+                    ip_history.mac_address = mac_address
+                    ip_history.date = date
+                    InsertDBData(ip_history)
+
 
             except Exception as e:
                 print("Failed to send Command, show interface " + str(e), file=sys.stderr)

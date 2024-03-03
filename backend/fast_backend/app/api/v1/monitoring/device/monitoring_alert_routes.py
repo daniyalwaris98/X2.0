@@ -3,6 +3,7 @@ from fastapi.responses import JSONResponse
 from fastapi import FastAPI,Query
 from app.api.v1.monitoring.device.utils.alerts_utils import *
 from app.schema.monitoring_schema import *
+from typing import List
 
 router = APIRouter(
     prefix="/alerts",
@@ -32,7 +33,9 @@ async def low_alerts():
     try:
         # alert_level: str = Query(..., description="alert level of the device of the device")
         # alert_level = str(alert_level).lower()
-        return JSONResponse(content=get_level_alert(), status_code=200)
+        result=get_level_alert()
+        #return JSONResponse(content=get_level_alert(), status_code=200)
+        return result
 
     except Exception:
         traceback.print_exc()
@@ -84,16 +87,18 @@ async def alert_status():
         return JSONResponse(content="Server Error", status_code=500)
 
 
-@router.get("/get_ip_alerts", responses={
+@router.post("/get_ip_alerts", responses={
     200: {"model": list[MonitoringAlertSchema]},
     500: {"model": str}
 },
 summary="Use this API to be used in monitoring alerts page to display the alert based on ip click.This API is of get method but requires ip_address as an query parameter",
 description="Use this API to be used in monitoring alerts page to display the alert based on ip click.This API is of get method but requires ip_address as an query parameter"
 )
-async def get_ip_alerts(ip: str = Query(..., description="IP address of the device")):
+#async def get_ip_alerts(ip: str = Query(..., description="IP address of the device")):
+async def get_ip_alerts(ip: MonitoringAlertsByIpAddress):
     try:
         monitoring_alert_list = []
+        print("ip_input",ip,file=sys.stderr)
 
         results = (
             configs.db.query(
@@ -105,10 +110,10 @@ async def get_ip_alerts(ip: str = Query(..., description="IP address of the devi
                 == Monitoring_Alerts_Table.monitoring_device_id,
             )
             .join(AtomTable, AtomTable.atom_id == Monitoring_Devices_Table.atom_id)
-            .filter(AtomTable.ip_address == ip)
+            .filter(AtomTable.ip_address == ip.ip_address)
             .all()
         )
-
+        print("alert_table query result",results,file=sys.stderr)
         for alert, device, atom in results:
             monitoring_alert_dict = {"alarm_id": alert.monitoring_alert_id,
                                      "ip_address": atom.ip_address,
@@ -119,9 +124,10 @@ async def get_ip_alerts(ip: str = Query(..., description="IP address of the devi
                                      "mail_status": alert.mail_status,
                                      "date": alert.modification_date}
 
+            print("monitoring_alert_dict",monitoring_alert_dict,file=sys.stderr)
             monitoring_alert_list.append(monitoring_alert_dict)
 
-        return JSONResponse(content=monitoring_alert_list, status_code=200)
+        return monitoring_alert_list
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
@@ -161,10 +167,12 @@ async def get_ips_alerts(ip: MonitoringAlertsByIpAddress):
                                      "alert_status": alert.alert_status,
                                      "mail_status": alert.mail_status,
                                      "date": alert.modification_date}
+            print("monitoring_alert_dict",monitoring_alert_dict,file=sys.stderr)
 
             monitoring_alert_list.append(monitoring_alert_dict)
 
-        return JSONResponse(content=monitoring_alert_list, status_code=200)
+        #return JSONResponse(content=monitoring_alert_list, status_code=200)
+        return monitoring_alert_list
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)

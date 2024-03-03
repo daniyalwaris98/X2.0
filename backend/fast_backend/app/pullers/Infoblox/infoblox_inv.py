@@ -4,6 +4,8 @@ from datetime import datetime
 from requests.packages.urllib3.exceptions import InsecureRequestWarning
 import threading
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 
 requests.packages.urllib3.disable_warnings(InsecureRequestWarning)

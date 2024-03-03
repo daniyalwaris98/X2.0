@@ -6,6 +6,8 @@ import threading
 from app.api.v1.uam.utils.uam_db_utils import uam_inventory_data
 
 from app.utils.failed_utils import addFailedDevice
+#from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 
 
@@ -106,8 +108,12 @@ class FirePowerPuller(object):
             print(f"Inventory not found Exception detail==>{e}", file=sys.stderr)
             if host['ip_address'] in self.inv_data:
                 self.inv_data[host['ip_address']].update({'status': 'error'})
+            #date = datetime.now()
+            #addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
             date = datetime.now()
-            addFailedDevice(host['ip_address'],date,host['device_type'],str(e),'UAM')
+            device_type = host['device_type']
+            addFailedDevice(host['ip_address'], date, device_type,str(e),'UAM')
+
             # file_name = time.strftime("%d-%m-%Y")+".txt"
             # failed_device=[]
             # #Read existing file

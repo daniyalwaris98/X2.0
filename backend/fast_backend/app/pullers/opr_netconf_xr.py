@@ -4,6 +4,8 @@ import json
 import xmltodict
 from datetime import datetime
 from collections import OrderedDict
+from app.utils.failed_utils import addFailedDevice
+from app.api.v1.ipam.utils.ipam_db_utils import *
 
 class Puller(object):
 
@@ -24,6 +26,10 @@ class Puller(object):
                 print(f"Success: logged in {host['host']}")
             except Exception as e:
                 print(f"Falied to login {host['host']}")
+                date = datetime.now()
+                device_type = host['device_type']
+                addFailedDevice(host['ip_address'], date, device_type, str(e), 'UAM')
+                
                 self.inv_data[host['host']]={"error":"Login failed"}
                 continue
 

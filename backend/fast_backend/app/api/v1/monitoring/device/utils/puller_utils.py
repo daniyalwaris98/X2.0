@@ -785,6 +785,7 @@ def dumpDeviceData(atom, output):
                 file=sys.stderr,
             )
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         print("Error Occured while dumpDeviceData",str(e))
 
@@ -831,6 +832,7 @@ def dumpInterfaceData(atom, output, interfaces):
                         file=sys.stderr,
                     )
     except Exception as e:
+        configs.db.rollback()
         traceback.print_exc()
         print("error occured while dumping devices interface data")
 #
@@ -919,182 +921,182 @@ def general(varbinds):
     except Exception as e:
         traceback.print_exc()
 
-# def date_diff(datedb, datenow):
-#     NUM_SECONDS_IN_A_MIN = 60
+def date_diff(datedb, datenow):
+    NUM_SECONDS_IN_A_MIN = 60
 
-#     seconds = (datenow-datedb).total_seconds()
-#     minutes = seconds / NUM_SECONDS_IN_A_MIN
-#     print("//////////////difference in seconds:", seconds, type(seconds),
-#           "\n///////////difference in minutes:", minutes, type(minutes), file=sys.stderr)
-#     return minutes
-
-
-# thrushold_list = [30, 60, 120, 300, 1440]
+    seconds = (datenow-datedb).total_seconds()
+    minutes = seconds / NUM_SECONDS_IN_A_MIN
+    print("//////////////difference in seconds:", seconds, type(seconds),
+          "\n///////////difference in minutes:", minutes, type(minutes), file=sys.stderr)
+    return minutes
 
 
-# def alert_check(ip, value, category, func):
-#     if category == 'memory' or category == 'cpu':
-#         try:
-#             if value == "None" or value == "NA" or value == None:
-#                 # start_time_query = f"select start_date from alerts_table where IP_ADDRESS='{ip}' and  (ALERT_TYPE='critical' and category='{category}') and ALERT_STATUS='Open';"
-#                 # start_time = db.session.execute(start_time_query)
-#                 # print("printing start time of alert",start_time,file=sys.stderr)
-#                 queryString = f"select IP_ADDRESS,ALERT_TYPE,date,start_date from alerts_table where IP_ADDRESS='{ip}' and (ALERT_TYPE='critical' and ALERT_STATUS='Open') and category='{category}';"
-#                 result = db.session.execute(queryString)
-#                 check_ip = ""
-#                 for row in result:
-#                     check_ip = row[0]
-#                     if check_ip != "" or check_ip != None:
-#                         time = date_diff(row[3], datetime.now())
+thrushold_list = [30, 60, 120, 300, 1440]
 
-#                         if int(time) > 30:
-#                             sqlquery1 = f"update alerts_table set ALERT_STATUS = 'Close' where IP_ADDRESS='{ip}' and (ALERT_TYPE='critical' and ALERT_STATUS='Open') and category='{category}';"
-#                             db.session.execute(sqlquery1)
-#                             db.session.commit()
-#                             des = f"Not Providing Value of {category.upper()} from the Last {int(time)} Minutes"
-#                             sqlquery1 = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{row[3]}','{func}');"
-#                             db.session.execute(sqlquery1)
-#                             db.session.commit()
-#                 if check_ip == "":
-#                     des = f"Not Providing Value of {category.upper()}"
-#                     sqlquery1 = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{datetime.now()}','{func}');"
-#                     db.session.execute(sqlquery1)
-#                     db.session.commit()
-#                 sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Critical' where ip_address='{ip}';"
-#                 db.session.execute(sqlquery1)
-#                 db.session.commit()
 
-#             elif float(value) < 50:
-#                 queryString = f"select IP_ADDRESS,ALERT_TYPE,date,start_date from alerts_table where IP_ADDRESS='{ip}' and (ALERT_STATUS='Open' and category='{category}');"
-#                 result = db.session.execute(queryString)
-#                 check_ip = ""
-#                 for row in result:
-#                     check_ip = row[0]
-#                     if check_ip != "":
-#                         sqlquery1 = f"update alerts_table set ALERT_STATUS = 'Close' where IP_ADDRESS='{ip}' and category='{category}';"
-#                         db.session.execute(sqlquery1)
-#                         db.session.commit()
-#                         des = f"Device {category.upper()} Utilization is Clear Now."
-#                         sqlquery2 = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','clear','{category}','Close','no','{datetime.now()}','{row[3]}','{func}');"
-#                         db.session.execute(sqlquery2)
-#                         db.session.commit()
-#                 sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Clear' where ip_address='{ip}';"
-#                 db.session.execute(sqlquery1)
-#                 db.session.commit()
+def alert_check(ip, value, category, func):
+    if category == 'memory' or category == 'cpu':
+        try:
+            if value == "None" or value == "NA" or value == None:
+                start_time_query = f"select start_date from alerts_table where ip_address='{ip}' and  (alert_type='critical' and category='{category}') and alert_status='Open';"
+                start_time = configs.db.execute(start_time_query)
+                print("printing start time of alert",start_time,file=sys.stderr)
+                queryString = f"select ip_address,alert_type,date,start_date from alerts_table where ip_address='{ip}' and (alert_type='critical' and alert_status='Open') and category='{category}';"
+                result = configs.db.execute(queryString)
+                check_ip = ""
+                for row in result:
+                    check_ip = row[0]
+                    if check_ip != "" or check_ip != None:
+                        time = date_diff(row[3], datetime.now())
 
-#             if float(value) > 50 and float(value) < 70:
-#                 # start_time_query = f"select min(start_date) from alerts_table where IP_ADDRESS='{ip}' and  (ALERT_TYPE='informational' and category='{category}');"
-#                 # start_time = db.session.execute(start_time_query)
-#                 # print("printing start time of alert",start_time,file=sys.stderr)
+                        if int(time) > 30:
+                            sqlquery1 = f"update alerts_table set alert_staus = 'Close' where ip_address='{ip}' and (alert_type='critical' and alert_status='Open') and category='{category}';"
+                            configs.db.execute(sqlquery1)
+                            configs.db.commit()
+                            des = f"Not Providing Value of {category.upper()} from the Last {int(time)} Minutes"
+                            sqlquery1 = f"insert into alerts_table (`ip_addresss`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`fucntion`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{row[3]}','{func}');"
+                            configs.db.execute(sqlquery1)
+                            configs.db.commit()
+                if check_ip == "":
+                    des = f"Not Providing Value of {category.upper()}"
+                    sqlquery1 = f"insert into alerts_table (`ip_address`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`fucntion`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{datetime.now()}','{func}');"
+                    configs.db.execute(sqlquery1)
+                    configs.db.commit()
+                sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Critical' where ip_address='{ip}';"
+                configs.db.execute(sqlquery1)
+                configs.db.commit()
 
-#                 queryString = f"select IP_ADDRESS,ALERT_TYPE,date,start_date from alerts_table where IP_ADDRESS='{ip}' and (ALERT_TYPE='informational'and ALERT_STATUS='Open') and category='{category}';"
-#                 result = db.session.execute(queryString)
-#                 check_ip = ""
-#                 for row in result:
-#                     check_ip = row[0]
-#                     if check_ip != "":
-#                         date_db = row[2]
-#                         date_now = datetime.now()
-#                         time = date_diff(row[3], datetime.now())
-#                         if int(time) > 30:
-#                             sqlquery1 = f"update alerts_table set ALERT_STATUS = 'Close' where IP_ADDRESS='{ip}' and (ALERT_TYPE='informational' and ALERT_STATUS='Open' and category='{category}');"
-#                             db.session.execute(sqlquery1)
-#                             db.session.commit()
-#                             des = f"Utilizing {value}% of {category.upper()} from the Last {int(time)} Minutes"
-#                             sqlquery1 = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{row[3]}','{func}');"
-#                             db.session.execute(sqlquery1)
-#                             db.session.commit()
-#                 if check_ip == "":
-#                     des = f"Utilizing {value}% of {category.upper()}"
-#                     sqlquery = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','informational','{category}','Open','no','{datetime.now()}','{datetime.now()}','{func}');"
-#                     db.session.execute(sqlquery)
-#                     db.session.commit()
-#                 sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Attention' where ip_address='{ip}';"
-#                 db.session.execute(sqlquery1)
-#                 db.session.commit()
+            elif float(value) < 50:
+                queryString = f"select ip_address,alert_type,date,start_date from alerts_table where IP_ADDRESS='{ip}' and (ALERT_STATUS='Open' and category='{category}');"
+                result = configs.db.execute(queryString)
+                check_ip = ""
+                for row in result:
+                    check_ip = row[0]
+                    if check_ip != "":
+                        sqlquery1 = f"update alerts_table set alert_status = 'Close' where ip_address='{ip}' and category='{category}';"
+                        configs.db.execute(sqlquery1)
+                        configs.db.commit()
+                        des = f"Device {category.upper()} Utilization is Clear Now."
+                        sqlquery2 = f"insert into alerts_table (`ip_address`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`fucntion`) values ('{ip}','{des}','clear','{category}','Close','no','{datetime.now()}','{row[3]}','{func}');"
+                        configs.db.execute(sqlquery2)
+                        configs.db.commit()
+                sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Clear' where ip_address='{ip}';"
+                configs.db.execute(sqlquery1)
+                configs.db.commit()
 
-#             if float(value) > 70:
-#                 # start_time_query = f"select min(start_date) from alerts_table where IP_ADDRESS='{ip}' and  (ALERT_TYPE='critical' and category='{category}') and ALERT_STATUS='Open';"
-#                 # start_time = db.session.execute(start_time_query)
-#                 # print("printing start time of alert",start_time,file=sys.stderr)
-#                 queryString = f"select IP_ADDRESS,ALERT_TYPE,date,start_date from alerts_table where IP_ADDRESS='{ip}' and ( ALERT_TYPE='critical'and ALERT_STATUS='Open' ) and category='{category}';"
-#                 result = db.session.execute(queryString)
-#                 check_ip = ""
-#                 for row in result:
-#                     check_ip = row[0]
-#                     if check_ip != "":
-#                         date_db = row[2]
-#                         date_now = datetime.now()
-#                         time = date_diff(row[3], datetime.now())
-#                         if int(time) > 30:
-#                             sqlquery1 = f"update alerts_table set ALERT_STATUS = 'Close' where IP_ADDRESS='{ip}' and (ALERT_TYPE='critical' and ALERT_STATUS='Open' and category='{category}');"
-#                             db.session.execute(sqlquery1)
-#                             db.session.commit()
-#                             des = f"Utilizing {value}% of {category.upper()} from the Last {int(time)} Minutes"
-#                             sqlquery1 = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{row[3]}','{func}');"
-#                             db.session.execute(sqlquery1)
-#                             db.session.commit()
-#                 if check_ip == "":
+            if float(value) > 50 and float(value) < 70:
+                # start_time_query = f"select min(start_date) from alerts_table where IP_ADDRESS='{ip}' and  (ALERT_TYPE='informational' and category='{category}');"
+                # start_time = db.session.execute(start_time_query)
+                # print("printing start time of alert",start_time,file=sys.stderr)
 
-#                     des = f"utilizing {value}% of {category}"
-#                     sqlquery = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{datetime.now()}','{func}');"
-#                     db.session.execute(sqlquery)
-#                     db.session.commit()
-#                 sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Critical' where ip_address='{ip}';"
-#                 db.session.execute(sqlquery1)
-#                 db.session.commit()
+                queryString = f"select ip_address,alert_type,date,start_date from alerts_table where IP_ADDRESS='{ip}' and (alert_type='informational'and alert_status='Open') and category='{category}';"
+                result = configs.db.execute(queryString)
+                check_ip = ""
+                for row in result:
+                    check_ip = row[0]
+                    if check_ip != "":
+                        date_db = row[2]
+                        date_now = datetime.now()
+                        time = date_diff(row[3], datetime.now())
+                        if int(time) > 30:
+                            sqlquery1 = f"update alerts_table set ALERT_STATUS = 'Close' where IP_ADDRESS='{ip}' and (ALERT_TYPE='informational' and ALERT_STATUS='Open' and category='{category}');"
+                            configs.db.execute(sqlquery1)
+                            configs.db.session.commit()
+                            des = f"Utilizing {value}% of {category.upper()} from the Last {int(time)} Minutes"
+                            sqlquery1 = f"insert into alerts_table (`ip_address`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`fucntion`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{row[3]}','{func}');"
+                            configs.db.execute(sqlquery1)
+                            configs.db.commit()
+                if check_ip == "":
+                    des = f"Utilizing {value}% of {category.upper()}"
+                    sqlquery = f"insert into alerts_table (`ip_address`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`function`) values ('{ip}','{des}','informational','{category}','Open','no','{datetime.now()}','{datetime.now()}','{func}');"
+                    configs.db.execute(sqlquery)
+                    configs.db.commit()
+                sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Attention' where ip_address='{ip}';"
+                configs.db.execute(sqlquery1)
+                configs.db.session.commit()
 
-#         except Exception as e:
-#             print("/////Printing exception in alerts/////",
-#                   str(e), file=sys.stderr)
-#             traceback.print_exc()
+            if float(value) > 70:
+                # start_time_query = f"select min(start_date) from alerts_table where IP_ADDRESS='{ip}' and  (ALERT_TYPE='critical' and category='{category}') and ALERT_STATUS='Open';"
+                # start_time = db.session.execute(start_time_query)
+                # print("printing start time of alert",start_time,file=sys.stderr)
+                queryString = f"select ip_address,alert_type,date,start_date from alerts_table where ip_address='{ip}' and ( alert_type='critical'and alert_status='Open' ) and category='{category}';"
+                result = configs.db.execute(queryString)
+                check_ip = ""
+                for row in result:
+                    check_ip = row[0]
+                    if check_ip != "":
+                        date_db = row[2]
+                        date_now = datetime.now()
+                        time = date_diff(row[3], datetime.now())
+                        if int(time) > 30:
+                            sqlquery1 = f"update alerts_table set alert_status = 'Close' where ip_address='{ip}' and (alert_type='critical' and ALERT_STATUS='Open' and category='{category}');"
+                            configs.db.execute(sqlquery1)
+                            configs.db.session.commit()
+                            des = f"Utilizing {value}% of {category.upper()} from the Last {int(time)} Minutes"
+                            sqlquery1 = f"insert into alerts_table (`ip_address`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`fucntion`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{row[3]}','{func}');"
+                            configs.db.execute(sqlquery1)
+                            configs.db.commit()
+                if check_ip == "":
 
-#     if category == 'device_down':
-#         # start_time_query = f"select min(start_date) from alerts_table where IP_ADDRESS='{ip}' and  (ALERT_TYPE='critical' and category='{category}') and ALERT_STATUS='Open';"
-#         # start_time = db.session.execute(start_time_query)
-#         # print("printing start time of alert",start_time,file=sys.stderr)
-#         queryString = f"select IP_ADDRESS,ALERT_TYPE,date,start_date from alerts_table where IP_ADDRESS='{ip}' and (ALERT_TYPE='device_down'and ALERT_STATUS='Open') and category='{category}';"
-#         result = db.session.execute(queryString)
-#         check_ip = ""
-#         for row in result:
-#             check_ip = row[0]
-#             if check_ip != "":
-#                 date_db = row[2]
-#                 date_now = datetime.now()
-#                 time = date_diff(row[3], datetime.now())
-#                 if int(time) > 30:
-#                     sqlquery1 = f"update alerts_table set ALERT_STATUS = 'Close' where IP_ADDRESS='{ip}' and (ALERT_TYPE='critical' and ALERT_STATUS='Open' and category='{category}');"
-#                     db.session.execute(sqlquery1)
-#                     db.session.commit()
-#                     des = f"Device is Offline from the Last {int(time)} Minutes"
-#                     sqlquery1 = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{row[3]}','{func}');"
-#                     db.session.execute(sqlquery1)
-#                     db.session.commit()
-#         if check_ip == "":
+                    des = f"utilizing {value}% of {category}"
+                    sqlquery = f"insert into alerts_table (`ip_address`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`function`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{datetime.now()}','{func}');"
+                    configs.db.execute(sqlquery)
+                    configs.db.commit()
+                sqlquery1 = f"update monitoring_devices_table set `device_heatmap`='Critical' where ip_address='{ip}';"
+                configs.db.execute(sqlquery1)
+                configs.db.commit()
 
-#             des = f"Device is Offline"
-#             sqlquery = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','device_down','{category}','Open','no','{datetime.now()}','{datetime.now()}','{func}');"
-#             db.session.execute(sqlquery)
-#             db.session.commit()
-#         sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Device Down' where ip_address='{ip}';"
-#         db.session.execute(sqlquery1)
-#         db.session.commit()
+        except Exception as e:
+            print("/////Printing exception in alerts/////",
+                  str(e), file=sys.stderr)
+            traceback.print_exc()
 
-#     if category == 'device_up':
-#         queryString = f"select IP_ADDRESS,ALERT_TYPE,date,start_date from alerts_table where IP_ADDRESS='{ip}' and (ALERT_STATUS='Open' and category='device_down');"
-#         result = db.session.execute(queryString)
-#         check_ip = ""
-#         for row in result:
-#             check_ip = row[0]
-#             if check_ip != "":
-#                 sqlquery1 = f"update alerts_table set ALERT_STATUS = 'Close' where IP_ADDRESS='{ip}' and category='device_down';"
-#                 db.session.execute(sqlquery1)
-#                 db.session.commit()
-#                 des = f"Device is Online now."
-#                 sqlquery2 = f"insert into alerts_table (`IP_ADDRESS`,`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,`DATE`,`START_DATE`,`FUNCTION`) values ('{ip}','{des}','clear','{category}','Close','no','{datetime.now()}','{row[3]}','{func}');"
-#                 db.session.execute(sqlquery2)
-#                 db.session.commit()
+    if category == 'device_down':
+        # start_time_query = f"select min(start_date) from alerts_table where IP_ADDRESS='{ip}' and  (ALERT_TYPE='critical' and category='{category}') and ALERT_STATUS='Open';"
+        # start_time = db.session.execute(start_time_query)
+        # print("printing start time of alert",start_time,file=sys.stderr)
+        queryString = f"select ip_address,alert_type,date,start_date from alerts_table where ip_address='{ip}' and (alert_typ='device_down'and alert_status='Open') and category='{category}';"
+        result = configs.db.execute(queryString)
+        check_ip = ""
+        for row in result:
+            check_ip = row[0]
+            if check_ip != "":
+                date_db = row[2]
+                date_now = datetime.now()
+                time = date_diff(row[3], datetime.now())
+                if int(time) > 30:
+                    sqlquery1 = f"update alerts_table set alert_status = 'Close' where ip_address='{ip}' and (alert_type='critical' and alert_status='Open' and category='{category}');"
+                    configs.db.execute(sqlquery1)
+                    configs.db.commit()
+                    des = f"Device is Offline from the Last {int(time)} Minutes"
+                    sqlquery1 = f"insert into alerts_table (`ip_address`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`fucntion`) values ('{ip}','{des}','critical','{category}','Open','no','{datetime.now()}','{row[3]}','{func}');"
+                    configs.db.execute(sqlquery1)
+                    configs.db.commit()
+        if check_ip == "":
 
-#         sqlquery1 = f"update monitoring_devices_table set `DEVICE_HEATMAP`='Clear' where ip_address='{ip}';"
-#         db.session.execute(sqlquery1)
-#         db.session.commit()
+            des = f"Device is Offline"
+            sqlquery = f"insert into alerts_table (`ip_address`,`description`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`function`) values ('{ip}','{des}','device_down','{category}','Open','no','{datetime.now()}','{datetime.now()}','{func}');"
+            configs.db.execute(sqlquery)
+            configs.db.commit()
+        sqlquery1 = f"update monitoring_devices_table set `device_heatmap`='Device Down' where ip_address='{ip}';"
+        configs.db.execute(sqlquery1)
+        configs.db.commit()
+
+    if category == 'device_up':
+        queryString = f"select ip_addres,alert_type,date,start_date from alerts_table where ip_address='{ip}' and (alert_status='Open' and category='device_down');"
+        result = configs.db.execute(queryString)
+        check_ip = ""
+        for row in result:
+            check_ip = row[0]
+            if check_ip != "":
+                sqlquery1 = f"update alerts_table set ALERT_STATUS = 'Close' where IP_ADDRESS='{ip}' and category='device_down';"
+                configs.db.execute(sqlquery1)
+                configs.db.commit()
+                des = f"Device is Online now."
+                sqlquery2 = f"insert into alerts_table (`ip_address`,`escription`,`alert_type`,`category`,`alert_status`,`mail_status`,`date`,`start_date`,`function`) values ('{ip}','{des}','clear','{category}','Close','no','{datetime.now()}','{row[3]}','{func}');"
+                configs.db.execute(sqlquery2)
+                configs.db.commit()
+
+        sqlquery1 = f"update monitoring_devices_table set `device_heatmap`='Clear' where ip_address='{ip}';"
+        configs.db.execute(sqlquery1)
+        configs.db.commit()

@@ -91,6 +91,7 @@ def check_device_name_uniqueness(device_ip, device_name):
 
 def validate_atom(device, update):
     try:
+        print("device in vlidate atom is:::::::::::::::::",device,file=sys.stderr)
         if device["ip_address"].strip() == "" or device['ip_address'] == 'string':
             return f"Ip Address Can Not be Empty", 400
         if device['ip_address'] !="" or device['ip_address']!='string':
@@ -123,23 +124,23 @@ def validate_atom(device, update):
         if device["device_name"] == "":
             return f"{device['ip_address']} : Device Name Can Not be Empty", 400
 
-        atom = configs.db.query(AtomTable).filter_by(ip_address = device["ip_address"]).first()
-        if atom is not None:
-            atom_device_name = atom.device_name
-            if atom_device_name:
-                if atom_device_name != device['device_name']:
-                    print(f"{device['ip_address']}: already assigned with the {device['device_name']}", file=sys.stderr)
-                    return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
-                else:
-                    # For update, check if the device name is unique among other devices
-                    is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
-                    if not is_unique_name:
-                        return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
-        else:
-            # For new device addition, check if the device name is unique among other devices
-            is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
-            if not is_unique_name:
-                return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
+        # atom = configs.db.query(AtomTable).filter_by(ip_address = device["ip_address"]).first()
+        # if atom is not None:
+        #     atom_device_name = atom.device_name
+        #     if atom_device_name:
+        #         if atom_device_name != device['device_name']:
+        #             print(f"{device['ip_address']}: already assigned with the {device['device_name']}", file=sys.stderr)
+        #             return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
+        #         else:
+        #             # For update, check if the device name is unique among other devices
+        #             is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
+        #             if not is_unique_name:
+        #                 return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
+        # else:
+        #     # For new device addition, check if the device name is unique among other devices
+        #     is_unique_name = check_device_name_uniqueness(device["ip_address"], device["device_name"])
+        #     if not is_unique_name:
+        #         return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
 
         if device["function"] is None or device['function'] == 'string':
             return f"Function Can Not be Empty", 400 #{device['ip_address']} : 
@@ -379,6 +380,7 @@ def add_complete_atom(device, update):
 
 def add_transition_atom(device, update):
     try:
+        print("device in add tranision atom is:;;;;;;;;;;;;",device,file=sys.stderr)
         device["ip_address"] = device["ip_address"].strip()
 
         if device["ip_address"] == "" or device['ip_address'] == 'string':

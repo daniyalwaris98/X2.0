@@ -47,21 +47,22 @@ def get_all_devices_in_servers():
                 print("record is::::::::",record,file=sys.stderr)
                 try:
                     switch_devices_record = GetMonitoringNetworkDevicesSchema(
-                        ip_address = record.get("IP_ADDRESS"),
-                        function = record.get("FUNCTION") ,
-                        repsones = record.get("Response"),
-                        status = record.get("STATUS"),
-                        uptime = record.get("Uptime"),
-                        vendor = record.get("VENDOR"),
-                        cpu = record.get("CPU"),
-                        memory = record.get("Memory"),
-                        packets = record.get("PACKETS_LOSS"),
-                        device_name = record.get("DEVICE_NAME"),
-                        interfaces = record.get("INTERFACES"),
-                        date = record.get("Date"),
-                        device_description = record.get("DEVICE_DESCRIPTION"),
-                        discovered_time = record.get("DISCOVERED_TIME"),
-                        device_type = record.get("DEVICE_TYPE"),
+                        ip_address = record["IP_ADDRESS"],
+                        function = record["FUNCTION"],
+                        response = record["Response"],
+                        status = record["STATUS"],
+                        uptime = record["Uptime"],
+                        vendor = record["VENDOR"],
+                        cpu = record["CPU"],
+                        memory = record["Memory"],
+                        packets = record["PACKETS_LOSS"],
+                        device_name = record["DEVICE_NAME"],
+                        interfaces = record["INTERFACES"],
+                        date = record["Date"],
+                        device_description = record["DEVICE_DESCRIPTION"],
+                        discovered_time = record["DISCOVERED_TIME"],
+                        device_type = record["DEVICE_TYPE"]
+
                     )
                     results.append(switch_devices_record)
                 except Exception as e:
@@ -109,17 +110,17 @@ async def get_all_interfaces_in_servers():
                 print("record is:::::::::::::::::::::",record,file=sys.stderr)
                 try:
                     router_interface_record = GetDevicesInterfaceRecordSchema(
-                        ip_address=record.get("IP_ADDRESS"),
-                        device_name=record.get("DEVICE_NAME"),
-                        function=record.get("FUNCTION"),
-                        interface_status=record.get("Status"),
-                        vendor=record.get("VENDOR"),
-                        download_speed=round(float(record.get("Download") or 0), 2),
-                        upload_speed=round(float(record.get("Upload") or 0), 2),
-                        interface_name=record.get("Interface_Name"),
-                        interface_description=record.get("Interface_Des"),
-                        date=record.get("Date"),
-                        device_type=record.get("DEVICE_TYPE")
+                        ip_address = record["IP_ADDRESS"],
+                        device_name = record["DEVICE_NAME"],
+                        function = record["FUNCTION"],
+                        interface_status = record["Status"],
+                        vendor = record["VENDOR"],
+                        download_speed = round(float(record["Download"] or 0), 2),
+                        upload_speed = round(float(record["Upload"] or 0), 2),
+                        interface_name = record["Interface_Name"],
+                        interface_description = record["Interface Desription"],
+                        date = record["Date"],
+                        device_type = record["DEVICE_TYPE"]
                     )
                     router_interface_records.append(router_interface_record)
                 except Exception as e:
@@ -167,21 +168,21 @@ def get_all_devices_in_windows():
                 print("record is::::::::",record,file=sys.stderr)
                 try:
                     switch_devices_record = GetMonitoringNetworkDevicesSchema(
-                        ip_address = record.get("IP_ADDRESS"),
-                        function = record.get("FUNCTION") ,
-                        repsones = record.get("Response"),
-                        status = record.get("STATUS"),
-                        uptime = record.get("Uptime"),
-                        vendor = record.get("VENDOR"),
-                        cpu = record.get("CPU"),
-                        memory = record.get("Memory"),
-                        packets = record.get("PACKETS_LOSS"),
-                        device_name = record.get("DEVICE_NAME"),
-                        interfaces = record.get("INTERFACES"),
-                        date = record.get("Date"),
-                        device_description = record.get("DEVICE_DESCRIPTION"),
-                        discovered_time = record.get("DISCOVERED_TIME"),
-                        device_type = record.get("DEVICE_TYPE"),
+                        ip_address = record["IP_ADDRESS"],
+                        function = record["FUNCTION"],
+                        response = record["Response"],
+                        status = record["STATUS"],
+                        uptime = record["Uptime"],
+                        vendor = record["VENDOR"],
+                        cpu = record["CPU"],
+                        memory = record["Memory"],
+                        packets = record["PACKETS_LOSS"],
+                        device_name = record["DEVICE_NAME"],
+                        interfaces = record["INTERFACES"],
+                        date = record["Date"],
+                        device_description = record["DEVICE_DESCRIPTION"],
+                        discovered_time = record["DISCOVERED_TIME"],
+                        device_type = record["DEVICE_TYPE"]
                     )
                     results.append(switch_devices_record)
                 except Exception as e:
@@ -230,17 +231,17 @@ async def get_all_interfaces_in_windows():
                 print("record is:::::::::::::::::::::",record,file=sys.stderr)
                 try:
                     router_interface_record = GetDevicesInterfaceRecordSchema(
-                        ip_address=record.get("IP_ADDRESS"),
-                        device_name=record.get("DEVICE_NAME"),
-                        function=record.get("FUNCTION"),
-                        interface_status=record.get("Status"),
-                        vendor=record.get("VENDOR"),
-                        download_speed=round(float(record.get("Download") or 0), 2),
-                        upload_speed=round(float(record.get("Upload") or 0), 2),
-                        interface_name=record.get("Interface_Name"),
-                        interface_description=record.get("Interface_Des"),
-                        date=record.get("Date"),
-                        device_type=record.get("DEVICE_TYPE")
+                        ip_address = record["IP_ADDRESS"],
+                        device_name = record["DEVICE_NAME"],
+                        function = record["FUNCTION"],
+                        interface_status = record["Status"],
+                        vendor = record["VENDOR"],
+                        download_speed = round(float(record["Download"] or 0), 2),
+                        upload_speed = round(float(record["Upload"] or 0), 2),
+                        interface_name = record["Interface_Name"],
+                        interface_description = record["Interface Description"],
+                        date = record["Date"],
+                        device_type = record["DEVICE_TYPE"]
                     )
                     router_interface_records.append(router_interface_record)
                 except Exception as e:
@@ -288,21 +289,21 @@ def get_all_devices_in_linux():
                 print("record is::::::::",record,file=sys.stderr)
                 try:
                     switch_devices_record = GetMonitoringNetworkDevicesSchema(
-                        ip_address = record.get("IP_ADDRESS"),
-                        function = record.get("FUNCTION") ,
-                        repsones = record.get("Response"),
-                        status = record.get("STATUS"),
-                        uptime = record.get("Uptime"),
-                        vendor = record.get("VENDOR"),
-                        cpu = record.get("CPU"),
-                        memory = record.get("Memory"),
-                        packets = record.get("PACKETS_LOSS"),
-                        device_name = record.get("DEVICE_NAME"),
-                        interfaces = record.get("INTERFACES"),
-                        date = record.get("Date"),
-                        device_description = record.get("DEVICE_DESCRIPTION"),
-                        discovered_time = record.get("DISCOVERED_TIME"),
-                        device_type = record.get("DEVICE_TYPE"),
+                        ip_address = record["IP_ADDRESS"],
+                        function = record["FUNCTION"],
+                        response = record["Response"],
+                        status = record["STATUS"],
+                        uptime = record["Uptime"],
+                        vendor = record["VENDOR"],
+                        cpu = record["CPU"],
+                        memory = record["Memory"],
+                        packets = record["PACKETS_LOSS"],
+                        device_name = record["DEVICE_NAME"],
+                        interfaces = record["INTERFACES"],
+                        date = record["Date"],
+                        device_description = record["DEVICE_DESCRIPTION"],
+                        discovered_time = record["DISCOVERED_TIME"],
+                        device_type = record["DEVICE_TYPE"]
                     )
                     results.append(switch_devices_record)
                 except Exception as e:
@@ -351,17 +352,18 @@ async def get_all_interfaces_in_linux():
                 print("record is:::::::::::::::::::::",record,file=sys.stderr)
                 try:
                     router_interface_record = GetDevicesInterfaceRecordSchema(
-                        ip_address=record.get("IP_ADDRESS"),
-                        device_name=record.get("DEVICE_NAME"),
-                        function=record.get("FUNCTION"),
-                        interface_status=record.get("Status"),
-                        vendor=record.get("VENDOR"),
-                        download_speed=round(float(record.get("Download") or 0), 2),
-                        upload_speed=round(float(record.get("Upload") or 0), 2),
-                        interface_name=record.get("Interface_Name"),
-                        interface_description=record.get("Interface_Des"),
-                        date=record.get("Date"),
-                        device_type=record.get("DEVICE_TYPE")
+                        ip_address = record["IP_ADDRESS"],
+                        device_name = record["DEVICE_NAME"],
+                        function = record["FUNCTION"],
+                        interface_status = record["Status"],
+                        vendor = record["VENDOR"],
+                        download_speed = round(float(record["Download"] or 0), 2),
+                        upload_speed = round(float(record["Upload"] or 0), 2),
+                        interface_name = record["Interface_Name"],
+                        interface_description = record["Interface Description"],
+                        date = record["Date"],
+                        device_type = record["DEVICE_TYPE"]
+
                     )
                     router_interface_records.append(router_interface_record)
                 except Exception as e:

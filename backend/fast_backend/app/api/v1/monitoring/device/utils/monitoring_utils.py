@@ -418,8 +418,8 @@ def get_interface_influx_data(query):
                         print("error", str(e), file=sys.stderr)
                         continue
                     try:
-                        if record["Interface_Des"]:
-                            objDict["interface_description"] = record["Interface_Des"]
+                        if record["Interface Description"]:
+                            objDict["interface_description"] = record["Interface Description"]
                     except Exception as e:
                         print("error", str(e), file=sys.stderr)
                         pass

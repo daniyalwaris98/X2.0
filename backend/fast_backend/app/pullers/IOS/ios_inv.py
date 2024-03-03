@@ -1,5 +1,5 @@
 import traceback
-from netmiko import Netmiko
+from netmiko import Netmiko, NetMikoAuthenticationException, NetMikoTimeoutException
 from datetime import datetime
 import re, sys, time
 import threading
@@ -49,38 +49,56 @@ class IOSPuller(object):
         c = 0
         self.is_login = False
         login_exception = None
+        device_info = {"ip_address": host['ip_address'], "status": "error", "message": ""}
         while c < login_tries:
             try:
-                device_info = {"ip_address": host['ip_address'], "status": "error", "message": ""}
-                device = Netmiko(host=host['ip_address'], username=host['username'], password=host['password'],
-                                 device_type=host['device_type'], timeout=600, global_delay_factor=2,
-                                 banner_timeout=300)
-                # device = ConnectHandler(**host)
-                # device.enable()
+                device = Netmiko(
+                    host=host['ip_address'],
+                    username=host['username'],
+                    password=host['password'],
+                    device_type=host['device_type'],
+                    timeout=600,
+                    global_delay_factor=2,
+                    banner_timeout=300
+                )
                 self.is_login = True
-                # self.inv_data[host['ip_address']] = {"success": "success"}
-                # print("devices are:::::::::::",device, file=sys.stderr)
-                # self.inv_data['status'] = "success"
                 print(f"Success: logged in {host['ip_address']}", file=sys.stderr)
                 device_info["status"] = "success"
                 device_info["message"] = "Inventory fetched successfully"
                 break
+            except NetMikoAuthenticationException as auth_err:
+                login_exception = str(auth_err)
+                device_info["message"] = f"Authentication failed for {host['ip_address']}: {auth_err}"
+            except NetMikoTimeoutException as timeout_err:
+                login_exception = str(timeout_err)
+                device_info["message"] = f"Connection timed out for {host['ip_address']}: {timeout_err}"
             except Exception as e:
-                c += 1
-                print(f"Failed to login {host['ip_address']}", file=sys.stderr)
-                device_info["message"] = f"{host['ip_address']} Failed to login"
                 traceback.print_exc()
-                login_exception = str(e)
+                device_info["message"] = f"General error for {host['ip_address']}: {e}"
+            finally:
+                c += 1
+
         with self.lock:
             self.results.append(device_info)
-        if self.is_login == False:
+
+        if not self.is_login:
+            self.failed = True
             self.inv_data[host['ip_address']] = {"error": "Login Failed"}
-            date = datetime.now()
+            #date = datetime.now()
             self.failed = True
             self.inv_data['status'] = "error"
-            date = datetime.now()
-            device_type = host['device_type']
-            addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
+            addFailedDevice(host['ip_address'], datetime.now(), host['device_type'], device_info["message"], 'UAM')
+
+        # with self.lock:
+        #     self.results.append(device_info)
+        # if self.is_login == False:
+        #     self.inv_data[host['ip_address']] = {"error": "Login Failed"}
+        #     date = datetime.now()
+        #     self.failed = True
+        #     self.inv_data['status'] = "error"
+        #     date = datetime.now()
+        #     device_type = host['device_type']
+        #     addFailedDevice(host['ip_address'], date, device_type, login_exception, 'UAM')
 
             # addFailedDevice(host['ip_address'],date,host['device_type'],login_exception,'UAM')
 

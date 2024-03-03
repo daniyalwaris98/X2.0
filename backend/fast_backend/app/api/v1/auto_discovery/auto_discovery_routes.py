@@ -2,7 +2,7 @@ import ipaddress
 import traceback
 
 from app.api.v1.atom.utils.atom_utils import *
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from fastapi.responses import JSONResponse
 from app.schema.auto_discovery_schema import *
 from app.models.atom_models import *
@@ -234,15 +234,7 @@ def validate_ip_range(ip_range):
         return None
 
 
-@router.post("/auto_discover", responses={
-    200: {"model": SummeryResponseSchema},
-    400: {"model": str},
-    500: {"model": str}
-},
-summary="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
-description="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
-)
-async def auto_discover_endpoint(subnet: RequestSubnetSchema):
+async def auto_discovery_background_task(subnet):
     try:
         auto_discovery_dict = {}
         data = {}
@@ -255,13 +247,13 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
             AutoDiscoveryNetworkTable.subnet == subnet.subnet).first()
 
         if network is not None:
-            start_ip= calculate_start_ip(subnet.subnet)
+            start_ip = calculate_start_ip(subnet.subnet)
             end_ip = calculate_end_ip(subnet.subnet)
             results = get_range_inventory_data(start_ip, end_ip)
             # results = auto_discover.get_range_inventory_data(
             #     network.subnet, network.excluded_ip_range
             # )
-            print("results for auto discovery inventroy data is:::::",results,file=sys.stderr)
+            print("results for auto discovery inventroy data is:::::", results, file=sys.stderr)
         else:
             error_lit.append("Subnet doesn't exit")
             # return JSONResponse("Subnet doesn't exit", 400)
@@ -270,10 +262,10 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
             error_lit.append(f"{results} : error while scanning")
 
         for host in results:
-            print("host in result is:::::::::::::::::::",host,file=sys.stderr)
+            print("host in result is:::::::::::::::::::", host, file=sys.stderr)
             discovery_obj = configs.db.query(AutoDiscoveryTable).filter(
                 AutoDiscoveryTable.ip_address == host[0]).first()
-            print("discovered obj is:::::::::",discovery_obj,file=sys.stderr)
+            print("discovered obj is:::::::::", discovery_obj, file=sys.stderr)
             if discovery_obj is None:
                 discovery_obj = AutoDiscoveryTable()
                 discovery_obj.ip_address = host[0]
@@ -287,17 +279,17 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
                 discovery_obj.ssh_status = False
 
                 InsertDBData(discovery_obj)
-                print(f"{host[0]} :::::::::::::Host Inserted to the DB:::::::::::::::::::::::::",file=sys.stderr)
+                print(f"{host[0]} :::::::::::::Host Inserted to the DB:::::::::::::::::::::::::", file=sys.stderr)
                 auto_discovery_dict = {
-                    "discovery_id":discovery_obj.discovery_id,
-                    "ip_address":discovery_obj.ip_address,
-                    "subnet":discovery_obj.subnet,
-                    "os_type":discovery_obj.os_type,
-                    "make_model":discovery_obj.make_model,
-                    "function":discovery_obj.function,
-                    "vendor":discovery_obj.vendor,
-                    "snmp_status":discovery_obj.snmp_status,
-                    "ssh_status":discovery_obj.ssh_status
+                    "discovery_id": discovery_obj.discovery_id,
+                    "ip_address": discovery_obj.ip_address,
+                    "subnet": discovery_obj.subnet,
+                    "os_type": discovery_obj.os_type,
+                    "make_model": discovery_obj.make_model,
+                    "function": discovery_obj.function,
+                    "vendor": discovery_obj.vendor,
+                    "snmp_status": discovery_obj.snmp_status,
+                    "ssh_status": discovery_obj.ssh_status
                 }
                 data['data'] = auto_discovery_dict
                 success_list.append(f"Successfully Inserted to Database for {host[0]}")
@@ -316,7 +308,7 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
                 discovery_obj.ssh_status = False
 
                 UpdateDBData(discovery_obj)
-                print(f"{host[0]}:::::::: host updated in db::::::",file=sys.stderr)
+                print(f"{host[0]}:::::::: host updated in db::::::", file=sys.stderr)
                 auto_discovery_dict = {
                     "discovery_id": discovery_obj.discovery_id,
                     "ip_address": discovery_obj.ip_address,
@@ -343,19 +335,47 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
         for network in result:
             query_string = (f"select count(*) from auto_discovery_table where "
                             f"SUBNET='{network.subnet}';")
-            print("query string is::::::::",query_string,file=sys.stderr)
+            print("query string is::::::::", query_string, file=sys.stderr)
             number_of_devices = configs.db.execute(query_string).fetchone()
-            print("number of devices are:::::::",number_of_devices,file=sys.stderr)
+            print("number of devices are:::::::", number_of_devices, file=sys.stderr)
             network.number_of_device = number_of_devices[0]
-            print("network number of devices ae:::::::::::::",network.number_of_device,file=sys.stderr)
+            print("network number of devices ae:::::::::::::", network.number_of_device, file=sys.stderr)
             UpdateDBData(network)
-        print("data ois:::::::::::::::",data,file=sys.stderr)
+        print("data ois:::::::::::::::", data, file=sys.stderr)
         responses = {
-            "data":auto_discovery_dict,
-            "sucess_list":success_list,
-            "error_list":error_lit,
-            "error":len(error_lit),
-            "success":len(success_list)
+            "data": auto_discovery_dict,
+            "sucess_list": success_list,
+            "error_list": error_lit,
+            "error": len(error_lit),
+            "success": len(success_list)
+        }
+        return responses
+
+    except Exception as e:
+        traceback.print_exc()
+        print("error occured while auto discovery",str(e))
+
+@router.post("/auto_discover", responses={
+    200: {"model": SummeryResponseSchema},
+    400: {"model": str},
+    500: {"model": str}
+},
+summary="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
+description="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
+)
+async def auto_discover_endpoint(background_tasks: BackgroundTasks,subnet: RequestSubnetSchema):
+    try:
+        data = []
+        success_list = []
+        error_list = []
+        background_tasks.add_task(auto_discovery_background_task,subnet)
+        success_list.append('Background task is in progress')
+        responses = {
+            "data": data,
+            "success_list": success_list,
+            "error_list": error_list,
+            "error": len(error_list),
+            "success": len(success_list)
         }
         return responses
 
@@ -1352,7 +1372,7 @@ async def get_discovery_data_in_atom():
     200: {"model": SummeryResponseSchema},
     500: {"model": str}
 })
-async def add_atoms(atom_objs: list[GetDiscoveryDataSchema]):
+async def add_atoms(atom_objs: list[int]):
     try:
         print("atom objs is:::::::::::::::::::::::::::::::::::::::::::::::", atom_objs, file=sys.stderr)
         row = 0
@@ -1362,22 +1382,43 @@ async def add_atoms(atom_objs: list[GetDiscoveryDataSchema]):
         data_filtered_lst = []
         filtered_list = []
         unique_success_list = []
+        discovery_data_dict = {}
         for atomObj in atom_objs:
             print("step1::::::::::::::::::::::", file=sys.stderr)
             try:
+                ip_address = ""
+                check_discovery_device = configs.db.query(AutoDiscoveryTable).filter_by(discovery_id = atomObj).first()
+                if check_discovery_device:
+                    discovery_data_dict = {key: getattr(check_discovery_device, key, '') for key in
+                                           ['ip_address', 'vendor', 'domain', 'criticality']}
+
+                    # Handle special cases
+                    discovery_data_dict[
+                        'function'] = check_discovery_device.function if check_discovery_device.function in function_list else 'Other'
+                    discovery_data_dict['scope'] = 'Discovery'
+                    discovery_data_dict['device_name'] = ""
+                    discovery_data_dict['device_type'] = ""
+                    discovery_data_dict['site_name'] = ""
+                    discovery_data_dict['rack_name'] = ""
+                    discovery_data_dict['password_group'] = ""
+                    discovery_data_dict['device_ru'] = 0
+                    discovery_data_dict['department'] = ""
+                    discovery_data_dict['section'] = ""
+                    discovery_data_dict['virtual'] = ""
+                    ip_address = check_discovery_device.ip_address
                 row += 1
-                atomObj["ip_address"] = atomObj["ip_address"].strip()
-                if atomObj["ip_address"] == "":
+                ip_address = ip_address.strip()
+                if "ip_address"== "":
                     error_list.append(f"Row {row} : IP Address Can Not Be Empty")
 
                 atom = configs.db.query(AtomTable).filter(
-                    AtomTable.ip_address == atomObj["ip_address"]).first()
+                    AtomTable.ip_address == ip_address).first()
                 transit_atom = configs.db.query(AtomTransitionTable).filter(
-                    AtomTransitionTable.ip_address == atomObj["ip_address"]
+                    AtomTransitionTable.ip_address == ip_address
                 ).first()
-
+                print("discovery data dict is:::::::::::::::;",discovery_data_dict,file=sys.stderr)
                 if atom is not None:
-                    msg, status = add_complete_atom(atomObj, True)
+                    msg, status = add_complete_atom(discovery_data_dict, True)
                     print("msg in atom is ::::::::::::::::", msg, file=sys.stderr)
                     if isinstance(msg, dict):
                         for key, value in msg.items():
@@ -1393,7 +1434,7 @@ async def add_atoms(atom_objs: list[GetDiscoveryDataSchema]):
                         print("atom msg ims not a dict and it is string", file=sys.stderr)
                         error_list.append(msg)
                 elif transit_atom is not None:
-                    msg, status = add_transition_atom(atomObj, True)
+                    msg, status = add_transition_atom(discovery_data_dict, True)
 
                     for key, value in msg.items():
 
@@ -1404,7 +1445,7 @@ async def add_atoms(atom_objs: list[GetDiscoveryDataSchema]):
                                 # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
                                 success_list.append(value)
                 else:
-                    msg, status = add_complete_atom(atomObj, False)
+                    msg, status = add_complete_atom(discovery_data_dict, False)
                     print("msg for add complete atom is34343434343434:::::::::::::::::::::", msg, file=sys.stderr)
                     if isinstance(msg, dict):
                         for key, value in msg.items():
@@ -1419,7 +1460,7 @@ async def add_atoms(atom_objs: list[GetDiscoveryDataSchema]):
                                     success_list.append(value)
 
                     if status != 200:
-                        msg, status = add_transition_atom(atomObj, False)
+                        msg, status = add_transition_atom(discovery_data_dict, False)
                         if isinstance(msg, dict):
                             for key, value in msg.items():
                                 if key == 'data':
@@ -1433,7 +1474,7 @@ async def add_atoms(atom_objs: list[GetDiscoveryDataSchema]):
             except Exception:
                 traceback.print_exc()
                 status = 500
-                msg = f"{atomObj['ip_address']} : Exception Occurred"
+                msg = f"Exception Occurred"
             seen_ids = set()
             filtered_dict = {}
             for item in data_lst:
@@ -1463,9 +1504,9 @@ async def add_atoms(atom_objs: list[GetDiscoveryDataSchema]):
         print("step 3 is::::::::::::::::::::::::::::::::::::::::", file=sys.stderr)
         print("filtered data list is:::::::::::::::", filtered_list, file=sys.stderr)
         print("unique success liset is:::::::::::::::::::::::::::", unique_success_list, file=sys.stderr)
-        if not filtered_list:
-            print("step4::::::::::::::::::::::::::::::::::Filtered list is None")
-            error_list.append("Empty Import")
+        # if not filtered_list:
+        #     print("step4::::::::::::::::::::::::::::::::::Filtered list is None")
+        #     error_list.append("Empty Import")
         print("filtered list is:::::::::::::::::::::::::::", filtered_list, file=sys.stderr)
         response = SummeryResponseSchema(
             data=filtered_list,

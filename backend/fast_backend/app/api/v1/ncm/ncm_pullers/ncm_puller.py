@@ -160,7 +160,7 @@ class NCMPuller(object):
             login_alarm(self.atom, self.ncm, login=False)
             date = datetime.now()
             device_type = self.atom.device_type
-            addFailedDevice(self.atom.ip_address, date, device_type, login_exception, 'IPAM')
+            addFailedDevice(self.atom.ip_address, date, device_type, login_exception, 'NCM')
             return
 
             # addFailedDevice(

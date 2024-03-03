@@ -181,38 +181,37 @@ description="Use this API to list down the Atom in NCM"
 )
 async def get_atom_in_ncm():
     try:
-        atom_ids = []
-        ncm_devices = configs.db.query(NcmDeviceTable).all()
-        for ncm in ncm_devices:
-            atom_ids.append(ncm.atom_id)
+        # Initialize a session
+        with configs.db_session() as session:
+            # Fetch atom_ids that are in NcmDeviceTable using a subquery
+            ncm_device_atom_ids_subquery = session.query(NcmDeviceTable.atom_id).subquery()
 
-        results = configs.db.query(AtomTable).all()
+            # Fetch atoms not in NcmDeviceTable with a single query
+            atoms = session.query(AtomTable).filter(AtomTable.atom_id.notin_(ncm_device_atom_ids_subquery)).all()
 
-        atom_list = []
-        for atom in results:
-            if atom.atom_id in atom_ids:
-                continue
+            # If password groups are needed, fetch them in a single query
+            if any(atom.password_group_id for atom in atoms):
+                password_groups = {pg.password_group_id: pg.password_group for pg in
+                                   session.query(PasswordGroupTable).all()}
+            else:
+                password_groups = {}
 
-            password_group = None
-            if atom.password_group_id is not None:
-                password = configs.db.query(PasswordGroupTable).filter(
-                    PasswordGroupTable.password_group_id == atom.password_group_id
-                ).first()
-
-                if password is not None:
-                    password_group = password.password_group
-
-            obj_dict = {"atom_id": atom.atom_id, "ip_address": atom.ip_address,
-                        "device_name": atom.device_name, "device_type": atom.device_type,
-                        "password_group": password_group, "vendor": atom.vendor,
-                        "function": atom.function}
-            atom_list.append(obj_dict)
+            # Construct the response list
+            atom_list = [{
+                "atom_id": atom.atom_id,
+                "ip_address": atom.ip_address,
+                "device_name": atom.device_name,
+                "device_type": atom.device_type,
+                "password_group": password_groups.get(atom.password_group_id),
+                "vendor": atom.vendor,
+                "function": atom.function
+            } for atom in atoms]
 
         return JSONResponse(content=atom_list, status_code=200)
-    except Exception:
+    except Exception as e:
+        print(f"Error: {e}")
         traceback.print_exc()
         return JSONResponse(content="Server Error While Fetching Atom In NCM", status_code=500)
-
 
 @router.post("/add_ncm_from_atom", responses={
     200: {"model": SummeryResponseSchema},
