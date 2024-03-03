@@ -271,8 +271,9 @@ async def auto_discovery_background_task(subnet):
 
         if results is None:
             error_lit.append(f"{results} : error while scanning")
-        update_and_add_function_state('auto_discover', 'Running')
+
         for host in results:
+            update_and_add_function_state('auto_discover', 'Running')
             print("host in result is:::::::::::::::::::", host, file=sys.stderr)
             discovery_obj = configs.db.query(AutoDiscoveryTable).filter(
                 AutoDiscoveryTable.ip_address == host[0]).first()
