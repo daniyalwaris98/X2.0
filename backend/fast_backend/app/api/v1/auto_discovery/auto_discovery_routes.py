@@ -11,6 +11,9 @@ from app.api.v1.auto_discovery import auto_discover
 from app.api.v1.auto_discovery.auto_discover import *
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from app.utils.common_state_utils import *
+
+
 
 router = APIRouter(
     prefix="/auto_discovery",
@@ -240,6 +243,8 @@ async def auto_discovery_background_task(subnet):
         data = {}
         success_list = []
         error_lit = []
+        results_length = 0
+        actual_host = 0
         if str(subnet).lower() == "all":
             return JSONResponse("Select a subnet to scan", 400)
 
@@ -249,11 +254,17 @@ async def auto_discovery_background_task(subnet):
         if network is not None:
             start_ip = calculate_start_ip(subnet.subnet)
             end_ip = calculate_end_ip(subnet.subnet)
-            results = get_range_inventory_data(start_ip, end_ip)
+            print("start_ip is:::",start_ip,file=sys.stderr)
+            print("end ip is::::::",end_ip,file=sys.stderr)
+            # results = get_range_inventory_data(start_ip, end_ip)
+            results = await asyncio.to_thread(get_range_inventory_data(start_ip,end_ip))
+            actual_host = len(results)
             # results = auto_discover.get_range_inventory_data(
             #     network.subnet, network.excluded_ip_range
             # )
             print("results for auto discovery inventroy data is:::::", results, file=sys.stderr)
+            results_length = len(results)
+            print("result ln is:::",len(results),file=sys.stderr)
         else:
             error_lit.append("Subnet doesn't exit")
             # return JSONResponse("Subnet doesn't exit", 400)
@@ -262,6 +273,7 @@ async def auto_discovery_background_task(subnet):
             error_lit.append(f"{results} : error while scanning")
 
         for host in results:
+            update_and_add_function_state('auto_discover', 'Running')
             print("host in result is:::::::::::::::::::", host, file=sys.stderr)
             discovery_obj = configs.db.query(AutoDiscoveryTable).filter(
                 AutoDiscoveryTable.ip_address == host[0]).first()
@@ -342,6 +354,8 @@ async def auto_discovery_background_task(subnet):
             print("network number of devices ae:::::::::::::", network.number_of_device, file=sys.stderr)
             UpdateDBData(network)
         print("data ois:::::::::::::::", data, file=sys.stderr)
+        if actual_host == results_length:
+            update_and_add_function_state('auto_discover', 'Completed')
         responses = {
             "data": auto_discovery_dict,
             "sucess_list": success_list,
@@ -369,7 +383,7 @@ async def auto_discover_endpoint(background_tasks: BackgroundTasks,subnet: Reque
         success_list = []
         error_list = []
         background_tasks.add_task(auto_discovery_background_task,subnet)
-        success_list.append('Background task is in progress')
+        success_list.append('Discovery process has been started')
         responses = {
             "data": data,
             "success_list": success_list,
