@@ -244,7 +244,7 @@ async def auto_discovery_background_task(subnet):
         success_list = []
         error_lit = []
         results_length = 0
-        acutal_host = 0
+        actual_host = 0
         if str(subnet).lower() == "all":
             return JSONResponse("Select a subnet to scan", 400)
 
