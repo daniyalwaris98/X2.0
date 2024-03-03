@@ -255,6 +255,7 @@ async def auto_discovery_background_task(subnet):
             start_ip = calculate_start_ip(subnet.subnet)
             end_ip = calculate_end_ip(subnet.subnet)
             results = get_range_inventory_data(start_ip, end_ip)
+            results = await asyncio.to_thread(get_range_inventory_data, start_ip, end_ip)
             actual_host = len(results)
             # results = auto_discover.get_range_inventory_data(
             #     network.subnet, network.excluded_ip_range
