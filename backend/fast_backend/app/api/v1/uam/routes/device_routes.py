@@ -109,7 +109,7 @@ async def onboard_devices(background_tasks: BackgroundTasks,ip_list: list[str],s
         error_list = []
         data = []
         background_tasks.add_task(onboard_devices_task, ip_list)
-        return {"message":"Onboard Process Is Started"}
+        # return {"message":"Onboard Process Is Started"}
         print("onboard backgorun task is being executed::::::::::",file=sys.stderr)
         # Immediate response to the client
         success_list.append("Onboard Process Has Been Started")
