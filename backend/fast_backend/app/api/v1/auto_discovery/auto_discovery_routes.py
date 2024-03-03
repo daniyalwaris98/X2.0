@@ -365,7 +365,7 @@ description="Use this API in Auto Discover Discovery page on start scanning devi
 )
 async def auto_discover_endpoint(background_tasks: BackgroundTasks,subnet: RequestSubnetSchema):
     try:
-        data = {}
+        data = []
         success_list = []
         error_list = []
         background_tasks.add_task(auto_discovery_background_task,subnet)
