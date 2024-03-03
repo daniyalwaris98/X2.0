@@ -178,7 +178,7 @@ const Index = () => {
       functionRunningStatusRef.current = setInterval(
         () =>
           getFunctionRunningStatusMutation({
-            function_name: "on_board_device",
+            function_name: "auto_discover",
           }),
         5000
       );
@@ -210,6 +210,8 @@ const Index = () => {
       fetchRecordsMutation(data);
       fetchFunctionCounts(data);
     }
+    handleInfoAlert("Discovery process has been started successfully.");
+    getFunctionRunningStatusMutation({ function_name: "auto_discover" });
   }
 
   return (
