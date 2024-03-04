@@ -540,7 +540,8 @@ import {
   useAddRecordsMutation,
   useDeleteRecordsMutation,
   useOnBoardRecordsMutation,
-} from "../../../store/features/atomModule/atoms/apis";
+  useGetAtomsQuery, // Import the getAtoms query
+} from "../../../store/features/atomModule/atoms/apis"; // Make sure to import the necessary APIs
 import { useGetFunctionRunningStatusMutation } from "../../../store/features/commons/apis";
 import {
   jsonToExcel,
@@ -617,6 +618,9 @@ const Index = () => {
     error: fetchRecordsError,
     refetch: refetchFetchRecordsQuery,
   } = useFetchRecordsQuery();
+
+  // Use the getAtoms query
+  const { refetch: refetchGetAtomsQuery } = useGetAtomsQuery();
 
   // hooks
   const { handleSuccessAlert, handleInfoAlert, handleCallbackAlert } =
@@ -763,18 +767,48 @@ const Index = () => {
 
   // effects
   useEffect(() => {
-    if (!functionRunningStatus?.running) {
-      const intervalId = setInterval(() => {
-        getFunctionRunningStatusMutation({ function_name: "on_board_device" });
-      }, 5000);
+    getFunctionRunningStatusMutation({ function_name: "on_board_device" });
 
-      return () => clearInterval(intervalId);
+    if (!functionRunningStatus?.running && !functionRunningStatusRef.current) {
+      // Call getAtoms when running status is false
+      refetchGetAtomsQuery();
+      
+      functionRunningStatusRef.current = setInterval(
+        () =>
+          getFunctionRunningStatusMutation({
+            function_name: "on_board_device",
+          }),
+        5000
+      );
     }
-  }, [functionRunningStatus?.running]);
+
+    return () => {
+      if (functionRunningStatusRef.current)
+        clearInterval(functionRunningStatusRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (!functionRunningStatus?.running && !functionRunningStatusRef.current) {
+      // Call getAtoms when running status is false
+      refetchGetAtomsQuery();
+
+      functionRunningStatusRef.current = setInterval(
+        () =>
+          getFunctionRunningStatusMutation({
+            function_name: "on_board_device",
+          }),
+        5000
+      );
+    }
+
+    if (functionRunningStatusRef.current && functionRunningStatus?.running)
+      clearInterval(functionRunningStatusRef.current);
+  }, [getFunctionRunningStatusMutationData]);
 
   // Effect to refetch records query when onboard status changes
   useEffect(() => {
-    if (!functionRunningStatus?.running) {
+    if (functionRunningStatus?.running) {
       refetchFetchRecordsQuery();
     }
   }, [functionRunningStatus?.running]);
