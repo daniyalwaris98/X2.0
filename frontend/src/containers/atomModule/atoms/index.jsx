@@ -764,7 +764,9 @@ const Index = () => {
   // effects
   useEffect(() => {
     const intervalId = setInterval(() => {
-      getFunctionRunningStatusMutation({ function_name: "on_board_device" });
+      if (!functionRunningStatus?.running) {
+        getFunctionRunningStatusMutation({ function_name: "on_board_device" });
+      }
     }, 5000);
 
     return () => clearInterval(intervalId);
