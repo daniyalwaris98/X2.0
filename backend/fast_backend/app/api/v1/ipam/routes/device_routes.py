@@ -1332,14 +1332,15 @@ def get_ip_history():
         history_list = []
         history = configs.db.query(IP_HISTORY_TABLE).all()
         for data in history:
-            history_dict = {
-                "ip_history_id":data.ip_history_id,
-                "mac_address":data.mac_address,
-                "ip_address":data.ip_address,
-                "asset_tag":data.asset_tag,
-                "date":data.date
-            }
-            history_list.append(history_dict)
+            if data.ip_address is not None:
+                history_dict = {
+                    "ip_history_id":data.ip_history_id,
+                    "mac_address":data.mac_address,
+                    "ip_address":data.ip_address,
+                    "asset_tag":data.asset_tag,
+                    "date":data.date
+                }
+                history_list.append(history_dict)
         return  history_list
     except Exception as e:
         traceback.print_exc()
