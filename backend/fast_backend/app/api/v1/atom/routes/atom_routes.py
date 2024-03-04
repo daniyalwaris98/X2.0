@@ -1,4 +1,5 @@
 from fastapi import Depends
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.v1.atom.utils.atom_utils import *
 from app.schema.validation_schema import Validator
@@ -304,11 +305,11 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
         success_list = []
         error_list = []
         deleted_atoms_lst = []
-        atom_found = False 
+        atom_found = False
         transition_atom_found = False
         delete_atom = {}
         for atom_obj in atom_list:
-            deleted_atom ={}
+            deleted_atom = {}
             atom_obj = atom_obj.dict()
 
             if "atom_id" in atom_obj and atom_obj['atom_id'] is not None and atom_obj['atom_id'] != 0:
@@ -316,7 +317,7 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                 if atoms:
                     for atom in atoms:
                         if atom.onboard_status == True:
-                            error_list.append(f"{atom.ip_address}Cannot delete onboarded device. Please Dismantel the device from active usage before deleting.")
+                            error_list.append(f"Cannot delete onboarded device. Please Dismantel the device from active usage before deleting.")
                         else:
                             atom_found = True
                             deleted_atom_id = atom.atom_id
@@ -345,10 +346,9 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                     not_found_atom_transition_id = atom_obj['atom_transition_id']
                     print(f"Atom transition Not Found for id: {not_found_atom_transition_id}", file=sys.stderr)
                     error_list.append(f"Atom Transition Not Found for id: {not_found_atom_transition_id}")
-        
 
         if not atom_found and not transition_atom_found:
-                error_list.append("Atom / Transition Atom Not Found")
+            error_list.append("Atom / Transition Atom Not Found")
 
         response = {
             "data": deleted_atoms_lst,
