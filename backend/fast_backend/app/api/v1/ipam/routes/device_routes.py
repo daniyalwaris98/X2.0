@@ -163,7 +163,7 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
                         devices_data['discovered_from'] = ip.discovered_from
                     subnet = configs.db.query(subnet_table).filter_by(ipam_device_id = device.ipam_device_id).all()
                     for row in subnet:
-                        devices_data['subnet'] = row.subnet_address
+                        devices_data['subnet_address'] = row.subnet_address
                         devices_data['subnet_mask'] = row.subnet_mask
                         devices_data['location'] = row.location
                         subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).all()
@@ -837,29 +837,30 @@ async def get_all_details():
         ip_detail = configs.db.query(IpTable).all()
         for ip in ip_detail:
             subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_id = ip.subnet_id).first()
-            if ip.ip_address is not None:
-                print("ip is::", ip, file=sys.stderr)
-                print("ip is::", ip, file=sys.stderr)
-                subnet_address = None
-                if subnet_exsist and subnet_exsist.subnet_address is not None :
-                    subnet_address = subnet_exsist.subnet_address
-                ip_dict = {
-                    "ip_id": ip.ip_id,
-                    "mac_address": ip.mac_address,
-                    "status": ip.status,
-                    "vip": ip.vip,
-                    "asset_tag": ip.asset_tag,
-                    "configuration_switch": ip.configuration_switch,
-                    "configuration_interface": ip.configuration_interface,
-                    "open_ports": ip.open_ports,
-                    "ip_dns": ip.ip_dns,
-                    "dns_ip": ip.dns_ip,
-                    "creation_date": ip.creation_date,
-                    "modification_date": ip.modification_date,
-                    "ip_address": ip.ip_address,
-                    "subnet_address":subnet_address
-                }
-                ip_list.append(ip_dict)
+            if subnet_exsist:
+                if ip.ip_address is not None:
+                    print("ip is::", ip, file=sys.stderr)
+                    print("ip is::", ip, file=sys.stderr)
+                    subnet_address = None
+                    if subnet_exsist and subnet_exsist.subnet_address is not None :
+                        subnet_address = subnet_exsist.subnet_address
+                    ip_dict = {
+                        "ip_id": ip.ip_id,
+                        "mac_address": ip.mac_address,
+                        "status": ip.status,
+                        "vip": ip.vip,
+                        "asset_tag": ip.asset_tag,
+                        "configuration_switch": ip.configuration_switch,
+                        "configuration_interface": ip.configuration_interface,
+                        "open_ports": ip.open_ports,
+                        "ip_dns": ip.ip_dns,
+                        "dns_ip": ip.dns_ip,
+                        "creation_date": ip.creation_date,
+                        "modification_date": ip.modification_date,
+                        "ip_address": ip.ip_address,
+                        "subnet_address":subnet_address
+                    }
+                    ip_list.append(ip_dict)
         return ip_list
     except Exception as e:
         traceback.print_exc()
@@ -1332,14 +1333,15 @@ def get_ip_history():
         history_list = []
         history = configs.db.query(IP_HISTORY_TABLE).all()
         for data in history:
-            history_dict = {
-                "ip_history_id":data.ip_history_id,
-                "mac_address":data.mac_address,
-                "ip_address":data.ip_address,
-                "asset_tag":data.asset_tag,
-                "date":data.date
-            }
-            history_list.append(history_dict)
+            if data.ip_address is not None:
+                history_dict = {
+                    "ip_history_id":data.ip_history_id,
+                    "mac_address":data.mac_address,
+                    "ip_address":data.ip_address,
+                    "asset_tag":data.asset_tag,
+                    "date":data.date
+                }
+                history_list.append(history_dict)
         return  history_list
     except Exception as e:
         traceback.print_exc()
