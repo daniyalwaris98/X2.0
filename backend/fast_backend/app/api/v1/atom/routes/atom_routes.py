@@ -1,4 +1,5 @@
 from fastapi import Depends
+from sqlalchemy.exc import SQLAlchemyError
 
 from app.api.v1.atom.utils.atom_utils import *
 from app.schema.validation_schema import Validator
@@ -304,27 +305,24 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
         success_list = []
         error_list = []
         deleted_atoms_lst = []
-        atom_found = False 
+        atom_found = False
         transition_atom_found = False
-        delete_atom = {}
-        for atom_obj in atom_list:
-            deleted_atom ={}
-            atom_obj = atom_obj.dict()
 
+        for atom_obj in atom_list:
             if "atom_id" in atom_obj and atom_obj['atom_id'] is not None and atom_obj['atom_id'] != 0:
                 atoms = configs.db.query(AtomTable).filter_by(atom_id=atom_obj['atom_id']).all()
                 if atoms:
                     for atom in atoms:
-                        if atom.onboard_status == True:
-                            error_list.append(f"{atom.ip_address}Cannot delete onboarded device. Please Dismantel the device from active usage before deleting.")
+                        if atom.onboard_status:
+                            error_list.append(f"{atom.ip_address} Cannot delete onboarded device. Please Dismantel the device from active usage before deleting.")
                         else:
                             atom_found = True
                             deleted_atom_id = atom.atom_id
                             atom_ip_address = atom.ip_address
-                            DeleteDBData(atom)
-                            deleted_atom['atom_id'] = deleted_atom_id
+                            configs.db.delete(atom)
+                            deleted_atoms_lst.append({'atom_id': deleted_atom_id})
                             success_list.append(f"{atom_ip_address} : Atom Deleted Successfully")
-                            deleted_atoms_lst.append(deleted_atom)
+
                 else:
                     not_found_atom_id = atom_obj['atom_id']
                     print(f"Atom Not Found for atom_id: {not_found_atom_id}", file=sys.stderr)
@@ -337,18 +335,19 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                         transition_atom_found = True
                         atom_transition_id = atoms.atom_transition_id
                         transition_atom_ip = atoms.ip_address
-                        DeleteDBData(atoms)
-                        deleted_atom['atom_transition_id'] = atom_transition_id
+                        configs.db.delete(atoms)
+                        deleted_atoms_lst.append({'atom_transition_id': atom_transition_id})
                         success_list.append(f"{transition_atom_ip} : Atom Transition Deleted Successfully")
-                        deleted_atoms_lst.append(deleted_atom)
+
                 else:
                     not_found_atom_transition_id = atom_obj['atom_transition_id']
                     print(f"Atom transition Not Found for id: {not_found_atom_transition_id}", file=sys.stderr)
                     error_list.append(f"Atom Transition Not Found for id: {not_found_atom_transition_id}")
-        
 
         if not atom_found and not transition_atom_found:
-                error_list.append("Atom / Transition Atom Not Found")
+            error_list.append("Atom / Transition Atom Not Found")
+
+        configs.db.commit()  # Commit the changes
 
         response = {
             "data": deleted_atoms_lst,
@@ -359,6 +358,8 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
         }
 
         return response
-    except Exception:
+
+    except SQLAlchemyError as e:
+        configs.db.rollback()  # Rollback changes on error
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Deleting Atom", status_code=500)
