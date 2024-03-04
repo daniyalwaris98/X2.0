@@ -696,6 +696,7 @@ async def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
         encryption_protocol = v3_credentials['encryption_protocol']
         encryption_password = v3_credentials['encryption_password']
         profile_name = v3_credentials['profile_name']
+        #community = v3_credentials['community']
         # community = v3_credentials['community']
         credentials.description = description
         credentials.username = username
@@ -706,14 +707,14 @@ async def add_snmp_v3_credentials(credentialObj: AddSnmpV3Schema):
         credentials.encryption_password = encryption_password
         credentials.category = "v3"
         credentials.profile_name = profile_name
-        # credentials.snmp_read_community =community
+        #credentials.snmp_read_community =community
         InsertDBData(credentials)
 
         snmp_dict = {
             "credentials_id":credentials.credentials_id,
             "profile_name": credentials.profile_name,
             "user_name": credentials.username,
-            "community": credentials.snmp_read_community,  # Check if this field is required
+            #"community": credentials.snmp_read_community,  # Check if this field is required
             "description": credentials.description,
             "port": credentials.snmp_port,
             "category": credentials.category,
@@ -836,11 +837,12 @@ async def get_snmp_v3_credentials():
                 "encryption_password":cred.encryption_password
 
             }
+            print("credentials",credentials,file=sys.stderr)
             snmp_lst.append(credentials)
         return JSONResponse(content=snmp_lst,status_code=200)
     except Exception as e:
         traceback.print_exc()
-        return  JSONResponse(conten = "Error Occured While Getting SNMP V1 And V2",status_code=500)
+        return  JSONResponse(content = "Error Occured While Getting SNMP V1 And V2",status_code=500)
 
 
 
@@ -902,9 +904,10 @@ async def ssh_login_credentials():
                 "password_group_id":row.password_group_id,
                 "password_group":row.password_group,
                 "password_group_type":row.password_group_type,
-                "username":row.username,
+                "user_name":row.username,
                 "password":row.password
             }
+            print("ssh_dict",ssh_dict,file=sys.stderr)
             ssh_lst.append(ssh_dict)
         return JSONResponse(content=ssh_lst,status_code=200)
     except Exception as e:
@@ -930,6 +933,7 @@ async def get_all_discovery_data():
                 "discovery_id":discover.discovery_id,
                 "ip_address":discover.ip_address,
                 "subnet":discover.subnet,
+                "os_type":discover.os_type,
                 "make_model":discover.make_model,
                 "function":discover.function,
                 "vendor":discover.vendor,
@@ -937,6 +941,7 @@ async def get_all_discovery_data():
                 "snmp_version":discover.snmp_version,
                 "ssh_status":discover.ssh_status
             }
+            print("discovery_dict",discovery_dict,file=sys.stderr)
             discovery_list.append(discovery_dict)
         return discovery_list
     except Exception as e:

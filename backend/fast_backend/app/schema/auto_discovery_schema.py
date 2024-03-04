@@ -84,6 +84,7 @@ class AddSnmpV1_V2Schema(BaseSchema):
 class AddSnmpV3Schema(BaseSchema):
     user_name:str
     encryption_protocol: str | None = None
+    #community : str | None = None
     profile_name:str | None = None
     description: str | None = None
     port:int | None = None
@@ -155,7 +156,7 @@ class GetSSHLoginSchema(BaseSchema):
     password_group_id:int
     password_group: str
     password_group_type:str
-    username:str
+    user_name:str
     password:str
 
 class RequestSubnetSchema(BaseSchema):
