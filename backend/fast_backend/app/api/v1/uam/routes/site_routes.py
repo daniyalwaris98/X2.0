@@ -112,7 +112,8 @@ async def get_all_site():
         print(response)
         non_default_sorted = sorted(
             (x for x in response if x['site_name'] != 'default_site'),
-            key=lambda x: datetime.strptime(x['creation_date'], '%Y-%m-%d %H:%M:%S'),
+            #key=lambda x: datetime.strptime(x['creation_date'], '%Y-%m-%d %H:%M:%S'),
+            key=lambda x: datetime.strptime(x['creation_date'], '%Y-%m-%d %H:%M:%S') if x['creation_date'] is not None else datetime.min,            
             reverse=True
         )
 
