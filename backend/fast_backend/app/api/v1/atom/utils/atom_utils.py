@@ -811,9 +811,9 @@ def get_transition_atoms():
             if status != 200:
                 obj_dict["creation_date"] = str(obj_dict["creation_date"])
                 obj_dict["modification_date"] = str(obj_dict["modification_date"])
-                obj_dict["message"] = msg
                 obj_dict["status"] = status
                 obj_dict['atom_table_id'] = count
+                obj_dict['onboard_status']= result.onboard_status if result.onboard_status else False
                 obj_list.append(obj_dict)
             
             count +=1

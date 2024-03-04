@@ -162,13 +162,13 @@ const ResponseTimeChart = () => {
         id="CPUUtilisation"
         value={4}
         color="#FFCB47"
-        title="CPU Utilisation"
+        title="CPU Utilization"
       />
       <GaugeChart
         id="MemoryUtilisation"
         value={34.59}
         color="#0F4EEE"
-        title="Memory Utilisation"
+        title="Memory Utilization"
       />
     </div>
   );
