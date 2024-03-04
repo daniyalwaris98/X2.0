@@ -190,9 +190,11 @@ class SnmpV3CredentialsRequestSchema(SnmpCredentialsSchema):
 
 class AddMonitoringSnmpV3CredentialsRequestSchema(BaseSchema):
     username: str
-    authorization_password: str
+    #authorization_password: str
+    authentication_password: str
     encryption_password: str
-    authorization_protocol: str
+    #authorization_protocol: str
+    authentication_protocol: str
     encryption_protocol: str
     profile_name: str
     description: str | None

@@ -1,7 +1,9 @@
+import traceback
+
 from fastapi import APIRouter, Depends
 #from aws_test.utils import *
 from app.api.v1.cloud_monitoring.utils.aws_test.ec2 import ec2Driver
-
+from app.schema.cloud_monitoring_schema.aws_schema import *
 account_details = {
     'aws_access_key_id':'AKIAX2MUDQMLR6Y4PJW3',
     'aws_secret_access_key':'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',
@@ -13,20 +15,23 @@ router = APIRouter(prefix="/aws_services", tags=["aws_services"])
 # Screen - AWS-EC2
 
 @router.get('/list_of_all_ec2_instances', description="Get All Instance Details")
-def list_of_all_ec2_instances() -> dict:
+def list_of_all_ec2_instances(service_name: str = "default") -> dict:
     obj = ec2Driver(**account_details)
-    list_of_instance = obj.list_all_instances()
+    list_of_instance = obj.list_all_instances(service_name = service_name)
     #store
     return {"data":list_of_instance, "count":len(list_of_instance),"success":1}
 
 
 
-@router.get('/aws_discovery_services', description="Discovery of AWS Services with Count")
-def aws_discovery_services() -> dict:
-    obj = ec2Driver(**account_details)
-    list_of_instance = obj.auto_discovery()
-    return {"data":list_of_instance}
-
+@router.post('/aws_discovery_services', description="Discovery of AWS Services with Count")
+def aws_discovery_services(account_data:AwsCredentialsResponseSchema) -> dict:
+    try:
+        account_data_obj = dict(account_data)
+        obj = ec2Driver(**account_data_obj)
+        list_of_instance = obj.auto_discovery()
+        return {"data":list_of_instance}
+    except Exception as e:
+        traceback.print_exc()
 
 # for S3 Buckets 
 @router.get('/list_of_all_s3_buckets', description="Get All S3 Buckets with Details")
