@@ -316,14 +316,15 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                 if atoms:
                     for atom in atoms:
                         if atom.onboard_status == True:
-                            return JSONResponse(content="Cannot delete onboarded device. Please Dismantel the device from active usage before deleting.",status_code=400)
-                        atom_found = True
-                        deleted_atom_id = atom.atom_id
-                        atom_ip_address = atom.ip_address
-                        DeleteDBData(atom)
-                        deleted_atom['atom_id'] = deleted_atom_id
-                        success_list.append(f"{atom_ip_address} : Atom Deleted Successfully")
-                        deleted_atoms_lst.append(deleted_atom)
+                            error_list.append(f"{atom.ip_address}Cannot delete onboarded device. Please Dismantel the device from active usage before deleting.")
+                        else:
+                            atom_found = True
+                            deleted_atom_id = atom.atom_id
+                            atom_ip_address = atom.ip_address
+                            DeleteDBData(atom)
+                            deleted_atom['atom_id'] = deleted_atom_id
+                            success_list.append(f"{atom_ip_address} : Atom Deleted Successfully")
+                            deleted_atoms_lst.append(deleted_atom)
                 else:
                     not_found_atom_id = atom_obj['atom_id']
                     print(f"Atom Not Found for atom_id: {not_found_atom_id}", file=sys.stderr)
