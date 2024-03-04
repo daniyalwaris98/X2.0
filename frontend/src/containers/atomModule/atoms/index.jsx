@@ -451,7 +451,7 @@ const Index = () => {
     <DefaultSpinner
       spinning={
         isFetchRecordsLoading || isAddRecordsLoading || isDeleteRecordsLoading
-        // || isOnBoardRecordsLoading
+        || isOnBoardRecordsLoading
       }
     >
       <input
