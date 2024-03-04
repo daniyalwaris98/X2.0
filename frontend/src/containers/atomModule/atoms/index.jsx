@@ -763,18 +763,18 @@ const Index = () => {
 
   // effects
   useEffect(() => {
-    const intervalId = setInterval(() => {
-      if (!functionRunningStatus?.running) {
+    if (!functionRunningStatus?.running) {
+      const intervalId = setInterval(() => {
         getFunctionRunningStatusMutation({ function_name: "on_board_device" });
-      }
-    }, 5000);
+      }, 5000);
 
-    return () => clearInterval(intervalId);
-  }, []);
+      return () => clearInterval(intervalId);
+    }
+  }, [functionRunningStatus?.running]);
 
   // Effect to refetch records query when onboard status changes
   useEffect(() => {
-    if (functionRunningStatus?.running) {
+    if (!functionRunningStatus?.running) {
       refetchFetchRecordsQuery();
     }
   }, [functionRunningStatus?.running]);
