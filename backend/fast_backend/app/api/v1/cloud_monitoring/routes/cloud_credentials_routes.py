@@ -4,7 +4,7 @@ from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from app.schema.cloud_monitoring_schema.aws_schema import *
 from app.models.cloud_monitoring_models import *
-
+from app.api.v1.cloud_monitoring.routes.cloud_aws_services_routes import account_details
 
 
 
@@ -12,12 +12,7 @@ from app.models.cloud_monitoring_models import *
 
 router = APIRouter(prefix="/aws_credentials", tags=["aws_credentials"])
 
-@router.get('/test_aws_credentials_apissss')
-def test():
-    try:
-        return {"message":"AWS"}
-    except Exception as e:
-        traceback.print_exc()
+
 
 
 
@@ -31,6 +26,9 @@ description="API to add the AWS credentials cloud credentials"
 )
 async def add_aws_credentials(aws_data:AwsCredentialsResponseSchema):
     try:
+        account_details['aws_access_key_id'] = aws_data.access_key
+        account_details['aws_secret_access_key'] = aws_data.secret_access_key
+        account_details['region_name'] = aws_data.region_name
         aws_credentials = CloudCredentials(
             access_key = aws_data.access_key,
             secret_access_key = aws_data.secret_access_key,

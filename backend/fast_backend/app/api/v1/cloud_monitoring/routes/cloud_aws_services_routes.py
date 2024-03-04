@@ -13,9 +13,9 @@ router = APIRouter(prefix="/aws_services", tags=["aws_services"])
 # Screen - AWS-EC2
 
 @router.get('/list_of_all_ec2_instances', description="Get All Instance Details")
-def list_of_all_ec2_instances() -> dict:
+def list_of_all_ec2_instances(service_name: str = "default") -> dict:
     obj = ec2Driver(**account_details)
-    list_of_instance = obj.list_all_instances()
+    list_of_instance = obj.list_all_instances(service_name = service_name)
     #store
     return {"data":list_of_instance, "count":len(list_of_instance),"success":1}
 
