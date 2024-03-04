@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect } from "react";
-import { useSelector } from "react-redux";
+import { useSelector, useDispatch } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
 import { selectFunctionRunningStatus } from "../../../store/features/commons/selectors";
 import {
@@ -60,7 +60,7 @@ import {
 const Index = () => {
   // hooks
   const { getUserInfoFromAccessToken, isPageEditable } = useAuthorization();
-
+  const dispatch = useDispatch();
   // user information
   const userInfo = getUserInfoFromAccessToken();
   const roleConfigurations = userInfo?.configuration;
@@ -82,6 +82,7 @@ const Index = () => {
     isLoading: isFetchRecordsLoading,
     isError: isFetchRecordsError,
     error: fetchRecordsError,
+    refetch: refetchFetchRecordsQuery,
   } = useFetchRecordsQuery();
 
   // hooks
@@ -440,7 +441,12 @@ const Index = () => {
   function handleCloseAddFromAutoDiscoveryModal() {
     setOpenAddFromAutoDiscoveryModal(false);
   }
-
+  useEffect(() => {
+    if (functionRunningStatus?.running) {
+      // Refetch records query when onboard status changes
+      refetchFetchRecordsQuery();
+    }
+  }, [functionRunningStatus?.running]);
   return (
     <DefaultSpinner
       spinning={
