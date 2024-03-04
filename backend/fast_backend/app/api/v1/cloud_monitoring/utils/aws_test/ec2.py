@@ -1,7 +1,10 @@
+from typing import List, Dict
+
 import boto3
 from datetime import datetime, timedelta
 from app.api.v1.cloud_monitoring.utils.cloud_monitoring_utils import *
-
+from app.static.cloud_monitoring_services_icon import *
+from fastapi import Request
 
 class ec2Driver:
     def __init__(self,aws_access_key_id:str, aws_secret_access_key:str, region_name:str) -> None:
@@ -12,9 +15,9 @@ class ec2Driver:
         )
 
 
-    def list_all_instances(self) -> list:
-        ec2_client = self.session.client('ec2')
-        ec2_resource = self.session.resource('ec2')
+    def list_all_instances(self,service_name) -> list:
+        ec2_client = self.session.client(service_name)
+        ec2_resource = self.session.resource(service_name)
         instances = ec2_resource.instances.all()
         all_instances = []
         for instance in instances:
@@ -60,8 +63,8 @@ class ec2Driver:
         return dbs['DBInstances']
 
 
-    def get_elbs(self):
-        elbv2 = self.session.client('elbv2')
+    def get_elbs(self,service_name):
+        elbv2 = self.session.client(service_name)
         elbs = elbv2.describe_load_balancers()
         return elbs['LoadBalancers']
 
@@ -269,8 +272,8 @@ class ec2Driver:
         clusters = msk.list_clusters()
         return clusters['ClusterInfoList']
 
-    def get_vpcs(self):
-        ec2 = self.session.client('ec2')
+    def get_vpcs(self,service_name):
+        ec2 = self.session.client(service_name)
         response = ec2.describe_vpcs()
         return response['Vpcs']
         
@@ -282,39 +285,39 @@ class ec2Driver:
         return clusters['clusters']
     
 
-    def get_nat_gateways(self):
+    def get_nat_gateways(self,service_name):
         ec2 = self.session.client('ec2')
         response = ec2.describe_nat_gateways()
         return response['NatGateways']
 
-    def get_subnets(self):
-        ec2 = self.session.client('ec2')
+    def get_subnets(self,service_name):
+        ec2 = self.session.client(service_name)
         response = ec2.describe_subnets()
         return response['Subnets']
 
-    def get_vpc_peering_connections(self):
-        ec2 = self.session.client('ec2')
+    def get_vpc_peering_connections(self,service_name):
+        ec2 = self.session.client(service_name)
         response = ec2.describe_vpc_peering_connections()
         return response['VpcPeeringConnections']
 
-    def get_route_tables(self):
-        ec2 = self.session.client('ec2')
+    def get_route_tables(self,service_name):
+        ec2 = self.session.client(service_name)
         response = ec2.describe_route_tables()
         return response['RouteTables']
 
-    def get_network_acls(self):
-        ec2 = self.session.client('ec2')
+    def get_network_acls(self,service_name):
+        ec2 = self.session.client(service_name)
         response = ec2.describe_network_acls()
         return response['NetworkAcls']
 
 
-    def get_internet_gateways(self):
-        ec2 = self.session.client('ec2')
+    def get_internet_gateways(self,service_name):
+        ec2 = self.session.client(service_name)
         response = ec2.describe_internet_gateways()
         return response['InternetGateways']
 
-    def get_security_groups(self):
-        ec2 = self.session.client('ec2')
+    def get_security_groups(self,service_name):
+        ec2 = self.session.client(service_name)
         response = ec2.describe_security_groups()
         return response['SecurityGroups']
 
@@ -323,8 +326,8 @@ class ec2Driver:
         response = ec2.describe_vpn_gateways()
         return response['VpnGateways']
 
-    def get_site_to_site_vpn_connections(self):
-        ec2 = self.session.client('ec2')
+    def get_site_to_site_vpn_connections(self,service_name):
+        ec2 = self.session.client(service_name)
         response = ec2.describe_vpn_connections()
         return response['VpnConnections']
 
@@ -345,8 +348,77 @@ class ec2Driver:
             # If NoSuchBucketPolicy exception is raised, bucket is private
             return "Private"
 
-    def auto_discovery(self) -> dict:
+    def auto_discovery(self,request) -> list:
+        auto_discovery_data_list = [
+            {
+                "service_name": "EC2",
+                "count": len(self.list_of_all_instance_by_status(['running', 'stopped'])),
+                "image": str(create_file_url(request=request, file_name='./static/cloud_monitoring_services_icon/ec_2.png')) # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "S3",
+                "count": len(self.get_s3_buckets()),
+                "image": create_file_url(request=request, file_name='./static/cloud_monitoring_services_icon/s3.png')
+                # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "ELB",
+                "count": len(self.get_elbs()),
+                "image": create_file_url(request=request, file_name='./static/cloud_monitoring_services_icon/elb.png')
+                # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "Route 53",
+                "count": len(self.get_route53_domains()),
+                "image": create_file_url(request=request, file_name='./static/cloud_monitoring_services_icon/route_53.png')
+                # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "IAM",
+                "count": len(self.get_iam_users()),
+                "image": create_file_url(request=request,
+                                         file_name='./static/cloud_monitoring_services_icon/iam.png')
+                # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "ECS",
+                "count": len(self.get_ecs_clusters()),
+                "image": create_file_url(request=request,
+                                         file_name='./static/cloud_monitoring_services_icon/ecs.png')
+                # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "ECR",
+                "count": len(self.get_ecr_repositories()),
+                "image": create_file_url(request=request,
+                                         file_name='./static/cloud_monitoring_services_icon/ecr.png.png')
+                # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "RDS",
+                "count":  len(self.get_rds_databases()),
+                "image": create_file_url(request=request,
+                                         file_name='./static/cloud_monitoring_services_icon/rds.png')
+                # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "VPC",
+                "count": len(self.get_vpcs()),
+                "image": create_file_url(request=request,
+                                         file_name='./static/cloud_monitoring_services_icon/vpc.png')
+                # Assuming 'ec_2.png' is the file name
+            },
+            {
+                "service_name": "EKS",
+                "count": len(self.get_eks_clusters()),
+                "image": create_file_url(request=request,
+                                         file_name='./static/cloud_monitoring_services_icon/EKS.png')
+                # Assuming 'ec_2.png' is the file name
+            }
+        ]
+        print("discovery data list is:::::::::::::",auto_discovery_data_list,file=sys.stderr)
         discovery_data = {
+
             "ec2_instance_count": len(self.list_of_all_instance_by_status(['running', 'stopped'])),
             "s3_bucket_count": len(self.get_s3_buckets()),
             "elb_count": len(self.get_elbs()),
@@ -361,7 +433,7 @@ class ec2Driver:
 
         add_discovery_data(discovery_data)
 
-        return discovery_data
+        return auto_discovery_data_list
 
     def list_all_s3_buckets(self) -> list:
         s3 = self.session.client('s3')
@@ -386,8 +458,9 @@ class ec2Driver:
         return bucket_info_list
 
     # load balancer
-    def list_all_load_balancers(self) -> list:
-        return [{
+    def list_all_load_balancers(self,service_name) -> list:
+        elb_data = [{
+
             'Name':elb['LoadBalancerName'],
             'DNSName': elb['DNSName'],
             'State': elb['State']['Code'],
@@ -395,7 +468,8 @@ class ec2Driver:
             'Availability Zones':len(elb['AvailabilityZones']),
             'Type': elb['Type'],
             'Date Created' : elb['CreatedTime'].strftime("%Y-%m-%d %H:%M:%S"),
-        } for elb in self.get_elbs()]
+        } for elb in self.get_elbs(service_name=service_name)]
+        return elb_data
     
 
 
@@ -414,7 +488,7 @@ class ec2Driver:
             "site_to_site_vpn_connection_count":len(self.get_site_to_site_vpn_connections())
         }
 
-    def get_all_site_to_site_vpn_connections(self) -> list:
+    def get_all_site_to_site_vpn_connections(self,service_name) -> list:
         vpn_info_list = [{
                 'Name': vpn_connection.get('Tags', [{}])[0].get('Value', 'N/A'),
                 'VPN ID': vpn_connection['VpnConnectionId'],
@@ -422,12 +496,12 @@ class ec2Driver:
                 'Virtual Private Gateway': vpn_connection.get('VpnGatewayId', 'N/A'),
                 'Transit Gateway': vpn_connection.get('TransitGatewayId', 'N/A'),
                 'Customer Gateway': vpn_connection['CustomerGatewayId']
-            } for vpn_connection in self.get_site_to_site_vpn_connections()]
+            } for vpn_connection in self.get_site_to_site_vpn_connections(service_name)]
         return vpn_info_list
 
 
-    def get_all_security_groups(self) -> list:
-        return [{
+    def get_all_security_groups(self,service_name) -> list:
+        security_group_list = [{
                 'Name': next((tag['Value'] for tag in sg.get('Tags', []) if tag['Key'] == 'Name'), '-'),
                 'Security Group ID': sg['GroupId'],
                 'Security Group Name': sg['GroupName'],
@@ -435,10 +509,11 @@ class ec2Driver:
                 'Owner': sg['OwnerId'],
                 'Inbound Rules Count': len(sg['IpPermissions']),
                 'Outbound Rules Count': len(sg['IpPermissionsEgress'])
-            } for sg in self.get_security_groups()]
+            } for sg in self.get_security_groups(service_name=service_name)]
+        return security_group_list
 
-    def get_all_network_acls(self)->list:
-        return [{
+    def get_all_network_acls(self,service_name)->list:
+        network_acl_list =[{
                 'Name': next((tag['Value'] for tag in acl.get('Tags', []) if tag['Key'] == 'Name'), '-'),
                 'Network ACL ID': acl['NetworkAclId'],
                 'Associated With': f"{len(acl['Associations'])} Subnets",
@@ -447,13 +522,13 @@ class ec2Driver:
                 'Owner': acl['OwnerId'],
                 'Inbound Rules Count': len([entry for entry in acl['Entries'] if entry['Egress'] == True]),
                 'Outbound Rules Count': len([entry for entry in acl['Entries'] if entry['Egress'] == False])
-        } for acl in self.get_network_acls()]
+        } for acl in self.get_network_acls(service_name=service_name)]
+        return network_acl_list
 
 
 
-    def get_all_vpc_connection_peering(self) -> list:
-        
-        return [{
+    def get_all_vpc_connection_peering(self,service_name) -> list:
+        vpn_connection_perring_list =[{
                 'Name': next((tag['Value'] for tag in vpc_peering.get('Tags', []) if tag['Key'] == 'Name'), '-'),
                 'Peering Connections ID': vpc_peering['VpcPeeringConnectionId'],
                 'Status': vpc_peering['Status']['Code'],
@@ -465,14 +540,15 @@ class ec2Driver:
                 'Acceptor Owner ID': vpc_peering['AccepterVpcInfo']['OwnerId'],
                 'Requestor Region': vpc_peering['RequesterVpcInfo']['Region'],
                 'Acceptor Region': vpc_peering['AccepterVpcInfo']['Region']
-        } for vpc_peering in self.get_vpc_peering_connections()]
+        } for vpc_peering in self.get_vpc_peering_connections(service_name=service_name)]
 
+        return vpn_connection_perring_list
     
     #get_nat_gateways
 
-    def get_all_nat_gateways(self)-> list:
-        return [{
-            
+    def get_all_nat_gateways(self,service_name)-> list:
+        nat_gateway_list = [{
+
                 'Name': nat_gateway.get('Tags', [{'Value': '-'}])[0]['Value'],
                 'NAT gateway ID': nat_gateway['NatGatewayId'],
                 'Connectivity type': nat_gateway['ConnectivityType'],
@@ -483,33 +559,36 @@ class ec2Driver:
                 'Subnet': nat_gateway['SubnetId'],
                 'Created': nat_gateway['CreateTime']
 
-        } for nat_gateway in self.get_nat_gateways()]
+        } for nat_gateway in self.get_nat_gateways(service_name)]
+
+        return nat_gateway_list
 
 
-
-    def get_all_internet_gateways(self)->list:
-        return [{
+    def get_all_internet_gateways(self,service_name)->list:
+        internet_gateway_list = [{
                 'Name': next((tag['Value'] for tag in internet_gateway.get('Tags', []) if tag['Key'] == 'Name'), '-'),
                 'Internet gateway ID': internet_gateway['InternetGatewayId'],
                 'State': internet_gateway['Attachments'][0]['State'] if internet_gateway['Attachments'] else 'Detached',
                 'VPC ID': internet_gateway['Attachments'][0]['VpcId'] if internet_gateway['Attachments'] else 'N/A',
                 'Owner': internet_gateway['OwnerId']
-        } for internet_gateway in self.get_internet_gateways()]
+        } for internet_gateway in self.get_internet_gateways(service_name)]
+        return internet_gateway_list
     
 
-    def get_all_route_table(self)-> list:
-        return [{
+    def get_all_route_table(self,service_name)-> list:
+        router_data_list = [{
                 'Name': next((tag['Value'] for tag in route_table.get('Tags', []) if tag['Key'] == 'Name'), '-'),
                 'Route table ID': route_table['RouteTableId'],
                 'Main': 'Yes' if route_table.get('Associations', [{}])[0].get('Main', False) else 'No',
                 'VPC': route_table['VpcId'],
                 'Owner': route_table['OwnerId']
-            } for route_table in self.get_route_tables()
+            } for route_table in self.get_route_tables(service_name)
         ]
+        return router_data_list
     
-    def get_all_subnets(self)->list:
+    def get_all_subnets(self,service_name)->list:
         # print(self.get_subnets())
-        return [{
+        subnet_list =  [{
                 'Subnets': next((tag['Value'] for tag in subnet.get('Tags', []) if tag['Key'] == 'Name'), '-'),
                 'Subnet ID': subnet['SubnetId'],
                 'State':subnet['State'],
@@ -525,12 +604,12 @@ class ec2Driver:
                 'Default subnet': 'Yes' if subnet['DefaultForAz'] else 'No',
                 'Auto-assign public IPv4 address': 'Yes' if subnet['MapPublicIpOnLaunch'] else '',
                 'Owner ID': subnet['OwnerId']
-            } for subnet in self.get_subnets()
+            } for subnet in self.get_subnets(service_name)
         ]
+        return subnet_list
     
-    def get_all_vpcs(self):
-            print(self.get_vpcs())
-            return [{
+    def get_all_vpcs(self,service_name):
+            vpc_list =  [{
                 'Name': next((tag['Value'] for tag in vpc.get('Tags', []) if tag['Key'] == 'Name'), '-'),
                 'VPC ID': vpc['VpcId'],
                 'State': vpc['State'],
@@ -542,4 +621,5 @@ class ec2Driver:
                 'Tenancy': vpc['InstanceTenancy'],
                 'Default VPC': 'Yes' if vpc['IsDefault'] else 'No',
                 'Owner ID': vpc['OwnerId']
-            } for vpc in self.get_vpcs()]
+            } for vpc in self.get_vpcs(service_name)]
+            return vpc_list

@@ -254,12 +254,12 @@ export default function Index() {
       activeIcon: <img src={uamActiveIcon} alt={MODULE_NAME_UAM} />,
       path: MODULE_PATH_UAM,
     },
-    {
-      name: MODULE_NAME_CLOUD,
-      inActiveIcon: <img src={cloudInactiveIcon} alt={MODULE_NAME_CLOUD} />,
-      activeIcon: <img src={cloudctActiveIcon} alt={MODULE_NAME_CLOUD} />,
-      path: MODULE_PATH_CLOUD,
-    },
+//     {
+//       name: MODULE_NAME_CLOUD,
+//       inActiveIcon: <img src={cloudInactiveIcon} alt={MODULE_NAME_CLOUD} />,
+//       activeIcon: <img src={cloudctActiveIcon} alt={MODULE_NAME_CLOUD} />,
+//       path: MODULE_PATH_CLOUD,
+//     },
   ].filter((item) => isModuleAllowed(roleConfigurations, item.path));
 
   const [selectedModule, setSelectedModule] = useState(
@@ -342,23 +342,23 @@ export default function Index() {
                 {selectedModule?.name}
               </div>
               <div style={{ display: "flex" }}>
-                <div style={{ cursor: "pointer" }}>
-                  {isDarkMode ? (
-                    <img
-                      src={dayModeIcon}
-                      alt="theme"
-                      onClick={toggleTheme}
-                      height={35}
-                    />
-                  ) : (
-                    <img
-                      src={nightModeIcon}
-                      alt="theme"
-                      onClick={toggleTheme}
-                      height={35}
-                    />
-                  )}
-                </div>
+{/*                 <div style={{ cursor: "pointer" }}> */}
+{/*                   {isDarkMode ? ( */}
+{/*                     <img */}
+{/*                       src={dayModeIcon} */}
+{/*                       alt="theme" */}
+{/*                       onClick={toggleTheme} */}
+{/*                       height={35} */}
+{/*                     /> */}
+{/*                   ) : ( */}
+{/*                     <img */}
+{/*                       src={nightModeIcon} */}
+{/*                       alt="theme" */}
+{/*                       onClick={toggleTheme} */}
+{/*                       height={35} */}
+{/*                     /> */}
+{/*                   )} */}
+{/*                 </div> */}
                 &nbsp; &nbsp;
                 <ProfilePicturePopup handleLogout={handleLogout} />
                 &nbsp; &nbsp;

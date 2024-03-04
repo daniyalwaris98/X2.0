@@ -108,8 +108,8 @@ class AWSS3(Base):
         'cloud_discovery_table.cloud_discovery_id', ondelete='CASCADE', onupdate='CASCADE'),
                                 nullable=False
                                 )
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
 
     def as_dict(self):
         data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -139,8 +139,8 @@ class AwsVpcServiceDiscovery(Base):
         'cloud_discovery_table.cloud_discovery_id', ondelete='CASCADE', onupdate='CASCADE'),
                                 nullable=False
                                 )
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
 
     def as_dict(self):
         data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -168,9 +168,9 @@ class AwsElasticLoadBalancer(Base):
     creation_date = Column(DateTime, default=datetime.now())
     modification_date = Column(DateTime, default=datetime.now())
 
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE")
-                     )
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE")
+    #                  )
     def as_dict(self):
         data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         for key, value in data.items():
@@ -197,9 +197,9 @@ class AwSecurityGroup(Base):
         'cloud_discovery_table.cloud_discovery_id',ondelete='CASCADE',onupdate='CASCADE'),
         nullable=False
         )
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE")
-                     )
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE")
+    #                  )
     def as_dict(self):
         data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         for key, value in data.items():
@@ -226,9 +226,9 @@ class AwsNetworkAcl(Base):
         'cloud_discovery_table.cloud_discovery_id', ondelete='CASCADE', onupdate='CASCADE'),
                                 nullable=False
                                 )
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE")
-                     )
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE")
+    #                  )
 
 #
 #     def as_dict(self):
@@ -260,8 +260,8 @@ class AwsPeeringConnection(Base):
         'cloud_discovery_table.cloud_discovery_id', ondelete='CASCADE', onupdate='CASCADE'),
                                 nullable=False
         )
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
 
 
     def as_dict(self):
@@ -290,8 +290,8 @@ class AwsNatGateway(Base):
         'cloud_discovery_table.cloud_discovery_id', ondelete='CASCADE', onupdate='CASCADE'),
                                 nullable=False
                                 )
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
     def as_dict(self):
         data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
         for key, value in data.items():
@@ -318,8 +318,8 @@ class AwsInternetGateway(Base):
         'cloud_discovery_table.cloud_discovery_id', ondelete='CASCADE', onupdate='CASCADE'),
                                 nullable=False
                                 )
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
 
     def as_dict(self):
         data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
@@ -346,8 +346,8 @@ class AwsRouteTable(Base):
         'cloud_discovery_table.cloud_discovery_id', ondelete='CASCADE', onupdate='CASCADE'),
                                 nullable=False
     )
-    user_id = Column(Integer, ForeignKey(
-        'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
+    # user_id = Column(Integer, ForeignKey(
+    #     'user_table.id', ondelete='CASCADE', onupdate="CASCADE"))
 
     def as_dict(self):
         data = {c.name: getattr(self, c.name) for c in self.__table__.columns}
