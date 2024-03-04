@@ -1,12 +1,14 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useEffect } from "react";
 import { useSelector } from "react-redux";
 import { selectTableData } from "../../../store/features/atomModule/atoms/selectors";
+import { selectFunctionRunningStatus } from "../../../store/features/commons/selectors";
 import {
   useFetchRecordsQuery,
   useAddRecordsMutation,
   useDeleteRecordsMutation,
   useOnBoardRecordsMutation,
 } from "../../../store/features/atomModule/atoms/apis";
+import { useGetFunctionRunningStatusMutation } from "../../../store/features/commons/apis";
 import {
   jsonToExcel,
   convertToJson,
@@ -29,6 +31,7 @@ import useErrorHandling, {
   TYPE_BULK_ADD_UPDATE,
   TYPE_BULK_DELETE,
   TYPE_BULK_ONBOARD,
+  TYPE_SINGLE,
 } from "../../../hooks/useErrorHandling";
 import { useAuthorization } from "../../../hooks/useAuth";
 import DefaultTableConfigurations from "../../../components/tableConfigurations";
@@ -70,6 +73,7 @@ const Index = () => {
 
   // selectors
   const dataSource = useSelector(selectTableData);
+  const functionRunningStatus = useSelector(selectFunctionRunningStatus);
 
   // apis required in hooks
   const {
@@ -103,6 +107,7 @@ const Index = () => {
       default_onboard: {
         handleClick: handleOnBoard,
         visible: shouldOnboardBeVisible() && pageEditable,
+        loader: functionRunningStatus?.running,
       },
       atom_add: {
         handleClick: handleAdd,
@@ -117,6 +122,7 @@ const Index = () => {
 
   // refs
   const fileInputRef = useRef(null);
+  const functionRunningStatusRef = useRef(null);
 
   // states
   const [recordToEdit, setRecordToEdit] = useState(null);
@@ -165,6 +171,17 @@ const Index = () => {
     },
   ] = useOnBoardRecordsMutation();
 
+  const [
+    getFunctionRunningStatusMutation,
+    {
+      data: getFunctionRunningStatusMutationData,
+      isSuccess: isGetFunctionRunningStatusMutationSuccess,
+      isLoading: isGetFunctionRunningStatusMutationLoading,
+      isError: isGetFunctionRunningStatusMutationError,
+      error: getFunctionRunningStatusMutationError,
+    },
+  ] = useGetFunctionRunningStatusMutation();
+
   // error handling custom hooks
   useErrorHandling({
     data: fetchRecordsData,
@@ -196,9 +213,54 @@ const Index = () => {
     isSuccess: isOnBoardRecordsSuccess,
     isError: isOnBoardRecordsError,
     error: OnBoardRecordsError,
-    type: TYPE_BULK_ONBOARD,
+    type: TYPE_BULK,
+    showMessage: false,
     callback: handleEmptySelectedRowKeys,
   });
+
+  useErrorHandling({
+    data: getFunctionRunningStatusMutationData,
+    isSuccess: isGetFunctionRunningStatusMutationSuccess,
+    isError: isGetFunctionRunningStatusMutationError,
+    error: getFunctionRunningStatusMutationError,
+    type: TYPE_SINGLE,
+    showMessage: false,
+  });
+
+  // effects
+  useEffect(() => {
+    getFunctionRunningStatusMutation({ function_name: "on_board_device" });
+
+    if (functionRunningStatus?.running && !functionRunningStatusRef.current) {
+      functionRunningStatusRef.current = setInterval(
+        () =>
+          getFunctionRunningStatusMutation({
+            function_name: "on_board_device",
+          }),
+        5000
+      );
+    }
+
+    return () => {
+      if (functionRunningStatusRef.current)
+        clearInterval(functionRunningStatusRef.current);
+    };
+  }, []);
+
+  useEffect(() => {
+    if (functionRunningStatus?.running && !functionRunningStatusRef.current) {
+      functionRunningStatusRef.current = setInterval(
+        () =>
+          getFunctionRunningStatusMutation({
+            function_name: "on_board_device",
+          }),
+        5000
+      );
+    }
+
+    if (functionRunningStatusRef.current && !functionRunningStatus?.running)
+      clearInterval(functionRunningStatusRef.current);
+  }, [getFunctionRunningStatusMutationData]);
 
   // handlers
   function handleEmptySelectedRowKeys() {
@@ -276,9 +338,9 @@ const Index = () => {
 
       if (ipAddressesToOnBoard.length > 0) {
         onBoardRecords(ipAddressesToOnBoard);
-        handleInfoAlert(
-          "Onboarding has started! it may take a while to complete."
-        );
+        handleInfoAlert("Onboarding process has been started successfully.");
+        handleEmptySelectedRowKeys();
+        getFunctionRunningStatusMutation({ function_name: "on_board_device" });
       }
     } else {
       setSelectedRowKeys([]);

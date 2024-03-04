@@ -2,7 +2,7 @@ import ipaddress
 import traceback
 
 from app.api.v1.atom.utils.atom_utils import *
-from fastapi import APIRouter
+from fastapi import APIRouter, BackgroundTasks
 from fastapi.responses import JSONResponse
 from app.schema.auto_discovery_schema import *
 from app.models.atom_models import *
@@ -11,6 +11,9 @@ from app.api.v1.auto_discovery import auto_discover
 from app.api.v1.auto_discovery.auto_discover import *
 import threading
 from concurrent.futures import ThreadPoolExecutor
+from app.utils.common_state_utils import *
+
+
 
 router = APIRouter(
     prefix="/auto_discovery",
@@ -234,20 +237,14 @@ def validate_ip_range(ip_range):
         return None
 
 
-@router.post("/auto_discover", responses={
-    200: {"model": SummeryResponseSchema},
-    400: {"model": str},
-    500: {"model": str}
-},
-summary="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
-description="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
-)
-async def auto_discover_endpoint(subnet: RequestSubnetSchema):
+async def auto_discovery_background_task(subnet):
     try:
         auto_discovery_dict = {}
         data = {}
         success_list = []
-        error_lit = []
+        error_list = []
+
+        update_and_add_function_state('auto_discover', 'Running')
         if str(subnet).lower() == "all":
             return JSONResponse("Select a subnet to scan", 400)
 
@@ -255,26 +252,26 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
             AutoDiscoveryNetworkTable.subnet == subnet.subnet).first()
 
         if network is not None:
-            start_ip= calculate_start_ip(subnet.subnet)
+            start_ip = calculate_start_ip(subnet.subnet)
             end_ip = calculate_end_ip(subnet.subnet)
-            results = get_range_inventory_data(start_ip, end_ip)
-            # results = auto_discover.get_range_inventory_data(
-            #     network.subnet, network.excluded_ip_range
-            # )
-            print("results for auto discovery inventroy data is:::::",results,file=sys.stderr)
+            print("start_ip is:::", start_ip, file=sys.stderr)
+            print("end ip is::::::", end_ip, file=sys.stderr)
+            results = await get_range_inventory_data(start_ip, end_ip)
+            print("result are:::::::::::::::", len(results), file=sys.stderr)
+            print("results for auto discovery inventory data is:::::", results, file=sys.stderr)
         else:
-            error_lit.append("Subnet doesn't exit")
-            # return JSONResponse("Subnet doesn't exit", 400)
+            error_list.append("Subnet doesn't exit")
 
         if results is None:
-            error_lit.append(f"{results} : error while scanning")
+            error_list.append(f"{results} : error while scanning")
 
         for host in results:
-            print("host in result is:::::::::::::::::::",host,file=sys.stderr)
+            print("host in result is:::::::::::::::::::", host, file=sys.stderr)
             discovery_obj = configs.db.query(AutoDiscoveryTable).filter(
                 AutoDiscoveryTable.ip_address == host[0]).first()
-            print("discovered obj is:::::::::",discovery_obj,file=sys.stderr)
+            print("discovered obj is:::::::::", discovery_obj, file=sys.stderr)
             if discovery_obj is None:
+                # Insert new record
                 discovery_obj = AutoDiscoveryTable()
                 discovery_obj.ip_address = host[0]
                 discovery_obj.subnet = network.subnet
@@ -287,17 +284,17 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
                 discovery_obj.ssh_status = False
 
                 InsertDBData(discovery_obj)
-                print(f"{host[0]} :::::::::::::Host Inserted to the DB:::::::::::::::::::::::::",file=sys.stderr)
+                print(f"{host[0]} :::::::::::::Host Inserted to the DB:::::::::::::::::::::::::", file=sys.stderr)
                 auto_discovery_dict = {
-                    "discovery_id":discovery_obj.discovery_id,
-                    "ip_address":discovery_obj.ip_address,
-                    "subnet":discovery_obj.subnet,
-                    "os_type":discovery_obj.os_type,
-                    "make_model":discovery_obj.make_model,
-                    "function":discovery_obj.function,
-                    "vendor":discovery_obj.vendor,
-                    "snmp_status":discovery_obj.snmp_status,
-                    "ssh_status":discovery_obj.ssh_status
+                    "discovery_id": discovery_obj.discovery_id,
+                    "ip_address": discovery_obj.ip_address,
+                    "subnet": discovery_obj.subnet,
+                    "os_type": discovery_obj.os_type,
+                    "make_model": discovery_obj.make_model,
+                    "function": discovery_obj.function,
+                    "vendor": discovery_obj.vendor,
+                    "snmp_status": discovery_obj.snmp_status,
+                    "ssh_status": discovery_obj.ssh_status
                 }
                 data['data'] = auto_discovery_dict
                 success_list.append(f"Successfully Inserted to Database for {host[0]}")
@@ -316,7 +313,7 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
                 discovery_obj.ssh_status = False
 
                 UpdateDBData(discovery_obj)
-                print(f"{host[0]}:::::::: host updated in db::::::",file=sys.stderr)
+                print(f"{host[0]}:::::::: host updated in db::::::", file=sys.stderr)
                 auto_discovery_dict = {
                     "discovery_id": discovery_obj.discovery_id,
                     "ip_address": discovery_obj.ip_address,
@@ -333,29 +330,57 @@ async def auto_discover_endpoint(subnet: RequestSubnetSchema):
                 print(
                     f"Successfully Updated to Database for {host[0]}", file=sys.stderr
                 )
-            #
-            # obj_dict = {"ip_address": host[0], "subnet": network.subnet, "os_type": host[1],
-            #             "make_model": host[2], "function": host[3], "vendor": host[4],
-            #             "snmp_status": host[5], "snmp_version": host[6], "ssh_status": False}
-            # response_list.append(obj_dict)
 
         result = configs.db.query(AutoDiscoveryNetworkTable).all()
         for network in result:
             query_string = (f"select count(*) from auto_discovery_table where "
                             f"SUBNET='{network.subnet}';")
-            print("query string is::::::::",query_string,file=sys.stderr)
+            print("query string is::::::::", query_string, file=sys.stderr)
             number_of_devices = configs.db.execute(query_string).fetchone()
-            print("number of devices are:::::::",number_of_devices,file=sys.stderr)
+            print("number of devices are:::::::", number_of_devices, file=sys.stderr)
             network.number_of_device = number_of_devices[0]
-            print("network number of devices ae:::::::::::::",network.number_of_device,file=sys.stderr)
+            print("network number of devices ae:::::::::::::", network.number_of_device, file=sys.stderr)
             UpdateDBData(network)
-        print("data ois:::::::::::::::",data,file=sys.stderr)
+        print("data ois:::::::::::::::", data, file=sys.stderr)
+
+        success_list.append("All hosts processed successfully")
+        update_and_add_function_state('auto_discover', 'Completed')
+
         responses = {
-            "data":auto_discovery_dict,
-            "sucess_list":success_list,
-            "error_list":error_lit,
-            "error":len(error_lit),
-            "success":len(success_list)
+            "data": auto_discovery_dict,
+            "success_list": success_list,
+            "error_list": error_list,
+            "error": len(error_list),
+            "success": len(success_list)
+        }
+        return responses
+
+    except Exception as e:
+        traceback.print_exc()
+        print("error occured while auto discovery", str(e))
+
+
+@router.post("/auto_discover", responses={
+    200: {"model": SummeryResponseSchema},
+    400: {"model": str},
+    500: {"model": str}
+},
+summary="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
+description="Use this API in Auto Discover Discovery page on start scanning devices button scan the subnet.This API is of post method",
+)
+async def auto_discover_endpoint(background_tasks: BackgroundTasks,subnet: RequestSubnetSchema):
+    try:
+        data = []
+        success_list = []
+        error_list = []
+        background_tasks.add_task(auto_discovery_background_task,subnet)
+        success_list.append('Discovery process has been started')
+        responses = {
+            "data": data,
+            "success_list": success_list,
+            "error_list": error_list,
+            "error": len(error_list),
+            "success": len(success_list)
         }
         return responses
 

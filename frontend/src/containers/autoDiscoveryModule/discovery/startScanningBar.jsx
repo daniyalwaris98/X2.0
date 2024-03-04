@@ -19,7 +19,7 @@ const schema = yup.object().shape({
     .required(`${getTitle(indexColumnNameConstants.SUBNET)} is required`),
 });
 
-function Index({ handleChange }) {
+function Index({ handleChange, scanning }) {
   const generateButton = useButtonGenerator();
 
   const { handleSubmit, control } = useForm({
@@ -29,6 +29,7 @@ function Index({ handleChange }) {
   // hooks
   const { buttonsConfigurationObject } = useButtonsConfiguration({
     start_scanning_devices: null,
+    loader: scanning,
   });
 
   // apis

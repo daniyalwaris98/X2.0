@@ -4,8 +4,8 @@ from app.schema.base_schema import *
 
 
 class AwsCredentialsResponseSchema(BaseSchema):
-    access_key : str
-    secret_access_key : str
+    aws_access_key_id : str
+    aws_secret_access_key : str
     region_name : str
 
 
