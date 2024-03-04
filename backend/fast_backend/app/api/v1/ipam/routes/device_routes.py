@@ -202,7 +202,7 @@ def get_ipam_fetch_devices():
             subnet = configs.db.query(subnet_table).filter_by(ipam_device_id=devices.ipam_device_id).first()
 
             print("atom exsist is:",atom_exist,file=sys.stderr)
-            print("insterface exsist is:::",file=sys.stderr)
+            print("insterface exsist is:::",interfaces,file=sys.stderr)
             print("subnet is::::::",subnet,file=sys.stderr)
             subnet_address = subnet_mask = subnet_name = scan_date = None
             subnet_usage_value = subnet_size = None
@@ -241,7 +241,7 @@ def get_ipam_fetch_devices():
                 "subnet_usage": subnet_usage_value,
                 "subnet_size": subnet_size
             }
-            print("device dict is::::::::::")
+            print("device dict is::::::::::",devices_dict,file=sys.stderr)
             devices_list.append(devices_dict)
         print("devices list is:::::::::::::::::",devices_list,file=sys.stderr)
         return devices_list
@@ -478,6 +478,7 @@ def get_all_discovered_subnet():
     try:
         subnet_lst = []
         subnets = configs.db.query(subnet_table).filter_by(discovered="Discovered").all()
+        print("subnets",subnets,file=sys.stderr)
         for subnet in subnets:
             subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnet.subnet_id).first()
             subnet_dict = {
@@ -491,6 +492,7 @@ def get_all_discovered_subnet():
                 "subnet_size":subnet_usage.subnet_size,
             }
             subnet_lst.append(subnet_dict)
+            print("subnet_list",subnet_lst,file=sys.stderr)
         return subnet_lst
     except Exception as e:
         traceback.print_exc()
