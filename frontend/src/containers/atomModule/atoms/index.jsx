@@ -763,38 +763,12 @@ const Index = () => {
 
   // effects
   useEffect(() => {
-    getFunctionRunningStatusMutation({ function_name: "on_board_device" });
+    const intervalId = setInterval(() => {
+      getFunctionRunningStatusMutation({ function_name: "on_board_device" });
+    }, 5000);
 
-    if (functionRunningStatus?.running && !functionRunningStatusRef.current) {
-      functionRunningStatusRef.current = setInterval(
-        () =>
-          getFunctionRunningStatusMutation({
-            function_name: "on_board_device",
-          }),
-        5000
-      );
-    }
-
-    return () => {
-      if (functionRunningStatusRef.current)
-        clearInterval(functionRunningStatusRef.current);
-    };
+    return () => clearInterval(intervalId);
   }, []);
-
-  useEffect(() => {
-    if (functionRunningStatus?.running && !functionRunningStatusRef.current) {
-      functionRunningStatusRef.current = setInterval(
-        () =>
-          getFunctionRunningStatusMutation({
-            function_name: "on_board_device",
-          }),
-        5000
-      );
-    }
-
-    if (functionRunningStatusRef.current && !functionRunningStatus?.running)
-      clearInterval(functionRunningStatusRef.current);
-  }, [getFunctionRunningStatusMutationData]);
 
   // Effect to refetch records query when onboard status changes
   useEffect(() => {
