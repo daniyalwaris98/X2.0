@@ -111,6 +111,7 @@ async def get_ip_alerts(ip: MonitoringAlertsByIpAddress):
             )
             .join(AtomTable, AtomTable.atom_id == Monitoring_Devices_Table.atom_id)
             .filter(AtomTable.ip_address == ip.ip_address)
+            .order_by(Monitoring_Alerts_Table.modification_date.desc())
             .all()
         )
         print("alert_table query result",results,file=sys.stderr)
@@ -155,6 +156,7 @@ async def get_ips_alerts(ip: MonitoringAlertsByIpAddress):
             )
             .join(AtomTable, AtomTable.atom_id == Monitoring_Devices_Table.atom_id)
             .filter(AtomTable.ip_address == ip.ip_address)
+            .order_by(Monitoring_Alerts_Table.modification_date.desc())
             .all()
         )
 

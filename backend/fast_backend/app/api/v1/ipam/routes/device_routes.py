@@ -44,6 +44,12 @@ from io import BytesIO
 from fastapi import FastAPI,APIRouter,Query
 from starlette.responses import Response
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm.exc import NoResultFound
+
+
+
+
+
 router = APIRouter(
     prefix = '/ipam_device',
     tags = ['ipam_device']
@@ -196,14 +202,20 @@ def get_ipam_fetch_devices():
         ipam_devices = configs.db.query(IpamDevicesFetchTable).all()
 
         for devices in ipam_devices:
-            print("device in ipma devicesi is::::::::::::",devices,file=sys.stderr)
-            atom_exist = configs.db.query(AtomTable).filter_by(atom_id=devices.atom_id).first()
+            print("device in ipam devices is:", devices, file=sys.stderr)
+            try:
+                atom_exist = configs.db.query(AtomTable).filter_by(atom_id=devices.atom_id).one()
+            except NoResultFound:
+                # Atom not found, delete record from IpamDevicesFetchTable
+                configs.db.query(IpamDevicesFetchTable).filter_by(ipam_device_id=devices.ipam_device_id).delete()
+                # Also delete from ip_interface_table
+                configs.db.query(ip_interface_table).filter_by(ipam_device_id=devices.ipam_device_id).delete()
+                configs.db.commit()
+                continue
+
             interfaces = configs.db.query(ip_interface_table).filter_by(ipam_device_id=devices.ipam_device_id).first()
             subnet = configs.db.query(subnet_table).filter_by(ipam_device_id=devices.ipam_device_id).first()
 
-            print("atom exsist is:",atom_exist,file=sys.stderr)
-            print("insterface exsist is:::",interfaces,file=sys.stderr)
-            print("subnet is::::::",subnet,file=sys.stderr)
             subnet_address = subnet_mask = subnet_name = scan_date = None
             subnet_usage_value = subnet_size = None
 
@@ -212,12 +224,10 @@ def get_ipam_fetch_devices():
                 subnet_mask = subnet.subnet_mask
                 subnet_name = subnet.subnet_name
                 scan_date = subnet.scan_date
-                print("subnet address:::::",subnet_address,file=sys.stderr)
                 subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id=subnet.subnet_id).first()
                 if subnet_usage:
                     subnet_usage_value = subnet_usage.subnet_usage
                     subnet_size = subnet_usage.subnet_size
-                    print("subent usage iss::",subnet_usage,file=sys.stderr)
 
             devices_dict = {
                 "ipam_device_id": devices.ipam_device_id,
@@ -241,15 +251,13 @@ def get_ipam_fetch_devices():
                 "subnet_usage": subnet_usage_value,
                 "subnet_size": subnet_size
             }
-            print("device dict is::::::::::",devices_dict,file=sys.stderr)
             devices_list.append(devices_dict)
-        print("devices list is:::::::::::::::::",devices_list,file=sys.stderr)
+
         return devices_list
 
     except Exception as e:
         print(traceback.format_exc())
         return JSONResponse(content={"error": "Error Occurred While Getting IPAM devices", "details": str(e)}, status_code=500)
-
 
 @router.post('/add_subnet',responses={
     200:{"model":Response200},
