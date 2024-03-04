@@ -22,7 +22,7 @@ from app.utils.class_object import singleton
 
 
 #Middleware
-from app.middleware import AuthMiddleware
+# from app.middleware import AuthMiddleware
 from fastapi.openapi.docs import get_swagger_ui_oauth2_redirect_html
 
 
