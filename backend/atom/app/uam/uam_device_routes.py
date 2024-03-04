@@ -1,4 +1,4 @@
-from app.uam.uam_utils import *
+from app.api.v1.uam.uam_utils import *
 
 
 @app.route("/totalDevicesInDeviceDashboard", methods=["GET"])
@@ -18,7 +18,7 @@ def TotalDevicesInDeviceDashboard(user_data):
 @token_required
 def getAllUamDevices(user_data):
     try:
-        return jsonify(GetAllUamDevices()), 200
+        return jsonify(get_all_uam_devices_util()), 200
     except Exception:
         traceback.print_exc()
         return "Server Error", 500
@@ -33,7 +33,7 @@ def deleteUamDevice(user_data):
         ip_addresses = request.get_json()
 
         for ip_address in ip_addresses:
-            msg, status = DeleteUamDevice(ip_address)
+            msg, status = delete_uam_device_util(ip_address)
             if status == 200:
                 success_list.append(msg)
             else:
@@ -138,7 +138,14 @@ def deleteUamDevice(user_data):
 def editUamDevice(user_data):
     try:
         deviceObj = request.get_json()
-        return EditUamDevice(deviceObj)
+        
+        if "uam_id" not in deviceObj.keys():
+            return "Atom ID is Missing", 500
+        
+        if deviceObj['uam_id'] is None:
+            return "UAM ID Can Not Be Null", 500
+        
+        return edit_uam_device_util(deviceObj, deviceObj['uam_id'])
     except Exception as e:
         traceback.print_exc()
         return "Server Error While Updating Device", 500
@@ -238,8 +245,8 @@ def GetSiteByIpAddress(user_data):
             siteDataDict["latitude"] = site.latitude
             siteDataDict["longitude"] = site.longitude
             siteDataDict["city"] = site.city
-            siteDataDict["creation_date"] = FormatDate(site.creation_date)
-            siteDataDict["modification_date"] = FormatDate(site.modification_date)
+            siteDataDict["creation_date"] = site.creation_date
+            siteDataDict["modification_date"] = site.modification_date
             siteDataDict["status"] = site.status
             siteDataDict["total_count"] = site.total_count
 
@@ -277,10 +284,10 @@ def GetRackByIpAddress(user_data):
             rackDataDict["rack_name"] = rack.rack_name
             rackDataDict["site_name"] = site.site_name
             rackDataDict["serial_number"] = rack.serial_number
-            rackDataDict["manufacturer_date"] = FormatDate(rack.manufacturer_date)
+            rackDataDict["manufacturer_date"] = FormatDate(rack.manufacture_date)
             rackDataDict["unit_position"] = rack.unit_position
-            rackDataDict["creation_date"] = FormatDate(rack.creation_date)
-            rackDataDict["modification_date"] = FormatDate(rack.modification_date)
+            rackDataDict["creation_date"] = rack.creation_date
+            rackDataDict["modification_date"] = rack.modification_date
             rackDataDict["status"] = rack.status
             rackDataDict["rfs_date"] = FormatDate(rack.rfs_date)
             rackDataDict["height"] = rack.height
@@ -339,20 +346,20 @@ def GetDeviceDetailsByIpAddress(user_data):
             objDict["section"] = atom.section
             objDict["function"] = atom.function
             objDict["manufacturer"] = uam.manufacturer
-            objDict["hw_eos_date"] = (uam.hw_eos_date)
-            objDict["hw_eol_date"] = (uam.hw_eol_date)
-            objDict["sw_eos_date"] = (uam.sw_eos_date)
-            objDict["sw_eol_date"] = (uam.sw_eol_date)
+            objDict["hw_eos_date"] = FormatDate(uam.hw_eos_date)
+            objDict["hw_eol_date"] = FormatDate(uam.hw_eol_date)
+            objDict["sw_eos_date"] = FormatDate(uam.sw_eos_date)
+            objDict["sw_eol_date"] = FormatDate(uam.sw_eol_date)
             objDict["virtual"] = atom.virtual
             objDict["authentication"] = uam.authentication
             objDict["serial_number"] = uam.serial_number
             objDict["pn_code"] = uam.pn_code
-            objDict["manufacturer_date"] = (uam.manufacturer_date)
+            objDict["manufacturer_date"] = FormatDate(uam.manufacture_date)
             objDict["hardware_version"] = uam.hardware_version
             objDict["source"] = uam.source
             objDict["stack"] = uam.stack
             objDict["contract_number"] = uam.contract_number
-            objDict["contract_expiry"] = (uam.contract_expiry)
+            objDict["contract_expiry"] = FormatDate(uam.contract_expiry)
             return objDict, 200
         except Exception as e:
             traceback.print_exc()
@@ -374,7 +381,7 @@ def DismantleOnBoardDevice(user_data):
 
         for ip in deviceIDs:
             try:
-                response, status = UpdateUAMStatus(ip, "Dismantled")
+                response, status = update_uam_status_utils(ip, "Dismantled")
                 print(response,status, file=sys.stderr)
                 
                 if status == 500:
@@ -405,8 +412,12 @@ def DismantleOnBoardDevice(user_data):
 def AddDeviceStatically(user_data):
     try:
             deviceObj = request.get_json()
+            
             deviceObj['status'] = "Dismantled"
-            response, status = EditUamDevice(deviceObj)
+            response, status = edit_uam_device_util(deviceObj, None)
+            
+            if status == 200:
+                return "Device Onboarded Statically", 200
             
             return response, status
     except Exception as e:

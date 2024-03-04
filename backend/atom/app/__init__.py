@@ -69,7 +69,7 @@ app.config[
     "SQLALCHEMY_DATABASE_URI"
 ] = "mysql+pymysql://root:As123456?@updated_atom_db:3306/AtomDB"
 
-app.config["SQLALCHEMY_TRACK_MODIFICATIONS"] = False
+app.config["SQLALCHEMY_TRACK_MODIFICA   TIONS"] = False
 db = SQLAlchemy(app)
 
 
@@ -124,6 +124,7 @@ from app.uam import module_routes
 from app.uam import sfp_routes
 from app.uam import aps_routes
 from app.uam import license_routes
+from app.uam import sntc_routes
 
 from app.monitoring_device.routes import monitoring_routes
 from app.monitoring_device.routes import monitoring_dashboard_routes

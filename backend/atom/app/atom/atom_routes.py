@@ -94,6 +94,7 @@ def AddAtomDevices(user_data):
 @token_required
 def GetAtoms(user_data):
     try:
+        transitionList = []
         try:
             transitionList = GetTransitionAtoms()
         except Exception:

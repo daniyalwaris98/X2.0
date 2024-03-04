@@ -37,7 +37,7 @@ class UAM_Device_Table(db.Model):
     serial_number = db.Column(db.String(50), nullable=True)
     pn_code = db.Column(db.String(50), nullable=True)
     subrack_id_number = db.Column(db.String(50), nullable=True)
-    manufacturer_date = db.Column(db.Date, nullable=True)
+    manufacture_date = db.Column(db.Date, nullable=True)
     hardware_version = db.Column(db.String(50), nullable=True)
     max_power = db.Column(db.String(50), nullable=True)
     site_type = db.Column(db.String(50), nullable=True)
@@ -72,7 +72,7 @@ class Board_Table(db.Model):
     device_slot_id = db.Column(db.String(50), nullable=True)
     software_version = db.Column(db.String(50), nullable=True)
     serial_number = db.Column(db.String(50), nullable=True)
-    manufacturer_date = db.Column(db.Date, nullable=True)
+    manufacture_date = db.Column(db.Date, nullable=True)
     eos_date = db.Column(db.Date, nullable=True)
     eol_date = db.Column(db.Date, nullable=True)
     rfs_date = db.Column(db.Date, nullable=True)
@@ -106,7 +106,8 @@ class Subboard_Table(db.Model):
     hardware_version = db.Column(db.String(50), nullable=True)
     software_version = db.Column(db.String(50), nullable=True)
     serial_number = db.Column(db.String(50), nullable=True)
-
+    
+    manufacture_date = db.Column(db.Date, nullable=True)
     eos_date = db.Column(db.Date, nullable=True)
     eol_date = db.Column(db.Date, nullable=True)
     rfs_date = db.Column(db.Date, nullable=True)
@@ -197,7 +198,7 @@ class SNTC_TABLE(db.Model):
     hw_eol_date = db.Column(db.Date, nullable=True)
     sw_eos_date = db.Column(db.Date, nullable=True)
     sw_eol_date = db.Column(db.Date, nullable=True)
-    manufacturer_date = db.Column(db.Date, nullable=True)
+    manufacture_date = db.Column(db.Date, nullable=True)
 
     creation_date = db.Column(db.DateTime, default=datetime.now())
     modification_date = db.Column(

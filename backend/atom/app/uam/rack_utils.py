@@ -1,4 +1,4 @@
-from app.uam.uam_utils import *
+from app.api.v1.uam.uam_utils import *
 
 
 def FormatDate(date):
@@ -24,7 +24,7 @@ def GetAllRacks():
             "rack_name": rackObj.rack_name,
             "site_name": siteObj.site_name,
             "serial_number": rackObj.serial_number,
-            "manufacturer_date": FormatDate(rackObj.manufacturer_date),
+            "manufacturer_date": FormatDate(rackObj.manufacture_date),
             "unit_position": rackObj.unit_position,
             "creation_date": FormatDate(rackObj.creation_date),
             "modification_date": FormatDate(rackObj.modification_date),
@@ -35,7 +35,8 @@ def GetAllRacks():
             "width": rackObj.width,
             "pn_code": rackObj.pn_code,
             "rack_model": rackObj.rack_model,
-            "brand": rackObj.floor,
+            "floor": rackObj.floor,
+            # "depth"
         }
         rackObjList.append(rackDataDict)
 
@@ -59,7 +60,7 @@ def GetRackDetailsByRackName(rackName):
                     "rack_name": rackObj.rack_name,
                     "site_name": siteObj.site_name,
                     "serial_number": rackObj.serial_number,
-                    "manufacturer_date": FormatDate(rackObj.manufacturer_date),
+                    "manufacturer_date": FormatDate(rackObj.manufacture_date),
                     "unit_position": rackObj.unit_position,
                     "creation_date": FormatDate(rackObj.creation_date),
                     "modification_date": FormatDate(rackObj.modification_date),
@@ -303,7 +304,7 @@ def DeleteRack(rackNames):
                 device = Atom_Table.query.filter_by(rack_id=rack.rack_id).first()
                 if device is not None:
                     errorList.append(f"{rackName} : Rack Is Assigned In Atom")
-                    continue
+                    
 
                 status = DeleteDBData(rack)
                 if status == 200:

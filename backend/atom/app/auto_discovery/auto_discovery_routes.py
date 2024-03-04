@@ -199,9 +199,8 @@ def Discovers():
 
         results = None
         if network is not None:
-            results = auto_discover.GetSubnetInventoryData(
-                network["subnet"], network["excluded_ip_range"]
-            )
+            results = auto_discover.get_subnet_inventory_data(network["subnet"],
+                                                              network["excluded_ip_range"])
         else:
             if discoveryObj["subnet"].strip() == "All":
                 return "Select a subnet to start scanning", 500
@@ -564,10 +563,10 @@ def CheckSNMPCredentials():
         v3_list.append(SNMPObj)
 
     for row in results:
-        test_result = auto_discover.TestSNMPV2Credentials(row[1], v2_list)
+        test_result = auto_discover.test_snmp_v2_credentials(row[1], v2_list)
         if test_result is None:
             # no credentials matched
-            test_result = auto_discover.TestSNMPV3Credentials(row[1], v3_list)
+            test_result = auto_discover.test_snmp_v_credentials(row[1], v3_list)
 
         if test_result is not None:
             # credentials matched

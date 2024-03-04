@@ -12,20 +12,38 @@ services:
     volumes:
       - mysql_db:/var/lib/mysql
       - ./db/atom.sql:/docker-entrypoint-initdb.d/atom.sql
+      - mysql_db:/var/lib/mysql
 
-  updated_atom_flask:
-    container_name: Updated_Atom_Flask_Container
+  # updated_atom_flask:
+  #   container_name: Updated_Atom_Flask_Container
+  #   restart: always
+  #   build: backend/atom
+  #   # cap_add:
+  #   #   - NET_ADMIN
+  #   #   - SYS_ADMIN
+  #   ports:
+  #     - "5010:5000"
+  #   environment:
+  #     - NET_TEXTFSM=/app/app/pullers/ntc-templates/ntc_templates/templates/
+  #   volumes:
+  #     - ./backend/atom:/app
+  #   depends_on:
+  #     - updated_atom_db
+  #     - updated_influx_db
+
+  atom_fast_backend:
+    container_name: Atom_Fast_Backend_Container
     restart: always
-    build: backend/atom
+    build: backend/fast_backend
     # cap_add:
     #   - NET_ADMIN
     #   - SYS_ADMIN
     ports:
-      - "5010:5000"
-    environment:
-      - NET_TEXTFSM=/app/app/pullers/ntc-templates/ntc_templates/templates/
+      - "8080:8080"
+    # environment:
+    #   - NET_TEXTFSM=/app/app/pullers/ntc-templates/ntc_templates/templates/
     volumes:
-      - ./backend/atom:/app
+      - ./backend/fast_backend:/app
     depends_on:
       - updated_atom_db
       - updated_influx_db
@@ -33,17 +51,17 @@ services:
   updated_atom_react:
     container_name: Updated_Atom_React_Container
     restart: always
-    build: frontend/atom
-    command: ["npm", "start"]
-    volumes:
-      - ./frontend/atom:/frontend-atom
-      - node-modules:/frontend-atom/node_modules
-    environment:
-      - NODE_ENV=development
+    build: ./frontend
+    #environment:
+      #- NODE_ENV=development
+    #command: [ "npm", "start" ]
     ports:
-      - "3010:3010"
+      - "3010:3000"
+    volumes:
+      - ./frontend/:/frontend-app
+      - node-modules:/frontend-app/node_modules
     depends_on:
-      - updated_atom_flask
+      - atom_fast_backend
 
   updated_influx_db:
     image: influxdb:latest
