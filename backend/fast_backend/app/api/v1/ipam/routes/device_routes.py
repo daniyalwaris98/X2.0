@@ -163,7 +163,7 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
                         devices_data['discovered_from'] = ip.discovered_from
                     subnet = configs.db.query(subnet_table).filter_by(ipam_device_id = device.ipam_device_id).all()
                     for row in subnet:
-                        devices_data['subnet'] = row.subnet_address
+                        devices_data['subnet_address'] = row.subnet_address
                         devices_data['subnet_mask'] = row.subnet_mask
                         devices_data['location'] = row.location
                         subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).all()
