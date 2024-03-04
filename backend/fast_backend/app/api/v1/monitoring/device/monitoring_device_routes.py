@@ -263,12 +263,13 @@ async def add_atom_in_monitoring(ip_list: list[AddAtomInMonitoringSchema]):
 
             monitoringDevice = configs.db.query(Monitoring_Devices_Table).filter_by(atom_id=atom.atom_id).first()
             ping_response = ping(atom.ip_address)
+            print("ping resposne is:::::::::::::::::::::",ping_response,file=sys.stderr)
             ping_status = ' '.join(map(str, ping_response))
             print("ping response is:::::::::::::::",ping_status,file=sys.stderr)
             if monitoringDevice is None:
                 monitoringDevice = Monitoring_Devices_Table()
                 monitoringDevice.atom_id = atom.atom_id
-                monitoringDevice.ping_status = ping_status
+                monitoringDevice.ping_status = ping_response
                 monitoringDevice.monitoring_credentials_id = credentials_id
                 monitoringDevice.snmp_status = "Active"
                 monitoringDevice.active = "Active"
