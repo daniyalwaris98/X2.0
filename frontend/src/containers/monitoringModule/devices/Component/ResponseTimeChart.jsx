@@ -168,7 +168,7 @@ const ResponseTimeChart = () => {
         id="MemoryUtilisation"
         value={34.59}
         color="#0F4EEE"
-        title="Memory Utilisation"
+        title="Memory Utilization"
       />
     </div>
   );
