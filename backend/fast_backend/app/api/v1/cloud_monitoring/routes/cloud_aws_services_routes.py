@@ -15,7 +15,7 @@ router = APIRouter(prefix="/aws_services", tags=["aws_services"])
 # Screen - AWS-EC2
 
 @router.get('/list_of_all_ec2_instances', description="Get All Instance Details")
-def list_of_all_ec2_instances(service_name: str = "default") -> dict:
+def list_of_all_ec2_instances(service_name: str = "ec2") -> dict:
     obj = ec2Driver(**account_details)
     list_of_instance = obj.list_all_instances(service_name = service_name)
     #store
@@ -35,9 +35,9 @@ def aws_discovery_services(account_data:AwsCredentialsResponseSchema) -> dict:
 
 # for S3 Buckets 
 @router.get('/list_of_all_s3_buckets', description="Get All S3 Buckets with Details")
-def list_of_all_s3_buckets() -> dict:
+def list_of_all_s3_buckets(service_name: str = "s3") -> dict:
     obj = ec2Driver(**account_details)
-    list_of_all_buckets = obj.list_all_s3_buckets()
+    list_of_all_buckets = obj.list_all_s3_buckets(service_name = service_name)
     #store into db
     return {"data":list_of_all_buckets, "count":len(list_of_all_buckets),"success":1}
 

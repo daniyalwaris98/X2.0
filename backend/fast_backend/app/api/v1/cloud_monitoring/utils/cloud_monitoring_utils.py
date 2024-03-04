@@ -100,9 +100,9 @@ def add_and_update_s3_instance(data):
         print("data for the ec2 instance is::::::::::::",data,file=sys.stderr)
 
         for s3_instance in data:
-            aws_s3_data = configs.db.query(AWSS3).flter_by(bucket_name = s3_instance['bucket_name']).first()
+            aws_s3_data = configs.db.query(AWSS3).filter_by(bucket_name = s3_instance['BucketName']).first()
             if aws_s3_data:
-                aws_s3_data.ec2_instance_id = s3_instance['bucket_name']
+                aws_s3_data.ec2_instance_id = s3_instance['BucketName']
                 aws_s3_data.ec2_instance_type = s3_instance['Region']
                 aws_s3_data.availability_zone = s3_instance['Access']
                 aws_s3_data.elastic_ip = s3_instance['CreationDate']
@@ -113,10 +113,10 @@ def add_and_update_s3_instance(data):
                 if result != "Not found":
                     do_cloud_discovery_id_exist = result
                     s3 = AWSS3(
-                        bucket_name = data.bucket_name,
-                        region = data.region,
-                        access = data.access,
-                        bucket_creation_date = data.CreationDate,
+                        bucket_name = s3_instance['BucketName'],
+                        region = s3_instance['Region'],
+                        access = s3_instance['Access'],
+                        bucket_creation_date = s3_instance['CreationDate'],
                         cloud_discovery_id = do_cloud_discovery_id_exist
                     )
                     InsertDBData(s3)
