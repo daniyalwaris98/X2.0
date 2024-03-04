@@ -1,6 +1,7 @@
 import traceback
-
+import sys
 from fastapi import APIRouter, Depends
+from fastapi import Request
 #from aws_test.utils import *
 from app.api.v1.cloud_monitoring.utils.aws_test.ec2 import ec2Driver
 from app.schema.cloud_monitoring_schema.aws_schema import *
@@ -24,11 +25,13 @@ def list_of_all_ec2_instances(service_name: str = "ec2") -> dict:
 
 
 @router.post('/aws_discovery_services', description="Discovery of AWS Services with Count")
-def aws_discovery_services(account_data:AwsCredentialsResponseSchema) -> dict:
+def aws_discovery_services(account_data:AwsCredentialsResponseSchema, request: Request) -> dict:
     try:
         account_data_obj = dict(account_data)
         obj = ec2Driver(**account_data_obj)
-        list_of_instance = obj.auto_discovery()
+        list_of_instance = obj.auto_discovery(request)
+        print("list of instance is:::::::::::::::::::",list_of_instance,file=sys.stderr)
+
         return {"data":list_of_instance}
     except Exception as e:
         traceback.print_exc()
@@ -44,9 +47,9 @@ def list_of_all_s3_buckets(service_name: str = "s3") -> dict:
 # for load balancer
 
 @router.get('/list_of_all_load_balancers', description="Get All Load Balancers with Details")
-def list_of_all_load_balancers()-> dict:
+def list_of_all_load_balancers(service_name: str = "elbv2")-> dict:
     obj = ec2Driver(**account_details)
-    list_of_all_lbs = obj.list_all_load_balancers()
+    list_of_all_lbs = obj.list_all_load_balancers(service_name = service_name)
     return {"data":list_of_all_lbs, "count":len(list_of_all_lbs),"success":1}
 
 
