@@ -317,7 +317,10 @@ async def delete_atom(atom_list: List[DeleteAtomRequestSchema]):
                 if atoms:
                     for atom in atoms:
                         if atom.onboard_status == True:
-                            error_list.append(f"Cannot delete onboarded device. Please Dismantel the device from active usage before deleting.")
+                            atom_found = True
+                            message = f"Cannot delete onboarded device. Please Dismantel the device from active usage before deleting."
+                            if message not in error_list:
+                                error_list.append(message)
                         else:
                             atom_found = True
                             deleted_atom_id = atom.atom_id
