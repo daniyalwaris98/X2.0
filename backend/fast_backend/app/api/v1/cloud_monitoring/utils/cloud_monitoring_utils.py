@@ -5,19 +5,18 @@ import pandas as pd
 from app.models.cloud_monitoring_models import *
 from app.utils.db_utils import *
 from app.core.config import *
-
-
-def create_file_url(request: Request, file_name: str):
+from urllib.parse import urljoin
+from starlette.responses import HTMLResponse
+def create_file_url(request: Request, file_name: str) -> str:
     try:
         base_url_str = str(request.base_url)
-        print("base url string is::",base_url_str,file=sys.stderr)
-        file_url = base_url_str+ file_name
-        print("file url s",file_url,file=sys.stderr)
-        return file_url
+        file_url = urljoin(base_url_str, file_name)
+        # Remove quotes if they exist
+        file_url = file_url.replace('"', '')
+        return file_url.replace('"', '')
     except Exception as e:
         traceback.print_exc()
         return None
-
 
 def get_service_id_by_name(service_name):
 
