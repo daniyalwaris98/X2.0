@@ -226,47 +226,47 @@ async def get_credentials_graph():
 
 #from sqlalchemy import text
 
-@router.get("/get_credentials_graph", responses={
-    200: {"model": NameValueDictResponseSchema},
-    500: {"model": str}
-},
-summary="API to get credentials graph",
-description="API to get credentials graph"
-)
-async def get_credentials_graph():
-    try:
-        obj_list = []
-
-        obj_dict = {
-            "name": ["SNMP V1/V2", "SNMP V3", "SSH Login"],
-            "value": [0, 0, 0],
-        }
-
-       
-        ssh_query = text("SELECT count(*) FROM password_group_table WHERE password_group_type='SSH';")
-        ssh_result = configs.db.execute(ssh_query).scalar()
-        obj_dict["value"][2] = ssh_result
-
-        
-        v1_v2_query = text("SELECT count(*) FROM snmp_credentials_table WHERE category='v1/v2';")
-        v1_v2_result = configs.db.execute(v1_v2_query).scalar()
-        obj_dict["value"][0] = v1_v2_result
-
-        
-        v3_query = text("SELECT count(*) FROM snmp_credentials_table WHERE category='v3';")
-        v3_result = configs.db.execute(v3_query).scalar()
-        obj_dict["value"][1] = v3_result
-
-        #obj_list.append(obj_dict)
-
-        if len(obj_dict) <= 0:
-            return JSONResponse(content=obj_dict, status_code=200)
-
-        return JSONResponse(content=obj_dict, status_code=200)
-
-    except Exception as e:
-        traceback.print_exc()
-        return JSONResponse(content="Server Error", status_code=500)
+# @router.get("/get_credentials_graph", responses={
+#     200: {"model": NameValueDictResponseSchema},
+#     500: {"model": str}
+# },
+# summary="API to get credentials graph",
+# description="API to get credentials graph"
+# )
+# async def get_credentials_graph():
+#     try:
+#         obj_list = []
+#
+#         obj_dict = {
+#             "name": ["SNMP V1/V2", "SNMP V3", "SSH Login"],
+#             "value": [0, 0, 0],
+#         }
+#
+#
+#         ssh_query = text("SELECT count(*) FROM password_group_table WHERE password_group_type='SSH';")
+#         ssh_result = configs.db.execute(ssh_query).scalar()
+#         obj_dict["value"][2] = ssh_result
+#
+#
+#         v1_v2_query = text("SELECT count(*) FROM snmp_credentials_table WHERE category='v1/v2';")
+#         v1_v2_result = configs.db.execute(v1_v2_query).scalar()
+#         obj_dict["value"][0] = v1_v2_result
+#
+#
+#         v3_query = text("SELECT count(*) FROM snmp_credentials_table WHERE category='v3';")
+#         v3_result = configs.db.execute(v3_query).scalar()
+#         obj_dict["value"][1] = v3_result
+#
+#         #obj_list.append(obj_dict)
+#
+#         if len(obj_dict) <= 0:
+#             return JSONResponse(content=obj_dict, status_code=200)
+#
+#         return JSONResponse(content=obj_dict, status_code=200)
+#
+#     except Exception as e:
+#         traceback.print_exc()
+#         return JSONResponse(content="Server Error", status_code=500)
 
 @router.get("/get_top_functions_for_discovery", responses={
     200: {"model": NameValueDictResponseSchema},
@@ -306,7 +306,7 @@ async def get_top_functions_for_discovery():
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
 
-@router.get('/get_auto_discovery_history_data',responses = {
+@router.get('/get_credentials_graph',responses = {
     200:{"model":str},
     500:{"model":str}
 },
