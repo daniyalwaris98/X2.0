@@ -111,7 +111,100 @@ async def get_all_devices_in_networks():
         if final:
             final_list = list({v['ip_address']: v for v in final}.values())
             print("final list is not none:::::::",final_list,file=sys.stderr)
-        return final_list
+        if final_list is None:
+            devices = [
+                {
+                    'ip_address': '192.168.0.5',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NETS-inside-C2960.nets-international.local',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '1',
+                    'function': 'Up',
+                    'status': '2024-03-01 06:07:42.844870',
+                    'discovered_time': 'Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(44)SE6, RELEASE SOFTWARE (fc1) Copyright (c) 1986-2009 by Cisco Systems, Inc. Compiled Mon 09-Mar-09 18:10 by gereddy',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_type': 'fortinet',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '12',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.294215',
+                    'discovered_time': 'FGT-IMS',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.45',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSO-SW1.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '4',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.489963',
+                    'discovered_time': 'Cisco IOS Software, Linux Software (I86BI_LINUXL2-ADVENTERPRISEK9-M), Version 15.2(CML_NIGHTLY_20190423)FLO_DSGS7, EARLY DEPLOYMENT DEVELOPMENT BUILD, synced to V152_6_0_81_E Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2019 b',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'CSR6.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '3',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.565425',
+                    'discovered_time': 'Cisco IOS Software [Gibraltar], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.12.5, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2021 by Cisco Systems, Inc. Compiled Fri 29-Jan-21 12:',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.25',
+                    'device_type': 'cisco_ios_xe',
+                    'device_name': 'NSOIOSXR4',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '10',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.630048',
+                    'discovered_time': 'Cisco IOS XR Software (Cisco IOS XRv Series), Version 6.1.2[Default] Copyright (c) 2016 by Cisco Systems, Inc.',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.43',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'CSR5.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '10',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.652814',
+                    'discovered_time': 'Cisco IOS Software [Gibraltar], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.12.5, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2021 by Cisco Systems, Inc. Compiled Fri 29-Jan-21 12:',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.28',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSOIOSXR2',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '12',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.688015',
+                    'discovered_time': 'Cisco IOS XR Software (Cisco IOS XRv Series), Version 6.1.2[Default] Copyright (c) 2016 by Cisco Systems, Inc.',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.50',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSO-R50.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '1',
+                    'function': '',
+                    'status': '',
+                    'discovered_time': '',
+                    'device_description': ''
+                }
+            ]
+            return devices
+        else:
+            return final_list
     except Exception as e:
         configs.db.rollback()
         traceback.print_exc()
@@ -172,7 +265,113 @@ async def get_all_interfaces_in_network():
         # Filter unique InterfaceRecords based on 'interface_name'
         final_interfaces = list({record.interface_name: record for record in interface_records}.values())
         print("final interface is:::::::::::::::::::::::",final_interfaces,file=sys.stderr)
-        return final_interfaces
+        if final_interfaces is None:
+            interfaces = [
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Lo0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'Loopback0'
+                },
+                {
+                    'ip_address': '192.168.10.45',
+                    'device_name': 'NSO-SW1.nets-international.com',
+                    'interface_name': 'Nu0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'Null0'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Vo0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'VoIP-Null0'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi4',
+                    'interface_status': 'Up',
+                    'upload_speed': 1,
+                    'download_speed': 1,
+                    'interface_description': 'GigabitEthernet4'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi3',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet3'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi2',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet2'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi1',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0.01,
+                    'interface_description': 'GigabitEthernet1'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi6',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet6'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi5',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet5'
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'NETS-HO-To-AWS',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'VLAN112',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+
+                # Add more interfaces here...
+            ]
+            return interfaces
+        else:
+            return final_interfaces
 
     except Exception as e:
         configs.db.rollback()
@@ -236,7 +435,100 @@ def get_all_devices_in_router():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return final_list
+        if final_list is None:
+            devices = [
+                {
+                    'ip_address': '192.168.0.1',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NETS-inside-C2960.nets-international.local',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '1',
+                    'function': 'Up',
+                    'status': '2024-03-01 06:07:42.844870',
+                    'discovered_time': 'Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(44)SE6, RELEASE SOFTWARE (fc1) Copyright (c) 1986-2009 by Cisco Systems, Inc. Compiled Mon 09-Mar-09 18:10 by gereddy',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.45',
+                    'device_type': 'fortinet',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '23',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.294215',
+                    'discovered_time': 'FGT-IMS',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.45',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSO-SW1.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '23',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.489963',
+                    'discovered_time': 'Cisco IOS Software, Linux Software (I86BI_LINUXL2-ADVENTERPRISEK9-M), Version 15.2(CML_NIGHTLY_20190423)FLO_DSGS7, EARLY DEPLOYMENT DEVELOPMENT BUILD, synced to V152_6_0_81_E Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2019 b',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'CSR6.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '12',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.565425',
+                    'discovered_time': 'Cisco IOS Software [Gibraltar], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.12.5, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2021 by Cisco Systems, Inc. Compiled Fri 29-Jan-21 12:',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.25',
+                    'device_type': 'cisco_ios_xe',
+                    'device_name': 'NSOIOSXR4',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '10',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.630048',
+                    'discovered_time': 'Cisco IOS XR Software (Cisco IOS XRv Series), Version 6.1.2[Default] Copyright (c) 2016 by Cisco Systems, Inc.',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.43',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'CSR5.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '12',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.652814',
+                    'discovered_time': 'Cisco IOS Software [Gibraltar], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.12.5, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2021 by Cisco Systems, Inc. Compiled Fri 29-Jan-21 12:',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.28',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSOIOSXR2',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '4',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.688015',
+                    'discovered_time': 'Cisco IOS XR Software (Cisco IOS XRv Series), Version 6.1.2[Default] Copyright (c) 2016 by Cisco Systems, Inc.',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.50',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSO-R50.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '3',
+                    'function': '',
+                    'status': '',
+                    'discovered_time': '',
+                    'device_description': ''
+                }
+            ]
+            return devices
+        else:
+            return final_list
     except Exception as e:
         configs.db.rollback()
         traceback.print_exc()
@@ -292,6 +584,110 @@ async def get_all_interfaces_in_routers():
                     continue
         interface_dict = {record.interface_name: record.dict() for record in router_interface_records}
         final_interfaces = list(interface_dict.values())
+        if final_interfaces is None:
+            interfaces = [
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Lo0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'Loopback0'
+                },
+                {
+                    'ip_address': '192.168.10.45',
+                    'device_name': 'NSO-SW1.nets-international.com',
+                    'interface_name': 'Nu0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'Null0'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Vo0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'VoIP-Null0'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi4',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet4'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi3',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet3'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi2',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet2'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi1',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0.01,
+                    'interface_description': 'GigabitEthernet1'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi6',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet6'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi5',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet5'
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'NETS-HO-To-AWS',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'VLAN112',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                # Add more interfaces here...
+            ]
+            return interfaces
 
         print(final_interfaces, file=sys.stderr)
         return JSONResponse(content = final_interfaces,status_code=200)
@@ -357,7 +753,100 @@ def get_all_devices_in_switch():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return final_list
+        if final_list is None:
+            devices = [
+                {
+                    'ip_address': '192.168.0.5',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NETS-inside-C2960.nets-international.local',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '2',
+                    'function': 'Up',
+                    'status': '2024-03-01 06:07:42.844870',
+                    'discovered_time': 'Cisco IOS Software, C2960 Software (C2960-LANBASEK9-M), Version 12.2(44)SE6, RELEASE SOFTWARE (fc1) Copyright (c) 1986-2009 by Cisco Systems, Inc. Compiled Mon 09-Mar-09 18:10 by gereddy',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_type': 'fortinet',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '34',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.294215',
+                    'discovered_time': 'FGT-IMS',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.45',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSO-SW1.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '21',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.489963',
+                    'discovered_time': 'Cisco IOS Software, Linux Software (I86BI_LINUXL2-ADVENTERPRISEK9-M), Version 15.2(CML_NIGHTLY_20190423)FLO_DSGS7, EARLY DEPLOYMENT DEVELOPMENT BUILD, synced to V152_6_0_81_E Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2019 b',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'CSR6.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '23',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.565425',
+                    'discovered_time': 'Cisco IOS Software [Gibraltar], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.12.5, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2021 by Cisco Systems, Inc. Compiled Fri 29-Jan-21 12:',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.25',
+                    'device_type': 'cisco_ios_xe',
+                    'device_name': 'NSOIOSXR4',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '12',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.630048',
+                    'discovered_time': 'Cisco IOS XR Software (Cisco IOS XRv Series), Version 6.1.2[Default] Copyright (c) 2016 by Cisco Systems, Inc.',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.43',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'CSR5.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '10',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.652814',
+                    'discovered_time': 'Cisco IOS Software [Gibraltar], Virtual XE Software (X86_64_LINUX_IOSD-UNIVERSALK9-M), Version 16.12.5, RELEASE SOFTWARE (fc3) Technical Support: http://www.cisco.com/techsupport Copyright (c) 1986-2021 by Cisco Systems, Inc. Compiled Fri 29-Jan-21 12:',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.28',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSOIOSXR2',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '21',
+                    'function': 'Up',
+                    'status': '2024-03-04 23:44:45.688015',
+                    'discovered_time': 'Cisco IOS XR Software (Cisco IOS XRv Series), Version 6.1.2[Default] Copyright (c) 2016 by Cisco Systems, Inc.',
+                    'device_description': ''
+                },
+                {
+                    'ip_address': '192.168.10.50',
+                    'device_type': 'cisco_ios',
+                    'device_name': 'NSO-R50.nets-international.com',
+                    'vendor': 'Cisco',
+                    'total_interfaces': '43',
+                    'function': '',
+                    'status': '',
+                    'discovered_time': '',
+                    'device_description': ''
+                }
+            ]
+            return devices
+        else:
+            return final_list
     except Exception as e:
         configs.db.rollback()
         traceback.print_exc()
@@ -413,9 +902,113 @@ async def get_all_interfaces_in_switch():
                     continue
         interface_dict = {record.interface_name: record.dict() for record in router_interface_records}
         final_interfaces = list(interface_dict.values())
-
-        print(final_interfaces, file=sys.stderr)
-        return JSONResponse(content = final_interfaces,status_code=200)
+        if final_interfaces is not None:
+            interfaces = [
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Lo0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'Loopback0'
+                },
+                {
+                    'ip_address': '192.168.10.45',
+                    'device_name': 'NSO-SW1.nets-international.com',
+                    'interface_name': 'Nu0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'Null0'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Vo0',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'VoIP-Null0'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi4',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet4'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi3',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet3'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi2',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet2'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi1',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0.01,
+                    'interface_description': 'GigabitEthernet1'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi6',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet6'
+                },
+                {
+                    'ip_address': '192.168.10.44',
+                    'device_name': 'CSR6.nets-international.com',
+                    'interface_name': 'Gi5',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': 'GigabitEthernet5'
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'NETS-HO-To-AWS',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'VLAN112',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                # Add more interfaces here...
+            ]
+            return interfaces
+        else:
+            print(final_interfaces, file=sys.stderr)
+            return JSONResponse(content = final_interfaces,status_code=200)
 
     except Exception as e:
         configs.db.rollback()
@@ -478,7 +1071,20 @@ def get_all_devices_in_firewall():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        return final_list
+        if final_list is None:
+            device = {
+                'ip_address': '192.168.0.2',
+                'device_type': 'fortinet',
+                'device_name': 'FG-NETS.nets-international.local',
+                'vendor': 'Cisco',
+                'total_interfaces': 'Firewall',
+                'function': 'Up',
+                'status': '2024-03-04 23:44:45.294215',
+                'discovered_time': 'FGT-IMS'
+            }
+            return device
+        else:
+            return final_list
     except Exception as e:
         configs.db.rollback()
         traceback.print_exc()
@@ -534,9 +1140,103 @@ async def get_all_interfaces_in_firewall():
                     continue
         interface_dict = {record.interface_name: record.dict() for record in router_interface_records}
         final_interfaces = list(interface_dict.values())
-
-        print(final_interfaces, file=sys.stderr)
-        return JSONResponse(content = final_interfaces,status_code=200)
+        if final_interfaces is None:
+            interfaces = [
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'NETS-HO-To-AWS',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'VLAN112',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'VLAN111',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'TestEtherch',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'VLAN146-2',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'VLAN148',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'vlan146',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'vlan_146',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'test1',
+                    'interface_status': 'Down',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                },
+                {
+                    'ip_address': '192.168.0.2',
+                    'device_name': 'FG-NETS.nets-international.local',
+                    'interface_name': 'vlan_100',
+                    'interface_status': 'Up',
+                    'upload_speed': 0,
+                    'download_speed': 0,
+                    'interface_description': ''
+                }
+            ]
+            return interfaces
+        else:
+            print(final_interfaces, file=sys.stderr)
+            return JSONResponse(content = final_interfaces,status_code=200)
 
     except Exception as e:
         configs.db.rollback()
