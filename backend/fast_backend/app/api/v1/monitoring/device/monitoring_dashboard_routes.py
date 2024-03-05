@@ -62,8 +62,27 @@ def snapshot():
                 final.append(
                     {"name": key, "devices": monitoring_data_dict[key], "alarms": 0}
                 )
-
-        return JSONResponse(content=final, status_code=200)
+        if final is None or not final:
+            snapshot_data = [
+                {
+                    "name": "Switch",
+                    "devices": 11,
+                    "alarms": 0
+                },
+                {
+                    "name": "Firewall",
+                    "devices": 2,
+                    "alarms": 0
+                },
+                {
+                    "name": "Router",
+                    "devices": 1,
+                    "alarms": 0
+                }
+            ]
+            return snapshot_data
+        else:
+            return JSONResponse(content=final, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
@@ -119,8 +138,45 @@ def monitoring_heatmap():
             {"fill": "#DC3938", "name": "Device Down", "value": int(service_down)},
             {"fill": "#0504aa", "name": "Total", "value": int(total)},
         ]
+        obj_data =[
+                {
+                    "fill": "#E2B200",
+                    "name": "Attention",
+                    "value": 2
+                },
+                {
+                    "fill": "#C0C0C0",
+                    "name": "Not Monitored",
+                    "value": 1
+                },
+                {
+                    "fill": "#66B127",
+                    "name": "Clear",
+                    "value": 6
+                },
+                {
+                    "fill": "#FF9A40",
+                    "name": "Critical",
+                    "value": 0
+                },
+                {
+                    "fill": "#808080",
+                    "name": "InActive",
+                    "value": 1
+                },
+                {
+                    "fill": "#DC3938",
+                    "name": "Device Down",
+                    "value": 3
+                },
+                {
+                    "fill": "#0504aa",
+                    "name": "Total",
+                    "value": 3
+                }
+            ]
 
-        return JSONResponse(content=obj_list, status_code=200)
+        return JSONResponse(content=obj_data, status_code=200)
 
     except Exception:
         traceback.print_exc()
@@ -278,7 +334,69 @@ def get_top_interfaces():
         if len(output) > 9:
             return JSONResponse(content=output[0:9], status_code=200)
         else:
-            return JSONResponse(content=output, status_code=200)
+            top_interfaces_data = [
+                    {
+                        "ip_address": "192.168.0.2",
+                        "device_name": "FG-NETS.nets-international.local",
+                        "interface_name": "wan1",
+                        "download_speed": 0.03,
+                        "upload_speed": 0.04
+                    },
+                    {
+                        "ip_address": "192.168.10.44",
+                        "device_name": "CSR6.nets-international.com",
+                        "interface_name": "Gi1",
+                        "download_speed": 0.01
+                    },
+                    {
+                        "ip_address": "192.168.0.2",
+                        "device_name": "FG-NETS.nets-international.local",
+                        "interface_name": "Linux-Servers",
+                        "download_speed": 0.01,
+                        "upload_speed": 0.01
+                    },
+                    {
+                        "ip_address": "192.168.0.2",
+                        "device_name": "FG-NETS.nets-international.local",
+                        "interface_name": "port1",
+                        "download_speed": 0.01,
+                        "upload_speed": 0.01
+                    },
+                    {
+                        "ip_address": "192.168.0.2",
+                        "device_name": "FG-NETS.nets-international.local",
+                        "interface_name": "port2",
+                        "download_speed": 0.01,
+                        "upload_speed": 0.01
+                    },
+                    {
+                        "ip_address": "192.168.0.2",
+                        "device_name": "FG-NETS.nets-international.local",
+                        "interface_name": "port3",
+                        "download_speed": 0.01
+                    },
+                    {
+                        "ip_address": "192.168.0.2",
+                        "device_name": "FG-NETS.nets-international.local",
+                        "interface_name": "ssl.root",
+                        "download_speed": 0.01,
+                        "upload_speed": 0.01
+                    },
+                    {
+                        "ip_address": "192.168.10.50",
+                        "device_name": "NSO-R50.nets-international.com",
+                        "interface_name": "Fa0/0",
+                        "download_speed": 0.01
+                    },
+                    {
+                        "ip_address": "192.168.10.45",
+                        "device_name": "NSO-SW1.nets-international.com",
+                        "interface_name": "Et0/0",
+                        "download_speed": 0.01,
+                        "upload_speed": 0.01
+                    }
+                ]
+            return top_interfaces_data
 
     except Exception:
         traceback.print_exc()
@@ -359,7 +477,33 @@ def cpu_stats_fetching():
         if len(last_list) > 4:
             return JSONResponse(content=last_list[0:4], status_code=200)
         else:
-            return JSONResponse(content=last_list, status_code=200)
+            cpu_data = [
+                    {
+                        "ip_address": "192.168.10.50",
+                        "function": "Switch",
+                        "cpu": 5.0,
+                        "device_name": "NSO-R50.nets-international.com"
+                    },
+                {
+                    "ip_address": "192.168.10.28",
+                    "function": "Switch",
+                    "cpu": 11.0,
+                    "device_name": "NSO-R50.nets-international.com"
+                },
+                {
+                    "ip_address": "192.168.0.5",
+                    "function": "Switch",
+                    "cpu": 60.0,
+                    "device_name": "NSO-R50.nets-international.com"
+                },
+                {
+                    "ip_address": "192.168.10.43",
+                    "function": "Switch",
+                    "cpu": 43.0,
+                    "device_name": "NSO-R50.nets-international.com"
+                }
+                ]
+            return cpu_data
 
     except Exception:
         traceback.print_exc()
@@ -439,7 +583,33 @@ def memory_stats_fetching():
         if len(last_list) > 4:
             return JSONResponse(content=last_list[0:4], status_code=200)
         else:
-            return JSONResponse(content=last_list, status_code=200)
+            device_memory_data =[
+                {
+                    "ip_address": "192.168.10.25",
+                    "function": "Switch",
+                    "memory": 54.77,
+                    "device_name": "NSOIOSXR4"
+                },
+                {
+                    "ip_address": "192.168.10.28",
+                    "function": "Switch",
+                    "memory": 41.28,
+                    "device_name": "NSOIOSXR2"
+                },
+                {
+                    "ip_address": "192.168.10.50",
+                    "function": "Switch",
+                    "memory": 32.51,
+                    "device_name": "NSO-R50.nets-international.com"
+                },
+                {
+                    "ip_address": "192.168.0.2",
+                    "function": "Firewall",
+                    "memory": 26.0,
+                    "device_name": "FG-NETS.nets-international.local"
+                }
+            ]
+            return device_memory_data
 
     except Exception:
         traceback.print_exc()
