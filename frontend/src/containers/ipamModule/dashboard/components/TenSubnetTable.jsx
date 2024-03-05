@@ -19,8 +19,8 @@ useGetTopTenSubnetQuery,
 const columns = [
   {
     title: 'IP Address',
-    dataIndex: 'address',
-    key: 'address',
+    dataIndex: 'ip_address',
+    key: 'ip_address',
     align: 'start',
     render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
   },
@@ -33,14 +33,14 @@ const columns = [
   },
   {
     title: 'Progress',
-    dataIndex: 'value',
-    key: 'value',
+    dataIndex: 'memory',
+    key: 'memory',
     align: 'start',
     render: (_, record) => (
       <Progress
-        percent={record.value}  // Use the actual percentage value from your data
+        percent={record.memory}  // Use the actual percentage value from your data
         status="active"
-        strokeColor={record.value > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
+        strokeColor={record.memory > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
       />
     ),
   },
@@ -75,7 +75,7 @@ const data = [
     device_name:"KSA_RO-1",
     value: 60,
     function:"Router",
-  
+   
   },
   {
     key: '4',
@@ -116,8 +116,8 @@ const TenSubnetTable = () => {
 
   return (
     <Table
-    // dataSource={topTenData || []}
-    dataSource={data || []}
+    dataSource={topTenData || []}
+    // dataSource={data || []}
 
     columns={columns}
     pagination={false}

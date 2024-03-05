@@ -14,6 +14,7 @@ import {Progress }from "antd";
 import MainTable from "./components/MainTable";
 import TypeSummaryChart from "../../ipamModule/dashboard/components/TypeSummaryChart";
 import TopSubnet from "../../ipamModule/dashboard/components/TopSubnet";
+import { Link } from "react-router-dom";
 import {
   useGetConfigurationByTimeQuery,
   useGetDeviceStatusOverviewQuery,
@@ -32,7 +33,15 @@ import {
  useGetCredentialsSummaryQuery,
  useGetSnmpStatusQuery
 } from "../../../store/features/autoDiscoveryModule/dashboard/apis";
+import { 
+  useGetHeatMapQuery,
+  useGetMemoryQuery,
+  useGetCpuQuery,
+  useGetTopInterfacesQuery,
+  useGetSnapshotQuery
 
+} from "../../../store/features//monitoringModule/dashboard/apis";
+import { Memory } from "@mui/icons-material";
 function Index() {
   const {
     data: typeSummaryData,
@@ -110,6 +119,23 @@ function Index() {
   } = useGetEolQuery();
 
   console.log("eolData", eolData)
+
+
+  const {
+    data: cpuData,
+    isSuccess: isCpuSuccess,
+    isLoading: isCpuLoading,
+    isError: isCpuError,
+    error: cpuError,
+  } = useGetCpuQuery();
+
+  const {
+    data: memoryData,
+    isSuccess: isMemorySuccess,
+    isLoading: isMemoryLoading,
+    isError: isMemoryError,
+    error: memoryError,
+  } = useGetMemoryQuery();
 
   const colStyle = {
     backgroundColor: "#FFFFFF", 
@@ -280,40 +306,51 @@ const tableColumnsSFPS = [
   ];
 
   const tableColumnsCPU = [
+   
+   
+
     {
-      title: 'Subnet',
-      dataIndex: 'subnet',
-      key: 'subnet',
+      title: 'IP Address',
+      dataIndex: 'ip_address',
+      key: 'ip_address',
       align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
-    },
-    {
-      title: 'Device Name',
-      dataIndex: 'DeviceName',
-      key: 'DeviceName',
-      align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
-    },
-    {
-      title: 'Progress',
-      dataIndex: 'value',
-      key: 'value',
-      align: 'center',
-        render: (_, record) => (
-          <Progress
-            percent={record.value}
-            status="active"
-            strokeColor={record.value > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
-          />
-        ),
-    },
-    {
-      title: 'Function',
-      dataIndex: 'function',
-      key: 'function',
-      align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
-    }];
+      render: (text, record) => (
+        <Link
+          to={`/monetx/monitoring_module/devices_landing/devices_summary?ip=${record.ip}`}
+          rel="noopener noreferrer"
+        >
+          <span style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</span>
+        </Link>
+      ),
+    },    
+        {
+          title: 'Device Name',
+          dataIndex: 'device_name',
+          key: 'device_name',
+          align: 'start',
+          render: text => <a style={{ display: 'block', fontWeight: '600', color:"#262626" }}>{text}</a>,
+        },
+        {
+          title: 'Progress',
+          dataIndex: 'value',
+          key: 'value',
+          align: 'center',
+          render: (_, record) => (
+            <Progress
+              percent={record.value}
+              status="active"
+              strokeColor={record.value > 50 ? '#FF0000' : { from: '#108ee9', to: '#87d068' }}
+            />
+          ),
+        },
+        {
+          title: 'Function',
+          dataIndex: 'function',
+          key: 'function',
+          align: 'start',
+          render: text => <a style={{ display: 'block', fontWeight: '600', color:"#262626" }}>{text}</a>,
+        },
+      ];
 
     const categories = [
       { name: "Dismantle", value: 35},
@@ -426,14 +463,14 @@ const tableColumnsSFPS = [
         <Col span={12}>
           <div style={colStyle}>
             <h5 style={title}>Devices By CPU Utilization</h5>
-            <MainTable tableData={tableDataCPU} tableColumns={tableColumnsCPU} />
+            <MainTable tableData={cpuData!== undefined? cpuData:[]} tableColumns={tableColumnsCPU} />
           </div>
         </Col>
 
         <Col span={12}>
           <div style={colStyle}>
             <h5 style={title}>Devices By Memory Utilization</h5>
-            <MainTable tableData={tableDataCPU} tableColumns={tableColumnsCPU} />
+            <MainTable tableData={memoryData!== undefined? memoryData:[]} tableColumns={tableColumnsCPU} />
           </div>
         </Col>
       </Row>
