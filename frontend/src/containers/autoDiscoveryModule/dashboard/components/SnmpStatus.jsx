@@ -1,52 +1,56 @@
 import React, { useEffect, useRef } from 'react';
 import * as echarts from 'echarts';
 
-const SnmpStatus = ({ responseData }) => {
+const SnmpStatus = () => {
   const chartRef = useRef(null);
 
   useEffect(() => {
-    if (!responseData || responseData.length === 0) {
-      // Handle empty data
-      return;
-    }
+    const myChart = echarts.init(chartRef.current);
 
-    if (chartRef.current) {
-      const myChart = echarts.init(chartRef.current);
+    const option = {
+      tooltip: {
+        trigger: 'item'
+      },
+      legend: {
+        bottom: '0%',
+        left: 'center'
+      },
+      series: [
+        {
+          name: 'Access From',
+          type: 'pie',
+          radius: ['40%', '70%'],
+          avoidLabelOverlap: false,
+          label: {
+            show: false,
+            position: 'center'
+          },
+          emphasis: {
+            label: {
+              show: true,
+              fontSize: 40,
+              fontWeight: 'bold'
+            }
+          },
+          labelLine: {
+            show: false
+          },
+          data: [
+            { value: 484, name: 'SNMP Enabled', itemStyle: { color: '#3D9E47' } }, // Green color
+            { value: 300, name: 'SNMP Disabled', itemStyle: { color: '#E34444' } } // Red color
+          ]
+        }
+      ]
+    };
 
-      const option = {
-        legend: {
-          data: responseData.map(item => item.name)
-        },
-        radar: {
-          indicator: responseData.map(item => ({ name: item.name, max: item.value }))
-        },
-        series: [
-          {
-            name: 'SNMP Status',
-            type: 'radar',
-            areaStyle: {
-              color: 'rgba(67, 160, 71, 0.3)', // Green color with opacity
-            },
-            lineStyle: {
-              color: '#43A047' // Adjust radar line color
-            },
-            data: [
-              {
-                value: responseData.map(item => item.value),
-                name: 'SNMP Status'
-              }
-            ]
-          }
-        ]
-      };
+    myChart.setOption(option);
 
-      myChart.setOption(option);
-    }
-  }, [responseData]);
+    return () => {
+      myChart.dispose();
+    };
+  }, []); // Empty dependency array to run only once when the component mounts
 
-  return (
-    <div ref={chartRef} id="snmpStatusChart" style={{ width: '100%', height: '400px' }} />
-  );
+  return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
 };
 
 export default SnmpStatus;
