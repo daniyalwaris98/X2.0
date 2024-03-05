@@ -9,7 +9,8 @@ def FormatDate(date):
 
     result = None
     try:
-        result = date.strftime("%d-%m-%Y")
+        if date is not None:
+            result = date.strftime("%d-%m-%Y")
     except Exception:
         traceback.print_exc()
 

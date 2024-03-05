@@ -161,7 +161,7 @@ async def get_all_devices():
     try:
         response = get_all_uam_devices_util()
         print("reaponae in get all devices are:::::::::::::::::::::::::::::::::::::::",response,file = sys.stderr)
-        return JSONResponse(content=response, status_code=200)
+        return response
 
     except Exception:
         traceback.print_exc()
