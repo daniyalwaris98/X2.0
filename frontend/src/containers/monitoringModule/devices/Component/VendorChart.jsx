@@ -11,7 +11,7 @@ const VendorChart = () => {
     const option = {
       xAxis: {
         type: 'category',
-        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+        data: ['Cisco', 'Arsita', 'Fortinet', 'Juniper', 'D-Link', 'Versa']
       },
       yAxis: {
         type: 'value'

@@ -203,12 +203,7 @@ export default function Index() {
       activeIcon: <img src={dashboardActiveIcon} alt={MODULE_NAME_DASHBOARD} />,
       path: MODULE_PATH_DASHBOARD,
     },
-    {
-      name: MODULE_NAME_ADMIN,
-      inActiveIcon: <img src={adminInactiveIcon} alt={MODULE_NAME_ADMIN} />,
-      activeIcon: <img src={adminActiveIcon} alt={MODULE_NAME_ADMIN} />,
-      path: MODULE_PATH_ADMIN,
-    },
+   
     {
       name: MODULE_NAME_ATOM,
       inActiveIcon: <img src={atomInactiveIcon} alt={MODULE_NAME_ATOM} />,
@@ -224,6 +219,13 @@ export default function Index() {
         <img src={autoDiscoveryActiveIcon} alt={MODULE_NAME_AUTO_DISCOVERY} />
       ),
       path: MODULE_PATH_AUTO_DISCOVERY,
+    },
+    {
+      name: MODULE_NAME_UAM
+      ,
+      inActiveIcon: <img src={uamInactiveIcon} alt={MODULE_NAME_UAM} />,
+      activeIcon: <img src={uamActiveIcon} alt={MODULE_NAME_UAM} />,
+      path: MODULE_PATH_UAM,
     },
     {
       name: MODULE_NAME_IPAM,
@@ -247,12 +249,12 @@ export default function Index() {
       activeIcon: <img src={ncmActiveIcon} alt={MODULE_NAME_NCM} />,
       path: MODULE_PATH_NCM,
     },
+  
     {
-      name: MODULE_NAME_UAM
-      ,
-      inActiveIcon: <img src={uamInactiveIcon} alt={MODULE_NAME_UAM} />,
-      activeIcon: <img src={uamActiveIcon} alt={MODULE_NAME_UAM} />,
-      path: MODULE_PATH_UAM,
+      name: MODULE_NAME_ADMIN,
+      inActiveIcon: <img src={adminInactiveIcon} alt={MODULE_NAME_ADMIN} />,
+      activeIcon: <img src={adminActiveIcon} alt={MODULE_NAME_ADMIN} />,
+      path: MODULE_PATH_ADMIN,
     },
 //     {
 //       name: MODULE_NAME_CLOUD,

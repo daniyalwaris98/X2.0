@@ -33,6 +33,7 @@ function Index() {
     isError: isMemoryError,
     error: memoryError,
   } = useGetMemoryQuery();
+  console.log("memory ",memoryData)
 
   const {
     data: cpuData,
@@ -41,6 +42,7 @@ function Index() {
     isError: isCpuError,
     error: cpuError,
   } = useGetCpuQuery();
+  console.log("cpu",cpuData)
 
   const {
     data: topInterfacesData,
@@ -177,23 +179,7 @@ function Index() {
       value: 0,
     },
   ];
-  const tableData = [
-    {
-      key: '1',
-      subnet: '10.66.211.141',
-      value: 50
-    },
-    {
-      key: '2',
-      subnet: '10.66.211.141',
-      value: 10
-    },
-    {
-      key: '3',
-      subnet: '1',
-      value: 60
-    },
-  ];
+
   const tableDataSnapshot = [
     {
       key: '1',
@@ -226,26 +212,34 @@ function Index() {
       dataIndex: 'alarms',
       key: 'alarms',
       align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
+      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'black' }}>{text}</a>,
     },
     {
       title: 'Devices',
       dataIndex: 'devices',
       key: 'devices',
       align: 'center',
-      render: (text) => <span>{text}</span>, // Render the value directly
+      render: (text) => <span style={{fontWeight: '600', color: 'black'}}>{text}</span>, // Render the value directly
     },
     
   ]
  
 
   const tableColumns = [
+   
     {
-      title: 'Subnet',
-      dataIndex: 'subnet',
-      key: 'subnet',
+      title: 'IP',
+      dataIndex: 'ip',
+      key: 'ip',
       align: 'start',
       render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
+    },
+    {
+      title: 'Device Name',
+      dataIndex: 'device_name',
+      key: 'device_name',
+      align: 'start',
+      render: text => <a style={{ display: 'block', fontWeight: '600', color:"#262626" }}>{text}</a>,
     },
     {
       title: 'Progress',
@@ -260,6 +254,56 @@ function Index() {
         />
       ),
     },
+    {
+      title: 'Function',
+      dataIndex: 'function',
+      key: 'function',
+      align: 'start',
+      render: text => <a style={{ display: 'block', fontWeight: '600', color:"#262626" }}>{text}</a>,
+    },
+  ];
+
+  const tableData = [
+    {
+      key: '1',
+      ip: '10.66.211.141',
+      device_name:"KSA_RO-1",
+      value: 50,
+      function:"Router",
+    },
+    {
+      key: '2',
+      ip: '10.66.211.141',
+      device_name:"KSA_RO-02",
+      value: 10,
+      function:"Router",
+
+    },
+    {
+      key: '3',
+      ip: '10.66.211.141',
+      device_name:"KSA_RO-03",
+      value: 60,
+      function:"Router",
+
+    },
+    {
+      key: '4',
+      ip: '10.66.211.41',
+      device_name:"KSA_RO-04",
+      value: 10,
+      function:"Router",
+
+    },
+    {
+      key: '5',
+      ip: '10.66.211.1',
+      device_name:"KSA_RO-05",
+      value: 50,
+      function:"Router",
+
+    },
+   
   ];
   return (
     <>
