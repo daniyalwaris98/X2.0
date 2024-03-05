@@ -68,7 +68,7 @@ function Index() {
     isError: isCountPerFunctionError,
     error: countPerFunctionError,
   } = useGetCountPerFunctionQuery();
-  console.log("snmpStatusDataHUnsain",snmpStatusData)
+  console.log("snmpStatusData",snmpStatusData)
   console.log("credentialsSummaryData",credentialsSummaryData)
   console.log("topVendorData",topVendorData)
   console.log("topOsData",topOsData)
@@ -91,19 +91,19 @@ function Index() {
   const apiResponse = [
     {
       name: "Sales",
-      value: 4200
+      value: 42
     },
     {
       name: "Admin",
-      value: 3000
+      value: 30
     },
     {
       name: "Inform",
-      value: 20000
+      value: 200
     },
     {
       name : "Customer",
-      value: 35000
+      value: 350
     },
    
   ];
@@ -155,8 +155,8 @@ function Index() {
           <div className="container">
             <h6 className="heading">SNMP Status </h6>
             <SnmpStatus
-             responseData={snmpStatusData !== undefined? snmpStatusData:[]} 
-            // responseData={apiResponse}
+            //  responseData={snmpStatusData !== undefined? snmpStatusData:[]} 
+            responseData={apiResponse}
              /> 
                       </div>
         </Col>

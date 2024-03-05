@@ -265,14 +265,12 @@ const Index = () => {
         <Col span={12}>
           <div className="container">
             <h6 className="heading">Function</h6>
-<FunctionChart  deviceNames={[
-                "Switch",
-                "Firewall",
-                "VM",
-                "Router",
-                "Switch 2",
-              ]}
-              values={[15, 10, 20,15]}/>          </div>
+<FunctionChart          
+              
+              />
+              
+              
+                        </div>
         </Col>
       </Row>
 
