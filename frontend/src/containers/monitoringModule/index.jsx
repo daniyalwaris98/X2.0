@@ -398,44 +398,44 @@ function Index(props) {
       path: PAGE_PATH_ALERTS,
       icon: "ri:alert-line",
     },
-    {
-      id: DROPDOWN_PATH_CLOUDS,
-      name: DROPDOWN_NAME_CLOUDS,
-      icon: "mingcute:clouds-line",
-      children: [
-        {
-          id: DROPDOWN_PATH_AWS,
-          name: DROPDOWN_NAME_AWS,
-          icon: "bxl:aws",
-          children: [
-            {
-              id: PAGE_PATH_ACCOUNTS,
-              name: PAGE_NAME_ACCOUNTS,
-              path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ACCOUNTS}`,
-              icon: "carbon:account",
-            },
-            {
-              id: PAGE_PATH_S3,
-              name: PAGE_NAME_S3,
-              path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_S3}`,
-              icon: "teenyicons:bitbucket-outline",
-            },
-            {
-              id: PAGE_PATH_EC2,
-              name: PAGE_NAME_EC2,
-              path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_EC2}`,
-              icon: "simple-icons:amazonec2",
-            },
-            {
-              id: PAGE_PATH_ELB,
-              name: PAGE_NAME_ELB,
-              path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ELB}`,
-              icon: "carbon:load-balancer-vpc",
-            },
-          ],
-        },
-      ],
-    },
+    // {
+    //   id: DROPDOWN_PATH_CLOUDS,
+    //   name: DROPDOWN_NAME_CLOUDS,
+    //   icon: "mingcute:clouds-line",
+    //   children: [
+    //     {
+    //       id: DROPDOWN_PATH_AWS,
+    //       name: DROPDOWN_NAME_AWS,
+    //       icon: "bxl:aws",
+    //       children: [
+    //         {
+    //           id: PAGE_PATH_ACCOUNTS,
+    //           name: PAGE_NAME_ACCOUNTS,
+    //           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ACCOUNTS}`,
+    //           icon: "carbon:account",
+    //         },
+    //         {
+    //           id: PAGE_PATH_S3,
+    //           name: PAGE_NAME_S3,
+    //           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_S3}`,
+    //           icon: "teenyicons:bitbucket-outline",
+    //         },
+    //         {
+    //           id: PAGE_PATH_EC2,
+    //           name: PAGE_NAME_EC2,
+    //           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_EC2}`,
+    //           icon: "simple-icons:amazonec2",
+    //         },
+    //         {
+    //           id: PAGE_PATH_ELB,
+    //           name: PAGE_NAME_ELB,
+    //           path: `/${MAIN_LAYOUT_PATH}/${MODULE_PATH}/${DROPDOWN_PATH_CLOUDS}/${DROPDOWN_PATH_AWS}/${PAGE_PATH_ELB}`,
+    //           icon: "carbon:load-balancer-vpc",
+    //         },
+    //       ],
+    //     },
+    //   ],
+    // },
     {
       id: DROPDOWN_PATH_MANAGE_CREDENTIALS,
       name: DROPDOWN_NAME_MANAGE_CREDENTIALS,
