@@ -18,11 +18,18 @@ useGetTopTenSubnetQuery,
 
 const columns = [
   {
-    title: 'Subnet',
-    dataIndex: 'subnet',
-    key: 'subnet',
+    title: 'IP Address',
+    dataIndex: 'address',
+    key: 'address',
     align: 'start',
     render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
+  },
+  {
+    title: 'Device Name',
+    dataIndex: 'device_name',
+    key: 'device_name',
+    align: 'start',
+    render: text => <a style={{ display: 'block', fontWeight: '600', color: 'black' }}>{text}</a>,
   },
   {
     title: 'Progress',
@@ -37,25 +44,57 @@ const columns = [
       />
     ),
   },
+  {
+    title: 'Function',
+    dataIndex: 'function',
+    key: 'function',
+    align: 'start',
+    render: text => <a style={{ display: 'block', fontWeight: '600', color: 'black' }}>{text}</a>,
+  },
 ];  
 
 const data = [
   {
     key: '1',
-    subnet: '10..66.211.141',
-    value: "50"
+    address: '10.66.211.141',
+    device_name:"KSA_RO-1",
+    value: 50,
+    function:"Router",
   },
   {
     key: '2',
-    subnet: '10..66.211.141',
-    value: "10"
+    address: '10.66.211.141',
+    device_name:"KSA_RO-1",
+    value: 10 ,
+    function:"Router",
+ 
   },
   {
     key: '3',
-    subnet: '1',
-    value: "60"
+    address: '10.66.211.141',
+    device_name:"KSA_RO-1",
+    value: 60,
+    function:"Router",
+  
   },
+  {
+    key: '4',
+    address: '10.66.211.141',
+    device_name:"KSA_RO-1",
+    value: 50,
+    function:"Router",
+  },
+  {
+    key: '5',
+    address: '10.66.211.141',
+    device_name:"KSA_RO-1",
+    value: 10 ,
+    function:"Router",
+ 
+  },
+ 
 ];
+
 
 const TenSubnetTable = () => {
   const getRowClassName = (record, index) => {
@@ -77,7 +116,9 @@ const TenSubnetTable = () => {
 
   return (
     <Table
-    dataSource={topTenData || []}
+    // dataSource={topTenData || []}
+    dataSource={data || []}
+
     columns={columns}
     pagination={false}
     bordered={false}
