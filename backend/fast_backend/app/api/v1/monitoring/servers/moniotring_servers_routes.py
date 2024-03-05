@@ -1,4 +1,4 @@
-from fastapi import  FastAPI,Query
+from fastapi import FastAPI, Query
 from fastapi import APIRouter
 from app.models.monitoring_models import *
 from app.schema.monitoring_schema import *
@@ -9,23 +9,20 @@ from app.models.atom_models import *
 from app.api.v1.monitoring.device.utils.monitoring_utils import *
 from app.schema.monitoring_network_schema import *
 
-
 router = APIRouter(
     prefix="/monitoring_server",
     tags=["monitoring_server"]
 )
 
 
-
-
 @router.get('/get_all_devices_in_servers',
             responses={
-              200:{"model":list[GetMonitoringNetworkDevicesSchema]},
-              500:{"model":str}
+                200: {"model": list[GetMonitoringNetworkDevicesSchema]},
+                500: {"model": str}
             },
             summary="Use this API in Monitoring ==>Netowrk==>Server==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of Server all devices",
             description="Use this API in Monitoring ==>Netowrk==>Server==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of Server all devices",
-)
+            )
 def get_all_devices_in_servers():
     try:
         query_api = configs.client.query_api()
@@ -39,40 +36,40 @@ def get_all_devices_in_servers():
                     |> schema.fieldsAsCols()'
 
         result = query_api.query(org='monetx', query=query)
-        print("result is::::::::::::::::::",result,file=sys.stderr)
+        print("result is::::::::::::::::::", result, file=sys.stderr)
         results = []
         for table in result:
-            print("table in result is:::::::::::::",table,file=sys.stderr)
+            print("table in result is:::::::::::::", table, file=sys.stderr)
             for record in table.records:
-                print("record is::::::::",record,file=sys.stderr)
+                print("record is::::::::", record, file=sys.stderr)
                 try:
                     switch_devices_record = GetMonitoringNetworkDevicesSchema(
-                        ip_address = record["IP_ADDRESS"],
-                        function = record["FUNCTION"],
-                        response = record["Response"],
-                        status = record["STATUS"],
-                        uptime = record["Uptime"],
-                        vendor = record["VENDOR"],
-                        cpu = record["CPU"],
-                        memory = record["Memory"],
-                        packets = record["PACKETS_LOSS"],
-                        device_name = record["DEVICE_NAME"],
-                        interfaces = record["INTERFACES"],
-                        date = record["Date"],
-                        device_description = record["DEVICE_DESCRIPTION"],
-                        discovered_time = record["DISCOVERED_TIME"],
-                        device_type = record["DEVICE_TYPE"]
+                        ip_address=record["IP_ADDRESS"],
+                        function=record["FUNCTION"],
+                        response=record["Response"],
+                        status=record["STATUS"],
+                        uptime=record["Uptime"],
+                        vendor=record["VENDOR"],
+                        cpu=record["CPU"],
+                        memory=record["Memory"],
+                        packets=record["PACKETS_LOSS"],
+                        device_name=record["DEVICE_NAME"],
+                        interfaces=record["INTERFACES"],
+                        date=record["Date"],
+                        device_description=record["DEVICE_DESCRIPTION"],
+                        discovered_time=record["DISCOVERED_TIME"],
+                        device_type=record["DEVICE_TYPE"]
 
                     )
                     results.append(switch_devices_record)
                 except Exception as e:
-                    print("Error:::",str(e),file=sys.stderr)
+                    print("Error:::", str(e), file=sys.stderr)
                     traceback.print_exc()
         final = sorted(results, key=lambda k: k['date'], reverse=False)
-        print("final is::::::::::::::::::",final,file=sys.stderr)
+        print("final is::::::::::::::::::", final, file=sys.stderr)
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
-        print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
+        print("final list is:::::::::::::::::::::::::", final_list, file=sys.stderr)
         if final_list is None or not final_list:
             server_device = [{
                 'ip_address': '192.168.10.220',
@@ -90,7 +87,7 @@ def get_all_devices_in_servers():
                 'device_description': 'Hardware: Intel64 Family 6 Model 46 Stepping 6 AT/AT COMPATIBLE - Software: Windows Version 6.3 (Build 14393 Multiprocessor Free)',
                 'discovered_time': ''
             },
-            {
+                {
                     'device_name': 'LinuxServer',
                     'ip_address': '192.168.1.10',
                     'device_type': 'Linux',
@@ -107,18 +104,18 @@ def get_all_devices_in_servers():
             return final_list
     except Exception as e:
         traceback.print_exc()
-        return JSONResponse(content="Error Occured While Getting Network Devices",status_code=500)
+        return JSONResponse(content="Error Occured While Getting Network Devices", status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_servers',
             responses={
-                200:{"model":list[GetDevicesInterfaceRecordSchema]},
-                500:{"model":str}
+                200: {"model": list[GetDevicesInterfaceRecordSchema]},
+                500: {"model": str}
             },
             summary="use this api in monitoring network=>Server=>interfaces to list down all Server devices interfaces in table",
             description="use this api in monitoring network=>Server=>interfaces to list down all Server devices interfaces in table",
 
-)
+            )
 async def get_all_interfaces_in_servers():
     try:
         router_interface_records = []
@@ -136,22 +133,22 @@ async def get_all_interfaces_in_servers():
         result = query_api.query(org='monetx', query=query)
         results = []
         for table in result:
-            print("for table in result is::::::::::::::::",table,file=sys.stderr)
+            print("for table in result is::::::::::::::::", table, file=sys.stderr)
             for record in table.records:
-                print("record is:::::::::::::::::::::",record,file=sys.stderr)
+                print("record is:::::::::::::::::::::", record, file=sys.stderr)
                 try:
                     router_interface_record = GetDevicesInterfaceRecordSchema(
-                        ip_address = record["IP_ADDRESS"],
-                        device_name = record["DEVICE_NAME"],
-                        function = record["FUNCTION"],
-                        interface_status = record["Status"],
-                        vendor = record["VENDOR"],
-                        download_speed = round(float(record["Download"] or 0), 2),
-                        upload_speed = round(float(record["Upload"] or 0), 2),
-                        interface_name = record["Interface_Name"],
-                        interface_description = record["Interface Desription"],
-                        date = record["Date"],
-                        device_type = record["DEVICE_TYPE"]
+                        ip_address=record["IP_ADDRESS"],
+                        device_name=record["DEVICE_NAME"],
+                        function=record["FUNCTION"],
+                        interface_status=record["Status"],
+                        vendor=record["VENDOR"],
+                        download_speed=round(float(record["Download"] or 0), 2),
+                        upload_speed=round(float(record["Upload"] or 0), 2),
+                        interface_name=record["Interface_Name"],
+                        interface_description=record["Interface Desription"],
+                        date=record["Date"],
+                        device_type=record["DEVICE_TYPE"]
                     )
                     router_interface_records.append(router_interface_record)
                 except Exception as e:
@@ -242,7 +239,7 @@ async def get_all_interfaces_in_servers():
                     'interface_status': 'Up',
                     'upload_speed': 'Mbps',
                     'download_speed': 'Mbps'
-                },{
+                }, {
                     'device_name': 'PBNG3BMTLL',
                     'ip_address': '192.168.1.10',
                     'interface_name': 'eth0',
@@ -268,26 +265,27 @@ async def get_all_interfaces_in_servers():
                 },
                 # Add more interfaces as needed
             ]
-                # Add more interfaces here...
+            # Add more interfaces here...
+
             return server_interfaces
         else:
 
             return final_interfaces
 
     except Exception as e:
-        print("Error ",str(e),file=sys.stderr)
+        print("Error ", str(e), file=sys.stderr)
         traceback.print_exc()
-        return JSONResponse("Error Ocucred while getting server interfaces",status_code=500)
+        return JSONResponse("Error Ocucred while getting server interfaces", status_code=500)
 
 
 @router.get('/get_all_devices_in_windows',
             responses={
-              200:{"model":list[GetMonitoringNetworkDevicesSchema]},
-              500:{"model":str}
+                200: {"model": list[GetMonitoringNetworkDevicesSchema]},
+                500: {"model": str}
             },
             summary="Use this API in Monitoring ==>Netowrk==>Windows==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of windows",
             description="Use this API in Monitoring ==>Netowrk==>Windows==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of windows",
-)
+            )
 def get_all_devices_in_windows():
     try:
         query_api = configs.client.query_api()
@@ -302,39 +300,39 @@ def get_all_devices_in_windows():
                     |> schema.fieldsAsCols()'
 
         result = query_api.query(org='monetx', query=query)
-        print("result is::::::::::::::::::",result,file=sys.stderr)
+        print("result is::::::::::::::::::", result, file=sys.stderr)
         results = []
         for table in result:
-            print("table in result is:::::::::::::",table,file=sys.stderr)
+            print("table in result is:::::::::::::", table, file=sys.stderr)
             for record in table.records:
-                print("record is::::::::",record,file=sys.stderr)
+                print("record is::::::::", record, file=sys.stderr)
                 try:
                     switch_devices_record = GetMonitoringNetworkDevicesSchema(
-                        ip_address = record["IP_ADDRESS"],
-                        function = record["FUNCTION"],
-                        response = record["Response"],
-                        status = record["STATUS"],
-                        uptime = record["Uptime"],
-                        vendor = record["VENDOR"],
-                        cpu = record["CPU"],
-                        memory = record["Memory"],
-                        packets = record["PACKETS_LOSS"],
-                        device_name = record["DEVICE_NAME"],
-                        interfaces = record["INTERFACES"],
-                        date = record["Date"],
-                        device_description = record["DEVICE_DESCRIPTION"],
-                        discovered_time = record["DISCOVERED_TIME"],
-                        device_type = record["DEVICE_TYPE"]
+                        ip_address=record["IP_ADDRESS"],
+                        function=record["FUNCTION"],
+                        response=record["Response"],
+                        status=record["STATUS"],
+                        uptime=record["Uptime"],
+                        vendor=record["VENDOR"],
+                        cpu=record["CPU"],
+                        memory=record["Memory"],
+                        packets=record["PACKETS_LOSS"],
+                        device_name=record["DEVICE_NAME"],
+                        interfaces=record["INTERFACES"],
+                        date=record["Date"],
+                        device_description=record["DEVICE_DESCRIPTION"],
+                        discovered_time=record["DISCOVERED_TIME"],
+                        device_type=record["DEVICE_TYPE"]
                     )
                     results.append(switch_devices_record)
                 except Exception as e:
-                    print("Error:::",str(e),file=sys.stderr)
+                    print("Error:::", str(e), file=sys.stderr)
                     traceback.print_exc()
         final = sorted(results, key=lambda k: k['date'], reverse=False)
-        print("final is::::::::::::::::::",final,file=sys.stderr)
+        print("final is::::::::::::::::::", final, file=sys.stderr)
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
-        print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
+        print("final list is:::::::::::::::::::::::::", final_list, file=sys.stderr)
         if final_list is None or not final_list:
             server_device = [{
                 'ip_address': '192.168.10.220',
@@ -357,18 +355,18 @@ def get_all_devices_in_windows():
             return final_list
     except Exception as e:
         traceback.print_exc()
-        return JSONResponse(content="Error Occured While Getting windows Devices",status_code=500)
+        return JSONResponse(content="Error Occured While Getting windows Devices", status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_windows',
             responses={
-                200:{"model":list[GetDevicesInterfaceRecordSchema]},
-                500:{"model":str}
+                200: {"model": list[GetDevicesInterfaceRecordSchema]},
+                500: {"model": str}
             },
             summary="use this api in monitoring network=>Windows=>interfaces to list down all windows devices interfaces in table",
             description="use this api in monitoring network=>Windows=>interfaces to list down all windows devices interfaces in table"
 
-)
+            )
 async def get_all_interfaces_in_windows():
     try:
         router_interface_records = []
@@ -387,22 +385,22 @@ async def get_all_interfaces_in_windows():
         result = query_api.query(org='monetx', query=query)
         results = []
         for table in result:
-            print("for table in result is::::::::::::::::",table,file=sys.stderr)
+            print("for table in result is::::::::::::::::", table, file=sys.stderr)
             for record in table.records:
-                print("record is:::::::::::::::::::::",record,file=sys.stderr)
+                print("record is:::::::::::::::::::::", record, file=sys.stderr)
                 try:
                     router_interface_record = GetDevicesInterfaceRecordSchema(
-                        ip_address = record["IP_ADDRESS"],
-                        device_name = record["DEVICE_NAME"],
-                        function = record["FUNCTION"],
-                        interface_status = record["Status"],
-                        vendor = record["VENDOR"],
-                        download_speed = round(float(record["Download"] or 0), 2),
-                        upload_speed = round(float(record["Upload"] or 0), 2),
-                        interface_name = record["Interface_Name"],
-                        interface_description = record["Interface Description"],
-                        date = record["Date"],
-                        device_type = record["DEVICE_TYPE"]
+                        ip_address=record["IP_ADDRESS"],
+                        device_name=record["DEVICE_NAME"],
+                        function=record["FUNCTION"],
+                        interface_status=record["Status"],
+                        vendor=record["VENDOR"],
+                        download_speed=round(float(record["Download"] or 0), 2),
+                        upload_speed=round(float(record["Upload"] or 0), 2),
+                        interface_name=record["Interface_Name"],
+                        interface_description=record["Interface Description"],
+                        date=record["Date"],
+                        device_type=record["DEVICE_TYPE"]
                     )
                     router_interface_records.append(router_interface_record)
                 except Exception as e:
@@ -500,19 +498,19 @@ async def get_all_interfaces_in_windows():
             return final_interfaces
 
     except Exception as e:
-        print("Error ",str(e),file=sys.stderr)
+        print("Error ", str(e), file=sys.stderr)
         traceback.print_exc()
-        return JSONResponse("Error Ocucred while getting windows interfaces",status_code=500)
+        return JSONResponse("Error Ocucred while getting windows interfaces", status_code=500)
 
 
 @router.get('/get_all_devices_in_linux',
             responses={
-              200:{"model":list[GetMonitoringNetworkDevicesSchema]},
-              500:{"model":str}
+                200: {"model": list[GetMonitoringNetworkDevicesSchema]},
+                500: {"model": str}
             },
             summary="Use this API in Monitoring ==>Netowrk==>linux==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of linux",
             description="Use this API in Monitoring ==>Netowrk==>linux==>devices.Use this API in the monitoring netowrk page to list down the devices in the table of linux",
-)
+            )
 def get_all_devices_in_linux():
     try:
         query_api = configs.client.query_api()
@@ -527,54 +525,54 @@ def get_all_devices_in_linux():
                    |> schema.fieldsAsCols()'
 
         result = query_api.query(org='monetx', query=query)
-        print("result is::::::::::::::::::",result,file=sys.stderr)
+        print("result is::::::::::::::::::", result, file=sys.stderr)
         results = []
         for table in result:
-            print("table in result is:::::::::::::",table,file=sys.stderr)
+            print("table in result is:::::::::::::", table, file=sys.stderr)
             for record in table.records:
-                print("record is::::::::",record,file=sys.stderr)
+                print("record is::::::::", record, file=sys.stderr)
                 try:
                     switch_devices_record = GetMonitoringNetworkDevicesSchema(
-                        ip_address = record["IP_ADDRESS"],
-                        function = record["FUNCTION"],
-                        response = record["Response"],
-                        status = record["STATUS"],
-                        uptime = record["Uptime"],
-                        vendor = record["VENDOR"],
-                        cpu = record["CPU"],
-                        memory = record["Memory"],
-                        packets = record["PACKETS_LOSS"],
-                        device_name = record["DEVICE_NAME"],
-                        interfaces = record["INTERFACES"],
-                        date = record["Date"],
-                        device_description = record["DEVICE_DESCRIPTION"],
-                        discovered_time = record["DISCOVERED_TIME"],
-                        device_type = record["DEVICE_TYPE"]
+                        ip_address=record["IP_ADDRESS"],
+                        function=record["FUNCTION"],
+                        response=record["Response"],
+                        status=record["STATUS"],
+                        uptime=record["Uptime"],
+                        vendor=record["VENDOR"],
+                        cpu=record["CPU"],
+                        memory=record["Memory"],
+                        packets=record["PACKETS_LOSS"],
+                        device_name=record["DEVICE_NAME"],
+                        interfaces=record["INTERFACES"],
+                        date=record["Date"],
+                        device_description=record["DEVICE_DESCRIPTION"],
+                        discovered_time=record["DISCOVERED_TIME"],
+                        device_type=record["DEVICE_TYPE"]
                     )
                     results.append(switch_devices_record)
                 except Exception as e:
-                    print("Error:::",str(e),file=sys.stderr)
+                    print("Error:::", str(e), file=sys.stderr)
                     traceback.print_exc()
         final = sorted(results, key=lambda k: k['date'], reverse=False)
-        print("final is::::::::::::::::::",final,file=sys.stderr)
+        print("final is::::::::::::::::::", final, file=sys.stderr)
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
-        print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
+        print("final list is:::::::::::::::::::::::::", final_list, file=sys.stderr)
         return final_list
     except Exception as e:
         traceback.print_exc()
-        return JSONResponse(content="Error Occured While Getting server Devices",status_code=500)
+        return JSONResponse(content="Error Occured While Getting server Devices", status_code=500)
 
 
 @router.get('/get_all_devices_interfaces_in_linux',
             responses={
-                200:{"model":list[GetDevicesInterfaceRecordSchema]},
-                500:{"model":str}
+                200: {"model": list[GetDevicesInterfaceRecordSchema]},
+                500: {"model": str}
             },
             summary="use this api in monitoring network=>linux=>interfaces to list down all devices interfaces in table for linux",
             description="use this api in monitoring network=>linux=>interfaces to list down all devices interfaces in table for linux",
 
-)
+            )
 async def get_all_interfaces_in_linux():
     try:
         router_interface_records = []
@@ -593,22 +591,22 @@ async def get_all_interfaces_in_linux():
         result = query_api.query(org='monetx', query=query)
         results = []
         for table in result:
-            print("for table in result is::::::::::::::::",table,file=sys.stderr)
+            print("for table in result is::::::::::::::::", table, file=sys.stderr)
             for record in table.records:
-                print("record is:::::::::::::::::::::",record,file=sys.stderr)
+                print("record is:::::::::::::::::::::", record, file=sys.stderr)
                 try:
                     router_interface_record = GetDevicesInterfaceRecordSchema(
-                        ip_address = record["IP_ADDRESS"],
-                        device_name = record["DEVICE_NAME"],
-                        function = record["FUNCTION"],
-                        interface_status = record["Status"],
-                        vendor = record["VENDOR"],
-                        download_speed = round(float(record["Download"] or 0), 2),
-                        upload_speed = round(float(record["Upload"] or 0), 2),
-                        interface_name = record["Interface_Name"],
-                        interface_description = record["Interface Description"],
-                        date = record["Date"],
-                        device_type = record["DEVICE_TYPE"]
+                        ip_address=record["IP_ADDRESS"],
+                        device_name=record["DEVICE_NAME"],
+                        function=record["FUNCTION"],
+                        interface_status=record["Status"],
+                        vendor=record["VENDOR"],
+                        download_speed=round(float(record["Download"] or 0), 2),
+                        upload_speed=round(float(record["Upload"] or 0), 2),
+                        interface_name=record["Interface_Name"],
+                        interface_description=record["Interface Description"],
+                        date=record["Date"],
+                        device_type=record["DEVICE_TYPE"]
 
                     )
                     router_interface_records.append(router_interface_record)
@@ -652,7 +650,7 @@ async def get_all_interfaces_in_linux():
             return final_interfaces
 
     except Exception as e:
-        print("Error ",str(e),file=sys.stderr)
+        print("Error ", str(e), file=sys.stderr)
         traceback.print_exc()
-        return JSONResponse("Error Ocucred while getting linux interfaces",status_code=500)
+        return JSONResponse("Error Ocucred while getting linux interfaces", status_code=500)
 
