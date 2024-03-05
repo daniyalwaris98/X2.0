@@ -111,7 +111,7 @@ async def get_all_devices_in_networks():
         if final:
             final_list = list({v['ip_address']: v for v in final}.values())
             print("final list is not none:::::::",final_list,file=sys.stderr)
-        if final_list is None:
+        if final_list is None or not final_list:
             devices = [
                 {
                     'ip_address': '192.168.0.5',
@@ -265,7 +265,7 @@ async def get_all_interfaces_in_network():
         # Filter unique InterfaceRecords based on 'interface_name'
         final_interfaces = list({record.interface_name: record for record in interface_records}.values())
         print("final interface is:::::::::::::::::::::::",final_interfaces,file=sys.stderr)
-        if final_interfaces is None:
+        if final_interfaces is None or not final_interfaces:
             interfaces = [
                 {
                     'ip_address': '192.168.10.44',
@@ -435,7 +435,7 @@ def get_all_devices_in_router():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        if final_list is None:
+        if final_list is None or not final_list:
             devices = [
                 {
                     'ip_address': '192.168.0.1',
@@ -584,7 +584,7 @@ async def get_all_interfaces_in_routers():
                     continue
         interface_dict = {record.interface_name: record.dict() for record in router_interface_records}
         final_interfaces = list(interface_dict.values())
-        if final_interfaces is None:
+        if final_interfaces is None or not final_interfaces:
             interfaces = [
                 {
                     'ip_address': '192.168.10.44',
@@ -753,7 +753,7 @@ def get_all_devices_in_switch():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        if final_list is None:
+        if final_list is None or not final_list:
             devices = [
                 {
                     'ip_address': '192.168.0.5',
@@ -902,7 +902,7 @@ async def get_all_interfaces_in_switch():
                     continue
         interface_dict = {record.interface_name: record.dict() for record in router_interface_records}
         final_interfaces = list(interface_dict.values())
-        if final_interfaces is not None:
+        if final_interfaces is not None or not final_interfaces:
             interfaces = [
                 {
                     'ip_address': '192.168.10.44',
@@ -1071,7 +1071,7 @@ def get_all_devices_in_firewall():
         final_list = list({v['ip_address']: v for v in final}.values())
         print(results, file=sys.stderr)
         print("final list is:::::::::::::::::::::::::",final_list,file=sys.stderr)
-        if final_list is None:
+        if final_list is None or not final_list:
             device = {
                 'ip_address': '192.168.0.2',
                 'device_type': 'fortinet',
@@ -1140,7 +1140,7 @@ async def get_all_interfaces_in_firewall():
                     continue
         interface_dict = {record.interface_name: record.dict() for record in router_interface_records}
         final_interfaces = list(interface_dict.values())
-        if final_interfaces is None:
+        if final_interfaces is None or not final_interfaces:
             interfaces = [
                 {
                     'ip_address': '192.168.0.2',
