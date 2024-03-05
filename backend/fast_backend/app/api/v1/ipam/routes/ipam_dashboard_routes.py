@@ -287,47 +287,47 @@ description="API to get top_10_subnet_ip_used"
 def top_10_subnet_ip_used():
     try:
         query = (
-            "SELECT subnet_table.subnet_address, subent_usage_table.subnet_usage "
-            "FROM subnet_table "
-            "INNER JOIN subent_usage_table ON subnet_table.subnet_id = subent_usage_table.subnet_id"
+            "SELECT "
+            "subnet_table.subnet_address, "
+            "subent_usage_table.subnet_usage, "
+            "atom_table.ip_address, "
+            "atom_table.device_name, "
+            "atom_table.function "
+            "FROM "
+            "subnet_table "
+            "INNER JOIN subent_usage_table ON subnet_table.subnet_id = subent_usage_table.subnet_id "
+            "INNER JOIN ipam_devices_fetch_table ON subnet_table.ipam_device_id = ipam_devices_fetch_table.ipam_device_id "
+            "INNER JOIN atom_table ON ipam_devices_fetch_table.atom_id = atom_table.atom_id"
         )
 
         result = configs.db.execute(query)
         print("result is::::::::::::::::", result, file=sys.stderr)
-        
-        subnet_address_list = []
-        subnet_usage_list = []
-        newsubnet_usage_list = []
 
+        subnet_data_list = []
         for row in result:
-            print("row is::::::::::::::::::::::::::::", row, file=sys.stderr)
-            subnet_address_list.append(row[0])
-            subnet_usage_list.append(row[1])
-        
-        if len(subnet_address_list) <= 0:
-            subnet_address_list = ["SubnetA", "subnetB", "Other"]
-            subnet_usage_list= [0, 0, 0]
-            obj_dict = {"subnet_address": subnet_usage_list, "subnet_usage": subnet_usage_list }
-            print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
-        else:
-            for  usage in subnet_usage_list:
-                if usage is None :
-                    usage = '0.0'
-                    newsubnet_usage_list.append(usage)
-                else:
-                    newsubnet_usage_list.append(usage)
-            print(newsubnet_usage_list)
-            subnets_data = list(zip(subnet_address_list, newsubnet_usage_list))
-            sorted_subnets = sorted(subnets_data, key=lambda x: x[1], reverse=True)
-            result_list = [{"subnet": subnet, "value": value} for subnet, value in sorted_subnets[:10]]
-            
+            subnet_data_list.append({
+                "subnet_address": row[0],
+                "subnet_usage": row[1],
+                "ip_address": row[2],
+                "device_name": row[3],
+                "function": row[4]
+            })
+
+        if len(subnet_data_list) <= 0:
+            subnet_data_list = [
+                {"subnet_address": "SubnetA", "subnet_usage": 0, "ip_address": "IP", "device_name": "Device",
+                 "function": "Function"}]
+
+        sorted_subnets = sorted(subnet_data_list, key=lambda x: x["subnet_usage"], reverse=True)
+        result_list = sorted_subnets[:10]
+
         print("obj dict is:::::::::::::::::::::::::", result_list, file=sys.stderr)
-        return JSONResponse(content= result_list, status_code=200)
+        return JSONResponse(content=result_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-           content =  "Error While Fetching The Data\nFor subnet_address and subnet_usage from subnet_table , subent_usage_table",
-            status_code = 500,
+            content="Error While Fetching The Data\nFor subnet_address and subnet_usage from subnet_table, subent_usage_table",
+            status_code=500,
         )
     
 
