@@ -28,43 +28,50 @@ summary="API to get all ports and their obj_list from ip_table",
 description="API to get all ports and their obj_list from ip_table"
 )
 async def tcp_open_ports():
-    
+
 
     try:
         port_list = []
         port_value =[]
         obj_list=[]
-        
+
         query = (
             "SELECT open_ports, COUNT(open_ports) AS frequency "
             "FROM ip_table "
-            "GROUP BY open_ports"
+            "GROUP BY open_ports "
+            "ORDER BY frequency DESC, open_ports ASC "
+            "LIMIT 10;"
         )
 
         print("Executing query:", query, file=sys.stderr)
         result = configs.db.execute(query)
         print("results is::::::::::::::::::::::::", result, file=sys.stderr)
 
+        port_dict = {}
+
         for row in result:
-            print("row in result is::::::::::::::::::", row, file=sys.stderr)
+            if row[0]:
+                ports = row[0].split(", ")
+                for port in ports:
+                    if port in port_dict:
+                        port_dict[port] = max(port_dict[port], int(row[1]))
+                    else:
+                        port_dict[port] = int(row[1])
 
-            # If the open_ports is None or an empty string, consider it as "None"
-            #port = "None" if row[0] is None or row[0] == "" else row[0]
+        # Convert the port_dict to the desired format
+        port_list = list(port_dict.keys())
+        port_value = list(port_dict.values())
 
-            port_list.append(row[0])
-            port_value.append(int(row[1]))
-
-        print("port list is::::::::::::::::::::::::::::", port_list, file=sys.stderr)
-        print("port value is::::::::::::::::::::::::::::", port_value, file=sys.stderr)
+        obj_list = [{"name": port_list, "value": port_value}]
         if len(port_list) <= 0:
             port_list = ["PortA", "PortB", "PortC", "Other"]
             port_value = [0, 0, 0, 0]
 
 
         obj_list=[{"name":port_list,
-                   "value":port_value}]    
+                   "value":port_value}]
 
-        
+
         print("obj dict is:::::::::::::::::::::::::", obj_list, file=sys.stderr)
 
         return JSONResponse(content=obj_list, status_code=200)
@@ -74,9 +81,6 @@ async def tcp_open_ports():
             content = "Error While Fetching The Data\nFor Port List and Frequency from ip_table",
             status_code = 500,
         )
-
-        
-
 
 
 
@@ -262,13 +266,32 @@ async def type_summary():
             print("row is::::::::::::::::::::::", row, file=sys.stderr)
             print("row [0] is:::::::::::::::", row[0], file=sys.stderr)
             print("row[1] is:::::::::::::::::::", row[1], file=sys.stderr)
-            objt_dict = {"vender": row[0],"obj_list": row[1]}
+            objt_dict = {"vender": row[0],"obj_list": row[1],
+                         }
             print("obj dict is::::::::::::::::::::", objt_dict, file=sys.stderr)
             objt_list.append(objt_dict)
    
 
         print("objlist is:::::::::::::::::", objt_list, file=sys.stderr)
-        return  JSONResponse(content=objt_list, status_code = 200)
+        summery_data = [
+            {
+                "vender":"Cisco",
+                "obj_list":200
+            },
+            {
+                "vender": "Fortinet",
+                "obj_list": 150
+            },
+            {
+                "vender": "Linux",
+                "obj_list": 150
+            },
+            {
+                "vender": "Huawei",
+                "obj_list": 150
+            }
+        ]
+        return  JSONResponse(content=summery_data, status_code = 200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
@@ -287,47 +310,47 @@ description="API to get top_10_subnet_ip_used"
 def top_10_subnet_ip_used():
     try:
         query = (
-            "SELECT subnet_table.subnet_address, subent_usage_table.subnet_usage "
-            "FROM subnet_table "
-            "INNER JOIN subent_usage_table ON subnet_table.subnet_id = subent_usage_table.subnet_id"
+            "SELECT "
+            "subnet_table.subnet_address, "
+            "subent_usage_table.subnet_usage, "
+            "atom_table.ip_address, "
+            "atom_table.device_name, "
+            "atom_table.function "
+            "FROM "
+            "subnet_table "
+            "INNER JOIN subent_usage_table ON subnet_table.subnet_id = subent_usage_table.subnet_id "
+            "INNER JOIN ipam_devices_fetch_table ON subnet_table.ipam_device_id = ipam_devices_fetch_table.ipam_device_id "
+            "INNER JOIN atom_table ON ipam_devices_fetch_table.atom_id = atom_table.atom_id"
         )
 
         result = configs.db.execute(query)
         print("result is::::::::::::::::", result, file=sys.stderr)
-        
-        subnet_address_list = []
-        subnet_usage_list = []
-        newsubnet_usage_list = []
 
+        subnet_data_list = []
         for row in result:
-            print("row is::::::::::::::::::::::::::::", row, file=sys.stderr)
-            subnet_address_list.append(row[0])
-            subnet_usage_list.append(row[1])
-        
-        if len(subnet_address_list) <= 0:
-            subnet_address_list = ["SubnetA", "subnetB", "Other"]
-            subnet_usage_list= [0, 0, 0]
-            obj_dict = {"subnet_address": subnet_usage_list, "subnet_usage": subnet_usage_list }
-            print("obj dict is:::::::::::::::::::::::::", obj_dict, file=sys.stderr)
-        else:
-            for  usage in subnet_usage_list:
-                if usage is None :
-                    usage = '0.0'
-                    newsubnet_usage_list.append(usage)
-                else:
-                    newsubnet_usage_list.append(usage)
-            print(newsubnet_usage_list)
-            subnets_data = list(zip(subnet_address_list, newsubnet_usage_list))
-            sorted_subnets = sorted(subnets_data, key=lambda x: x[1], reverse=True)
-            result_list = [{"subnet": subnet, "value": value} for subnet, value in sorted_subnets[:10]]
-            
+            subnet_data_list.append({
+                "subnet_address": row[0],
+                "subnet_usage": row[1],
+                "ip_address": row[2],
+                "device_name": row[3],
+                "function": row[4]
+            })
+
+        if len(subnet_data_list) <= 0:
+            subnet_data_list = [
+                {"subnet_address": "SubnetA", "subnet_usage": 0, "ip_address": "IP", "device_name": "Device",
+                 "function": "Function"}]
+
+        sorted_subnets = sorted(subnet_data_list, key=lambda x: x["subnet_usage"], reverse=True)
+        result_list = sorted_subnets[:10]
+
         print("obj dict is:::::::::::::::::::::::::", result_list, file=sys.stderr)
-        return JSONResponse(content= result_list, status_code=200)
+        return JSONResponse(content=result_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-           content =  "Error While Fetching The Data\nFor subnet_address and subnet_usage from subnet_table , subent_usage_table",
-            status_code = 500,
+            content="Error While Fetching The Data\nFor subnet_address and subnet_usage from subnet_table, subent_usage_table",
+            status_code=500,
         )
     
 

@@ -3,6 +3,7 @@ import { Row, Col } from "antd";
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
 // import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import { 
   useGetHeatMapQuery,
@@ -227,13 +228,22 @@ function Index() {
 
   const tableColumns = [
    
-    {
-      title: 'IP',
-      dataIndex: 'ip',
-      key: 'ip',
-      align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
-    },
+   
+
+{
+  title: 'IP Address',
+  dataIndex: 'ip_address',
+  key: 'ip_address',
+  align: 'start',
+  render: (text, record) => (
+    <Link
+      to={`/monetx/monitoring_module/devices_landing/devices_summary?ip=${record.ip}`}
+      rel="noopener noreferrer"
+    >
+      <span style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</span>
+    </Link>
+  ),
+},    
     {
       title: 'Device Name',
       dataIndex: 'device_name',
@@ -263,43 +273,70 @@ function Index() {
     },
   ];
 
+//   [
+//     {
+//         "ip_address": "192.168.10.50",
+//         "function": "Switch",
+//         "cpu": 5.0,
+//         "device_name": "NSO-R50.nets-international.com"
+//     },
+//     {
+//         "ip_address": "192.168.10.28",
+//         "function": "Switch",
+//         "cpu": 11.0,
+//         "device_name": "NSO-R50.nets-international.com"
+//     },
+//     {
+//         "ip_address": "192.168.0.5",
+//         "function": "Switch",
+//         "cpu": 60.0,
+//         "device_name": "NSO-R50.nets-international.com"
+//     },
+//     {
+//         "ip_address": "192.168.10.43",
+//         "function": "Switch",
+//         "cpu": 43.0,
+//         "device_name": "NSO-R50.nets-international.com"
+//     }
+// ]
+
   const tableData = [
     {
       key: '1',
-      ip: '10.66.211.141',
+      ip_address: '10.66.211.141',
       device_name:"KSA_RO-1",
-      value: 50,
+      cpu: 50,
       function:"Router",
     },
     {
       key: '2',
-      ip: '10.66.211.141',
+      ip_address: '10.66.211.141',
       device_name:"KSA_RO-02",
-      value: 10,
+      cpu: 10,
       function:"Router",
 
     },
     {
       key: '3',
-      ip: '10.66.211.141',
+      ip_address: '10.66.211.141',
       device_name:"KSA_RO-03",
-      value: 60,
+      cpu: 60,
       function:"Router",
 
     },
     {
       key: '4',
-      ip: '10.66.211.41',
+      ip_address: '10.66.211.41',
       device_name:"KSA_RO-04",
-      value: 10,
+      cpu: 10,
       function:"Router",
 
     },
     {
       key: '5',
-      ip: '10.66.211.1',
+      ip_address: '10.66.211.1',
       device_name:"KSA_RO-05",
-      value: 50,
+      cpu: 50,
       function:"Router",
 
     },
@@ -321,7 +358,7 @@ function Index() {
           <div className="container">
             <h6 className="heading">Devices By CPU Utilization</h6>
             {/* <TenSubnetTable /> */}
-            <MainTable tableData={tableData} tableColumns={tableColumns} />
+            <MainTable tableData={cpuData!== undefined ? cpuData:[]} tableColumns={tableColumns} />
 
           </div>
         </Col>
@@ -329,7 +366,9 @@ function Index() {
         <Col span={12}>
           <div className="container">
             <h6 className="heading">Devices By Memory Utilization</h6>
-            <TenSubnetTable />
+            {/* <TenSubnetTable /> */}
+            <MainTable tableData={memoryData!== undefined ? memoryData:[]} tableColumns={tableColumns} />
+
           </div>
         </Col>
       </Row>
@@ -337,7 +376,7 @@ function Index() {
         <Col span={12}>
           <div className="container">
             <h6 className="heading">Interfaces By Bandwidth Utilization</h6>
-            <TenSubnetTable />
+             <MainTable tableData={memoryData!== undefined ? memoryData:[]} tableColumns={tableColumns} />  topInterfacesData
           </div>
         </Col>
 

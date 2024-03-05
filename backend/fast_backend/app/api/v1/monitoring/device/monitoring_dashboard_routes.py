@@ -446,7 +446,7 @@ def cpu_stats_fetching():
 
                         try:
                             if record["CPU"]:
-                                obj_dict["cpu"] = float(record["CPU"])
+                                obj_dict["value"] = float(record["CPU"])
                         except Exception as e:
                             print("error", str(e), file=sys.stderr)
                             obj_dict["cpu"] = float(0)
@@ -466,7 +466,7 @@ def cpu_stats_fetching():
                     continue
 
         final_list = []
-        cpu_list = sorted(results, key=lambda k: k["cpu"], reverse=True)
+        cpu_list = sorted(results, key=lambda k: k["value"], reverse=True)
         ip_list = []
 
         for dct in cpu_list:
@@ -484,13 +484,13 @@ def cpu_stats_fetching():
                     {
                         "ip_address": "192.168.10.50",
                         "function": "Switch",
-                        "cpu": 5.0,
+                        "value": 5.0,
                         "device_name": "NSO-R50.nets-international.com"
                     },
                 {
                     "ip_address": "192.168.10.28",
                     "function": "Switch",
-                    "cpu": 11.0,
+                    "value": 11.0,
                     "device_name": "NSO-R50.nets-international.com"
                 },
                 {
@@ -502,7 +502,7 @@ def cpu_stats_fetching():
                 {
                     "ip_address": "192.168.10.43",
                     "function": "Switch",
-                    "cpu": 43.0,
+                    "value": 43.0,
                     "device_name": "NSO-R50.nets-international.com"
                 }
                 ]
@@ -551,7 +551,7 @@ def memory_stats_fetching():
 
                 try:
                     if record["Memory"]:
-                        obj_dict["memory"] = float(record["Memory"])
+                        obj_dict["value"] = float(record["Memory"])
                 except Exception as e:
                     print("error", str(e), file=sys.stderr)
                     obj_dict["memory"] = float(0)
@@ -580,7 +580,7 @@ def memory_stats_fetching():
         last_list = [
             x
             for x in final_list
-            if x.get("memory") is not None and (x.get("memory") >= 0.1)
+            if x.get("value") is not None and (x.get("value") >= 0.1)
         ]
 
         if len(last_list) > 4:
@@ -590,25 +590,25 @@ def memory_stats_fetching():
                 {
                     "ip_address": "192.168.10.25",
                     "function": "Switch",
-                    "memory": 54.77,
+                    "value": 54.77,
                     "device_name": "NSOIOSXR4"
                 },
                 {
                     "ip_address": "192.168.10.28",
                     "function": "Switch",
-                    "memory": 41.28,
+                    "value": 41.28,
                     "device_name": "NSOIOSXR2"
                 },
                 {
                     "ip_address": "192.168.10.50",
                     "function": "Switch",
-                    "memory": 32.51,
+                    "value": 32.51,
                     "device_name": "NSO-R50.nets-international.com"
                 },
                 {
                     "ip_address": "192.168.0.2",
                     "function": "Firewall",
-                    "memory": 26.0,
+                    "value": 26.0,
                     "device_name": "FG-NETS.nets-international.local"
                 }
             ]
