@@ -666,11 +666,11 @@ def GetAllDnsServersRecord():
             dnsServersRecordObjs = configs.db.query(DnsRecordTable).all()
             for dnsServersRecordObj in dnsServersRecordObjs:
                 dns_zone_exsist = configs.db.query(DnsZonesTable).filter_by(dns_zone_id = dnsServersRecordObj.dns_zone_id).first()
-                dns_server_exsist = configs.db.query(DnsServerTable).filter_by(dns_Server_id = dns_zone_exsist.dns_server_id).first()
+                dns_server_exsist = configs.db.query(DnsServerTable).filter_by(dns_server_id = dns_zone_exsist.dns_server_id).first()
                 objDict = {}
-                objDict['dns_record_id'] = dnsServersRecordObj.dns_id
+                objDict['dns_record_id'] = dnsServersRecordObj.dns_record_id
                 objDict['server_name'] = dnsServersRecordObj.server_name
-                objDict['server_ip'] = dnsServersRecordObj.server_ip
+                objDict['ip_address'] = dnsServersRecordObj.server_ip
                 objDict['zone_name'] = dns_zone_exsist.zone_name
                 objDict['dns_name'] = dns_server_exsist.server_name
                 objDict['dns_type'] = dns_server_exsist.type
@@ -702,7 +702,7 @@ def get_all_f5():
                 "f5_id":f5Obj.f5_id,
                 "ip_address":f5Obj.ip_address,
                 "device_name":f5Obj.device_name,
-                "vserver_name":f5Obj.vserver_name,
+                "v_server_name":f5Obj.vserver_name,
                 "vip":f5Obj.vip,
                 "pool_name":f5Obj.pool_name,
                 "pool_member":f5Obj.pool_member,
@@ -711,8 +711,6 @@ def get_all_f5():
                 "monitor_value":f5Obj.monitor_value,
                 "monitor_status":f5Obj.monitor_status,
                 "lb_method":f5Obj.lb_method,
-                "creation_date":f5Obj.creation_date,
-                "modification_date":f5Obj.modification_date,
                 "created_by":f5Obj.created_by,
                 "modified_by":f5Obj.modified_by
             }
@@ -760,11 +758,10 @@ def get_all_firewall_vip():
                 "device_name":row.device_name,
                 "internal_ip":row.internal_ip,
                 "vip":row.vip,
-                "sport":row.sport,
-                "dport":row.dport,
-                "extintf":row.extintf,
-                "creation_date":row.creation_date,
-                "modification_date":row.modification_date
+                "source_port":row.sport,
+                "destination_port":row.dport,
+                "external_interface":row.extintf,
+
             }
             firewall_lst.append(firewall_dict)
         content = json.dumps(firewall_lst).encode('utf-8')
@@ -810,7 +807,8 @@ def get_all_subnet():
                 "subnet_address":row.subnet_address,
                 "subnet_mask":row.subnet_mask,
                 "subnet_name":row.subnet_name,
-                "location":row.location,
+                "subnet_location":row.location,
+                "subnet_status":row.status,
                 "discovered_from":row.discovered_from,
                 "discovered":row.discovered,
                 "scan_date":row.scan_date,
