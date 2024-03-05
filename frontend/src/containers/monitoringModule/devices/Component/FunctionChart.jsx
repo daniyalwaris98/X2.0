@@ -72,7 +72,7 @@ const FunctionChart = ({ deviceNames, values }) => {
           barWidth: '40%', // Fixed width for the bars
           itemStyle: {
             color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-              { offset: 0, color: '#31C7A4' },
+              { offset: 0, color: '#008AB5' },
               { offset: 1, color: '#FFFFFF' },
             ]),
             borderRadius: [15, 15, 15, 15],
@@ -83,7 +83,7 @@ const FunctionChart = ({ deviceNames, values }) => {
           yAxisIndex: 0,
           data: values,
           itemStyle: {
-            color: '#31C7A4',
+            color: '#008AB5',
           },
         },
       ],
@@ -118,7 +118,7 @@ const FunctionChart = ({ deviceNames, values }) => {
     };
   }, [deviceNames, values]);
 
-  return <div ref={chartRef} className="chart-container" style={{ width: '100%', height: '400px' }} />;
+  return <div ref={chartRef} className="chart-container" style={{ width: '100%', height: '350px' }} />;
 };
 
 export default FunctionChart;

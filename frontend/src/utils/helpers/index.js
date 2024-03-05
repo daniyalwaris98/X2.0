@@ -65,12 +65,42 @@ export function getPathAllSegments() {
   return segments;
 }
 
+// export function getTitle(dataKey) {
+//   return dataKey
+//     ?.split("_")
+//     ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+//     ?.join(" ");
+// }
+
+
+
 export function getTitle(dataKey) {
-  return dataKey
-    ?.split("_")
-    ?.map((word) => word.charAt(0).toUpperCase() + word.slice(1))
-    ?.join(" ");
+  const words = dataKey?.split("_");
+  if (words && words.length > 0) {
+    const firstWord = words[0];
+    let capitalizedFirstWord = firstWord.charAt(0).toUpperCase() + firstWord.slice(1);
+    switch (capitalizedFirstWord) {
+      case "Ipam":
+        capitalizedFirstWord = "IPAM";
+        break;
+      case "Ncm":
+        capitalizedFirstWord = "NCM";
+        break;
+      case "Uam":
+        capitalizedFirstWord = "UAM";
+        break;
+      default:
+        break;
+    }
+    return [capitalizedFirstWord, ...words.slice(1)]
+      .map((word) => word.charAt(0).toUpperCase() + word.slice(1))
+      .join(" ");
+  }
+  return "";
 }
+
+
+
 
 export function convertToJson(headers, fileData) {
   let rows = [];
