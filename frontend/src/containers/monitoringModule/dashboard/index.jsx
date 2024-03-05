@@ -3,6 +3,7 @@ import { Row, Col } from "antd";
 import ConfigurationChangeByVendor from "../../../components/charts/ConfigurationChangeByVendor";
 // import { selectTableData } from "../../../store/features/ncmModule/dashboard/selectors";
 import { useSelector } from "react-redux";
+import { Link } from "react-router-dom";
 
 import { 
   useGetHeatMapQuery,
@@ -227,13 +228,26 @@ function Index() {
 
   const tableColumns = [
    
-    {
-      title: 'IP',
-      dataIndex: 'ip',
-      key: 'ip',
-      align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
-    },
+   
+
+{
+  title: 'IP Address',
+  dataIndex: 'ip',
+  key: 'ip',
+  align: 'start',
+  render: (text, record) => (
+    <Link
+      to={`/monetx/monitoring_module/devices_landing/devices_summary?ip=${record.ip}`}
+      rel="noopener noreferrer"
+    >
+      <span style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</span>
+    </Link>
+  ),
+}
+
+,    
+
+
     {
       title: 'Device Name',
       dataIndex: 'device_name',
