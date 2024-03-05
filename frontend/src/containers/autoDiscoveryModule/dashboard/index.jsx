@@ -68,7 +68,7 @@ function Index() {
     isError: isCountPerFunctionError,
     error: countPerFunctionError,
   } = useGetCountPerFunctionQuery();
-  console.log("snmpStatusDataHUnsain",snmpStatusData)
+  console.log("snmpStatusData",snmpStatusData)
   console.log("credentialsSummaryData",credentialsSummaryData)
   console.log("topVendorData",topVendorData)
   console.log("topOsData",topOsData)
@@ -91,19 +91,19 @@ function Index() {
   const apiResponse = [
     {
       name: "Sales",
-      value: 4200
+      value: 42
     },
     {
       name: "Admin",
-      value: 3000
+      value: 30
     },
     {
       name: "Inform",
-      value: 20000
+      value: 200
     },
     {
       name : "Customer",
-      value: 35000
+      value: 350
     },
    
   ];
@@ -125,7 +125,11 @@ function Index() {
     value: [3, 0, 23]
   };
  
-  
+  const data12 = [
+    { name: 'SNMP V1/V2', step: 'start', values: [120, 132, 101, 134, 90, 230, 210], label: 'Mon' },
+    { name: 'SNMP V3', step: 'middle', values: [220, 282, 201, 234, 290, 430, 410], label: 'Tue' },
+    { name: 'SSH Login', step: 'end', values: [450, 432, 401, 454, 590, 530, 510], label: 'Wed' }
+  ]; 
  const count= [
     {
         "name": "Router",
@@ -148,6 +152,8 @@ function Index() {
         "value": 1
     }
 ] ;
+
+
  return (
     <>
       <Row gutter={[32, 32]} justify="space-between">
@@ -155,8 +161,8 @@ function Index() {
           <div className="container">
             <h6 className="heading">SNMP Status </h6>
             <SnmpStatus
-             responseData={snmpStatusData !== undefined? snmpStatusData:[]} 
-            // responseData={apiResponse}
+            //  responseData={snmpStatusData !== undefined? snmpStatusData:[]} 
+            responseData={apiResponse}
              /> 
                       </div>
         </Col>
@@ -164,10 +170,11 @@ function Index() {
         <Col span={10}>
           <div className="container">
             <h6 className="heading">Credentials Summary </h6>
-            <CredentialSummary 
-    data={credentialsSummaryData !== undefined ? credentialsSummaryData : []} 
+            {/* <CredentialSummary  */}
+    {/* // data={credentialsSummaryData !== undefined ? credentialsSummaryData : []}  */}
 
-/>
+{/* /> */}
+<CredentialSummary data={data12} />
           </div>
         </Col>
         <Col span={7}>

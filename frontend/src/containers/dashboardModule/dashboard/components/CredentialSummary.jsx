@@ -1,75 +1,70 @@
-import React, { useEffect } from "react";
-import * as echarts from "echarts";
+import React, { useEffect } from 'react';
+import * as echarts from 'echarts';
 
-const CredentialSummary = ({ data }) => {
+const CredentialSummary = () => {
   useEffect(() => {
-    if (!data || !data.name || !data.value || data.name.length !== data.value.length) {
-      console.error("Invalid data:", data);
-      return;
-    }
-
-    var chartDom = document.getElementById("CredentialSummary");
-    var myChart = echarts.init(chartDom);
-    var option = {
+    const chartDom = document.getElementById('main');
+    const myChart = echarts.init(chartDom);
+    
+    const option = {
+      title: {
+        text: 'Step Line'
+      },
       tooltip: {
-        trigger: "axis",
-        axisPointer: {
-          lineStyle: {
-            type: "line",
-            color: "orange",
-          },
-        },
-        label: {
-          show: false,
-        },
-      },
-      xAxis: {
-        type: "category",
-        boundaryGap: false,
-        axisLine: {
-          show: false,
-        },
-        axisTick: {
-          show: false,
-        },
-        splitLine: {
-          show: true,
-        },
-        axisLabel: {
-          show: false,
-        },
-        data: data.name,
-      },
-      yAxis: {
-        type: "value",
+        trigger: 'axis'
       },
       legend: {
-        y: "bottom",
-        icon: "circle",
-        data: data.name,
+        data: ['Step Start', 'Step Middle', 'Step End']
       },
-      series: data.name.map((name, index) => ({
-        name: name,
-        data: [data.value[index]], // Corrected this line
-        type: "line",
-        smooth: true,
-        itemStyle: {
-          color: index === 0 ? "green" : index === 1 ? "blue" : "grey",
+      grid: {
+        left: '3%',
+        right: '4%',
+        bottom: '3%',
+        containLabel: true
+      },
+      toolbox: {
+        feature: {
+          saveAsImage: {}
+        }
+      },
+      xAxis: {
+        type: 'category',
+        data: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun']
+      },
+      yAxis: {
+        type: 'value'
+      },
+      series: [
+        {
+          name: 'Step Start',
+          type: 'line',
+          step: 'start',
+          data: [120, 132, 101, 134, 90, 230, 210]
         },
-        emphasis: {
-          focus: "series",
+        {
+          name: 'Step Middle',
+          type: 'line',
+          step: 'middle',
+          data: [220, 282, 201, 234, 290, 430, 410]
         },
-      })),
+        {
+          name: 'Step End',
+          type: 'line',
+          step: 'end',
+          data: [450, 432, 401, 454, 590, 530, 510]
+        }
+      ]
     };
+    
     option && myChart.setOption(option);
+
+    // Clean up the chart instance on unmount
     return () => {
       myChart.dispose();
     };
-  }, [data]);
+  }, []);
 
-  return (
-    <div id="CredentialSummary" style={{ width: "100%", height: "400px" }}></div>
-  );
+  return <div id="main" style={{ width: '100%', height: '400px' }}></div>;
 };
 
 export default CredentialSummary;
