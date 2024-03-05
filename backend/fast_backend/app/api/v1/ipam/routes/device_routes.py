@@ -44,6 +44,12 @@ from io import BytesIO
 from fastapi import FastAPI,APIRouter,Query
 from starlette.responses import Response
 from fastapi.responses import JSONResponse
+from sqlalchemy.orm.exc import NoResultFound
+
+
+
+
+
 router = APIRouter(
     prefix = '/ipam_device',
     tags = ['ipam_device']
@@ -157,7 +163,7 @@ async def add_atom_in_ipam(ipam_obj: list[int]):
                         devices_data['discovered_from'] = ip.discovered_from
                     subnet = configs.db.query(subnet_table).filter_by(ipam_device_id = device.ipam_device_id).all()
                     for row in subnet:
-                        devices_data['subnet'] = row.subnet_address
+                        devices_data['subnet_address'] = row.subnet_address
                         devices_data['subnet_mask'] = row.subnet_mask
                         devices_data['location'] = row.location
                         subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = row.subnet_id).all()
@@ -196,14 +202,20 @@ def get_ipam_fetch_devices():
         ipam_devices = configs.db.query(IpamDevicesFetchTable).all()
 
         for devices in ipam_devices:
-            print("device in ipma devicesi is::::::::::::",devices,file=sys.stderr)
-            atom_exist = configs.db.query(AtomTable).filter_by(atom_id=devices.atom_id).first()
+            print("device in ipam devices is:", devices, file=sys.stderr)
+            try:
+                atom_exist = configs.db.query(AtomTable).filter_by(atom_id=devices.atom_id).one()
+            except NoResultFound:
+                # Atom not found, delete record from IpamDevicesFetchTable
+                configs.db.query(IpamDevicesFetchTable).filter_by(ipam_device_id=devices.ipam_device_id).delete()
+                # Also delete from ip_interface_table
+                configs.db.query(ip_interface_table).filter_by(ipam_device_id=devices.ipam_device_id).delete()
+                configs.db.commit()
+                continue
+
             interfaces = configs.db.query(ip_interface_table).filter_by(ipam_device_id=devices.ipam_device_id).first()
             subnet = configs.db.query(subnet_table).filter_by(ipam_device_id=devices.ipam_device_id).first()
 
-            print("atom exsist is:",atom_exist,file=sys.stderr)
-            print("insterface exsist is:::",file=sys.stderr)
-            print("subnet is::::::",subnet,file=sys.stderr)
             subnet_address = subnet_mask = subnet_name = scan_date = None
             subnet_usage_value = subnet_size = None
 
@@ -212,12 +224,10 @@ def get_ipam_fetch_devices():
                 subnet_mask = subnet.subnet_mask
                 subnet_name = subnet.subnet_name
                 scan_date = subnet.scan_date
-                print("subnet address:::::",subnet_address,file=sys.stderr)
                 subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id=subnet.subnet_id).first()
                 if subnet_usage:
                     subnet_usage_value = subnet_usage.subnet_usage
                     subnet_size = subnet_usage.subnet_size
-                    print("subent usage iss::",subnet_usage,file=sys.stderr)
 
             devices_dict = {
                 "ipam_device_id": devices.ipam_device_id,
@@ -241,15 +251,13 @@ def get_ipam_fetch_devices():
                 "subnet_usage": subnet_usage_value,
                 "subnet_size": subnet_size
             }
-            print("device dict is::::::::::")
             devices_list.append(devices_dict)
-        print("devices list is:::::::::::::::::",devices_list,file=sys.stderr)
+
         return devices_list
 
     except Exception as e:
         print(traceback.format_exc())
         return JSONResponse(content={"error": "Error Occurred While Getting IPAM devices", "details": str(e)}, status_code=500)
-
 
 @router.post('/add_subnet',responses={
     200:{"model":Response200},
@@ -478,6 +486,7 @@ def get_all_discovered_subnet():
     try:
         subnet_lst = []
         subnets = configs.db.query(subnet_table).filter_by(discovered="Discovered").all()
+        print("subnets",subnets,file=sys.stderr)
         for subnet in subnets:
             subnet_usage = configs.db.query(subnet_usage_table).filter_by(subnet_id = subnet.subnet_id).first()
             subnet_dict = {
@@ -491,6 +500,7 @@ def get_all_discovered_subnet():
                 "subnet_size":subnet_usage.subnet_size,
             }
             subnet_lst.append(subnet_dict)
+            print("subnet_list",subnet_lst,file=sys.stderr)
         return subnet_lst
     except Exception as e:
         traceback.print_exc()
@@ -656,11 +666,11 @@ def GetAllDnsServersRecord():
             dnsServersRecordObjs = configs.db.query(DnsRecordTable).all()
             for dnsServersRecordObj in dnsServersRecordObjs:
                 dns_zone_exsist = configs.db.query(DnsZonesTable).filter_by(dns_zone_id = dnsServersRecordObj.dns_zone_id).first()
-                dns_server_exsist = configs.db.query(DnsServerTable).filter_by(dns_Server_id = dns_zone_exsist.dns_server_id).first()
+                dns_server_exsist = configs.db.query(DnsServerTable).filter_by(dns_server_id = dns_zone_exsist.dns_server_id).first()
                 objDict = {}
-                objDict['dns_record_id'] = dnsServersRecordObj.dns_id
+                objDict['dns_record_id'] = dnsServersRecordObj.dns_record_id
                 objDict['server_name'] = dnsServersRecordObj.server_name
-                objDict['server_ip'] = dnsServersRecordObj.server_ip
+                objDict['ip_address'] = dnsServersRecordObj.server_ip
                 objDict['zone_name'] = dns_zone_exsist.zone_name
                 objDict['dns_name'] = dns_server_exsist.server_name
                 objDict['dns_type'] = dns_server_exsist.type
@@ -692,7 +702,7 @@ def get_all_f5():
                 "f5_id":f5Obj.f5_id,
                 "ip_address":f5Obj.ip_address,
                 "device_name":f5Obj.device_name,
-                "vserver_name":f5Obj.vserver_name,
+                "v_server_name":f5Obj.vserver_name,
                 "vip":f5Obj.vip,
                 "pool_name":f5Obj.pool_name,
                 "pool_member":f5Obj.pool_member,
@@ -701,8 +711,6 @@ def get_all_f5():
                 "monitor_value":f5Obj.monitor_value,
                 "monitor_status":f5Obj.monitor_status,
                 "lb_method":f5Obj.lb_method,
-                "creation_date":f5Obj.creation_date,
-                "modification_date":f5Obj.modification_date,
                 "created_by":f5Obj.created_by,
                 "modified_by":f5Obj.modified_by
             }
@@ -750,11 +758,10 @@ def get_all_firewall_vip():
                 "device_name":row.device_name,
                 "internal_ip":row.internal_ip,
                 "vip":row.vip,
-                "sport":row.sport,
-                "dport":row.dport,
-                "extintf":row.extintf,
-                "creation_date":row.creation_date,
-                "modification_date":row.modification_date
+                "source_port":row.sport,
+                "destination_port":row.dport,
+                "external_interface":row.extintf,
+
             }
             firewall_lst.append(firewall_dict)
         content = json.dumps(firewall_lst).encode('utf-8')
@@ -800,7 +807,8 @@ def get_all_subnet():
                 "subnet_address":row.subnet_address,
                 "subnet_mask":row.subnet_mask,
                 "subnet_name":row.subnet_name,
-                "location":row.location,
+                "subnet_location":row.location,
+                "subnet_status":row.status,
                 "discovered_from":row.discovered_from,
                 "discovered":row.discovered,
                 "scan_date":row.scan_date,
@@ -827,29 +835,30 @@ async def get_all_details():
         ip_detail = configs.db.query(IpTable).all()
         for ip in ip_detail:
             subnet_exsist = configs.db.query(subnet_table).filter_by(subnet_id = ip.subnet_id).first()
-            if ip.ip_address is not None:
-                print("ip is::", ip, file=sys.stderr)
-                print("ip is::", ip, file=sys.stderr)
-                subnet_address = None
-                if subnet_exsist and subnet_exsist.subnet_address is not None :
-                    subnet_address = subnet_exsist.subnet_address
-                ip_dict = {
-                    "ip_id": ip.ip_id,
-                    "mac_address": ip.mac_address,
-                    "status": ip.status,
-                    "vip": ip.vip,
-                    "asset_tag": ip.asset_tag,
-                    "configuration_switch": ip.configuration_switch,
-                    "configuration_interface": ip.configuration_interface,
-                    "open_ports": ip.open_ports,
-                    "ip_dns": ip.ip_dns,
-                    "dns_ip": ip.dns_ip,
-                    "creation_date": ip.creation_date,
-                    "modification_date": ip.modification_date,
-                    "ip_address": ip.ip_address,
-                    "subnet_address":subnet_address
-                }
-                ip_list.append(ip_dict)
+            if subnet_exsist:
+                if ip.ip_address is not None:
+                    print("ip is::", ip, file=sys.stderr)
+                    print("ip is::", ip, file=sys.stderr)
+                    subnet_address = None
+                    if subnet_exsist and subnet_exsist.subnet_address is not None :
+                        subnet_address = subnet_exsist.subnet_address
+                    ip_dict = {
+                        "ip_id": ip.ip_id,
+                        "mac_address": ip.mac_address,
+                        "status": ip.status,
+                        "vip": ip.vip,
+                        "asset_tag": ip.asset_tag,
+                        "configuration_switch": ip.configuration_switch,
+                        "configuration_interface": ip.configuration_interface,
+                        "open_ports": ip.open_ports,
+                        "ip_dns": ip.ip_dns,
+                        "dns_ip": ip.dns_ip,
+                        "creation_date": ip.creation_date,
+                        "modification_date": ip.modification_date,
+                        "ip_address": ip.ip_address,
+                        "subnet_address":subnet_address
+                    }
+                    ip_list.append(ip_dict)
         return ip_list
     except Exception as e:
         traceback.print_exc()
@@ -1322,14 +1331,15 @@ def get_ip_history():
         history_list = []
         history = configs.db.query(IP_HISTORY_TABLE).all()
         for data in history:
-            history_dict = {
-                "ip_history_id":data.ip_history_id,
-                "mac_address":data.mac_address,
-                "ip_address":data.ip_address,
-                "asset_tag":data.asset_tag,
-                "date":data.date
-            }
-            history_list.append(history_dict)
+            if data.ip_address is not None:
+                history_dict = {
+                    "ip_history_id":data.ip_history_id,
+                    "mac_address":data.mac_address,
+                    "ip_address":data.ip_address,
+                    "asset_tag":data.asset_tag,
+                    "date":data.date
+                }
+                history_list.append(history_dict)
         return  history_list
     except Exception as e:
         traceback.print_exc()

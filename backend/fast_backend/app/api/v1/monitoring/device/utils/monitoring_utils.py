@@ -25,7 +25,9 @@ def UpdateMonitoringDevice(MonitoringObj, row, update):
                 print("atom id is::::::::::::::::::::::::::",atom_id,file=sys.stderr)
             else:
                 return f"No Atom ID Against the Monitoring ID {monitoring_id_exsist}", 400
-            status = ping(atom_id_exsist.ip_address)[0]
+            #status = ping(atom_id_exsist.ip_address)[0]
+            status = ping(atom_id_exsist.ip_address)
+            
             print("status is:::::::::::::::::::::::::::",file=sys.stderr)
             monitoring_id_exsist.atom_id = atom_id
             monitoring_id_exsist.active ='Active'

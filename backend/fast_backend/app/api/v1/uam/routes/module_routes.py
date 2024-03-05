@@ -185,8 +185,9 @@ def get_all_subboards():
             .join(AtomTable, UamDeviceTable.atom_id == AtomTable.atom_id)
             .all()
         )
-
+        print("results are:::::::",results,file=sys.stderr)
         for subboardObj, uam, atom in results:
+            print(f"sub{subboardObj} :::::: {uam} ::::: {atom}")
             try:
                 subboardDataDict = {"subboard_name": subboardObj.subboard_name,
                                     "device_name": atom.device_name,
@@ -210,7 +211,7 @@ def get_all_subboards():
                 subboardObjList.append(subboardDataDict)
             except Exception:
                 traceback.print_exc()
-
+        print("subboard list is::::::::::::",subboardObjList,file=sys.stderr)
         return JSONResponse(content=subboardObjList, status_code=200)
 
     except Exception as e:

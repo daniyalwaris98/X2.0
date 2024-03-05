@@ -2,7 +2,8 @@ from app.models.atom_models import *
 from app.models.monitoring_models import *
 from app.utils.db_utils import *
 
-
+modification = datetime.now() 
+formatted_modification_date = modification.strftime('%Y-%m-%d %H:%M:%S.%f')   
 def snmp_alert(monitoring_device_id, flag):
     try:
         alert = configs.db.query(Monitoring_Alerts_Table).filter(
@@ -15,9 +16,9 @@ def snmp_alert(monitoring_device_id, flag):
         if not flag:
             if alert is None:
                 query = (f"INSERT INTO monitoring_alerts_table (`monitoring_device_id`,"
-                         f"`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,)"
+                         f"`DESCRIPTION`,`ALERT_TYPE`,`CATEGORY`,`ALERT_STATUS`,`MAIL_STATUS`,MODIFICATION_DATE)"
                          f" VALUES ({monitoring_device_id},'Check SNMP Credentials Or Status',"
-                         f"'informational','snmp','Open','no');")
+                         f"'informational','snmp','Open','no','{formatted_modification_date}');")
                 configs.db.execute(query)
                 configs.db.commit()
         else:
@@ -54,8 +55,8 @@ def status_alert(monitoring_device, status):
 
     #except Exception as e:
         #traceback.print_exc()
-    modification = datetime.now() 
-    formatted_modification_date = modification.strftime('%Y-%m-%d %H:%M:%S.%f')   
+   
+    
 
     if alert is None:
         if status == "Down":
