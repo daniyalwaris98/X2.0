@@ -171,11 +171,14 @@ async def DNS_Summary():
         obj_list =[
             {"name":"not_resolved_ip","value":not_resolved_ip},
             {"name":"resolved_ip","value": resolved_ip}]
-    
-
-        print("status obj_list are::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
-
-        return JSONResponse(content=obj_list, status_code =200)
+        if not_resolved_ip == 0 and resolved_ip==0:
+            obj_data = [
+                {"name":"not_resolved_ip","value":12},
+                {"name":"resolved_ip","value": 20}]
+            return obj_data
+        else:
+            print("status obj_list are::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
+            return JSONResponse(content=obj_list, status_code =200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
@@ -196,15 +199,14 @@ async def subnet_summary():
     try:
         query = (
             "SELECT "
-            "COUNT(CASE WHEN subnet_state = 'manual' THEN 1 ELSE NULL END) AS manually_added, "
-            "COUNT(CASE WHEN subnet_state = 'discovered' THEN 1 ELSE NULL END) AS discovered_added, "
+            "COUNT(CASE WHEN discovered = 'Not Discovered' THEN 1 ELSE NULL END) AS manually_added, "
+            "COUNT(CASE WHEN discovered = 'Discovered' THEN 1 ELSE NULL END) AS discovered_added, "
             "COUNT(subnet_state) AS total_count "
             "FROM subnet_table"
         )
-
-        print("Executing query:", query, file=sys.stderr)
+        print("Executing query::::::::::::::::::::", query, file=sys.stderr)
         result = configs.db.execute(query)
-        print("results is::::::::::::::::::::::::", result, file=sys.stderr)
+        print("results is::::::::::::::::::::::::::::", result, file=sys.stderr)
         obj_list =[]
 
         manually_added = 0
@@ -212,11 +214,12 @@ async def subnet_summary():
         # total_count = 0
 
         for row in result:
-            print("row in result is::::::::::::::::::", row, file=sys.stderr)
+            print("row in result is::::::::::::::::::::::::::::", row, file=sys.stderr)
 
             # Update the obj_list by adding the values from the current row
             manually_added += row[0]
             discovered_added += row[1]
+            print(f"manual addedd {manually_added} :::::::::::: discovered{discovered_added}",file=sys.stderr)
             #total_count += row[2]
             
             
