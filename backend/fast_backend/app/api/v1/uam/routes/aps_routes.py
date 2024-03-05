@@ -26,7 +26,7 @@ async def get_all_aps():
 
         obj_list = []
         for ap_obj in ap_objs:
-            obj_dict = {"ap_id": ap_obj.ap_id, "uam_id": ap_obj.uam_id, "controller_name": ap_obj.controller_name,
+            obj_dict = {"ap_id": ap_obj.ap_id, "uam_id": ap_obj.uam_id,
                         "ap_ip": ap_obj.ap_ip, "ap_name": ap_obj.ap_name, "serial_number": ap_obj.serial_number,
                         "ap_model": ap_obj.ap_model, "hardware_version": ap_obj.hardware_version,
                         "software_version": ap_obj.software_version, "description": ap_obj.description,
@@ -34,7 +34,7 @@ async def get_all_aps():
             obj_list.append(obj_dict)
 
         # print(obj_list, file=sys.stderr)
-        return JSONResponse(content=obj_list, status_code=200)
+        return obj_list
 
     except Exception:
         traceback.print_exc()

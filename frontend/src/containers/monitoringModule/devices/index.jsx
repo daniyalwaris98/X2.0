@@ -45,6 +45,8 @@ import { MODULE_PATH } from "..";
 import { MAIN_LAYOUT_PATH } from "../../../layouts/mainLayout";
 import { Row, Col } from "antd";
 import ResponseTimeChart from "./Component/ResponseTimeChart";
+import VendorChart from "./Component/VendorChart";
+import FunctionChart from "./Component/FunctionChart";
 
 const Index = () => {
   // hooks
@@ -253,11 +255,24 @@ const Index = () => {
         justify="space-between"
         style={{ padding: "0 0 20px 0" }}
       >
-        <Col span={24}>
+        <Col span={12}>
           <div className="container">
-            <h6 className="heading"></h6>
-            <ResponseTimeChart />
+            <h6 className="heading">Vendor</h6>
+            {/* <ResponseTimeChart /> */}
+            <VendorChart/>
           </div>
+        </Col>
+        <Col span={12}>
+          <div className="container">
+            <h6 className="heading">Function</h6>
+<FunctionChart  deviceNames={[
+                "Switch",
+                "Firewall",
+                "VM",
+                "Router",
+                "Switch 2",
+              ]}
+              values={[15, 10, 20,15]}/>          </div>
         </Col>
       </Row>
 
