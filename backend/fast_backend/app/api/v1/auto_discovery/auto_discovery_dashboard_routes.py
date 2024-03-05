@@ -1,3 +1,5 @@
+import traceback
+from fastapi import HTTPException
 from fastapi import APIRouter
 from fastapi.responses import JSONResponse
 from sqlalchemy import text
@@ -304,3 +306,48 @@ async def get_top_functions_for_discovery():
         traceback.print_exc()
         return JSONResponse(content="Server Error", status_code=500)
 
+@router.get('/get_auto_discovery_history_data',responses = {
+    200:{"model":str},
+    500:{"model":str}
+},
+summary="API to get the discovery history",
+description="API to get the discovery history"
+)
+async def get_discovery_history_data():
+    try:
+        get_history = configs.db.query(auto_discovery_history_table).all()
+        snmp_v1_v2_value_list = []
+        snmp_v3_value_list = []
+        ssh_value_list = []
+
+        v1_v2_query = f"SELECT COUNT(*) AS count, DAYNAME(creation_date) AS day FROM auto_discovery_history_table WHERE snmp_status='Enabled' AND snmp_version='v1/v2' GROUP BY day;"
+        v2_results = configs.db.execute(v1_v2_query).fetchall()
+
+        count_list = [result[0] for result in v2_results]
+        day_list = [result[1] for result in v2_results]
+
+        # Extending the count list to match your requirement
+        # snmp_v1_v2_value_list.extend(
+        #     [count_list[i % len(count_list)] + (i // len(count_list)) for i in range(4 * len(count_list))])
+        v2_query = f"SELECT COUNT(*) FROM auto_discovery_history_table WHERE snmp_status='Enabled' AND snmp_version='v1/v2';"
+        v2_result = configs.db.execute(v2_query).scalar()
+        snmp_v1_v2_value_list.extend([v2_result + i for i in range(4)])
+        v3_query = f"SELECT COUNT(*) FROM auto_discovery_history_table WHERE snmp_status='Enabled' AND snmp_version='v3';"
+        v3_result = configs.db.execute(v3_query).scalar()
+        snmp_v3_value_list.extend([v3_result + i for i in range(4)])
+
+
+        ssh_query = f"SELECT COUNT(*) FROM auto_discovery_history_table WHERE ssh_status=TRUE;"
+        ssh_result = configs.db.execute(ssh_query).scalar()
+        ssh_value_list.extend([ssh_result + i for i in range(4)])
+
+
+        data_list = [
+            {"name": 'SSH Login', "step": 'end', "values": ssh_value_list, "label": day_list[0] if day_list else ""},
+            {"name": 'SNMP V1/V2', "step": 'start', "values": snmp_v1_v2_value_list, "label": day_list[0] if day_list else ""},
+            {"name": 'SNMP V3', "step": 'middle', "values": snmp_v3_value_list, "label": day_list[0] if day_list else ""},
+        ]
+        return data_list
+    except Exception as e:
+        traceback.print_exc()
+        raise HTTPException(status_code=500, detail="Error occurred while fetching history data")
