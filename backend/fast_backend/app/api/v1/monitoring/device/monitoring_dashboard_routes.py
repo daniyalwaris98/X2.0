@@ -466,7 +466,7 @@ def cpu_stats_fetching():
                     continue
 
         final_list = []
-        cpu_list = sorted(results, key=lambda k: k["cpu"], reverse=True)
+        cpu_list = sorted(results, key=lambda k: k["value"], reverse=True)
         ip_list = []
 
         for dct in cpu_list:
