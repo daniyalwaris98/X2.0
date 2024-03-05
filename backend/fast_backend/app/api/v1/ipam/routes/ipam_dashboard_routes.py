@@ -27,41 +27,59 @@ router = APIRouter(
 summary="API to get all ports and their obj_list from ip_table",
 description="API to get all ports and their obj_list from ip_table"
 )
-async def get_port_list():
+async def tcp_open_ports():
+
+
     try:
-        port_dict = {}
+        port_list = []
+        port_value =[]
+        obj_list=[]
 
         query = (
             "SELECT open_ports, COUNT(open_ports) AS frequency "
             "FROM ip_table "
-            "GROUP BY open_ports"
+            "GROUP BY open_ports "
+            "ORDER BY frequency DESC, open_ports ASC "
+            "LIMIT 10;"
         )
 
         print("Executing query:", query, file=sys.stderr)
         result = configs.db.execute(query)
         print("results is::::::::::::::::::::::::", result, file=sys.stderr)
 
+        port_dict = {}
+
         for row in result:
-            print("row in result is::::::::::::::::::", row, file=sys.stderr)
-            ports = row[0].split(', ') if row[0] else ['None']
-            for port in ports:
-                port_dict[port] = max(port_dict.get(port, 0), int(row[1]))
+            if row[0]:
+                ports = row[0].split(", ")
+                for port in ports:
+                    if port in port_dict:
+                        port_dict[port] = max(port_dict[port], int(row[1]))
+                    else:
+                        port_dict[port] = int(row[1])
 
-        print("port dict is::::::::::::::::::::::::::::", port_dict, file=sys.stderr)
+        # Convert the port_dict to the desired format
+        port_list = list(port_dict.keys())
+        port_value = list(port_dict.values())
 
-        obj_list = [{"name": port, "value": value} for port, value in port_dict.items()]
+        obj_list = [{"name": port_list, "value": port_value}]
+        if len(port_list) <= 0:
+            port_list = ["PortA", "PortB", "PortC", "Other"]
+            port_value = [0, 0, 0, 0]
 
-        print("obj list is::::::::::::::::::::::::::::", obj_list, file=sys.stderr)
 
-        if not obj_list:
-            obj_list = [{"name": "None", "value": 0}]
+        obj_list=[{"name":port_list,
+                   "value":port_value}]
+
+
+        print("obj dict is:::::::::::::::::::::::::", obj_list, file=sys.stderr)
 
         return JSONResponse(content=obj_list, status_code=200)
     except Exception:
         traceback.print_exc()
         return JSONResponse(
-            content="Error While Fetching The Data\nFor Port List and Frequency from ip_table",
-            status_code=500,
+            content = "Error While Fetching The Data\nFor Port List and Frequency from ip_table",
+            status_code = 500,
         )
 
 
@@ -269,7 +287,7 @@ async def type_summary():
                 "obj_list": 150
             },
             {
-                "vender": "HC3Huawei",
+                "vender": "Huawei",
                 "obj_list": 150
             }
         ]
