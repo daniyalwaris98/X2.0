@@ -397,7 +397,7 @@ const tableColumnsSFPS = [
           <div style={colStyle}>
             <h5 style={title}>Configuration Change by Time</h5>
             <TopOpenPorts
-             chartData={configurationByTimeData !== undefined? configurationByTimeData:[] } 
+            //  chartData={configurationByTimeData !== undefined? configurationByTimeData:[] } 
             //  chartData={chartData}//
              
              />
