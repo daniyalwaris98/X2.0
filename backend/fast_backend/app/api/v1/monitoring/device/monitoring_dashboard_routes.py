@@ -138,45 +138,48 @@ def monitoring_heatmap():
             {"fill": "#DC3938", "name": "Device Down", "value": int(service_down)},
             {"fill": "#0504aa", "name": "Total", "value": int(total)},
         ]
-        obj_data =[
-                {
-                    "fill": "#E2B200",
-                    "name": "Attention",
-                    "value": 2
-                },
-                {
-                    "fill": "#C0C0C0",
-                    "name": "Not Monitored",
-                    "value": 1
-                },
-                {
-                    "fill": "#66B127",
-                    "name": "Clear",
-                    "value": 6
-                },
-                {
-                    "fill": "#FF9A40",
-                    "name": "Critical",
-                    "value": 0
-                },
-                {
-                    "fill": "#808080",
-                    "name": "InActive",
-                    "value": 1
-                },
-                {
-                    "fill": "#DC3938",
-                    "name": "Device Down",
-                    "value": 3
-                },
-                {
-                    "fill": "#0504aa",
-                    "name": "Total",
-                    "value": 3
-                }
-            ]
+        list_of_lists = [
 
-        return JSONResponse(content=obj_data, status_code=200)
+                {"fill": "#E2B200", "name": "Attention", "value": 2},
+                {"fill": "#C0C0C0", "name": "Not Monitored", "value": 1},
+                {"fill": "#66B127", "name": "Clear", "value": 6},
+                {"fill": "#FF9A40", "name": "Critical", "value": 0},
+
+
+                {"fill": "#808080", "name": "InActive", "value": 1},
+                {"fill": "#DC3938", "name": "Device Down", "value": 3},
+                {"fill": "#0504aa", "name": "Total", "value": 3},
+                {"fill": "#E2B240", "name": "Attention", "value": 2},
+
+
+                {"fill": "#C0C0D0", "name": "Not Monitored", "value": 1},
+                {"fill": "#66B147", "name": "Clear", "value": 6},
+                {"fill": "#AA3938", "name": "Device Down", "value": 3},
+                {"fill": "#2A04AA", "name": "Total", "value": 3},
+
+
+                {"fill": "#B230FF", "name": "Critical", "value": 0},
+                {"fill": "#E2B200", "name": "Attention", "value": 2},
+                {"fill": "#C0C0C0", "name": "Not Monitored", "value": 1},
+                {"fill": "#66B127", "name": "Clear", "value": 6},
+
+                {"fill": "#C0C0D0", "name": "Not Monitored", "value": 1},
+                {"fill": "#E2B200", "name": "Attention", "value": 2},
+                {"fill": "#C0C0C0", "name": "Not Monitored", "value": 1},
+                {"fill": "#66B127", "name": "Clear", "value": 6},
+
+                {"fill": "#66B147", "name": "Clear", "value": 6},
+                {"fill": "#E2B200", "name": "Attention", "value": 2},
+                {"fill": "#E2B240", "name": "Attention", "value": 2},
+                {"fill": "#66B147", "name": "Clear", "value": 6},
+
+                {"fill": "#66B147", "name": "Clear", "value": 6},
+                {"fill": "#E2B240", "name": "Attention", "value": 2},
+                {"fill": "#E2B200", "name": "Attention", "value": 2},
+                {"fill": "#66B147", "name": "Clear", "value": 6},
+        ]
+
+        return JSONResponse(content=list_of_lists, status_code=200)
 
     except Exception:
         traceback.print_exc()
