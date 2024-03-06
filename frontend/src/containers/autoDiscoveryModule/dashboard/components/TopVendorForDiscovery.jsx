@@ -83,7 +83,7 @@ const TopVendorForDiscovery = ({ data }) => {
         focus: "series",
       },
 
-      barGap: "13%",
+      barGap: "5%",
     };
 
     option && myChart.setOption(option);
