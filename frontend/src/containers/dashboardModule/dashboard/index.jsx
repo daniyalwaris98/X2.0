@@ -411,7 +411,7 @@ const tableColumnsSFPS = [
       </Row>
 
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
-        <Col span={8} style={{height:"350px"}}>
+        <Col span={8} style={{height:"360px"}}>
           <div style={colStyle} >
             <h5 style={title}>Configuration Change by Time</h5>
             <TopOpenPorts
@@ -422,7 +422,7 @@ const tableColumnsSFPS = [
           </div>
         </Col>
 
-        <Col span={8} style={{height:"350px"}}>
+        <Col span={8} style={{height:"360px"}}>
           <div style={colStyle}>
             <h5 style={title}>Credentials Summary</h5>
             {/* <CredentialSummary data={credentialsSummaryData !== undefined? credentialsSummaryData:[]}  /> */}
@@ -431,7 +431,7 @@ const tableColumnsSFPS = [
           </div>
         </Col>
 
-        <Col span={8} style={{height:"350px"}}>
+        <Col span={8} style={{height:"360px"}}>
           <div style={colStyle}>
             <h5 style={title}>SNMP Status</h5>
             <SnmpStatus  responseData={snmpStatusData !==undefined? snmpStatusData:[]}/>
