@@ -6,6 +6,7 @@ from sqlalchemy import text
 from collections import defaultdict
 from app.api.v1.auto_discovery.auto_discovery_utils import *
 from app.schema.base_schema import NameValueListOfDictResponseSchema, NameValueDictResponseSchema
+import datetime
 
 router = APIRouter(
     prefix="/auto_discovery_dashboard",
@@ -315,7 +316,17 @@ description="API to get the discovery history"
 )
 async def get_discovery_history_data():
     try:
-        get_history = configs.db.query(auto_discovery_history_table).all()
+        # Calculate the start and end dates of the current week
+        today = datetime.date.today()
+        start_of_week = today - datetime.timedelta(days=today.weekday())
+        end_of_week = start_of_week + datetime.timedelta(days=6)
+
+        # Query history data for the current week
+        get_history = configs.db.query(auto_discovery_history_table).filter(
+            auto_discovery_history_table.creation_date >= start_of_week,
+            auto_discovery_history_table.creation_date <= end_of_week
+        ).all()
+
         data_dict = defaultdict(lambda: defaultdict(lambda: [0, 0, 0]))
 
         for history in get_history:
