@@ -41,7 +41,7 @@ import {
   useGetSnapshotQuery
 
 } from "../../../store/features//monitoringModule/dashboard/apis";
-import { Memory } from "@mui/icons-material";
+import { Height, Memory } from "@mui/icons-material";
 function Index() {
   const {
     data: typeSummaryData,
@@ -411,8 +411,8 @@ const tableColumnsSFPS = [
       </Row>
 
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
-        <Col span={8}>
-          <div style={colStyle}>
+        <Col span={8} style={{height:"350px"}}>
+          <div style={colStyle} >
             <h5 style={title}>Configuration Change by Time</h5>
             <TopOpenPorts
             //  chartData={configurationByTimeData !== undefined? configurationByTimeData:[] } 
@@ -422,7 +422,7 @@ const tableColumnsSFPS = [
           </div>
         </Col>
 
-        <Col span={8}>
+        <Col span={8} style={{height:"350px"}}>
           <div style={colStyle}>
             <h5 style={title}>Credentials Summary</h5>
             {/* <CredentialSummary data={credentialsSummaryData !== undefined? credentialsSummaryData:[]}  /> */}
@@ -431,7 +431,7 @@ const tableColumnsSFPS = [
           </div>
         </Col>
 
-        <Col span={8}>
+        <Col span={8} style={{height:"350px"}}>
           <div style={colStyle}>
             <h5 style={title}>SNMP Status</h5>
             <SnmpStatus  responseData={snmpStatusData !==undefined? snmpStatusData:[]}/>
