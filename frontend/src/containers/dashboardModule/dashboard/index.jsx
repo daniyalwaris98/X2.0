@@ -463,8 +463,10 @@ const tableColumnsSFPS = [
         <Col span={16}>
           <div style={colStyle}>
             <h5 style={title}>Device Status Overview</h5>
-            {/* <DeviceStatus /> */}
-            <DeviceStatus categories={deviceStatusOverviewData !== undefined? deviceStatusOverviewData :[] } />
+            <DeviceStatus />
+            {/* <DeviceStatus categories={deviceStatusOverviewData !== undefined? deviceStatusOverviewData :[] } */}
+            
+            
           </div>
         </Col>
       </Row>
