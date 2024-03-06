@@ -3,15 +3,12 @@ import * as echarts from 'echarts';
 
 const CredentialSummary = ({ data }) => {
   useEffect(() => {
-    const chartDom = document.getElementById('credentialSummaryChart');
+    const chartDom = document.getElementById('credential');
     const myChart = echarts.init(chartDom);
-
+    
     const option = {
       tooltip: {
         trigger: 'axis'
-      },
-      legend: {
-        data: data?.name
       },
       grid: {
         left: '3%',
@@ -19,39 +16,30 @@ const CredentialSummary = ({ data }) => {
         bottom: '3%',
         containLabel: true
       },
-      toolbox: {
-        feature: {
-          saveAsImage: {}
-        }
-      },
       xAxis: {
         type: 'category',
-        data: data?.name
+        data: data ? data.map(item => item.label) : []
       },
       yAxis: {
         type: 'value'
       },
-      series: [
-        {
-          name: data?.name,
-          type: 'line',
-          data: data?.value
-        }
-      ]
+      series: data ? data.map(item => ({
+        name: item.name,
+        type: 'line',
+        step: item.step,
+        data: item.values
+      })) : []
     };
-
+    
     option && myChart.setOption(option);
 
+    // Clean up the chart instance on unmount
     return () => {
       myChart.dispose();
     };
-  }, [data]);
+  }, [data]); // Re-render chart when data changes
 
-  return (
-    <div id="credentialSummaryChart" style={{ width: '100%', height: '400px' }}>
-      {/* ECharts will be rendered inside this div */}
-    </div>
-  );
+  return <div id="credential" style={{ width: '100%', height: '400px' }}></div>;
 };
 
 export default CredentialSummary;

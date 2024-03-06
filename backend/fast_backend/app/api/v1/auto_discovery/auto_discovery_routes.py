@@ -284,6 +284,15 @@ async def auto_discovery_background_task(subnet):
                 discovery_obj.ssh_status = False
 
                 InsertDBData(discovery_obj)
+                discovery_history = auto_discovery_history_table(
+                    snmp_status = host[5],
+                    snmp_version = host[6],
+                    ssh_status = False,
+                    discovery_id = discovery_obj.discovery_id,
+                    creation_date = datetime.now(),
+                    modification_date = datetime.now()
+                )
+                InsertDBData(discovery_history)
                 print(f"{host[0]} :::::::::::::Host Inserted to the DB:::::::::::::::::::::::::", file=sys.stderr)
                 auto_discovery_dict = {
                     "discovery_id": discovery_obj.discovery_id,
@@ -313,6 +322,15 @@ async def auto_discovery_background_task(subnet):
                 discovery_obj.ssh_status = False
 
                 UpdateDBData(discovery_obj)
+                discovery_history = auto_discovery_history_table(
+                    snmp_status=host[5],
+                    snmp_version=host[6],
+                    ssh_status=False,
+                    discovery_id=discovery_obj.discovery_id,
+                    creation_date = datetime.now(),
+                    modification_date = datetime.now(),
+                )
+                InsertDBData(discovery_history)
                 print(f"{host[0]}:::::::: host updated in db::::::", file=sys.stderr)
                 auto_discovery_dict = {
                     "discovery_id": discovery_obj.discovery_id,

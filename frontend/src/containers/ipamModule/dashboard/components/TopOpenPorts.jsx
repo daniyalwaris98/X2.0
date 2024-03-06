@@ -88,7 +88,7 @@ const TopOpenPorts = () => {
       },
       series: [
         {
-          data: [0, 40, 0, 70, 0, ],
+          data: [0, 40, 0, 70, 0],
           type: "bar",
           showBackground: true,
           backgroundStyle: {

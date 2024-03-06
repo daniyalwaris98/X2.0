@@ -301,36 +301,64 @@ async def type_summary():
 @router.get("/main_phy_leaf_let",response_model=list[location]
             ,summary="API to get phy_leaf_let",
             description="API to get phy_leaf_let")
-async def phy_leaflet(site_name : str = Query(...,description="Name of the site")):
+async def phy_leaflet(region_name: str = Query(..., description="Name of the region")):
     try:
         result = (
             configs.db.query(SiteTable)
-            .filter(SiteTable.site_name == site_name)
+            .filter(SiteTable.region_name == region_name)
             .all()
         )
-        print("result in py leaflet is ::::::::::::::::::::::::::::::::",result,file=sys.stderr)
-        response = []
-        obj_dict ={}
+        print("result in py leaflet is ::::::::::::::::::::::::::::::::", result, file=sys.stderr)
+        response = {}
 
         for site in result:
-            print("site is::::::::::::::::::::::::::::::::::::::::::::::::::",site,file=sys.stderr)
-            obj_dict = {"name":"site_name", "value":site.site_name,
-                        "name":"city", "value":site.city}
-            response.append(obj_dict)
+            rack_count = configs.db.query(func.count(RackTable.rack_id)).filter_by(site_id=site.site_id).scalar()
+            atom_count = configs.db.query(func.count(AtomTable.atom_id)).join(RackTable,
+                                                                              RackTable.rack_id == AtomTable.rack_id).filter(
+                RackTable.site_id == site.site_id).scalar()
+            virtual_count = configs.db.query(func.count(AtomTable.atom_id)).join(RackTable,
+                                                                                 RackTable.rack_id == AtomTable.rack_id).filter(
+                RackTable.site_id == site.site_id, AtomTable.virtual == 'Virtual').scalar()
+            not_virtual_count = configs.db.query(func.count(AtomTable.atom_id)).join(RackTable,
+                                                                                     RackTable.rack_id == AtomTable.rack_id).filter(
+                RackTable.site_id == site.site_id, AtomTable.virtual != 'Virtual').scalar()
+            onboard_count = configs.db.query(func.count(AtomTable.atom_id)).join(RackTable,
+                                                                                 RackTable.rack_id == AtomTable.rack_id).filter(
+                RackTable.site_id == site.site_id, AtomTable.onboard_status == True).scalar()
+
+            atoms = configs.db.query(AtomTable).join(RackTable, RackTable.rack_id == AtomTable.rack_id).filter(
+                RackTable.site_id == site.site_id).all()
+            atom_info = [{"ip_address": atom.ip_address, "function": atom.function, "device_name": atom.device_name} for
+                         atom in atoms]
+
+            obj_dict = {
+                "location": site.city,
+                "site_name": site.site_name,
+                "rack_count": rack_count,
+                "atom_count": atom_count,
+                "virtual_count": virtual_count,
+                "not_virtual_count": not_virtual_count,
+                "onboard_count": onboard_count,
+                "atoms": atom_info
+            }
+
+            print("site is::::::::::::::::::::::::::::::::::::::::::::::::::", site, file=sys.stderr)
+            city_key = site.city
+            if city_key not in response:
+                response[city_key] = []
+            response[city_key].append(obj_dict)
 
         if not response:
-            response ={"name":"site_name", "value":"none" ,
-                        "name":"city", "value":"none"}
+            response = {
+                "none": [{"site_name": "none", "rack_count": 0, "atom_count": 0, "virtual_count": 0,
+                          "not_virtual_count": 0,
+                          "onboard_count": 0, "atoms": []}]}
 
-            return JSONResponse(content=response, status_code=200)
-        
         return JSONResponse(content=response, status_code=200)
+
     except Exception:
         traceback.print_exc()
         return JSONResponse(content="Error Occurred While Fetching Sites", status_code=500)
-
-
-
 
 @router.get("/main_device_status", responses={
     200: {"model": list[NameValueListOfDictResponseSchema]},

@@ -7,7 +7,7 @@ import SnmpStatus from "../../autoDiscoveryModule/dashboard/components/SnmpStatu
 import TenSubnetTable from "../../ipamModule/dashboard/components/TenSubnetTable";
 import DeviceStatus from "./components/DeviceStatus";
 import SubnetSummary from "./components/SubnetSummary";
-import CredentialSummary from "./components/CredentialSummary";
+import CredentialSummary from "../../autoDiscoveryModule/dashboard/components/CredentialSummary";
 import Compliance from "../../ncmModule/dashboard/components/Compliance";
 import TopVendorForDiscovery from "../../autoDiscoveryModule/dashboard/components/TopVendorForDiscovery";
 import {Progress }from "antd";
@@ -364,6 +364,11 @@ const tableColumnsSFPS = [
       { name: 'SSH Login', value: 26 },
       { name: 'SSH Logi', value: 30 }
     ];
+    const data12 = [
+      { name: 'SNMP V1/V2', step: 'start', values: [120, 132, 101, 134], label: 'Mon' },
+      { name: 'SNMP V3', step: 'middle', values: [220, 282, 201, 234], label: 'Tue' },
+      { name: 'SSH Login', step: 'end', values: [450, 432, 401, 454], label: 'Wed' }
+    ]; 
   return (
     <>
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
@@ -407,7 +412,9 @@ const tableColumnsSFPS = [
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Credentials Summary</h5>
-            <CredentialSummary data={credentialsSummaryData !== undefined? credentialsSummaryData:[]} />
+            {/* <CredentialSummary data={credentialsSummaryData !== undefined? credentialsSummaryData:[]}  /> */}
+
+            <CredentialSummary data={data12} />
           </div>
         </Col>
 
