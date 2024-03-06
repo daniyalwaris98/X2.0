@@ -43,7 +43,7 @@ const TopOpenPorts = () => {
     return () => myChart.dispose();
   }, []);
 
-  return <div id="TopOpenPortsChart" style={{ width: "100%", height: "350px", margin: 0, padding: 0 }} />;
+  return <div id="TopOpenPortsChart" style={{ width: "100%", height: "350px",padding:"0px", margin:"0px" }} />;
 };
 
 export default TopOpenPorts;

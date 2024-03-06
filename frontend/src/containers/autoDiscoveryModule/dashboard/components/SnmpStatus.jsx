@@ -53,7 +53,7 @@ const SnmpStatus = () => {
     };
   }, []); // Empty dependency array to run only once when the component mounts
 
-  return <div ref={chartRef} style={{ width: '100%', height: '350px' }} />;
+  return <div ref={chartRef} style={{ width: '100%', height: '350px' ,padding:"0px", margin:"0px"}} />;
 };
 
 export default SnmpStatus;
