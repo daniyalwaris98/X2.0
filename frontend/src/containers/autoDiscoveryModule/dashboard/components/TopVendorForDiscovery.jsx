@@ -53,8 +53,8 @@ const TopVendorForDiscovery = ({ data }) => {
         },
       },
       polar: {
-        radius: [7, "70%"], // Adjust the inner radius to decrease gap from the top
-        center: ["50%", "40%","50%", "50%"], // Adjusted center to be in the middle horizontally and at the top vertically
+        radius: [7, "75%"], // Adjust the inner radius to decrease gap from the top
+        center: ["50%", "45%","0%", "0%"], // Adjusted center to be in the middle horizontally and at the top vertically
 
       },
       series: data.map((item, index) => ({
@@ -92,7 +92,7 @@ const TopVendorForDiscovery = ({ data }) => {
     };
   }, [data]);
 
-  return <div id="main" style={{ width: "100%", height: "400px" }}></div>;
+  return <div id="main" style={{ width: "100%", height: "350px" }}></div>;
 };
 
 export default TopVendorForDiscovery;

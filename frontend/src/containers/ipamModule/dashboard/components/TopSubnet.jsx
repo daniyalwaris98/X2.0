@@ -43,8 +43,8 @@ const TopSubnet = ({ data }) => {
         },
       },
       polar: {
-        radius: [70, "70%"],
-        center: ["50%", "40%","50%", "50%"], // Adjusted center to be in the middle horizontally and at the top vertically
+        radius: [70, "75%"],
+        center: ["50%", "45%","0%", "0%"], // Adjusted center to be in the middle horizontally and at the top vertically
       },
       series: [
         {
@@ -109,7 +109,7 @@ const TopSubnet = ({ data }) => {
     };
   }, [data]);
 
-  return <div id="subnet" style={{ width: "100%", height: "400px" }} />;
+  return <div id="subnet" style={{ width: "100%", height: "350px" }} />;
 };
 
 export default TopSubnet;
