@@ -17,28 +17,29 @@ const Compliance = () => {
     const option = {
       tooltip: {
         trigger: 'item',
-        formatter: '{a} <br/>{b} : {c} ({d}%)'
+        // formatter: '{a} <br/>{b} : {c} ({d}%)'
       },
       legend: {
         bottom: 25,
         left: 'center',
-        data: ['Complaint', 'Voilation', 'Data Not Availble']
+        data: ['Complaint', 'Voilation', 'Data Not Available'],
+        fontSize: 10 // Decrease the font size of legend
       },
       series: [
         {
           type: 'pie',
           radius: '65%',
-          center: ['50%',"40%","50%", '50%'],
-          selectedMode: 'single',
+          center: ['50%', '45%',"0%","0%"],
+          selectedMode: 'single', 
           data: [
             { value: 735, name: 'Complaint' },
             { value: 510, name: 'Voilation' },
-            { value: 434, name: 'Data Not Availble' },
+            { value: 434, name: 'Data Not Available' },
           ],
           emphasis: {
             itemStyle: {
               shadowBlur: 10,
-              shadowOffsetX: 0,
+              shadowOffsetX: 10,
               shadowColor: 'rgba(0, 0, 0, 0.5)'
             }
           }
@@ -53,7 +54,8 @@ const Compliance = () => {
     };
   }, []);
 
-  return <div id="complianceChart" style={{ width: '100%', height: '400px', paddingTop: '0px' }}></div>;
+  return <div id="complianceChart" style={{ width: '100%', height: '400px', padding: '0px', margin: '0px' }}></div>;
 };
 
 export default Compliance;
+  
