@@ -189,26 +189,26 @@ function Index() {
   const tableData = [
     {
       key: '1',
-      ip_address: '10.66.211.41',
+      subnet: '10.66.211.41',
       value: 50
     },
     {
       key: '2',
-      ip_address: '10.66.211.11',
+      subnet: '10.66.211.11',
       value: 10
     },
     {
       key: '3',
-      ip_address: '10.66.211.14',
+      subnet: '10.66.211.14',
       value: 60
     },{
       key: '4',
-      ip_address: '10.66.211.11',
+      subnet: '10.66.211.11',
       value: 10
     },
     {
       key: '5',
-      ip_address: '10.66.211.14',
+      subnet: '10.66.211.14',
       value: 60
     },
 
@@ -217,9 +217,9 @@ function Index() {
 
   const tableColumns = [
     {
-      title: 'IP Address',
-      dataIndex: 'ip_address',
-      key: 'ip_address',
+      title: 'Subnet',
+      dataIndex: 'subnet',
+      key: 'subnet',
       align: 'start',
       render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green', textDecoration: 'underline' }}>{text}</a>,
     },
@@ -329,7 +329,7 @@ const tableColumnsSFPS = [
           to={`/monetx/monitoring_module/devices_landing/devices_summary?ip=${record.ip}`}
           rel="noopener noreferrer"
         >
-          <span style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</span>
+          <span style={{ display: 'block', fontWeight: '600', color: 'green' ,textDecoration:"underline"}}>{text}</span>
         </Link>
       ),
     },    
@@ -442,21 +442,21 @@ const tableColumnsSFPS = [
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
         <Col span={8}>
           <div style={colStyle}>
-            <h5 style={title}>Top 5 Subnets by % IP Address Used</h5>
+          <h5 style={{ ...title, padding: "0px 0px 10px 8px" }}>Top 5 Subnets by % IP Address Used</h5>
             <MainTable tableData={tableData} tableColumns={tableColumns} />
           </div>
         </Col>
 
         <Col span={8}>
           <div style={colStyle}>
-            <h5 style={title}>EOL Summary</h5>
+            <h5 style={title}>Compliance</h5>
             <Compliance />
           </div>
         </Col>
 
         <Col span={8}>
           <div style={colStyle}>
-            <h5 style={title}>Devices with most unused SFPs</h5>
+            <h5 style={{ ...title, padding: "0px 0px 10px 8px" }}>Devices with most unused SFPs</h5>
             <MainTable tableData={unusedSfpsData !== undefined ? unusedSfpsData:[]} tableColumns={tableColumnsSFPS} />
           </div>
         </Col>
@@ -472,7 +472,7 @@ const tableColumnsSFPS = [
 
         <Col span={16}>
           <div style={colStyle}>
-            <h5 style={title}>Device Status Overview</h5>
+            <h5 style={{ ...title, padding: "0px 0px px 8px" }}>Device Status Overview</h5>
             <DeviceStatus />
             {/* <DeviceStatus categories={deviceStatusOverviewData !== undefined? deviceStatusOverviewData :[] } */}
             
@@ -484,14 +484,14 @@ const tableColumnsSFPS = [
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
         <Col span={12}>
           <div style={colStyle}>
-            <h5 style={title}>Devices By CPU Utilization</h5>
+            <h5 style={{ ...title, padding: "0px 0px 10px 8px" }}>Devices By CPU Utilization</h5>
             <MainTable tableData={cpuData!== undefined? cpuData:[]} tableColumns={tableColumnsCPU} />
           </div>
         </Col>
 
         <Col span={12}>
           <div style={colStyle}>
-            <h5 style={title}>Devices By Memory Utilization</h5>
+            <h5 style={{ ...title, padding: "0px 0px 10px 8px" }}>Devices By Memory Utilization</h5>
             <MainTable tableData={memoryData!== undefined? memoryData:[]} tableColumns={tableColumnsCPU} />
           </div>
         </Col>
