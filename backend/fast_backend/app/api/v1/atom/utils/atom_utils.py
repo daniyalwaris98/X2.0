@@ -416,12 +416,14 @@ def add_transition_atom(device, update):
             status = UpdateDBData(trans_obj)
             if status == 200:
                 msg = f"{device['ip_address']} :Transition Atom Updated Successfully"
-                if device["device_type"] not in device_type_list:
-                    transition_info_alert_data.append(f"{device['ip_address']}Device Type '{device['device_type']}' is not supported")
-                if device['function'] not in function_list:
-                    transition_info_alert_data.append(f"{device['ip_address']} {device['function']} : Function is not supported")
-                if device["vendor"] not in vendor_list:
-                    transition_info_alert_data.append(f"{device['ip_address']} Vendor '{device['vendor']}' is unknown")
+                if trans_obj.device_type not in device_type_list:
+                    transition_info_alert_data.append(
+                        f"{trans_obj.ip_address}Device Type '{trans_obj.device_type}' is not supported")
+                if trans_obj.function not in function_list:
+                    transition_info_alert_data.append(
+                        f"{trans_obj.ip_address} {trans_obj.function} : Function is not supported")
+                if trans_obj.vendor not in vendor_list:
+                    transition_info_alert_data.append(f"{trans_obj.ip_address} Vendor '{trans_obj.vendor}' is unknown")
             else:
                 msg = f"{device['ip_address']} : Error While Updating Atom"
                 print(msg, file=sys.stderr)
@@ -430,12 +432,14 @@ def add_transition_atom(device, update):
             status = InsertDBData(trans_obj)
             if status == 200:
                 msg = f"{device['ip_address']} : Transition Atom Inserted Successfully"
-                if device["device_type"] not in device_type_list:
-                    transition_info_alert_data.append(f"{device['ip_address']} Device Type '{device['device_type']}' is not supported")
-                if device['function'] not in function_list:
-                    transition_info_alert_data.append(f"{device['ip_address']} {device['function']} : Function is not supported")
-                if device["vendor"] not in vendor_list:
-                    transition_info_alert_data.append(f"{device['ip_address']} Vendor '{device['vendor']}' is unknown")
+                if trans_obj.device_type not in device_type_list:
+                    transition_info_alert_data.append(
+                        f"{trans_obj.ip_address}Device Type '{trans_obj.device_type}' is not supported")
+                if trans_obj.function not in function_list:
+                    transition_info_alert_data.append(
+                        f"{trans_obj.ip_address} {trans_obj.function} : Function is not supported")
+                if trans_obj.vendor not in vendor_list:
+                    transition_info_alert_data.append(f"{trans_obj.ip_address} Vendor '{trans_obj.vendor}' is unknown")
             else:
                 msg = f"{device['ip_address']} : Error While Inserting Atom"
                 return msg, 500
@@ -483,15 +487,20 @@ def fill_transition_data(device, trans_obj):
                 trans_obj.device_name = device["device_name"].strip()
 
         if device["vendor"] is not None:
-            if device["vendor"].strip() != "":
-                trans_obj.vendor = device["vendor"].strip()
+            vendor_name = device["vendor"].strip()
+            if vendor_name != "":
+                trans_obj.vendor = vendor_name[0].upper() + vendor_name[1:]
 
         if device["function"] is not None and device["function"].strip() != "":
-            trans_obj.function = device["function"].strip()
+            function = device["function"].strip()
+            if function.lower() == "vm" or function.lower() == "exsi":
+                trans_obj.function = function.upper()
+            else:
+                trans_obj.function = function[0].upper() + function[1:]
 
-        if device["device_type"] is not None:
-            if device["device_type"].strip() != "":
-                trans_obj.device_type = device["device_type"].strip()
+        if device["device_type"] is not None and device["device_type"].strip() != "":
+            device_type = device["device_type"].strip().lower()
+            trans_obj.device_type = device_type
 
         if device["site_name"] is not None:
             if device["site_name"].strip() != "":
