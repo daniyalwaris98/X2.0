@@ -27,7 +27,7 @@ const CredentialSummary = ({ data }) => {
         ? data.values.map((item) => ({
             name: item.name,
             type: "line",
-            step: item.step,
+            step: "start",
             data: item.values,
           }))
         : [],
