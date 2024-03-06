@@ -189,29 +189,39 @@ function Index() {
   const tableData = [
     {
       key: '1',
-      subnet: '10.66.211.141',
+      ip_address: '10.66.211.41',
       value: 50
     },
     {
       key: '2',
-      subnet: '10.66.211.141',
+      ip_address: '10.66.211.11',
       value: 10
     },
     {
       key: '3',
-      subnet: '1',
+      ip_address: '10.66.211.14',
+      value: 60
+    },{
+      key: '4',
+      ip_address: '10.66.211.11',
+      value: 10
+    },
+    {
+      key: '5',
+      ip_address: '10.66.211.14',
       value: 60
     },
+
   ];
  
 
   const tableColumns = [
     {
-      title: 'Subnet',
-      dataIndex: 'subnet',
-      key: 'subnet',
+      title: 'IP Address',
+      dataIndex: 'ip_address',
+      key: 'ip_address',
       align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
+      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green', textDecoration: 'underline' }}>{text}</a>,
     },
     {
       title: 'Progress',
