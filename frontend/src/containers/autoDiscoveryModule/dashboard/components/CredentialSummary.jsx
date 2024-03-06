@@ -12,8 +12,8 @@ const CredentialSummary = ({ data }) => {
       },
       grid: {
         left: "3%",
-        right: "4%",
-        bottom: "3%",
+        right: "0%",
+        bottom: "13%",
         containLabel: true,
       },
       xAxis: {
@@ -41,7 +41,7 @@ const CredentialSummary = ({ data }) => {
     };
   }, [data]); // Re-render chart when data changes
 
-  return <div id="credential" style={{ width: "100%", height: "400px" }}></div>;
+  return <div id="credential" style={{ width: "100%", height: "350px",padding:"0px", margin:"0px" }}></div>;
 };
 
 export default CredentialSummary;

@@ -162,7 +162,11 @@ function Index() {
         <Col span={10}>
           <div className="container">
             <h6 className="heading">Credentials Summary </h6>
-           
+            {/* <CredentialSummary  */}
+            {/* // data={credentialsSummaryData !== undefined ? credentialsSummaryData : []}  */}
+
+            {/* /> */}
+            <CredentialSummary data={data12} />
           </div>
         </Col>
         <Col span={7}>

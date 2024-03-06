@@ -41,7 +41,7 @@ import {
   useGetSnapshotQuery
 
 } from "../../../store/features//monitoringModule/dashboard/apis";
-import { Memory } from "@mui/icons-material";
+import { Height, Memory } from "@mui/icons-material";
 function Index() {
   const {
     data: typeSummaryData,
@@ -189,29 +189,39 @@ function Index() {
   const tableData = [
     {
       key: '1',
-      subnet: '10.66.211.141',
+      ip_address: '10.66.211.41',
       value: 50
     },
     {
       key: '2',
-      subnet: '10.66.211.141',
+      ip_address: '10.66.211.11',
       value: 10
     },
     {
       key: '3',
-      subnet: '1',
+      ip_address: '10.66.211.14',
+      value: 60
+    },{
+      key: '4',
+      ip_address: '10.66.211.11',
+      value: 10
+    },
+    {
+      key: '5',
+      ip_address: '10.66.211.14',
       value: 60
     },
+
   ];
  
 
   const tableColumns = [
     {
-      title: 'Subnet',
-      dataIndex: 'subnet',
-      key: 'subnet',
+      title: 'IP Address',
+      dataIndex: 'ip_address',
+      key: 'ip_address',
       align: 'start',
-      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green' }}>{text}</a>,
+      render: text => <a style={{ display: 'block', fontWeight: '600', color: 'green', textDecoration: 'underline' }}>{text}</a>,
     },
     {
       title: 'Progress',
@@ -401,8 +411,8 @@ const tableColumnsSFPS = [
       </Row>
 
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
-        <Col span={8}>
-          <div style={colStyle}>
+        <Col span={8} style={{height:"350px"}}>
+          <div style={colStyle} >
             <h5 style={title}>Configuration Change by Time</h5>
             <TopOpenPorts
             //  chartData={configurationByTimeData !== undefined? configurationByTimeData:[] } 
@@ -412,7 +422,7 @@ const tableColumnsSFPS = [
           </div>
         </Col>
 
-        <Col span={8}>
+        <Col span={8} style={{height:"350px"}}>
           <div style={colStyle}>
             <h5 style={title}>Credentials Summary</h5>
             {/* <CredentialSummary data={credentialsSummaryData !== undefined? credentialsSummaryData:[]}  /> */}
@@ -421,7 +431,7 @@ const tableColumnsSFPS = [
           </div>
         </Col>
 
-        <Col span={8}>
+        <Col span={8} style={{height:"350px"}}>
           <div style={colStyle}>
             <h5 style={title}>SNMP Status</h5>
             <SnmpStatus  responseData={snmpStatusData !==undefined? snmpStatusData:[]}/>
@@ -463,8 +473,10 @@ const tableColumnsSFPS = [
         <Col span={16}>
           <div style={colStyle}>
             <h5 style={title}>Device Status Overview</h5>
-            {/* <DeviceStatus /> */}
-            <DeviceStatus categories={deviceStatusOverviewData !== undefined? deviceStatusOverviewData :[] } />
+            <DeviceStatus />
+            {/* <DeviceStatus categories={deviceStatusOverviewData !== undefined? deviceStatusOverviewData :[] } */}
+            
+            
           </div>
         </Col>
       </Row>
