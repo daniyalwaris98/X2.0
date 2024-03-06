@@ -26,6 +26,7 @@ const CredentialSummary = ({ data }) => {
       legend: {
         orient: "horizontal",
         bottom: 5, // Adjust this value to position the legend as needed
+        show: true, // Show legend
       },
       series: data
         ? data.values.map((item) => ({
@@ -39,12 +40,10 @@ const CredentialSummary = ({ data }) => {
 
     option && myChart.setOption(option);
 
-    // Clean up the chart instance on unmount
     return () => {
       myChart.dispose();
     };
-  }, [data]); // Re-render chart when data changes
-
+  }, [data]); 
   return <div id="credential" style={{ width: "100%", height: "350px", padding: "0px", margin: "0px" }}></div>;
 };
 

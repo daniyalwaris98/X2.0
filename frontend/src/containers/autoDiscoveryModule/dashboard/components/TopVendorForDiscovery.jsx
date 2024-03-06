@@ -7,10 +7,8 @@ const TopVendorForDiscovery = ({ data }) => {
       console.error("Invalid data:", data);
       return;
     }
-
     const chartDom = document.getElementById("main");
     const myChart = echarts.init(chartDom);
-
     // Define colors array
     const colors = [
       "#63ABFD",
@@ -20,74 +18,13 @@ const TopVendorForDiscovery = ({ data }) => {
       "#E69B43",
       "#9E00D5",
     ];
-
-    // const option = {
-    //   tooltip: {
-    //     show: true,
-    //     trigger: "item",
-    //   },
-    //   angleAxis: {
-    //     type: "category",
-    //     startAngle: 270,
-    //     axisLine: {
-    //       show: false,
-    //     },
-    //     axisLabel: {
-    //       show: false,
-    //     },
-    //     axisTick: {
-    //       show: false,
-    //     },
-    //   },
-    //   radiusAxis: {
-    //     max: 12,
-    //     startAngle: 90,
-    //     axisLine: {
-    //       show: false,
-    //     },
-    //     axisLabel: {
-    //       show: false,
-    //     },
-    //     axisTick: {
-    //       show: false,
-    //     },
-    //   },
-    //   polar: {
-    //     radius: [7, "75%"], // Adjust the inner radius to decrease gap from the top
-    //     center: ["50%", "45%","0%", "0%"], // Adjusted center to be in the middle horizontally and at the top vertically
-
-    //   },
-    //   series: data.map((item, index) => ({
-    //     type: "bar",
-    //     data: [item.value],
-    //     coordinateSystem: "polar",
-    //     name: item.name,
-    //     color: colors[index % colors.length], // Use colors from the array
-    //     label: {
-    //       show: true,
-    //       position: "outside", // Labels at the center of the bar
-    //       formatter: "{c}", // Display data value as label
-    //     },
-    //   })),
-    //   legend: {
-    //     show: true,
-    //     orient: "horizontal", // Display legend horizontally
-    //     y: "bottom", // Adjust legend position
-    //     icon: "circle",
-    //     itemGap: 10, // Adjust the gap between legend items
-    //     itemWidth: 20, // Adjust the width of legend items
-    //     itemHeight: 10, // Adjust the height of legend items
-    //   },
-    //   emphasis: {
-    //     focus: "series",
-    //   },
-    //   barGap: "5%",
-    // };
-    
     const option = {
       tooltip: {
         show: true,
         trigger: "item",
+        formatter: (params) => {
+          return `${params.seriesName}: ${params.value}`;
+        },
       },
       angleAxis: {
         type: "category",
@@ -117,8 +54,7 @@ const TopVendorForDiscovery = ({ data }) => {
       },
       polar: {
         radius: [0, "70%"], // Adjust the inner radius to decrease gap from the top
-        center: ["50%", "45%","0%", "0%"], // Adjusted center to be in the middle horizontally and at the top vertically
-
+        center: ["50%", "45%", "0%", "0%"], // Adjusted center to be in the middle horizontally and at the top vertically
       },
       series: data.map((item, index) => ({
         type: "bar",
@@ -129,7 +65,6 @@ const TopVendorForDiscovery = ({ data }) => {
         label: {
           show: false,
           formatter: function (params) {
-            // Display label only on hover
             return params.dataIndex === index ? params.value : "";
           },
           position: "outside", // Labels at the center of the bar
@@ -149,7 +84,7 @@ const TopVendorForDiscovery = ({ data }) => {
       },
       barGap: "5%",
     };
-    
+
     option && myChart.setOption(option);
 
     return () => {
