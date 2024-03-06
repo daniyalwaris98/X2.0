@@ -364,11 +364,14 @@ const tableColumnsSFPS = [
       { name: 'SSH Login', value: 26 },
       { name: 'SSH Logi', value: 30 }
     ];
-    const data12 = [
-      { name: 'SNMP V1/V2', step: 'start', values: [120, 132, 101, 134], label: 'Mon' },
-      { name: 'SNMP V3', step: 'middle', values: [220, 282, 201, 234], label: 'Tue' },
-      { name: 'SSH Login', step: 'end', values: [450, 432, 401, 454], label: 'Wed' }
-    ]; 
+    const data12 = {
+      values: [
+        { name: "SNMP V1/V2", values: [120, 132, 101] },
+        { name: "SNMP V3", values: [220, 282, 201] },
+        { name: "SSH Login", values: [450, 432, 401] },
+      ],
+      labels: ["Mon", "Tue", "Wed"],
+    };
   return (
     <>
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
