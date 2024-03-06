@@ -97,7 +97,8 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                         error_list.append(msg)
                 elif transit_atom is not None:
                     msg, status = add_transition_atom(atomObj, True)
-                   
+                    print("11111messgae for the tranistion atom is:::::::::::::::::::",msg,file=sys.stderr)
+                    print("111111status intranistionatom is::::::::::::::::::::::::::",status,file=sys.stderr)
                     for key,value in msg.items():
                         if key =='data':
                             data_lst.append(value)
@@ -105,6 +106,8 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
                            if value not in success_list:
                                     # print("values for the message is::::::::::::::::::::::",value,file=sys.stderr)
                                     success_list.append(value)
+                        if key == 'transiton_info_alert' and value is not None:
+                            error_list.extend([row for row in value if row])
                 else:
                     msg, status = add_complete_atom(atomObj, False)
                     if isinstance(msg, dict):
@@ -118,13 +121,18 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
 
                     if status != 200:
                         msg, status = add_transition_atom(atomObj, False)
-                        if isinstance(msg,dict):
-                            for key,value in msg.items():
-                                if key =='data':
-                                    data_lst.append(value)
-                                if key == 'message':
-                                    if value not in success_list:
-                                        success_list.append(value)
+                        print("222messgae for the tranistion atom is:::::::::::::::::::", msg, file=sys.stderr)
+                        print("2222status intranistionatom is::::::::::::::::::::::::::", status, file=sys.stderr)
+                        if status ==200:
+                            if isinstance(msg,dict):
+                                for key,value in msg.items():
+                                    if key =='data':
+                                        data_lst.append(value)
+                                    if key == 'message':
+                                        if value not in success_list:
+                                            success_list.append(value)
+                                    if key=='transiton_info_alert' and value is not None:
+                                        error_list.extend([row for row in value if row])
                         else:
                             error_list.append(msg)
             except Exception:
@@ -179,7 +187,8 @@ async def add_atoms(atom_objs: list[AddAtomRequestSchema]):
 
         if not filtered_list:
             error_list.append("Empty Import")
-
+        print("succes list is::::::::::::::",unique_success_list,file=sys.stderr)
+        print("error list is::::::::::::::::",unique_error_list,file=sys.stderr)
         response = SummeryResponseSchema(
             data=unique_data_lst,
             success=len(unique_success_list),
