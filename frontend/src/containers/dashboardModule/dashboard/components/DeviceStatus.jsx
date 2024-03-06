@@ -101,15 +101,15 @@ const DeviceStatus = () => {
         { offset: 1, color: "white" },
       ]),
     },
-    {
-      title: "Undefined",
-      value: 50,
-      pointerColor: "orange",
-      color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        { offset: 0, color: "orange" },
-        { offset: 1, color: "white" },
-      ]),
-    },
+    // {
+    //   title: "Undefined",
+    //   value: 50,
+    //   pointerColor: "orange",
+    //   color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    //     { offset: 0, color: "orange" },
+    //     { offset: 1, color: "white" },
+    //   ]),
+    // },
     {
       title: "Production",
       value: 80,
@@ -119,15 +119,15 @@ const DeviceStatus = () => {
         { offset: 1, color: "white" },
       ]),
     },
-    {
-      title: "Maintenance",
-      value: 70,
-      pointerColor: "blue",
-      color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
-        { offset: 0, color: "blue" },
-        { offset: 1, color: "white" },
-      ]),
-    },
+    // {
+    //   title: "Maintenance",
+    //   value: 70,
+    //   pointerColor: "blue",
+    //   color: new echarts.graphic.LinearGradient(0, 0, 0, 1, [
+    //     { offset: 0, color: "blue" },
+    //     { offset: 1, color: "white" },
+    //   ]),
+    // },
   ], []);
   useEffect(() => {
     chartsData.forEach(({ title, value, color, pointerColor }) => {
@@ -149,7 +149,7 @@ const DeviceStatus = () => {
             },
             axisLine: {
               lineStyle: {
-                width: 10,
+                width: 5,
               },
             },
             axisTick: {
@@ -159,8 +159,8 @@ const DeviceStatus = () => {
               length: 0,
             },
             axisLabel: {
-              distance: 30,
-              fontSize: 7,
+              distance: 20,
+              fontSize: 8,
             },
             anchor: {
               show: true,

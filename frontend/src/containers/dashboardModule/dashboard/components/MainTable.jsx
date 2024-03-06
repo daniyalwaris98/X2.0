@@ -109,10 +109,11 @@ const MainTable = ({ tableData, tableColumns }) => {
       bordered={false}
       rowClassName={getRowClassName}
       style={{ border: 'none', overflow: "scroll", height: "400px" }}
-      headerStyle={{ background: 'black', color: 'white' }}
+      headerStyle={{ background: 'black', color: 'white', position: 'sticky', top: 0 }}
     />
   );
 };
 
 export default MainTable;
+
 
