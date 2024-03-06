@@ -143,13 +143,13 @@ def validate_atom(device, update):
         #         return f"{device['ip_address']} : Device Name Already Assigned To Another Device", 400
 
         if device["function"] is None or device['function'] == 'string':
-            return f"Function Can Not be Empty", 400 #{device['ip_address']} : 
+            return f"Function Can Not be Empty", 400 #{device['ip_address']} :
 
         elif device["function"].strip() == "":
-            return f"Function Can Not be Empty", 400 #{device['ip_address']} : 
+            return f"Function Can Not be Empty", 400 #{device['ip_address']} :
 
         if device["device_type"] is None or device['device_type'] == 'string':
-            return f"Device Type Can Not be Empty", 400 #{device['ip_address']} : 
+            return f"Device Type Can Not be Empty", 400 #{device['ip_address']} :
 
         device["device_type"] = device["device_type"].strip()
         device["device_type"] = device["device_type"].lower()
@@ -380,48 +380,34 @@ def add_complete_atom(device, update):
 
 def add_transition_atom(device, update):
     try:
-        print("device in add tranision atom is:;;;;;;;;;;;;",device,file=sys.stderr)
+        transition_info_alert_data = []
+        print("device in add transition atom is:", device, file=sys.stderr)
         device["ip_address"] = device["ip_address"].strip()
 
-        if device["ip_address"] == "" or device['ip_address'] == 'string':
-            print("ip address is empty or a string::::::::::::::::::::::::",file=sys.stderr)
-            return f"IP Address Can Not Be Empty", 400
-        
-        if device['ip_address'] !="" or device['ip_address']!='string':
-            try:
-                validate_ip_address = ipaddress.ip_address(device['ip_address'])
-            except ValueError:
-                print("IP address is not a valid IP address")
-                return f"{device['ip_address']} : IP Address is not valid", 400
+        if not device["ip_address"]:
+            print("IP address is empty or a string", file=sys.stderr)
+            return "IP Address Can Not Be Empty", 400
+
+        try:
+            validate_ip_address = ipaddress.ip_address(device['ip_address'])
+        except ValueError:
+            print("IP address is not a valid IP address")
+            return f"{device['ip_address']} : IP Address is not valid", 400
 
         if not update:
-            if (
-                    configs.db.query(AtomTable).filter(
-                        AtomTable.ip_address == device["ip_address"]).first()
-                    is not None
-            ):
+            if configs.db.query(AtomTable).filter(AtomTable.ip_address == device["ip_address"]).first():
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 400
 
-            if (
-                    configs.db.query(AtomTransitionTable).filter(
-                        AtomTransitionTable.ip_address == device["ip_address"]
-                    ).first()
-                    is not None
-            ):
+            if configs.db.query(AtomTransitionTable).filter(
+                    AtomTransitionTable.ip_address == device["ip_address"]).first():
                 return f"{device['ip_address']} : IP Address Is Already Assigned", 400
-
-        # msg, status = ValidateAtom(device, row, update)
 
         trans_obj = configs.db.query(AtomTransitionTable).filter(
-            AtomTransitionTable.ip_address == device["ip_address"]
-        ).first()
-        attributes_dict = {}
-        processed_ips = {}
-        exist = True
-        if trans_obj is None:
-            exist = False
-            trans_obj = AtomTransitionTable()
+            AtomTransitionTable.ip_address == device["ip_address"]).first()
+        exist = bool(trans_obj)
 
+        if not exist:
+            trans_obj = AtomTransitionTable()
             trans_obj.ip_address = device["ip_address"]
 
         trans_obj = fill_transition_data(device, trans_obj)
@@ -429,97 +415,69 @@ def add_transition_atom(device, update):
         if exist:
             status = UpdateDBData(trans_obj)
             if status == 200:
-                msg = f"{device['ip_address']} : Atom Updated Successfully"
-
-                # Check if trans_obj exists
-                if trans_obj:
-                    
-                    inspector = inspect(trans_obj.__class__)
-                    columns = inspector.columns
-                    
-                    # Iterate through columns and fetch values
-                    for column in columns:
-                        column_name = column.key
-                        # Exclude 'creation_date' and 'modification_date'
-                        if column_name not in ['creation_date', 'modification_date']:
-                            value = getattr(trans_obj, column_name, None)
-                            attributes_dict[column_name] = value
-                            if column_name == 'rack_id':
-                                rack = configs.db.query(RackTable).filter_by(rack_id=value).first()
-                                if rack:
-                                    attributes_dict['rack_name'] = rack.rack_name
-                                    if rack.site_id:
-                                        site = configs.db.query(SiteTable).filter_by(site_id=rack.site_id).first()
-                                        attributes_dict['site_name'] = site.site_name
-
-                                # Special handling for password_group_id
-                            elif column_name == 'password_group_id':
-                                password_group = configs.db.query(PasswordGroupTable).filter_by(
-                                    password_group_id=value).first()
-                                if password_group:
-                                    attributes_dict['password_group'] = password_group.password_group
-                            elif column_name == 'onboard_status' or column_name=="":
-                                if value:
-                                    attributes_dict['onboard_status'] = True
-                                elif value is None:
-                                    attributes_dict['onboard_status'] = False
-                                else:
-                                    attributes_dict['onboard_status'] = False
-                            else:
-                                attributes_dict[column_name] = value
-                            
-                transition_data = {
-                        "data":attributes_dict,
-                        "message":str(msg)
-                }
-                return (transition_data), 200
+                msg = f"{device['ip_address']} :Transition Atom Updated Successfully"
+                if trans_obj.device_type not in device_type_list:
+                    transition_info_alert_data.append(
+                        f"{trans_obj.ip_address}Device Type '{trans_obj.device_type}' is not supported")
+                if trans_obj.function not in function_list:
+                    transition_info_alert_data.append(
+                        f"{trans_obj.ip_address} {trans_obj.function} : Function is not supported")
+                if trans_obj.vendor not in vendor_list:
+                    transition_info_alert_data.append(f"{trans_obj.ip_address} Vendor '{trans_obj.vendor}' is unknown")
             else:
                 msg = f"{device['ip_address']} : Error While Updating Atom"
                 print(msg, file=sys.stderr)
                 return msg, 500
         else:
             status = InsertDBData(trans_obj)
-            
             if status == 200:
-                msg = f"{device['ip_address']} :Transition Atom Inserted Successfully"
-
-                devices = device
-                onboard_status = None
-                if trans_obj.onboard_status is None:
-                    onboard_status = False
-                devices_data ={
-                    "atom_transition_id":trans_obj.atom_transition_id,
-                    "ip_address":trans_obj.ip_address,
-                    "rack_name":trans_obj.rack_name,
-                    "device_name":trans_obj.device_name,
-                    "vendor":trans_obj.vendor,
-                    "device_ru":trans_obj.device_ru,
-                    "department":trans_obj.department,
-                    "section":trans_obj.section,
-                    "criticality":trans_obj.criticality,
-                    "function":trans_obj.function,
-                    "domain":trans_obj.domain,
-                    "virtual":trans_obj.virtual,
-                    "device_type":trans_obj.device_type,
-                    "password_group":trans_obj.password_group,
-                    "onboard_status":onboard_status
-                }
-                data = {"transition id":trans_obj.atom_transition_id}
-                transition_data = {
-                    "data":devices_data,
-                    "message":msg
-                }
-                # print(msg, file=sys.stderr)
-                return (transition_data), 200
+                msg = f"{device['ip_address']} : Transition Atom Inserted Successfully"
+                if trans_obj.device_type not in device_type_list:
+                    transition_info_alert_data.append(
+                        f"{trans_obj.ip_address}Device Type '{trans_obj.device_type}' is not supported")
+                if trans_obj.function not in function_list:
+                    transition_info_alert_data.append(
+                        f"{trans_obj.ip_address} {trans_obj.function} : Function is not supported")
+                if trans_obj.vendor not in vendor_list:
+                    transition_info_alert_data.append(f"{trans_obj.ip_address} Vendor '{trans_obj.vendor}' is unknown")
             else:
                 msg = f"{device['ip_address']} : Error While Inserting Atom"
-                # print(msg, file=sys.stderr)
                 return msg, 500
+
+        attributes_dict = {}
+        for column in inspect(trans_obj.__class__).columns:
+            column_name = column.key
+            if column_name not in ['creation_date', 'modification_date']:
+                value = getattr(trans_obj, column_name, None)
+                attributes_dict[column_name] = value
+                if column_name == 'rack_id':
+                    rack = configs.db.query(RackTable).filter_by(rack_id=value).first()
+                    if rack:
+                        attributes_dict['rack_name'] = rack.rack_name
+                        if rack.site_id:
+                            site = configs.db.query(SiteTable).filter_by(site_id=rack.site_id).first()
+                            attributes_dict['site_name'] = site.site_name
+                elif column_name == 'password_group_id':
+                    password_group = configs.db.query(PasswordGroupTable).filter_by(password_group_id=value).first()
+                    if password_group:
+                        attributes_dict['password_group'] = password_group.password_group
+                elif column_name == 'onboard_status' or column_name == "":
+                    attributes_dict['onboard_status'] = bool(value)
+                else:
+                    attributes_dict[column_name] = value
+
+        transition_data = {
+            "data": attributes_dict,
+            "message": str(msg),
+            "transiton_info_alert":transition_info_alert_data if transition_info_alert_data else None
+        }
+        return transition_data, 200
 
     except Exception:
         error = f"Error : Exception Occurred"
         traceback.print_exc()
         return error, 500
+
 
 
 def fill_transition_data(device, trans_obj):
@@ -529,15 +487,20 @@ def fill_transition_data(device, trans_obj):
                 trans_obj.device_name = device["device_name"].strip()
 
         if device["vendor"] is not None:
-            if device["vendor"].strip() != "":
-                trans_obj.vendor = device["vendor"].strip()
+            vendor_name = device["vendor"].strip()
+            if vendor_name != "":
+                trans_obj.vendor = vendor_name[0].upper() + vendor_name[1:]
 
         if device["function"] is not None and device["function"].strip() != "":
-            trans_obj.function = device["function"].strip()
+            function = device["function"].strip()
+            if function.lower() == "vm" or function.lower() == "exsi":
+                trans_obj.function = function.upper()
+            else:
+                trans_obj.function = function[0].upper() + function[1:]
 
-        if device["device_type"] is not None:
-            if device["device_type"].strip() != "":
-                trans_obj.device_type = device["device_type"].strip()
+        if device["device_type"] is not None and device["device_type"].strip() != "":
+            device_type = device["device_type"].strip().lower()
+            trans_obj.device_type = device_type
 
         if device["site_name"] is not None:
             if device["site_name"].strip() != "":
@@ -590,6 +553,7 @@ def edit_atom_util(device):
         trans_atom = None
         data = {}
         attributes_dict = {}
+        transition_info_alert_data = []
 
         if "atom_id" not in device and "atom_transition_id" not in device:
             return "Atom ID Or Atom Transition ID is Missing", 400
@@ -632,7 +596,12 @@ def edit_atom_util(device):
             print("message for the add compelte atom is in tranistions",msg,file=sys.stderr)
             print("status for the add compelte atom is:::::::::::::::",status,file=sys.stderr)
             status = UpdateDBData(trans_atom)
-
+            if device["device_type"] not in device_type_list:
+                transition_info_alert_data.append(f"Device Type '{device['device_type']}' is not supported")
+            if device['function'] not in function_list:
+                transition_info_alert_data.append(f"{device['function']} : Function is not supported")
+            if device["vendor"] not in vendor_list:
+                transition_info_alert_data.append(f"Vendor '{device['vendor']}' is unknown")
             object_to_inspect = trans_atom
         else:
             return "Device Not Found", 400
@@ -677,7 +646,7 @@ def edit_atom_util(device):
 
             data = {
                 "data": attributes_dict,
-                "message": msg
+                "message": msg,
             }
         else:
             msg = f"{device['ip_address']} : Error While Updating Atom"

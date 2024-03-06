@@ -466,7 +466,7 @@ async def ncm_vendor_count():
                 #obj_dict["name"] = "Other"        
 
             #obj_list.append(obj_dict)
-            obj_list ={"names": names, "time": time, "date": date, "values": values }
+        obj_list ={"names": names, "time": time, "date": date, "values": values }
         print("objlist is:::::::::::::::::",obj_list,file=sys.stderr)
         return JSONResponse(content=obj_list, status_code=200)
     except Exception:

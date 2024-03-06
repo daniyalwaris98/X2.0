@@ -12,14 +12,17 @@ const SnmpStatus = () => {
         trigger: 'item'
       },
       legend: {
-        bottom: '0%',
+        bottom: '13%',
         left: 'center'
       },
+ 
       series: [
         {
           name: 'Access From',
           type: 'pie',
           radius: ['40%', '70%'],
+          center: ["50%", "40%","0%", "0%"], // Adjusted center to be in the middle horizontally and at the top vertically
+
           avoidLabelOverlap: false,
           label: {
             show: false,
@@ -50,7 +53,7 @@ const SnmpStatus = () => {
     };
   }, []); // Empty dependency array to run only once when the component mounts
 
-  return <div ref={chartRef} style={{ width: '100%', height: '400px' }} />;
+  return <div ref={chartRef} style={{ width: '100%', height: '350px' ,padding:"0px", margin:"0px"}} />;
 };
 
 export default SnmpStatus;
