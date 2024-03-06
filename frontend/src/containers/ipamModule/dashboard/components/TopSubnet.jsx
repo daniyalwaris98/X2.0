@@ -43,7 +43,7 @@ const TopSubnet = ({ data }) => {
         },
       },
       polar: {
-        radius: [80, "80%"],
+        radius: [70, "70%"],
         center: ["50%", "40%","50%", "50%"], // Adjusted center to be in the middle horizontally and at the top vertically
       },
       series: [
