@@ -25,6 +25,20 @@ class AutoDiscoveryTable(Base):
     def as_dict(self):
         return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
+class auto_discovery_history_table(Base):
+    __tablename__ = "auto_discovery_history_table"
+    auto_discovery_history_id = Column(Integer, primary_key=True, autoincrement=True)
+    snmp_status = Column(String(50), nullable=True)
+    snmp_version = Column(String(50), nullable=True)
+    ssh_status = Column(String(50), nullable=True)
+    discovery_id = Column(Integer,ForeignKey('auto_discovery_table.discovery_id',ondelete='CASCADE',onupdate='CASCADE'),nullable=True)
+    creation_date = Column(DateTime, default=datetime.now())
+    modification_date = Column(
+        DateTime, default=datetime.now(), onupdate=datetime.now()
+    )
+
+    def as_dict(self):
+        return {c.name: getattr(self, c.name) for c in self.__table__.columns}
 
 class AutoDiscoveryNetworkTable(Base):
     __tablename__ = "auto_discovery_network_table"
