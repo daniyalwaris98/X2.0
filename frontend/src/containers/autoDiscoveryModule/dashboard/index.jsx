@@ -9,7 +9,7 @@ import {
   selectCredentialsSummary,
   selectTopVendorForDiscovery,
   selectTopOs,
-  selectCountPerFunction
+  selectCountPerFunction,
 } from "../../../store/features/autoDiscoveryModule/dashboard/selectors";
 import {
   useGetSnmpStatusQuery,
@@ -17,7 +17,6 @@ import {
   useGetTopVendorForDiscoveryQuery,
   useGetTopOsQuery,
   useGetCountPerFunctionQuery,
-  
 } from "../../../store/features/autoDiscoveryModule/dashboard/apis";
 import "./index.css";
 import TopOpenPorts from "../../ipamModule/dashboard/components/TopOpenPorts";
@@ -29,8 +28,6 @@ import CountPerFuntion from "./components/CountPerFuntion";
 import { useGetEolQuery } from "../../../store/features/dashboardModule/dashboard/apis";
 
 function Index() {
-  
-
   const {
     data: snmpStatusData,
     isSuccess: isSnmpStatusSuccess,
@@ -60,7 +57,6 @@ function Index() {
     error: topOsError,
   } = useGetTopOsQuery();
 
-
   const {
     data: countPerFunctionData,
     isSuccess: isCountPerFunctionSuccess,
@@ -68,13 +64,11 @@ function Index() {
     isError: isCountPerFunctionError,
     error: countPerFunctionError,
   } = useGetCountPerFunctionQuery();
-  console.log("snmpStatusData",snmpStatusData)
-  console.log("credentialsSummaryData",credentialsSummaryData)
-  console.log("topVendorData",topVendorData)
-  console.log("topOsData",topOsData)
-  console.log("countPerFunctionData",countPerFunctionData)
-
-  
+  console.log("snmpStatusData", snmpStatusData);
+  console.log("credentialsSummaryData", credentialsSummaryData);
+  console.log("topVendorData", topVendorData);
+  console.log("topOsData", topOsData);
+  console.log("countPerFunctionData", countPerFunctionData);
 
   const companyData = {
     Cisco: 50,
@@ -87,100 +81,96 @@ function Index() {
     Juniper: 10,
   };
 
-
   const apiResponse = [
     {
       name: "Sales",
-      value: 42
+      value: 42,
     },
     {
       name: "Admin",
-      value: 30
+      value: 30,
     },
     {
       name: "Inform",
-      value: 200
+      value: 200,
     },
     {
-      name : "Customer",
-      value: 350
+      name: "Customer",
+      value: 350,
     },
-   
   ];
-  const data=[
+  const data = [
     { name: "Windows_1", value: 4200 },
     { name: "Linux_1", value: 8200 },
     { name: "IOS_1", value: 3200 },
- 
   ];
 
-
   const chartData = {
-    ports: ['Port 1', 'Port 2', 'Port 3', 'Port 4'],
+    ports: ["Port 1", "Port 2", "Port 3", "Port 4"],
     counts: [10, 20, 15, 30],
   };
 
   const sampleData = {
-    name: ['SNMP V1/V2', 'SNMP V3', 'SSH Login'],
-    value: [3, 0, 23]
+    name: ["SNMP V1/V2", "SNMP V3", "SSH Login"],
+    value: [3, 0, 23],
   };
- 
-  const data12 = [
-    { name: 'SNMP V1/V2', step: 'start', values: [120, 132, 101, 134, 90, 230, 210], label: 'Mon' },
-    { name: 'SNMP V3', step: 'middle', values: [220, 282, 201, 234, 290, 430, 410], label: 'Tue' },
-    { name: 'SSH Login', step: 'end', values: [450, 432, 401, 454, 590, 530, 510], label: 'Wed' }
-  ]; 
- const count= [
-    {
-        "name": "Router",
-        "value": 29
-    },
-    {
-        "name": "General purpose",
-        "value": 20
-    },
-    {
-        "name": "Specialized",
-        "value": 2
-    },
-    {
-        "name": "Firewall",
-        "value": 1
-    },
-    {
-        "name": "Remote management",
-        "value": 1
-    }
-] ;
 
+  const data12 = {
+    values: [
+      { name: "SNMP V1/V2", values: [120, 132, 101] },
+      { name: "SNMP V3", values: [220, 282, 201] },
+      { name: "SSH Login", values: [450, 432, 401] },
+    ],
+    labels: ["Mon", "Tue", "Wed"],
+  };
+  const count = [
+    {
+      name: "Router",
+      value: 29,
+    },
+    {
+      name: "General purpose",
+      value: 20,
+    },
+    {
+      name: "Specialized",
+      value: 2,
+    },
+    {
+      name: "Firewall",
+      value: 1,
+    },
+    {
+      name: "Remote management",
+      value: 1,
+    },
+  ];
 
- return (
+  return (
     <>
       <Row gutter={[32, 32]} justify="space-between">
         <Col span={7}>
           <div className="container">
             <h6 className="heading">SNMP Status </h6>
             <SnmpStatus
-            //  responseData={snmpStatusData !== undefined? snmpStatusData:[]} 
-            responseData={apiResponse}
-             /> 
-                      </div>
+              //  responseData={snmpStatusData !== undefined? snmpStatusData:[]}
+              responseData={apiResponse}
+            />
+          </div>
         </Col>
 
         <Col span={10}>
           <div className="container">
             <h6 className="heading">Credentials Summary </h6>
-            {/* <CredentialSummary  */}
-    {/* // data={credentialsSummaryData !== undefined ? credentialsSummaryData : []}  */}
-
-{/* /> */}
-<CredentialSummary data={data12} />
+           
           </div>
         </Col>
         <Col span={7}>
           <div className="container">
             <h6 className="heading">Top Vendors For Discovery</h6>
-            <TopVendorForDiscovery data={topVendorData !== undefined? topVendorData:[]} />
+            <TopVendorForDiscovery
+              data={topVendorData !== undefined ? topVendorData : []}
+            />
           </div>
         </Col>
       </Row>
@@ -189,18 +179,13 @@ function Index() {
         <Col span={16} xs={24} sm={24} md={16} lg={16} xl={16}>
           <div className="container">
             <h6 className="heading">Top OS in Auto Discovery</h6>
-            <TopOsAutoDiscovery data={data !== undefined? data:[]}
- 
-/>
-
+            <TopOsAutoDiscovery data={data !== undefined ? data : []} />
           </div>
         </Col>
 
         <Col span={8} xs={24} sm={24} md={16} lg={8} xl={8}>
           <div className="container">
             <h6 className="heading">Count Per Function</h6>
-           
-            
 
             <CountPerFuntion chartData={countPerFunctionData} />
           </div>
