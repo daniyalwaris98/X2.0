@@ -117,6 +117,8 @@ const TopVendorForDiscovery = ({ data }) => {
       },
       polar: {
         radius: [0, "70%"], // Adjust the inner radius to decrease gap from the top
+        center: ["50%", "40%","0%", "0%"], // Adjusted center to be in the middle horizontally and at the top vertically
+
       },
       series: data.map((item, index) => ({
         type: "bar",
