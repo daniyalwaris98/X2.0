@@ -382,6 +382,10 @@ const tableColumnsSFPS = [
       ],
       labels: ["Mon", "Tue", "Wed"],
     };
+  
+
+
+
   return (
     <>
       <Row gutter={[16, 16]} justify="space-between" style={rowStyle}>
@@ -426,8 +430,10 @@ const tableColumnsSFPS = [
           <div style={colStyle}>
             <h5 style={title}>Credentials Summary</h5>
             {/* <CredentialSummary data={credentialsSummaryData !== undefined? credentialsSummaryData:[]}  /> */}
+            <CredentialSummary 
+    data={credentialsSummaryData}
+/>
 
-            <CredentialSummary data={data12} />
           </div>
         </Col>
 
