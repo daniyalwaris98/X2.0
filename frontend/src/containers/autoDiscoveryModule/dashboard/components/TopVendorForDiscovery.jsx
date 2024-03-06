@@ -93,7 +93,7 @@ const TopVendorForDiscovery = ({ data }) => {
     };
   }, [data]);
 
-  return <div id="main" style={{ width: "100%", height: "380px" }}></div>;
+  return <div id="main" style={{ width: "100%", height: "400px" }}></div>;
 };
 
 export default TopVendorForDiscovery;
