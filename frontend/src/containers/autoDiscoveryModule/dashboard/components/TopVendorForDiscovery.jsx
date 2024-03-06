@@ -53,23 +53,22 @@ const TopVendorForDiscovery = ({ data }) => {
         },
       },
       polar: {
-        radius: [2, "70%"],
-      },
+        radius: [7, "70%"], // Adjust the inner radius to decrease gap from the top
+        center: ["50%", "40%","50%", "50%"], // Adjusted center to be in the middle horizontally and at the top vertically
 
-      
-        series: data.map((item, index) => ({
-          type: "bar",
-          data: [item.value],
-          coordinateSystem: "polar",
-          name: item.name,
-          color: colors[index % colors.length], // Use colors from the array
-          label: {
-            show: true,
-            position: "inside", // Labels at the center of the bar
-            formatter: "{c}", // Display data value as label
-          },
-        })),
-       
+      },
+      series: data.map((item, index) => ({
+        type: "bar",
+        data: [item.value],
+        coordinateSystem: "polar",
+        name: item.name,
+        color: colors[index % colors.length], // Use colors from the array
+        label: {
+          show: true,
+          position: "inside", // Labels at the center of the bar
+          formatter: "{c}", // Display data value as label
+        },
+      })),
       legend: {
         show: true,
         orient: "horizontal", // Display legend horizontally
@@ -82,9 +81,9 @@ const TopVendorForDiscovery = ({ data }) => {
       emphasis: {
         focus: "series",
       },
-
       barGap: "5%",
     };
+    
 
     option && myChart.setOption(option);
 
