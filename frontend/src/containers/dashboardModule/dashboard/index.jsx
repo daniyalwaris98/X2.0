@@ -42,6 +42,7 @@ import {
 
 } from "../../../store/features//monitoringModule/dashboard/apis";
 import { Height, Memory } from "@mui/icons-material";
+import SiteMap from "./components/SiteMap";
 function Index() {
   const {
     data: typeSummaryData,
@@ -384,7 +385,12 @@ const tableColumnsSFPS = [
     };
   
 
-
+    const subnet = {
+      xAxis: ['Jan', 'Feb', 'Mar', 'April', 'May', 'Jun'],
+      manualAdded: [0, 24, 30, 20, 15, 35],
+  
+      discovered: [150, 232, 201, 154, 190, 330, 410]
+    };
 
   return (
     <>
@@ -400,9 +406,9 @@ const tableColumnsSFPS = [
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Subnet Summary</h5>
-            <TopSubnet
-              data={subnetSummaryData !== undefined ? subnetSummaryData : []}
-            />
+            <TopSubnet data={subnet} />
+              {/* // data={subnetSummaryData !== undefined ? subnetSummaryData : []} */}
+            
           </div>
         </Col>
 
@@ -472,7 +478,7 @@ const tableColumnsSFPS = [
         <Col span={8}>
           <div style={colStyle}>
             <h5 style={title}>Sites Location</h5>
-            {/* <TypeSummaryChart /> */}
+<SiteMap/>
           </div>
         </Col>
 
