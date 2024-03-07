@@ -1,50 +1,134 @@
-import React, { useState, useEffect } from 'react';
+// import React, { useState, useEffect } from 'react';
 
-const SiteMap = () => {
-  const [data, setData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+// const SiteMap = ({ apiKey, markerData }) => {
+//   const [map, setMap] = useState(null);
+//   const [infoWindow, setInfoWindow] = useState(null);
+//   const [selectedMarker, setSelectedMarker] = useState(null);
 
-  useEffect(() => {
-    // Simulating fetching data from an API
-    const fetchData = async () => {
-      try {
-        // Replace this with your actual API call to fetch data
-        const response = await fetch('http://192.168.10.147:3010/api/v1/main_dashboard/main_phy_leaf_let');
-        if (!response.ok) {
-          throw new Error('Failed to fetch data');
-        }
-        const result = await response.json();
-        setData(result);
-        setLoading(false);
-      } catch (error) {
-        setError(error);
-        setLoading(false);
-      }
-    };
+//   useEffect(() => {
+//     const loadScript = () => {
+//       const script = document.createElement('script');
+//       script.src = `https://maps.googleapis.com/maps/api/js?key=${apiKey}&libraries=places`;
+//       script.async = true;
+//       script.onload = initMap;
+//       script.onerror = handleScriptError; // Handle script loading errors
+//       document.body.appendChild(script);
+//     };
 
-    fetchData();
-  }, []);
+//     const initMap = () => {
+//       try {
+//         const mapInstance = new window.google.maps.Map(document.getElementById('map'), {
+//           center: { lat: 0, lng: 0 },
+//           zoom: 14,
+//         });
+//         setMap(mapInstance);
 
-  if (loading) {
-    return <div>Loading...</div>;
-  }
+//         const infoWindowInstance = new window.google.maps.InfoWindow();
+//         setInfoWindow(infoWindowInstance);
 
-  if (error) {
-    return <div>Error: {error.message}</div>;
-  }
+//         addMarkers();
+//       } catch (error) {
+//         console.error('Error initializing map:', error);
+//       }
+//     };
 
-  // Render the data
+//     const addMarkers = () => {
+//       if (!map || !infoWindow) return;
+
+//       markerData.forEach((marker, index) => {
+//         const markerInstance = new window.google.maps.Marker({
+//           position: marker.position,
+//           map: map,
+//           title: marker.name,
+//         });
+
+//         markerInstance.addListener('click', () => {
+//           setSelectedMarker(marker);
+//           infoWindow.setContent(marker.name);
+//           infoWindow.open(map, markerInstance);
+//         });
+//       });
+//     };
+
+//     const handleScriptError = () => {
+//       console.error('Error loading Google Maps script.');
+//     };
+
+//     loadScript();
+
+//     return () => {
+//       // Clean up resources if needed
+//     };
+//   }, [apiKey, markerData]);
+
+//   return <div id="map" style={{ width: '100%', height: '400px' }} />;
+// };
+
+// export default SiteMap;
+
+import React from "react";
+import map from "../../../../resources/map.png";
+
+function SiteMap() {
   return (
-    <div>
-      <h1>Site Map</h1>
-      <ul>
-        {data.map((item) => (
-          <li key={item.id}>{item.name}</li>
-        ))}
-      </ul>
-    </div>
+    <>
+      <div
+        style={{
+          display: "flex",
+          alignItems: "start",
+          justifyContent: "start",
+          gap:"5px"
+        }}
+      >
+        <div
+          style={{
+            flexBasis: "45%",
+            borderRadius: "8px",
+            margin: "30px 0 0 0",
+          
+          }}
+        >
+          <img src={map} width={400} height={290} />
+        </div>
+        <label
+          style={{
+            color: "red",
+            width: "2px",
+            height: "250px",
+            backgroundColor: "#D8D8D8",
+            margin: "50px 0 0 0",
+          }}
+        ></label>
+       <div style={{display:"flex", flexDirection:"column",gap:"20px", margin:"60px 0 0 0"}} >
+
+<div style={{backgroundColor:"#F6F6F6", height:"80px ", width:"130px", borderRadius:"8px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}> 
+<h5 style={{padding:"0px", margin:"0px"}}>Total Devices</h5>
+<h1 style={{padding:"0px", margin:"0px"}}>25</h1>
+
+
+
+</div> 
+<div style={{backgroundColor:"#F6F6F6", height:"80px ", width:"130px", borderRadius:"8px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}> 
+
+
+<h5 style={{padding:"0px", margin:"0px",color:"#434343"}}>Onboard Devices</h5>
+<h1 style={{padding:"0px", margin:"0px",color:"#434343"}}>20</h1></div> 
+</div> 
+<div style={{display:"flex", flexDirection:"column",gap:"20px", margin:"60px 0 0 0"}}>
+
+<div style={{backgroundColor:"#F6F6F6", height:"80px ", width:"130px", borderRadius:"8px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+<h5 style={{padding:"0px", margin:"0px",color:"#434343"}}>Physical Devices</h5>
+<h1 style={{padding:"0px", margin:"0px",color:"#434343"}}>15</h1> </div> 
+<div style={{backgroundColor:"#F6F6F6", height:"80px ", width:"130px", borderRadius:"8px", display:"flex", flexDirection:"column", justifyContent:"center", alignItems:"center"}}>
+<h5 style={{padding:"0px", margin:"0px",color:"#434343"}}>Virtual Count</h5>
+<h1 style={{padding:"0px", margin:"0px",color:"#434343"}}>5</h1> </div> 
+</div> 
+
+      </div>
+      
+      
+    </>
   );
-};
+}
 
 export default SiteMap;
